@@ -115,12 +115,16 @@ public:
   //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/BTagSFMethods
 
   //==== 1a) Event reweighting using scale factors and MC b-tagging efficiencies
-  double GetBTaggingReweight_1a(const vector<Jet>& jets, JetTagging::Parameters jtp, string Syst="central");
+  double GetBTaggingReweight_1a(const vector<Jet>& jets, JetTagging::Parameters jtp, TString SystStr="");
   //==== 1d) Event reweighting using discriminator-dependent scale factors
   double GetBTaggingReweight_1d(const vector<Jet>& jets, JetTagging::Parameters jtp, string Syst="central");
 
   //==== 2a) Jet-by-jet updating of the b-tagging status
   bool IsBTagged_2a(JetTagging::Parameters jtp, const Jet& jet, string Syst="central");
+
+  //Jihwan Bhyun's private functions
+  float GetTriggerSF(vector<Electron>& EleColl, vector<Muon>& MuColl, TString SFKey, TString Option);
+  float TriggerEfficiency(vector<Electron>& EleColl, vector<Muon>& MuColl, TString SFKey, bool ReturnDataEff, TString Option);
 
 };
 

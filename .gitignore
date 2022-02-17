@@ -4,4 +4,6 @@
 *.so
 *_Dict.cxx
 lib/*.tar.gz
+lib/*
 */obj
+Debug_*/*

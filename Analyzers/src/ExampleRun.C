@@ -49,7 +49,7 @@ void ExampleRun::initializeAnalyzer(){
   //==== add taggers and WP that you want to use in analysis
   std::vector<JetTagging::Parameters> jtps;
   //==== If you want to use 1a or 2a method,
-  jtps.push_back( JetTagging::Parameters(JetTagging::DeepCSV, JetTagging::Medium, JetTagging::incl, JetTagging::comb) );
+  jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Tight, JetTagging::incl, JetTagging::comb) );
   //==== set
   mcCorr->SetJetTaggingParameters(jtps);
 
@@ -326,24 +326,27 @@ void ExampleRun::executeEventFromParameter(AnalyzerParameter param){
   std::sort(jets.begin(), jets.end(), PtComparing);
 
   int NBJets_NoSF(0), NBJets_WithSF_2a(0);
-  JetTagging::Parameters jtp_DeepCSV_Medium = JetTagging::Parameters(JetTagging::DeepCSV,
-                                                                     JetTagging::Medium,
+  JetTagging::Parameters jtp_DeepJet_Tight = JetTagging::Parameters(JetTagging::DeepJet,
+                                                                     JetTagging::Tight,
                                                                      JetTagging::incl, JetTagging::comb);
+
 
   //==== b tagging
 
   //==== method 1a)
   //==== multiply "btagWeight" to the event weight
-  double btagWeight = mcCorr->GetBTaggingReweight_1a(jets, jtp_DeepCSV_Medium);
+  double btagWeight_M = mcCorr->GetBTaggingReweight_1a(jets, jtp_DeepJet_Tight);
+  printf("bsf:%.2e\n", btagWeight_M);
 
   //==== method 2a)
   for(unsigned int ij = 0 ; ij < jets.size(); ij++){
 
-    double this_discr = jets.at(ij).GetTaggerResult(JetTagging::DeepCSV);
+    double this_discr = jets.at(ij).GetTaggerResult(JetTagging::DeepJet);
     //==== No SF
-    if( this_discr > mcCorr->GetJetTaggingCutValue(JetTagging::DeepCSV, JetTagging::Medium) ) NBJets_NoSF++;
+    if( this_discr > mcCorr->GetJetTaggingCutValue(JetTagging::DeepJet, JetTagging::Tight) ) NBJets_NoSF++;
+    //if( this_discr > mcCorr->GetJetTaggingCutValue(JetTagging::DeepCSV, JetTagging::Tight) ) NBJets_NoSF++;
     //==== 2a
-    if( mcCorr->IsBTagged_2a(jtp_DeepCSV_Medium, jets.at(ij)) ) NBJets_WithSF_2a++;
+    if( mcCorr->IsBTagged_2a(jtp_DeepJet_Tight, jets.at(ij)) ) NBJets_WithSF_2a++;
 
   }
 

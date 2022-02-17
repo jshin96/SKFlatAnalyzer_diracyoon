@@ -29,14 +29,14 @@ if [[ $HOSTNAME == *"ui"*".sdfarm.kr"* ]]; then
 elif [[ $HOSTNAME == *"tamsa1"* ]]; then
 
   echo "@@@@ Working on tamsa1"
-  export SKFlatRunlogDir="/data6/Users/$USER/SKFlatRunlog/"
-  export SKFlatOutputDir="/data6/Users/$USER/SKFlatOutput/"
+  export SKFlatRunlogDir="/data6/Users/$USER/SKFlatAnalyzer/SKFlatRunlog/"
+  export SKFlatOutputDir="/data6/Users/$USER/SKFlatAnalyzer/SKFlatOutput/"
 
 elif [[ $HOSTNAME == *"tamsa2"* ]]; then
 
   echo "@@@@ Working on tamsa2"
-  export SKFlatRunlogDir="/data6/Users/$USER/SKFlatRunlog/"
-  export SKFlatOutputDir="/data6/Users/$USER/SKFlatOutput/"
+  export SKFlatRunlogDir="/data6/Users/$USER/SKFlatAnalyzer/SKFlatRunlog/"
+  export SKFlatOutputDir="/data6/Users/$USER/SKFlatAnalyzer/SKFlatOutput/"
 
 elif [[ $HOSTNAME == *"knu"* ]]; then
 
@@ -45,8 +45,6 @@ elif [[ $HOSTNAME == *"knu"* ]]; then
   export SKFlatOutputDir="/u/user/$USER/scratch/SKFlatOutput/"
 
 fi
-
-alias skout="cd $SKFlatOutputDir/$SKFlatV/"
 
 export MYBIN=$SKFlat_WD/bin/
 export PYTHONDIR=$SKFlat_WD/python/
