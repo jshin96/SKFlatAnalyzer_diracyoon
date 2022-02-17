@@ -70,7 +70,7 @@ void MeasureJetTaggingEfficiency::executeEvent(){
 
   vector<double> vec_etabins = {0.0, 0.8, 1.6, 2., 2.5};
   vector<double> vec_ptbins = {20., 30., 50., 70., 100., 140., 200., 300., 600., 1000.};//PT bins used in POG SF measurements
-  //for average users, this binning will be sufficient.
+  //for average users, this binning will be sufficient. 
   //but eta-dependence of efficiency can be larger for |eta|>~2, where track & muon detector information of jet constituents starts to get lost, which is critical in tagging.
   //precision analysis with high-eta b may use finer binnings there, but beware of small number of b-jets in high-eta, high-pt bins if you use ttbar sample; proper optimization of bin size should be studied.
   double PtMax = vec_ptbins.at( vec_ptbins.size()-1 );
