@@ -14,6 +14,16 @@ alias skmuid_2016a="cd ${SKFlat_WD}/data/${SKFlatV}/2016preVFP/ID/Muon"
 alias skmuid_2016b="cd ${SKFlat_WD}/data/${SKFlatV}/2016postVFP/ID/Muon"
 alias skmuid_2017="cd ${SKFlat_WD}/data/${SKFlatV}/2017/ID/Muon"
 alias skmuid_2018="cd ${SKFlat_WD}/data/${SKFlatV}/2018/ID/Muon"
+alias skfr_2016a="cd ${SKFlat_WD}/data/${SKFlatV}/2016preVFP/FakeRate"
+alias skfr_2016b="cd ${SKFlat_WD}/data/${SKFlatV}/2016postVFP/FakeRate"
+alias skfr_2017="cd ${SKFlat_WD}/data/${SKFlatV}/2017/FakeRate"
+alias skfr_2018="cd ${SKFlat_WD}/data/${SKFlatV}/2018/FakeRate"
+alias skmva_2016a="cd ${SKFlat_WD}/data/${SKFlatV}/2016preVFP/MVAClassifier"
+alias skmva_2016b="cd ${SKFlat_WD}/data/${SKFlatV}/2016postVFP/MVAClassifier"
+alias skmva_2017="cd ${SKFlat_WD}/data/${SKFlatV}/2017/MVAClassifier"
+alias skmva_2018="cd ${SKFlat_WD}/data/${SKFlatV}/2018/MVAClassifier"
+
+
 
 alias sktools="cd ${SKFlat_WD}/AnalyzerTools"
 alias skformat="cd ${SKFlat_WD}/DataFormats" 
@@ -21,7 +31,7 @@ alias skscript="cd ${SKFlat_WD}/script"
 
 alias skrun="cd ${SKFlat_WD}/script/SKRun"
 alias skout="cd /data6/Users/jbhyun/SKFlatAnalyzer/SKFlatOutput/${SKFlatV}"
-alias sklog="cd /data6/Users/jbhyun/SKFlatRunlog"
+alias sklog="cd /data6/Users/jbhyun/SKFlatAnalyzer/SKFlatRunlog"
 alias skanalysis="cd ${SKFlat_WD}/Analyzers/"
 
 alias CleanLog="cd ${SKFlatRunlogDir}; rm -rv $(date "+%Y")*; rm -rv www/SKFlatAnalyzerJobLogs/$(date "+%Y")*; cd -"

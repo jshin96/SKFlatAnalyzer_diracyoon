@@ -125,6 +125,7 @@ public:
   //Jihwan Bhyun's private functions
   float GetTriggerSF(vector<Electron>& EleColl, vector<Muon>& MuColl, TString SFKey, TString Option);
   float TriggerEfficiency(vector<Electron>& EleColl, vector<Muon>& MuColl, TString SFKey, bool ReturnDataEff, TString Option);
+  float DZEfficiency(TString SFKey, bool ReturnDataEff, TString Option);
 
 };
 

@@ -1,9 +1,10 @@
 #!/bin/bash
 
 ########################################################################
-declare -a List_runModes=("runBkdMC")
+declare -a List_runModes=("runMC")
 declare -a List_Year=("2017")
 #declare -a List_Year=("2016a" "2016b" "2017" "2018")
+#declare -a List_Year=("2016a" "2016b")
 
 ########################################################################
 ## RUN PARAMETERS
@@ -61,8 +62,7 @@ do
       echo "Inappropriate AnalysisCode setting."; exit 1;
     fi
     if   [[ ${runMode} == "runData"  ]]; then CategoryLabel="Data";
-    elif [[ ${runMode} == "runBkdMC" ]]; then CategoryLabel="BkdMC";
-    elif [[ ${runMode} == "runSigMC" ]]; then CategoryLabel="SigMC";
+    elif [[ ${runMode} == "runMC" ]]; then CategoryLabel="MC";
     else echo "Inappropriate runData/runBkdMC/runSigMC settings."; exit 1; fi 
   
     OutputDir="${SKFlatOutputDir}/${SKFlatV}/${AnalysisCode}/${Year}/${CategoryLabel}"

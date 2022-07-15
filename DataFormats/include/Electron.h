@@ -132,8 +132,10 @@ public:
   bool PassID(TString ID) const;
   bool Pass_TESTID() const;
   bool Pass_TESTIDL() const;
-  bool Pass_CaloIdL_TrackIdL_IsoVL16() const;
-  bool Pass_CaloIdL_TrackIdL_IsoVL17() const;
+  bool Pass_CaloIdL_TrackIdL_IsoVL_HctoWA() const;
+  bool Pass_CaloIdL_TrackIdL_IsoVL_Tight(TString Option="") const;
+  bool Pass_CaloIdL_TrackIdL_IsoVL(TString Option="") const;
+  bool PassLooseMVA(TString wp, TString Option="") const;
 
   bool Pass_CutBasedLooseNoIso() const;
   bool Pass_CutBasedVetoNoIso() const;

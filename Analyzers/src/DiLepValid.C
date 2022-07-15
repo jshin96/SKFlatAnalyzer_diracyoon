@@ -2,43 +2,60 @@
 
 void DiLepValid::initializeAnalyzer(){
 
-  ElEl=false, MuMu=false, ElMu=false, SystRun=false; 
-  TrigEffMeas=false, HEMCheck=false;
+  SglLTrig=false, DiLTrig=false, ElEl=false, MuMu=false, ElMu=false; 
+  HEMCheck=false, SystRun=false;
   for(unsigned int i=0; i<Userflags.size(); i++){
-    if(Userflags.at(i).Contains("ElEl")) ElEl=true; 
-    if(Userflags.at(i).Contains("MuMu")) MuMu=true; 
-    if(Userflags.at(i).Contains("ElMu")) ElMu=true; 
-    if(Userflags.at(i).Contains("TrigEffMeas")) TrigEffMeas=true;
-    if(Userflags.at(i).Contains("HEMCheck")) HEMCheck=true;
-    if(Userflags.at(i).Contains("SystRun")) SystRun=true; 
+    if(Userflags.at(i).Contains("SglLTrig")) SglLTrig = true; 
+    if(Userflags.at(i).Contains("DiLTrig" )) DiLTrig  = true; 
+    if(Userflags.at(i).Contains("ElEl"    )) ElEl     = true; 
+    if(Userflags.at(i).Contains("MuMu"    )) MuMu     = true; 
+    if(Userflags.at(i).Contains("ElMu"    )) ElMu     = true; 
+    if(Userflags.at(i).Contains("HEMCheck")) HEMCheck = true;
+    if(Userflags.at(i).Contains("SystRun" )) SystRun  = true; 
   }
 
-  if(MuMu){
-    //if(DataYear==2016){ TrigList.push_back("HLT_IsoMu24_v"); TrigList.push_back("HLT_IsoTkMu24_v"); SFKey_Trig="IsoORTkIsoMu24_POGTight";}
-    //if(DataYear==2017){ TrigList.push_back("HLT_IsoMu27_v"); SFKey_Trig="IsoMu27_POGTight";}
-    //if(DataYear==2018){ TrigList.push_back("HLT_IsoMu24_v"); SFKey_Trig="IsoMu24_POGTight";}
-    if(DataYear==2017){ TrigList.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");
-                        TrigList.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v");
-                        TrigList.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v"); SFKey_Trig="DiMuIso_HNTopID";}
+  if(SglLTrig){
+    if(DataYear==2016){
+      TrigList_SglMu = {"HLT_IsoMu24_v", "HLT_IsoTkMu24_v"}; TrigList_SglEl = {"HLT_Ele27_WPTight_Gsf_v"};
+    }
+    else if(DataYear==2017){
+      TrigList_SglMu = {"HLT_IsoMu27_v"}; TrigList_SglEl = {"HLT_Ele32_WPTight_Gsf_v", "HLT_Ele32_WPTight_Gsf_L1DoubleEG_v"};
+    }
+    else if(DataYear==2018){
+      TrigList_SglMu = {"HLT_IsoMu24_v"}; TrigList_SglEl = {"HLT_Ele32_WPTight_Gsf_v"};
+    }
+    if(MuMu or ElMu) TrigList = TrigList_SglMu;
+    else if(ElEl)    TrigList = TrigList_SglEl;
   }
-  if(ElEl){
-    //if(DataYear==2016){ TrigList.push_back("HLT_Ele27_WPTight_Gsf_v"); SFKey_Trig="Ele27WPTight_POGMVAIsoWP90";}
-    //if(DataYear==2017){ TrigList.push_back("HLT_Ele32_WPTight_Gsf_v"); TrigList.push_back("HLT_Ele32_WPTight_Gsf_L1DoubleEG_v"); SFKey_Trig="Ele32WPTight1OR2_POGMVAIsoWP90";}
-    //if(DataYear==2018){ TrigList.push_back("HLT_Ele32_WPTight_Gsf_v"); SFKey_Trig="Ele32WPTight_POGMVAIsoWP90";}
-    if(DataYear>=2017){ TrigList.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v"); SFKey_Trig="DiElIso_HNTopIDSS"; }
-  }
-  if(ElMu){
-    //if(DataYear==2016){ TrigList.push_back("HLT_IsoMu24_v"); TrigList.push_back("HLT_IsoTkMu24_v"); SFKey_Trig="IsoORTkIsoMu24_POGTight";}
-    //if(DataYear==2017){ TrigList.push_back("HLT_IsoMu27_v"); SFKey_Trig="IsoMu27_POGTight";}
-    //if(DataYear==2018){ TrigList.push_back("HLT_IsoMu24_v"); SFKey_Trig="IsoMu24_POGTight";}
-    if(DataYear>=2017){
-      TrigList.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v");
-      TrigList.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
-      SFKey_Trig="EMuIso_HNTopIDSS"; }
+  else if(DiLTrig){
+    if(GetEraShort()=="2016a"){
+      TrigList_DiMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v"};
+      TrigList_DiEl = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
+      TrigList_ElMu = {"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v", "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v"};
+    }
+    else if(GetEraShort()=="2016b"){
+      TrigList_DiMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v", "HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"};
+      TrigList_DiEl = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
+      TrigList_ElMu = {"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
+    }
+    else if(DataYear==2017){
+      TrigList_DiMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v", "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v"};
+      TrigList_DiEl = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v"};
+      TrigList_ElMu = {"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v"};
+    }
+    else if(DataYear==2018){
+      TrigList_DiMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v"};
+      TrigList_DiEl = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v"};
+      TrigList_ElMu = {"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v"};
+    }
+    //if     (MuMu){ TrigList = TrigList_DiMu; SFKey_Trig="DiMuIso_POGMIDTIso"; }
+    if     (MuMu){ TrigList = TrigList_DiMu; SFKey_Trig="DiMuIso_HNTopID"; }
+    else if(ElEl){ TrigList = TrigList_DiEl; SFKey_Trig="DiElIso_HNTopID17SS"; }
+    else if(ElMu){ TrigList = TrigList_ElMu; SFKey_Trig="EMuIso_HNTopIDSS"; }
   }
 
   //Set up the tagger map only for the param settings to be used.
-  std::vector<JetTagging::Parameters> jtps;
+  vector<JetTagging::Parameters> jtps;
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets) );
   mcCorr->SetJetTaggingParameters(jtps);
 
@@ -49,138 +66,142 @@ void DiLepValid::executeEvent(){
 
 
   Event ev = GetEvent();
-  float weight = 1.;
+  float weight=1., w_GenNorm=1., w_BR=1., w_PU=1.;
+  if(!IsDATA){
+    w_GenNorm = ev.MCweight()*weight_norm_1invpb*GetKFactor()*ev.GetTriggerLumi("Full");
+    w_BR      = GetBRWeight();
+    w_PU      = GetPileUpWeight(nPileUp, 0);
+    weight *= w_GenNorm * w_BR * w_PU;
+  }
 
   if(!ev.PassTrigger(TrigList)) return;
   if(!PassMETFilter()) return;
 
-
   bool PreCutPass=false;
-  std::vector<Muon>     muonPreColl     = GetMuons("NOCUT", 5., 2.4);
-  std::vector<Electron> electronPreColl = GetElectrons("NOCUT", 5., 2.5);
-  std::sort(muonPreColl.begin(), muonPreColl.end(), PtComparing);
-  std::sort(electronPreColl.begin(), electronPreColl.end(), PtComparing);
+  vector<Muon>     muonPreColl     = GetMuons("NOCUT", 8., 2.4);
+  vector<Electron> electronPreColl = GetElectrons("NOCUT", 8., 2.5);
+  sort(muonPreColl.begin(), muonPreColl.end(), PtComparing);
+  sort(electronPreColl.begin(), electronPreColl.end(), PtComparing);
   if(ElEl and electronPreColl.size()>1) PreCutPass=true;
   if(MuMu and muonPreColl.size()>1    ) PreCutPass=true;
   if(ElMu and electronPreColl.size()>0 && muonPreColl.size()>0) PreCutPass=true;
   if(!PreCutPass) return;
 
-
-  std::vector<Muon>     muonTightColl     = SelectMuons(muonPreColl, "TopHN17T", 10., 2.4);
-  std::vector<Electron> electronTightColl = SelectElectrons(electronPreColl, "TopHN17SST", 10., 2.5);
-  std::vector<Muon>     muonLooseColl     = SelectMuons(muonPreColl, "TopHN17L", 10., 2.4);
-  std::vector<Electron> electronLooseColl = SelectElectrons(electronPreColl, "TopHN17SSL", 10., 2.5);
+  //TString MuTID = "POGMIDTIso", MuLID = "POGMIDVVLIso";
+  TString MuTID = "TopHNT", MuLID = "TopHNLLIsop6SIP5";
+  TString ElTID = "TopHN17SST", ElLID = "TopHNSSNM01LFixLMVAIsop4NoSIP_"+GetEraShort(), ElVID = "TopHNV";  
+  float PTminEl = ElTID.Contains("SS")? 15.:10.;
+  vector<Muon>     muonTightColl     = SelectMuons(muonPreColl, MuTID, 10., 2.4);
+  vector<Electron> electronTightColl = SelectElectrons(electronPreColl, ElTID, PTminEl, 2.5);
+  vector<Muon>     muonLooseColl     = SelectMuons(muonPreColl, MuLID, 10., 2.4);
+  vector<Electron> electronLooseColl = SelectElectrons(electronPreColl, ElLID, PTminEl, 2.5);
+  vector<Electron> electronVetoColl  = SelectElectrons(electronPreColl, ElVID, 10., 2.5);
 
 
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
-  std::vector<Jet> jetNoVetoColl  = GetJets("tight", 25., 2.4);
-  std::sort(jetNoVetoColl.begin(), jetNoVetoColl.end(), PtComparing);
-  std::vector<Jet> bjetNoVetoColl = SelBJets(jetNoVetoColl, param_jets);
-  std::vector<Jet> jetColl  = JetsVetoLeptonInside(jetNoVetoColl, electronLooseColl, muonLooseColl, 0.4);
-  std::vector<Jet> bjetColl = SelBJets(jetColl, param_jets);
+  vector<Jet> jetNoVetoColl  = GetJets("tight", 25., 2.4);
+  sort(jetNoVetoColl.begin(), jetNoVetoColl.end(), PtComparing);
+  vector<Jet> bjetNoVetoColl = SelBJets(jetNoVetoColl, param_jets);
+  vector<Jet> jetColl  = JetsVetoLeptonInside(jetNoVetoColl, electronVetoColl, muonLooseColl, 0.4);
+  vector<Jet> bjetColl = SelBJets(jetColl, param_jets);
 
 
   Particle vMET = ev.GetMETVector();
-  Particle vMET_xyCorr(pfMET_Type1_PhiCor_pt*TMath::Cos(pfMET_Type1_PhiCor_phi), pfMET_Type1_PhiCor_pt*TMath::Sin(pfMET_Type1_PhiCor_phi), 0., pfMET_Type1_PhiCor_pt);
+  Particle vMET_T1xy = GetvMET("T1xyCorr");
 
 
-  std::vector<Gen> truthColl;
+  vector<Gen> truthColl;
 
 
   bool EventCand = false;
+  float w_topptrw = 1., w_prefire = 1., sf_trig = 1.;
+  float sf_mutk = 1., sf_muid = 1., sf_muiso = 1., sf_elreco = 1., sf_elid = 1., sf_btag = 1.;
   if(MuMu){ EventCand = muonLooseColl.size()>1; }
   if(ElEl){ EventCand = electronLooseColl.size()>1; }
   if(ElMu){ EventCand = electronLooseColl.size()>0 && muonLooseColl.size()>0; }
-
-  float w_gen = 1., w_filter = 1., w_topptrw = 1., w_lumi = 1., w_PU = 1., w_prefire = 1., sf_trig = 1.;
-  float sf_mutk = 1., sf_muid = 1., sf_muiso = 1., sf_elreco = 1., sf_elid = 1., sf_btag = 1.;
   if((!IsDATA) and EventCand){
-    if(MCSample.Contains("TT") and MCSample.Contains("powheg")) truthColl = GetGens();
-    w_gen     = ev.MCweight();
-    //w_filter  = GetGenFilterEffCorr();
-    w_topptrw = mcCorr->GetTopPtReweight(truthColl);
-    w_lumi    = weight_norm_1invpb*GetKFactor()*ev.GetTriggerLumi("Full");
-    w_PU      = GetPileUpWeight(nPileUp, 0);
+    if(MCSample.Contains("TT") and MCSample.Contains("powheg")){ truthColl = GetGens(); w_topptrw = mcCorr->GetTopPtReweight(truthColl); }
     w_prefire = GetPrefireWeight(0);
-    sf_muid   = GetMuonSF(muonTightColl, "TopHNID_TkMu", "ID");
+    sf_muid   = GetMuonSF(muonTightColl, MuTID, "ID");
+    //sf_muid   = GetMuonSF(muonTightColl, "NUM_MediumID_DEN_TrackerMuons", "ID")*GetMuonSF(muonTightColl, "TopHNTIsoIP_POGMID", "ISO");
+    //sf_muid   = GetMuonSF(muonTightColl, "NUM_MediumID_DEN_TrackerMuons", "ID")*GetMuonSF(muonTightColl, "NUM_TightRelIso_DEN_MediumID", "ISO");
     sf_elreco = GetElectronSF(electronTightColl, "", "Reco");
-    sf_elid   = GetElectronSF(electronTightColl, "TopHNIDSS", "ID");
+    sf_elid   = GetElectronSF(electronTightColl, ElTID, "ID");
     sf_btag   = mcCorr->GetBTaggingReweight_1a(jetColl, param_jets);
     sf_trig   = mcCorr->GetTriggerSF(electronTightColl, muonTightColl, SFKey_Trig, "");
-    //cout<<"w_gen:"<<w_gen<<" w_lumi:"<<w_lumi<<" w_PU:"<<w_PU<<" w_prefire:"<<w_prefire<<" sf_trig:"<<sf_trig<<endl;
+    //cout<<"w_prefire:"<<w_prefire<<" sf_trig:"<<sf_trig<<endl;
     //cout<<"sf_mutk"<<sf_mutk<<" sf_muid:"<<sf_muid<<" sf_muiso:"<<sf_muiso<<" sf_elreco:"<<sf_elreco<<" sf_elid:"<<sf_elid<<" sf_btag:"<<sf_btag<<endl;
   }
-  weight *= w_gen * w_filter * w_topptrw * w_lumi * w_PU * w_prefire * sf_trig;
+  weight *= w_topptrw * w_prefire * sf_trig;
   weight *= sf_mutk * sf_muid * sf_muiso * sf_elreco * sf_elid * sf_btag;
 
  
   if(MuMu){
     if(HEMCheck){
-      CheckHEMIssue(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET_xyCorr, weight, "", "");
+      CheckHEMIssue(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET_T1xy, weight, "", "");
     }
     else{
-      AnalyzeDiMuon(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET, weight, "");
-      AnalyzeDiMuon(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET, w_gen*w_lumi, "_NoW");
-      AnalyzeDiMuon(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET, w_gen*w_lumi*w_prefire, "_Pref");
-      AnalyzeDiMuon(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET, w_gen*w_lumi*w_prefire*w_PU, "_PrefPU");
-      AnalyzeDiMuon(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET, w_gen*w_lumi*w_prefire*w_PU*sf_muid*sf_muiso, "_PrefPUID");
-      AnalyzeDiMuon(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET, w_gen*w_lumi*w_prefire*w_PU*sf_muid*sf_muiso*sf_trig, "_PrefPUIDTrig");
+      AnalyzeDiMuon(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET, weight, "");
+      AnalyzeDiMuon(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET, w_GenNorm, "_NoW");
+      AnalyzeDiMuon(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET, w_GenNorm*w_prefire, "_Pref");
+      AnalyzeDiMuon(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET, w_GenNorm*w_prefire*w_PU, "_PrefPU");
+      AnalyzeDiMuon(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET, w_GenNorm*w_prefire*w_PU*sf_muid*sf_muiso, "_PrefPUID");
+      AnalyzeDiMuon(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET, w_GenNorm*w_prefire*w_PU*sf_muid*sf_muiso*sf_trig, "_PrefPUIDTrig");
     }
   }
   if(ElEl){
     if(HEMCheck){
-      CheckHEMIssue(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET_xyCorr, weight, "", "");
+      CheckHEMIssue(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET_T1xy, weight, "", "");
     }
     else{
-      AnalyzeDiElectron(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET, weight, "");
-      AnalyzeDiElectron(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET, w_gen*w_lumi, "_NoW");
-      AnalyzeDiElectron(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET, w_gen*w_lumi*w_prefire, "_Pref");
-      AnalyzeDiElectron(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET, w_gen*w_lumi*w_prefire*w_PU, "_PrefPU");
-      AnalyzeDiElectron(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET, w_gen*w_lumi*w_prefire*w_PU*sf_elreco, "_PrefPUReco");
-      AnalyzeDiElectron(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET, w_gen*w_lumi*w_prefire*w_PU*sf_elreco*sf_elid, "_PrefPURecoID");
-      AnalyzeDiElectron(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET, w_gen*w_lumi*w_prefire*w_PU*sf_elreco*sf_elid*sf_trig, "_PrefPURecoIDTrig");
+      AnalyzeDiElectron(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET, weight, "");
+      AnalyzeDiElectron(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET, w_GenNorm, "_NoW");
+      AnalyzeDiElectron(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET, w_GenNorm*w_prefire, "_Pref");
+      AnalyzeDiElectron(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET, w_GenNorm*w_prefire*w_PU, "_PrefPU");
+      AnalyzeDiElectron(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET, w_GenNorm*w_prefire*w_PU*sf_elreco, "_PrefPUReco");
+      AnalyzeDiElectron(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET, w_GenNorm*w_prefire*w_PU*sf_elreco*sf_elid, "_PrefPURecoID");
+      AnalyzeDiElectron(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET, w_GenNorm*w_prefire*w_PU*sf_elreco*sf_elid*sf_trig, "_PrefPURecoIDTrig");
     }
   }
   if(ElMu){
-    if(TrigEffMeas){
-      MeasSiglEleTrigEff(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET, ev, w_gen*w_lumi*w_prefire*w_PU, "");
-    }
-    else if(HEMCheck){
-      CheckHEMIssue(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET_xyCorr,
+    if(HEMCheck){
+      CheckHEMIssue(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET_T1xy,
                     weight, "", "");
     }
     else{
-      AnalyzeElectronMuon(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET_xyCorr,
+      AnalyzeElectronMuon(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET_T1xy,
                           weight, "");
-      AnalyzeElectronMuon(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET,
-                          w_gen*w_lumi, "_NoW");
-      AnalyzeElectronMuon(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET,
-                          w_gen*w_lumi*w_prefire, "_Pref");
-      AnalyzeElectronMuon(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET,
-                          w_gen*w_lumi*w_prefire*w_PU, "_PrefPU");
-      AnalyzeElectronMuon(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET,
-                          w_gen*w_lumi*w_prefire*w_PU*sf_muid*sf_muiso*sf_trig, "_PrefPUIDTrigMu");
-      AnalyzeElectronMuon(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET,
-                          w_gen*w_lumi*w_prefire*w_PU*sf_muid*sf_muiso*sf_elreco*sf_elid*sf_trig, "_PrefPUIDTrigMuEl");
-      AnalyzeElectronMuon(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET_xyCorr,
-                          w_gen*w_lumi*w_prefire*w_PU*sf_muid*sf_muiso*sf_elreco*sf_elid*sf_trig, "_PrefPUIDTrigMuElMETPhi");
-      AnalyzeElectronMuon(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET_xyCorr,
-                          w_gen*w_lumi*w_prefire*w_PU*sf_muid*sf_muiso*sf_elreco*sf_elid*sf_trig*sf_btag, "_PrefPUIDTrigMuElMETPhiBTag");
+      AnalyzeElectronMuon(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET,
+                          w_GenNorm, "_NoW");
+      AnalyzeElectronMuon(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET,
+                          w_GenNorm*w_prefire, "_Pref");
+      AnalyzeElectronMuon(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET,
+                          w_GenNorm*w_prefire*w_PU, "_PrefPU");
+      AnalyzeElectronMuon(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET,
+                          w_GenNorm*w_prefire*w_PU*sf_muid*sf_muiso*sf_trig, "_PrefPUIDTrigMu");
+      AnalyzeElectronMuon(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET,
+                          w_GenNorm*w_prefire*w_PU*sf_muid*sf_muiso*sf_elreco*sf_elid*sf_trig, "_PrefPUIDTrigMuEl");
+      AnalyzeElectronMuon(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET_T1xy,
+                          w_GenNorm*w_prefire*w_PU*sf_muid*sf_muiso*sf_elreco*sf_elid*sf_trig, "_PrefPUIDTrigMuElMETPhi");
+      AnalyzeElectronMuon(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET_T1xy,
+                          w_GenNorm*w_prefire*w_PU*sf_muid*sf_muiso*sf_elreco*sf_elid*sf_trig*sf_btag, "_PrefPUIDTrigMuElMETPhiBTag");
     }
   }
 
 }
 
 
-void DiLepValid::AnalyzeDiMuon(std::vector<Muon>& MuTColl, std::vector<Muon>& MuLColl, std::vector<Electron>& ElTColl, std::vector<Electron>& ElLColl,
-                                std::vector<Jet>& JetColl, std::vector<Jet>& BJetColl, Particle& vMET, float weight, TString Label)
+void DiLepValid::AnalyzeDiMuon(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Electron>& ElTColl, vector<Electron>& ElLColl,
+                               vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, float weight, TString Label)
 {
   if( !(MuTColl.size()==2 && MuLColl.size()==2) ) return;
   if( ElLColl.size()!=0 ) return;
-  //if( DataYear==2016 or DataYear==2018 ){ if(MuTColl.at(0).Pt()<26) return; }
-  //else{                                   if(MuTColl.at(0).Pt()<29) return; }
-  if( !(MuTColl.at(0).Pt()>20 && MuTColl.at(1).Pt()>10) ) return;
   if( MuTColl.at(0).Charge() == MuTColl.at(1).Charge() ) return;
+
+  float PTmin1 = 10., PTmin2 = 10.;
+  if     (SglLTrig){ PTmin1 = DataYear==2017? 29.:26.; PTmin2 = 10.; }
+  else if(DiLTrig ){ PTmin1 = 20., PTmin2 = 10.; }
+  if( !(MuTColl.at(0).Pt()>PTmin1 && MuTColl.at(1).Pt()>PTmin2) ) return; 
   
   float Mmumu = (MuTColl.at(0)+MuTColl.at(1)).M();
   if(Mmumu<50) return;
@@ -209,15 +230,17 @@ void DiLepValid::AnalyzeDiMuon(std::vector<Muon>& MuTColl, std::vector<Muon>& Mu
 } 
 
 
-void DiLepValid::AnalyzeDiElectron(std::vector<Muon>& MuTColl, std::vector<Muon>& MuLColl, std::vector<Electron>& ElTColl, std::vector<Electron>& ElLColl,
-                                std::vector<Jet>& JetColl, std::vector<Jet>& BJetColl, Particle& vMET, float weight, TString Label)
+void DiLepValid::AnalyzeDiElectron(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Electron>& ElTColl, vector<Electron>& ElLColl,
+                                   vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, float weight, TString Label)
 {
   if( !(ElTColl.size()==2 && ElLColl.size()==2) ) return;
   if( MuLColl.size()!=0 ) return;
-  if( !(ElTColl.at(0).Pt()>25 && ElTColl.at(1).Pt()>15) ) return; 
   if( ElTColl.at(0).Charge() == ElTColl.at(1).Charge() ) return;
-  //if( DataYear==2016 ){ if(ElTColl.at(0).Pt()<30) return; }
-  //else                { if(ElTColl.at(0).Pt()<35) return; }
+
+  float PTmin1 = 10., PTmin2 = 10.;
+  if     (SglLTrig){ PTmin1 = DataYear==2016? 30.:35.; PTmin2 = 10.; }
+  else if(DiLTrig ){ PTmin1 = 25., PTmin2 = 15.; }
+  if( !(ElTColl.at(0).Pt()>PTmin1 && ElTColl.at(1).Pt()>PTmin2) ) return; 
 
   float Melel = (ElTColl.at(0)+ElTColl.at(1)).M();
   if(Melel<50) return;
@@ -237,8 +260,8 @@ void DiLepValid::AnalyzeDiElectron(std::vector<Muon>& MuTColl, std::vector<Muon>
 }
 
 
-void DiLepValid::AnalyzeElectronMuon(std::vector<Muon>& MuTColl, std::vector<Muon>& MuLColl, std::vector<Electron>& ElTColl, std::vector<Electron>& ElLColl,
-                                    std::vector<Jet>& JetColl, std::vector<Jet>& BJetColl, Particle& vMET, float weight, TString Label)
+void DiLepValid::AnalyzeElectronMuon(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Electron>& ElTColl, vector<Electron>& ElLColl,
+                                     vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, float weight, TString Label)
 
 {
   if( !(ElTColl.size()==1 && ElLColl.size()==1) ) return;
@@ -246,12 +269,12 @@ void DiLepValid::AnalyzeElectronMuon(std::vector<Muon>& MuTColl, std::vector<Muo
   if( !(JetColl.size()>1 && BJetColl.size()>0) ) return;
   if( MuTColl.at(0).Charge() == ElTColl.at(0).Charge() ) return;
   if( MuTColl.at(0).DeltaR(ElTColl.at(0))<0.4 ) return;
-  //if( DataYear==2016 or DataYear==2018 ){ if(MuTColl.at(0).Pt()<26) return; }
-  //else{                                   if(MuTColl.at(0).Pt()<29) return; }
-  if(!(MuTColl.at(0).Pt()>10 && ElTColl.at(0).Pt()>15)) return; 
-  if(!(MuTColl.at(0).Pt()>25 || ElTColl.at(0).Pt()>25)) return; 
-  //if(!(MuTColl.at(0).Pt()>25 && ElTColl.at(0).Pt()>15)) return; 
-  //if(!(MuTColl.at(0).Pt()>10 && ElTColl.at(0).Pt()>25)) return; 
+
+  float PTmin1 = 10., PTminMu = 10., PTminEl = 10.;
+  if(SglLTrig){ PTminMu = DataYear==2017? 29.:26.; PTminEl = 10., PTmin1 = PTminMu; }
+  if(DiLTrig ){ PTminMu = 10., PTminEl = GetEraShort()=="2016a"? 10.:15.; PTmin1 = 25.; }
+  if(!(MuTColl.at(0).Pt()>PTminMu && ElTColl.at(0).Pt()>PTminEl)) return; 
+  if(!(MuTColl.at(0).Pt()>PTmin1  || ElTColl.at(0).Pt()>PTmin1 )) return; 
 
 
   FillHist("NCount"+Label, 0., weight, 1, 0., 1.);
@@ -283,8 +306,8 @@ void DiLepValid::AnalyzeElectronMuon(std::vector<Muon>& MuTColl, std::vector<Muo
 }
 
 
-void DiLepValid::CheckHEMIssue(std::vector<Muon>& MuTColl, std::vector<Muon>& MuLColl, std::vector<Electron>& ElTColl, std::vector<Electron>& ElLColl,
-                               std::vector<Jet>& JetColl, std::vector<Jet>& BJetColl, Particle& vMET, float weight, TString Label, TString Option)
+void DiLepValid::CheckHEMIssue(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Electron>& ElTColl, vector<Electron>& ElLColl,
+                               vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, float weight, TString Label, TString Option)
 {
 
   if(DataYear!=2018) return;
@@ -422,69 +445,6 @@ void DiLepValid::CheckHEMIssue(std::vector<Muon>& MuTColl, std::vector<Muon>& Mu
   }//End of ElMu
 
 }
-
-
-
-void DiLepValid::MeasSiglEleTrigEff(std::vector<Muon>& MuTColl, std::vector<Muon>& MuLColl, std::vector<Electron>& ElTColl, std::vector<Electron>& ElLColl,
-                                    std::vector<Jet>& JetColl, std::vector<Jet>& BJetColl, Particle& vMET, Event& ev, float weight, TString Label)
-
-{
-  if( !(ElTColl.size()==1 && ElLColl.size()==1) ) return;
-  if( !(MuTColl.size()==1 && MuLColl.size()==1) ) return;
-  if( MuTColl.at(0).Charge() == ElTColl.at(0).Charge() ) return;
-  if( DataYear==2016 or DataYear==2018 ){ 
-    if(MuTColl.at(0).Pt()<26) return;
-  }
-  else{
-    if(MuTColl.at(0).Pt()<29) return;
-  }
-  if( ElTColl.at(0).DeltaR(MuTColl.at(0))<0.4 ) return;
-
-  //Sanity check
-  FillHist("PtMu1" +Label, MuTColl.at(0).Pt(), weight, 30, 0., 300.);
-  FillHist("PtEl1" +Label, ElTColl.at(0).Pt(), weight, 30, 0., 300.);
-  FillHist("EtaMu1"+Label, MuTColl.at(0).Eta(), weight, 20, -5., 5.);
-  FillHist("EtaEl1"+Label, ElTColl.at(0).Eta(), weight, 20, -5., 5.);
-  FillHist("MET"   +Label, vMET.Pt(), weight, 40, 0., 400.);
-
-
-  vector<TString> TrigListToMeas;
-  if(DataYear==2016){ TrigListToMeas.push_back("HLT_Ele27_WPTight_Gsf_v"); }
-  if(DataYear==2017){ TrigListToMeas.push_back("HLT_Ele32_WPTight_Gsf_v"); TrigListToMeas.push_back("HLT_Ele32_WPTight_Gsf_L1DoubleEG_v"); }
-  if(DataYear==2018){ TrigListToMeas.push_back("HLT_Ele32_WPTight_Gsf_v"); }
-
-  const int NPtBinEdges=11, NfEtaBinEdges=4;
-  double PtBinEdges[NPtBinEdges];
-  double PtBinEdges_16[NPtBinEdges]   = {0., 15., 24., 27., 30., 35., 45., 70., 100., 200., 500};
-  double PtBinEdges_1718[NPtBinEdges] = {0., 20., 29., 32., 35., 40., 50., 70., 100., 200., 500};
-  if(DataYear==2016){ std::copy(PtBinEdges_16, PtBinEdges_16+NPtBinEdges, PtBinEdges); }
-  else              { std::copy(PtBinEdges_1718, PtBinEdges_1718+NPtBinEdges, PtBinEdges); }
-
-  double fEtaBinEdges[NfEtaBinEdges]={0., 0.8, 1.479, 2.5};
-  double PTEle   = ElTColl.at(0).Pt();
-  double fEtaEle = fabs(ElTColl.at(0).Eta());
-
-  FillHist("NEle_ALL_Pt_1D", PTEle, weight, NPtBinEdges-1, PtBinEdges);
-  FillHist("NEle_ALL_PtEta_2D", PTEle, fEtaEle, weight, NPtBinEdges-1, PtBinEdges, NfEtaBinEdges-1, fEtaBinEdges);
-  if(ev.PassTrigger(TrigListToMeas)){
-    FillHist("NEleTrig_ALL_Pt_1D", PTEle, weight, NPtBinEdges-1, PtBinEdges);
-    FillHist("NEleTrig_ALL_PtEta_2D", PTEle, fEtaEle, weight, NPtBinEdges-1, PtBinEdges, NfEtaBinEdges-1, fEtaBinEdges);
-  }
-
-  //Syst:QCD contamination 
-  if(MuTColl.at(0).Pt()>35 && MuTColl.at(0).RelIso()<0.1){
-    FillHist("NEle_AltTag_ALL_Pt_1D", PTEle, weight, NPtBinEdges-1, PtBinEdges);
-    FillHist("NEle_AltTag_ALL_PtEta_2D", PTEle, fEtaEle, weight, NPtBinEdges-1, PtBinEdges, NfEtaBinEdges-1, fEtaBinEdges);
-    if(ev.PassTrigger(TrigListToMeas)){
-      FillHist("NEleTrig_AltTag_ALL_Pt_1D", PTEle, weight, NPtBinEdges-1, PtBinEdges);
-      FillHist("NEleTrig_AltTag_ALL_PtEta_2D", PTEle, fEtaEle, weight, NPtBinEdges-1, PtBinEdges, NfEtaBinEdges-1, fEtaBinEdges);
-    }
-  }
-  
-}
-
-
-
 
 
 void DiLepValid::executeEventFromParameter(AnalyzerParameter param){

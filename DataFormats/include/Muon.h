@@ -106,6 +106,7 @@ public:
   bool Pass_TESTIDL() const;
   bool Pass_TESTID2() const;
   bool Pass_TESTID2L() const;
+  bool Pass_SIPFakeLoose(TString wp, TString Option="") const;
   
   void SetTrackerLayers(int n);
   inline int TrackerLayers() const { return j_trackerLayers; }

@@ -1,0 +1,1391 @@
+MN:20
+==> Start TMVAClassification
+DataSetInfo              : [dataset] : Added class "Signal"
+                         : Add Tree Tree_ee of type Signal with 21448 events
+DataSetInfo              : [dataset] : Added class "Background"
+                         : Add Tree Tree_ee of type Background with 2732 events
+!H:!V:BoostType=Grad:NTrees=100:MinNodeSize=10%:Shrinkage=0.1:UseBaggedBoost:BaggedSampleFraction=0.5:nCuts=100:MaxDepth=2
+Factory                  : Booking method: [1mBDTG[0m
+                         : 
+                         : the option NegWeightTreatment=InverseBoostNegWeights does not exist for BoostType=Grad
+                         : --> change to new default NegWeightTreatment=Pray
+                         : Building event vectors for type 2 Signal
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Building event vectors for type 2 Background
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+DataSetFactory           : [dataset] : Number of events in input trees
+                         : 
+                         : 
+                         : Dataset[dataset] : Weight renormalisation mode: "EqualNumEvents": renormalises all event classes ...
+                         : Dataset[dataset] :  such that the effective (weighted) number of events in each class is the same 
+                         : Dataset[dataset] :  (and equals the number of events (entries) given for class=0 )
+                         : Dataset[dataset] : ... i.e. such that Sum[i=1..N_j]{w_i} = N_classA, j=classA, classB, ...
+                         : Dataset[dataset] : ... (note that N_j is the sum of TRAINING events
+                         : Dataset[dataset] :  ..... Testing events are not renormalised nor included in the renormalisation factor!)
+                         : Number of training and testing events
+                         : ---------------------------------------------------------------------------
+                         : Signal     -- training events            : 10724
+                         : Signal     -- testing events             : 10724
+                         : Signal     -- training and testing events: 21448
+                         : Background -- training events            : 1366
+                         : Background -- testing events             : 1366
+                         : Background -- training and testing events: 2732
+                         : 
+DataSetInfo              : Correlation matrix (Signal):
+                         : -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                         :                Nj      Nb    Ptl1    Ptl2    Ptj1    Ptj2    Ptj3      HT  MET2HT    dRll  dRlj11  dRlj12  dRlj13  dRlj21  dRlj22  dRlj23   MSSSF   MTvl1   MTvl2 MllW_2jL MllW_1jL Ml1W_2jL Ml1W_1jL Ml2W_2jL Ml2W_1jL MllW1_H Ml1W1_H Ml2W1_H
+                         :       Nj:  +1.000  +0.130  +0.041  -0.022  +0.245  +0.292  +0.433  +0.612  -0.159  -0.066  -0.035  +0.007  -0.009  +0.006  -0.009  -0.003  -0.080  -0.030  -0.054   -0.335   +0.062   -0.321   -0.066   -0.335   -0.087  -0.039  -0.030  -0.079
+                         :       Nb:  +0.130  +1.000  -0.027  -0.032  +0.015  +0.044  +0.071  +0.078  -0.024  +0.033  -0.025  -0.027  +0.008  -0.045  -0.010  +0.020  -0.013  -0.025  -0.005   -0.050   -0.006   -0.044   -0.023   -0.030   -0.014  -0.025  -0.020  -0.026
+                         :     Ptl1:  +0.041  -0.027  +1.000  +0.343  +0.328  +0.183  +0.157  +0.242  +0.040  -0.521  +0.224  +0.022  -0.008  +0.157  +0.043  +0.025  +0.182  +0.412  +0.141   +0.436   +0.030   +0.461   +0.553   +0.182   +0.310  +0.516  +0.561  +0.214
+                         :     Ptl2:  -0.022  -0.032  +0.343  +1.000  +0.155  +0.063  +0.043  +0.089  +0.054  -0.332  +0.134  +0.042  +0.011  +0.128  +0.075  +0.037  +0.385  +0.176  +0.352   +0.361   +0.060   +0.212   +0.381   +0.354   +0.544  +0.350  +0.219  +0.463
+                         :     Ptj1:  +0.245  +0.015  +0.328  +0.155  +1.000  +0.748  +0.539  +0.839  -0.073  -0.175  +0.076  -0.166  -0.056  +0.067  -0.120  -0.021  +0.028  +0.057  +0.014   +0.236   -0.006   +0.239   +0.361   +0.211   +0.303  +0.305  +0.302  +0.247
+                         :     Ptj2:  +0.292  +0.044  +0.183  +0.063  +0.748  +1.000  +0.703  +0.856  -0.118  -0.071  -0.057  -0.108  +0.000  -0.026  -0.086  +0.002  +0.018  +0.039  -0.003   +0.251   -0.021   +0.257   +0.222   +0.259   +0.198  +0.288  +0.285  +0.243
+                         :     Ptj3:  +0.433  +0.071  +0.157  +0.043  +0.539  +0.703  +1.000  +0.809  -0.135  -0.095  -0.069  -0.046  -0.006  -0.030  -0.041  -0.002  -0.026  +0.025  -0.015   +0.203   -0.049   +0.216   +0.165   +0.224   +0.155  +0.262  +0.262  +0.221
+                         :       HT:  +0.612  +0.078  +0.242  +0.089  +0.839  +0.856  +0.809  +1.000  -0.145  -0.141  -0.012  -0.105  -0.027  +0.015  -0.084  -0.011  -0.016  +0.031  -0.015   +0.119   -0.003   +0.130   +0.237   +0.116   +0.198  +0.264  +0.264  +0.202
+                         :   MET2HT:  -0.159  -0.024  +0.040  +0.054  -0.073  -0.118  -0.135  -0.145  +1.000  -0.004  -0.060  +0.010  +0.006  -0.043  -0.002  +0.012  +0.074  +0.485  +0.461   +0.040   +0.055   +0.023   -0.007   +0.021   -0.007  -0.003  -0.011  -0.008
+                         :     dRll:  -0.066  +0.033  -0.521  -0.332  -0.175  -0.071  -0.095  -0.141  -0.004  +1.000  -0.231  -0.024  -0.006  -0.272  -0.062  -0.041  +0.421  -0.220  -0.126   -0.154   +0.211   -0.240   -0.207   -0.110   -0.147  -0.264  -0.305  -0.203
+                         :   dRlj11:  -0.035  -0.025  +0.224  +0.134  +0.076  -0.057  -0.069  -0.012  -0.060  -0.231  +1.000  -0.255  -0.137  +0.269  +0.053  +0.024  +0.002  -0.059  -0.000   +0.128   +0.001   +0.129   +0.365   +0.095   +0.174  +0.226  +0.234  +0.147
+                         :   dRlj12:  +0.007  -0.027  +0.022  +0.042  -0.166  -0.108  -0.046  -0.105  +0.010  -0.024  -0.255  +1.000  -0.053  +0.043  +0.295  -0.026  +0.019  -0.004  +0.002   +0.113   -0.058   +0.127   -0.016   +0.018   +0.020  +0.142  +0.151  +0.070
+                         :   dRlj13:  -0.009  +0.008  -0.008  +0.011  -0.056  +0.000  -0.006  -0.027  +0.006  -0.006  -0.137  -0.053  +1.000  +0.026  -0.040  +0.314  +0.032  -0.006  +0.005   +0.217   -0.096   +0.239   +0.091   +0.121   +0.100  +0.177  +0.189  +0.098
+                         :   dRlj21:  +0.006  -0.045  +0.157  +0.128  +0.067  -0.026  -0.030  +0.015  -0.043  -0.272  +0.269  +0.043  +0.026  +1.000  -0.187  -0.095  -0.098  +0.037  -0.094   +0.094   -0.076   +0.111   +0.166   +0.068   +0.313  +0.180  +0.153  +0.215
+                         :   dRlj22:  -0.009  -0.010  +0.043  +0.075  -0.120  -0.086  -0.041  -0.084  -0.002  -0.062  +0.053  +0.295  -0.040  -0.187  +1.000  -0.049  +0.017  -0.010  +0.003   +0.120   -0.067   +0.065   +0.043   +0.139   +0.046  +0.142  +0.087  +0.208
+                         :   dRlj23:  -0.003  +0.020  +0.025  +0.037  -0.021  +0.002  -0.002  -0.011  +0.012  -0.041  +0.024  -0.026  +0.314  -0.095  -0.049  +1.000  +0.026  +0.015  -0.005   +0.184   -0.072   +0.120   +0.093   +0.233   +0.131  +0.155  +0.101  +0.220
+                         :    MSSSF:  -0.080  -0.013  +0.182  +0.385  +0.028  +0.018  -0.026  -0.016  +0.074  +0.421  +0.002  +0.019  +0.032  -0.098  +0.017  +0.026  +1.000  +0.128  +0.144   +0.361   +0.499   +0.154   +0.305   +0.222   +0.280  +0.238  +0.126  +0.153
+                         :    MTvl1:  -0.030  -0.025  +0.412  +0.176  +0.057  +0.039  +0.025  +0.031  +0.485  -0.220  -0.059  -0.004  -0.006  +0.037  -0.010  +0.015  +0.128  +1.000  +0.523   +0.181   +0.072   +0.174   +0.158   +0.083   +0.100  +0.179  +0.186  +0.075
+                         :    MTvl2:  -0.054  -0.005  +0.141  +0.352  +0.014  -0.003  -0.015  -0.015  +0.461  -0.126  -0.000  +0.002  +0.005  -0.094  +0.003  -0.005  +0.144  +0.523  +1.000   +0.138   +0.022   +0.092   +0.118   +0.132   +0.138  +0.104  +0.066  +0.136
+                         : MllW_2jL:  -0.335  -0.050  +0.436  +0.361  +0.236  +0.251  +0.203  +0.119  +0.040  -0.154  +0.128  +0.113  +0.217  +0.094  +0.120  +0.184  +0.361  +0.181  +0.138   +1.000   -0.047   +0.942   +0.596   +0.845   +0.539  +0.720  +0.674  +0.605
+                         : MllW_1jL:  +0.062  -0.006  +0.030  +0.060  -0.006  -0.021  -0.049  -0.003  +0.055  +0.211  +0.001  -0.058  -0.096  -0.076  -0.067  -0.072  +0.499  +0.072  +0.022   -0.047   +1.000   -0.147   -0.192   -0.103   -0.252  -0.037  -0.079  -0.107
+                         : Ml1W_2jL:  -0.321  -0.044  +0.461  +0.212  +0.239  +0.257  +0.216  +0.130  +0.023  -0.240  +0.129  +0.127  +0.239  +0.111  +0.065  +0.120  +0.154  +0.174  +0.092   +0.942   -0.147   +1.000   +0.559   +0.731   +0.431  +0.694  +0.715  +0.505
+                         : Ml1W_1jL:  -0.066  -0.023  +0.553  +0.381  +0.361  +0.222  +0.165  +0.237  -0.007  -0.207  +0.365  -0.016  +0.091  +0.166  +0.043  +0.093  +0.305  +0.158  +0.118   +0.596   -0.192   +0.559   +1.000   +0.415   +0.754  +0.558  +0.541  +0.392
+                         : Ml2W_2jL:  -0.335  -0.030  +0.182  +0.354  +0.211  +0.259  +0.224  +0.116  +0.021  -0.110  +0.095  +0.018  +0.121  +0.068  +0.139  +0.233  +0.222  +0.083  +0.132   +0.845   -0.103   +0.731   +0.415   +1.000   +0.505  +0.583  +0.487  +0.679
+                         : Ml2W_1jL:  -0.087  -0.014  +0.310  +0.544  +0.303  +0.198  +0.155  +0.198  -0.007  -0.147  +0.174  +0.020  +0.100  +0.313  +0.046  +0.131  +0.280  +0.100  +0.138   +0.539   -0.252   +0.431   +0.754   +0.505   +1.000  +0.475  +0.372  +0.542
+                         :  MllW1_H:  -0.039  -0.025  +0.516  +0.350  +0.305  +0.288  +0.262  +0.264  -0.003  -0.264  +0.226  +0.142  +0.177  +0.180  +0.142  +0.155  +0.238  +0.179  +0.104   +0.720   -0.037   +0.694   +0.558   +0.583   +0.475  +1.000  +0.959  +0.795
+                         :  Ml1W1_H:  -0.030  -0.020  +0.561  +0.219  +0.302  +0.285  +0.262  +0.264  -0.011  -0.305  +0.234  +0.151  +0.189  +0.153  +0.087  +0.101  +0.126  +0.186  +0.066   +0.674   -0.079   +0.715   +0.541   +0.487   +0.372  +0.959  +1.000  +0.627
+                         :  Ml2W1_H:  -0.079  -0.026  +0.214  +0.463  +0.247  +0.243  +0.221  +0.202  -0.008  -0.203  +0.147  +0.070  +0.098  +0.215  +0.208  +0.220  +0.153  +0.075  +0.136   +0.605   -0.107   +0.505   +0.392   +0.679   +0.542  +0.795  +0.627  +1.000
+                         : -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DataSetInfo              : Correlation matrix (Background):
+                         : -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                         :                Nj      Nb    Ptl1    Ptl2    Ptj1    Ptj2    Ptj3      HT  MET2HT    dRll  dRlj11  dRlj12  dRlj13  dRlj21  dRlj22  dRlj23   MSSSF   MTvl1   MTvl2 MllW_2jL MllW_1jL Ml1W_2jL Ml1W_1jL Ml2W_2jL Ml2W_1jL MllW1_H Ml1W1_H Ml2W1_H
+                         :       Nj:  +1.000  +0.095  +0.107  +0.066  +0.329  +0.371  +0.502  +0.629  -0.158  -0.070  +0.023  +0.038  -0.009  +0.010  -0.012  +0.022  +0.010  +0.034  +0.012   -0.105   +0.016   -0.152   +0.129   -0.131   +0.133  +0.061  +0.055  +0.023
+                         :       Nb:  +0.095  +1.000  +0.068  +0.096  +0.117  +0.091  +0.110  +0.128  -0.044  +0.009  -0.014  +0.012  -0.027  -0.054  -0.006  -0.018  +0.080  -0.007  -0.000   +0.045   +0.099   +0.009   +0.031   +0.042   +0.017  +0.032  +0.001  +0.027
+                         :     Ptl1:  +0.107  +0.068  +1.000  +0.378  +0.262  +0.176  +0.205  +0.240  -0.007  +0.025  +0.194  +0.076  +0.015  -0.006  -0.014  -0.060  +0.485  +0.362  +0.078   +0.576   +0.424   +0.547   +0.622   +0.285   +0.332  +0.620  +0.613  +0.200
+                         :     Ptl2:  +0.066  +0.096  +0.378  +1.000  +0.080  +0.097  +0.069  +0.096  +0.004  +0.098  +0.042  +0.059  +0.060  +0.000  -0.029  +0.038  +0.571  +0.193  +0.322   +0.510   +0.539   +0.275   +0.295   +0.366   +0.453  +0.427  +0.218  +0.411
+                         :     Ptj1:  +0.329  +0.117  +0.262  +0.080  +1.000  +0.718  +0.604  +0.878  -0.029  -0.075  +0.055  -0.127  -0.027  +0.026  -0.045  -0.077  +0.070  +0.018  +0.001   +0.214   +0.071   +0.252   +0.421   +0.198   +0.387  +0.234  +0.241  +0.156
+                         :     Ptj2:  +0.371  +0.091  +0.176  +0.097  +0.718  +1.000  +0.722  +0.858  -0.151  -0.040  -0.036  -0.090  +0.007  -0.041  -0.012  -0.032  +0.072  +0.051  -0.025   +0.276   +0.064   +0.311   +0.290   +0.306   +0.283  +0.282  +0.278  +0.225
+                         :     Ptj3:  +0.502  +0.110  +0.205  +0.069  +0.604  +0.722  +1.000  +0.827  -0.195  -0.051  -0.015  -0.029  -0.023  -0.025  -0.010  -0.081  +0.045  +0.019  -0.001   +0.236   +0.031   +0.293   +0.287   +0.232   +0.277  +0.252  +0.284  +0.136
+                         :       HT:  +0.629  +0.128  +0.240  +0.096  +0.878  +0.858  +0.827  +1.000  -0.136  -0.083  +0.016  -0.075  -0.017  -0.007  -0.025  -0.055  +0.057  +0.031  -0.008   +0.196   +0.050   +0.225   +0.369   +0.195   +0.349  +0.259  +0.267  +0.176
+                         :   MET2HT:  -0.158  -0.044  -0.007  +0.004  -0.029  -0.151  -0.195  -0.136  +1.000  +0.053  -0.027  +0.008  +0.060  -0.055  +0.043  -0.016  +0.035  +0.354  +0.335   -0.011   +0.048   -0.028   -0.025   -0.037   -0.042  -0.024  -0.025  -0.065
+                         :     dRll:  -0.070  +0.009  +0.025  +0.098  -0.075  -0.040  -0.051  -0.083  +0.053  +1.000  -0.010  +0.049  -0.028  -0.136  -0.054  +0.006  +0.675  +0.110  +0.078   +0.358   +0.497   +0.100   +0.159   +0.175   +0.174  +0.229  +0.059  +0.047
+                         :   dRlj11:  +0.023  -0.014  +0.194  +0.042  +0.055  -0.036  -0.015  +0.016  -0.027  -0.010  +1.000  -0.178  -0.055  -0.020  +0.034  +0.049  +0.128  -0.177  +0.082   +0.187   +0.089   +0.196   +0.548   +0.116   +0.061  +0.231  +0.252  +0.066
+                         :   dRlj12:  +0.038  +0.012  +0.076  +0.059  -0.127  -0.090  -0.029  -0.075  +0.008  +0.049  -0.178  +1.000  +0.010  +0.076  -0.009  +0.065  +0.114  -0.035  +0.059   +0.158   +0.098   +0.189   +0.005   -0.026   +0.062  +0.183  +0.214  +0.007
+                         :   dRlj13:  -0.009  -0.027  +0.015  +0.060  -0.027  +0.007  -0.023  -0.017  +0.060  -0.028  -0.055  +0.010  +1.000  +0.074  +0.018  +0.055  +0.070  -0.008  +0.032   +0.204   +0.078   +0.256   +0.056   +0.099   +0.084  +0.206  +0.235  +0.073
+                         :   dRlj21:  +0.010  -0.054  -0.006  +0.000  +0.026  -0.041  -0.025  -0.007  -0.055  -0.136  -0.020  +0.076  +0.074  +1.000  -0.148  -0.003  -0.032  +0.048  -0.213   +0.015   -0.021   -0.002   -0.030   +0.053   +0.505  +0.042  -0.029  +0.193
+                         :   dRlj22:  -0.012  -0.006  -0.014  -0.029  -0.045  -0.012  -0.010  -0.025  +0.043  -0.054  +0.034  -0.009  +0.018  -0.148  +1.000  +0.015  +0.005  +0.000  -0.061   +0.080   +0.013   +0.014   +0.044   +0.203   +0.003  +0.094  +0.008  +0.257
+                         :   dRlj23:  +0.022  -0.018  -0.060  +0.038  -0.077  -0.032  -0.081  -0.055  -0.016  +0.006  +0.049  +0.065  +0.055  -0.003  +0.015  +1.000  +0.068  -0.031  +0.004   +0.133   +0.062   +0.018   +0.025   +0.267   +0.081  +0.145  +0.030  +0.307
+                         :    MSSSF:  +0.010  +0.080  +0.485  +0.571  +0.070  +0.072  +0.045  +0.057  +0.035  +0.675  +0.128  +0.114  +0.070  -0.032  +0.005  +0.068  +1.000  +0.282  +0.197   +0.764   +0.914   +0.409   +0.451   +0.440   +0.437  +0.625  +0.364  +0.314
+                         :    MTvl1:  +0.034  -0.007  +0.362  +0.193  +0.018  +0.051  +0.019  +0.031  +0.354  +0.110  -0.177  -0.035  -0.008  +0.048  +0.000  -0.031  +0.282  +1.000  +0.104   +0.255   +0.247   +0.181   +0.147   +0.177   +0.151  +0.240  +0.183  +0.114
+                         :    MTvl2:  +0.012  -0.000  +0.078  +0.322  +0.001  -0.025  -0.001  -0.008  +0.335  +0.078  +0.082  +0.059  +0.032  -0.213  -0.061  +0.004  +0.197  +0.104  +1.000   +0.172   +0.178   +0.086   +0.105   +0.111   +0.099  +0.140  +0.071  +0.133
+                         : MllW_2jL:  -0.105  +0.045  +0.576  +0.510  +0.214  +0.276  +0.236  +0.196  -0.011  +0.358  +0.187  +0.158  +0.204  +0.015  +0.080  +0.133  +0.764  +0.255  +0.172   +1.000   +0.697   +0.854   +0.577   +0.774   +0.467  +0.838  +0.682  +0.518
+                         : MllW_1jL:  +0.016  +0.099  +0.424  +0.539  +0.071  +0.064  +0.031  +0.050  +0.048  +0.497  +0.089  +0.098  +0.078  -0.021  +0.013  +0.062  +0.914  +0.247  +0.178   +0.697   +1.000   +0.352   +0.326   +0.394   +0.331  +0.568  +0.314  +0.286
+                         : Ml1W_2jL:  -0.152  +0.009  +0.547  +0.275  +0.252  +0.311  +0.293  +0.225  -0.028  +0.100  +0.196  +0.189  +0.256  -0.002  +0.014  +0.018  +0.409  +0.181  +0.086   +0.854   +0.352   +1.000   +0.541   +0.600   +0.302  +0.736  +0.781  +0.328
+                         : Ml1W_1jL:  +0.129  +0.031  +0.622  +0.295  +0.421  +0.290  +0.287  +0.369  -0.025  +0.159  +0.548  +0.005  +0.056  -0.030  +0.044  +0.025  +0.451  +0.147  +0.105   +0.577   +0.326   +0.541   +1.000   +0.366   +0.483  +0.582  +0.558  +0.252
+                         : Ml2W_2jL:  -0.131  +0.042  +0.285  +0.366  +0.198  +0.306  +0.232  +0.195  -0.037  +0.175  +0.116  -0.026  +0.099  +0.053  +0.203  +0.267  +0.440  +0.177  +0.111   +0.774   +0.394   +0.600   +0.366   +1.000   +0.383  +0.637  +0.449  +0.672
+                         : Ml2W_1jL:  +0.133  +0.017  +0.332  +0.453  +0.387  +0.283  +0.277  +0.349  -0.042  +0.174  +0.061  +0.062  +0.084  +0.505  +0.003  +0.081  +0.437  +0.151  +0.099   +0.467   +0.331   +0.302   +0.483   +0.383   +1.000  +0.435  +0.239  +0.474
+                         :  MllW1_H:  +0.061  +0.032  +0.620  +0.427  +0.234  +0.282  +0.252  +0.259  -0.024  +0.229  +0.231  +0.183  +0.206  +0.042  +0.094  +0.145  +0.625  +0.240  +0.140   +0.838   +0.568   +0.736   +0.582   +0.637   +0.435  +1.000  +0.892  +0.645
+                         :  Ml1W1_H:  +0.055  +0.001  +0.613  +0.218  +0.241  +0.278  +0.284  +0.267  -0.025  +0.059  +0.252  +0.214  +0.235  -0.029  +0.008  +0.030  +0.364  +0.183  +0.071   +0.682   +0.314   +0.781   +0.558   +0.449   +0.239  +0.892  +1.000  +0.344
+                         :  Ml2W1_H:  +0.023  +0.027  +0.200  +0.411  +0.156  +0.225  +0.136  +0.176  -0.065  +0.047  +0.066  +0.007  +0.073  +0.193  +0.257  +0.307  +0.314  +0.114  +0.133   +0.518   +0.286   +0.328   +0.252   +0.672   +0.474  +0.645  +0.344  +1.000
+                         : -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DataSetFactory           : [dataset] :  
+                         : 
+Factory                  : [1mTrain all methods[0m
+Factory                  : [dataset] : Create Transformation "I" with events from all classes.
+                         : 
+                         : Transformation, Variable selection : 
+                         : Input : variable 'Nj' <---> Output : variable 'Nj'
+                         : Input : variable 'Nb' <---> Output : variable 'Nb'
+                         : Input : variable 'Ptl1' <---> Output : variable 'Ptl1'
+                         : Input : variable 'Ptl2' <---> Output : variable 'Ptl2'
+                         : Input : variable 'Ptj1' <---> Output : variable 'Ptj1'
+                         : Input : variable 'Ptj2' <---> Output : variable 'Ptj2'
+                         : Input : variable 'Ptj3' <---> Output : variable 'Ptj3'
+                         : Input : variable 'HT' <---> Output : variable 'HT'
+                         : Input : variable 'MET2HT' <---> Output : variable 'MET2HT'
+                         : Input : variable 'dRll' <---> Output : variable 'dRll'
+                         : Input : variable 'dRlj11' <---> Output : variable 'dRlj11'
+                         : Input : variable 'dRlj12' <---> Output : variable 'dRlj12'
+                         : Input : variable 'dRlj13' <---> Output : variable 'dRlj13'
+                         : Input : variable 'dRlj21' <---> Output : variable 'dRlj21'
+                         : Input : variable 'dRlj22' <---> Output : variable 'dRlj22'
+                         : Input : variable 'dRlj23' <---> Output : variable 'dRlj23'
+                         : Input : variable 'MSSSF' <---> Output : variable 'MSSSF'
+                         : Input : variable 'MTvl1' <---> Output : variable 'MTvl1'
+                         : Input : variable 'MTvl2' <---> Output : variable 'MTvl2'
+                         : Input : variable 'MllW_2jL' <---> Output : variable 'MllW_2jL'
+                         : Input : variable 'MllW_1jL' <---> Output : variable 'MllW_1jL'
+                         : Input : variable 'Ml1W_2jL' <---> Output : variable 'Ml1W_2jL'
+                         : Input : variable 'Ml1W_1jL' <---> Output : variable 'Ml1W_1jL'
+                         : Input : variable 'Ml2W_2jL' <---> Output : variable 'Ml2W_2jL'
+                         : Input : variable 'Ml2W_1jL' <---> Output : variable 'Ml2W_1jL'
+                         : Input : variable 'MllW1_H' <---> Output : variable 'MllW1_H'
+                         : Input : variable 'Ml1W1_H' <---> Output : variable 'Ml1W1_H'
+                         : Input : variable 'Ml2W1_H' <---> Output : variable 'Ml2W1_H'
+TFHandler_Factory        : Variable        Mean        RMS   [        Min        Max ]
+                         : -----------------------------------------------------------
+                         :       Nj:     4.1701     1.1731   [     3.0000     11.000 ]
+                         :       Nb:     1.3317    0.51909   [     1.0000     4.0000 ]
+                         :     Ptl1:     65.552     37.340   [     25.012     590.20 ]
+                         :     Ptl2:     29.518     15.376   [     15.006     204.67 ]
+                         :     Ptj1:     117.61     67.704   [     26.692     959.44 ]
+                         :     Ptj2:     76.635     39.762   [     25.255     774.79 ]
+                         :     Ptj3:     52.302     24.524   [     25.001     267.19 ]
+                         :       HT:     293.04     152.49   [     78.884     1765.4 ]
+                         :   MET2HT:     20.810     33.196   [  0.0043733     903.89 ]
+                         :     dRll:     1.9318    0.87377   [    0.29735     5.1184 ]
+                         :   dRlj11:     2.4248    0.84999   [    0.40726     5.2991 ]
+                         :   dRlj12:     2.2005    0.87295   [    0.40266     5.3065 ]
+                         :   dRlj13:     2.2205    0.85014   [    0.40057     5.1980 ]
+                         :   dRlj21:     2.2821    0.85574   [    0.40081     5.2867 ]
+                         :   dRlj22:     2.1722    0.86200   [    0.40001     5.4821 ]
+                         :   dRlj23:     2.2218    0.88518   [    0.40098     5.5478 ]
+                         :    MSSSF:     74.642     52.421   [     8.9483     737.56 ]
+                         :    MTvl1:     73.562     52.382   [  0.0052341     814.33 ]
+                         :    MTvl2:     49.456     33.422   [  0.0010904     322.69 ]
+                         : MllW_2jL:     210.43     80.823   [     66.888     1095.4 ]
+                         : MllW_1jL:     92.904     46.117   [     15.813     737.56 ]
+                         : Ml1W_2jL:     163.10     66.574   [     34.795     941.54 ]
+                         : Ml1W_1jL:     144.40     125.14   [     12.391     1590.8 ]
+                         : Ml2W_2jL:     130.66     52.947   [     26.202     666.94 ]
+                         : Ml2W_1jL:     93.451     77.765   [     10.280     1150.9 ]
+                         :  MllW1_H:     255.33     107.06   [     99.416     1331.6 ]
+                         :  Ml1W1_H:     203.35     93.856   [     56.576     1269.1 ]
+                         :  Ml2W1_H:     150.43     56.749   [     49.013     1009.6 ]
+                         : -----------------------------------------------------------
+                         : [32m
+                         : <PlotVariables> Will not produce scatter plots ==> 
+                         : |  The number of 28 input variables and 0 target values would require 378 two-dimensional
+                         : |  histograms, which would occupy the computer's memory. Note that this
+                         : |  suppression does not have any consequences for your analysis, other
+                         : |  than not disposing of these scatter plots. You can modify the maximum
+                         : |  number of input variables allowed to generate scatter plots in your
+                         : |  script via the command line:
+                         : |  "(TMVA::gConfig().GetVariablePlotting()).fMaxNumOfAllowedVariablesForScatterPlots = <some int>;"[0m
+                         : 
+                         : Some more output
+                         : Ranking input variables (method unspecific)...
+IdTransformation         : Ranking result (top variable is best ranked)
+                         : ---------------------------------
+                         : Rank : Variable  : Separation
+                         : ---------------------------------
+                         :    1 : MSSSF     : 3.143e-01
+                         :    2 : MllW_1jL  : 1.753e-01
+                         :    3 : dRll      : 1.375e-01
+                         :    4 : MET2HT    : 1.329e-01
+                         :    5 : Ml2W_1jL  : 8.891e-02
+                         :    6 : Nb        : 7.666e-02
+                         :    7 : MllW_2jL  : 7.429e-02
+                         :    8 : Ml1W_1jL  : 6.961e-02
+                         :    9 : MllW1_H   : 4.128e-02
+                         :   10 : Ptj3      : 3.827e-02
+                         :   11 : Nj        : 3.307e-02
+                         :   12 : HT        : 3.189e-02
+                         :   13 : Ml1W_2jL  : 2.926e-02
+                         :   14 : Ml2W_2jL  : 2.817e-02
+                         :   15 : MTvl2     : 2.785e-02
+                         :   16 : MTvl1     : 2.606e-02
+                         :   17 : dRlj23    : 2.539e-02
+                         :   18 : dRlj21    : 2.436e-02
+                         :   19 : Ptj2      : 2.287e-02
+                         :   20 : dRlj11    : 1.948e-02
+                         :   21 : dRlj12    : 1.936e-02
+                         :   22 : dRlj22    : 1.775e-02
+                         :   23 : Ptl1      : 1.680e-02
+                         :   24 : Ptj1      : 1.648e-02
+                         :   25 : Ptl2      : 1.548e-02
+                         :   26 : Ml1W1_H   : 1.487e-02
+                         :   27 : dRlj13    : 1.375e-02
+                         :   28 : Ml2W1_H   : 1.364e-02
+                         : ---------------------------------
+Factory                  : Train method: BDTG for Classification
+                         : 
+<WARNING>                : Events with negative event weights are USED during the BDT training. This might cause problems with small node sizes or with the boosting. Please remove negative events from training using the option *IgnoreEventsWithNegWeightsInTraining* in case you observe problems with the boosting
+BDTG                     : #events: (reweighted) sig: 6045 bkg: 6045
+                         : #events: (unweighted) sig: 10724 bkg: 1366
+                         : Training 100 Decision Trees ... patience please
+                         : Elapsed time for training with 12090 events: [1;31m0.921 sec[0m         
+BDTG                     : [dataset] : Evaluation of BDTG on training sample (12090 events)
+                         : Elapsed time for evaluation of 12090 events: [1;31m0.0384 sec[0m       
+                         : Creating xml weight file: [0;36mdataset/weights/TMVAClassification_MN20_El_BDTG.weights.xml[0m
+                         : Creating standalone class: [0;36mdataset/weights/TMVAClassification_MN20_El_BDTG.class.C[0m
+                         : TMVA_MN20_El.root:/dataset/Method_BDT/BDTG
+Factory                  : Training finished
+                         : 
+                         : Ranking input variables (method specific)...
+BDTG                     : Ranking result (top variable is best ranked)
+                         : ------------------------------------------
+                         : Rank : Variable  : Variable Importance
+                         : ------------------------------------------
+                         :    1 : MSSSF     : 9.129e-02
+                         :    2 : MET2HT    : 6.363e-02
+                         :    3 : Ml2W_1jL  : 5.619e-02
+                         :    4 : Nb        : 5.426e-02
+                         :    5 : MllW_1jL  : 5.225e-02
+                         :    6 : dRll      : 4.886e-02
+                         :    7 : dRlj22    : 4.294e-02
+                         :    8 : Ptl1      : 4.170e-02
+                         :    9 : Ptl2      : 4.014e-02
+                         :   10 : Ptj3      : 3.902e-02
+                         :   11 : Ml2W1_H   : 3.709e-02
+                         :   12 : dRlj12    : 3.652e-02
+                         :   13 : dRlj13    : 3.515e-02
+                         :   14 : dRlj21    : 3.365e-02
+                         :   15 : Ml1W_1jL  : 2.988e-02
+                         :   16 : MTvl1     : 2.954e-02
+                         :   17 : Ptj1      : 2.788e-02
+                         :   18 : dRlj23    : 2.737e-02
+                         :   19 : Ml2W_2jL  : 2.603e-02
+                         :   20 : MllW_2jL  : 2.517e-02
+                         :   21 : Nj        : 2.504e-02
+                         :   22 : dRlj11    : 2.426e-02
+                         :   23 : MTvl2     : 2.359e-02
+                         :   24 : Ml1W_2jL  : 2.054e-02
+                         :   25 : MllW1_H   : 1.966e-02
+                         :   26 : Ml1W1_H   : 1.949e-02
+                         :   27 : HT        : 1.628e-02
+                         :   28 : Ptj2      : 1.257e-02
+                         : ------------------------------------------
+Factory                  : === Destroy and recreate all methods via weight files for testing ===
+                         : 
+                         : Reading weight file: [0;36mdataset/weights/TMVAClassification_MN20_El_BDTG.weights.xml[0m
+Factory                  : [1mTest all methods[0m
+Factory                  : Test method: BDTG for Classification performance
+                         : 
+BDTG                     : [dataset] : Evaluation of BDTG on testing sample (12090 events)
+                         : Elapsed time for evaluation of 12090 events: [1;31m0.0335 sec[0m       
+Factory                  : [1mEvaluate all methods[0m
+Factory                  : Evaluate classifier: BDTG
+                         : 
+BDTG                     : [dataset] : Loop over test events and fill histograms with classifier response...
+                         : 
+TFHandler_BDTG           : Variable        Mean        RMS   [        Min        Max ]
+                         : -----------------------------------------------------------
+                         :       Nj:     4.2157     1.2072   [     3.0000     12.000 ]
+                         :       Nb:     1.3721    0.54305   [     1.0000     5.0000 ]
+                         :     Ptl1:     65.129     36.725   [     25.001     424.48 ]
+                         :     Ptl2:     30.572     16.632   [     15.000     223.65 ]
+                         :     Ptj1:     117.96     64.008   [     27.147     1042.0 ]
+                         :     Ptj2:     77.841     39.900   [     25.283     540.10 ]
+                         :     Ptj3:     53.550     26.325   [     25.000     373.18 ]
+                         :       HT:     297.83     154.89   [     79.842     1836.0 ]
+                         :   MET2HT:     18.641     29.101   [  0.0014233     1444.4 ]
+                         :     dRll:     1.9047    0.84162   [    0.30596     5.2233 ]
+                         :   dRlj11:     2.3978    0.84358   [    0.40250     5.3635 ]
+                         :   dRlj12:     2.1862    0.86812   [    0.40032     5.1956 ]
+                         :   dRlj13:     2.2085    0.85151   [    0.40192     5.4077 ]
+                         :   dRlj21:     2.2920    0.84513   [    0.40195     5.5415 ]
+                         :   dRlj22:     2.1762    0.88600   [    0.40013     5.5420 ]
+                         :   dRlj23:     2.1815    0.87612   [    0.40142     5.1562 ]
+                         :    MSSSF:     73.912     54.677   [     7.4647     933.15 ]
+                         :    MTvl1:     73.113     50.168   [  0.0047924     655.20 ]
+                         :    MTvl2:     50.185     33.533   [  0.0017287     369.94 ]
+                         : MllW_2jL:     208.67     80.536   [     70.167     1011.6 ]
+                         : MllW_1jL:     91.196     49.300   [     14.486     933.15 ]
+                         : Ml1W_2jL:     161.04     63.980   [     33.958     758.45 ]
+                         : Ml1W_1jL:     139.42     121.18   [     13.221     1430.5 ]
+                         : Ml2W_2jL:     131.29     52.398   [     30.505     605.33 ]
+                         : Ml2W_1jL:     93.670     75.944   [     9.8691     1150.2 ]
+                         :  MllW1_H:     255.03     110.35   [     92.042     1517.9 ]
+                         :  Ml1W1_H:     203.00     94.661   [     44.793     1442.4 ]
+                         :  Ml2W1_H:     152.15     58.555   [     45.883     812.48 ]
+                         : -----------------------------------------------------------
+                         : [32m
+                         : <PlotVariables> Will not produce scatter plots ==> 
+                         : |  The number of 28 input variables and 0 target values would require 378 two-dimensional
+                         : |  histograms, which would occupy the computer's memory. Note that this
+                         : |  suppression does not have any consequences for your analysis, other
+                         : |  than not disposing of these scatter plots. You can modify the maximum
+                         : |  number of input variables allowed to generate scatter plots in your
+                         : |  script via the command line:
+                         : |  "(TMVA::gConfig().GetVariablePlotting()).fMaxNumOfAllowedVariablesForScatterPlots = <some int>;"[0m
+                         : 
+                         : Some more output
+                         : 
+                         : Evaluation results ranked by best signal efficiency and purity (area)
+                         : -------------------------------------------------------------------------------------------------------------------
+                         : DataSet       MVA                       
+                         : Name:         Method:          ROC-integ
+                         : dataset       BDTG           : 0.885
+                         : -------------------------------------------------------------------------------------------------------------------
+                         : 
+                         : Testing efficiency compared to training efficiency (overtraining check)
+                         : -------------------------------------------------------------------------------------------------------------------
+                         : DataSet              MVA              Signal efficiency: from test sample (from training sample) 
+                         : Name:                Method:          @B=0.01             @B=0.10            @B=0.30   
+                         : -------------------------------------------------------------------------------------------------------------------
+                         : dataset              BDTG           : 0.154 (0.323)       0.666 (0.760)      0.891 (0.909)
+                         : -------------------------------------------------------------------------------------------------------------------
+                         : 
+Dataset:dataset          : Created tree 'TestTree' with 12090 events
+                         : 
+Dataset:dataset          : Created tree 'TrainTree' with 12090 events
+                         : 
+Factory                  : [1mThank you for using TMVA![0m
+                         : [1mFor citation information, please visit: http://tmva.sf.net/citeTMVA.html[0m
+==> Wrote root file: TMVA_MN20_El.root
+==> TMVAClassification is done!
+--- Launch TMVA GUI to view input file: TMVA_MN20_El.root
+=== Note: inactive buttons indicate classifiers that were not trained, ===
+===       or functionalities that were not invoked during the training ===
+--- Opening root file TMVA_MN20_El.root in read mode
+--- Found directory for method: BDT::BDTG containing MVA_BDTG_S/_B
+--- Mean and RMS (S): 0.484484, 0.444666
+--- Mean and RMS (B): -0.399693, 0.524973
+--- Found comparison histograms for overtraining check
+--- Perform Kolmogorov-Smirnov tests
+--- Goodness of signal (background) consistency: 0.787 (0.006)
+MN:50
+==> Start TMVAClassification
+DataSetInfo              : [dataset] : Added class "Signal"
+                         : Add Tree Tree_ee of type Signal with 31131 events
+DataSetInfo              : [dataset] : Added class "Background"
+                         : Add Tree Tree_ee of type Background with 2732 events
+!H:!V:BoostType=Grad:NTrees=120:MinNodeSize=10%:Shrinkage=0.1:UseBaggedBoost:BaggedSampleFraction=0.5:nCuts=100:MaxDepth=2
+Factory                  : Booking method: [1mBDTG[0m
+                         : 
+                         : the option NegWeightTreatment=InverseBoostNegWeights does not exist for BoostType=Grad
+                         : --> change to new default NegWeightTreatment=Pray
+                         : Building event vectors for type 2 Signal
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Building event vectors for type 2 Background
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+DataSetFactory           : [dataset] : Number of events in input trees
+                         : 
+                         : 
+                         : Dataset[dataset] : Weight renormalisation mode: "EqualNumEvents": renormalises all event classes ...
+                         : Dataset[dataset] :  such that the effective (weighted) number of events in each class is the same 
+                         : Dataset[dataset] :  (and equals the number of events (entries) given for class=0 )
+                         : Dataset[dataset] : ... i.e. such that Sum[i=1..N_j]{w_i} = N_classA, j=classA, classB, ...
+                         : Dataset[dataset] : ... (note that N_j is the sum of TRAINING events
+                         : Dataset[dataset] :  ..... Testing events are not renormalised nor included in the renormalisation factor!)
+                         : Number of training and testing events
+                         : ---------------------------------------------------------------------------
+                         : Signal     -- training events            : 15565
+                         : Signal     -- testing events             : 15565
+                         : Signal     -- training and testing events: 31130
+                         : Background -- training events            : 1366
+                         : Background -- testing events             : 1366
+                         : Background -- training and testing events: 2732
+                         : 
+DataSetInfo              : Correlation matrix (Signal):
+                         : -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                         :                Nj      Nb    Ptl1    Ptl2    Ptj1    Ptj2    Ptj3      HT  MET2HT    dRll  dRlj11  dRlj12  dRlj13  dRlj21  dRlj22  dRlj23   MSSSF   MTvl1   MTvl2 MllW_2jL MllW_1jL Ml1W_2jL Ml1W_1jL Ml2W_2jL Ml2W_1jL MllW1_H Ml1W1_H Ml2W1_H
+                         :       Nj:  +1.000  +0.139  +0.020  +0.004  +0.236  +0.284  +0.420  +0.602  -0.186  -0.115  -0.008  -0.002  +0.009  +0.022  +0.002  +0.009  -0.096  -0.032  -0.047   -0.382   -0.004   -0.386   -0.133   -0.368   -0.118  -0.066  -0.063  -0.077
+                         :       Nb:  +0.139  +1.000  -0.028  -0.005  +0.017  +0.048  +0.073  +0.080  -0.033  +0.007  -0.033  +0.003  +0.014  -0.030  -0.008  +0.002  -0.005  -0.012  -0.008   -0.053   +0.007   -0.056   -0.014   -0.045   -0.005  -0.018  -0.019  -0.017
+                         :     Ptl1:  +0.020  -0.028  +1.000  +0.508  +0.244  +0.121  +0.095  +0.164  +0.065  -0.216  +0.204  +0.040  -0.014  +0.135  +0.029  -0.015  +0.352  +0.343  +0.210   +0.432   +0.099   +0.411   +0.483   +0.221   +0.323  +0.496  +0.514  +0.279
+                         :     Ptl2:  +0.004  -0.005  +0.508  +1.000  +0.170  +0.083  +0.058  +0.110  +0.048  -0.281  +0.140  +0.043  -0.012  +0.149  +0.034  -0.019  +0.276  +0.189  +0.356   +0.383   +0.100   +0.265   +0.311   +0.351   +0.423  +0.426  +0.313  +0.479
+                         :     Ptj1:  +0.236  +0.017  +0.244  +0.170  +1.000  +0.762  +0.570  +0.845  -0.077  -0.112  +0.059  -0.164  -0.059  +0.048  -0.127  -0.049  +0.016  +0.017  +0.030   +0.160   -0.024   +0.163   +0.236   +0.167   +0.211  +0.228  +0.225  +0.213
+                         :     Ptj2:  +0.284  +0.048  +0.121  +0.083  +0.762  +1.000  +0.729  +0.856  -0.138  -0.075  -0.080  -0.087  -0.002  -0.054  -0.070  -0.003  -0.017  +0.002  +0.009   +0.193   -0.043   +0.206   +0.151   +0.226   +0.159  +0.228  +0.225  +0.230
+                         :     Ptj3:  +0.420  +0.073  +0.095  +0.058  +0.570  +0.729  +1.000  +0.822  -0.164  -0.103  -0.081  -0.023  -0.002  -0.047  -0.029  -0.001  -0.050  -0.025  -0.021   +0.140   -0.046   +0.161   +0.078   +0.183   +0.096  +0.202  +0.208  +0.197
+                         :       HT:  +0.602  +0.080  +0.164  +0.110  +0.845  +0.856  +0.822  +1.000  -0.164  -0.129  -0.020  -0.099  -0.026  +0.000  -0.079  -0.021  -0.041  -0.006  -0.003   +0.038   -0.034   +0.048   +0.119   +0.067   +0.122  +0.188  +0.188  +0.176
+                         :   MET2HT:  -0.186  -0.033  +0.065  +0.048  -0.077  -0.138  -0.164  -0.164  +1.000  +0.068  -0.118  +0.004  -0.026  -0.100  +0.001  -0.021  +0.121  +0.528  +0.513   +0.037   +0.078   +0.011   +0.026   +0.007   +0.014  -0.022  -0.035  -0.036
+                         :     dRll:  -0.115  +0.007  -0.216  -0.281  -0.112  -0.075  -0.103  -0.129  +0.068  +1.000  -0.133  -0.002  +0.006  -0.231  -0.019  -0.026  +0.654  -0.079  -0.074   +0.074   +0.256   -0.035   +0.090   -0.042   +0.032  -0.084  -0.128  -0.161
+                         :   dRlj11:  -0.008  -0.033  +0.204  +0.140  +0.059  -0.080  -0.081  -0.020  -0.118  -0.133  +1.000  -0.282  -0.148  +0.522  -0.102  -0.066  +0.013  -0.118  -0.055   +0.057   -0.006   +0.053   +0.199   +0.043   +0.105  +0.169  +0.176  +0.129
+                         :   dRlj12:  -0.002  +0.003  +0.040  +0.043  -0.164  -0.087  -0.023  -0.099  +0.004  -0.002  -0.282  +1.000  -0.087  -0.101  +0.557  -0.061  +0.024  -0.001  +0.006   +0.134   -0.025   +0.145   +0.015   +0.056   +0.024  +0.150  +0.162  +0.096
+                         :   dRlj13:  +0.009  +0.014  -0.014  -0.012  -0.059  -0.002  -0.002  -0.026  -0.026  +0.006  -0.148  -0.087  +1.000  -0.049  -0.072  +0.568  +0.012  -0.030  -0.021   +0.177   -0.009   +0.197   +0.110   +0.114   +0.090  +0.165  +0.178  +0.110
+                         :   dRlj21:  +0.022  -0.030  +0.135  +0.149  +0.048  -0.054  -0.047  +0.000  -0.100  -0.231  +0.522  -0.101  -0.049  +1.000  -0.246  -0.122  -0.101  -0.039  -0.130   +0.027   -0.065   +0.040   +0.060   +0.033   +0.191  +0.145  +0.125  +0.185
+                         :   dRlj22:  +0.002  -0.008  +0.029  +0.034  -0.127  -0.070  -0.029  -0.079  +0.001  -0.019  -0.102  +0.557  -0.072  -0.246  +1.000  -0.066  +0.009  -0.002  -0.009   +0.114   -0.028   +0.077   +0.021   +0.116   +0.016  +0.131  +0.096  +0.157
+                         :   dRlj23:  +0.009  +0.002  -0.015  -0.019  -0.049  -0.003  -0.001  -0.021  -0.021  -0.026  -0.066  -0.061  +0.568  -0.122  -0.066  +1.000  -0.017  -0.010  -0.021   +0.154   -0.019   +0.125   +0.073   +0.181   +0.097  +0.146  +0.111  +0.183
+                         :    MSSSF:  -0.096  -0.005  +0.352  +0.276  +0.016  -0.017  -0.050  -0.041  +0.121  +0.654  +0.013  +0.024  +0.012  -0.101  +0.009  -0.017  +1.000  +0.131  +0.160   +0.421   +0.515   +0.224   +0.398   +0.185   +0.309  +0.273  +0.173  +0.113
+                         :    MTvl1:  -0.032  -0.012  +0.343  +0.189  +0.017  +0.002  -0.025  -0.006  +0.528  -0.079  -0.118  -0.001  -0.030  -0.039  -0.002  -0.010  +0.131  +1.000  +0.670   +0.113   +0.035   +0.092   +0.098   +0.058   +0.093  +0.119  +0.112  +0.071
+                         :    MTvl2:  -0.047  -0.008  +0.210  +0.356  +0.030  +0.009  -0.021  -0.003  +0.513  -0.074  -0.055  +0.006  -0.021  -0.130  -0.009  -0.021  +0.160  +0.670  +1.000   +0.140   +0.075   +0.095   +0.120   +0.111   +0.109  +0.124  +0.088  +0.121
+                         : MllW_2jL:  -0.382  -0.053  +0.432  +0.383  +0.160  +0.193  +0.140  +0.038  +0.037  +0.074  +0.057  +0.134  +0.177  +0.027  +0.114  +0.154  +0.421  +0.113  +0.140   +1.000   +0.132   +0.946   +0.564   +0.883   +0.538  +0.680  +0.635  +0.598
+                         : MllW_1jL:  -0.004  +0.007  +0.099  +0.100  -0.024  -0.043  -0.046  -0.034  +0.078  +0.256  -0.006  -0.025  -0.009  -0.065  -0.028  -0.019  +0.515  +0.035  +0.075   +0.132   +1.000   +0.009   +0.004   +0.008   -0.060  +0.053  -0.013  -0.025
+                         : Ml1W_2jL:  -0.386  -0.056  +0.411  +0.265  +0.163  +0.206  +0.161  +0.048  +0.011  -0.035  +0.053  +0.145  +0.197  +0.040  +0.077  +0.125  +0.224  +0.092  +0.095   +0.946   +0.009   +1.000   +0.512   +0.824   +0.446  +0.642  +0.659  +0.532
+                         : Ml1W_1jL:  -0.133  -0.014  +0.483  +0.311  +0.236  +0.151  +0.078  +0.119  +0.026  +0.090  +0.199  +0.015  +0.110  +0.060  +0.021  +0.073  +0.398  +0.098  +0.120   +0.564   +0.004   +0.512   +1.000   +0.388   +0.779  +0.466  +0.449  +0.327
+                         : Ml2W_2jL:  -0.368  -0.045  +0.221  +0.351  +0.167  +0.226  +0.183  +0.067  +0.007  -0.042  +0.043  +0.056  +0.114  +0.033  +0.116  +0.181  +0.185  +0.058  +0.111   +0.883   +0.008   +0.824   +0.388   +1.000   +0.466  +0.588  +0.520  +0.652
+                         : Ml2W_1jL:  -0.118  -0.005  +0.323  +0.423  +0.211  +0.159  +0.096  +0.122  +0.014  +0.032  +0.105  +0.024  +0.090  +0.191  +0.016  +0.097  +0.309  +0.093  +0.109   +0.538   -0.060   +0.446   +0.779   +0.466   +1.000  +0.447  +0.370  +0.450
+                         :  MllW1_H:  -0.066  -0.018  +0.496  +0.426  +0.228  +0.228  +0.202  +0.188  -0.022  -0.084  +0.169  +0.150  +0.165  +0.145  +0.131  +0.146  +0.273  +0.119  +0.124   +0.680   +0.053   +0.642   +0.466   +0.588   +0.447  +1.000  +0.961  +0.876
+                         :  Ml1W1_H:  -0.063  -0.019  +0.514  +0.313  +0.225  +0.225  +0.208  +0.188  -0.035  -0.128  +0.176  +0.162  +0.178  +0.125  +0.096  +0.111  +0.173  +0.112  +0.088   +0.635   -0.013   +0.659   +0.449   +0.520   +0.370  +0.961  +1.000  +0.752
+                         :  Ml2W1_H:  -0.077  -0.017  +0.279  +0.479  +0.213  +0.230  +0.197  +0.176  -0.036  -0.161  +0.129  +0.096  +0.110  +0.185  +0.157  +0.183  +0.113  +0.071  +0.121   +0.598   -0.025   +0.532   +0.327   +0.652   +0.450  +0.876  +0.752  +1.000
+                         : -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DataSetInfo              : Correlation matrix (Background):
+                         : -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                         :                Nj      Nb    Ptl1    Ptl2    Ptj1    Ptj2    Ptj3      HT  MET2HT    dRll  dRlj11  dRlj12  dRlj13  dRlj21  dRlj22  dRlj23   MSSSF   MTvl1   MTvl2 MllW_2jL MllW_1jL Ml1W_2jL Ml1W_1jL Ml2W_2jL Ml2W_1jL MllW1_H Ml1W1_H Ml2W1_H
+                         :       Nj:  +1.000  +0.146  +0.134  +0.089  +0.365  +0.467  +0.551  +0.679  -0.155  -0.035  +0.059  -0.019  -0.016  +0.009  -0.036  -0.019  +0.058  +0.032  +0.049   -0.042   +0.052   -0.105   +0.183   -0.102   +0.182  +0.110  +0.090  +0.068
+                         :       Nb:  +0.146  +1.000  +0.079  +0.154  +0.045  +0.073  +0.091  +0.103  -0.042  +0.012  +0.019  -0.013  +0.010  -0.038  -0.025  -0.004  +0.119  +0.010  +0.048   +0.088   +0.130   +0.019   +0.067   +0.079   +0.078  +0.092  +0.051  +0.074
+                         :     Ptl1:  +0.134  +0.079  +1.000  +0.518  +0.238  +0.169  +0.146  +0.216  -0.075  +0.102  +0.197  +0.045  +0.012  -0.004  -0.036  -0.004  +0.571  +0.351  +0.142   +0.619   +0.515   +0.525   +0.632   +0.328   +0.407  +0.650  +0.592  +0.308
+                         :     Ptl2:  +0.089  +0.154  +0.518  +1.000  +0.118  +0.121  +0.117  +0.131  -0.035  +0.189  +0.037  +0.017  -0.002  -0.030  -0.025  -0.017  +0.694  +0.262  +0.353   +0.620   +0.679   +0.326   +0.356   +0.435   +0.490  +0.531  +0.287  +0.487
+                         :     Ptj1:  +0.365  +0.045  +0.238  +0.118  +1.000  +0.751  +0.605  +0.862  -0.001  -0.049  +0.110  -0.172  -0.024  +0.046  -0.063  -0.074  +0.124  +0.062  +0.074   +0.228   +0.135   +0.234   +0.432   +0.215   +0.396  +0.247  +0.244  +0.177
+                         :     Ptj2:  +0.467  +0.073  +0.169  +0.121  +0.751  +1.000  +0.750  +0.889  -0.125  -0.046  +0.015  -0.079  -0.010  -0.017  -0.067  -0.051  +0.090  +0.044  +0.076   +0.248   +0.095   +0.288   +0.321   +0.272   +0.321  +0.251  +0.256  +0.198
+                         :     Ptj3:  +0.551  +0.091  +0.146  +0.117  +0.605  +0.750  +1.000  +0.841  -0.158  -0.029  +0.012  -0.011  -0.016  +0.006  -0.012  -0.059  +0.081  +0.041  +0.092   +0.243   +0.081   +0.276   +0.272   +0.284   +0.317  +0.246  +0.246  +0.199
+                         :       HT:  +0.679  +0.103  +0.216  +0.131  +0.862  +0.889  +0.841  +1.000  -0.106  -0.052  +0.060  -0.095  -0.019  +0.022  -0.056  -0.061  +0.106  +0.054  +0.092   +0.211   +0.108   +0.218   +0.379   +0.210   +0.382  +0.263  +0.259  +0.195
+                         :   MET2HT:  -0.155  -0.042  -0.075  -0.035  -0.001  -0.125  -0.158  -0.106  +1.000  +0.015  -0.045  +0.027  +0.012  +0.028  +0.007  -0.005  -0.030  +0.290  +0.311   -0.071   -0.028   -0.077   -0.068   -0.065   -0.010  -0.061  -0.060  -0.018
+                         :     dRll:  -0.035  +0.012  +0.102  +0.189  -0.049  -0.046  -0.029  -0.052  +0.015  +1.000  -0.029  +0.035  -0.057  -0.092  -0.023  -0.031  +0.647  +0.148  +0.084   +0.392   +0.484   +0.110   +0.196   +0.220   +0.236  +0.247  +0.062  +0.089
+                         :   dRlj11:  +0.059  +0.019  +0.197  +0.037  +0.110  +0.015  +0.012  +0.060  -0.045  -0.029  +1.000  -0.215  -0.052  -0.035  +0.059  +0.055  +0.086  -0.166  +0.057   +0.132   +0.052   +0.137   +0.546   +0.100   +0.047  +0.231  +0.274  +0.089
+                         :   dRlj12:  -0.019  -0.013  +0.045  +0.017  -0.172  -0.079  -0.011  -0.095  +0.027  +0.035  -0.215  +1.000  +0.035  +0.198  +0.009  +0.088  +0.087  -0.021  +0.008   +0.163   +0.083   +0.210   -0.049   +0.021   +0.087  +0.180  +0.195  +0.079
+                         :   dRlj13:  -0.016  +0.010  +0.012  -0.002  -0.024  -0.010  -0.016  -0.019  +0.012  -0.057  -0.052  +0.035  +1.000  +0.083  +0.013  +0.024  +0.028  -0.039  +0.010   +0.179   +0.049   +0.288   +0.038   +0.094   +0.062  +0.190  +0.252  +0.035
+                         :   dRlj21:  +0.009  -0.038  -0.004  -0.030  +0.046  -0.017  +0.006  +0.022  +0.028  -0.092  -0.035  +0.198  +0.083  +1.000  -0.155  -0.036  +0.017  +0.057  -0.173   +0.083   +0.042   +0.099   -0.022   +0.033   +0.485  +0.078  +0.026  +0.139
+                         :   dRlj22:  -0.036  -0.025  -0.036  -0.025  -0.063  -0.067  -0.012  -0.056  +0.007  -0.023  +0.059  +0.009  +0.013  -0.155  +1.000  +0.032  +0.013  +0.003  -0.054   +0.066   +0.003   -0.019   +0.042   +0.199   -0.015  +0.121  +0.053  +0.243
+                         :   dRlj23:  -0.019  -0.004  -0.004  -0.017  -0.074  -0.051  -0.059  -0.061  -0.005  -0.031  +0.055  +0.088  +0.024  -0.036  +0.032  +1.000  +0.043  +0.056  -0.115   +0.118   +0.057   +0.032   +0.002   +0.234   +0.014  +0.111  +0.036  +0.233
+                         :    MSSSF:  +0.058  +0.119  +0.571  +0.694  +0.124  +0.090  +0.081  +0.106  -0.030  +0.647  +0.086  +0.087  +0.028  +0.017  +0.013  +0.043  +1.000  +0.312  +0.236   +0.817   +0.939   +0.415   +0.468   +0.497   +0.519  +0.667  +0.375  +0.406
+                         :    MTvl1:  +0.032  +0.010  +0.351  +0.262  +0.062  +0.044  +0.041  +0.054  +0.290  +0.148  -0.166  -0.021  -0.039  +0.057  +0.003  +0.056  +0.312  +1.000  +0.056   +0.294   +0.280   +0.199   +0.151   +0.192   +0.193  +0.246  +0.169  +0.172
+                         :    MTvl2:  +0.049  +0.048  +0.142  +0.353  +0.074  +0.076  +0.092  +0.092  +0.311  +0.084  +0.057  +0.008  +0.010  -0.173  -0.054  -0.115  +0.236  +0.056  +1.000   +0.201   +0.212   +0.094   +0.156   +0.166   +0.181  +0.183  +0.092  +0.206
+                         : MllW_2jL:  -0.042  +0.088  +0.619  +0.620  +0.228  +0.248  +0.243  +0.211  -0.071  +0.392  +0.132  +0.163  +0.179  +0.083  +0.066  +0.118  +0.817  +0.294  +0.201   +1.000   +0.774   +0.819   +0.550   +0.780   +0.552  +0.821  +0.630  +0.557
+                         : MllW_1jL:  +0.052  +0.130  +0.515  +0.679  +0.135  +0.095  +0.081  +0.108  -0.028  +0.484  +0.052  +0.083  +0.049  +0.042  +0.003  +0.057  +0.939  +0.280  +0.212   +0.774   +1.000   +0.374   +0.370   +0.474   +0.445  +0.636  +0.341  +0.404
+                         : Ml1W_2jL:  -0.105  +0.019  +0.525  +0.326  +0.234  +0.288  +0.276  +0.218  -0.077  +0.110  +0.137  +0.210  +0.288  +0.099  -0.019  +0.032  +0.415  +0.199  +0.094   +0.819   +0.374   +1.000   +0.481   +0.604   +0.376  +0.683  +0.713  +0.359
+                         : Ml1W_1jL:  +0.183  +0.067  +0.632  +0.356  +0.432  +0.321  +0.272  +0.379  -0.068  +0.196  +0.546  -0.049  +0.038  -0.022  +0.042  +0.002  +0.468  +0.151  +0.156   +0.550   +0.370   +0.481   +1.000   +0.370   +0.512  +0.583  +0.555  +0.287
+                         : Ml2W_2jL:  -0.102  +0.079  +0.328  +0.435  +0.215  +0.272  +0.284  +0.210  -0.065  +0.220  +0.100  +0.021  +0.094  +0.033  +0.199  +0.234  +0.497  +0.192  +0.166   +0.780   +0.474   +0.604   +0.370   +1.000   +0.402  +0.627  +0.448  +0.653
+                         : Ml2W_1jL:  +0.182  +0.078  +0.407  +0.490  +0.396  +0.321  +0.317  +0.382  -0.010  +0.236  +0.047  +0.087  +0.062  +0.485  -0.015  +0.014  +0.519  +0.193  +0.181   +0.552   +0.445   +0.376   +0.512   +0.402   +1.000  +0.491  +0.300  +0.462
+                         :  MllW1_H:  +0.110  +0.092  +0.650  +0.531  +0.247  +0.251  +0.246  +0.263  -0.061  +0.247  +0.231  +0.180  +0.190  +0.078  +0.121  +0.111  +0.667  +0.246  +0.183   +0.821   +0.636   +0.683   +0.583   +0.627   +0.491  +1.000  +0.890  +0.691
+                         :  Ml1W1_H:  +0.090  +0.051  +0.592  +0.287  +0.244  +0.256  +0.246  +0.259  -0.060  +0.062  +0.274  +0.195  +0.252  +0.026  +0.053  +0.036  +0.375  +0.169  +0.092   +0.630   +0.341   +0.713   +0.555   +0.448   +0.300  +0.890  +1.000  +0.417
+                         :  Ml2W1_H:  +0.068  +0.074  +0.308  +0.487  +0.177  +0.198  +0.199  +0.195  -0.018  +0.089  +0.089  +0.079  +0.035  +0.139  +0.243  +0.233  +0.406  +0.172  +0.206   +0.557   +0.404   +0.359   +0.287   +0.653   +0.462  +0.691  +0.417  +1.000
+                         : -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DataSetFactory           : [dataset] :  
+                         : 
+Factory                  : [1mTrain all methods[0m
+Factory                  : [dataset] : Create Transformation "I" with events from all classes.
+                         : 
+                         : Transformation, Variable selection : 
+                         : Input : variable 'Nj' <---> Output : variable 'Nj'
+                         : Input : variable 'Nb' <---> Output : variable 'Nb'
+                         : Input : variable 'Ptl1' <---> Output : variable 'Ptl1'
+                         : Input : variable 'Ptl2' <---> Output : variable 'Ptl2'
+                         : Input : variable 'Ptj1' <---> Output : variable 'Ptj1'
+                         : Input : variable 'Ptj2' <---> Output : variable 'Ptj2'
+                         : Input : variable 'Ptj3' <---> Output : variable 'Ptj3'
+                         : Input : variable 'HT' <---> Output : variable 'HT'
+                         : Input : variable 'MET2HT' <---> Output : variable 'MET2HT'
+                         : Input : variable 'dRll' <---> Output : variable 'dRll'
+                         : Input : variable 'dRlj11' <---> Output : variable 'dRlj11'
+                         : Input : variable 'dRlj12' <---> Output : variable 'dRlj12'
+                         : Input : variable 'dRlj13' <---> Output : variable 'dRlj13'
+                         : Input : variable 'dRlj21' <---> Output : variable 'dRlj21'
+                         : Input : variable 'dRlj22' <---> Output : variable 'dRlj22'
+                         : Input : variable 'dRlj23' <---> Output : variable 'dRlj23'
+                         : Input : variable 'MSSSF' <---> Output : variable 'MSSSF'
+                         : Input : variable 'MTvl1' <---> Output : variable 'MTvl1'
+                         : Input : variable 'MTvl2' <---> Output : variable 'MTvl2'
+                         : Input : variable 'MllW_2jL' <---> Output : variable 'MllW_2jL'
+                         : Input : variable 'MllW_1jL' <---> Output : variable 'MllW_1jL'
+                         : Input : variable 'Ml1W_2jL' <---> Output : variable 'Ml1W_2jL'
+                         : Input : variable 'Ml1W_1jL' <---> Output : variable 'Ml1W_1jL'
+                         : Input : variable 'Ml2W_2jL' <---> Output : variable 'Ml2W_2jL'
+                         : Input : variable 'Ml2W_1jL' <---> Output : variable 'Ml2W_1jL'
+                         : Input : variable 'MllW1_H' <---> Output : variable 'MllW1_H'
+                         : Input : variable 'Ml1W1_H' <---> Output : variable 'Ml1W1_H'
+                         : Input : variable 'Ml2W1_H' <---> Output : variable 'Ml2W1_H'
+TFHandler_Factory        : Variable        Mean        RMS   [        Min        Max ]
+                         : -----------------------------------------------------------
+                         :       Nj:     4.2792     1.2470   [     3.0000     14.000 ]
+                         :       Nb:     1.3364    0.52948   [     1.0000     5.0000 ]
+                         :     Ptl1:     61.129     33.942   [     25.002     503.77 ]
+                         :     Ptl2:     31.267     17.560   [     15.002     204.67 ]
+                         :     Ptj1:     118.71     67.954   [     26.692     990.11 ]
+                         :     Ptj2:     77.900     40.149   [     25.678     593.98 ]
+                         :     Ptj3:     53.623     25.860   [     25.013     366.95 ]
+                         :       HT:     301.95     161.55   [     79.439     2039.1 ]
+                         :   MET2HT:     20.088     30.031   [  0.0011440     588.24 ]
+                         :     dRll:     1.7332    0.95568   [    0.30112     5.2233 ]
+                         :   dRlj11:     2.4329    0.85052   [    0.40275     5.3635 ]
+                         :   dRlj12:     2.1497    0.89744   [    0.40099     5.3068 ]
+                         :   dRlj13:     2.1634    0.87049   [    0.40093     5.4077 ]
+                         :   dRlj21:     2.2702    0.86316   [    0.40250     5.0878 ]
+                         :   dRlj22:     2.1619    0.87233   [    0.40101     5.1972 ]
+                         :   dRlj23:     2.1734    0.85360   [    0.40293     5.4829 ]
+                         :    MSSSF:     70.044     63.155   [     7.2871     933.15 ]
+                         :    MTvl1:     72.471     49.121   [   0.013146     577.99 ]
+                         :    MTvl2:     52.017     35.036   [  0.0022376     403.47 ]
+                         : MllW_2jL:     200.35     84.274   [     57.706     1102.9 ]
+                         : MllW_1jL:     96.954     53.258   [     12.354     933.15 ]
+                         : Ml1W_2jL:     152.54     62.363   [     32.721     941.54 ]
+                         : Ml1W_1jL:     126.02     118.74   [     14.238     1384.8 ]
+                         : Ml2W_2jL:     128.27     50.836   [     30.476     695.24 ]
+                         : Ml2W_1jL:     85.844     74.320   [     10.625     1240.6 ]
+                         :  MllW1_H:     247.60     110.51   [     78.639     1250.1 ]
+                         :  Ml1W1_H:     195.10     90.489   [     52.787     963.31 ]
+                         :  Ml2W1_H:     150.54     57.917   [     41.145     1020.4 ]
+                         : -----------------------------------------------------------
+                         : [32m
+                         : <PlotVariables> Will not produce scatter plots ==> 
+                         : |  The number of 28 input variables and 0 target values would require 378 two-dimensional
+                         : |  histograms, which would occupy the computer's memory. Note that this
+                         : |  suppression does not have any consequences for your analysis, other
+                         : |  than not disposing of these scatter plots. You can modify the maximum
+                         : |  number of input variables allowed to generate scatter plots in your
+                         : |  script via the command line:
+                         : |  "(TMVA::gConfig().GetVariablePlotting()).fMaxNumOfAllowedVariablesForScatterPlots = <some int>;"[0m
+                         : 
+                         : Some more output
+                         : Ranking input variables (method unspecific)...
+IdTransformation         : Ranking result (top variable is best ranked)
+                         : ---------------------------------
+                         : Rank : Variable  : Separation
+                         : ---------------------------------
+                         :    1 : MSSSF     : 3.758e-01
+                         :    2 : dRll      : 3.116e-01
+                         :    3 : MllW_2jL  : 2.654e-01
+                         :    4 : Ml1W_1jL  : 2.132e-01
+                         :    5 : Ml2W_1jL  : 1.616e-01
+                         :    6 : MllW_1jL  : 1.123e-01
+                         :    7 : MET2HT    : 1.111e-01
+                         :    8 : MllW1_H   : 7.739e-02
+                         :    9 : Ml1W_2jL  : 7.584e-02
+                         :   10 : Nb        : 5.998e-02
+                         :   11 : Ml2W_2jL  : 5.934e-02
+                         :   12 : Nj        : 5.823e-02
+                         :   13 : HT        : 4.318e-02
+                         :   14 : Ptl1      : 4.081e-02
+                         :   15 : Ptj3      : 4.024e-02
+                         :   16 : MTvl1     : 3.824e-02
+                         :   17 : Ml1W1_H   : 3.612e-02
+                         :   18 : dRlj21    : 3.600e-02
+                         :   19 : Ptj2      : 2.508e-02
+                         :   20 : MTvl2     : 2.314e-02
+                         :   21 : dRlj12    : 2.227e-02
+                         :   22 : dRlj22    : 1.984e-02
+                         :   23 : dRlj23    : 1.826e-02
+                         :   24 : Ptj1      : 1.776e-02
+                         :   25 : Ptl2      : 1.775e-02
+                         :   26 : dRlj13    : 1.704e-02
+                         :   27 : dRlj11    : 1.659e-02
+                         :   28 : Ml2W1_H   : 1.264e-02
+                         : ---------------------------------
+Factory                  : Train method: BDTG for Classification
+                         : 
+<WARNING>                : Events with negative event weights are USED during the BDT training. This might cause problems with small node sizes or with the boosting. Please remove negative events from training using the option *IgnoreEventsWithNegWeightsInTraining* in case you observe problems with the boosting
+BDTG                     : #events: (reweighted) sig: 8465.5 bkg: 8465.5
+                         : #events: (unweighted) sig: 15565 bkg: 1366
+                         : Training 120 Decision Trees ... patience please
+                         : Elapsed time for training with 16931 events: [1;31m1.44 sec[0m         
+BDTG                     : [dataset] : Evaluation of BDTG on training sample (16931 events)
+                         : Elapsed time for evaluation of 16931 events: [1;31m0.0673 sec[0m       
+                         : Creating xml weight file: [0;36mdataset/weights/TMVAClassification_MN50_El_BDTG.weights.xml[0m
+                         : Creating standalone class: [0;36mdataset/weights/TMVAClassification_MN50_El_BDTG.class.C[0m
+                         : TMVA_MN50_El.root:/dataset/Method_BDT/BDTG
+Factory                  : Training finished
+                         : 
+                         : Ranking input variables (method specific)...
+BDTG                     : Ranking result (top variable is best ranked)
+                         : ------------------------------------------
+                         : Rank : Variable  : Variable Importance
+                         : ------------------------------------------
+                         :    1 : MSSSF     : 8.398e-02
+                         :    2 : dRll      : 6.241e-02
+                         :    3 : Ml1W_1jL  : 5.000e-02
+                         :    4 : MET2HT    : 4.739e-02
+                         :    5 : Ptl1      : 4.119e-02
+                         :    6 : Nb        : 4.079e-02
+                         :    7 : dRlj21    : 4.008e-02
+                         :    8 : MllW_2jL  : 4.005e-02
+                         :    9 : Ptl2      : 3.916e-02
+                         :   10 : Ptj1      : 3.906e-02
+                         :   11 : dRlj23    : 3.659e-02
+                         :   12 : dRlj11    : 3.620e-02
+                         :   13 : MTvl1     : 3.568e-02
+                         :   14 : Ptj3      : 3.356e-02
+                         :   15 : MTvl2     : 3.345e-02
+                         :   16 : dRlj12    : 3.181e-02
+                         :   17 : Ml2W_2jL  : 3.148e-02
+                         :   18 : dRlj13    : 3.147e-02
+                         :   19 : dRlj22    : 3.123e-02
+                         :   20 : MllW_1jL  : 3.054e-02
+                         :   21 : Ml2W1_H   : 2.971e-02
+                         :   22 : Ml2W_1jL  : 2.891e-02
+                         :   23 : MllW1_H   : 2.785e-02
+                         :   24 : Ptj2      : 2.475e-02
+                         :   25 : HT        : 2.144e-02
+                         :   26 : Ml1W1_H   : 2.109e-02
+                         :   27 : Ml1W_2jL  : 2.108e-02
+                         :   28 : Nj        : 9.048e-03
+                         : ------------------------------------------
+Factory                  : === Destroy and recreate all methods via weight files for testing ===
+                         : 
+                         : Reading weight file: [0;36mdataset/weights/TMVAClassification_MN50_El_BDTG.weights.xml[0m
+Factory                  : [1mTest all methods[0m
+Factory                  : Test method: BDTG for Classification performance
+                         : 
+BDTG                     : [dataset] : Evaluation of BDTG on testing sample (16931 events)
+                         : Elapsed time for evaluation of 16931 events: [1;31m0.0555 sec[0m       
+Factory                  : [1mEvaluate all methods[0m
+Factory                  : Evaluate classifier: BDTG
+                         : 
+BDTG                     : [dataset] : Loop over test events and fill histograms with classifier response...
+                         : 
+TFHandler_BDTG           : Variable        Mean        RMS   [        Min        Max ]
+                         : -----------------------------------------------------------
+                         :       Nj:     4.3470     1.2795   [     3.0000     13.000 ]
+                         :       Nb:     1.3856    0.54371   [     1.0000     4.0000 ]
+                         :     Ptl1:     59.266     31.603   [     25.002     382.86 ]
+                         :     Ptl2:     30.232     14.672   [     15.005     214.42 ]
+                         :     Ptj1:     120.86     68.180   [     26.930     859.64 ]
+                         :     Ptj2:     79.180     41.656   [     25.243     642.31 ]
+                         :     Ptj3:     54.288     26.685   [     25.000     373.18 ]
+                         :       HT:     307.88     159.38   [     77.397     1901.3 ]
+                         :   MET2HT:     18.633     32.071   [ 0.00010419     1302.1 ]
+                         :     dRll:     1.5471    0.90528   [    0.30169     5.1186 ]
+                         :   dRlj11:     2.4181    0.85202   [    0.40174     5.4146 ]
+                         :   dRlj12:     2.1574    0.89087   [    0.40021     5.3065 ]
+                         :   dRlj13:     2.1666    0.87585   [    0.40192     5.3586 ]
+                         :   dRlj21:     2.3211    0.84122   [    0.40752     5.3996 ]
+                         :   dRlj22:     2.1504    0.87744   [    0.40239     5.1535 ]
+                         :   dRlj23:     2.1717    0.88476   [    0.40192     5.4213 ]
+                         :    MSSSF:     59.109     49.326   [     6.9576     711.66 ]
+                         :    MTvl1:     69.689     49.228   [  0.0080768     541.53 ]
+                         :    MTvl2:     50.708     33.539   [   0.012784     305.80 ]
+                         : MllW_2jL:     191.69     79.653   [     61.108     919.24 ]
+                         : MllW_1jL:     89.835     40.697   [     10.043     711.66 ]
+                         : Ml1W_2jL:     150.21     64.891   [     37.705     771.66 ]
+                         : Ml1W_1jL:     112.02     107.99   [     14.694     1590.8 ]
+                         : Ml2W_2jL:     125.49     52.609   [     32.470     666.94 ]
+                         : Ml2W_1jL:     79.531     66.559   [     9.6792     919.41 ]
+                         :  MllW1_H:     239.70     103.78   [     77.721     1517.9 ]
+                         :  Ml1W1_H:     191.53     87.628   [     46.452     1442.4 ]
+                         :  Ml2W1_H:     149.86     57.273   [     46.005     998.00 ]
+                         : -----------------------------------------------------------
+                         : [32m
+                         : <PlotVariables> Will not produce scatter plots ==> 
+                         : |  The number of 28 input variables and 0 target values would require 378 two-dimensional
+                         : |  histograms, which would occupy the computer's memory. Note that this
+                         : |  suppression does not have any consequences for your analysis, other
+                         : |  than not disposing of these scatter plots. You can modify the maximum
+                         : |  number of input variables allowed to generate scatter plots in your
+                         : |  script via the command line:
+                         : |  "(TMVA::gConfig().GetVariablePlotting()).fMaxNumOfAllowedVariablesForScatterPlots = <some int>;"[0m
+                         : 
+                         : Some more output
+                         : 
+                         : Evaluation results ranked by best signal efficiency and purity (area)
+                         : -------------------------------------------------------------------------------------------------------------------
+                         : DataSet       MVA                       
+                         : Name:         Method:          ROC-integ
+                         : dataset       BDTG           : 0.908
+                         : -------------------------------------------------------------------------------------------------------------------
+                         : 
+                         : Testing efficiency compared to training efficiency (overtraining check)
+                         : -------------------------------------------------------------------------------------------------------------------
+                         : DataSet              MVA              Signal efficiency: from test sample (from training sample) 
+                         : Name:                Method:          @B=0.01             @B=0.10            @B=0.30   
+                         : -------------------------------------------------------------------------------------------------------------------
+                         : dataset              BDTG           : 0.357 (0.439)       0.736 (0.797)      0.921 (0.927)
+                         : -------------------------------------------------------------------------------------------------------------------
+                         : 
+Dataset:dataset          : Created tree 'TestTree' with 16931 events
+                         : 
+Dataset:dataset          : Created tree 'TrainTree' with 16931 events
+                         : 
+Factory                  : [1mThank you for using TMVA![0m
+                         : [1mFor citation information, please visit: http://tmva.sf.net/citeTMVA.html[0m
+==> Wrote root file: TMVA_MN50_El.root
+==> TMVAClassification is done!
+--- Opening root file TMVA_MN50_El.root in read mode
+--- Found directory for method: BDT::BDTG containing MVA_BDTG_S/_B
+--- Mean and RMS (S): 0.537101, 0.480296
+--- Mean and RMS (B): -0.495959, 0.512329
+--- Found comparison histograms for overtraining check
+--- Perform Kolmogorov-Smirnov tests
+--- Goodness of signal (background) consistency: 0.312 (0.346)
+MN:75
+==> Start TMVAClassification
+DataSetInfo              : [dataset] : Added class "Signal"
+                         : Add Tree Tree_ee of type Signal with 14501 events
+DataSetInfo              : [dataset] : Added class "Background"
+                         : Add Tree Tree_ee of type Background with 2732 events
+!H:!V:BoostType=Grad:NTrees=40:MinNodeSize=10%:Shrinkage=0.1:UseBaggedBoost:BaggedSampleFraction=0.5:nCuts=100:MaxDepth=2
+Factory                  : Booking method: [1mBDTG[0m
+                         : 
+                         : the option NegWeightTreatment=InverseBoostNegWeights does not exist for BoostType=Grad
+                         : --> change to new default NegWeightTreatment=Pray
+                         : Building event vectors for type 2 Signal
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Building event vectors for type 2 Background
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+DataSetFactory           : [dataset] : Number of events in input trees
+                         : 
+                         : 
+                         : Dataset[dataset] : Weight renormalisation mode: "EqualNumEvents": renormalises all event classes ...
+                         : Dataset[dataset] :  such that the effective (weighted) number of events in each class is the same 
+                         : Dataset[dataset] :  (and equals the number of events (entries) given for class=0 )
+                         : Dataset[dataset] : ... i.e. such that Sum[i=1..N_j]{w_i} = N_classA, j=classA, classB, ...
+                         : Dataset[dataset] : ... (note that N_j is the sum of TRAINING events
+                         : Dataset[dataset] :  ..... Testing events are not renormalised nor included in the renormalisation factor!)
+                         : Number of training and testing events
+                         : ---------------------------------------------------------------------------
+                         : Signal     -- training events            : 7250
+                         : Signal     -- testing events             : 7250
+                         : Signal     -- training and testing events: 14500
+                         : Background -- training events            : 1366
+                         : Background -- testing events             : 1366
+                         : Background -- training and testing events: 2732
+                         : 
+DataSetInfo              : Correlation matrix (Signal):
+                         : -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                         :                Nj      Nb    Ptl1    Ptl2    Ptj1    Ptj2    Ptj3      HT  MET2HT    dRll  dRlj11  dRlj12  dRlj13  dRlj21  dRlj22  dRlj23   MSSSF   MTvl1   MTvl2 MllW_2jL MllW_1jL Ml1W_2jL Ml1W_1jL Ml2W_2jL Ml2W_1jL MllW1_H Ml1W1_H Ml2W1_H
+                         :       Nj:  +1.000  +0.144  -0.032  -0.060  +0.229  +0.288  +0.455  +0.616  -0.212  -0.215  +0.014  -0.008  +0.002  +0.062  +0.010  +0.024  -0.166  -0.072  -0.078   -0.355   -0.074   -0.363   -0.100   -0.347   -0.080  -0.087  -0.068  -0.060
+                         :       Nb:  +0.144  +1.000  -0.022  -0.020  +0.046  +0.071  +0.094  +0.113  -0.027  +0.007  -0.009  -0.017  -0.015  -0.008  +0.006  -0.007  -0.011  +0.005  -0.006   -0.035   +0.003   -0.043   -0.020   -0.022   -0.017  -0.030  -0.030  -0.022
+                         :     Ptl1:  -0.032  -0.022  +1.000  +0.468  +0.260  +0.120  +0.076  +0.151  +0.043  +0.099  +0.170  +0.051  +0.037  -0.035  +0.024  -0.025  +0.530  +0.338  +0.196   +0.557   +0.465   +0.475   +0.612   +0.240   +0.335  +0.579  +0.544  +0.205
+                         :     Ptl2:  -0.060  -0.020  +0.468  +1.000  +0.119  +0.051  +0.007  +0.048  +0.058  +0.162  +0.046  +0.017  +0.010  -0.022  +0.014  -0.019  +0.616  +0.174  +0.371   +0.490   +0.549   +0.237   +0.371   +0.344   +0.481  +0.439  +0.225  +0.405
+                         :     Ptj1:  +0.229  +0.046  +0.260  +0.119  +1.000  +0.735  +0.532  +0.836  -0.073  -0.131  +0.107  -0.167  -0.055  +0.091  -0.103  -0.050  +0.018  +0.011  +0.030   +0.175   +0.043   +0.196   +0.313   +0.203   +0.250  +0.255  +0.262  +0.225
+                         :     Ptj2:  +0.288  +0.071  +0.120  +0.051  +0.735  +1.000  +0.679  +0.843  -0.141  -0.104  -0.038  -0.085  +0.020  +0.022  -0.056  -0.009  -0.017  +0.018  +0.015   +0.181   +0.014   +0.221   +0.161   +0.243   +0.159  +0.236  +0.242  +0.244
+                         :     Ptj3:  +0.455  +0.094  +0.076  +0.007  +0.532  +0.679  +1.000  +0.806  -0.157  -0.150  -0.029  -0.049  +0.013  +0.030  -0.021  -0.001  -0.076  -0.013  -0.025   +0.077   -0.030   +0.122   +0.077   +0.156   +0.095  +0.174  +0.187  +0.200
+                         :       HT:  +0.616  +0.113  +0.151  +0.048  +0.836  +0.843  +0.806  +1.000  -0.175  -0.195  +0.036  -0.107  -0.017  +0.074  -0.059  -0.020  -0.073  -0.018  -0.014   +0.029   -0.011   +0.059   +0.163   +0.082   +0.146  +0.189  +0.203  +0.192
+                         :   MET2HT:  -0.212  -0.027  +0.043  +0.058  -0.073  -0.141  -0.157  -0.175  +1.000  +0.117  -0.104  +0.017  -0.015  -0.110  +0.003  +0.013  +0.112  +0.460  +0.460   +0.070   +0.087   +0.021   +0.040   +0.042   +0.031  -0.001  -0.030  -0.022
+                         :     dRll:  -0.215  +0.007  +0.099  +0.162  -0.131  -0.104  -0.150  -0.195  +0.117  +1.000  -0.089  +0.026  +0.068  -0.265  -0.007  +0.004  +0.731  +0.048  +0.152   +0.409   +0.446   +0.180   +0.329   +0.207   +0.287  +0.218  +0.072  +0.032
+                         :   dRlj11:  +0.014  -0.009  +0.170  +0.046  +0.107  -0.038  -0.029  +0.036  -0.104  -0.089  +1.000  -0.280  -0.149  +0.256  -0.021  -0.032  +0.020  -0.151  -0.017   +0.058   +0.033   +0.068   +0.305   +0.035   -0.005  +0.147  +0.172  +0.060
+                         :   dRlj12:  -0.008  -0.017  +0.051  +0.017  -0.167  -0.085  -0.049  -0.107  +0.017  +0.026  -0.280  +1.000  -0.071  -0.017  +0.343  -0.042  +0.042  -0.008  -0.013   +0.135   +0.021   +0.177   -0.013   +0.035   +0.074  +0.133  +0.163  +0.028
+                         :   dRlj13:  +0.002  -0.015  +0.037  +0.010  -0.055  +0.020  +0.013  -0.017  -0.015  +0.068  -0.149  -0.071  +1.000  -0.042  -0.045  +0.328  +0.080  -0.032  +0.013   +0.189   +0.057   +0.238   +0.074   +0.091   +0.066  +0.185  +0.210  +0.066
+                         :   dRlj21:  +0.062  -0.008  -0.035  -0.022  +0.091  +0.022  +0.030  +0.074  -0.110  -0.265  +0.256  -0.017  -0.042  +1.000  -0.260  -0.115  -0.191  -0.037  -0.248   -0.087   -0.134   -0.026   -0.114   -0.038   +0.242  +0.008  +0.005  +0.133
+                         :   dRlj22:  +0.010  +0.006  +0.024  +0.014  -0.103  -0.056  -0.021  -0.059  +0.003  -0.007  -0.021  +0.343  -0.045  -0.260  +1.000  -0.045  +0.020  +0.016  -0.030   +0.097   +0.002   +0.060   +0.076   +0.141   -0.016  +0.109  +0.066  +0.165
+                         :   dRlj23:  +0.024  -0.007  -0.025  -0.019  -0.050  -0.009  -0.001  -0.020  +0.013  +0.004  -0.032  -0.042  +0.328  -0.115  -0.045  +1.000  +0.019  +0.017  -0.045   +0.096   +0.020   +0.037   +0.029   +0.188   +0.046  +0.096  +0.029  +0.206
+                         :    MSSSF:  -0.166  -0.011  +0.530  +0.616  +0.018  -0.017  -0.076  -0.073  +0.112  +0.731  +0.020  +0.042  +0.080  -0.191  +0.020  +0.019  +1.000  +0.205  +0.305   +0.702   +0.838   +0.375   +0.560   +0.377   +0.472  +0.538  +0.312  +0.244
+                         :    MTvl1:  -0.072  +0.005  +0.338  +0.174  +0.011  +0.018  -0.013  -0.018  +0.460  +0.048  -0.151  -0.008  -0.032  -0.037  +0.016  +0.017  +0.205  +1.000  +0.392   +0.178   +0.164   +0.106   +0.149   +0.105   +0.148  +0.130  +0.078  +0.071
+                         :    MTvl2:  -0.078  -0.006  +0.196  +0.371  +0.030  +0.015  -0.025  -0.014  +0.460  +0.152  -0.017  -0.013  +0.013  -0.248  -0.030  -0.045  +0.305  +0.392  +1.000   +0.215   +0.248   +0.122   +0.229   +0.109   +0.151  +0.144  +0.084  +0.048
+                         : MllW_2jL:  -0.355  -0.035  +0.557  +0.490  +0.175  +0.181  +0.077  +0.029  +0.070  +0.409  +0.058  +0.135  +0.189  -0.087  +0.097  +0.096  +0.702  +0.178  +0.215   +1.000   +0.591   +0.886   +0.603   +0.802   +0.493  +0.771  +0.648  +0.511
+                         : MllW_1jL:  -0.074  +0.003  +0.465  +0.549  +0.043  +0.014  -0.030  -0.011  +0.087  +0.446  +0.033  +0.021  +0.057  -0.134  +0.002  +0.020  +0.838  +0.164  +0.248   +0.591   +1.000   +0.294   +0.382   +0.298   +0.287  +0.470  +0.263  +0.198
+                         : Ml1W_2jL:  -0.363  -0.043  +0.475  +0.237  +0.196  +0.221  +0.122  +0.059  +0.021  +0.180  +0.068  +0.177  +0.238  -0.026  +0.060  +0.037  +0.375  +0.106  +0.122   +0.886   +0.294   +1.000   +0.494   +0.699   +0.343  +0.693  +0.717  +0.407
+                         : Ml1W_1jL:  -0.100  -0.020  +0.612  +0.371  +0.313  +0.161  +0.077  +0.163  +0.040  +0.329  +0.305  -0.013  +0.074  -0.114  +0.076  +0.029  +0.560  +0.149  +0.229   +0.603   +0.382   +0.494   +1.000   +0.371   +0.604  +0.550  +0.487  +0.256
+                         : Ml2W_2jL:  -0.347  -0.022  +0.240  +0.344  +0.203  +0.243  +0.156  +0.082  +0.042  +0.207  +0.035  +0.035  +0.091  -0.038  +0.141  +0.188  +0.377  +0.105  +0.109   +0.802   +0.298   +0.699   +0.371   +1.000   +0.383  +0.592  +0.464  +0.633
+                         : Ml2W_1jL:  -0.080  -0.017  +0.335  +0.481  +0.250  +0.159  +0.095  +0.146  +0.031  +0.287  -0.005  +0.074  +0.066  +0.242  -0.016  +0.046  +0.472  +0.148  +0.151   +0.493   +0.287   +0.343   +0.604   +0.383   +1.000  +0.417  +0.263  +0.398
+                         :  MllW1_H:  -0.087  -0.030  +0.579  +0.439  +0.255  +0.236  +0.174  +0.189  -0.001  +0.218  +0.147  +0.133  +0.185  +0.008  +0.109  +0.096  +0.538  +0.130  +0.144   +0.771   +0.470   +0.693   +0.550   +0.592   +0.417  +1.000  +0.920  +0.713
+                         :  Ml1W1_H:  -0.068  -0.030  +0.544  +0.225  +0.262  +0.242  +0.187  +0.203  -0.030  +0.072  +0.172  +0.163  +0.210  +0.005  +0.066  +0.029  +0.312  +0.078  +0.084   +0.648   +0.263   +0.717   +0.487   +0.464   +0.263  +0.920  +1.000  +0.498
+                         :  Ml2W1_H:  -0.060  -0.022  +0.205  +0.405  +0.225  +0.244  +0.200  +0.192  -0.022  +0.032  +0.060  +0.028  +0.066  +0.133  +0.165  +0.206  +0.244  +0.071  +0.048   +0.511   +0.198   +0.407   +0.256   +0.633   +0.398  +0.713  +0.498  +1.000
+                         : -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DataSetInfo              : Correlation matrix (Background):
+                         : -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                         :                Nj      Nb    Ptl1    Ptl2    Ptj1    Ptj2    Ptj3      HT  MET2HT    dRll  dRlj11  dRlj12  dRlj13  dRlj21  dRlj22  dRlj23   MSSSF   MTvl1   MTvl2 MllW_2jL MllW_1jL Ml1W_2jL Ml1W_1jL Ml2W_2jL Ml2W_1jL MllW1_H Ml1W1_H Ml2W1_H
+                         :       Nj:  +1.000  +0.138  +0.123  +0.049  +0.332  +0.354  +0.476  +0.622  -0.145  -0.074  +0.055  -0.002  -0.006  +0.034  -0.055  -0.024  +0.010  -0.009  +0.032   -0.119   +0.021   -0.180   +0.199   -0.133   +0.173  +0.056  +0.046  +0.021
+                         :       Nb:  +0.138  +1.000  +0.054  +0.138  +0.076  +0.036  +0.074  +0.094  -0.017  +0.028  +0.002  -0.027  -0.020  -0.105  +0.026  +0.057  +0.098  +0.017  +0.041   +0.028   +0.089   -0.051   +0.035   +0.063   +0.051  +0.033  -0.024  +0.073
+                         :     Ptl1:  +0.123  +0.054  +1.000  +0.475  +0.239  +0.126  +0.110  +0.202  +0.028  +0.066  +0.247  +0.042  +0.009  -0.001  -0.024  -0.025  +0.573  +0.310  +0.117   +0.573   +0.519   +0.480   +0.643   +0.255   +0.383  +0.615  +0.567  +0.219
+                         :     Ptl2:  +0.049  +0.138  +0.475  +1.000  +0.076  +0.057  +0.079  +0.081  -0.001  +0.130  +0.098  +0.017  +0.029  -0.033  -0.013  -0.020  +0.647  +0.224  +0.288   +0.555   +0.623   +0.304   +0.337   +0.407   +0.462  +0.498  +0.295  +0.446
+                         :     Ptj1:  +0.332  +0.076  +0.239  +0.076  +1.000  +0.726  +0.589  +0.873  -0.037  -0.043  +0.089  -0.142  -0.005  +0.027  -0.075  -0.098  +0.082  +0.004  +0.066   +0.217   +0.083   +0.250   +0.469   +0.200   +0.429  +0.246  +0.271  +0.152
+                         :     Ptj2:  +0.354  +0.036  +0.126  +0.057  +0.726  +1.000  +0.694  +0.863  -0.152  +0.008  -0.020  -0.091  +0.034  +0.019  -0.093  -0.067  +0.076  -0.017  +0.019   +0.263   +0.065   +0.306   +0.300   +0.282   +0.352  +0.270  +0.292  +0.196
+                         :     Ptj3:  +0.476  +0.074  +0.110  +0.079  +0.589  +0.694  +1.000  +0.817  -0.172  +0.012  -0.032  -0.028  -0.016  +0.037  -0.070  -0.087  +0.059  -0.033  +0.059   +0.210   +0.045   +0.229   +0.260   +0.249   +0.353  +0.196  +0.198  +0.191
+                         :       HT:  +0.622  +0.094  +0.202  +0.081  +0.873  +0.863  +0.817  +1.000  -0.131  -0.037  +0.037  -0.092  +0.007  +0.037  -0.083  -0.091  +0.073  -0.016  +0.059   +0.189   +0.068   +0.204   +0.408   +0.197   +0.421  +0.252  +0.267  +0.178
+                         :   MET2HT:  -0.145  -0.017  +0.028  -0.001  -0.037  -0.152  -0.172  -0.131  +1.000  +0.027  -0.015  +0.000  +0.042  -0.017  +0.025  -0.021  +0.031  +0.404  +0.336   +0.007   +0.050   -0.001   -0.019   -0.018   -0.060  -0.001  -0.003  -0.046
+                         :     dRll:  -0.074  +0.028  +0.066  +0.130  -0.043  +0.008  +0.012  -0.037  +0.027  +1.000  -0.030  +0.076  -0.056  -0.130  -0.026  -0.003  +0.642  +0.104  +0.068   +0.400   +0.496   +0.148   +0.169   +0.239   +0.172  +0.280  +0.121  +0.097
+                         :   dRlj11:  +0.055  +0.002  +0.247  +0.098  +0.089  -0.020  -0.032  +0.037  -0.015  -0.030  +1.000  -0.214  -0.045  -0.067  +0.054  +0.075  +0.150  -0.139  +0.107   +0.150   +0.132   +0.125   +0.562   +0.053   +0.083  +0.252  +0.259  +0.072
+                         :   dRlj12:  -0.002  -0.027  +0.042  +0.017  -0.142  -0.091  -0.028  -0.092  +0.000  +0.076  -0.214  +1.000  +0.007  +0.128  +0.013  +0.066  +0.115  -0.005  -0.023   +0.192   +0.089   +0.235   -0.022   +0.029   +0.033  +0.163  +0.189  +0.021
+                         :   dRlj13:  -0.006  -0.020  +0.009  +0.029  -0.005  +0.034  -0.016  +0.007  +0.042  -0.056  -0.045  +0.007  +1.000  +0.124  +0.019  +0.074  +0.026  -0.025  +0.024   +0.191   +0.031   +0.281   +0.037   +0.097   +0.108  +0.182  +0.228  +0.061
+                         :   dRlj21:  +0.034  -0.105  -0.001  -0.033  +0.027  +0.019  +0.037  +0.037  -0.017  -0.130  -0.067  +0.128  +0.124  +1.000  -0.173  +0.020  -0.027  +0.096  -0.234   +0.052   -0.015   +0.088   -0.010   +0.044   +0.496  +0.051  +0.029  +0.124
+                         :   dRlj22:  -0.055  +0.026  -0.024  -0.013  -0.075  -0.093  -0.070  -0.083  +0.025  -0.026  +0.054  +0.013  +0.019  -0.173  +1.000  +0.014  +0.049  -0.026  -0.046   +0.092   +0.048   -0.001   +0.006   +0.219   -0.045  +0.092  +0.001  +0.221
+                         :   dRlj23:  -0.024  +0.057  -0.025  -0.020  -0.098  -0.067  -0.087  -0.091  -0.021  -0.003  +0.075  +0.066  +0.074  +0.020  +0.014  +1.000  +0.051  +0.023  -0.086   +0.124   +0.062   +0.052   +0.003   +0.229   +0.007  +0.114  +0.027  +0.256
+                         :    MSSSF:  +0.010  +0.098  +0.573  +0.647  +0.082  +0.076  +0.059  +0.073  +0.031  +0.642  +0.150  +0.115  +0.026  -0.027  +0.049  +0.051  +1.000  +0.290  +0.186   +0.798   +0.938   +0.443   +0.464   +0.465   +0.444  +0.699  +0.450  +0.378
+                         :    MTvl1:  -0.009  +0.017  +0.310  +0.224  +0.004  -0.017  -0.033  -0.016  +0.404  +0.104  -0.139  -0.005  -0.025  +0.096  -0.026  +0.023  +0.290  +1.000  +0.087   +0.271   +0.279   +0.188   +0.122   +0.198   +0.147  +0.268  +0.213  +0.143
+                         :    MTvl2:  +0.032  +0.041  +0.117  +0.288  +0.066  +0.019  +0.059  +0.059  +0.336  +0.068  +0.107  -0.023  +0.024  -0.234  -0.046  -0.086  +0.186  +0.087  +1.000   +0.154   +0.169   +0.088   +0.150   +0.098   +0.083  +0.127  +0.070  +0.100
+                         : MllW_2jL:  -0.119  +0.028  +0.573  +0.555  +0.217  +0.263  +0.210  +0.189  +0.007  +0.400  +0.150  +0.192  +0.191  +0.052  +0.092  +0.124  +0.798  +0.271  +0.154   +1.000   +0.735   +0.855   +0.507   +0.750   +0.498  +0.842  +0.687  +0.561
+                         : MllW_1jL:  +0.021  +0.089  +0.519  +0.623  +0.083  +0.065  +0.045  +0.068  +0.050  +0.496  +0.132  +0.089  +0.031  -0.015  +0.048  +0.062  +0.938  +0.279  +0.169   +0.735   +1.000   +0.379   +0.367   +0.415   +0.357  +0.658  +0.411  +0.361
+                         : Ml1W_2jL:  -0.180  -0.051  +0.480  +0.304  +0.250  +0.306  +0.229  +0.204  -0.001  +0.148  +0.125  +0.235  +0.281  +0.088  -0.001  +0.052  +0.443  +0.188  +0.088   +0.855   +0.379   +1.000   +0.437   +0.587   +0.377  +0.711  +0.731  +0.397
+                         : Ml1W_1jL:  +0.199  +0.035  +0.643  +0.337  +0.469  +0.300  +0.260  +0.408  -0.019  +0.169  +0.562  -0.022  +0.037  -0.010  +0.006  +0.003  +0.464  +0.122  +0.150   +0.507   +0.367   +0.437   +1.000   +0.289   +0.541  +0.564  +0.538  +0.218
+                         : Ml2W_2jL:  -0.133  +0.063  +0.255  +0.407  +0.200  +0.282  +0.249  +0.197  -0.018  +0.239  +0.053  +0.029  +0.097  +0.044  +0.219  +0.229  +0.465  +0.198  +0.098   +0.750   +0.415   +0.587   +0.289   +1.000   +0.389  +0.612  +0.441  +0.718
+                         : Ml2W_1jL:  +0.173  +0.051  +0.383  +0.462  +0.429  +0.352  +0.353  +0.421  -0.060  +0.172  +0.083  +0.033  +0.108  +0.496  -0.045  +0.007  +0.444  +0.147  +0.083   +0.498   +0.357   +0.377   +0.541   +0.389   +1.000  +0.447  +0.308  +0.419
+                         :  MllW1_H:  +0.056  +0.033  +0.615  +0.498  +0.246  +0.270  +0.196  +0.252  -0.001  +0.280  +0.252  +0.163  +0.182  +0.051  +0.092  +0.114  +0.699  +0.268  +0.127   +0.842   +0.658   +0.711   +0.564   +0.612   +0.447  +1.000  +0.906  +0.624
+                         :  Ml1W1_H:  +0.046  -0.024  +0.567  +0.295  +0.271  +0.292  +0.198  +0.267  -0.003  +0.121  +0.259  +0.189  +0.228  +0.029  +0.001  +0.027  +0.450  +0.213  +0.070   +0.687   +0.411   +0.731   +0.538   +0.441   +0.308  +0.906  +1.000  +0.363
+                         :  Ml2W1_H:  +0.021  +0.073  +0.219  +0.446  +0.152  +0.196  +0.191  +0.178  -0.046  +0.097  +0.072  +0.021  +0.061  +0.124  +0.221  +0.256  +0.378  +0.143  +0.100   +0.561   +0.361   +0.397   +0.218   +0.718   +0.419  +0.624  +0.363  +1.000
+                         : -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DataSetFactory           : [dataset] :  
+                         : 
+Factory                  : [1mTrain all methods[0m
+Factory                  : [dataset] : Create Transformation "I" with events from all classes.
+                         : 
+                         : Transformation, Variable selection : 
+                         : Input : variable 'Nj' <---> Output : variable 'Nj'
+                         : Input : variable 'Nb' <---> Output : variable 'Nb'
+                         : Input : variable 'Ptl1' <---> Output : variable 'Ptl1'
+                         : Input : variable 'Ptl2' <---> Output : variable 'Ptl2'
+                         : Input : variable 'Ptj1' <---> Output : variable 'Ptj1'
+                         : Input : variable 'Ptj2' <---> Output : variable 'Ptj2'
+                         : Input : variable 'Ptj3' <---> Output : variable 'Ptj3'
+                         : Input : variable 'HT' <---> Output : variable 'HT'
+                         : Input : variable 'MET2HT' <---> Output : variable 'MET2HT'
+                         : Input : variable 'dRll' <---> Output : variable 'dRll'
+                         : Input : variable 'dRlj11' <---> Output : variable 'dRlj11'
+                         : Input : variable 'dRlj12' <---> Output : variable 'dRlj12'
+                         : Input : variable 'dRlj13' <---> Output : variable 'dRlj13'
+                         : Input : variable 'dRlj21' <---> Output : variable 'dRlj21'
+                         : Input : variable 'dRlj22' <---> Output : variable 'dRlj22'
+                         : Input : variable 'dRlj23' <---> Output : variable 'dRlj23'
+                         : Input : variable 'MSSSF' <---> Output : variable 'MSSSF'
+                         : Input : variable 'MTvl1' <---> Output : variable 'MTvl1'
+                         : Input : variable 'MTvl2' <---> Output : variable 'MTvl2'
+                         : Input : variable 'MllW_2jL' <---> Output : variable 'MllW_2jL'
+                         : Input : variable 'MllW_1jL' <---> Output : variable 'MllW_1jL'
+                         : Input : variable 'Ml1W_2jL' <---> Output : variable 'Ml1W_2jL'
+                         : Input : variable 'Ml1W_1jL' <---> Output : variable 'Ml1W_1jL'
+                         : Input : variable 'Ml2W_2jL' <---> Output : variable 'Ml2W_2jL'
+                         : Input : variable 'Ml2W_1jL' <---> Output : variable 'Ml2W_1jL'
+                         : Input : variable 'MllW1_H' <---> Output : variable 'MllW1_H'
+                         : Input : variable 'Ml1W1_H' <---> Output : variable 'Ml1W1_H'
+                         : Input : variable 'Ml2W1_H' <---> Output : variable 'Ml2W1_H'
+TFHandler_Factory        : Variable        Mean        RMS   [        Min        Max ]
+                         : -----------------------------------------------------------
+                         :       Nj:     4.1953     1.2270   [     3.0000     12.000 ]
+                         :       Nb:     1.3239    0.51491   [     1.0000     5.0000 ]
+                         :     Ptl1:     64.853     36.618   [     25.001     539.58 ]
+                         :     Ptl2:     30.852     16.958   [     15.005     191.77 ]
+                         :     Ptj1:     119.70     68.556   [     26.692     887.83 ]
+                         :     Ptj2:     77.334     41.548   [     25.385     544.28 ]
+                         :     Ptj3:     52.264     25.513   [     25.003     373.18 ]
+                         :       HT:     296.70     157.25   [     78.884     1817.7 ]
+                         :   MET2HT:     23.172     34.893   [  0.0013491     508.31 ]
+                         :     dRll:     1.9277    0.97040   [    0.29064     5.2233 ]
+                         :   dRlj11:     2.4172    0.86107   [    0.40270     5.3698 ]
+                         :   dRlj12:     2.1476    0.90756   [    0.40099     5.0585 ]
+                         :   dRlj13:     2.1647    0.86670   [    0.40192     5.1980 ]
+                         :   dRlj21:     2.2233    0.87628   [    0.40193     5.3026 ]
+                         :   dRlj22:     2.1244    0.88535   [    0.40145     5.3065 ]
+                         :   dRlj23:     2.1419    0.87436   [    0.40271     5.3172 ]
+                         :    MSSSF:     79.538     63.992   [     6.8005     933.15 ]
+                         :    MTvl1:     74.132     51.954   [  0.0038943     516.83 ]
+                         :    MTvl2:     53.440     35.505   [   0.019578     322.69 ]
+                         : MllW_2jL:     208.00     87.567   [     60.974     1095.4 ]
+                         : MllW_1jL:     100.96     53.100   [     12.412     933.15 ]
+                         : Ml1W_2jL:     157.55     67.403   [     35.148     941.54 ]
+                         : Ml1W_1jL:     143.71     129.51   [     14.785     1341.8 ]
+                         : Ml2W_2jL:     127.77     52.235   [     32.624     659.21 ]
+                         : Ml2W_1jL:     91.849     76.257   [     11.303     1150.9 ]
+                         :  MllW1_H:     252.09     109.21   [     87.353     1517.9 ]
+                         :  Ml1W1_H:     198.73     92.995   [     63.031     1442.4 ]
+                         :  Ml2W1_H:     147.89     54.956   [     46.097     1009.6 ]
+                         : -----------------------------------------------------------
+                         : [32m
+                         : <PlotVariables> Will not produce scatter plots ==> 
+                         : |  The number of 28 input variables and 0 target values would require 378 two-dimensional
+                         : |  histograms, which would occupy the computer's memory. Note that this
+                         : |  suppression does not have any consequences for your analysis, other
+                         : |  than not disposing of these scatter plots. You can modify the maximum
+                         : |  number of input variables allowed to generate scatter plots in your
+                         : |  script via the command line:
+                         : |  "(TMVA::gConfig().GetVariablePlotting()).fMaxNumOfAllowedVariablesForScatterPlots = <some int>;"[0m
+                         : 
+                         : Some more output
+                         : Ranking input variables (method unspecific)...
+IdTransformation         : Ranking result (top variable is best ranked)
+                         : ---------------------------------
+                         : Rank : Variable  : Separation
+                         : ---------------------------------
+                         :    1 : MllW_2jL  : 1.329e-01
+                         :    2 : dRll      : 1.326e-01
+                         :    3 : MSSSF     : 1.278e-01
+                         :    4 : Ml2W_1jL  : 1.055e-01
+                         :    5 : Ml1W_1jL  : 1.000e-01
+                         :    6 : Ml1W_2jL  : 8.356e-02
+                         :    7 : MllW1_H   : 6.986e-02
+                         :    8 : Ml2W_2jL  : 6.186e-02
+                         :    9 : Nb        : 6.076e-02
+                         :   10 : MllW_1jL  : 5.012e-02
+                         :   11 : Nj        : 4.781e-02
+                         :   12 : Ml1W1_H   : 4.319e-02
+                         :   13 : MET2HT    : 3.774e-02
+                         :   14 : Ml2W1_H   : 3.538e-02
+                         :   15 : dRlj23    : 3.248e-02
+                         :   16 : dRlj21    : 3.177e-02
+                         :   17 : dRlj22    : 3.127e-02
+                         :   18 : dRlj12    : 2.925e-02
+                         :   19 : Ptj3      : 2.643e-02
+                         :   20 : HT        : 2.514e-02
+                         :   21 : dRlj13    : 2.436e-02
+                         :   22 : Ptl2      : 2.094e-02
+                         :   23 : Ptl1      : 2.029e-02
+                         :   24 : Ptj2      : 1.824e-02
+                         :   25 : dRlj11    : 1.773e-02
+                         :   26 : MTvl1     : 1.255e-02
+                         :   27 : MTvl2     : 1.144e-02
+                         :   28 : Ptj1      : 1.109e-02
+                         : ---------------------------------
+Factory                  : Train method: BDTG for Classification
+                         : 
+<WARNING>                : Events with negative event weights are USED during the BDT training. This might cause problems with small node sizes or with the boosting. Please remove negative events from training using the option *IgnoreEventsWithNegWeightsInTraining* in case you observe problems with the boosting
+BDTG                     : #events: (reweighted) sig: 4308 bkg: 4308
+                         : #events: (unweighted) sig: 7250 bkg: 1366
+                         : Training 40 Decision Trees ... patience please
+                         : Elapsed time for training with 8616 events: [1;31m0.338 sec[0m         
+BDTG                     : [dataset] : Evaluation of BDTG on training sample (8616 events)
+                         : Elapsed time for evaluation of 8616 events: [1;31m0.0114 sec[0m       
+                         : Creating xml weight file: [0;36mdataset/weights/TMVAClassification_MN75_El_BDTG.weights.xml[0m
+                         : Creating standalone class: [0;36mdataset/weights/TMVAClassification_MN75_El_BDTG.class.C[0m
+                         : TMVA_MN75_El.root:/dataset/Method_BDT/BDTG
+Factory                  : Training finished
+                         : 
+                         : Ranking input variables (method specific)...
+BDTG                     : Ranking result (top variable is best ranked)
+                         : ------------------------------------------
+                         : Rank : Variable  : Variable Importance
+                         : ------------------------------------------
+                         :    1 : dRll      : 9.318e-02
+                         :    2 : MllW_2jL  : 7.766e-02
+                         :    3 : MET2HT    : 7.067e-02
+                         :    4 : Nb        : 6.909e-02
+                         :    5 : dRlj23    : 6.207e-02
+                         :    6 : Ml2W_1jL  : 6.192e-02
+                         :    7 : Ptl2      : 5.855e-02
+                         :    8 : dRlj21    : 5.177e-02
+                         :    9 : Ml1W_2jL  : 4.553e-02
+                         :   10 : MSSSF     : 4.280e-02
+                         :   11 : dRlj12    : 3.914e-02
+                         :   12 : dRlj22    : 3.666e-02
+                         :   13 : Ptj3      : 3.508e-02
+                         :   14 : Ml2W_2jL  : 3.195e-02
+                         :   15 : Ml2W1_H   : 2.689e-02
+                         :   16 : MllW1_H   : 2.561e-02
+                         :   17 : dRlj13    : 2.465e-02
+                         :   18 : Ml1W_1jL  : 2.333e-02
+                         :   19 : Nj        : 2.238e-02
+                         :   20 : dRlj11    : 2.134e-02
+                         :   21 : HT        : 1.914e-02
+                         :   22 : MllW_1jL  : 1.913e-02
+                         :   23 : MTvl2     : 1.582e-02
+                         :   24 : MTvl1     : 1.578e-02
+                         :   25 : Ptj1      : 9.871e-03
+                         :   26 : Ptl1      : 0.000e+00
+                         :   27 : Ptj2      : 0.000e+00
+                         :   28 : Ml1W1_H   : 0.000e+00
+                         : ------------------------------------------
+Factory                  : === Destroy and recreate all methods via weight files for testing ===
+                         : 
+                         : Reading weight file: [0;36mdataset/weights/TMVAClassification_MN75_El_BDTG.weights.xml[0m
+Factory                  : [1mTest all methods[0m
+Factory                  : Test method: BDTG for Classification performance
+                         : 
+BDTG                     : [dataset] : Evaluation of BDTG on testing sample (8616 events)
+                         : Elapsed time for evaluation of 8616 events: [1;31m0.0109 sec[0m       
+Factory                  : [1mEvaluate all methods[0m
+Factory                  : Evaluate classifier: BDTG
+                         : 
+BDTG                     : [dataset] : Loop over test events and fill histograms with classifier response...
+                         : 
+TFHandler_BDTG           : Variable        Mean        RMS   [        Min        Max ]
+                         : -----------------------------------------------------------
+                         :       Nj:     4.1937     1.2168   [     3.0000     13.000 ]
+                         :       Nb:     1.3219    0.52188   [     1.0000     4.0000 ]
+                         :     Ptl1:     64.730     36.411   [     25.010     503.77 ]
+                         :     Ptl2:     31.476     17.492   [     15.001     206.52 ]
+                         :     Ptj1:     117.40     66.203   [     28.364     903.30 ]
+                         :     Ptj2:     75.861     38.976   [     25.283     504.84 ]
+                         :     Ptj3:     52.176     26.018   [     25.002     271.12 ]
+                         :       HT:     292.25     154.05   [     84.233     1613.2 ]
+                         :   MET2HT:     23.608     31.248   [ 0.00025077     1022.4 ]
+                         :     dRll:     1.9561    0.97888   [    0.28522     5.1798 ]
+                         :   dRlj11:     2.4043    0.86515   [    0.40397     5.3635 ]
+                         :   dRlj12:     2.1817    0.91027   [    0.40014     5.3065 ]
+                         :   dRlj13:     2.1671    0.87483   [    0.40175     5.4077 ]
+                         :   dRlj21:     2.2434    0.87377   [    0.40126     5.1970 ]
+                         :   dRlj22:     2.1551    0.90118   [    0.40215     5.3485 ]
+                         :   dRlj23:     2.1731    0.90048   [    0.40293     5.4213 ]
+                         :    MSSSF:     80.737     64.336   [     6.9495     792.82 ]
+                         :    MTvl1:     77.158     50.915   [   0.066271     692.16 ]
+                         :    MTvl2:     53.769     35.259   [  0.0080584     381.19 ]
+                         : MllW_2jL:     209.61     88.756   [     58.845     1029.0 ]
+                         : MllW_1jL:     102.47     53.284   [     14.015     792.82 ]
+                         : Ml1W_2jL:     156.97     67.946   [     37.860     925.21 ]
+                         : Ml1W_1jL:     139.19     116.60   [     14.182     1590.8 ]
+                         : Ml2W_2jL:     130.10     56.033   [     32.866     693.60 ]
+                         : Ml2W_1jL:     94.106     74.549   [     11.538     960.15 ]
+                         :  MllW1_H:     255.77     112.82   [     73.839     1250.1 ]
+                         :  Ml1W1_H:     198.98     95.731   [     55.930     1185.0 ]
+                         :  Ml2W1_H:     150.92     60.055   [     47.604     773.15 ]
+                         : -----------------------------------------------------------
+                         : [32m
+                         : <PlotVariables> Will not produce scatter plots ==> 
+                         : |  The number of 28 input variables and 0 target values would require 378 two-dimensional
+                         : |  histograms, which would occupy the computer's memory. Note that this
+                         : |  suppression does not have any consequences for your analysis, other
+                         : |  than not disposing of these scatter plots. You can modify the maximum
+                         : |  number of input variables allowed to generate scatter plots in your
+                         : |  script via the command line:
+                         : |  "(TMVA::gConfig().GetVariablePlotting()).fMaxNumOfAllowedVariablesForScatterPlots = <some int>;"[0m
+                         : 
+                         : Some more output
+                         : 
+                         : Evaluation results ranked by best signal efficiency and purity (area)
+                         : -------------------------------------------------------------------------------------------------------------------
+                         : DataSet       MVA                       
+                         : Name:         Method:          ROC-integ
+                         : dataset       BDTG           : 0.783
+                         : -------------------------------------------------------------------------------------------------------------------
+                         : 
+                         : Testing efficiency compared to training efficiency (overtraining check)
+                         : -------------------------------------------------------------------------------------------------------------------
+                         : DataSet              MVA              Signal efficiency: from test sample (from training sample) 
+                         : Name:                Method:          @B=0.01             @B=0.10            @B=0.30   
+                         : -------------------------------------------------------------------------------------------------------------------
+                         : dataset              BDTG           : 0.155 (0.210)       0.478 (0.531)      0.722 (0.757)
+                         : -------------------------------------------------------------------------------------------------------------------
+                         : 
+Dataset:dataset          : Created tree 'TestTree' with 8616 events
+                         : 
+Dataset:dataset          : Created tree 'TrainTree' with 8616 events
+                         : 
+Factory                  : [1mThank you for using TMVA![0m
+                         : [1mFor citation information, please visit: http://tmva.sf.net/citeTMVA.html[0m
+==> Wrote root file: TMVA_MN75_El.root
+==> TMVAClassification is done!
+--- Opening root file TMVA_MN75_El.root in read mode
+--- Found directory for method: BDT::BDTG containing MVA_BDTG_S/_B
+--- Mean and RMS (S): 0.24154, 0.414144
+--- Mean and RMS (B): -0.186606, 0.333279
+--- Found comparison histograms for overtraining check
+--- Perform Kolmogorov-Smirnov tests
+--- Goodness of signal (background) consistency: 0.438 (0.002)
+MN:100
+==> Start TMVAClassification
+DataSetInfo              : [dataset] : Added class "Signal"
+                         : Add Tree Tree_ee of type Signal with 20064 events
+DataSetInfo              : [dataset] : Added class "Background"
+                         : Add Tree Tree_ee of type Background with 2732 events
+!H:!V:BoostType=Grad:NTrees=50:MinNodeSize=10%:Shrinkage=0.1:UseBaggedBoost:BaggedSampleFraction=0.5:nCuts=100:MaxDepth=2
+Factory                  : Booking method: [1mBDTG[0m
+                         : 
+                         : the option NegWeightTreatment=InverseBoostNegWeights does not exist for BoostType=Grad
+                         : --> change to new default NegWeightTreatment=Pray
+                         : Building event vectors for type 2 Signal
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Building event vectors for type 2 Background
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+                         : Dataset[dataset] :  create input formulas for tree Tree_ee
+DataSetFactory           : [dataset] : Number of events in input trees
+                         : 
+                         : 
+                         : Dataset[dataset] : Weight renormalisation mode: "EqualNumEvents": renormalises all event classes ...
+                         : Dataset[dataset] :  such that the effective (weighted) number of events in each class is the same 
+                         : Dataset[dataset] :  (and equals the number of events (entries) given for class=0 )
+                         : Dataset[dataset] : ... i.e. such that Sum[i=1..N_j]{w_i} = N_classA, j=classA, classB, ...
+                         : Dataset[dataset] : ... (note that N_j is the sum of TRAINING events
+                         : Dataset[dataset] :  ..... Testing events are not renormalised nor included in the renormalisation factor!)
+                         : Number of training and testing events
+                         : ---------------------------------------------------------------------------
+                         : Signal     -- training events            : 10032
+                         : Signal     -- testing events             : 10032
+                         : Signal     -- training and testing events: 20064
+                         : Background -- training events            : 1366
+                         : Background -- testing events             : 1366
+                         : Background -- training and testing events: 2732
+                         : 
+DataSetInfo              : Correlation matrix (Signal):
+                         : -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                         :                Nj      Nb    Ptl1    Ptl2    Ptj1    Ptj2    Ptj3      HT  MET2HT    dRll  dRlj11  dRlj12  dRlj13  dRlj21  dRlj22  dRlj23   MSSSF   MTvl1   MTvl2 MllW_2jL MllW_1jL Ml1W_2jL Ml1W_1jL Ml2W_2jL Ml2W_1jL MllW1_H Ml1W1_H Ml2W1_H
+                         :       Nj:  +1.000  +0.183  -0.049  +0.005  +0.257  +0.297  +0.426  +0.628  -0.206  -0.141  +0.033  +0.006  +0.002  +0.063  +0.029  +0.017  -0.133  -0.074  -0.055   -0.378   -0.023   -0.379   -0.093   -0.357   -0.073  -0.079  -0.080  -0.043
+                         :       Nb:  +0.183  +1.000  -0.008  -0.003  +0.059  +0.066  +0.102  +0.128  -0.018  -0.028  +0.002  -0.003  -0.032  -0.006  -0.016  -0.021  -0.013  +0.006  +0.020   -0.089   +0.011   -0.090   -0.013   -0.085   -0.020  -0.013  -0.009  -0.017
+                         :     Ptl1:  -0.049  -0.008  +1.000  +0.403  +0.242  +0.137  +0.081  +0.139  +0.065  -0.032  +0.134  +0.084  +0.042  +0.001  +0.025  -0.021  +0.491  +0.310  +0.190   +0.519   +0.329   +0.485   +0.545   +0.242   +0.288  +0.519  +0.542  +0.182
+                         :     Ptl2:  +0.005  -0.003  +0.403  +1.000  +0.174  +0.131  +0.101  +0.133  +0.048  -0.138  +0.083  +0.056  +0.025  +0.093  +0.016  -0.011  +0.353  +0.153  +0.311   +0.342   +0.233   +0.226   +0.257   +0.281   +0.347  +0.363  +0.254  +0.384
+                         :     Ptj1:  +0.257  +0.059  +0.242  +0.174  +1.000  +0.739  +0.556  +0.836  -0.063  -0.194  +0.130  -0.120  -0.051  +0.106  -0.061  -0.044  -0.010  -0.000  +0.029   +0.133   +0.019   +0.142   +0.238   +0.151   +0.206  +0.201  +0.198  +0.180
+                         :     Ptj2:  +0.297  +0.066  +0.137  +0.131  +0.739  +1.000  +0.717  +0.846  -0.132  -0.170  -0.010  -0.034  +0.029  +0.018  +0.001  +0.013  -0.035  -0.005  +0.021   +0.162   -0.000   +0.176   +0.142   +0.215   +0.150  +0.230  +0.223  +0.230
+                         :     Ptj3:  +0.426  +0.102  +0.081  +0.101  +0.556  +0.717  +1.000  +0.813  -0.158  -0.187  -0.022  +0.009  +0.025  +0.018  +0.021  +0.005  -0.079  -0.024  +0.004   +0.085   -0.032   +0.103   +0.067   +0.163   +0.093  +0.192  +0.184  +0.213
+                         :       HT:  +0.628  +0.128  +0.139  +0.133  +0.836  +0.846  +0.813  +1.000  -0.166  -0.222  +0.053  -0.048  -0.005  +0.075  -0.005  -0.006  -0.081  -0.029  +0.002   -0.007   -0.009   +0.006   +0.119   +0.042   +0.122  +0.167  +0.161  +0.175
+                         :   MET2HT:  -0.206  -0.018  +0.065  +0.048  -0.063  -0.132  -0.158  -0.166  +1.000  +0.065  -0.103  +0.025  -0.009  -0.095  +0.007  -0.003  +0.101  +0.459  +0.476   +0.065   +0.054   +0.039   +0.051   +0.022   +0.030  -0.002  -0.010  -0.034
+                         :     dRll:  -0.141  -0.028  -0.032  -0.138  -0.194  -0.170  -0.187  -0.222  +0.065  +1.000  -0.120  +0.028  +0.041  -0.270  -0.007  +0.012  +0.701  -0.028  +0.006   +0.204   +0.308   +0.056   +0.223   +0.015   +0.174  +0.038  -0.019  -0.120
+                         :   dRlj11:  +0.033  +0.002  +0.134  +0.083  +0.130  -0.010  -0.022  +0.053  -0.103  -0.120  +1.000  -0.257  -0.188  +0.345  -0.073  -0.052  -0.008  -0.148  -0.027   +0.033   +0.015   +0.032   +0.201   +0.030   +0.026  +0.128  +0.145  +0.072
+                         :   dRlj12:  +0.006  -0.003  +0.084  +0.056  -0.120  -0.034  +0.009  -0.048  +0.025  +0.028  -0.257  +1.000  -0.059  -0.051  +0.439  -0.049  +0.077  -0.028  +0.005   +0.180   -0.002   +0.192   +0.063   +0.084   +0.077  +0.201  +0.209  +0.123
+                         :   dRlj13:  +0.002  -0.032  +0.042  +0.025  -0.051  +0.029  +0.025  -0.005  -0.009  +0.041  -0.188  -0.059  +1.000  -0.059  -0.043  +0.423  +0.073  -0.034  -0.008   +0.223   +0.020   +0.247   +0.093   +0.142   +0.089  +0.193  +0.206  +0.105
+                         :   dRlj21:  +0.063  -0.006  +0.001  +0.093  +0.106  +0.018  +0.018  +0.075  -0.095  -0.270  +0.345  -0.051  -0.059  +1.000  -0.212  -0.135  -0.174  -0.033  -0.170   -0.041   -0.095   -0.009   -0.049   +0.007   +0.195  +0.073  +0.045  +0.184
+                         :   dRlj22:  +0.029  -0.016  +0.025  +0.016  -0.061  +0.001  +0.021  -0.005  +0.007  -0.007  -0.073  +0.439  -0.043  -0.212  +1.000  -0.059  -0.007  -0.017  -0.049   +0.096   -0.067   +0.062   +0.048   +0.130   +0.024  +0.127  +0.086  +0.187
+                         :   dRlj23:  +0.017  -0.021  -0.021  -0.011  -0.044  +0.013  +0.005  -0.006  -0.003  +0.012  -0.052  -0.049  +0.423  -0.135  -0.059  +1.000  +0.007  -0.013  -0.045   +0.135   -0.014   +0.087   +0.036   +0.200   +0.076  +0.127  +0.074  +0.202
+                         :    MSSSF:  -0.133  -0.013  +0.491  +0.353  -0.010  -0.035  -0.079  -0.081  +0.101  +0.701  -0.008  +0.077  +0.073  -0.174  -0.007  +0.007  +1.000  +0.145  +0.202   +0.537   +0.635   +0.331   +0.535   +0.224   +0.404  +0.389  +0.300  +0.094
+                         :    MTvl1:  -0.074  +0.006  +0.310  +0.153  -0.000  -0.005  -0.024  -0.029  +0.459  -0.028  -0.148  -0.028  -0.034  -0.033  -0.017  -0.013  +0.145  +1.000  +0.489   +0.113   +0.086   +0.087   +0.094   +0.056   +0.097  +0.098  +0.091  +0.037
+                         :    MTvl2:  -0.055  +0.020  +0.190  +0.311  +0.029  +0.021  +0.004  +0.002  +0.476  +0.006  -0.027  +0.005  -0.008  -0.170  -0.049  -0.045  +0.202  +0.489  +1.000   +0.134   +0.148   +0.093   +0.165   +0.062   +0.098  +0.107  +0.084  +0.049
+                         : MllW_2jL:  -0.378  -0.089  +0.519  +0.342  +0.133  +0.162  +0.085  -0.007  +0.065  +0.204  +0.033  +0.180  +0.223  -0.041  +0.096  +0.135  +0.537  +0.113  +0.134   +1.000   +0.307   +0.940   +0.550   +0.830   +0.457  +0.693  +0.655  +0.482
+                         : MllW_1jL:  -0.023  +0.011  +0.329  +0.233  +0.019  -0.000  -0.032  -0.009  +0.054  +0.308  +0.015  -0.002  +0.020  -0.095  -0.067  -0.014  +0.635  +0.086  +0.148   +0.307   +1.000   +0.161   +0.255   +0.103   +0.111  +0.238  +0.178  +0.020
+                         : Ml1W_2jL:  -0.379  -0.090  +0.485  +0.226  +0.142  +0.176  +0.103  +0.006  +0.039  +0.056  +0.032  +0.192  +0.247  -0.009  +0.062  +0.087  +0.331  +0.087  +0.093   +0.940   +0.161   +1.000   +0.475   +0.758   +0.344  +0.648  +0.672  +0.418
+                         : Ml1W_1jL:  -0.093  -0.013  +0.545  +0.257  +0.238  +0.142  +0.067  +0.119  +0.051  +0.223  +0.201  +0.063  +0.093  -0.049  +0.048  +0.036  +0.535  +0.094  +0.165   +0.550   +0.255   +0.475   +1.000   +0.310   +0.650  +0.444  +0.434  +0.177
+                         : Ml2W_2jL:  -0.357  -0.085  +0.242  +0.281  +0.151  +0.215  +0.163  +0.042  +0.022  +0.015  +0.030  +0.084  +0.142  +0.007  +0.130  +0.200  +0.224  +0.056  +0.062   +0.830   +0.103   +0.758   +0.310   +1.000   +0.363  +0.558  +0.488  +0.579
+                         : Ml2W_1jL:  -0.073  -0.020  +0.288  +0.347  +0.206  +0.150  +0.093  +0.122  +0.030  +0.174  +0.026  +0.077  +0.089  +0.195  +0.024  +0.076  +0.404  +0.097  +0.098   +0.457   +0.111   +0.344   +0.650   +0.363   +1.000  +0.349  +0.261  +0.320
+                         :  MllW1_H:  -0.079  -0.013  +0.519  +0.363  +0.201  +0.230  +0.192  +0.167  -0.002  +0.038  +0.128  +0.201  +0.193  +0.073  +0.127  +0.127  +0.389  +0.098  +0.107   +0.693   +0.238   +0.648   +0.444   +0.558   +0.349  +1.000  +0.956  +0.788
+                         :  Ml1W1_H:  -0.080  -0.009  +0.542  +0.254  +0.198  +0.223  +0.184  +0.161  -0.010  -0.019  +0.145  +0.209  +0.206  +0.045  +0.086  +0.074  +0.300  +0.091  +0.084   +0.655   +0.178   +0.672   +0.434   +0.488   +0.261  +0.956  +1.000  +0.628
+                         :  Ml2W1_H:  -0.043  -0.017  +0.182  +0.384  +0.180  +0.230  +0.213  +0.175  -0.034  -0.120  +0.072  +0.123  +0.105  +0.184  +0.187  +0.202  +0.094  +0.037  +0.049   +0.482   +0.020   +0.418   +0.177   +0.579   +0.320  +0.788  +0.628  +1.000
+                         : -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DataSetInfo              : Correlation matrix (Background):
+                         : -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                         :                Nj      Nb    Ptl1    Ptl2    Ptj1    Ptj2    Ptj3      HT  MET2HT    dRll  dRlj11  dRlj12  dRlj13  dRlj21  dRlj22  dRlj23   MSSSF   MTvl1   MTvl2 MllW_2jL MllW_1jL Ml1W_2jL Ml1W_1jL Ml2W_2jL Ml2W_1jL MllW1_H Ml1W1_H Ml2W1_H
+                         :       Nj:  +1.000  +0.178  +0.051  +0.000  +0.357  +0.400  +0.533  +0.664  -0.162  -0.112  +0.019  +0.027  -0.034  +0.036  +0.002  +0.014  -0.034  -0.025  +0.018   -0.167   -0.011   -0.207   +0.087   -0.176   +0.091  +0.028  +0.023  +0.009
+                         :       Nb:  +0.178  +1.000  +0.090  +0.160  +0.140  +0.132  +0.190  +0.197  -0.053  +0.036  +0.018  -0.007  -0.062  -0.048  -0.007  -0.024  +0.133  -0.016  +0.050   +0.076   +0.130   -0.000   +0.084   +0.071   +0.111  +0.053  +0.007  +0.036
+                         :     Ptl1:  +0.051  +0.090  +1.000  +0.410  +0.259  +0.149  +0.127  +0.199  +0.031  +0.059  +0.183  -0.024  -0.030  -0.039  +0.017  -0.057  +0.557  +0.350  +0.081   +0.579   +0.511   +0.496   +0.638   +0.281   +0.297  +0.604  +0.568  +0.158
+                         :     Ptl2:  +0.000  +0.160  +0.410  +1.000  +0.051  +0.034  +0.035  +0.043  +0.002  +0.181  -0.030  -0.022  +0.008  -0.046  -0.014  -0.045  +0.676  +0.197  +0.325   +0.526   +0.658   +0.238   +0.240   +0.359   +0.409  +0.409  +0.160  +0.368
+                         :     Ptj1:  +0.357  +0.140  +0.259  +0.051  +1.000  +0.729  +0.605  +0.864  -0.072  -0.086  +0.098  -0.093  -0.025  -0.015  -0.007  -0.052  +0.064  -0.001  +0.066   +0.216   +0.069   +0.253   +0.454   +0.196   +0.366  +0.283  +0.314  +0.154
+                         :     Ptj2:  +0.400  +0.132  +0.149  +0.034  +0.729  +1.000  +0.706  +0.862  -0.159  -0.061  +0.008  -0.081  +0.017  -0.047  -0.050  -0.023  +0.051  +0.018  +0.035   +0.252   +0.056   +0.312   +0.295   +0.269   +0.240  +0.291  +0.327  +0.169
+                         :     Ptj3:  +0.533  +0.190  +0.127  +0.035  +0.605  +0.706  +1.000  +0.836  -0.161  -0.064  -0.007  +0.015  -0.028  -0.023  -0.006  -0.008  +0.026  -0.032  +0.076   +0.197   +0.037   +0.248   +0.229   +0.239   +0.215  +0.218  +0.250  +0.141
+                         :       HT:  +0.664  +0.197  +0.199  +0.043  +0.864  +0.862  +0.836  +1.000  -0.152  -0.098  +0.043  -0.043  -0.014  -0.019  -0.010  -0.024  +0.044  -0.016  +0.066   +0.170   +0.054   +0.201   +0.353   +0.173   +0.303  +0.271  +0.299  +0.153
+                         :   MET2HT:  -0.162  -0.053  +0.031  +0.002  -0.072  -0.159  -0.161  -0.152  +1.000  +0.033  +0.005  +0.053  +0.020  -0.040  +0.002  -0.033  +0.039  +0.364  +0.325   +0.002   +0.048   -0.015   -0.022   -0.030   -0.041  -0.010  -0.012  -0.055
+                         :     dRll:  -0.112  +0.036  +0.059  +0.181  -0.086  -0.061  -0.064  -0.098  +0.033  +1.000  -0.080  +0.022  -0.092  -0.133  -0.034  -0.019  +0.635  +0.091  +0.046   +0.344   +0.482   +0.090   +0.159   +0.179   +0.199  +0.203  +0.037  +0.052
+                         :   dRlj11:  +0.019  +0.018  +0.183  -0.030  +0.098  +0.008  -0.007  +0.043  +0.005  -0.080  +1.000  -0.218  -0.051  -0.113  +0.110  +0.088  +0.079  -0.154  +0.083   +0.130   +0.089   +0.131   +0.552   +0.061   -0.054  +0.218  +0.263  +0.000
+                         :   dRlj12:  +0.027  -0.007  -0.024  -0.022  -0.093  -0.081  +0.015  -0.043  +0.053  +0.022  -0.218  +1.000  -0.057  +0.156  +0.006  +0.049  +0.041  -0.065  +0.026   +0.102   +0.029   +0.149   -0.110   +0.003   +0.064  +0.107  +0.126  +0.036
+                         :   dRlj13:  -0.034  -0.062  -0.030  +0.008  -0.025  +0.017  -0.028  -0.014  +0.020  -0.092  -0.051  -0.057  +1.000  +0.062  -0.005  +0.032  -0.018  -0.054  -0.001   +0.136   +0.002   +0.232   -0.015   +0.049   +0.006  +0.134  +0.188  +0.025
+                         :   dRlj21:  +0.036  -0.048  -0.039  -0.046  -0.015  -0.047  -0.023  -0.019  -0.040  -0.133  -0.113  +0.156  +0.062  +1.000  -0.151  +0.017  -0.057  +0.072  -0.211   -0.020   -0.037   -0.007   -0.119   +0.007   +0.502  +0.010  -0.053  +0.172
+                         :   dRlj22:  +0.002  -0.007  +0.017  -0.014  -0.007  -0.050  -0.006  -0.010  +0.002  -0.034  +0.110  +0.006  -0.005  -0.151  +1.000  +0.021  +0.048  +0.007  -0.062   +0.089   +0.042   -0.014   +0.090   +0.177   -0.008  +0.131  +0.039  +0.234
+                         :   dRlj23:  +0.014  -0.024  -0.057  -0.045  -0.052  -0.023  -0.008  -0.024  -0.033  -0.019  +0.088  +0.049  +0.032  +0.017  +0.021  +1.000  +0.037  -0.019  -0.078   +0.121   +0.053   +0.027   +0.006   +0.238   +0.021  +0.118  +0.027  +0.259
+                         :    MSSSF:  -0.034  +0.133  +0.557  +0.676  +0.064  +0.051  +0.026  +0.044  +0.039  +0.635  +0.079  +0.041  -0.018  -0.057  +0.048  +0.037  +1.000  +0.274  +0.218   +0.768   +0.938   +0.397   +0.462   +0.444   +0.420  +0.622  +0.351  +0.318
+                         :    MTvl1:  -0.025  -0.016  +0.350  +0.197  -0.001  +0.018  -0.032  -0.016  +0.364  +0.091  -0.154  -0.065  -0.054  +0.072  +0.007  -0.019  +0.274  +1.000  +0.047   +0.260   +0.252   +0.185   +0.120   +0.204   +0.116  +0.223  +0.168  +0.095
+                         :    MTvl2:  +0.018  +0.050  +0.081  +0.325  +0.066  +0.035  +0.076  +0.066  +0.325  +0.046  +0.083  +0.026  -0.001  -0.211  -0.062  -0.078  +0.218  +0.047  +1.000   +0.192   +0.220   +0.098   +0.107   +0.140   +0.086  +0.163  +0.076  +0.161
+                         : MllW_2jL:  -0.167  +0.076  +0.579  +0.526  +0.216  +0.252  +0.197  +0.170  +0.002  +0.344  +0.130  +0.102  +0.136  -0.020  +0.089  +0.121  +0.768  +0.260  +0.192   +1.000   +0.721   +0.848   +0.550   +0.784   +0.420  +0.817  +0.657  +0.509
+                         : MllW_1jL:  -0.011  +0.130  +0.511  +0.658  +0.069  +0.056  +0.037  +0.054  +0.048  +0.482  +0.089  +0.029  +0.002  -0.037  +0.042  +0.053  +0.938  +0.252  +0.220   +0.721   +1.000   +0.356   +0.373   +0.415   +0.327  +0.591  +0.324  +0.307
+                         : Ml1W_2jL:  -0.207  -0.000  +0.496  +0.238  +0.253  +0.312  +0.248  +0.201  -0.015  +0.090  +0.131  +0.149  +0.232  -0.007  -0.014  +0.027  +0.397  +0.185  +0.098   +0.848   +0.356   +1.000   +0.487   +0.624   +0.277  +0.704  +0.744  +0.334
+                         : Ml1W_1jL:  +0.087  +0.084  +0.638  +0.240  +0.454  +0.295  +0.229  +0.353  -0.022  +0.159  +0.552  -0.110  -0.015  -0.119  +0.090  +0.006  +0.462  +0.120  +0.107   +0.550   +0.373   +0.487   +1.000   +0.334   +0.377  +0.589  +0.578  +0.173
+                         : Ml2W_2jL:  -0.176  +0.071  +0.281  +0.359  +0.196  +0.269  +0.239  +0.173  -0.030  +0.179  +0.061  +0.003  +0.049  +0.007  +0.177  +0.238  +0.444  +0.204  +0.140   +0.784   +0.415   +0.624   +0.334   +1.000   +0.314  +0.637  +0.472  +0.654
+                         : Ml2W_1jL:  +0.091  +0.111  +0.297  +0.409  +0.366  +0.240  +0.215  +0.303  -0.041  +0.199  -0.054  +0.064  +0.006  +0.502  -0.008  +0.021  +0.420  +0.116  +0.086   +0.420   +0.327   +0.277   +0.377   +0.314   +1.000  +0.373  +0.183  +0.408
+                         :  MllW1_H:  +0.028  +0.053  +0.604  +0.409  +0.283  +0.291  +0.218  +0.271  -0.010  +0.203  +0.218  +0.107  +0.134  +0.010  +0.131  +0.118  +0.622  +0.223  +0.163   +0.817   +0.591   +0.704   +0.589   +0.637   +0.373  +1.000  +0.891  +0.631
+                         :  Ml1W1_H:  +0.023  +0.007  +0.568  +0.160  +0.314  +0.327  +0.250  +0.299  -0.012  +0.037  +0.263  +0.126  +0.188  -0.053  +0.039  +0.027  +0.351  +0.168  +0.076   +0.657   +0.324   +0.744   +0.578   +0.472   +0.183  +0.891  +1.000  +0.334
+                         :  Ml2W1_H:  +0.009  +0.036  +0.158  +0.368  +0.154  +0.169  +0.141  +0.153  -0.055  +0.052  +0.000  +0.036  +0.025  +0.172  +0.234  +0.259  +0.318  +0.095  +0.161   +0.509   +0.307   +0.334   +0.173   +0.654   +0.408  +0.631  +0.334  +1.000
+                         : -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DataSetFactory           : [dataset] :  
+                         : 
+Factory                  : [1mTrain all methods[0m
+Factory                  : [dataset] : Create Transformation "I" with events from all classes.
+                         : 
+                         : Transformation, Variable selection : 
+                         : Input : variable 'Nj' <---> Output : variable 'Nj'
+                         : Input : variable 'Nb' <---> Output : variable 'Nb'
+                         : Input : variable 'Ptl1' <---> Output : variable 'Ptl1'
+                         : Input : variable 'Ptl2' <---> Output : variable 'Ptl2'
+                         : Input : variable 'Ptj1' <---> Output : variable 'Ptj1'
+                         : Input : variable 'Ptj2' <---> Output : variable 'Ptj2'
+                         : Input : variable 'Ptj3' <---> Output : variable 'Ptj3'
+                         : Input : variable 'HT' <---> Output : variable 'HT'
+                         : Input : variable 'MET2HT' <---> Output : variable 'MET2HT'
+                         : Input : variable 'dRll' <---> Output : variable 'dRll'
+                         : Input : variable 'dRlj11' <---> Output : variable 'dRlj11'
+                         : Input : variable 'dRlj12' <---> Output : variable 'dRlj12'
+                         : Input : variable 'dRlj13' <---> Output : variable 'dRlj13'
+                         : Input : variable 'dRlj21' <---> Output : variable 'dRlj21'
+                         : Input : variable 'dRlj22' <---> Output : variable 'dRlj22'
+                         : Input : variable 'dRlj23' <---> Output : variable 'dRlj23'
+                         : Input : variable 'MSSSF' <---> Output : variable 'MSSSF'
+                         : Input : variable 'MTvl1' <---> Output : variable 'MTvl1'
+                         : Input : variable 'MTvl2' <---> Output : variable 'MTvl2'
+                         : Input : variable 'MllW_2jL' <---> Output : variable 'MllW_2jL'
+                         : Input : variable 'MllW_1jL' <---> Output : variable 'MllW_1jL'
+                         : Input : variable 'Ml1W_2jL' <---> Output : variable 'Ml1W_2jL'
+                         : Input : variable 'Ml1W_1jL' <---> Output : variable 'Ml1W_1jL'
+                         : Input : variable 'Ml2W_2jL' <---> Output : variable 'Ml2W_2jL'
+                         : Input : variable 'Ml2W_1jL' <---> Output : variable 'Ml2W_1jL'
+                         : Input : variable 'MllW1_H' <---> Output : variable 'MllW1_H'
+                         : Input : variable 'Ml1W1_H' <---> Output : variable 'Ml1W1_H'
+                         : Input : variable 'Ml2W1_H' <---> Output : variable 'Ml2W1_H'
+TFHandler_Factory        : Variable        Mean        RMS   [        Min        Max ]
+                         : -----------------------------------------------------------
+                         :       Nj:     4.3605     1.2901   [     3.0000     11.000 ]
+                         :       Nb:     1.2812    0.50451   [     1.0000     5.0000 ]
+                         :     Ptl1:     60.072     35.237   [     25.002     431.21 ]
+                         :     Ptl2:     29.557     15.530   [     15.002     196.53 ]
+                         :     Ptj1:     119.20     66.790   [     26.692     806.67 ]
+                         :     Ptj2:     78.214     41.090   [     25.182     595.14 ]
+                         :     Ptj3:     53.366     25.955   [     25.002     318.13 ]
+                         :       HT:     304.76     159.12   [     78.884     1787.9 ]
+                         :   MET2HT:     21.299     32.721   [ 0.00011979     556.12 ]
+                         :     dRll:     1.9253    0.91363   [    0.29961     5.4010 ]
+                         :   dRlj11:     2.4065    0.87725   [    0.40075     5.3635 ]
+                         :   dRlj12:     2.1123    0.92098   [    0.40115     5.5183 ]
+                         :   dRlj13:     2.1156    0.89566   [    0.40278     5.4077 ]
+                         :   dRlj21:     2.2573    0.86634   [    0.40420     5.1974 ]
+                         :   dRlj22:     2.0914    0.90167   [    0.40259     5.3539 ]
+                         :   dRlj23:     2.1206    0.90276   [    0.40293     5.4213 ]
+                         :    MSSSF:     74.526     59.494   [     7.2617     1021.9 ]
+                         :    MTvl1:     71.398     50.197   [   0.030588     513.08 ]
+                         :    MTvl2:     50.889     34.247   [  0.0094036     278.61 ]
+                         : MllW_2jL:     195.85     88.722   [     59.558     1112.7 ]
+                         : MllW_1jL:     97.291     49.206   [     14.073     1021.9 ]
+                         : Ml1W_2jL:     148.31     69.074   [     30.925     941.54 ]
+                         : Ml1W_1jL:     126.08     118.01   [     14.183     1590.8 ]
+                         : Ml2W_2jL:     122.75     54.491   [     29.356     666.94 ]
+                         : Ml2W_1jL:     85.358     69.125   [     10.311     913.87 ]
+                         :  MllW1_H:     243.19     110.46   [     59.558     1425.0 ]
+                         :  Ml1W1_H:     191.46     93.339   [     47.274     1391.2 ]
+                         :  Ml2W1_H:     145.81     57.483   [     42.285     1009.6 ]
+                         : -----------------------------------------------------------
+                         : [32m
+                         : <PlotVariables> Will not produce scatter plots ==> 
+                         : |  The number of 28 input variables and 0 target values would require 378 two-dimensional
+                         : |  histograms, which would occupy the computer's memory. Note that this
+                         : |  suppression does not have any consequences for your analysis, other
+                         : |  than not disposing of these scatter plots. You can modify the maximum
+                         : |  number of input variables allowed to generate scatter plots in your
+                         : |  script via the command line:
+                         : |  "(TMVA::gConfig().GetVariablePlotting()).fMaxNumOfAllowedVariablesForScatterPlots = <some int>;"[0m
+                         : 
+                         : Some more output
+                         : Ranking input variables (method unspecific)...
+IdTransformation         : Ranking result (top variable is best ranked)
+                         : ---------------------------------
+                         : Rank : Variable  : Separation
+                         : ---------------------------------
+                         :    1 : MllW_2jL  : 2.950e-01
+                         :    2 : MSSSF     : 2.773e-01
+                         :    3 : Ml1W_1jL  : 2.515e-01
+                         :    4 : Ml2W_1jL  : 2.407e-01
+                         :    5 : Ml1W_2jL  : 2.011e-01
+                         :    6 : MllW1_H   : 1.818e-01
+                         :    7 : dRll      : 1.698e-01
+                         :    8 : MllW_1jL  : 1.605e-01
+                         :    9 : Ml2W_2jL  : 1.322e-01
+                         :   10 : Ml1W1_H   : 1.160e-01
+                         :   11 : Ptl1      : 9.745e-02
+                         :   12 : Ml2W1_H   : 7.484e-02
+                         :   13 : Nj        : 7.232e-02
+                         :   14 : MET2HT    : 5.715e-02
+                         :   15 : MTvl1     : 4.992e-02
+                         :   16 : dRlj12    : 4.716e-02
+                         :   17 : dRlj13    : 4.628e-02
+                         :   18 : Ptl2      : 4.373e-02
+                         :   19 : HT        : 3.524e-02
+                         :   20 : dRlj22    : 3.477e-02
+                         :   21 : dRlj23    : 3.462e-02
+                         :   22 : Ptj3      : 2.975e-02
+                         :   23 : dRlj11    : 2.851e-02
+                         :   24 : dRlj21    : 2.844e-02
+                         :   25 : MTvl2     : 2.697e-02
+                         :   26 : Nb        : 2.684e-02
+                         :   27 : Ptj2      : 1.584e-02
+                         :   28 : Ptj1      : 1.247e-02
+                         : ---------------------------------
+Factory                  : Train method: BDTG for Classification
+                         : 
+<WARNING>                : Events with negative event weights are USED during the BDT training. This might cause problems with small node sizes or with the boosting. Please remove negative events from training using the option *IgnoreEventsWithNegWeightsInTraining* in case you observe problems with the boosting
+BDTG                     : #events: (reweighted) sig: 5699 bkg: 5699
+                         : #events: (unweighted) sig: 10032 bkg: 1366
+                         : Training 50 Decision Trees ... patience please
+                         : Elapsed time for training with 11398 events: [1;31m0.522 sec[0m         
+BDTG                     : [dataset] : Evaluation of BDTG on training sample (11398 events)
+                         : Elapsed time for evaluation of 11398 events: [1;31m0.0189 sec[0m       
+                         : Creating xml weight file: [0;36mdataset/weights/TMVAClassification_MN100_El_BDTG.weights.xml[0m
+                         : Creating standalone class: [0;36mdataset/weights/TMVAClassification_MN100_El_BDTG.class.C[0m
+                         : TMVA_MN100_El.root:/dataset/Method_BDT/BDTG
+Factory                  : Training finished
+                         : 
+                         : Ranking input variables (method specific)...
+BDTG                     : Ranking result (top variable is best ranked)
+                         : ------------------------------------------
+                         : Rank : Variable  : Variable Importance
+                         : ------------------------------------------
+                         :    1 : MllW_2jL  : 8.714e-02
+                         :    2 : MSSSF     : 7.969e-02
+                         :    3 : Ml1W_1jL  : 6.836e-02
+                         :    4 : MET2HT    : 6.024e-02
+                         :    5 : Ml2W_1jL  : 5.727e-02
+                         :    6 : dRll      : 5.370e-02
+                         :    7 : dRlj22    : 4.977e-02
+                         :    8 : MTvl1     : 4.611e-02
+                         :    9 : MllW_1jL  : 4.458e-02
+                         :   10 : dRlj21    : 4.293e-02
+                         :   11 : Ptj3      : 4.138e-02
+                         :   12 : dRlj23    : 4.098e-02
+                         :   13 : Ml1W_2jL  : 3.829e-02
+                         :   14 : Nb        : 3.735e-02
+                         :   15 : Ptl2      : 3.607e-02
+                         :   16 : Ptl1      : 3.493e-02
+                         :   17 : dRlj11    : 3.027e-02
+                         :   18 : Ml2W1_H   : 2.917e-02
+                         :   19 : dRlj13    : 2.916e-02
+                         :   20 : MllW1_H   : 2.661e-02
+                         :   21 : dRlj12    : 2.509e-02
+                         :   22 : Ml1W1_H   : 2.011e-02
+                         :   23 : Ptj1      : 1.116e-02
+                         :   24 : HT        : 7.383e-03
+                         :   25 : Ml2W_2jL  : 2.266e-03
+                         :   26 : Nj        : 0.000e+00
+                         :   27 : Ptj2      : 0.000e+00
+                         :   28 : MTvl2     : 0.000e+00
+                         : ------------------------------------------
+Factory                  : === Destroy and recreate all methods via weight files for testing ===
+                         : 
+                         : Reading weight file: [0;36mdataset/weights/TMVAClassification_MN100_El_BDTG.weights.xml[0m
+Factory                  : [1mTest all methods[0m
+Factory                  : Test method: BDTG for Classification performance
+                         : 
+BDTG                     : [dataset] : Evaluation of BDTG on testing sample (11398 events)
+                         : Elapsed time for evaluation of 11398 events: [1;31m0.0167 sec[0m       
+Factory                  : [1mEvaluate all methods[0m
+Factory                  : Evaluate classifier: BDTG
+                         : 
+BDTG                     : [dataset] : Loop over test events and fill histograms with classifier response...
+                         : 
+TFHandler_BDTG           : Variable        Mean        RMS   [        Min        Max ]
+                         : -----------------------------------------------------------
+                         :       Nj:     4.3752     1.3216   [     3.0000     13.000 ]
+                         :       Nb:     1.2942    0.50850   [     1.0000     4.0000 ]
+                         :     Ptl1:     56.922     31.652   [     25.000     503.77 ]
+                         :     Ptl2:     28.482     14.397   [     15.002     204.67 ]
+                         :     Ptj1:     117.69     66.271   [     27.141     1020.5 ]
+                         :     Ptj2:     75.677     39.157   [     25.193     699.09 ]
+                         :     Ptj3:     52.643     24.845   [     25.001     461.79 ]
+                         :       HT:     300.22     155.36   [     77.414     2339.8 ]
+                         :   MET2HT:     21.851     32.047   [ 0.00034457     655.90 ]
+                         :     dRll:     1.8163    0.91980   [    0.30278     5.2233 ]
+                         :   dRlj11:     2.4336    0.86203   [    0.40020     5.3706 ]
+                         :   dRlj12:     2.1162    0.94180   [    0.40173     5.1540 ]
+                         :   dRlj13:     2.0960    0.91054   [    0.40105     5.3211 ]
+                         :   dRlj21:     2.2571    0.87433   [    0.40135     5.0016 ]
+                         :   dRlj22:     2.1000    0.90181   [    0.40052     5.3316 ]
+                         :   dRlj23:     2.1021    0.89460   [    0.40043     5.4056 ]
+                         :    MSSSF:     66.508     54.084   [     6.5025     933.15 ]
+                         :    MTvl1:     68.986     47.565   [  0.0041390     569.80 ]
+                         :    MTvl2:     51.073     33.197   [  0.0020789     326.94 ]
+                         : MllW_2jL:     185.93     81.681   [     49.535     1011.6 ]
+                         : MllW_1jL:     93.139     43.758   [     12.559     933.15 ]
+                         : Ml1W_2jL:     142.44     64.003   [     32.439     631.26 ]
+                         : Ml1W_1jL:     116.37     113.40   [     15.431     1549.4 ]
+                         : Ml2W_2jL:     119.50     49.492   [     26.855     585.98 ]
+                         : Ml2W_1jL:     79.665     70.373   [     9.8499     1150.9 ]
+                         :  MllW1_H:     231.87     103.68   [     68.412     1517.9 ]
+                         :  Ml1W1_H:     184.32     86.978   [     46.920     1442.4 ]
+                         :  Ml2W1_H:     142.34     53.337   [     43.813     694.98 ]
+                         : -----------------------------------------------------------
+                         : [32m
+                         : <PlotVariables> Will not produce scatter plots ==> 
+                         : |  The number of 28 input variables and 0 target values would require 378 two-dimensional
+                         : |  histograms, which would occupy the computer's memory. Note that this
+                         : |  suppression does not have any consequences for your analysis, other
+                         : |  than not disposing of these scatter plots. You can modify the maximum
+                         : |  number of input variables allowed to generate scatter plots in your
+                         : |  script via the command line:
+                         : |  "(TMVA::gConfig().GetVariablePlotting()).fMaxNumOfAllowedVariablesForScatterPlots = <some int>;"[0m
+                         : 
+                         : Some more output
+                         : 
+                         : Evaluation results ranked by best signal efficiency and purity (area)
+                         : -------------------------------------------------------------------------------------------------------------------
+                         : DataSet       MVA                       
+                         : Name:         Method:          ROC-integ
+                         : dataset       BDTG           : 0.856
+                         : -------------------------------------------------------------------------------------------------------------------
+                         : 
+                         : Testing efficiency compared to training efficiency (overtraining check)
+                         : -------------------------------------------------------------------------------------------------------------------
+                         : DataSet              MVA              Signal efficiency: from test sample (from training sample) 
+                         : Name:                Method:          @B=0.01             @B=0.10            @B=0.30   
+                         : -------------------------------------------------------------------------------------------------------------------
+                         : dataset              BDTG           : 0.241 (0.305)       0.616 (0.665)      0.820 (0.860)
+                         : -------------------------------------------------------------------------------------------------------------------
+                         : 
+Dataset:dataset          : Created tree 'TestTree' with 11398 events
+                         : 
+Dataset:dataset          : Created tree 'TrainTree' with 11398 events
+                         : 
+Factory                  : [1mThank you for using TMVA![0m
+                         : [1mFor citation information, please visit: http://tmva.sf.net/citeTMVA.html[0m
+==> Wrote root file: TMVA_MN100_El.root
+==> TMVAClassification is done!
+--- Opening root file TMVA_MN100_El.root in read mode
+--- Found directory for method: BDT::BDTG containing MVA_BDTG_S/_B
+--- Mean and RMS (S): 0.405155, 0.486669
+--- Mean and RMS (B): -0.338783, 0.463712
+--- Found comparison histograms for overtraining check
+--- Perform Kolmogorov-Smirnov tests
+--- Goodness of signal (background) consistency: 0.234 (0.078)

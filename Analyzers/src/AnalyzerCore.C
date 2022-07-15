@@ -1482,9 +1482,9 @@ int AnalyzerCore::GetPrElType_InSameSCRange_Public(int TruthIdx, const std::vect
 //Note: Hadronic origins are not included in this algo. as I am not sure of effect of many nearby particles in jets on the ele-reco performance.
 //      + it is not of my interest yet.
 
-  if(TruthIdx<2) return false;
-  if(abs(TruthColl.at(TruthIdx).PID())!=11) return false;
-  if(TruthColl.at(TruthIdx).Status()!=1) return false;
+  if(TruthIdx<2) return 0;
+  if(abs(TruthColl.at(TruthIdx).PID())!=11) return 0;
+  if(TruthColl.at(TruthIdx).Status()!=1) return 0;
 
   float dPhiMax=0.3, dEtaMax=0.1;
   int NearbyElType=-1;
@@ -1816,6 +1816,7 @@ void AnalyzerCore::FillHist(TString histname, double value, double weight, int n
   if( !this_hist ){
     this_hist = new TH1D(histname, "", n_bin, x_min, x_max);
     this_hist->SetDirectory(NULL);
+    this_hist->Sumw2(true);
     maphist_TH1D[histname] = this_hist;
   }
 
@@ -1829,6 +1830,7 @@ void AnalyzerCore::FillHist(TString histname, double value, double weight, int n
   if( !this_hist ){
     this_hist = new TH1D(histname, "", n_bin, xbins);
     this_hist->SetDirectory(NULL);
+    this_hist->Sumw2(true);
     maphist_TH1D[histname] = this_hist;
   }
 
@@ -2190,6 +2192,148 @@ std::vector<int> AnalyzerCore::GetSFLJetIdx(std::vector<Jet>& jetColl, JetTaggin
 }
 
 
+vector<Electron> AnalyzerCore::SkimLepColl(vector<Electron>& ElColl, vector<Gen>& TruthColl, TString Option){
+
+  bool GetPrompt=false, GetHadFake=false, GetEWtau=false, GetNHIntConv=false, GetNHExtConv=false;
+  if(Option.Contains("Prompt"))          GetPrompt    =true;
+  if(Option.Contains("HFake"))           GetHadFake   =true;
+  if(Option.Contains("EWtau"))           GetEWtau     =true;
+  if(Option.Contains("NHConv"))         {GetNHIntConv =true; GetNHExtConv=true;}
+  else{ if(Option.Contains("NHIntConv")) GetNHIntConv =true;
+        if(Option.Contains("NHExtConv")) GetNHExtConv =true; }
+  if(     Option=="Fake"     )          {GetHadFake   =true; GetNHExtConv=true;}
+
+
+  vector<Electron> ReturnVec;
+  for(unsigned int i=0; i<ElColl.size(); i++){
+    int LepType=GetLeptonType_JH(ElColl.at(i), TruthColl); bool PassSel=false;
+    if( GetPrompt    && (LepType==1 || LepType==2) ) PassSel=true;
+    if( GetHadFake   && (LepType<0 && LepType>=-4) ) PassSel=true;
+    if( GetEWtau     &&         LepType==3         ) PassSel=true;
+    if( GetNHIntConv &&         LepType>=4         ) PassSel=true;
+    if( GetNHExtConv &&         LepType<-4         ) PassSel=true;
+    if( PassSel ) ReturnVec.push_back(ElColl.at(i));
+  }
+
+  return ReturnVec;
+}
+
+
+vector<Muon> AnalyzerCore::SkimLepColl(vector<Muon>& MuColl, vector<Gen>& TruthColl, TString Option){
+
+  bool GetPrompt=false, GetHadFake=false, GetEWtau=false, GetNHIntConv=false, GetNHExtConv=false;
+  if(Option.Contains("Prompt"))          GetPrompt    =true;
+  if(Option.Contains("HFake"))           GetHadFake   =true;
+  if(Option.Contains("EWtau"))           GetEWtau     =true;
+  if(Option.Contains("NHConv"))         {GetNHIntConv =true; GetNHExtConv=true;}
+  else{ if(Option.Contains("NHIntConv")) GetNHIntConv =true;
+        if(Option.Contains("NHExtConv")) GetNHExtConv =true; }
+  if(     Option=="Fake"     )          {GetHadFake   =true; GetNHExtConv=true;}
+
+
+  vector<Muon> ReturnVec;
+  for(unsigned int i=0; i<MuColl.size(); i++){
+    int LepType=GetLeptonType_JH(MuColl.at(i), TruthColl); bool PassSel=false;
+    if( GetPrompt    && (LepType==1 || LepType==2) ) PassSel=true;
+    if( GetHadFake   && (LepType<0 && LepType>=-4) ) PassSel=true;
+    if( GetEWtau     &&         LepType==3         ) PassSel=true;
+    if( GetNHIntConv &&         LepType>=4         ) PassSel=true;
+    if( GetNHExtConv &&         LepType<-4         ) PassSel=true;
+    if( PassSel ) ReturnVec.push_back(MuColl.at(i));
+  }
+
+  return ReturnVec;
+}
+
+
+vector<Electron> AnalyzerCore::SkimLepColl(vector<Electron>& ElColl, TString Option, float PTmin){
+  
+  vector<Electron> ReturnColl;
+  bool Barrel1=false, Barrel2=false, Endcap=false, PtCut=false;
+  if(Option.Contains("B1")) Barrel1=true;
+  if(Option.Contains("B2")) Barrel2=true;
+  if(Option.Contains("E"))  Endcap =true;
+  if(Option.Contains("Pt")) PtCut  =true;
+
+  for(unsigned int i=0; i<ElColl.size(); i++){
+    bool PassSel=false; float fEta=fabs(ElColl.at(i).Eta());
+    if( PtCut   && ElColl.at(i).Pt()<PTmin ) continue;
+    if( Barrel1 && fEta <0.8               ) PassSel=true;
+    if( Barrel2 && fEta>=0.8 && fEta<1.479 ) PassSel=true;
+    if( Endcap  && fEta>=1.479 && fEta<2.5 ) PassSel=true;
+    if( PassSel ) ReturnColl.push_back(ElColl.at(i));
+  }
+
+  return ReturnColl;
+}
+
+
+vector<Muon> AnalyzerCore::SkimLepColl(vector<Muon>& MuColl, TString Option, float PTmin){
+  
+  vector<Muon> ReturnColl;
+  bool Barrel=false, Overlap=false, Endcap=false, PtCut=false;
+  if(Option.Contains("MB")) Barrel =true;
+  if(Option.Contains("MO")) Overlap=true;
+  if(Option.Contains("ME")) Endcap =true;
+  if(Option.Contains("Pt")) PtCut  =true;
+
+  for(unsigned int i=0; i<MuColl.size(); i++){
+    bool PassSel=false; float fEta=fabs(MuColl.at(i).Eta());
+    if( PtCut   && MuColl.at(i).Pt()<PTmin ) continue;
+    if( Barrel  && fEta <0.9               ) PassSel=true;
+    if( Overlap && fEta>=0.9 && fEta<1.6   ) PassSel=true;
+    if( Endcap  && fEta>=1.6 && fEta<2.4   ) PassSel=true;
+    if( PassSel ) ReturnColl.push_back(MuColl.at(i));
+  }
+
+  return ReturnColl;
+}
+
+
+
+vector<Jet> AnalyzerCore::SkimJetColl(vector<Jet>& JetColl, vector<Gen>& TruthColl, TString Option){
+
+  bool GetPrLepCleanJet=false;
+  TString Criteria="";
+  if(Option.Contains("NoPr"))  GetPrLepCleanJet =true;
+  if(Option.Contains("NoTau")) Criteria="InclTau";
+
+  vector<Jet> ReturnVec;
+  for(unsigned int i=0; i<JetColl.size(); i++){
+    bool HasEWLep=HasEWLepInJet(JetColl.at(i), TruthColl, Criteria);
+    if( GetPrLepCleanJet && (!HasEWLep) ) ReturnVec.push_back(JetColl.at(i));
+  }
+
+  return ReturnVec;
+}
+
+
+bool AnalyzerCore::HasEWLepInJet(Jet Jet, vector<Gen>& TruthColl, TString Option){
+
+  int HasEWLep=false;
+  bool InclEWTau=Option.Contains("InclTau");
+  for(unsigned int i=2; i<TruthColl.size(); i++){
+    if(TruthColl.at(i).MotherIndex()<0 )  continue;
+    bool IsCand=false;
+    int abspid=fabs(TruthColl.at(i).PID());
+    int absmpid=fabs(TruthColl.at(TruthColl.at(i).MotherIndex()).PID());
+    if( TruthColl.at(i).Status()==1 ){
+      if( abspid==11 || abspid==13 ){
+        int LepType=GetLeptonType_JH(i, TruthColl);
+        if( LepType==1 || LepType==2 || LepType==3 ) IsCand=true; 
+      }
+    }
+    if( InclEWTau && abspid==15 && TruthColl.at(i).Status()>20 && TruthColl.at(i).Status()<30 ) IsCand=true;
+    else if( InclEWTau && abspid==15 && (absmpid==23 || absmpid==24) && TruthColl.at(i).Status()==2 ) IsCand=true;
+
+    if( IsCand && TruthColl.at(i).DeltaR(Jet)<0.4) HasEWLep=true;
+    if( HasEWLep ) break;
+  }
+
+  return HasEWLep;
+}
+
+
 float AnalyzerCore::GetMuonSF(std::vector<Muon>& muonColl, TString SFKey, TString Option){
 
   float weight = 1.;
@@ -2249,13 +2393,12 @@ float AnalyzerCore::GetKFactor(){
 
   float weight = 1.;
 
-  if(MCSample.Contains("WZTo3LNu_powheg") or MCSample.Contains("WZ_pythia") or MCSample.Contains("WZTo2L2Q")){
+  if(MCSample.Contains("WZTo3LNu_powheg") or MCSample.Contains("WZTo2L2Q")){
     //Physics Letters B 761 (2016) 197 
     //http://dx.doi.org/10.1016/j.physletb.2016.08.017 
     weight = 1.109;
   }
-  else if(MCSample.Contains("ZZTo4L_powheg") or MCSample.Contains("ZZTo2L2Nu") or MCSample.Contains("ZZTo2L2Q")
-       or MCSample.Contains("ZZ_pythia")){
+  else if(MCSample.Contains("ZZTo4L_powheg") or MCSample.Contains("ZZTo2L2Nu") or MCSample.Contains("ZZTo2L2Q")){
     // Physics Letters B 735 (2014) 311-313
     // https://doi.org/10.1016/j.physletb.2014.06.056
     weight = 1.16; 
@@ -2285,25 +2428,25 @@ float AnalyzerCore::GetBRWeight(){
   if(IsDATA) return 1.;
 
   float weight=1.;
-  if(MCSample.Contains("TTbarTypeIHeavyN")){
+  if(MCSample.Contains("TT_HeavyN")){
     float BrN_ljj=-1., BrN_llv=-1., BrW_jj=0.6742, BrW_lv=0.3258;
     //BrW from PDG2019 table, 
     //BrN from Madgraph LO calculation (Gm(t->bmn1, n1->ljj/llv)/Gm(t->bmn1))
-    if     (MCSample.Contains("MN20") ){ BrN_ljj=4.86E-01; BrN_llv=2.30E-01; }
-    else if(MCSample.Contains("MN30") ){ BrN_ljj=4.89E-01; BrN_llv=2.31E-01; }
-    else if(MCSample.Contains("MN40") ){ BrN_ljj=4.91E-01; BrN_llv=2.32E-01; }
-    else if(MCSample.Contains("MN50") ){ BrN_ljj=4.95E-01; BrN_llv=2.35E-01; }
-    else if(MCSample.Contains("MN60") ){ BrN_ljj=5.02E-01; BrN_llv=2.38E-01; }
-    else if(MCSample.Contains("MN70") ){ BrN_ljj=5.15E-01; BrN_llv=2.45E-01; }
+    if     (MCSample.Contains("MN20") ){ BrN_ljj=4.90E-01; BrN_llv=2.25E-01; }
+    else if(MCSample.Contains("MN30") ){ BrN_ljj=4.90E-01; BrN_llv=2.29E-01; }
+    else if(MCSample.Contains("MN40") ){ BrN_ljj=4.92E-01; BrN_llv=2.31E-01; }
+    else if(MCSample.Contains("MN50") ){ BrN_ljj=4.96E-01; BrN_llv=2.34E-01; }
+    else if(MCSample.Contains("MN60") ){ BrN_ljj=5.03E-01; BrN_llv=2.38E-01; }
+    else if(MCSample.Contains("MN70") ){ BrN_ljj=5.16E-01; BrN_llv=2.45E-01; }
     else if(MCSample.Contains("MN75") ){ BrN_ljj=5.28E-01; BrN_llv=2.52E-01; }
-    else if(MCSample.Contains("MN85") ){ BrN_ljj=6.18E-01; BrN_llv=3.05E-01; }
+    else if(MCSample.Contains("MN85") ){ BrN_ljj=6.19E-01; BrN_llv=3.05E-01; }
     else if(MCSample.Contains("MN90") ){ BrN_ljj=6.34E-01; BrN_llv=3.15E-01; }
-    else if(MCSample.Contains("MN100")){ BrN_ljj=5.79E-01; BrN_llv=3.00E-01; }
+    else if(MCSample.Contains("MN100")){ BrN_ljj=5.80E-01; BrN_llv=2.99E-01; }
 
-    if     (MCSample.Contains("_2L_")      ){ weight=BrN_ljj*BrW_jj; }
-    else if(MCSample.Contains("_LepTop3L_")){ weight=BrN_ljj*BrW_lv; }
-    else if(MCSample.Contains("_HadTop3L_")){ weight=BrN_llv*BrW_jj; }
-    else if(MCSample.Contains("_4L_")      ){ weight=BrN_llv*BrW_lv; }
+    if     (MCSample.Contains("_2L_")        ){ weight=BrN_ljj*BrW_jj; }
+    else if(MCSample.Contains("_LepSMTop3L_")){ weight=BrN_ljj*BrW_lv; }
+    else if(MCSample.Contains("_HadSMTop3L_")){ weight=BrN_llv*BrW_jj; }
+    else if(MCSample.Contains("_4L_")        ){ weight=BrN_llv*BrW_lv; }
   }
 
   return weight;
@@ -2449,7 +2592,7 @@ int AnalyzerCore::TriElChargeIndex(vector<Electron>& ElectronColl, TString charg
     // charge="SS2" will return the index of second muon that having same sign
 
     if(ElectronColl.size()!=3) return -1;
-    if(fabs(SumCharge(ElectronColl))>1) return -1;
+    if(abs(SumCharge(ElectronColl))!=1) return -1;
 
     int IdxOS=-1, IdxSS1=-1, IdxSS2=-1;
     if     (ElectronColl.at(0).Charge()==ElectronColl.at(1).Charge()){ IdxSS1=0, IdxSS2=1, IdxOS=2; }
@@ -2695,9 +2838,9 @@ int AnalyzerCore::GetPrElType_InSameSCRange(int TruthIdx, std::vector<Gen>& Trut
 //Note: Hadronic origins are not included in this algo. as I am not sure of effect of many nearby particles in jets on the ele-reco performance.
 //      + it is not of my interest yet.
 
-  if(TruthIdx<2) return false;
-  if(abs(TruthColl.at(TruthIdx).PID())!=11) return false;
-  if(TruthColl.at(TruthIdx).Status()!=1) return false;
+  if(TruthIdx<2) return 0;
+  if(abs(TruthColl.at(TruthIdx).PID())!=11) return 0;
+  if(TruthColl.at(TruthIdx).Status()!=1) return 0;
 
   float dPhiMax=0.3, dEtaMax=0.1;
   int NearbyElType=-1, NearbyPrElIdx=-1;
@@ -2730,6 +2873,7 @@ int AnalyzerCore::GetLeptonType_JH(int TruthIdx, std::vector<Gen>& TruthColl){
 
 
   //Only consider Status 1 lepton
+  if(TruthColl.size()==0) return 0;
   if(TruthIdx<2) return 0;
   if(TruthColl.at(TruthIdx).Status()!=1) return 0;
   if( !(fabs(TruthColl.at(TruthIdx).PID())==11 || fabs(TruthColl.at(TruthIdx).PID())==13) ) return 0;
@@ -2819,6 +2963,8 @@ int AnalyzerCore::GetLeptonType_JH(Lepton& Lep, std::vector<Gen>& TruthColl){
 //      -5:External Conversion Candidate (Hard scattered photon) / -6:External conversion from t/EWV/EWlep
 //      (-4:Daughter of Non-hard scattered photon & has parton or hadron ancestor OR implicit Conv from quark)
 //       0:Error / >0: Non-fake: Non-hadronic origin / <0 : Fakes: Hadronic origin or external conversion
+
+  if(TruthColl.size()==0) return 0;
 
   int LeptonType=0;
   int MatchedTruthIdx = GenMatchedIdx(Lep,TruthColl);
@@ -2919,6 +3065,32 @@ float AnalyzerCore::GetvPz(Lepton& Lep, Particle& vMET, TString Option){
 }
 
 
+vector<Electron> AnalyzerCore::SelectElectrons(vector<Electron>& ElColl, TString id, double ptmin, double fetamax, TString Option){
+
+  std::vector<Electron> out;
+  int SystDir=0; bool SystCFPT1=false, SystCFPT2=false;
+  if((!IsDATA) && Option.Contains("Syst")){
+    if     (Option.Contains("Up"))    SystDir   =    1;
+    else if(Option.Contains("Down"))  SystDir   =   -1;
+    if     (Option.Contains("CFPT1")) SystCFPT1 = true;
+    else if(Option.Contains("CFPT2")) SystCFPT2 = true;
+  }
+  for(unsigned int ie=0; ie<ElColl.size(); ie++){
+    Electron El(ElColl.at(ie));
+    if(SystCFPT1 && ie==0) El *= (1.+((double) SystDir)*0.04);
+    if(SystCFPT2 && ie==1) El *= (1.+((double) SystDir)*0.04);
+    if(!( El.Pt()>ptmin )) continue;
+    if(!( fabs(El.scEta())<fetamax )) continue;
+    if(!( El.PassID(id) )) continue;
+    out.push_back(El);
+  }
+  if(SystCFPT1 or SystCFPT2) sort(out.begin(), out.end(), PtComparing);
+
+  return out;
+}
+
+
+
 vector<Jet> AnalyzerCore::SelectJets(vector<Jet>& JetColl, vector<Muon>& MuColl, vector<Electron>& ElColl, TString id, double ptmin, double fetamax, TString Option){
 
   int SystDir=0; bool SystJES=false, SystJER=false;
@@ -2931,22 +3103,24 @@ vector<Jet> AnalyzerCore::SelectJets(vector<Jet>& JetColl, vector<Muon>& MuColl,
   bool LepVeto = Option.Contains("LVeto");
   vector<Jet> OutColl;
   for(unsigned int ij=0; ij<JetColl.size(); ij++){
-    if(SystJES) JetColl.at(ij) *= JetColl.at(ij).EnShift(SystDir);
-    if(SystJER) JetColl.at(ij) *= JetColl.at(ij).ResShift(SystDir);
-    if( !(JetColl.at(ij).Pt()>ptmin) ) continue;
-    if( !(fabs(JetColl.at(ij).Eta())<fetamax) ) continue; 
-    if( !(JetColl.at(ij).PassID(id)) ) continue;
+    Jet ThisJet(JetColl.at(ij));
+
+    if(SystJES) ThisJet *= ThisJet.EnShift(SystDir);
+    if(SystJER) ThisJet *= ThisJet.ResShift(SystDir);
+    if( !(ThisJet.Pt()>ptmin) ) continue;
+    if( !(fabs(ThisJet.Eta())<fetamax) ) continue; 
+    if( !(ThisJet.PassID(id)) ) continue;
     if(LepVeto){
       bool MatchL=false;
       for(unsigned int im=0; im<MuColl.size() && (!MatchL); im++){
-        if(JetColl.at(ij).DeltaR(MuColl.at(im))<0.4){ MatchL=true; break; }
+        if(ThisJet.DeltaR(MuColl.at(im))<0.4){ MatchL=true; break; }
       }
       for(unsigned int ie=0; ie<ElColl.size() && (!MatchL); ie++){
-        if(JetColl.at(ij).DeltaR(ElColl.at(ie))<0.4){ MatchL=true; break; }
+        if(ThisJet.DeltaR(ElColl.at(ie))<0.4){ MatchL=true; break; }
       }
       if(MatchL) continue;
     }
-    OutColl.push_back( JetColl.at(ij) );
+    OutColl.push_back( ThisJet );
   }
 
   return OutColl;
@@ -2958,7 +3132,7 @@ TLorentzVector AnalyzerCore::GetvMET(TString METType, TString Option){
   bool IsType1   = METType.Contains("T1");
   bool IsxyCorr  = METType.Contains("xyCorr");
   bool ApplySyst = (!IsDATA) && Option.Contains("Syst");
-  int IdxSyst = 0, SystDir = Option.Contains("Up")? 1:Option.Contains("Down")? -1:0;
+  int IdxSyst = -1, SystDir = Option.Contains("Up")? 1:Option.Contains("Down")? -1:0;
   if(ApplySyst){
     if     (Option.Contains("JES")  && SystDir>0 ) IdxSyst=2;
     else if(Option.Contains("JES")  && SystDir<0 ) IdxSyst=3;
@@ -2970,7 +3144,7 @@ TLorentzVector AnalyzerCore::GetvMET(TString METType, TString Option){
   
   TLorentzVector vMET;
   if(IsType1){
-    if(!ApplySyst){
+    if( (!ApplySyst) or ( IdxSyst>=0 && (!isfinite(pfMET_Type1_PhiCor_pt_shifts->at(IdxSyst))) ) ){
       if(IsxyCorr) vMET.SetPtEtaPhiM(pfMET_Type1_PhiCor_pt, 0., pfMET_Type1_PhiCor_phi, 0.); 
       else         vMET.SetPtEtaPhiM(pfMET_Type1_pt, 0., pfMET_Type1_phi, 0.); 
     }
@@ -2982,3 +3156,25 @@ TLorentzVector AnalyzerCore::GetvMET(TString METType, TString Option){
 
   return vMET;
 }
+
+
+int AnalyzerCore::GetFakeLepSrcType(Lepton& Lep, vector<Jet>& JetColl){
+  //Type: -1: Unmatched, 1:L, 2:C, 3:B
+  int SrcType=-1;
+  bool NearB=false, NearC=false, NearL=false;
+  for(unsigned int ij=0; ij<JetColl.size(); ij++){
+    if(Lep.DeltaR(JetColl.at(ij))<0.4){
+      if     (JetColl.at(ij).hadronFlavour()==5){ NearB=true; break; }//1)
+      else if(JetColl.at(ij).hadronFlavour()==4){ NearC=true; }
+      else if(JetColl.at(ij).hadronFlavour()==0){ NearL=true; }
+    }
+  }
+
+  if     (NearB) SrcType=3;
+  else if(NearC) SrcType=2;
+  else if(NearL) SrcType=1;
+
+  return SrcType;
+//1) Higher Priority to B. if there's multiple near jets, then b-jet has higher priority
+}
+

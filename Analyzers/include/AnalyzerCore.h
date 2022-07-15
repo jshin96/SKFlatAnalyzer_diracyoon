@@ -261,11 +261,18 @@ public:
   void SetOutfilePath(TString outname);
 
   //Jihwan Bhyun Modification/////////////////////////
+  vector<Electron> SelectElectrons(vector<Electron>& electrons, TString id, double ptmin, double fetamax, TString Option);
   vector<Jet> SelectJets(vector<Jet>& JetColl, vector<Muon>& MuColl, vector<Electron>& ElColl, TString id, double ptmin, double fetamax, TString Option="");
-  vector<Jet> SelBJets    (std::vector<Jet>& jetColl, JetTagging::Parameters jtp);
-  vector<Jet> SelLightJets(std::vector<Jet>& jetColl, JetTagging::Parameters jtp);
-  vector<int> GetSFBJetIdx(std::vector<Jet>& jetColl, JetTagging::Parameters jtp);
-  vector<int> GetSFLJetIdx(std::vector<Jet>& jetColl, JetTagging::Parameters jtp);
+  vector<Jet> SelBJets    (vector<Jet>& jetColl, JetTagging::Parameters jtp);
+  vector<Jet> SelLightJets(vector<Jet>& jetColl, JetTagging::Parameters jtp);
+  vector<int> GetSFBJetIdx(vector<Jet>& jetColl, JetTagging::Parameters jtp);
+  vector<int> GetSFLJetIdx(vector<Jet>& jetColl, JetTagging::Parameters jtp);
+  vector<Electron> SkimLepColl(vector<Electron>& ElColl, vector<Gen>& TruthColl, TString Option="Prompt");
+  vector<Muon>     SkimLepColl(vector<Muon>&     MuColl, vector<Gen>& TruthColl, TString Option="Prompt");
+  vector<Electron> SkimLepColl(vector<Electron>& ElColl, TString Option="B1B2E", float PTmin=10.);
+  vector<Muon>     SkimLepColl(vector<Muon>&     MuColl, TString Option="MBMOME", float PTmin=10.);
+  vector<Jet>      SkimJetColl(vector<Jet>&     JetColl, vector<Gen>& TruthColl, TString Option="NoPr");
+  bool             HasEWLepInJet(Jet Jet, std::vector<Gen>& TruthColl, TString Option="");
   TLorentzVector GetvMET(TString METType="T1xyCorr", TString Option="");
   float GetvPz(Lepton& Lep, Particle& vMET, TString Option="");
   float GetMuonSF(std::vector<Muon>& muonColl, TString SFKey, TString Option="");
@@ -294,6 +301,7 @@ public:
   int  GetLeptonType_JH(int TruthIdx, std::vector<Gen>& TruthColl);
   int  GetLeptonType_JH(Lepton& Lep, std::vector<Gen>& TruthColl);
   int  GetPhotonType_JH(int PhotonIdx, std::vector<Gen>& TruthColl);
+  int  GetFakeLepSrcType(Lepton& Lep, vector<Jet>& JetColl);
 
 };
 

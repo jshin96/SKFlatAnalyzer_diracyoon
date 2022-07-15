@@ -5,22 +5,31 @@
 #declare -a List_runModes=("runData")
 declare -a List_runModes=("runBkdMC" "runData")
 
+#declare -a List_Year=("2016a")
+#declare -a List_Year=("2018" "2017")
+#declare -a List_Year=("2018" "2017" "2016a" "2016b")
+declare -a List_Year=("2016a" "2016b")
 ########################################################################
 ## RUN PARAMETERS
 
 AnalysisCode="MeasTrigEff" 
-FinalState="ElectronMuon" #"ElectronMuon" #"DiMuon"
+FinalState="ElEl" # ElEl MuMu ElMu
 Skim=""
-Year="2017"
-RunningMode="ElMu,EMuTrig_DZ" #"ElMu,EMuTrig_ElLeg" #"MuMu,DiMuTrig_DZ"
+RunningMode="ElEl,DiElTrig_DZ"
+## MuMu ElEl ElMu ## DiMuTrig_DZ DiElTrig_DZ EMuTrig_DZ ## EMuTrig_ElLeg EMuTrig_MuLeg  
 
 NJobs=""
+NJobFactor=2
 Memory=""
 NJobMax="100"
-NEvtMax="100000"
+NEvtMax="50000"
 NSkipEvt=""
 ReductionFactor="" #"10"
+SpecificList=""
+SpecificDir="DiElTrig_DZ/TopHN17SST" #"SFv1/TopHNSSTWP90Isop1" #"HNTopIDSS_preL/NewMCEff"
 runDebug="False"
+ResubRun="False"
+
 
 # Options:
 # List_runModes   - run on RD, BkdMC, SigMC, 
@@ -50,78 +59,117 @@ runDebug="False"
 if [[ ! -e CommandHist.txt ]]; then touch CommandHist.txt; echo "Command History">> CommandHist.txt; echo >> CommandHist.txt; fi;
 date >> CommandHist.txt
 
-for runMode in ${List_runModes[@]}; 
+TrLabel=""
+if [[ ${RunningMode} == *"ElEl"* ]]; then
+  if [[ ${RunningMode} == *"DiElTrig_DZ"* ]]; then TrLabel="EE"; fi
+elif [[ ${RunningMode} == *"MuMu"* ]]; then
+  if [[ ${RunningMode} == *"DiMuTrig_DZ"* ]]; then TrLabel="MM"; fi
+elif [[ ${RunningMode} == *"ElMu"* ]]; then
+  if [[ ${RunningMode} == *"EMuTrig_ElLeg"* ]]; then TrLabel="SM";
+  elif [[ ${RunningMode} == *"EMuTrig_MuLeg"* ]]; then TrLabel="SE";
+  elif [[ ${RunningMode} == *"EMuTrig_DZ"* ]]; then TrLabel="EM"; 
+  else echo "no trlabel for "${RunningMode}; exit 1; fi;
+else echo "no trlabel for "${RunningMode}; exit 1; fi;
+   
+
+## MuMu ElEl ElMu ## DiMuTrig_DZ DiElTrig_DZ EMuTrig_DZ ## EMuTrig_ElLeg EMuTrig_MuLeg  
+
+
+for Year in ${List_Year[@]};
 do
-
-  ## OUTPUT PATH CONFIG
-  CategoryLabel=""
-  StateLabel=${FinalState}
-  
-  if [[ -z ${SKFlatV} ]]; then echo "source setup.sh needed. exit"; exit 1; fi
-  if [[ ! -e "${SKFlat_WD}/Analyzers/include/${AnalysisCode}.h" ]]; then
-    echo "Inappropriate AnalysisCode setting."; exit 1;
-  fi
-  if   [[ ${runMode} == "runData"  ]]; then CategoryLabel="Data";
-  elif [[ ${runMode} == "runFake"  ]]; then CategoryLabel="Fake";
-  elif [[ ${runMode} == "runBkdMC" ]]; then CategoryLabel="BkdMC";
-  elif [[ ${runMode} == "runSigMC" ]]; then CategoryLabel="SigMC";
-  else echo "Inappropriate runData/runBkdMC/runFake/runSigMC settings."; exit 1; fi 
-
-  OutputDir="${SKFlatOutputDir}/${SKFlatV}/${AnalysisCode}/${Year}/${StateLabel}/${CategoryLabel}"
-  mkdir -pv ${OutputDir}
-  
-  
-  #OPTION SETTING
-  List="${AnalysisCode}_${CategoryLabel}_${Year}"
-  if [[ ${runDebug} == "True" ]]; then List="Debug_${CategoryLabel}_${Year}";
-  elif [[ ${runMode} == "runData" || ${runMode} == "runFake" ]]; then List="${AnalysisCode}_${CategoryLabel}_${Year}_${StateLabel}"; 
-  else :; fi
-
-  NSample=$( python GetJobConfig.py ${List} )
-  if [[ ${NSample} == "Error"* ]]; then echo "Sample List wrong for ${runMode}, skip."; continue; fi
-
-  for (( it_s=0; it_s<${NSample}; it_s++ ))
+  for runMode in ${List_runModes[@]}; 
   do
-    Option=" -a ${AnalysisCode}"
-
-    SampleName=$( python GetJobConfig.py ${List} ${it_s} | cut -d ' ' -f1 )  
-    NJobs=$( python GetJobConfig.py ${List} ${it_s} | cut -d ' ' -f2 )
-    DataPeriod="ALL"
-    if [[ ${runMode} == "runData" || ${runMode} == "runFake" ]]; then DataPeriod=$( python GetJobConfig.py ${List} ${it_s} | cut -d ' ' -f3 ); fi
-
-    if [[ ${NJobs} -gt 0 ]]; then :; 
-    elif [[ ${NJobs} == "-" ]]; then NJobs=20; 
-    else echo "NJob Config invalid for ${SampleName} in ${CategoryLabel} mode"; continue; fi
-    if [[ ( ${runDebug} == "False" ) && ( -z ${ReductionFactor} ) ]]; then (( NJobs *= 2 )); fi
-
-    Option+=" -i ${SampleName}" 
-    Option+=" -n ${NJobs}" 
-    Option+=" -y ${Year} -p ${DataPeriod}";
-    if [[ ! -z ${Skim} ]]; then Option+=" --skim ${Skim}"; fi
-    if [[ ! -z ${ReductionFactor} ]]; then Option+=" --reduction ${ReductionFactor}"; fi
-    if [[ ! -z ${RunningMode} ]]; then Option+=" --userflags ${RunningMode}"; fi
-    if [[ ! -z ${Memory} ]]; then Option+=" --memory ${Memory}"; fi
-    if [[ ! -z ${NJobMax} ]]; then Option+=" --nmax ${NJobMax}"; fi
-    if [[ ${runDebug} == "True" ]]; then Option+=" --no_exec"; fi
-    Option+=" -o ${OutputDir}"
-    SKFlat.py ${Option} &
-    echo "SKFlat.py ${Option}" >> CommandHist.txt
-
-    if [[ ${runDebug} == "True" ]]; then 
-      sleep 5s
-      DirName=$( ls -rt ${SKFlatRunlogDir} | tail -1 ) 
-      if [[ ${DirName} == "www"* ]]; then DirName= $( ls -rt ${SKFlatRunlogDir} | tail -2 | head -1 ); fi
-      PeriodLabel=""
-      if [[ ${runMode} == "runData" || ${runMode} == "runFake" ]]; then PeriodLabel="_period${DataPeriod}"; fi
-      OrigPath=${SKFlatRunlogDir}/${DirName}/${SampleName}${PeriodLabel}
-      DebugPath=${SKFlat_WD}/Debug_${AnalysisCode}_${SampleName}${PeriodLabel}
-      mkdir -p ${DebugPath}
-      mv ${OrigPath}/run_0.C ${DebugPath}/run_0.C
-      sed -i "1 i R__LOAD_LIBRARY(${SKFlat_WD}/lib/libDataFormats.so)" ${DebugPath}/run_0.C
-      sed -i "1 i R__LOAD_LIBRARY(${SKFlat_WD}/lib/libAnalyzers.so)" ${DebugPath}/run_0.C
-      if [[ ${NEvtMax} -gt 0 ]]; then sed -i "/m.LogEvery/a \ \ m.MaxEvent\ =\ ${NEvtMax};" ${DebugPath}/run_0.C; fi
-      if [[ ${NSkipEvt} -gt 0 ]]; then sed -i "/m.LogEvery/a \ \ m.NSkipEvent\ =\ ${NSkipEvt};" ${DebugPath}/run_0.C; fi
+  
+    ## OUTPUT PATH CONFIG
+    CategoryLabel=""
+    StateLabel=${FinalState}
+    
+    if [[ -z ${SKFlatV} ]]; then echo "source setup.sh needed. exit"; exit 1; fi
+    if [[ ! -e "${SKFlat_WD}/Analyzers/include/${AnalysisCode}.h" ]]; then
+      echo "Inappropriate AnalysisCode setting."; exit 1;
     fi
+    if   [[ ${runMode} == "runData"  ]]; then CategoryLabel="Data";
+    elif [[ ${runMode} == "runFake"* ]]; then CategoryLabel="Fake";
+    elif [[ ${runMode} == "runConv"  ]]; then CategoryLabel="Conv";
+    elif [[ ${runMode} == "runFlip"  ]]; then CategoryLabel="Flip";
+    elif [[ ${runMode} == "runBkdMC" ]]; then CategoryLabel="BkdMC";
+    elif [[ ${runMode} == "runSigMC" ]]; then CategoryLabel="SigMC";
+    else echo "Inappropriate runData/runBkdMC/runFake/runFakeMC/runSigMC settings."; exit 1; fi 
+  
+    OutputDir="${SKFlatOutputDir}/${SKFlatV}/${AnalysisCode}/${Year}/${StateLabel}/${SpecificDir}"
+    if [[ ${runMode} == "runConv" || ${runMode} == "runFlip" ]];
+    then OutputDir+="/BkdMC/${CategoryLabel}"
+    elif [[ ${runMode} == "runFakeRD" ]]; then OutputDir+="/BkdMC/${CategoryLabel}/Data"
+    elif [[ ${runMode} == "runFakeMC" ]]; then OutputDir+="/BkdMC/${CategoryLabel}/BkdMC"
+    elif [[ ${runMode} == "runFakeCv" ]]; then OutputDir+="/BkdMC/${CategoryLabel}/BkdMC/Conv"
+    else OutputDir+="/${CategoryLabel}"; fi
+    mkdir -pv ${OutputDir}
+    
+    
+    #OPTION SETTING
+    if [[ -z ${SpecificList} ]]; then
+      List="${AnalysisCode}_${CategoryLabel}_${Year}";
+      if [[ ${runDebug} == "True" ]]; then List="Debug_${CategoryLabel}_${Year}";
+      elif [[ ${runMode} == "runData" || ${runMode} == "runFakeRD" ]]; then List="${AnalysisCode}_Data_${Year}_${StateLabel}${TrLabel}"; 
+      elif [[ ${runMode} == "runFakeMC" ]]; then List="${AnalysisCode}_FkMC_${Year}"; 
+      elif [[ ${runMode} == "runFakeCv" ]]; then List="${AnalysisCode}_FkConv_${Year}"; 
+      elif [[ ${runMode} == "runFlip"   ]]; then List="${AnalysisCode}_Flip_${Year}_${StateLabel}${TrLabel}"; 
+      else :; fi
+    fi
+  
+    NSample=$( python GetJobConfig.py ${List} )
+    #echo "python GetJobConfig.py ${List}"
+    if [[ ${NSample} == "Error"* ]]; then echo "Sample List wrong for ${runMode}, skip."; continue; fi
+  
+    for (( it_s=0; it_s<${NSample}; it_s++ ))
+    do
+      Option=" -a ${AnalysisCode}"
+  
+      SampleName=$( python GetJobConfig.py ${List} ${it_s} | cut -d ' ' -f1 )  
+      NJobs=$( python GetJobConfig.py ${List} ${it_s} | cut -d ' ' -f2 )
+      DataPeriod="ALL"
+      if [[ ${runMode} == "runData" || ${runMode} == "runFakeRD" || ${runMode} == "runFlip" ]];
+      then DataPeriod=$( python GetJobConfig.py ${List} ${it_s} | cut -d ' ' -f3 ); fi
+      if [[ ${ResubRun} == "True" && -e "${OutputDir}/${AnalysisCode}_${Skim}_${SampleName}.root" ]]; then continue; fi
+  
+      if [[ ${NJobs} -gt 0 ]]; then :; 
+      elif [[ ${NJobs} == "-" ]]; then NJobs=20; 
+      else echo "NJob Config invalid for ${SampleName} in ${CategoryLabel} mode"; continue; fi
+      if [[ ( ${runDebug} == "False" ) ]]; then (( NJobs *= ${NJobFactor} )); fi
+  
+      TmpRunningMode=${RunningMode}; TmpSkim=${Skim};
+      if [[ ${runMode} == "runFake"* ]]; then TmpRunningMode+=",FakeRun"; fi
+      if [[ ${runMode} == "runFlip"  ]]; then TmpRunningMode+=",FlipRun"; TmpSkim=""; fi
+      if [[ ${runMode} == "runConv" || ${runMode} == "runFakeCv" ]]; then TmpRunningMode+=",ConvRun"; fi
+      if [[ ${runMode} == "runSigMC" ]]; then TmpSkim=""; fi
+  
+      Option+=" -i ${SampleName}" 
+      Option+=" -n ${NJobs}" 
+      Option+=" -e ${Year} -p ${DataPeriod}";
+      if [[ ! -z ${TmpSkim} ]]; then Option+=" --skim ${TmpSkim}"; fi
+      if [[ ! -z ${ReductionFactor} ]]; then Option+=" --reduction ${ReductionFactor}"; fi
+      if [[ ! -z ${TmpRunningMode} ]]; then Option+=" --userflags ${TmpRunningMode}"; fi
+      if [[ ! -z ${Memory} ]]; then Option+=" --memory ${Memory}"; fi
+      if [[ ! -z ${NJobMax} ]]; then Option+=" --nmax ${NJobMax}"; fi
+      if [[ ${runDebug} == "True" ]]; then Option+=" --no_exec"; fi
+      Option+=" -o ${OutputDir}"
+      SKFlat.py ${Option} &
+      echo "SKFlat.py ${Option}" >> CommandHist.txt
+  
+      if [[ ${runDebug} == "True" ]]; then 
+        sleep 4s
+        DirName=$( ls -rt ${SKFlatRunlogDir} | tail -1 ) 
+        if [[ ${DirName} == "www"* ]]; then DirName= $( ls -rt ${SKFlatRunlogDir} | tail -2 | head -1 ); fi
+        PeriodLabel=""
+        if [[ ${runMode} == "runData" || ${runMode} == "runFakeRD" || ${runMode} == "runFlip" ]]; then PeriodLabel="_period${DataPeriod}"; fi
+        OrigPath=${SKFlatRunlogDir}/${DirName}/${SampleName}${PeriodLabel}
+        DebugPath=${SKFlat_WD}/Debug_${AnalysisCode}_${SampleName}${PeriodLabel}
+        mkdir -p ${DebugPath}
+        mv ${OrigPath}/run_0.C ${DebugPath}/run_0.C
+        if [[ ${NEvtMax} -gt 0 ]]; then sed -i "/m.LogEvery/a \ \ m.MaxEvent\ =\ ${NEvtMax};" ${DebugPath}/run_0.C; fi
+        if [[ ${NSkipEvt} -gt 0 ]]; then sed -i "/m.LogEvery/a \ \ m.NSkipEvent\ =\ ${NSkipEvt};" ${DebugPath}/run_0.C; fi
+      fi
+    done
   done
 done
 

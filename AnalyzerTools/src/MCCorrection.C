@@ -250,16 +250,14 @@ double MCCorrection::MuonID_SF(TString ID, double eta, double pt, int sys){
   double value = 1.;
   double error = 0.;
 
-  if(DataYear!=2016){
-    eta = fabs(eta);
-  }
+  eta = fabs(eta);
 
   //==== boundaries
-  double ptmin=10.1, ptmax=199., etamin=-2.39, etamax=2.39;
-  if(ID=="NUM_TightID_DEN_genTracks" || ID=="NUM_HighPtID_DEN_genTracks" || ID=="POGTID_genTrk" || ID=="POGMID_genTrk"){
-    ptmin = 20.1, ptmax = 119., etamin = -2.39, etamax = 2.39;
+  double ptmin=10.1, ptmax=199., etamin=0.01, etamax=2.39;
+  if(ID=="NUM_TightID_DEN_genTracks" || ID=="NUM_HighPtID_DEN_genTracks" || ID=="NUM_MediumID_DEN_TrackerMuons"){
+    ptmin = 15.1, ptmax = 119., etamin = 0.01, etamax = 2.39;
   }
-  else if(ID.Contains("HNTop")){ ptmin=10.1, ptmax=199., etamin=-2.39, etamax=2.39; }
+  else if(ID.Contains("HNTop")){ ptmin=10.1, ptmax=199., etamin=0.01, etamax=2.39; }
   pt = min(max(pt,ptmin),ptmax); eta = min(max(eta,etamin),etamax);
 
 
@@ -272,15 +270,7 @@ double MCCorrection::MuonID_SF(TString ID, double eta, double pt, int sys){
     }
   }
 
-  int this_bin(-999);
-
-  if(DataYear==2016 or DataYear==2017){
-    this_bin = this_hist->FindBin(eta,pt);
-  }
-  else{
-    this_bin = this_hist->FindBin(pt,eta);
-  }
-
+  int this_bin = this_hist->FindBin(eta,pt);
   value = this_hist->GetBinContent(this_bin);
   error = this_hist->GetBinError(this_bin);
 
@@ -295,21 +285,19 @@ double MCCorrection::MuonISO_SF(TString ID, double eta, double pt, int sys){
   if(ID=="Default") return 1.;
 
   //cout << "[MCCorrection::MuonISO_SF] eta = " << eta << ", pt = " << pt << endl;
-
   double value = 1.;
   double error = 0.;
 
-  if(DataYear!=2016){
-    eta = fabs(eta);
-  }
+  eta = fabs(eta);
 
+
+  double ptmin=10.1, ptmax=199., etamin=0.01, etamax=2.39;
   if(ID=="NUM_TightRelIso_DEN_TightIDandIPCut" || ID=="NUM_LooseRelTkIso_DEN_HighPtIDandIPCut"){
-    //==== boundaries
-    if(pt<20.) pt = 20.;
-    if(pt>=120.) pt = 119.;
-    if(eta>=2.4) eta = 2.39;
-    if(eta<-2.4) eta = -2.4;
+    ptmin = 15.1; ptmax = 119.; etamin = 0.01; etamax = 2.39;
   }
+  else if(ID.Contains("HNTop")){ ptmin=10.1, ptmax=199., etamin=0.01, etamax=2.39; }
+  pt = min(max(pt,ptmin),ptmax); eta = min(max(eta,etamin),etamax);
+
 
   TH2F *this_hist = map_hist_Muon["ISO_SF_"+ID];
   if(!this_hist){
@@ -320,15 +308,7 @@ double MCCorrection::MuonISO_SF(TString ID, double eta, double pt, int sys){
     }
   }
 
-  int this_bin(-999);
-
-  if(DataYear==2016){
-    this_bin = this_hist->FindBin(eta,pt);
-  }
-  else{
-    this_bin = this_hist->FindBin(pt,eta);
-  }
-
+  int this_bin = this_hist->FindBin(eta,pt);
   value = this_hist->GetBinContent(this_bin);
   error = this_hist->GetBinError(this_bin);
 
