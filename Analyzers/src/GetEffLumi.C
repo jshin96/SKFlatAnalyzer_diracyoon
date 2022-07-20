@@ -17,6 +17,7 @@ void GetEffLumi::executeEvent(){
     weight_sign = MCweight(true,false);
   }
 
+  FillHist("sumEvents", 0, 1., 1, 0., 1.);
   FillHist("sumW", 0, weight, 1, 0., 1.);
   FillHist("sumSign", 0, weight_sign, 1, 0., 1.);
   if(!IsDATA && weight_Scale->size()>0){

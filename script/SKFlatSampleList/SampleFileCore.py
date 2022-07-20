@@ -998,7 +998,7 @@ def get_effective_lumi(array_from_googledoc,_era,_skoutput ,data_skoutput, _skda
         print "SKFlat.py -a GetEffLumi -l "+currentdir+"/"+_workdir+"/MC"+_era+".txt -n 50  --nmax 300  -e "+_era
 
         os.chdir(os.getenv("SKFlat_WD"))
-        os.system("SKFlat.py -a GetEffLumi -l "+currentdir+"/"+_workdir+"/MC"+_era+".txt -n 50  --nmax 300  -e "+_era )
+        #os.system("SKFlat.py -a GetEffLumi -l "+currentdir+"/"+_workdir+"/MC"+_era+".txt -n 50  --nmax 300  -e "+_era )
         for x in arr_alias_torun:
             print "SKFlat.py -a GetEffLumi -i "+x.split()[0] +" -n 50  --nmax 300  -e "+_era 
             #print ('cp ' + _skoutput + "/GetEffLumi/"+_era + "/GetEffLumi_"+ x.split()[0] +".root " + data_skoutput+"/")
