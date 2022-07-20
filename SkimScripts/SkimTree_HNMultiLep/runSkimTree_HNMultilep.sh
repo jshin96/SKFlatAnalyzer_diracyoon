@@ -8,15 +8,6 @@ nmax=250
 skim=' '
 declare  -a era_list=("2016postVFP" "2016preVFP" "2017" )
 
-if [[ $1 == "MC" ]]; then
-    for i in "${era_list[@]}"
-    do
-        #SKFlat.py -a $analyzer  -l $mcpath/MC_${i}.txt  -n ${njobs}  --nmax ${nmax} -e ${i} &
-	SKFlat.py -a $analyzer  -l $mcpath/MC.txt  -n ${njobs}  --nmax ${nmax} -e ${i} &
-    done
-
-    python $SKFlat_WD/script/BadFileChecker/runTAMSA_Skim.py -s $analyzer
-fi
 
 if [[ $1 == "DATA" ]]; then
     for i in "${era_list[@]}"
