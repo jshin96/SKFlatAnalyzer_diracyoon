@@ -92,7 +92,16 @@ def ReadConfig(conf_var):
 
     return arr_conf
 
-def nevents(_filename):
+def nevents(_skoutput,_alias, _filename):
+    
+    if os.path.exists( _skoutput + "/GetEffLumi/"+_era + "/GetEffLumi_"+ _alias+".root"):
+
+        _file = ROOT.TFile(_skoutput + "/GetEffLumi/"+_era + "/GetEffLumi_"+ _alias+".root")
+        _hist      = _file.Get("sumEvents")
+        nevents_tree = _hist.Integral()
+        _file.Close()
+        return nevent_tree
+
 
     _localfile = open(_filename, "r")
     nevent_tree1=0
@@ -1118,12 +1127,12 @@ def get_effective_lumi(array_from_googledoc,_era,_skoutput ,data_skoutput, _skda
             #print "CommonSampleInfo xsec updated for nevents_no_w " + str(nevents_no_w)
         if not float(orig_nevent_w)==nevents_w:
             update_file=True
-            nevents_no_w=nevents(_skdatadir + _era+ "/Sample/ForSNU/"+var_alias + ".txt")
+            nevents_no_w=nevents(_skoutput, var_alias,_skdatadir + _era+ "/Sample/ForSNU/"+var_alias + ".txt")
             print "CommonSampleInfo updated for nevents_w " + str(nevents_w)
 
         elif not float(orig_nevent_sign)==nevents_sign:
             update_file=True
-            nevents_no_w=nevents(_skdatadir + _era+ "/Sample/ForSNU/"+var_alias + ".txt")
+            nevents_no_w=nevents(_skoutput, var_alias,_skdatadir + _era+ "/Sample/ForSNU/"+var_alias + ".txt")
             print "CommonSampleInfo updated for nevents_sign " + str(nevents_sign)
         else: 
             nevents_no_w=orig_nevent_no_w
@@ -1178,7 +1187,7 @@ def tmpDir(cdir):
             return True
     return False
 
-def check_samplefile_diff(orig_dir, updated_dir, geteff_filepath):
+def check_samplefile_diff(orig_dir, updated_dir, geteff_filepath, checksample_path):
     
     from os import listdir
     from os.path import isfile,isdir, join
@@ -1191,13 +1200,15 @@ def check_samplefile_diff(orig_dir, updated_dir, geteff_filepath):
         if not filecmp.cmp(orig_dir+'/'+x, updated_dir+'/'+x):
             alias_changed = x
             alias_changed = alias_changed.replace('.txt','')
-            if os.path.exists(geteff_filepath + "/"+ alias_changed +".txt"):
-                #var_userinput= raw_input ('Remove ' + geteff_filepath + '/GetEffLumi_'+ alias_changed +'.root since ForSNU file changed  [y/n]:')
-                print 'Remove ' + geteff_filepath + '/'+ alias_changed +'.txt since ForSNU file changed'
+            if os.path.exists(checksample_path + "/"+ alias_changed +".txt"):
+                #var_userinput= raw_input ('Remove ' + checksample_path + '/GetEffLumi_'+ alias_changed +'.root since ForSNU file changed  [y/n]:')
+                print 'Remove ' + checksample_path + '/'+ alias_changed +'.txt since ForSNU file changed'
                 #if var_userinput == "y" :
-                os.system("rm " + geteff_filepath + "/"+ alias_changed +".txt")
+
+                os.system("rm " + geteff_filepath + "/GetEffLumi_"+ alias_changed +".root")
+                os.system("rm " + checksample_path + "/"+ alias_changed +".txt")
                 print "###############################"*2
-                print "removing " + geteff_filepath + "/"+ alias_changed +"."
+                print "removing " + checksample_path + "/"+ alias_changed +"."
                 print "###############################"*2
                 
                 
@@ -1257,6 +1268,10 @@ def check_file_diff(array_from_googledoc,_era, _dsn,  _path_to_skflat_mc, _path_
         if runBadFile:
             hasBadFile=True
             if os.path.exists(_skoutput+"/"+ var_alias +".txt"):
+                _skoutput_eff_lumi=_skoutput
+                _skoutput_eff_lumi=_skoutput_eff_lumi.replace('SampleCheck','GetEffLumi')
+                os.system("rm " + _skoutput_eff_lumi+"/GetEffLumi_"+ var_alias +".root")
+                
                 os.system("rm " + _skoutput+"/"+ var_alias +".txt")
                 print "###############################"*2
                 print "removing " + _skoutput+"/"+ var_alias +".txt"

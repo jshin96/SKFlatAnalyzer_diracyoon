@@ -275,7 +275,7 @@ for era in arr_eras:
 
     up_start_sdiff_time = time.time()
 
-    check_samplefile_diff(var_skflat_wd+"/data/"+FLAT_Version+"/"+era+"/Sample/ForSNU/", workdir + "/ForSNU/" , var_sk_out+"/"+FLAT_Version+"/SampleCheck/"+era+"/")
+    check_samplefile_diff(var_skflat_wd+"/data/"+FLAT_Version+"/"+era+"/Sample/ForSNU/", workdir + "/ForSNU/" , var_sk_out+"/"+FLAT_Version+"/GetEffLumi/"+era+"/",var_sk_out+"/"+FLAT_Version+"/SampleCheck/"+era+"/")
 
     vtimes.append(["post_check_samplefile_diff_time",time.time()])
 
