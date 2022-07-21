@@ -760,7 +760,7 @@ def check_bad_files(badfile_dir,_era, _dir, RunFull):
     os.chdir(currentdir)
     
 
-def CopyCommonSampleFiles(_era,commonpath, geteff_path, _path_mc_outfile,gd_list_wo_skipped):
+def CopyCommonSampleFiles(_era,commonpath, geteff_path, _path_mc_outfile,_path_type1_outfile,gd_list_wo_skipped):
 
 
     currentdir = os.getenv("PWD")
@@ -799,11 +799,36 @@ def CopyCommonSampleFiles(_era,commonpath, geteff_path, _path_mc_outfile,gd_list
             
     r_mc_outfile.close()
     w_mc_outfile.close()
+
+
+    _path_type1_outfile_tmp = "tmpType1.txt"
+    w_type1_outfile=open(_path_type1_outfile_tmp,"w")
+    r_type1_outfile=open(_path_type1_outfile,"r")
+    for line in r_type1_type1_outfile:
+        if "#" in line:
+            w_type1_outfile.write(line)
+        else:
+
+            alias=line.split()[0]
+            if float(line.split()[3]) == 1. and float(line.split()[4]) == 1. and float(line.split()[5]) == 1. :
+                print ("Removing sample " + alias+ " from " + _path_type1_outfile)
+            else:
+                alias_copy_file.append(alias)
+                w_type1_outfile.write(line)
+
+    r_type1_outfile.close()
+
+
     os.system('mv ' + _path_mc_outfile_tmp + ' ' + _path_mc_outfile)
     print('Updated ' + _path_mc_outfile)
     print '-'*40
-    os.system('cat ' + _path_mc_outfile)
+
+
+    os.system('mv ' + _path_type1_outfile_tmp + ' ' + _path_type1_outfile)
+    print('Updated ' + _path_type1_outfile)
     print '-'*40
+
+
 
     forsnupath=commonpath
     forsnupath=forsnupath.replace('CommonSampleInfo','ForSNU')
