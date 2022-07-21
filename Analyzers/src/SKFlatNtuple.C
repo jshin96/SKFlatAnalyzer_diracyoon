@@ -26,7 +26,73 @@ void SKFlatNtuple::Loop(){
   cout << "[SKFlatNtuple::Loop] xsec = " << xsec << endl;
   cout << "[SKFlatNtuple::Loop] sumW = " << sumW << endl;
   cout << "[SKFlatNtuple::Loop] sumSign = " << sumSign << endl;
+  cout << "[SKFlatNtuple::Loop] timestamp = " << timestamp << endl;
+
+
+  vector<vector<TString>  > ev_lists;
+  if(EventList.size() > 0){ 
+
+    ///// EventList is an array of lists of events input by user
+    ///// if 1 list is added keep all events in list
+    ///// if >1 lists added keep only events that are in a list but not in all lists
+
+    cout << "[SKFlatNtuple::Loop] EventList = {" << endl;
+
+
+    for(unsigned int i=0; i<EventList.size(); i++){
+
+      cout << "[SKFlatNtuple::Loop] " << i << "  \"" << EventList.at(i) << "\"," << endl;
+
+      vector<TString> _list;
+
+      ifstream comp(( EventList.at(i)));
+      if(!comp) {
+	cout << "file " << EventList.at(i) << " not found" << endl;
+	exit(EXIT_FAILURE);
+      }
+
+      string lline;
+      while(getline(comp,lline) ){
+	std::istringstream is( lline );
+	TString blank;
+	TString user;
+	int _run;
+	int _ev;
+	is >>blank;
+	is >>user;
+	is >>blank;
+	is >>_run;
+	is >>blank;
+	is >> _ev;
+
+
+	char srun[10];
+	char sev[10];
+
+	// convert 123 to string [buf]
+
+	sprintf(srun,"%d",_run);
+	sprintf(sev,"%d",_ev);
+
+	TString evtag = TString(srun) + "_"+TString(sev);
+
+	_list.push_back(evtag);
+
+	continue;
+      }
+      ev_lists.push_back(_list);
+    }
+
+    cout << "[SKFlatNtuple::Loop] }" << endl;
+  }
+
+  vector<TString> ev_list;
+  if (EventList.size() > 0) ev_list = EventsToKeep (ev_lists);
+  if (EventList.size() > 0) cout << "ev_list size = " << ev_list.size() << endl;
+
+
   cout << "[SKFlatNtuple::Loop] Userflags = {" << endl;
+
   for(unsigned int i=0; i<Userflags.size(); i++){
     cout << "[SKFlatNtuple::Loop]   \"" << Userflags.at(i) << "\"," << endl;
   }
@@ -49,6 +115,15 @@ void SKFlatNtuple::Loop(){
 
     if(fChain->GetEntry(jentry)<0) exit(EIO);
 
+    // added by jalmond: if Event lists are added then check if event should be skipped
+    if(EventList.size()>0){
+      if(!RunEvent(ev_list,run,event)) continue;
+
+      ev_list_id = AssignList (ev_lists,run,event);
+      cout << "AssignList (ev_lists,run,event) = " << AssignList (ev_lists,run,event) << endl;
+    }
+
+
     beginEvent();
     executeEvent();
     endEvent();
@@ -60,6 +135,85 @@ void SKFlatNtuple::Loop(){
   cout << "[SKFlatNtuple::Loop] LOOP END " << printcurrunttime() << endl;
 
 }
+
+int SKFlatNtuple::AssignList(vector<vector<TString> > ev_run_vec, int _run, int _ev){
+
+  int n_list_value=0;
+
+  /// here we want to set an int to a value which tells the user which lists the event is in
+  /// if there are N lists added then the int should be an int with N values: with a 0/1 denoting if it is in the nths list or not
+
+  for (unsigned int i=0; i < ev_run_vec.size() ; i++){
+    //cout << "RE = " << RunEvent(ev_run_vec[i], _run, _ev) << " ev_run_vec[i] = " << ev_run_vec[i].size() <<  " n_list_value=" <<n_list_value <<  endl;
+
+    if (RunEvent(ev_run_vec[i], _run, _ev))  n_list_value+= int(1*pow(10,i));
+  }
+
+  // is event comparison flag is not set then timestamp=="-999999" and all events are assigned as 0
+  // if(timestamp=="-999999") return 0;
+
+  return n_list_value;
+
+}
+vector<TString> SKFlatNtuple::EventsToKeep(vector<vector<TString> > ev_run_vec){
+
+  // if 1 input list keep All
+
+  // if > 1 list keep non matching
+
+  if (ev_run_vec.size() ==1) return ev_run_vec[0];
+
+  // to_keep lists all events that are to be ran on
+  vector<TString> to_keep;
+
+  // loop over v of v
+  for(unsigned int n=0; n < ev_run_vec.size(); n++){
+    // loop over nth vector
+    for(unsigned int i=0; i < ev_run_vec[n].size(); i++){
+
+      int matched(0);
+      // check if event/run in [n][i] is matched to any other list 
+      for(unsigned int j=0; j < ev_run_vec.size(); j++){
+	// obviously of n== j then lists are the same
+	if (j==n) continue;
+
+	if (std::find(ev_run_vec[j].begin(), ev_run_vec[j].end(), ev_run_vec[n][i]) != ev_run_vec[j].end()) matched++;
+      }
+      // if timestamp is set as default then eventcomparison flag is not on and so ALL events are to be kept
+      if(timestamp=="-999999") {
+	// check if event is already in to_keep list before adding again
+	if (!(std::find(to_keep.begin(), to_keep.end(), ev_run_vec[n][i]) != to_keep.end())) to_keep.push_back(ev_run_vec[n][i]);
+      }
+      else if(matched< ev_run_vec.size()-1) {
+	// if eventcomparison flag  is on and is not matched in all lists then this event is kept
+	if (!(std::find(to_keep.begin(), to_keep.end(), ev_run_vec[n][i]) != to_keep.end())) to_keep.push_back(ev_run_vec[n][i]); 
+
+      }
+    }
+  }
+  return to_keep;
+
+}
+
+bool SKFlatNtuple::RunEvent(vector<TString> ev_run_vec,int _run, int _ev){
+
+  // simply check that run/event is in list of events to run on
+  char srun[10];
+  char sev[10];
+  // convert 123 to string [buf]                                                                                                                                                                   
+  sprintf(srun,"%d",_run);
+  sprintf(sev,"%d",_ev);
+
+  TString evtag = TString(srun) + "_"+TString(sev);
+
+  if (std::find(ev_run_vec.begin(), ev_run_vec.end(), evtag) != ev_run_vec.end()) cout << evtag << " matched and run " << endl;
+
+  if (std::find(ev_run_vec.begin(), ev_run_vec.end(), evtag) != ev_run_vec.end()) return true;
+  else return false;
+
+}
+
+
 
 //==== Basic
 
@@ -75,7 +229,11 @@ SKFlatNtuple::SKFlatNtuple(){
   xsec = 1.;
   sumW = 1.;
   sumSign = 1.;
+  ev_list_id=-1;
+  timestamp="-999999";
   Userflags.clear();
+  EventList.clear();
+
 }
 
 SKFlatNtuple::~SKFlatNtuple()
