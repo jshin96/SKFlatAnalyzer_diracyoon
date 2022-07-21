@@ -92,15 +92,15 @@ def ReadConfig(conf_var):
 
     return arr_conf
 
-def nevents(_skoutput,_alias, _filename):
+def nevents(_era,_skoutput,_alias, _filename):
     
     if os.path.exists( _skoutput + "/GetEffLumi/"+_era + "/GetEffLumi_"+ _alias+".root"):
 
         _file = ROOT.TFile(_skoutput + "/GetEffLumi/"+_era + "/GetEffLumi_"+ _alias+".root")
         _hist      = _file.Get("sumEvents")
-        nevents_tree = _hist.Integral()
+        nevents_tree = int(_hist.Integral())
         _file.Close()
-        return nevent_tree
+        return nevents_tree
 
 
     _localfile = open(_filename, "r")
@@ -545,7 +545,7 @@ def check_processed_status(_dsnlist,_era):
 
 
 
-def make_common_sampleinfo(array_from_googledoc,_era, _dirlist, _outfiledir,data_skoutput):
+def make_common_sampleinfo(array_from_googledoc,_era, _dirlist, _outfiledir,data_skoutput, VERBOSE):
 
     print_message(1,"make_commonsample_file ["+_era+"]")
 
@@ -557,7 +557,8 @@ def make_common_sampleinfo(array_from_googledoc,_era, _dirlist, _outfiledir,data
         var_xsec  = find_googledoc_var_from_dsn(array_gd,_era, "xsec" , DSN)
         
         if var_alias == "NULL":
-            print "skipping " + DSN
+            if VERBOSE:
+                print "skipping " + DSN
             continue
 
         if os.path.exists(_outfiledir+"/"+var_alias+".txt"):
@@ -628,7 +629,6 @@ def check_xsec_in_current_list( _dslist, _dsn, _varname):
 
 
 def update_mc_samplelist_from_googledoc(array_from_googledoc,_era, _dirlist, _path_mc_outfile, _path_sklat_dir,work_dir):
-
     
     update_list=[]
   
@@ -656,7 +656,6 @@ def update_mc_samplelist_from_googledoc(array_from_googledoc,_era, _dirlist, _pa
         #""" get alias xsec from googledoc"""
 
         array_gd = array_from_googledoc
-
 
         var_alias = find_googledoc_var_from_dsn(array_gd,_era,"alias", dsn)
         var_xsec  = find_googledoc_var_from_dsn(array_gd,_era,"xsec" , dsn)
@@ -709,7 +708,7 @@ def update_mc_samplelist_from_googledoc(array_from_googledoc,_era, _dirlist, _pa
                     ToUpdate=True
                     update_list.append(dsn)
                     
-        line_to_file = var_alias + "\t"  + dsn + "\t"+ var_xsec + "\t"+_nevents_no_w+"\t"+_nevents_sign+"\t"+_nevents_w+" \n"
+        line_to_file = var_alias + "\t"  + dsn + "\t"+ var_xsec + "\t"+_nevents_no_w+"\t"+_nevents_sign+"\t"+_nevents_w+"\n"
         if not sample_exists:
             w_mc_outfile.write(line_to_file)
             update_list.append(dsn)
@@ -760,8 +759,13 @@ def check_bad_files(badfile_dir,_era, _dir, RunFull):
     os.chdir(currentdir)
     
 
-def CopyCommonSampleFiles(_era,commonpath, geteff_path, _path_mc_outfile,_path_type1_outfile,gd_list_wo_skipped):
+def CopyCommonSampleFiles(_era,commonpath, geteff_path, vsummary,gd_list_wo_skipped):
+    
+    if len(vsummary) < 2:
+        exit()
 
+    _path_mc_outfile=vsummary[0]
+    _path_type1_outfile=vsummary[1]
 
     currentdir = os.getenv("PWD")
     var_skflat_wd=os.getenv("SKFlat_WD")
@@ -804,7 +808,7 @@ def CopyCommonSampleFiles(_era,commonpath, geteff_path, _path_mc_outfile,_path_t
     _path_type1_outfile_tmp = "tmpType1.txt"
     w_type1_outfile=open(_path_type1_outfile_tmp,"w")
     r_type1_outfile=open(_path_type1_outfile,"r")
-    for line in r_type1_type1_outfile:
+    for line in r_type1_outfile:
         if "#" in line:
             w_type1_outfile.write(line)
         else:
@@ -899,6 +903,8 @@ def CopyCommonSampleFiles(_era,commonpath, geteff_path, _path_mc_outfile,_path_t
             continue
         if "skim" in x:
             continue
+        if "nfs" in x:
+            continue
 
         if IsData(x):
             continue
@@ -955,10 +961,6 @@ def CopyCommonSampleFiles(_era,commonpath, geteff_path, _path_mc_outfile,_path_t
     w_mc_outfile.close()
     os.system('mv ' + _path_mc_outfile_tmp + ' ' + _path_mc_outfile)
     print(' '*40)
-    print('*'*40)
-    os.system('cat ' + _path_mc_outfile)
-    print('*'*40)
-
 
     print (geteff_path)
     os.system('ls ' + geteff_path)
@@ -986,7 +988,7 @@ def CopyCommonSampleFiles(_era,commonpath, geteff_path, _path_mc_outfile,_path_t
     return
 
 
-def get_effective_lumi(array_from_googledoc,_era,_skoutput ,data_skoutput, _skdatadir,_dirlist,_summary_path,skim_list, _workdir, RunFull):
+def get_effective_lumi(array_from_googledoc,_era,_skoutput ,data_skoutput, _skdatadir,_dirlist,_summary_path,skim_list, _workdir, RunFull, VERBOSE):
 
     """  fill file with all alias that has not been ran previously"""
 
@@ -1007,7 +1009,8 @@ def get_effective_lumi(array_from_googledoc,_era,_skoutput ,data_skoutput, _skda
         var_alias = find_googledoc_var_from_dsn(array_gd,_era,"alias", dsn)
 
         if var_alias == "NULL" :
-            print "Skipping NULL [get_effective_lumi] " +dsn
+            if VERBOSE:
+                print "Skipping NULL [get_effective_lumi] " +dsn
             continue
 
         if not os.path.exists(data_skoutput+"/"+ var_alias +".txt"):
@@ -1035,18 +1038,6 @@ def get_effective_lumi(array_from_googledoc,_era,_skoutput ,data_skoutput, _skda
         os.system("SKFlat.py -a GetEffLumi -l "+currentdir+"/"+_workdir+"/MC"+_era+".txt -n 50  --nmax 300  -e "+_era )
         for x in arr_alias_torun:
             print "SKFlat.py -a GetEffLumi -i "+x.split()[0] +" -n 50  --nmax 300  -e "+_era 
-            #print ('cp ' + _skoutput + "/GetEffLumi/"+_era + "/GetEffLumi_"+ x.split()[0] +".root " + data_skoutput+"/")
-            #os.system('cp ' + _skoutput + "/GetEffLumi/"+_era + "/GetEffLumi_"+ x.split()[0] +".root " + data_skoutput+"/")
-
-        #GetEFf=False
-        #while not GetEFf:
-        #    l_userinput= raw_input ('Check if Eff lumi job is ok?  [y/ MCname]:')   
-        #    if l_userinput == "y" :                                                                                                                                                             
-        #        print "Good"
-        #        GetEFf=True
-        #    else:
-        #        os.system("SKFlat.py -a GetEffLumi -i "+l_userinput+" -n 50  --nmax 300  -e "+_era )
-                
 
         for skim in skim_list:
             new_list=open(currentdir+"/"+_workdir+"/MC"+_era+".txt","r")
@@ -1152,12 +1143,12 @@ def get_effective_lumi(array_from_googledoc,_era,_skoutput ,data_skoutput, _skda
             #print "CommonSampleInfo xsec updated for nevents_no_w " + str(nevents_no_w)
         if not float(orig_nevent_w)==nevents_w:
             update_file=True
-            nevents_no_w=nevents(_skoutput, var_alias,_skdatadir + _era+ "/Sample/ForSNU/"+var_alias + ".txt")
+            nevents_no_w=nevents(_era,_skoutput, var_alias,_skdatadir + _era+ "/Sample/ForSNU/"+var_alias + ".txt")
             print "CommonSampleInfo updated for nevents_w " + str(nevents_w)
 
         elif not float(orig_nevent_sign)==nevents_sign:
             update_file=True
-            nevents_no_w=nevents(_skoutput, var_alias,_skdatadir + _era+ "/Sample/ForSNU/"+var_alias + ".txt")
+            nevents_no_w=nevents(_era,_skoutput, var_alias,_skdatadir + _era+ "/Sample/ForSNU/"+var_alias + ".txt")
             print "CommonSampleInfo updated for nevents_sign " + str(nevents_sign)
         else: 
             nevents_no_w=orig_nevent_no_w
@@ -1311,7 +1302,7 @@ def check_file_diff(array_from_googledoc,_era, _dsn,  _path_to_skflat_mc, _path_
     return
 
 
-def get_alias_perera(_era, dirlist):
+def get_alias_perera(_era, dirlist, VERBOSE):
 
     arr_alias=[]
     var_url = get_url_from_era(_era,False)
@@ -1324,7 +1315,8 @@ def get_alias_perera(_era, dirlist):
 
         var_alias = find_googledoc_var_from_dsn(_era,"alias", x, var_url)
         if var_alias == "NULL" :
-            print "Skipping " +var_alias
+            if VERBOSE:
+                print "Skipping " +var_alias
             continue
 
         arr_alias.append(var_alias)

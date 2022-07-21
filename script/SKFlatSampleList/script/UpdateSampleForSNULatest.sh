@@ -45,7 +45,10 @@ while read line <&3; do
 	ALIAS=$(grep $SAMPLE $SKFlat_WD/data/$SKFlatV/$YEAR/Sample/SampleSummary_MC.txt|awk '{print $1}'|head -n1)
 	if [ "$ALIAS" = "" ]; then
 	    ALIAS=$(cat $SKFlat_WD/data/$SKFlatV/*/Sample/SampleSummary_MC.txt|grep $SAMPLE|awk '{print $1}'|head -n1)
-	fi  
+	fi 
+	if [ "$ALIAS" = "" ]; then
+            ALIAS=$(cat $SKFlat_WD/data/$SKFlatV/*/Sample/SampleSummary_Signal_Type1.txt|grep $SAMPLE|awk '{print $1}'|head -n1)
+        fi
 	if [ "$ALIAS" = "" ]; then
 	    ALIAS=$(cat $SKFlat_WD/data/*/*/Sample/SampleSummary_MC.txt|grep $SAMPLE|awk '{print $1}'|head -n1)
 	fi  

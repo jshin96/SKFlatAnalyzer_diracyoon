@@ -37,7 +37,7 @@ print "-------------------------------------------------------------------------
 
 for era in arr_eras:
     
-    arr_alias = get_alias_perera(era,get_skflat_on_tamsa(path_sklat_dir,era))
+    arr_alias = get_alias_perera(era,get_skflat_on_tamsa(path_sklat_dir,era,False))
     get_missing_alias_perera(era,get_skflat_on_tamsa(path_sklat_dir,era), "SkimTree_HNMultiLep")
 
 
