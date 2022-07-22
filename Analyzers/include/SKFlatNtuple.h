@@ -42,6 +42,7 @@ public :
    TString DataEra;
    double xsec, sumW, sumSign;
    vector<TString> Userflags;
+   vector<TString> EventList;
 
    virtual void Init();
    virtual void Loop();
@@ -66,6 +67,13 @@ public :
        return std::to_string(twodigit);
      }
    }
+
+
+   bool RunEvent(vector<TString> ev_run_vec,int _run, int _ev);
+   vector<TString> EventsToKeep(vector<vector<TString> > ev_run_vec);
+   int AssignList(vector<vector<TString> > ev_run_vec, int _run, int _ev);
+   Int_t ev_list_id;
+
 
    std::string printcurrunttime(){
 
