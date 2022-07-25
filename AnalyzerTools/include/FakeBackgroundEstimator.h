@@ -45,8 +45,18 @@ public:
   double GetElectronFakeRate(TString ID, TString key, double eta, double pt, int sys=0);
   double GetMuonFakeRate(TString ID, TString key, double eta, double pt, int sys=0);
 
+  double GetElectronPromptRate(TString ID, TString key, double eta, double pt, int sys=0);
+  double GetMuonPromptRate(TString ID, TString key, double eta, double pt, int sys=0);
+
+
   bool HasLooseLepton;
   double GetWeight(vector<Lepton *> lepptrs, AnalyzerParameter param, int sys=0);
+  double GetFullWeight(vector<Lepton *> lepptrs, AnalyzerParameter param, int sys=0);
+
+  float CalculateLepWeight(float r1, float fr1, bool lep1Tight);
+  float CalculateDilepWeight(float r1, float fr1, float r2, float fr2, bool lep1Tight, bool lep2Tight, int eventtype);
+						       
+
 
 };
 

@@ -36,6 +36,9 @@ public:
   inline double UncorrE() const { return j_EnergyUnCorr; }
   inline double UncorrPt() const { return Pt() * j_EnergyUnCorr/E(); }
 
+
+  bool PassMVA(double mva1, double mva2, double mva3) const;
+  bool PassHNID()const ;
   void SetPassConversionVeto(bool b);
   inline int PassConversionVeto() const { return j_passConversionVeto; }
   void SetNMissingHits(int n);
@@ -112,35 +115,103 @@ public:
   inline bool passLooseID()  const {return PassSelector(POG_CB_LOOSE); }
   inline bool passMediumID() const {return PassSelector(POG_CB_MEDIUM); }
   inline bool passTightID()  const {return PassSelector(POG_CB_TIGHT); }
+
   inline bool passMVAID_noIso_WP80() const {return PassSelector(POG_MVA_NOISO_WP80); }
   inline bool passMVAID_noIso_WP90() const {return PassSelector(POG_MVA_NOISO_WP90); }
-  inline bool passMVAID_iso_WP80() const {return PassSelector(POG_MVA_ISO_WP80); }
-  inline bool passMVAID_iso_WP90() const {return PassSelector(POG_MVA_ISO_WP90); }
+  inline bool passMVAID_Iso_WP80() const {return PassSelector(POG_MVA_ISO_WP80); }
+  inline bool passMVAID_Iso_WP90() const {return PassSelector(POG_MVA_ISO_WP90); }
+  inline bool passMVAID_noiso_WPLoose() const {return PassSelector(POG_MVA_NOISO_WPLOOSE); }
   inline bool passHEEPID() const {return PassSelector(POG_HEEP); }
-  bool passHEEP2018Prompt() const;
+  
+  bool passLooseHEEPID() const;
+
+  bool passHEEP2018Prompt() const; // HEEP
 
   bool Pass_SUSYMVAWP(TString wp) const;
   bool Pass_SUSYTight() const;
+  bool passMVAID_noIso_WP80HN() const;
+  bool passMVAID_noIso_WP90HN() const;
+  bool passMVAID_noIso_WP90XHN(double relisoCut, double dxyCut, double dzCut, double sipCut) const;
+  bool passMVAID_noIso_XHN(double relisoCut, double dxyCut, double dzCut, double sipCut) const;
+  bool passPOGMVAID_noIso_WP80HN() const;
+  bool passPOGMVAID_noIso_WP90HN() const;
+
+
+
+  bool passMVAID_noIso_WP80HNLoose() const;
+  bool passMVAID_noIso_WP90HNLoose() const;
+  
+  bool passMVAID_Iso_WP80HN() const;
+  bool passMVAID_Iso_WP90HN() const;
+  bool passPOGMVAID_Iso_WP80HN() const;
+  bool passPOGMVAID_Iso_WP90HN() const;
+
+  bool passMVAID_Iso_WP80HNLoose() const;
+  bool passMVAID_Iso_WP90HNLoose() const;
+
+  bool PassHNIsGsfCtfScPixChargeConsistent() const;
+  bool PassHNIsGsfCtfScPixChargeConsistentVar(double pt1, double pt2) const;
   bool Pass_SUSYLoose() const;
+  bool passTightIDHN() const;
+  bool passMediumIDHN() const;
+  bool passLooseIDHN() const;
+  bool passMediumID_NoCC() const;
+  bool passTightID_NoCCB() const;
+  bool passTightID_NoCC() const;
+  bool passLooseID_NoCCB() const;
+  bool passLooseID_NoCC() const;
+  bool Pass_CutBasedTightWithIPcut() const;
+
+  //==== HN ID
+  bool Pass_TriggerEmulation() const;
+  bool Pass_TriggerEmulationLoose() const;
+
+  bool Pass_HNVeto2016() const;
+  bool Pass_HNLoose2016(double relisoCut, double dxyCut, double dzCut, double sipCut) const;
+
+  bool Pass_HNLoose2016MVAISO( double dxyCut, double dzCut, double sipCut) const;
+  bool Pass_HNLoose2016MVANonIso( double relisoCut,double dxyCut, double dzCut, double sipCut) const;
+  bool Pass_HNTight2016() const;
+
+  bool Pass_HNVeto(double relisoCut) const;
+  bool Pass_HNLoose(double relisoCut, double dxyCut, double dzCut) const;
+  bool Pass_HNLooseID(double relisoCut, double dxyCut, double dzCut, double sipCut) const;
+  bool Pass_HNLoosest() const;
+  bool Pass_HNTight(double relisoCut,double dxyCut1, double dxyCut2, double dzCut, double sipCut1, double sipCut2) const;
+  bool Pass_HNMedium(double relisoCut,double dxyCut1, double dxyCut2, double dzCut, double sipCut1, double sipCut2) const;
+
+  bool Pass_ISRLoose(double relisoCut) const;
+  bool Pass_ISRTight() const;
+
+  bool Pass_HNMVALoose(double relisoCut, double dxyCut, double dzCut) const;
+  bool Pass_HNMVATight(double relisoCut, double dxyCut, double dzCut) const;
 
   void SetRelPFIso_Rho(double r);
   double EA();
 
+  bool passIDHN(int ID, double dxy_b, double dxy_e, double dz_b,double dz_e, double sip_b, double sip_e, double iso_b,double iso_e, double miso_b, double miso_e) const;
+  bool PassIDOpt(TString ID, bool cc, double dx_b ,double dx_e,double dz_b,double dz_e, double iso_b, double iso_e) const;
   //==== ID
   bool PassID(TString ID) const;
+  int  PassIDOptLoose(TString ID) const;
+  int  PassIDOpt(TString ID) const;
+  int  PassIDLoose(TString ID) const;
+  int  PassIDTight(TString ID) const;
+
+
   bool Pass_TESTID() const;
 
+  bool Pass_CutBasedTightNoIso() const;
   bool Pass_CutBasedLooseNoIso() const;
+  bool Pass_CutBasedMediumNoIso() const;
   bool Pass_CutBasedVetoNoIso() const;
   bool Pass_CutBasedLoose() const;
   bool Pass_CutBasedVeto() const;
-
-  bool Pass_HNLoosest() const;
-
   void SetRho(double r);
   inline double Rho() const { return j_Rho; }
   void SetIsGsfCtfScPixChargeConsistent(bool b);
   inline bool IsGsfCtfScPixChargeConsistent() const { return j_isGsfCtfScPixChargeConsistent; }
+
   inline void SetR9(double r9) { j_r9=r9; }
   inline double R9() const { return j_r9; }
   inline void SetL1Et(double l1et) { j_L1Et=l1et; }
@@ -152,6 +223,7 @@ public:
   bool PassPath(TString path) const;
 
     
+
 private:
 
   double j_En_up;
@@ -166,7 +238,7 @@ private:
   double j_Full5x5_sigmaIetaIeta, j_dEtaSeed, j_dPhiIn, j_HoverE, j_InvEminusInvP, j_e2x5OverE5x5, j_e1x5OverE5x5, j_trkiso, j_dr03EcalRecHitSumEt, j_dr03HcalDepth1TowerSumEt;
   double j_dr03HcalTowerSumEt, j_dr03TkSumPt, j_ecalPFClusterIso, j_hcalPFClusterIso;
   bool j_isEcalDriven;
-  double j_L1Et;
+  double j_L1Et; 
   unsigned int j_IDBit;
   vector<int> j_IDCutBit;
   double j_RelPFIso_Rho;

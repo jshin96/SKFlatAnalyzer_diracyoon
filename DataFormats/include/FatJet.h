@@ -36,6 +36,7 @@ public:
   void SetTightLepVetoJetID(double b);
   inline bool Pass_tightJetID() const { return j_tightJetID; }
   inline bool Pass_tightLepVetoJetID() const { return j_tightLepVetoJetID; }
+  bool Pass_HNTight() const;
 
   bool PassID(TString ID) const;
 
@@ -46,6 +47,18 @@ public:
   double PuppiTau2() const { return j_puppi_tau2; }
   double PuppiTau3() const { return j_puppi_tau3; }
   double PuppiTau4() const { return j_puppi_tau4; }
+
+  double PuppiTau21() const { return j_puppi_tau2/j_puppi_tau1; }
+  bool PassPuppiTau21(double cut) const {
+    if(j_puppi_tau2/j_puppi_tau1 < cut) return true;
+    return false;
+  }
+  bool PassSDMassrange(double lowercut, double uppercut) const {
+    if (j_SDMass < lowercut) return false;
+    if (j_SDMass > uppercut) return false;
+    return true;
+  }
+
 
   void SetSDMass(double m);
   double SDMass() const { return j_SDMass; }

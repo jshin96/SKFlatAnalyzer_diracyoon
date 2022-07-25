@@ -7,6 +7,7 @@
 
 #pragma link C++ class SKFlatNtuple+;
 #pragma link C++ class AnalyzerCore+;
+#pragma link C++ class HNL_LeptonCore+;
 #pragma link C++ class GetEffLumi+;
 #pragma link C++ class ExampleRun+;
 #pragma link C++ class SKFlatValidation+;

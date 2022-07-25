@@ -11,6 +11,7 @@ public:
   Event();
   ~Event();
 
+
   void SetnPV(double n);
   inline int nPV() const { return j_nPV; }
 
@@ -18,6 +19,7 @@ public:
   bool PassTrigger(TString trig);
   bool PassTrigger(std::vector<TString> trigs);
   double GetTriggerLumi(TString trig);
+  double GetTriggerLumiByYear(TString trig);
   bool IsPDForTrigger(TString trig, TString PD);
 
   void SetMET(double pt, double phi);

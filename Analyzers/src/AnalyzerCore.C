@@ -51,6 +51,31 @@ AnalyzerCore::~AnalyzerCore(){
 
 }
 
+void AnalyzerCore::FillEventComparisonFile(AnalyzerParameter param,TString label,string date, double w){
+
+  //// Make TEX file                                                                                                                             
+
+  ofstream ofile_tex;
+  string lqdir = getenv("SKFlat_WD");
+
+  if(!IsData)label = label  +"_" +MCSample;
+  else label = label  +"_" +GetEra();
+
+  //label = label + k_sample_name;                                                                                                               
+  string compfile = string(getenv("SKFlatEvCompDir")) +  "/"+date + "/"+string(param.Name)+string(label)+".txt";
+
+  cout << "FillEventComparisonFile  " << label << " " << compfile << endl;
+  ofile_tex.open(compfile.c_str(),ios::out | ios::app);
+
+  ofile_tex.setf(ios::fixed,ios::floatfield);
+  ofile_tex << "[ "<<getenv("USER") << " : " << run << " : " << event << " : " << param.Muon_Tight_ID << " : " << param.Electron_Tight_ID << " :\
+ " << w <<   "]" << endl;
+
+  ofile_tex.close();
+
+  return;
+}
+
 //==== Attach the historams to ai different direcotry, not outfile
 //==== We will write these histograms in WriteHist() to outfile
 void AnalyzerCore::SwitchToTempDir(){
@@ -101,6 +126,10 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
     mu.SetMiniAODPt(muon_pt->at(i));
     mu.SetMiniAODTunePPt(muon_TuneP_pt->at(i));
 
+    mu.SetJetPtRel(muon_jetPtRel->at(i));
+    mu.SetJetPtRatio(muon_jetPtRatio->at(i));
+
+
     double rc = muon_roch_sf->at(i);
     double rc_err = muon_roch_sf_up->at(i)-rc;
     //==== For the Rochester corection, up and down err are the same
@@ -111,7 +140,10 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
     //==== Apply scailing later with AnalyzerCore::UseTunePMuon()
     mu.SetTuneP4(muon_TuneP_pt->at(i), muon_TuneP_ptError->at(i), muon_TuneP_eta->at(i), muon_TuneP_phi->at(i), muon_TuneP_charge->at(i));
 
+    mu.SetSoftMVA(muon_softMVA->at(i));
     mu.SetMVA(muon_MVA->at(i));
+    mu.SetLepMVA( muon_MVA->at(i));
+
 
     mu.SetdXY(muon_dxyVTX->at(i), muon_dxyerrVTX->at(i));
     mu.SetdZ(muon_dzVTX->at(i), muon_dzerrVTX->at(i));
@@ -123,6 +155,10 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
     mu.SetChi2(muon_normchi->at(i));
     mu.SetIso(muon_PfChargedHadronIsoR04->at(i),muon_PfNeutralHadronIsoR04->at(i),muon_PfGammaIsoR04->at(i),muon_PFSumPUIsoR04->at(i),muon_trkiso->at(i));
     mu.SetTrackerLayers(muon_trackerLayers->at(i));
+
+    mu.SetMatchedStations(muon_matchedstations->at(i));
+    mu.SetPixelHits(muon_pixelHits->at(i));
+    mu.SetValidMuonHits(muon_validmuonhits->at(i));
 
     //==== Should be set after Eta is set
     mu.SetMiniIso(
@@ -319,6 +355,18 @@ std::vector<Tau> AnalyzerCore::GetTaus(TString id, double ptmin, double fetamax)
 }
 
 
+bool AnalyzerCore::PassID(std::vector<Electron> electrons, TString ID){
+
+  int nel(0);
+  for(auto el : electrons){
+
+    if( el.PassID(ID) ) nel++;
+
+  }
+  if (nel ==2) return true;
+  return false;
+}
+
 
 std::vector<Lepton *> AnalyzerCore::MakeLeptonPointerVector(const std::vector<Muon>& muons, double TightIso, bool UseMini){
 
@@ -364,6 +412,49 @@ std::vector<Lepton *> AnalyzerCore::MakeLeptonPointerVector(const std::vector<El
   return out;
 
 }
+
+std::vector<Lepton *> AnalyzerCore::MakeLeptonPointerVector(const std::vector<Muon>& muons, const std::vector<Electron>& electrons,double TightIso, bool UseMini){
+
+  std::vector<Lepton *> out;
+  for(unsigned int i=0; i<muons.size(); i++){
+    Lepton *l = (Lepton *)(&muons.at(i));
+    if( !(l->LeptonFlavour() == Lepton::MUON) ){
+      cout << "[AnalyzerCore::MakeLeptonPointerVector(std::vector<Muon>& muons)] Not muon.." << endl;
+      exit(EXIT_FAILURE);
+    }
+    if(TightIso>0){
+
+      double this_RelIso = l->RelIso();
+      if(UseMini) this_RelIso = l->MiniRelIso();
+      double ptcone = l->CalcPtCone(this_RelIso, TightIso);
+      l->SetPtCone( ptcone );
+
+    }
+    out.push_back(l);
+  }
+
+  for(unsigned int i=0; i<electrons.size(); i++){
+    Lepton *l = (Lepton *)(&electrons.at(i));
+    if( !(l->LeptonFlavour() == Lepton::ELECTRON) ){
+      cout << "[AnalyzerCore::MakeLeptonPointerVector(std::vector<ELECTRON>& electrons)] Not electron.." << endl;
+      exit(EXIT_FAILURE);
+    }
+    if(TightIso>0){
+
+      double this_RelIso = l->RelIso();
+      if(UseMini) this_RelIso = l->MiniRelIso();
+      double ptcone = l->CalcPtCone(this_RelIso, TightIso);
+      l->SetPtCone( ptcone );
+
+    }
+    out.push_back(l);
+  }
+
+  std::sort(out.begin(),     out.end(),     PtComparingPtr);
+
+  return out;
+}
+
 
 
 
@@ -434,11 +525,16 @@ std::vector<Jet> AnalyzerCore::GetAllJets(){
     Jet jet;
     jet.SetPtEtaPhiM(jet_pt->at(i), jet_eta->at(i), jet_phi->at(i), jet_m->at(i));
 
+    jet.SetPxUnSmeared(jet.Px());
+    jet.SetPyUnSmeared(jet.Py());
+
+
     //==== Jet energy up and down are 1.xx or 0.99, not energy
     jet.SetEnShift( jet_shiftedEnUp->at(i), jet_shiftedEnDown->at(i) );
     if(!IsDATA){
       jet *= jet_smearedRes->at(i);
       jet.SetResShift( jet_smearedResUp->at(i)/jet_smearedRes->at(i), jet_smearedResDown->at(i)/jet_smearedRes->at(i) );
+      jet.SetRes(jet_smearedRes->at(i));
       jet.SetGenFlavours(jet_partonFlavour->at(i), jet_hadronFlavour->at(i));
       jet.SetGenHFHadronMatcher(jet_GenHFHadronMatcher_flavour->at(i),jet_GenHFHadronMatcher_origin->at(i));
     }
@@ -823,6 +919,296 @@ std::vector<FatJet> AnalyzerCore::SelectFatJets(const std::vector<FatJet>& jets,
 
 }
 
+
+pair<int,double> AnalyzerCore::GetNBJets(AnalyzerParameter param, TString WP){
+
+  //=== This function uses param to get bjets + apply syst, but jets used have no Syst effects                                                   
+  vector<Jet> this_AllJets = GetAllJets();
+  vector<Jet>       jets   = SelectJets(this_AllJets,param.Jet_ID, 20., 2.4);
+
+  return GetNBJets(jets, param, WP);
+
+}
+
+pair<int,double> AnalyzerCore::GetNBJets(TString ID, TString WP, TString method){
+
+  vector<Jet> this_AllJets = GetAllJets();
+  vector<Jet>       jets   = SelectJets(this_AllJets,ID, 20., 2.4);
+
+  return GetNBJets(jets, WP, method);
+}
+
+pair<int,double> AnalyzerCore::GetNBJets(vector<Jet> jets, AnalyzerParameter param,TString WP){
+
+  int NBJets_NoSF(0);
+  JetTagging::WP             jwp = JetTagging::Medium;
+  if  (WP == "Loose")        jwp = JetTagging::Loose;
+  else if  (WP == "Medium")  jwp = JetTagging::Medium;
+  else  if  (WP == "Tight")  jwp = JetTagging::Tight;
+  else return make_pair(-1,1.);
+
+  JetTagging::Parameters jtp_DeepCSV = JetTagging::Parameters(JetTagging::DeepCSV,
+							      jwp,
+							      JetTagging::incl, JetTagging::comb);
+
+
+  double btagWeight_1a = mcCorr->GetBTaggingReweight_1a(jets, jtp_DeepCSV);
+  double btagWeight_1d = 1.;//mcCorr->GetBTaggingReweight_1d(jets, jtp_DeepCSV_Reshape);                                                         
+
+
+  for(auto ij : jets)  {
+    double this_discr = ij.GetTaggerResult(JetTagging::DeepCSV);
+    if( this_discr > mcCorr->GetJetTaggingCutValue(JetTagging::DeepCSV, JetTagging::Medium) ) NBJets_NoSF++;
+  }
+
+  if(param.BJet_Method=="1a") return make_pair(NBJets_NoSF,btagWeight_1a);
+  if(param.BJet_Method=="1d") return make_pair(NBJets_NoSF,btagWeight_1d);
+  if(param.BJet_Method=="2a") return make_pair(GetNBJets2a(jets,param, WP),1.);
+
+  cout << "[AnalyzerCore::GettNBjet] wtf" << endl;
+  exit(EXIT_FAILURE);
+
+  return make_pair(NBJets_NoSF,-9999.);
+
+}
+
+pair<int,double> AnalyzerCore::GetNBJets(vector<Jet> jets, TString WP, TString method){
+
+  int NBJets_NoSF(0);
+  JetTagging::WP jwp = JetTagging::Medium;
+  if  (WP == "Loose")  jwp = JetTagging::Loose;
+  else if  (WP == "Medium")  jwp = JetTagging::Medium;
+  else  if  (WP == "Tight")  jwp = JetTagging::Tight;
+  else return make_pair(-1,1.);
+
+
+  JetTagging::Parameters jtp_DeepCSV = JetTagging::Parameters(JetTagging::DeepCSV,
+							      jwp,
+							      JetTagging::incl, JetTagging::comb);
+  //  JetTagging::Parameters jtp_DeepCSV_Reshape = JetTagging::Parameters(JetTagging::DeepCSV//,                                                 
+  //jwp,                                                                                                                                         
+  //                                                                         JetTagging::iterativefit, JetTagging::iterativefit);                
+
+  double btagWeight_1a = mcCorr->GetBTaggingReweight_1a(jets, jtp_DeepCSV);
+  double btagWeight_1d = 1.;//mcCorr->GetBTaggingReweight_1d(jets, jtp_DeepCSV_Reshape);                                                         
+
+
+  for(auto ij : jets)  {
+    double this_discr = ij.GetTaggerResult(JetTagging::DeepCSV);
+    if( this_discr > mcCorr->GetJetTaggingCutValue(JetTagging::DeepCSV, JetTagging::Medium) ) NBJets_NoSF++;
+  }
+
+  if(method=="1a") return make_pair(NBJets_NoSF,btagWeight_1a);
+  if(method=="1d") return make_pair(NBJets_NoSF,btagWeight_1d);
+  if(method=="2a") return make_pair(GetNBJets2a(jets, WP),1.);
+
+
+  cout << "[AnalyzerCore::GetNBJet] wtf" << endl;
+  exit(EXIT_FAILURE);
+
+  return make_pair(NBJets_NoSF,-9999.);
+}
+
+int AnalyzerCore::GetNBJets2a(TString ID, TString WP){
+
+  vector<Jet> this_AllJets = GetAllJets();
+  vector<Jet>       jets   = SelectJets(this_AllJets,ID, 20., 2.4);
+
+  int NBJets_WithSF_2a(0);
+
+  JetTagging::WP             jwp = JetTagging::Medium;
+  if  (WP == "Loose")        jwp = JetTagging::Loose;
+  else if  (WP == "Medium")  jwp = JetTagging::Medium;
+  else  if  (WP == "Tight")  jwp = JetTagging::Tight;
+  else return -1;
+  for( auto i  :  jets)
+    if( mcCorr->IsBTagged_2a(JetTagging::Parameters(JetTagging::DeepCSV,       jwp, JetTagging::incl, JetTagging::comb), i) ) NBJets_WithSF_2a++;
+
+
+  return NBJets_WithSF_2a;
+}
+
+
+
+int AnalyzerCore::GetNBJets2a( vector<Jet> jets, AnalyzerParameter param, TString WP){
+
+  int NBJets_WithSF_2a(0);
+
+  JetTagging::WP             jwp = JetTagging::Medium;
+  if  (WP == "Loose")        jwp = JetTagging::Loose;
+  else if  (WP == "Medium")  jwp = JetTagging::Medium;
+  else  if  (WP == "Tight")  jwp = JetTagging::Tight;
+  else return -1;
+  for( auto i  :  jets){
+    if(fabs(i.Eta()) >2.4) continue;
+    if( mcCorr->IsBTagged_2a(JetTagging::Parameters(JetTagging::DeepCSV,       jwp, JetTagging::incl, JetTagging::comb), i,param.SystDir_BTag)	) NBJets_WithSF_2a++;
+  }
+  
+  return NBJets_WithSF_2a;
+}
+
+
+int AnalyzerCore::GetNBJets2a( vector<Jet> jets, TString WP){
+
+  int NBJets_WithSF_2a(0);
+
+  JetTagging::WP             jwp = JetTagging::Medium;
+  if  (WP == "Loose")        jwp = JetTagging::Loose;
+  else if  (WP == "Medium")  jwp = JetTagging::Medium;
+  else  if  (WP == "Tight")  jwp = JetTagging::Tight;
+  else return -1;
+  for(unsigned int i=0; i<jets.size(); i++)
+    if( mcCorr->IsBTagged_2a(JetTagging::Parameters(JetTagging::DeepCSV,       jwp, JetTagging::incl, JetTagging::comb), jets.at(i)) ) NBJets_WithSF_2a++;
+
+
+  return NBJets_WithSF_2a;
+}
+
+
+
+double AnalyzerCore::GetEventFatJetSF(vector<FatJet> fatjets, TString label, int dir){
+
+  double FatJetTau21_SF(1);
+  for (auto ifj : fatjets){
+    FatJetTau21_SF*=GetFatJetSF(ifj, label,dir);
+  }
+  return FatJetTau21_SF;
+
+}
+
+double AnalyzerCore::GetFatJetSF(FatJet fatjet, TString tag,  int dir){
+
+  if(IsDATA) return 1.;
+  float fsys = -1;
+  if(dir > 0) fsys =1;
+  if(dir==0) fsys=0.;
+
+  double loose_sf(1.);
+  if(DataYear==2016) loose_sf = 1.03 + fsys*0.14;
+  if(DataYear==2017) loose_sf = 0.974 + fsys*0.029;
+  if(DataYear==2018) loose_sf = 0.980 + fsys*0.019;
+
+  if(tag=="ak8_type1") return loose_sf;
+  if (tag.Contains("_tau21" ))  return loose_sf;
+
+  return 1.;
+
+}
+
+
+vector<Jet>   AnalyzerCore::GetAK4Jets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag,std::vector<Lepton *> leps_veto,  vector<FatJet> fatjets){
+
+  vector<Jet> output_jets;
+  for(unsigned int ijet =0; ijet < jets.size(); ijet++){
+    bool jetok=true;
+
+    if(fabs(jets[ijet].Eta()) > eta_cut) continue;
+    if(jets[ijet].Pt() < pt_cut)continue;
+
+    for(auto ilep : leps_veto){
+      if(ilep->DeltaR(jets[ijet]) < dr_lep_clean) jetok = false;
+    }
+
+    for(unsigned int ifjet =0; ifjet < fatjets.size(); ifjet++){
+      if(jets[ijet].DeltaR(fatjets[ifjet]) <dr_ak8_clean) jetok = false;
+    }
+
+    if(!jetok) continue;
+    if(pu_tag=="")output_jets.push_back(jets[ijet]);
+    else if(jets[ijet].PassPileupMVA(pu_tag,GetEra())) output_jets.push_back(jets[ijet]);
+  }
+  return output_jets;
+
+}
+
+
+
+vector<Jet>   AnalyzerCore::GetAK4Jets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag, vector<Electron>  veto_electrons, vector<Muon>  veto_muons, vector<FatJet> fatjets){
+
+  vector<Jet> output_jets;
+  for(unsigned int ijet =0; ijet < jets.size(); ijet++){
+    bool jetok=true;
+
+    if(fabs(jets[ijet].Eta()) > eta_cut) continue;
+    if(jets[ijet].Pt() < pt_cut)continue;
+
+    for(unsigned int iel=0 ; iel < veto_electrons.size(); iel++){
+      if(jets[ijet].DeltaR(veto_electrons[iel]) < dr_lep_clean) jetok = false;
+    }
+
+    for(unsigned int iel=0 ; iel < veto_muons.size(); iel++){
+      if(jets[ijet].DeltaR(veto_muons[iel]) < dr_lep_clean) jetok = false;
+    }
+    for(unsigned int ifjet =0; ifjet < fatjets.size(); ifjet++){
+      if(jets[ijet].DeltaR(fatjets[ifjet]) <dr_ak8_clean) jetok = false;
+    }
+
+    if(!jetok) continue;
+    if(pu_tag=="")output_jets.push_back(jets[ijet]);
+    else if(jets[ijet].PassPileupMVA(pu_tag,GetEra())) output_jets.push_back(jets[ijet]);
+  }
+  return output_jets;
+}
+
+
+vector<FatJet>  AnalyzerCore::GetAK8Jets(vector<FatJet> fatjets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean , bool apply_tau21, double tau21_cut , bool apply_masscut, double sdmass_lower_cut,  double sdmass_upper_cut, vector<Electron>  veto_electrons, vector<Muon>  veto_muons){
+
+  vector<FatJet> output_fatjets;
+  for(unsigned int ijet =0; ijet < fatjets.size(); ijet++){
+
+    bool jetok=true;
+
+    for(unsigned int iel=0 ; iel < veto_electrons.size(); iel++){
+      if(fatjets[ijet].DeltaR(veto_electrons[iel]) < dr_lep_clean) jetok = false;
+    }
+
+    for(unsigned int iel=0 ; iel < veto_muons.size(); iel++){
+      if(fatjets[ijet].DeltaR(veto_muons[iel]) < dr_lep_clean) jetok = false;
+    }
+
+
+    double lower_sd_mass_cut=sdmass_lower_cut;
+    double upper_sd_mass_cut=sdmass_upper_cut;
+    if(sdmass_lower_cut < 0.){
+      lower_sd_mass_cut = 40.;
+      upper_sd_mass_cut = 130.;
+      if(DataYear==2017){
+        lower_sd_mass_cut=65.;
+        upper_sd_mass_cut=105.;
+      }
+    }
+    // tau21 cut has SF so need to apply SD mass for 2017                                                                                        
+    if(apply_tau21) {
+      if(DataYear==2017) {
+        lower_sd_mass_cut  = 65.;
+        upper_sd_mass_cut  = 105.;
+      }
+    }
+
+    double tau_21_cut = tau21_cut;
+    if(tau21_cut < 0.){
+      if(DataYear==2016) tau_21_cut = 0.55;
+      if(DataYear==2017) tau_21_cut = 0.45;
+      if(DataYear==2018) tau_21_cut = 0.45;
+    }
+
+    if( fabs(fatjets[ijet].Eta()) > eta_cut)    continue;
+    if( fabs(fatjets[ijet].Pt())  < pt_cut)    continue;
+
+    if(lepton_cleaning && !jetok)  continue;
+    if(apply_tau21 && !fatjets[ijet].PassPuppiTau21(tau_21_cut))  continue;
+    if(apply_masscut && !fatjets[ijet].PassSDMassrange(lower_sd_mass_cut,upper_sd_mass_cut)) continue;
+
+
+    output_fatjets.push_back(fatjets[ijet]);
+  }
+
+
+  return output_fatjets;
+}
+
+
+
 std::vector<Electron> AnalyzerCore::ScaleElectrons(const std::vector<Electron>& electrons, int sys){
 
   std::vector<Electron> out;
@@ -1003,6 +1389,287 @@ bool AnalyzerCore::PassMETFilter(){
 
 }
 
+
+///======== Weight functions                                                                                                                     
+
+
+
+double AnalyzerCore::GetMuonSFEventWeight(std::vector<Muon> muons,AnalyzerParameter param ){
+
+  double this_weight(1.);
+  if(!IsDATA){
+
+    mcCorr->IgnoreNoHist = param.MCCorrrectionIgnoreNoHist;
+
+    for (auto mu: muons){
+      double MiniAODP = sqrt( mu.MiniAODPt() * mu.MiniAODPt() + mu.Pz() * mu.Pz() );
+      double this_pt  = mu.MiniAODPt();
+      double this_eta = mu.Eta();
+
+
+      double this_idsf   = mcCorr->MuonID_SF (param.Muon_ID_SF_Key,  this_eta, this_pt);
+      double this_isosf  = mcCorr->MuonISO_SF(param.Muon_ISO_SF_Key, this_eta, this_pt);
+      double this_trigsf = mcCorr->MuonTrigger_SF(param.Muon_Trigger_SF_Key, param.Muon_Trigger_NameForSF, muons);
+
+      this_weight *= this_idsf*this_isosf*this_trigsf;
+      if(param.DEBUG) cout << "GetMuonSFEventWeight this_idsf=" << this_idsf << " this_isosf=" << this_isosf << " this_trigsf=" << this_trigsf << endl;
+      /*if(param.Muon_RECO_SF_Key  == "HighPtMuonRecoSF"){                                                                                       
+        double this_recosf = mcCorr->MuonReco_SF("HighPtMuonRecoSF", this_eta, MiniAODP);                                                        
+        this_weight *= this_recosf;                                                                                                              
+        FillWeightHist("RecoMuWeight_"+param.Name,this_recosf);                                                                                  
+        }*/
+
+      double reco_pt = (param.Muon_RECO_SF_Key  == "HighPtMuonRecoSF") ?  MiniAODP : this_pt;
+
+      double this_recosf = mcCorr->MuonReco_SF(param.Muon_RECO_SF_Key, this_eta, reco_pt);
+
+      this_weight *= this_recosf;		      
+      FillWeightHist(param.Name+"/RecoMuWeight_"+param.Name,this_recosf); 
+      
+
+      FillWeightHist(param.Name+"/IDMuWeight_"+param.Name,this_idsf);
+      FillWeightHist(param.Name+"/ISOMuWeight_"+param.Name,this_isosf);
+
+    }// end of muon loop  
+
+  }// end of MC req.                                                                                                                             
+
+  return this_weight;
+
+}
+
+
+double AnalyzerCore::GetElectronSFEventWeight(std::vector<Electron> electrons, AnalyzerParameter param ){
+
+  double this_weight(1.);
+  if(!IsDATA){
+
+    mcCorr->IgnoreNoHist = param.MCCorrrectionIgnoreNoHist;
+
+    for (auto el: electrons){
+
+      double this_recosf  = mcCorr->ElectronReco_SF(el.scEta(),el.Pt(), param.SystDir_ElectronRecoSF);
+      double this_idsf    = mcCorr->ElectronID_SF(param.Electron_ID_SF_Key, el.scEta(), el.Pt(), param.SystDir_ElectronIDSF);
+
+      this_weight *= this_recosf*this_idsf;
+      FillWeightHist(param.Name+"/el_reco_sf_"+param.Name, this_recosf);
+      FillWeightHist(param.Name+"/el_id_sf_"+param.Name, this_idsf);
+
+    }
+    double this_trigsf = mcCorr->ElectronTrigger_SF(param.Electron_Trigger_SF_Key, param.Electron_Trigger_NameForSF, electrons);
+
+    this_weight  *= this_trigsf;
+
+  }
+  return this_weight;
+
+}
+
+
+
+double AnalyzerCore::GetFakeRateEl(double eta, double pt, AnalyzerParameter param){
+
+  double scale=1.;
+
+  return fakeEst->GetElectronFakeRate(param.Electron_Tight_ID,param.Electron_FR_Key,eta, pt, 0)*scale;
+
+
+}
+double AnalyzerCore::GetFakeRateM(double eta, double pt, AnalyzerParameter param){
+
+  double scale=1.;
+
+  return fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, param.Muon_FR_Key ,eta, pt, 0)*scale;
+
+}
+
+
+
+
+double AnalyzerCore::GetFakeWeightElectron(std::vector<Electron> electrons , AnalyzerParameter param){
+
+
+  double this_weight = -1.;
+  vector<double> FRs;
+
+  double this_fr = -999.;
+  for(auto el : electrons){
+
+    if( el.PassID(param.Electron_Tight_ID) ) continue;
+    this_fr = fakeEst->GetElectronFakeRate(param.Electron_Tight_ID, param.Electron_FR_Key, fabs(el.scEta()), el.Pt());
+    this_weight *= -1.*this_fr/(1.-this_fr);
+
+    FRs.push_back(this_fr);
+
+  }
+  if(FRs.size()==0){
+    return 0;
+  }
+  else{
+    return this_weight;
+  }
+  return 0.;
+}
+
+
+
+
+double AnalyzerCore::GetFakeWeightElectron(std::vector<Electron> electrons , vector<TString> trigs, AnalyzerParameter param){
+
+  double this_weight = -1.;
+  if (electrons.size() ==1){
+    TString fr_key1 = param.Electron_FR_Key;
+    TString pr_key1 = "ptcone_eta_Prescaled";
+
+    double this_fr1 = fakeEst->GetElectronFakeRate(param.Electron_Tight_ID, fr_key1, fabs(electrons[0].Eta()), electrons[0].Pt());
+    double this_pr1 = fakeEst->GetElectronPromptRate(param.Electron_Tight_ID, pr_key1, fabs(electrons[0].Eta()), electrons[0].Pt());
+
+    this_weight=  fakeEst->CalculateLepWeight(this_pr1, this_fr1, electrons[0].PassID(param.Electron_Tight_ID));
+
+
+    return this_weight;
+
+  }
+
+  if (electrons.size() ==2){
+
+    TString fr_key1 = param.Electron_FR_Key;
+    TString fr_key2 = param.Electron_FR_Key;
+    TString pr_key1 = "ptcone_eta_Prescaled";
+    TString pr_key2 = "ptcone_eta_Prescaled";
+
+    double this_fr1 = fakeEst->GetElectronFakeRate(param.Electron_Tight_ID, fr_key1, fabs(electrons[0].Eta()), electrons[0].Pt());
+    double this_fr2 = fakeEst->GetElectronFakeRate(param.Electron_Tight_ID, fr_key2, fabs(electrons[1].Eta()), electrons[1].Pt());
+
+    double this_pr1 = fakeEst->GetElectronPromptRate(param.Electron_Tight_ID, pr_key1, fabs(electrons[0].Eta()), electrons[0].Pt());
+    double this_pr2 = fakeEst->GetElectronPromptRate(param.Electron_Tight_ID, pr_key2, fabs(electrons[1].Eta()), electrons[1].Pt());
+
+    this_weight = fakeEst->CalculateDilepWeight(this_pr1,this_fr1, this_pr2, this_fr2, electrons[0].PassID(param.Electron_Tight_ID) , electrons[1].PassID(param.Electron_Tight_ID), 0);
+
+                                                                                                                                                 
+    return this_weight;
+  }
+  else{
+    return GetFakeWeightElectron(electrons, param);
+  }
+  return -999.;
+
+
+}
+
+
+
+double AnalyzerCore::GetFakeWeightMuon(std::vector<Muon> muons , vector<TString> trigs, AnalyzerParameter param){
+
+
+  double this_weight = -1.;
+  if (muons.size() ==1){
+    TString fr_key1 = param.Muon_FR_Key;
+    TString pr_key1 = "ptcone_eta_Prescaled";
+    if(trigs[0].Contains("IsoMu")) {
+      fr_key1 = fr_key1.ReplaceAll("AwayJetPt","UnPrescaled_AwayJetPt");
+      pr_key1 = pr_key1.ReplaceAll("Prescaled","UnPrescaled");
+    }
+    double this_fr1 = fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, fr_key1, fabs(muons[0].Eta()), muons[0].Pt());
+    double this_pr1 = fakeEst->GetMuonPromptRate(param.Muon_Tight_ID, pr_key1, fabs(muons[0].Eta()), muons[0].Pt());
+
+    this_weight=  fakeEst->CalculateLepWeight(this_pr1, this_fr1, muons[0].PassID(param.Muon_Tight_ID));
+
+
+    return this_weight;
+
+  }
+
+
+  if (muons.size() ==2){
+
+    TString fr_key1 = param.Muon_FR_Key;
+    TString fr_key2 = param.Muon_FR_Key;
+    TString pr_key1 = "ptcone_eta_Prescaled";
+    TString pr_key2 = "ptcone_eta_Prescaled";
+
+    if(trigs[0].Contains("IsoMu")) {
+      fr_key1 = fr_key1.ReplaceAll("AwayJetPt","UnPrescaled_AwayJetPt");
+      pr_key1 = pr_key1.ReplaceAll("Prescaled","UnPrescaled");
+    }
+
+    double this_fr1 = fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, fr_key1, fabs(muons[0].Eta()), muons[0].Pt());
+    double this_fr2 = fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, fr_key2, fabs(muons[1].Eta()), muons[1].Pt());
+
+    double this_pr1 = fakeEst->GetMuonPromptRate(param.Muon_Tight_ID, pr_key1, fabs(muons[0].Eta()), muons[0].Pt());
+    double this_pr2 = fakeEst->GetMuonPromptRate(param.Muon_Tight_ID, pr_key2, fabs(muons[1].Eta()), muons[1].Pt());
+
+    this_weight = fakeEst->CalculateDilepWeight(this_pr1,this_fr1, this_pr2, this_fr2, muons[0].PassID(param.Muon_Tight_ID) , muons[1].PassID(param.Muon_Tight_ID), 0);
+
+    return this_weight;
+  }
+  else {
+    return GetFakeWeightMuon(muons, param);
+  }
+  return -999.;
+
+}
+
+
+
+double AnalyzerCore::GetFakeWeightMuon(std::vector<Muon> muons , AnalyzerParameter param){
+
+
+
+  double this_weight = -1.;
+  vector<double> FRs;
+
+  double this_fr = -999.;
+  for(auto mu : muons){
+
+    if( mu.PassID(param.Muon_Tight_ID) ) continue;
+    this_fr = fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, param.Muon_FR_Key, fabs(mu.Eta()), mu.Pt());
+    this_weight *= -1.*this_fr/(1.-this_fr);
+
+    FRs.push_back(this_fr);
+
+  }
+
+
+  if(FRs.size()==0){
+    return 0;
+  }
+  else{
+    return this_weight;
+  }
+
+}
+
+
+
+double AnalyzerCore::GetCFWeightElectron(std::vector<Electron> electrons ,  AnalyzerParameter param){
+  //double CFBackgroundEstimator::GetElectronCFRate(TString ID, TString key, double eta, double pt, int sys){                                    
+
+  //  cout << "GetCFWeightElectron" << endl;                                                                                                       
+
+  double el1_cf_rate =   cfEst->GetElectronCFRate2D(param.Electron_Tight_ID,"central",(electrons[0].scEta()), electrons[0].Pt(), 0);
+  double el2_cf_rate =   cfEst->GetElectronCFRate2D(param.Electron_Tight_ID,"central",(electrons[1].scEta()), electrons[1].Pt(), 0);
+
+  // for(auto iel : electrons) cout << iel.Pt() << " " << iel.Eta() << endl;                                                                     
+  //cout << "GetCFWeightElectron " << el1_cf_rate<< endl;                                                                                        
+  //  cout << "GetCFWeightElectron " << el2_cf_rate<< endl;                                                                                      
+
+
+  if((electrons[0].scEta()) < 1.5) el1_cf_rate *= 0.95;
+  else el1_cf_rate *= 0.95;
+  if((electrons[1].scEta()) < 1.5) el2_cf_rate *= 0.95;
+  else el2_cf_rate *= 0.95;
+
+  double cf_weight = (el1_cf_rate / (1.-el1_cf_rate))  + (el2_cf_rate/(1.-el2_cf_rate));
+  return cf_weight;
+}
+
+
+
+
+
+
+
 void AnalyzerCore::initializeAnalyzerTools(){
 
   //==== MCCorrection
@@ -1167,6 +1834,22 @@ std::vector<Muon> AnalyzerCore::MuonWithoutGap(const std::vector<Muon>& muons){
 
 }
 
+
+std::vector<Muon> AnalyzerCore::MuonNonPromptOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens){
+
+  if(IsDATA) return muons;
+
+  std::vector<Muon> out;
+
+  for(unsigned int i=0; i<muons.size(); i++){
+    bool pass=false;
+    if(GetLeptonType(muons.at(i), gens)>0)pass=true;
+    if(!pass)out.push_back( muons.at(i) );
+  }
+  return out;
+
+}
+
 std::vector<Muon> AnalyzerCore::MuonPromptOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens){
 
   if(IsDATA) return muons;
@@ -1181,6 +1864,15 @@ std::vector<Muon> AnalyzerCore::MuonPromptOnly(const std::vector<Muon>& muons, c
   return out;
 
 }
+
+
+TString AnalyzerCore::PromptStatus(Muon mu, const std::vector<Gen>& gens){
+
+  if(GetLeptonType(mu, gens)>0) return "Prompt";
+  else return "Fake";
+
+}
+
 
 std::vector<Muon> AnalyzerCore::MuonUsePtCone(const std::vector<Muon>& muons){
 
@@ -1231,6 +1923,31 @@ Particle AnalyzerCore::UpdateMET(const Particle& METv, const std::vector<Muon>& 
 
 }
 
+Particle AnalyzerCore::UpdateMETSmearedJet(const Particle& METv, const std::vector<Jet>& jets){
+
+  float met_x = METv.Px();
+  float met_y = METv.Py();
+
+  double px_orig(0.), py_orig(0.),px_corrected(0.), py_corrected(0.);
+  for(auto jet : jets){
+    px_orig+= jet.PxUnSmeared();
+    py_orig+= jet.PyUnSmeared();
+
+    px_corrected += jet.Px();
+    py_corrected += jet.Py();
+  }
+
+  met_x = met_x + px_orig - px_corrected;
+  met_y = met_y + py_orig - py_corrected;
+
+  Particle METout;
+  METout.SetPxPyPzE(met_x,met_y,0,sqrt(met_x*met_x+met_y*met_y));
+  return METout;
+
+}
+
+
+
 std::vector<Muon> AnalyzerCore::MuonApplyPtCut(const std::vector<Muon>& muons, double ptcut){
 
   std::vector<Muon> out;
@@ -1249,10 +1966,15 @@ std::vector<Electron> AnalyzerCore::ElectronPromptOnly(const std::vector<Electro
   if(IsDATA) return electrons;
 
   std::vector<Electron> out;
-
   for(unsigned int i=0; i<electrons.size(); i++){
-    if(GetLeptonType(electrons.at(i), gens)<=0) continue;
-    out.push_back( electrons.at(i) );
+    bool pass=false;
+    //if(GetLeptonType(electrons.at(i), gens)<=0) continue;
+    if(GetLeptonType(electrons.at(i), gens) > 0)pass=true;
+    if(GetLeptonType(electrons.at(i), gens)== -5)pass=true;
+    if(GetLeptonType(electrons.at(i), gens)== -6)pass=true;
+    if(IsCF(electrons.at(i), gens)) pass=false;
+
+    if(pass)out.push_back( electrons.at(i) );
   }
 
   return out;
@@ -1429,6 +2151,30 @@ void AnalyzerCore::PrintGen(const std::vector<Gen>& gens){
 
 }
 
+void AnalyzerCore::PrintEvent(AnalyzerParameter param,TString selection,double w){
+
+  // if run_timestamp is not set dont run                                                                                                        
+  if (timestamp == "-999999") return;
+
+  FillEventComparisonFile(param,selection,string(timestamp), w);
+
+  cout <<  "selection = " << selection << " RunNumber:EventNumber = " << run << ":" << event << endl;
+
+}
+
+bool AnalyzerCore::IsCF(Electron el, std::vector<Gen> gens){
+
+  int charge_el_reco = el.Charge();
+  Lepton l = Lepton(el);
+
+  Gen gen_el= GetGenMatchedLepton(l, gens);
+  int pdgid = gen_el.PID() ;
+  if( (pdgid * charge_el_reco) > 0) return true;
+
+  return false;
+}
+
+
 Gen AnalyzerCore::GetGenMatchedLepton(const Lepton& lep, const std::vector<Gen>& gens){
 
   //==== find status 1 lepton
@@ -1591,6 +2337,40 @@ bool AnalyzerCore::IsFromHadron(const Gen& me, const std::vector<Gen>& gens){
   return out;
 
 }
+
+
+bool AnalyzerCore::ConversionVeto(std::vector<Lepton *> leps,const std::vector<Gen>& gens){
+
+  // function vetos conversion events in DY/X+G                                                                                                  
+  // since Z/G and WG have cut on phootn in GEN need to overlap with DY                                                                          
+  // Photon Cut is 15 GeV                                                                                                                        
+  //                                                                                                                                             
+
+  bool GENTMatched=false;
+  for(auto ilep : leps){
+    for(unsigned int i=2; i<gens.size(); i++){
+      Gen gen = gens.at(i);
+      if(ilep->DeltaR(gen) < 0.2) {
+        if(gen.PID() == 22 && gen.isPromptFinalState() && gen.Pt()> 15.) {
+          GENTMatched=true;
+          for(unsigned int j=2; j<gens.size(); j++){
+            if(!(fabs(gens.at(j).PID()) <7 || fabs(gens.at(j).PID()) == 21)) continue;
+            if(gens.at(j).Status() != 23) continue;
+            if(gens.at(j).DeltaR(gen) <0.05)GENTMatched=false;
+          }
+        }
+      }
+    }
+    if(GENTMatched) break;
+  }
+
+  if(MCSample.Contains("WG") ||MCSample.Contains("ZG"))   return GENTMatched;
+  else if(MCSample.Contains("DY") || MCSample.Contains("WJ")) return !GENTMatched;
+
+  return false;
+}
+
+
 
 
 int AnalyzerCore::GetPrElType_InSameSCRange_Public(int TruthIdx, const std::vector<Gen>& TruthColl){
@@ -1932,13 +2712,23 @@ TH3D* AnalyzerCore::GetHist3D(TString histname){
   
 }
 
+void AnalyzerCore::FillWeightHist(TString label, double _weight){
 
-void AnalyzerCore::FillHist(TString histname, double value, double weight, int n_bin, double x_min, double x_max){
+  if(!label.Contains("Syst_"))
+    FillHist( "weights/"+ label , _weight ,1., 200, -5., 5,"ev weight");
+
+  return;
+}
+
+
+
+void AnalyzerCore::FillHist(TString histname, double value, double weight, int n_bin, double x_min, double x_max , TString label){
 
   TH1D *this_hist = GetHist1D(histname);
   if( !this_hist ){
     this_hist = new TH1D(histname, "", n_bin, x_min, x_max);
     this_hist->SetDirectory(NULL);
+    this_hist->GetXaxis()->SetTitle(label);
     maphist_TH1D[histname] = this_hist;
   }
 
@@ -1946,12 +2736,15 @@ void AnalyzerCore::FillHist(TString histname, double value, double weight, int n
 
 }
 
-void AnalyzerCore::FillHist(TString histname, double value, double weight, int n_bin, double *xbins){
+
+void AnalyzerCore::FillHist(TString histname, double value, double weight, int n_bin, double *xbins, TString label){
 
   TH1D *this_hist = GetHist1D(histname);
   if( !this_hist ){
     this_hist = new TH1D(histname, "", n_bin, xbins);
     this_hist->SetDirectory(NULL);
+    this_hist->GetXaxis()->SetTitle(label);
+
     maphist_TH1D[histname] = this_hist;
   }
 

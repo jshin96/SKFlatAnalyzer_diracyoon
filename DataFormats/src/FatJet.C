@@ -113,6 +113,7 @@ bool FatJet::PassID(TString ID) const {
 
   if(ID=="tight") return Pass_tightJetID();
   if(ID=="tightLepVeto") return Pass_tightLepVetoJetID();
+  if(ID=="HNTight") return Pass_HNTight();
 
   cout << "[FatJet::PassID] No id : " << ID << endl;
   exit(ENODATA);
@@ -140,6 +141,16 @@ double FatJet::GetTaggerResult(JetTagging::Tagger tg) const{
     cout << "[FatJet::GetTaggerResult] ERROR; Wrong tagger" << endl;
     return -999;
   }
+}
+
+
+bool FatJet::Pass_HNTight() const{
+  //  if(!Pass_tightLepVetoJetID()) return false;
+  if(!Pass_tightJetID()) return false;
+  if(!(PuppiTau2()/PuppiTau1()<0.75)) return false;
+  if(!(SDMass()>40. && SDMass()<130.)) return false;
+  
+  return true;
 }
 
 void FatJet::SetPuppiTaus(double t1, double t2, double t3, double t4){

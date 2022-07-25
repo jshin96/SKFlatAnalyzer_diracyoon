@@ -5,11 +5,15 @@ void AnalyzerParameter::Clear(){
   Name = "";
 
   MCCorrrectionIgnoreNoHist = false;
+  DEBUG = false;
 
   Electron_Tight_ID = "";
   Electron_Loose_ID = "";
   Electron_Veto_ID = "";
   Electron_ID_SF_Key = "";
+  Electron_Trigger_SF_Key = "Default";
+  Electron_Trigger_NameForSF = "Default";
+
   Electron_FR_ID = "";
   Electron_FR_Key = "";
   Electron_CF_ID = "";
@@ -26,6 +30,8 @@ void AnalyzerParameter::Clear(){
   Muon_Loose_ID = "";
   Muon_Veto_ID = "";
   Muon_RECO_SF_Key = "";
+  Muon_Trigger_SF_Key = "";
+  Muon_Trigger_NameForSF = "Default";
   Muon_ID_SF_Key = "";
   Muon_ISO_SF_Key = "";
   Muon_Trigger_SF_Key = "";
@@ -41,6 +47,11 @@ void AnalyzerParameter::Clear(){
   Muon_UseTuneP = false;
   Muon_MinPt = 10.;
 
+  SystDir_PU=0;
+  SystDir_BTag="central";
+  BJet_Method="2a";
+
+
   Jet_ID = "";
   FatJet_ID = "";
 
@@ -53,11 +64,13 @@ AnalyzerParameter::AnalyzerParameter(){
   Name = "Default";
 
   MCCorrrectionIgnoreNoHist = false;
+  DEBUG = false;
 
   Electron_Tight_ID = "passTightID";
   Electron_Loose_ID = "passLooseID";
   Electron_Veto_ID = "passVetoID";
   Electron_ID_SF_Key = "passTightID";
+  Electron_Trigger_NameForSF = "Ele32_WPTight_Gsf";
 
   Muon_Tight_ID = "POGTightWithTightIso";
   Muon_Loose_ID = "POGLoose";
@@ -66,6 +79,13 @@ AnalyzerParameter::AnalyzerParameter(){
   Muon_ID_SF_Key = "NUM_TightID_DEN_genTracks";
   Muon_ISO_SF_Key = "NUM_TightRelIso_DEN_TightIDandIPCut";
   Muon_Trigger_SF_Key = "POGTight";
+  Muon_Trigger_NameForSF = "IsoMu24";
+
+
+
+  SystDir_PU=0;
+  SystDir_BTag="central";
+  BJet_Method="2a";
 
   Jet_ID = "HN";
   FatJet_ID = "HN";

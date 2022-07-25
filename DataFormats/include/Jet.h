@@ -20,8 +20,10 @@ public:
   inline bool IsGenMatched() const { return j_GenHFHadronMatcher_flavour!=-999; }
   void SetTaggerResults(std::vector<double> ds);
   void SetEnergyFractions(double cH, double nH, double nEM, double cEM, double muE);
+  inline double ChargedEmEnergyFraction() const { return j_chargedEmEnergyFraction;}
   void SetMultiplicities(double cM, double nM);
   void SetPileupJetId(double v);
+  inline double PileupJetId() const { return j_PileupJetId; }
 
   void SetEnShift(double en_up, double en_down);
   inline double EnShift(int s) const {
@@ -30,6 +32,11 @@ public:
     else return j_En_down;
   }
   void SetResShift(double res_up, double res_down);
+
+  void SetRes(double res);
+  void SetPxUnSmeared(double px);
+  void SetPyUnSmeared(double py);
+
   inline double ResShift(int s) const {
     if(s==0) return 1.;
     else if(s>0) return j_Res_up;
@@ -47,7 +54,14 @@ public:
   inline bool Pass_tightJetID() const { return j_tightJetID; }
   inline bool Pass_tightLepVetoJetID() const { return j_tightLepVetoJetID; }
 
+  inline double Res() const { return j_Res;}
+  inline double PxUnSmeared()  const { return j_PxUnSmeared;}
+  inline double PyUnSmeared()  const { return j_PyUnSmeared;}
+  bool Pass_HNTight() const;
+
   bool PassID(TString ID) const;
+  bool PassPileupMVA(TString WP, TString era) const;
+
 
   double GetTaggerResult(JetTagging::Tagger tg) const;
 
@@ -56,6 +70,8 @@ private:
   double  j_area;
   int j_partonFlavour;
   int j_hadronFlavour;
+  double  j_PxUnSmeared;
+  double  j_PyUnSmeared;
   int j_GenHFHadronMatcher_flavour;
   int j_GenHFHadronMatcher_origin;
   double  j_DeepCSV;
@@ -74,6 +90,7 @@ private:
   double j_PileupJetId;
   double j_En_up;
   double j_En_down;
+  double j_Res;
   double j_Res_up;
   double j_Res_down;
   double j_bJetNN_corr;

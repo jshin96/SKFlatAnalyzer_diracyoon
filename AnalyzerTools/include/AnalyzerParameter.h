@@ -12,10 +12,10 @@ public:
 
   TString Name;
 
-  bool MCCorrrectionIgnoreNoHist;
+  bool MCCorrrectionIgnoreNoHist,DEBUG;
 
   TString Electron_Tight_ID, Electron_Loose_ID, Electron_Veto_ID;
-  TString Electron_ID_SF_Key, Electron_Trigger_SF_Key;
+  TString Electron_ID_SF_Key, Electron_Trigger_SF_Key,Electron_Trigger_NameForSF;
   TString Electron_FR_ID, Electron_FR_Key;
   TString Electron_CF_ID, Electron_CF_Key;
   double Electron_Tight_RelIso, Electron_Loose_RelIso, Electron_Veto_RelIso;
@@ -23,12 +23,17 @@ public:
   double Electron_MinPt;
 
   TString Muon_Tight_ID, Muon_Loose_ID, Muon_Veto_ID;
-  TString Muon_RECO_SF_Key, Muon_ID_SF_Key, Muon_ISO_SF_Key, Muon_Trigger_SF_Key;
+  TString Muon_RECO_SF_Key, Muon_ID_SF_Key, Muon_ISO_SF_Key, Muon_Trigger_SF_Key,Muon_Trigger_NameForSF;
   TString Muon_FR_ID, Muon_FR_Key;
   TString Muon_CF_ID, Muon_CF_Key;
   double Muon_Tight_RelIso, Muon_Loose_RelIso, Muon_Veto_RelIso;
   bool Muon_UseMini, Muon_UsePtCone, Muon_UseTuneP;
   double Muon_MinPt;
+
+  int SystDir_ElectronRecoSF, SystDir_ElectronIDSF, SystDir_MuonRecoSF, SystDir_MuonIDSF, SystDir_PU;
+
+  std::string SystDir_BTag,  BJet_Method;
+
 
   TString Jet_ID, FatJet_ID;
 

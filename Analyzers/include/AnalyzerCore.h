@@ -6,6 +6,7 @@
 #include "TMath.h"
 #include "TH3.h"
 #include <sstream>      
+#include <ctime>
 
 #include "SKFlatNtuple.h"
 #include "Event.h"
@@ -63,6 +64,19 @@ public:
 
   Event GetEvent();
 
+  // MC weight functions                                                                                                                         
+  double GetMuonSFEventWeight(std::vector<Muon> muons,AnalyzerParameter param );
+  double GetElectronSFEventWeight(std::vector<Electron> electrons, AnalyzerParameter param );
+
+  // FR functions                                                                                                                                
+  double GetFakeWeightMuon(std::vector<Muon> muons , AnalyzerParameter param);
+  double GetFakeWeightMuon(std::vector<Muon> muons , std::vector<TString> vtrig, AnalyzerParameter param);
+  double GetFakeWeightElectron(std::vector<Electron> electrons , vector<TString> trigs, AnalyzerParameter param);
+  double GetFakeWeightElectron(std::vector<Electron> electrons , AnalyzerParameter param);
+  double GetFakeRateEl(double eta, double pt, AnalyzerParameter param);
+  double GetFakeRateM(double eta, double pt, AnalyzerParameter param);
+
+  double GetCFWeightElectron(std::vector<Electron> electrons ,  AnalyzerParameter param);
 
   std::vector<Electron> GetAllElectrons();
   std::vector<Electron> GetElectrons(TString id, double ptmin, double fetamax, bool vetoHEM = false);
@@ -76,8 +90,13 @@ public:
   std::vector<Photon> GetAllPhotons();
   std::vector<Photon> GetPhotons(TString id, double ptmin, double fetamax);
 
+
+  bool PassID(std::vector<Electron> electrons, TString ID);
+
   //==== If TightIso is set, it calculate ptcone
   //==== If UseMini is true, Lepton::RelIso() returns MiniRelIso
+  std::vector<Lepton *> MakeLeptonPointerVector(const std::vector<Muon>& muons,const std::vector<Electron>& electrons, double TightIso=-999, bool UseMini=false);
+
   std::vector<Lepton *> MakeLeptonPointerVector(const std::vector<Muon>& muons, double TightIso=-999, bool UseMini=false);
   std::vector<Lepton *> MakeLeptonPointerVector(const std::vector<Electron>& electrons, double TightIso=-999, bool UseMini=false);
 
@@ -90,12 +109,18 @@ public:
   std::vector<Gen> GetGens();
   std::vector<LHE> GetLHEs();
 
+  bool ConversionVeto(std::vector<Lepton *> leps,const std::vector<Gen>& gens);
+  bool IsCF(Electron el, std::vector<Gen> gens);
+
+
   //===================================================
   //==== Get objects METHOD 2
   //==== Get AllObject in the begining, and apply cut
   //==================================================+
 
   std::vector<Electron> SelectElectrons(const std::vector<Electron>& electrons, TString id, double ptmin, double fetamax, bool vetoHEM = false);
+  std::vector<Electron> SelectElectrons(const std::vector<Electron>& electrons, TString id, double ptmin, double fetamax, bool cc, double dx_b, double dx_e,double dz_b,double dz_e, double iso_b, double iso_e);
+
 
   std::vector<Muon> UseTunePMuon(const std::vector<Muon>& muons);
   std::vector<Muon> SelectMuons(const std::vector<Muon>& muons, TString id, double ptmin, double fetamax);
@@ -106,6 +131,27 @@ public:
   std::vector<Jet> SelectJets(const std::vector<Jet>& jets, TString id, double ptmin, double fetamax);
 
   std::vector<FatJet> SelectFatJets(const std::vector<FatJet>& jets, TString id, double ptmin, double fetamax);
+
+  //==== BJets                                                                                                                                   
+  pair<int,double> GetNBJets(vector<Jet>       jets,  TString WP="Medium", TString method="2a");
+  pair<int,double> GetNBJets(vector<Jet>       jets,  AnalyzerParameter param, TString WP="Medium");
+  pair<int,double> GetNBJets(TString ID,              TString WP="Medium", TString method="2a");
+  pair<int,double> GetNBJets(AnalyzerParameter param, TString WP="Medium");
+  int GetNBJets2a(TString ID, TString WP="Medium");
+  int GetNBJets2a( vector<Jet> jets, TString WP="Medium");
+  int GetNBJets2a( vector<Jet> jets, AnalyzerParameter param,TString WP="Medium");
+
+  //===== AK8 Jet Syst + weights                                                                                                                 
+
+  double GetEventFatJetSF(vector<FatJet> fatjets, TString label, int dir);
+  double GetFatJetSF(FatJet fatjet, TString tag,  int dir);
+
+
+  //===== Detailed jet selection                                                                                                                 
+  vector<Jet>   GetAK4Jets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean,   TString pu_tag,std::vector<Lepton *> leps_veto,  vector<FatJet> fatjets);
+
+  vector<Jet>  GetAK4Jets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag, vector<Electron>  veto_electrons, vector<Muon>  veto_muons, vector<FatJet> fatjets);
+  vector<FatJet> GetAK8Jets(vector<FatJet> fatjets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean , bool apply_tau21, double tau21_cut , bool apply_masscut, double sdmass_lower_cut,  double sdmass_upper_cut, vector<Electron>  veto_electrons, vector<Muon>  veto_muons);
 
   //==================
   //==== Systematics
@@ -166,7 +212,7 @@ public:
   //================
   //==== Functions
   //================
-
+ 
   bool IsOnZ(double m, double width);
   double MT(TLorentzVector a, TLorentzVector b);
   double MT2(TLorentzVector a, TLorentzVector b, Particle METv, double METgap);
@@ -174,9 +220,14 @@ public:
   bool HasFlag(TString flag);
   std::vector<Muon> MuonWithoutGap(const std::vector<Muon>& muons);
   std::vector<Muon> MuonPromptOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens);
+  std::vector<Muon> MuonNonPromptOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens);
+  TString PromptStatus(Muon mu, const std::vector<Gen>& gens);
+  
   std::vector<Muon> MuonUsePtCone(const std::vector<Muon>& muons);
   Muon MuonUsePtCone(const Muon& muon);
   Particle UpdateMET(const Particle& METv, const std::vector<Muon>& muons);
+  Particle UpdateMETSmearedJet(const Particle& METv, const std::vector<Jet>& jets);
+
   std::vector<Muon> MuonApplyPtCut(const std::vector<Muon>& muons, double ptcut);
   std::vector<Electron> ElectronPromptOnly(const std::vector<Electron>& electrons, const std::vector<Gen>& gens);
   std::vector<Electron> ElectronUsePtCone(const std::vector<Electron>& electrons);
@@ -187,6 +238,14 @@ public:
   std::vector<FatJet> FatJetsVetoLeptonInside(const std::vector<FatJet>& jets, const std::vector<Electron>& els, const std::vector<Muon>& mus, double dR=0.8);
   std::vector<Jet> JetsAwayFromPhoton(const std::vector<Jet>& jets, const std::vector<Photon>& photons, double mindr);
   Particle AddFatJetAndLepton(const FatJet& fatjet, const Lepton& lep);
+
+
+
+  //--------- JA                                                                                                                                 
+
+  void PrintEvent(AnalyzerParameter param,TString selection,double w);
+  void FillEventComparisonFile(AnalyzerParameter param, TString label,string time, double w);
+
 
   //==== GenMatching
 
@@ -213,8 +272,14 @@ public:
   TH2D* GetHist2D(TString histname);
   TH3D* GetHist3D(TString histname);
 
-  void FillHist(TString histname, double value, double weight, int n_bin, double x_min, double x_max);
-  void FillHist(TString histname, double value, double weight, int n_bin, double *xbins);
+  // === Ev weights                                                                                                                              
+  void FillWeightHist(TString label, double _weight);
+
+  // === HIST settings/filling                        
+
+  void FillHist(TString histname, double value, double weight, int n_bin, double x_min, double x_max, TString label="");
+  void FillHist(TString histname, double value, double weight, int n_bin, double *xbins, TString label="");
+
   void FillHist(TString histname,
                 double value_x, double value_y,
                 double weight,
@@ -266,6 +331,8 @@ public:
   void SwitchToTempDir();
   TFile *outfile=NULL;
   void SetOutfilePath(TString outname);
+
+  string run_timestamp;
 
 };
 

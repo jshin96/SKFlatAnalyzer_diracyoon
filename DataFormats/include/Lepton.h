@@ -13,6 +13,17 @@ public:
   inline double dXY() const {return j_dXY;}
   inline double dXYerr() const {return j_dXYerr;}
 
+  void SetLepMVA(double mva);
+  inline double lep_mva() const {return j_lep_mva;}
+
+
+  void SetJetPtRel(double ptrel);
+  inline double lep_jet_ptrel() const {return j_lep_jetptrel;}
+  void SetJetPtRatio(double ptr);
+  inline double lep_jet_ptratio() const {return j_lep_jetptratio;}
+
+
+
   void SetdZ(double dZ, double dZerr);
   inline double dZ() const {return j_dZ;}
   inline double dZerr() const {return j_dZerr;}
@@ -33,6 +44,11 @@ public:
   enum Flavour{
     NONE, ELECTRON, MUON, TAU
   };
+
+  inline int LeptonType() const {return j_LeptonType;}
+  void SetLeptonType(int t);
+
+
   inline Flavour LeptonFlavour() const {return j_LeptonFlavour;}
   void SetLeptonFlavour(Flavour f);
   inline bool IsElectron() const {return j_LeptonFlavour==ELECTRON;}
@@ -65,12 +81,16 @@ public:
 
 private:
   double j_dXY, j_dXYerr;
+  double j_lep_mva;
   double j_dZ, j_dZerr;
   double j_IP3D, j_IP3Derr;
 
   double j_RelIso, j_MiniRelIso;
   double j_ptcone;
+  double j_lep_jetptrel,j_lep_jetptratio;
   Flavour j_LeptonFlavour;
+
+  int j_LeptonType;
 
   ClassDef(Lepton,1)
 

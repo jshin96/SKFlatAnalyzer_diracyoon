@@ -19,18 +19,23 @@ void CFBackgroundEstimator::ReadHistograms(){
   while(getline(in,elline)){
     std::istringstream is( elline );
     TString a,b,c,d,e;
-    is >> a; // <ID>
-    is >> b; // <rootfilename>
-    TFile *file = new TFile(datapath+"/"+b);
+    is >> a; // <Rate>
+    is >> b; // histlabel
+    is >> c; // syst
+    is >> d; // <rootfilename>
+
+    TFile *file = new TFile(datapath+"/"+d);
     TList *histlist = file->GetListOfKeys();
     for(int i=0;i<histlist->Capacity();i++){
       TString this_cfname = histlist->At(i)->GetName();
+      if(!this_cfname.Contains(b)) continue;
+      if(!this_cfname.Contains(c)) continue;
       histDir->cd();
-      map_hist_Electron[a+"_"+this_cfname] = (TH1D *)file->Get(this_cfname)->Clone();
+      map_hist_Electron[a+"_"+b+"_"+c] = (TH1D *)file->Get(this_cfname)->Clone();
       file->Close();
       delete file;
       origDir->cd();
-      //cout << "[CFBackgroundEstimator::CFBackgroundEstimator] map_hist_Electron : " << a+"_"+this_cfname << endl;
+      cout << "[CFBackgroundEstimator::CFBackgroundEstimator] map_hist_Electron : " << a+"_"+b+"_"+c+" --> "+this_cfname << endl;
     }
   }
 
@@ -50,7 +55,7 @@ void CFBackgroundEstimator::ReadHistograms(){
       file->Close();
       delete file;
       origDir->cd();
-      //cout << "[CFBackgroundEstimator::CFBackgroundEstimator] map_hist_Muon : " << a+"_"+this_cfname << endl;
+      cout << "[CFBackgroundEstimator::CFBackgroundEstimator] map_hist_Muon : " << a+"_"+this_cfname << endl;
     }
   }
 
@@ -71,6 +76,7 @@ double CFBackgroundEstimator::GetElectronCFRate(TString ID, TString key, double 
   eta = fabs(eta);
   if(eta>=2.5) eta = 2.49;
 
+
   TString EtaRegion = "InnerBarrel";
   if(eta<0.8) EtaRegion = "InnerBarrel";
   else if(eta<1.479) EtaRegion = "OuterBarrel";
@@ -89,6 +95,37 @@ double CFBackgroundEstimator::GetElectronCFRate(TString ID, TString key, double 
   error = (mapit->second)->GetBinError(this_bin);
 
   //cout << "[CFBackgroundEstimator::CFBackgroundEstimator] value = " << value << endl;
+
+  return value+double(sys)*error;
+
+}
+
+double CFBackgroundEstimator::GetElectronCFRate2D(TString ID, TString key, double eta, double pt, int sys){
+
+  //cout << "[CFBackgroundEstimator::GetElectronCFRate] ID = " << ID << ", key = " << key << endl;                                                                        
+  //cout << "[CFBackgroundEstimator::GetElectronCFRate] eta = " << eta << ", pt = " << pt << endl;                                                                        
+
+  double value = 1.;
+  double error = 0.;
+
+  eta = fabs(eta);
+  if(eta>=2.5) eta = 2.49;
+
+  if(pt > 250.) pt = 249.;
+
+  std::map< TString, TH1D* >::const_iterator mapit;
+  mapit = map_hist_Electron.find("Rate_" + ID+"_"+key);
+
+  if(mapit==map_hist_Electron.end()){
+    cout << "[CFBackgroundEstimator::GetElectronCFRate] No"<< ID+"_"+key+"_pteta" <<endl;
+    exit(ENODATA);
+  }
+
+  int this_bin = (mapit->second)->FindBin(pt,eta);
+  value = (mapit->second)->GetBinContent(this_bin);
+  error = (mapit->second)->GetBinError(this_bin);
+
+  //cout << "[CFBackgroundEstimator::CFBackgroundEstimator] value = " << value << endl;                                                                                   
 
   return value+double(sys)*error;
 

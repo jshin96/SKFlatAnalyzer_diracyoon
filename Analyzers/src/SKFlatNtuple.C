@@ -93,15 +93,52 @@ void SKFlatNtuple::Loop(){
 
   cout << "[SKFlatNtuple::Loop] Userflags = {" << endl;
 
+  int _event_end(-999), _event_start(-999);
+
   for(unsigned int i=0; i<Userflags.size(); i++){
     cout << "[SKFlatNtuple::Loop]   \"" << Userflags.at(i) << "\"," << endl;
+    if(Userflags.at(i).Contains("split_job_n")) {
+      TString _tstring = Userflags.at(i);
+      _tstring=_tstring.ReplaceAll("split_job_n","");
+      std::string _string = string(_tstring);
+      _event_start = stoi(_string);
+    }
+    if(Userflags.at(i).Contains("split_job_total")) {
+      TString _tstring = Userflags.at(i);
+      _tstring=_tstring.ReplaceAll("split_job_total","");
+      std::string _string = string(_tstring);
+      _event_end = stoi(_string);
+    }
+
   }
   cout << "[SKFlatNtuple::Loop] }" << endl;
 
 
   cout << "[SKFlatNtuple::Loop] Event Loop Started " << printcurrunttime() << endl;
 
-  for(Long64_t jentry=0; jentry<nentries;jentry++){
+  if(_event_start >= 0 )    cout << "[SKFlatNtuple::Loop] Event Loop [start] Modified " << _event_start << endl;
+  if(_event_end > 0 )    cout << "[SKFlatNtuple::Loop] Event Loop [end] Modified " << _event_end << endl;
+  cout << "[SKFlatNtuple::Loop] Event Loop Started " << printcurrunttime() << endl;
+
+  Long64_t jentry_initial =0;
+  Long64_t jentry_final =nentries;
+  if(_event_start >= 0 && _event_end > 0 ){
+
+    int nentries_per_job= int(jentry_final)/_event_end;
+
+    jentry_initial = Long64_t(_event_start * nentries_per_job);
+    cout << "jentry_initial = " << jentry_initial << endl;
+    cout << "jentry_final = " << jentry_final << " " << _event_start << " " << nentries_per_job << endl;
+    if(_event_start < _event_end-1)jentry_final = Long64_t((_event_start+1) * nentries_per_job);
+    cout << "jentry_final = " << jentry_final << endl;
+  }
+  _nentries = nentries;
+
+  if(_event_start >= 0){
+    if(_event_start >= _event_end ) jentry_initial = jentry_final;
+  }
+
+  for(Long64_t jentry=jentry_initial; jentry<jentry_final;jentry++){
 
     if(jentry<NSkipEvent){
       //cout << "[SKFlatNtuple::Loop] Skipping " << jentry << "'th event" << endl;
@@ -219,6 +256,9 @@ bool SKFlatNtuple::RunEvent(vector<TString> ev_run_vec,int _run, int _ev){
 
 SKFlatNtuple::SKFlatNtuple(){
   MaxEvent = -1;
+
+  _nentries = 0;
+    _jentry= 0;
   NSkipEvent = 0;
   LogEvery = 1000;
   IsDATA = false;

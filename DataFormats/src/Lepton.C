@@ -12,12 +12,31 @@ Lepton::Lepton() : Particle() {
   j_RelIso = -999.;
   j_MiniRelIso = -999.;
   j_ptcone = -999.;
+  j_lep_jetptrel=-999.;
+  j_lep_jetptratio=-999.;
   j_LeptonFlavour = NONE;
+  j_LeptonType = -999;
+
 }
 
 Lepton::~Lepton(){
 
 }
+
+void Lepton::SetJetPtRel(double ptrel){
+
+  j_lep_jetptrel = ptrel;
+}
+
+void Lepton::SetJetPtRatio(double ptr){
+
+  j_lep_jetptratio = ptr;
+}
+
+void Lepton::SetLepMVA(double MVA){
+  j_lep_mva = MVA;
+}
+
 
 void Lepton::SetdXY(double dXY, double dXYerr){
   j_dXY = dXY;
@@ -50,6 +69,10 @@ void Lepton::SetMiniIso(double ch, double nh, double ph, double pu, double rho, 
 
 void Lepton::SetLeptonFlavour(Flavour f){
   j_LeptonFlavour = f;
+}
+
+void Lepton::SetLeptonType(int t){
+  j_LeptonType= t;
 }
 
 void Lepton::Print(){
