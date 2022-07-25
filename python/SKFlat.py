@@ -32,6 +32,7 @@ parser.add_argument('--FastSim', action='store_true')
 parser.add_argument('--EventComparison', action='store_true')
 parser.add_argument('--eventlists', dest='EventLists', default="") 
 parser.add_argument('--userflags', dest='Userflags', default="")
+parser.add_argument('--tagoutput', dest='TagOutput', default="")
 parser.add_argument('--nmax', dest='NMax', default=0, type=int, help="maximum running jobs")
 parser.add_argument('--reduction', dest='Reduction', default=1, type=float)
 parser.add_argument('--memory', dest='Memory', default=0, type=float)
@@ -1118,6 +1119,9 @@ try:
           outputname = args.Analyzer+'_'+SkimString+InputSample
           if IsDATA:
             outputname += '_'+DataPeriod
+
+          if args.TagOutput != '':
+            outputname += '_' + args.TagOutput
 
           if not GotError:
             cwd = os.getcwd()
