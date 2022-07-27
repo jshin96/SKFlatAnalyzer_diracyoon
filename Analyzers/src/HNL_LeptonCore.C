@@ -1308,6 +1308,13 @@ void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::Region sr, float event_wei
     EVhitname ="SR_Summary";
   }
 
+  if(sr==sigmm){
+    labels = {"NoCut", "SSMM", "SSMM_Jet", "SSMM_Jet_vTau", "SSMM_SR1","SSMM_SR2a","SSMM_SR2b","SSMM_SR3","SSMM_SR4","SSMM_Fail"};
+
+    EVhitname ="SR_Summary";
+  }
+
+
 
   HNL_LeptonCore::FillEventCutflowAll(analysis_dir_name,EVhitname, event_weight, labels, label);
 

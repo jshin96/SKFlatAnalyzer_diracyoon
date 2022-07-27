@@ -44,7 +44,10 @@ class HNL_LeptonCore : public AnalyzerCore {
     Presel=24,
     PreselSS=25,
     PreselOS=26,
-    SR=27
+    SR=27,
+    sigmm=28,
+    sigee=29,
+    sigem=30,
 
   };
 

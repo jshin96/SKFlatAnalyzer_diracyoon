@@ -110,7 +110,6 @@ void HNL_SignalStudies::RunSignalPlotter(TString process){
     
   }
 
-  FillHist ("NoCutW", 1, weight, 2, 0., 2.,"");
 
   vector<Electron> this_AllElectrons = AllElectrons;
   vector<Muon>     this_AllMuons     = AllMuons;
@@ -149,56 +148,71 @@ void HNL_SignalStudies::RunSignalPlotter(TString process){
   
   int njets = vbf_jets.size() + fatjets.size();
 
-  if(SameCharge(mymuons) && vetomuons.size()==2 && vetoelectrons.size()==0 ) {
 
-    FillHist ("SSMM", 1, weight, 2, 0., 2.,"");
-
-    if(njets > 0 && GetLLMass(mymuons) > 10.)     FillHist ("SSMM_Jet", 1, weight, 2, 0., 2.,"");
-    if(njets > 0 && GetLLMass(mymuons) > 10. && mytaus.size()==0 ) {
-
-      FillHist ("SSMM_Jet_vTau", 1, weight, 2, 0., 2.,"");  
-      TString channel_string= GetChannelString(MuMu, SS);
-      
-      if(fatjets.size() > 0){
-	if(RunSignalRegionAK8( MuMu, SS, myelectrons, vetoelectrons, mymuons, vetomuons, jets, fatjets, "Medium", ev, param,  channel_string, weight ))FillHist ("SSMM_SR1", 1, weight, 2, 0., 2.,"");
+  if (process.Contains("MuMu") or   process.Contains("Mu+Mu") or   process.Contains("Mu-Mu") ){
     
-      }
-      else{
-	if(PassVBFInitial(vbf_jets)) {
-	  
-	  FillHist ("SSMM_SR2a", 1, weight, 2, 0., 2.,"");
-	  if(PassVBFInitial(vbf_jets)&&RunSignalRegionWW( MuMu,SS, myelectrons, vetoelectrons, mymuons, vetomuons,  vbf_jets, fatjets, "Medium", ev, param,  channel_string, weight )) FillHist ("SSMM_SR2b", 1, weight, 2, 0., 2.,"");
-	  
+    param.Name = "MuonChannelSiganls";
+    FillEventCutflow(sigmm,weight, "NoCut", param.Name);
+    
+    if(SameCharge(mymuons) && vetomuons.size()==2 && vetoelectrons.size()==0 ) {
+      
+      FillEventCutflow(sigmm,weight, "SSMM",  param.Name);
+      
+      
+      
+      if(njets > 0 && GetLLMass(mymuons) > 10.)            FillEventCutflow(sigmm,weight, "SSMM_Jet",  param.Name);
+
+      if(njets > 0 && GetLLMass(mymuons) > 10. && mytaus.size()==0 ) {
+	
+	FillEventCutflow(sigmm,weight, "SSMM_Jet_vTau",  param.Name);
+	
+	TString channel_string= GetChannelString(MuMu, SS);
+	
+	if(fatjets.size() > 0){
+	  if(RunSignalRegionAK8( MuMu, SS, myelectrons, vetoelectrons, mymuons, vetomuons, jets, fatjets, "Medium", ev, param,  channel_string, weight ))
+	    FillEventCutflow(sigmm,weight, "SSMM_SR1",  param.Name);
 	}
 	else{
+	  if(PassVBFInitial(vbf_jets)) {
+	    
+	    FillEventCutflow(sigmm,weight, "SSMM_SR2a",  param.Name);
+	    
+	    if(PassVBFInitial(vbf_jets)&&RunSignalRegionWW( MuMu,SS, myelectrons, vetoelectrons, mymuons, vetomuons,  vbf_jets, fatjets, "Medium", ev, param,  channel_string, weight ))             FillEventCutflow(sigmm,weight, "SSMM_SR2b",  param.Name);
 
-	  if(RunSignalRegionAK4(MuMu, SS, myelectrons, vetoelectrons, mymuons, vetomuons, jets, fatjets, "Medium", ev, param,  channel_string, weight )) FillHist ("SSMM_SR3", 1, weight, 2, 0., 2.,"");
 	  
-	  if(jets.size() < 2 && mymuons[1].Pt() > 100) FillHist ("SSMM_SR4", 1, weight, 2, 0., 2.,"");
-							       
-	  
-
+	  }
+	  else{
+	    
+	    if(RunSignalRegionAK4(MuMu, SS, myelectrons, vetoelectrons, mymuons, vetomuons, jets, fatjets, "Medium", ev, param,  channel_string, weight ))             FillEventCutflow(sigmm,weight, "SSMM_SR3",  param.Name);
+	    
+	    
+	    else if(jets.size() < 2 && mymuons[1].Pt() > 100)             FillEventCutflow(sigmm,weight, "SSMM_SR4",  param.Name);
+	    
+	    
+	    else             FillEventCutflow(sigmm,weight, "SSMM_Fail",  param.Name);
+	    
+	    
+	  }
 	}
       }
     }
   }
-
   return;
 
-  if(SameCharge(myelectrons))  FillHist ("SSEE", 1, weight, 2, 0., 2.,"");
-  if(SameCharge(myelectrons,mymuons))  FillHist ("SSEM", 1, weight, 2, 0., 2.,"");
+  if(SameCharge(myelectrons))  FillHist (process + "/SSEE", 1, weight, 2, 0., 2.,"");
+  if(SameCharge(myelectrons,mymuons))  FillHist (process + "/SSEM", 1, weight, 2, 0., 2.,"");
 
 
 
   
 
-  if(SameCharge(mymuons,-1))   FillHist ("SSmm_MM", 1, weight, 2, 0., 2.,"");
-  if(SameCharge(myelectrons,-1))  FillHist ("SSmm_EE", 1, weight, 2, 0., 2.,"");
-  if(SameCharge(myelectrons,mymuons,-1))  FillHist ("SSmm_EM", 1, weight, 2, 0., 2.,"");
+  if(SameCharge(mymuons,-1))   FillHist (process + "/SSmm_MM", 1, weight, 2, 0., 2.,"");
+  if(SameCharge(myelectrons,-1))  FillHist (process + "/SSmm_EE", 1, weight, 2, 0., 2.,"");
+  if(SameCharge(myelectrons,mymuons,-1))  FillHist (process + "/SSmm_EM", 1, weight, 2, 0., 2.,"");
 
-  if(SameCharge(mymuons,1))   FillHist ("SSpp_MM", 1, weight, 2, 0., 2.,"");
-  if(SameCharge(myelectrons,1))  FillHist ("SSpp_EE", 1, weight, 2, 0., 2.,"");
-  if(SameCharge(myelectrons,mymuons,1))  FillHist ("SSpp_EM", 1, weight, 2, 0., 2.,"");
+  if(SameCharge(mymuons,1))   FillHist (process + "/SSpp_MM", 1, weight, 2, 0., 2.,"");
+  if(SameCharge(myelectrons,1))  FillHist (process + "/SSpp_EE", 1, weight, 2, 0., 2.,"");
+  if(SameCharge(myelectrons,mymuons,1))  FillHist (process + "/SSpp_EM", 1, weight, 2, 0., 2.,"");
   
 
 
