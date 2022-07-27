@@ -136,9 +136,10 @@ class HNL_LeptonCore : public AnalyzerCore {
   double GetIsoFromID(HNL_LeptonCore::LeptonType lep, TString id, double eta, double pt);
 
   //==== JA                                                                                                                                                                                            
-  bool SameCharge(vector<Electron> els);
-  bool SameCharge(vector<Muon> mus);
-  bool SameCharge(std::vector<Lepton *> leps);
+  bool SameCharge(vector<Electron> els, int ch=0);
+  bool SameCharge(vector<Electron> els, vector<Muon> mus,  int ch=0);
+  bool SameCharge(vector<Muon> mus, int ch=0);
+  bool SameCharge(std::vector<Lepton *> leps, int ch=0);
 
   /// global var for user flags
  bool RunFake, RunCF,  RunSyst;
@@ -148,10 +149,12 @@ class HNL_LeptonCore : public AnalyzerCore {
  bool HEM1516 ,BeforeRun319077;
  bool DEBUG;
 
- bool isElectronChannel;
- bool isMuonChannel;
- bool isSingleMuon;
-
+ 
+ bool DblEG_Channel;
+ bool DblMuon_Channel;
+ bool SglMuon_Channel;
+ bool SglEG_Channel;
+ bool MuonEG_Channel;
  
  bool IsCentral, RunFullAnalysis;
  TRandom3* rand_;

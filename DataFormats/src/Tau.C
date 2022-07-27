@@ -37,6 +37,14 @@ bool Tau::PassID(TString ID) const{
 
   // === list of IDs for analyis
   if(ID=="NoCut") return true;
+  if(ID=="HNVeto") {
+
+    if(j_decaymode == 0 || j_decaymode == 1 || j_decaymode == 10 || j_decaymode ==11) {
+      
+      if (passTIDvJet() && passTIDvEl()  && passTIDvMu() ) return true;
+    }
+
+  }
 
   
   return false;

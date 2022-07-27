@@ -557,6 +557,7 @@ HNL_LeptonCore::HNL_LeptonCore(){
   RunCF= false;
   IsCentral=true;
   RunFullAnalysis=true;
+  run_Debug=false;
 
 }
  
@@ -1270,6 +1271,7 @@ void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::Region sr, float event_wei
   vector<TString> labels;
   TString EVhitname("");
   
+  
   if(sr==SR1 ){
     labels = {  "Presel", "AK8Jet",   "SR1_lep_charge",  "SR1_lep_pt", "SR1_dilep_mass" , "SR1_Wmass",  "SR1_MET" , "SR1_bveto" };
     EVhitname= "SR1";
@@ -1490,6 +1492,7 @@ TString HNL_LeptonCore::GetProcess(){
     int lep_3_ch=-999;
 
     TString lep1_s="", lep2_s="", lep3_s="";
+    TString lep1_ss="", lep2_ss="", lep3_ss="";
 
     for(unsigned int i=2; i<gens.size(); i++){
       Gen gen = gens.at(i);
@@ -1498,18 +1501,42 @@ TString HNL_LeptonCore::GetProcess(){
       if((gens.at(gen.MotherIndex()).PID() == 9900012|| gens.at(gen.MotherIndex()).PID() == 9900014) && !(gens.at(i).PID() == 9900012 || gens.at(i).PID() == 9900014)){
         if(fabs(gen.PID())  < 16 && fabs(gen.PID())  > 10) lep_2_ch = (gen.PID() < 0) ? 1 : -1;
         //      cout << "Lep 2 lep_2_ch= " << lep_2_ch << "   gen.PID=" <<gen.PID () << endl;                                                                                                               
-        if(fabs(gen.PID()) == 15) {lep2_s="Tau";lep2_s+=lep_ch;}
-        if(fabs(gen.PID()) == 13) {lep2_s="Mu";lep2_s+=lep_ch;}
-        if(fabs(gen.PID()) == 14) {lep2_s="Mu";lep2_s+=lep_ch;}
-        if(fabs(gen.PID()) == 11) {lep2_s="El";lep2_s+=lep_ch;}
+        if(fabs(gen.PID()) == 15) {
+	  lep2_s="Tau";
+	  if (gen.PID() <0) lep2_ss=lep2_s+"+";
+	  else lep2_ss=lep2_s+"-";
+	}
+        if(fabs(gen.PID()) == 13) {
+	  lep2_s="Mu";
+	  if (gen.PID() <0) lep2_ss=lep2_s+"+";
+          else lep2_ss=lep2_s+"-";
+	}
+        //if(fabs(gen.PID()) == 14) {lep2_s="Mu";lep2_s+=lep_ch;}
+        if(fabs(gen.PID()) == 11) {
+	  lep2_s="El";
+          if (gen.PID() <0) lep2_ss=lep2_s+"+";
+          else lep2_ss=lep2_s+"-";
+	}
       }
       else if(gen.MotherIndex() == N_Mother&& !(gens.at(i).PID() == 9900012 || gens.at(i).PID() == 9900014)){
         if(fabs(gen.PID())  < 16 && fabs(gen.PID())  > 10)  lep_1_ch = (gen.PID() < 0) ? 1 : -1;
         //cout << "Lep 1 lep_1_ch= " << lep_1_ch <<"   gen.PID=" <<gen.PID() << endl;                                                                                                                       
-
-        if(fabs(gen.PID()) == 15) {lep1_s="Tau"; lep1_s+=lep_ch;}
-        if(fabs(gen.PID()) == 13) {lep1_s="Mu";lep1_s+=lep_ch;}
-        if(fabs(gen.PID()) == 11) {lep1_s="El";lep1_s+=lep_ch;}
+	
+        if(fabs(gen.PID()) == 15) {
+	  lep1_s="Tau"; 
+	  if (gen.PID() < 0) lep1_ss=lep1_s+"+";
+	  else lep1_ss=lep1_s+"-";
+	}
+        if(fabs(gen.PID()) == 13) {
+	  lep1_s="Mu";
+	  if (gen.PID() < 0) lep1_ss=lep1_s+"+";
+          else lep1_ss=lep1_s+"-";
+	}
+        if(fabs(gen.PID()) == 11) {
+	  lep1_s="El";
+	  if (gen.PID() < 0) lep1_ss=lep1_s+"+";
+          else lep1_ss=lep1_s+"-";
+	}
       }
       if(int(gen.MotherIndex()) == Index_W) {
         if(fabs(gen.PID())  < 16 && fabs(gen.PID())  > 10)      lep_3_ch = (gen.PID() < 0) ? 1 : -1;
@@ -1519,19 +1546,34 @@ TString HNL_LeptonCore::GetProcess(){
         if(fabs(gen.PID()) == 11) {lep3_s="W2_daughter_El";lep3_s+=lep_ch;}
       }
     }
-    if(lep_1_ch == lep_2_ch) lep2_s=lep2_s+ "_SS";
-    else lep2_s=lep2_s+ "_OS";
+    if(lep_1_ch == lep_2_ch) return ("SS_"+ lep1_ss+lep2_ss);
+    else return ("OS_"+ lep1_s + lep2_s);
 
-
-    return lep1_s+lep2_s;
   }
 
   else{
+    
+    
+    TString pr="SS_";
     for(unsigned int i=2; i<gens.size(); i++){
       Gen gen = gens.at(i);
-      if (fabs(gen.PID()) == 13 && gen.Status() == 23) return "SSMuMu";
-      if (fabs(gen.PID()) == 11 && gen.Status() == 23) return "SSEE";
+      if (fabs(gen.PID()) == 13 && gen.Status() == 23) {
+	pr=pr+"Mu";
+	if (gen.PID() < 0) pr = pr+"+";
+	else pr = pr+"-";
+      }
+      if (fabs(gen.PID()) == 11 && gen.Status() == 23) {
+	pr=pr+"El";
+	if (gen.PID() < 0) pr = pr+"+";
+	else pr = pr+"-";
+      }
+      if (fabs(gen.PID()) == 15 && gen.Status() == 23){
+	pr=pr+"Tau";
+	if (gen.PID() < 0) pr = pr+"+";
+	else pr = pr+"-";
+      }
     }
+    return pr;
   }
   return "TMP";
 
@@ -2208,24 +2250,96 @@ TString HNL_LeptonCore::GetLepTypeTString(const Lepton& lep, const std::vector<G
   return tag;
 }
 
-bool HNL_LeptonCore::SameCharge(vector<Muon> mus){
+bool HNL_LeptonCore::SameCharge(vector<Muon> mus, int ch){
 
   if(mus.size() != 2) return false;
-  if(mus[0].Charge() == mus[1].Charge()) return true;
+ 
+  int sumQ=mus[0].Charge()+mus[1].Charge();
+  if(ch==0){
+    if(fabs(sumQ) == 2) return true;
+    return false;
+  }
+  else if(ch==1){
+    if(sumQ == 2) return true;
+    return false;
+
+  }
+  else if(ch==-1){
+    if(sumQ == -2) return true;
+    return false;
+
+  }
   return false;
+
 }
 
-bool HNL_LeptonCore::SameCharge(vector<Electron> els){
+bool HNL_LeptonCore::SameCharge(vector<Electron> els, int ch){
 
   if(els.size() != 2) return false;
-  if(els[0].Charge() == els[1].Charge()) return true;
+
+  int sumQ=els[0].Charge()+els[1].Charge();
+  if(ch==0){
+    if(fabs(sumQ) == 2) return true;
+    return false;
+  }
+  else if(ch==1){
+    if(sumQ == 2) return true;
+    return false;
+
+  }
+  else if(ch==-1){
+    if(sumQ == -2) return true;
+    return false;
+
+  }
   return false;
 }
 
-bool HNL_LeptonCore::SameCharge(std::vector<Lepton *> leps){
+
+bool HNL_LeptonCore::SameCharge(vector<Electron> els, vector<Muon> mus,int ch){
+
+  if(els.size() != 1) return false;
+  if(mus.size() != 1) return false;
+
+  int sumQ=els[0].Charge()+mus[1].Charge();
+  if(ch==0){
+    if(fabs(sumQ) == 2) return true;
+    return false;
+  }
+  else if(ch==1){
+    if(sumQ == 2) return true;
+    return false;
+
+  }
+  else if(ch==-1){
+    if(sumQ == -2) return true;
+    return false;
+
+  }
+  return false;
+}
+
+
+bool HNL_LeptonCore::SameCharge(std::vector<Lepton *> leps, int ch){
 
   if(leps.size() != 2) return false;
-  if(leps[0]->Charge() == leps[1]->Charge()) return true;
+
+  int sumQ=leps[0]->Charge()+leps[1]->Charge();
+  if(ch==0){
+    if(fabs(sumQ) == 2) return true;
+    return false;
+  }
+  else if(ch==1){
+    if(sumQ == 2) return true;
+    return false;
+
+  }
+  else if(ch==-1){
+    if(sumQ == -2) return true;
+    return false;
+
+  }
+
   return false;
 }
 

@@ -8,6 +8,7 @@
 #pragma link C++ class SKFlatNtuple+;
 #pragma link C++ class AnalyzerCore+;
 #pragma link C++ class HNL_LeptonCore+;
+#pragma link C++ class HNL_SignalStudies+;
 #pragma link C++ class GetEffLumi+;
 #pragma link C++ class ExampleRun+;
 #pragma link C++ class SKFlatValidation+;
@@ -20,5 +21,8 @@
 #pragma link C++ class SkimTree_HNMultiLep+;
 #pragma link C++ class MeasureJetTaggingEfficiency+;
 #pragma link C++ class SkimTree_Dilepton+;
+#pragma link C++ class SkimTree_HNL_SS_MuMu+;
+#pragma link C++ class SkimTree_HNL_SS_ElEl+;
+#pragma link C++ class SkimTree_HNL_SS_ElMu+;
 
 #endif

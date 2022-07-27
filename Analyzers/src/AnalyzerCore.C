@@ -821,6 +821,9 @@ std::vector<Muon> AnalyzerCore::SelectMuons(const std::vector<Muon>& muons, TStr
     }
     out.push_back( muons.at(i) );
   }
+
+  std::sort(out.begin(),       out.end(),        PtComparing);
+  
   return out;
 
 }
@@ -849,6 +852,8 @@ std::vector<Electron> AnalyzerCore::SelectElectrons(const std::vector<Electron>&
 
     out.push_back(electrons.at(i));
   }
+  std::sort(out.begin(),       out.end(),        PtComparing);
+
   return out;
 
 }
@@ -871,6 +876,8 @@ std::vector<Tau> AnalyzerCore::SelectTaus(const std::vector<Tau>& taus, TString 
     }
     out.push_back( taus.at(i) );
   }
+  std::sort(out.begin(),       out.end(),        PtComparing);
+
   return out;
 
 }
@@ -893,6 +900,8 @@ std::vector<Jet> AnalyzerCore::SelectJets(const std::vector<Jet>& jets, TString 
     }
     out.push_back( jets.at(i) );
   }
+  std::sort(out.begin(),       out.end(),        PtComparing);
+
   return out;
 
 }
@@ -915,6 +924,8 @@ std::vector<FatJet> AnalyzerCore::SelectFatJets(const std::vector<FatJet>& jets,
     }
     out.push_back( jets.at(i) );
   }
+  std::sort(out.begin(),       out.end(),        PtComparing);
+
   return out;
 
 }
@@ -1117,6 +1128,9 @@ vector<Jet>   AnalyzerCore::GetAK4Jets(vector<Jet> jets, double pt_cut ,  double
     if(pu_tag=="")output_jets.push_back(jets[ijet]);
     else if(jets[ijet].PassPileupMVA(pu_tag,GetEra())) output_jets.push_back(jets[ijet]);
   }
+
+  std::sort(output_jets.begin(),       output_jets.end(),        PtComparing);
+
   return output_jets;
 
 }
@@ -1147,6 +1161,8 @@ vector<Jet>   AnalyzerCore::GetAK4Jets(vector<Jet> jets, double pt_cut ,  double
     if(pu_tag=="")output_jets.push_back(jets[ijet]);
     else if(jets[ijet].PassPileupMVA(pu_tag,GetEra())) output_jets.push_back(jets[ijet]);
   }
+  std::sort(output_jets.begin(),       output_jets.end(),        PtComparing);
+
   return output_jets;
 }
 
@@ -1204,6 +1220,8 @@ vector<FatJet>  AnalyzerCore::GetAK8Jets(vector<FatJet> fatjets, double pt_cut ,
   }
 
 
+  std::sort(output_fatjets.begin(),       output_fatjets.end(),        PtComparing);
+
   return output_fatjets;
 }
 
@@ -1221,6 +1239,7 @@ std::vector<Electron> AnalyzerCore::ScaleElectrons(const std::vector<Electron>& 
 
     out.push_back( this_electron );
   }
+  std::sort(out.begin(),       out.end(),        PtComparing);
 
   return out;
 
@@ -1237,6 +1256,8 @@ std::vector<Electron> AnalyzerCore::SmearElectrons(const std::vector<Electron>& 
 
     out.push_back( this_electron );
   }
+
+  std::sort(out.begin(),       out.end(),        PtComparing);
 
   return out;
 
@@ -1270,6 +1291,8 @@ std::vector<Muon> AnalyzerCore::ScaleMuons(const std::vector<Muon>& muons, int s
 
   }
 
+  std::sort(out.begin(),       out.end(),        PtComparing);
+
   return out;
 
 }
@@ -1285,6 +1308,7 @@ std::vector<Jet> AnalyzerCore::ScaleJets(const std::vector<Jet>& jets, int sys){
 
     out.push_back( this_jet );
   }
+  std::sort(out.begin(),       out.end(),        PtComparing);
 
   return out;
 
@@ -1301,6 +1325,8 @@ std::vector<Jet> AnalyzerCore::SmearJets(const std::vector<Jet>& jets, int sys){
     out.push_back( this_jet );
   }
 
+  std::sort(out.begin(),       out.end(),        PtComparing);
+
   return out;
 
 }
@@ -1316,6 +1342,7 @@ std::vector<FatJet> AnalyzerCore::ScaleFatJets(const std::vector<FatJet>& jets, 
 
     out.push_back( this_jet );
   }
+  std::sort(out.begin(),       out.end(),        PtComparing);
 
   return out;
 
@@ -1331,6 +1358,7 @@ std::vector<FatJet> AnalyzerCore::SmearFatJets(const std::vector<FatJet>& jets, 
 
     out.push_back( this_jet );
   }
+  std::sort(out.begin(),       out.end(),        PtComparing);
 
   return out;
 
@@ -1347,7 +1375,8 @@ std::vector<FatJet> AnalyzerCore::ScaleSDMassFatJets(const std::vector<FatJet>& 
     
     out.push_back( this_jet );
   }
-  
+  std::sort(out.begin(),       out.end(),        PtComparing);
+
   return out;
   
 }
@@ -1362,6 +1391,7 @@ std::vector<FatJet> AnalyzerCore::SmearSDMassFatJets(const std::vector<FatJet>& 
 
     out.push_back( this_jet );
   }
+  std::sort(out.begin(),       out.end(),        PtComparing);
 
   return out;
 
@@ -1696,6 +1726,43 @@ void AnalyzerCore::initializeAnalyzerTools(){
 
 }
 
+
+float AnalyzerCore::GetKFactor(){
+
+  if(IsDATA) return 1.;
+
+  float weight = 1.;
+
+  if(MCSample.Contains("WZTo3LNu_powheg") or MCSample.Contains("WZTo2L2Q")){
+    //Physics Letters B 761 (2016) 197 
+    //http://dx.doi.org/10.1016/j.physletb.2016.08.017 
+    weight = 1.109;
+  }
+  else if(MCSample.Contains("ZZTo4L_powheg") or MCSample.Contains("ZZTo2L2Nu") or MCSample.Contains("ZZTo2L2Q")){
+    // Physics Letters B 735 (2014) 311-313
+    // https://doi.org/10.1016/j.physletb.2014.06.056
+    weight = 1.16; 
+  }
+  else if(MCSample.Contains("ggZZto")){
+    //  1.67 brings gg->ZZ from LO to NLO (http://arxiv.org/abs/1509.06734)
+    return 1.67;
+  }
+  else if(MCSample.Contains("ggHtoZZ")){
+    return 1.67;
+    //AN2016_359
+  }
+  else if(MCSample.Contains("ttZ") && !MCSample.Contains("To")){
+    weight = 839.3/780.;
+  }
+  else if(MCSample.Contains("ttW") && !MCSample.Contains("To")){
+    weight = 600.8/610.;
+  }
+
+  return weight;
+
+}
+
+
 double AnalyzerCore::MCweight(bool usesign, bool norm_1invpb) const {
 
   if(IsDATA) return 1.;
@@ -1829,6 +1896,7 @@ std::vector<Muon> AnalyzerCore::MuonWithoutGap(const std::vector<Muon>& muons){
 
     out.push_back( muons.at(i) );
   }
+  std::sort(out.begin(),       out.end(),        PtComparing);
 
   return out;
 
@@ -1846,6 +1914,8 @@ std::vector<Muon> AnalyzerCore::MuonNonPromptOnly(const std::vector<Muon>& muons
     if(GetLeptonType(muons.at(i), gens)>0)pass=true;
     if(!pass)out.push_back( muons.at(i) );
   }
+
+
   return out;
 
 }
@@ -1884,6 +1954,8 @@ std::vector<Muon> AnalyzerCore::MuonUsePtCone(const std::vector<Muon>& muons){
     this_muon.SetPtEtaPhiM( muons.at(i).PtCone(), muons.at(i).Eta(), muons.at(i).Phi(), muons.at(i).M() );
     out.push_back( this_muon );
   }
+
+  std::sort(out.begin(),       out.end(),        PtComparing);
 
   return out;
 
@@ -1991,6 +2063,8 @@ std::vector<Electron> AnalyzerCore::ElectronUsePtCone(const std::vector<Electron
     this_electron.SetPtEtaPhiM( electrons.at(i).PtCone(), electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() );
     out.push_back( this_electron );
   }
+
+  std::sort(out.begin(),       out.end(),        PtComparing);
 
   return out;
 

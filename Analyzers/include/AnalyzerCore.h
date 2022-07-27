@@ -191,6 +191,10 @@ public:
   //==== MCweight
   double MCweight(bool usesign=true, bool norm_1invpb=true) const;
 
+  //==== Kfactors
+  float GetKFactor();
+
+
   //==== Prefire
   double GetPrefireWeight(int sys);
 
