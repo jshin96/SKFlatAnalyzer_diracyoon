@@ -1637,6 +1637,48 @@ bool HNL_LeptonCore::PassVBFInitial(vector<Jet>  jets){
 
 }
 
+std::vector<Jet> HNL_LeptonCore::SelBJets(std::vector<Jet>& jetColl, JetTagging::Parameters jtp){
+
+  std::vector<Jet> bjetColl;
+  for(unsigned int i=0; i<jetColl.size(); i++){
+    if( jetColl.at(i).GetTaggerResult(jtp.j_Tagger) <= mcCorr->GetJetTaggingCutValue(jtp.j_Tagger, jtp.j_WP) ) continue;
+    bjetColl.push_back( jetColl.at(i) );
+  }
+  return bjetColl;
+}
+
+
+TLorentzVector HNL_LeptonCore::GetvMET(TString METType, TString Option){
+
+  bool IsType1   = METType.Contains("T1");
+  bool IsxyCorr  = METType.Contains("xyCorr");
+  bool ApplySyst = (!IsDATA) && Option.Contains("Syst");
+  int IdxSyst = -1, SystDir = Option.Contains("Up")? 1:Option.Contains("Down")? -1:0;
+  if(ApplySyst){
+    if     (Option.Contains("JES")  && SystDir>0 ) IdxSyst=2;
+    else if(Option.Contains("JES")  && SystDir<0 ) IdxSyst=3;
+    else if(Option.Contains("JER")  && SystDir>0 ) IdxSyst=0;
+    else if(Option.Contains("JER")  && SystDir<0 ) IdxSyst=1;
+    else if(Option.Contains("Uncl") && SystDir>0 ) IdxSyst=10;
+    else if(Option.Contains("Uncl") && SystDir<0 ) IdxSyst=11;
+  }
+  
+  TLorentzVector vMET;
+  if(IsType1){
+    if( (!ApplySyst) or ( IdxSyst>=0 && (!isfinite(pfMET_Type1_PhiCor_pt_shifts->at(IdxSyst))) ) ){
+      if(IsxyCorr) vMET.SetPtEtaPhiM(pfMET_Type1_PhiCor_pt, 0., pfMET_Type1_PhiCor_phi, 0.); 
+      else         vMET.SetPtEtaPhiM(pfMET_Type1_pt, 0., pfMET_Type1_phi, 0.); 
+    }
+    else{
+      if(IsxyCorr) vMET.SetPtEtaPhiM(pfMET_Type1_PhiCor_pt_shifts->at(IdxSyst), 0., pfMET_Type1_PhiCor_phi_shifts->at(IdxSyst), 0.); 
+      else         vMET.SetPtEtaPhiM(pfMET_Type1_pt_shifts->at(IdxSyst), 0., pfMET_Type1_phi_shifts->at(IdxSyst), 0.); 
+    }
+  }
+
+  return vMET;
+}
+
+
 bool HNL_LeptonCore::PassVBF(vector<Jet>  jets,std::vector<Lepton *> leps){
 
   if(leps.size() != 2) return false;

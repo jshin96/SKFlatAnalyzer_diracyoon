@@ -584,6 +584,9 @@ std::vector<Jet> AnalyzerCore::GetJets(TString id, double ptmin, double fetamax)
     }
     out.push_back( jets.at(i) );
   }
+
+  std::sort(out.begin(),       out.end(),        PtComparing);
+
   return out;
 
 }
@@ -655,6 +658,8 @@ std::vector<FatJet> AnalyzerCore::GetFatJets(TString id, double ptmin, double fe
     out.push_back( jets.at(i) );
   }
   return out;
+
+  std::sort(out.begin(),       out.end(),        PtComparing);
 
 }
 

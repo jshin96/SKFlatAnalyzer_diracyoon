@@ -98,6 +98,9 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   double M_T(Particle a, Particle b);
 
+  std::vector<Jet> SelBJets(std::vector<Jet>& jetColl, JetTagging::Parameters jtp);
+  TLorentzVector GetvMET(TString METType, TString Option);
+
 
   TString GetChannelString(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType  q);
 
