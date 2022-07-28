@@ -157,22 +157,23 @@ void HNL_SignalStudies::RunSignalPlotter(TString process){
     if(SameCharge(mymuons) && vetomuons.size()==2 && vetoelectrons.size()==0 ) {
       
       FillEventCutflow(sigmm,weight, "SSMM",  param.Name);
-      
-      
-      
+     
       if(njets > 0 && GetLLMass(mymuons) > 10.)            FillEventCutflow(sigmm,weight, "SSMM_Jet",  param.Name);
+      if(GetLLMass(mymuons) > 10.)            FillEventCutflow(sigmm,weight, "SSMM_LLMass",  param.Name);
 
-      if(njets > 0 && GetLLMass(mymuons) > 10. && mytaus.size()==0 ) {
+      TString channel_string= GetChannelString(MuMu, SS);
+      
+      if(GetLLMass(mymuons) > 10. && mytaus.size()==0 ) {
 	
-	FillEventCutflow(sigmm,weight, "SSMM_Jet_vTau",  param.Name);
+	if(njets > 0) FillEventCutflow(sigmm,weight, "SSMM_Jet_vTau",  param.Name);
 	
-	TString channel_string= GetChannelString(MuMu, SS);
-	
+      
 	if(fatjets.size() > 0){
 	  if(RunSignalRegionAK8( MuMu, SS, myelectrons, vetoelectrons, mymuons, vetomuons, jets, fatjets, "Medium", ev, param,  channel_string, weight ))
 	    FillEventCutflow(sigmm,weight, "SSMM_SR1",  param.Name);
 	}
 	else{
+	  
 	  if(PassVBFInitial(vbf_jets)) {
 	    
 	    FillEventCutflow(sigmm,weight, "SSMM_SR2a",  param.Name);
