@@ -1472,7 +1472,6 @@ TString HNL_LeptonCore::QToString(HNL_LeptonCore::ChargeType q){
 TString HNL_LeptonCore::GetProcess(){
 
   int N_Mother(0);
-  unsigned int Index_W(0);
 
   //  cout << "index\tPID\tStatus\tMIdx\tMPID\tStart\tPt\tEta\tPhi\tM" << endl;                                                                                                                             
 
@@ -1482,17 +1481,27 @@ TString HNL_LeptonCore::GetProcess(){
   for (auto i : gens){ Gen gen = i; if(gen.PID() == 9900012 || gen.PID() == 9900014) isDYVBF=true; }
 
   if(isDYVBF){
+
+    bool isVBF=false;
+    
+    for (auto i : gens){
+      Gen gen = i;
+      if (gen.PID() == 22 && gen.Status() == 21) isVBF=true;
+    }
+
+    
+    if(isVBF){
+
+    }
+
     for(unsigned int i=2; i<gens.size(); i++){
+
       Gen gen = gens.at(i);
 
-      if(fabs(gen.PID()) == 24 && (gens.at(gen.MotherIndex()).PID() == 9900012 || gens.at(gen.MotherIndex()).PID() == 9900014)){
-        Index_W= i;
-      }
       if((gen.PID() == 9900012 || gen.PID() == 9900014)  && gen.Status()==22) {
         N_Mother= gen.MotherIndex();
       }
     }
-    //    cout << "Index_W = " << Index_W << " N_Mother = " << N_Mother << endl;                                                                                                                            
 
     int lep_1_ch=-999;
     int lep_2_ch=-999;
@@ -1502,55 +1511,54 @@ TString HNL_LeptonCore::GetProcess(){
     TString lep1_ss="", lep2_ss="", lep3_ss="";
 
     for(unsigned int i=2; i<gens.size(); i++){
-      Gen gen = gens.at(i);
-      //TString lep_ch = (gen.PID() < 0) ? "+" : "-";                                                                                                                                                       
-      TString lep_ch="";
+      Gen gen = gens.at(i);     TString lep_ch="";
+
       if((gens.at(gen.MotherIndex()).PID() == 9900012|| gens.at(gen.MotherIndex()).PID() == 9900014) && !(gens.at(i).PID() == 9900012 || gens.at(i).PID() == 9900014)){
-        if(fabs(gen.PID())  < 16 && fabs(gen.PID())  > 10) lep_2_ch = (gen.PID() < 0) ? 1 : -1;
-        //      cout << "Lep 2 lep_2_ch= " << lep_2_ch << "   gen.PID=" <<gen.PID () << endl;                                                                                                               
+        //if(fabs(gen.PID())  < 16 && fabs(gen.PID())  > 10) lep_2_ch = (gen.PID() < 0) ? 1 : -1;
+
         if(fabs(gen.PID()) == 15) {
 	  lep2_s="Tau";
 	  if (gen.PID() <0) lep2_ss=lep2_s+"+";
 	  else lep2_ss=lep2_s+"-";
+	  lep_2_ch = (gen.PID() < 0) ? 1 : -1;
 	}
         if(fabs(gen.PID()) == 13) {
 	  lep2_s="Mu";
 	  if (gen.PID() <0) lep2_ss=lep2_s+"+";
           else lep2_ss=lep2_s+"-";
+	  lep_2_ch = (gen.PID() < 0) ? 1 : -1;
 	}
         //if(fabs(gen.PID()) == 14) {lep2_s="Mu";lep2_s+=lep_ch;}
         if(fabs(gen.PID()) == 11) {
 	  lep2_s="El";
           if (gen.PID() <0) lep2_ss=lep2_s+"+";
           else lep2_ss=lep2_s+"-";
+	  lep_2_ch = (gen.PID() < 0) ? 1 : -1;
 	}
       }
       else if(gen.MotherIndex() == N_Mother&& !(gens.at(i).PID() == 9900012 || gens.at(i).PID() == 9900014)){
-        if(fabs(gen.PID())  < 16 && fabs(gen.PID())  > 10)  lep_1_ch = (gen.PID() < 0) ? 1 : -1;
-        //cout << "Lep 1 lep_1_ch= " << lep_1_ch <<"   gen.PID=" <<gen.PID() << endl;                                                                                                                       
+
+        //if(fabs(gen.PID())  < 16 && fabs(gen.PID())  > 10)  lep_1_ch = (gen.PID() < 0) ? 1 : -1;
+
 	
         if(fabs(gen.PID()) == 15) {
 	  lep1_s="Tau"; 
 	  if (gen.PID() < 0) lep1_ss=lep1_s+"+";
 	  else lep1_ss=lep1_s+"-";
+	  lep_1_ch = (gen.PID() < 0) ? 1 : -1;    
 	}
         if(fabs(gen.PID()) == 13) {
 	  lep1_s="Mu";
 	  if (gen.PID() < 0) lep1_ss=lep1_s+"+";
           else lep1_ss=lep1_s+"-";
+	  lep_1_ch = (gen.PID() < 0) ? 1 : -1;    
 	}
         if(fabs(gen.PID()) == 11) {
 	  lep1_s="El";
 	  if (gen.PID() < 0) lep1_ss=lep1_s+"+";
           else lep1_ss=lep1_s+"-";
+	  lep_1_ch = (gen.PID() < 0) ? 1 : -1;    
 	}
-      }
-      if(int(gen.MotherIndex()) == Index_W) {
-        if(fabs(gen.PID())  < 16 && fabs(gen.PID())  > 10)      lep_3_ch = (gen.PID() < 0) ? 1 : -1;
-
-        if(fabs(gen.PID()) == 15) {lep3_s="W2_daughter_Tau";lep3_s+=lep_ch;}
-        if(fabs(gen.PID()) == 13) {lep3_s="W2_daughter_Mu";lep3_s+=lep_ch;}
-        if(fabs(gen.PID()) == 11) {lep3_s="W2_daughter_El";lep3_s+=lep_ch;}
       }
     }
     if(lep_1_ch == lep_2_ch) return ("SS_"+ lep1_ss+lep2_ss);
@@ -1791,6 +1799,16 @@ double  HNL_LeptonCore::GetMass(TString type , std::vector<Jet> jets, std::vecto
   return -9999.;
 }
 
+
+
+float HNL_LeptonCore::GetLT(std::vector<Lepton *> leps){
+  
+  float lt(0.);
+  for(auto ilep : leps) lt +=  ilep->Pt();
+
+  return lt;
+
+}
 
 float HNL_LeptonCore::GetLLMass(std::vector<Muon> leps){
   

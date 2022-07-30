@@ -99,11 +99,12 @@ class HNL_LeptonCore : public AnalyzerCore {
   double M_T(Particle a, Particle b);
 
   std::vector<Jet> SelBJets(std::vector<Jet>& jetColl, JetTagging::Parameters jtp);
-  TLorentzVector GetvMET(TString METType, TString Option);
+  TLorentzVector GetvMET(TString METType, TString Option="");
 
 
   TString GetChannelString(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType  q);
 
+  float GetLT(std::vector<Lepton *> leps);
   double GetHT( std::vector<Jet> jets, std::vector<FatJet> fatjets);
   double GetST( std::vector<Electron> electrons, std::vector<Muon> muons, std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev);
   double GetST( std::vector<Electron> electrons, std::vector<Muon> muons, std::vector<Jet> jets, std::vector<FatJet> fatjets, Particle met);

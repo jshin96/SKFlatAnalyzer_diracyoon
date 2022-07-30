@@ -628,7 +628,7 @@ def check_xsec_in_current_list( _dslist, _dsn, _varname):
     return b_to_update
 
 
-def update_mc_samplelist_from_googledoc(array_from_googledoc,_era, _dirlist, _path_mc_outfile, _path_sklat_dir,work_dir):
+def update_mc_samplelist_from_googledoc(array_from_googledoc,_era, commonpath,samplecheck, _dirlist, _path_mc_outfile, _path_sklat_dir,work_dir):
     
     update_list=[]
   
@@ -704,6 +704,13 @@ def update_mc_samplelist_from_googledoc(array_from_googledoc,_era, _dirlist, _pa
                 _nevents_w=mcline.split()[5]
                 mc_xsec = mcline.split()[2]
                 if not mc_xsec.split()[0]  == var_xsec.split()[0]:
+                    if os.path.exists(commonpath + "/"+var_alias+".txt"):
+                        os.system("rm " + commonpath + "/"+var_alias+".txt")
+                        print ("rm " + commonpath + "/"+var_alias+".txt")
+                    if os.path.exists(samplecheck + "/"+var_alias+".txt"):
+                        os.system("rm " + samplecheck + "/"+var_alias+".txt")
+                        print ("rm " + samplecheck + "/"+var_alias+".txt")
+
                     print "Change in xsec for " +var_alias + " -->"  + mc_xsec+ ": " + var_xsec.split()[0]+":"
                     ToUpdate=True
                     update_list.append(dsn)

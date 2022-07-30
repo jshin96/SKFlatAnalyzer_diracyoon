@@ -16,7 +16,7 @@ def Exit(timelist, exit_code):
     if len(timelist) == 0:
         exit()
 
-    print "Total run time =  " +str(timelist[len(timelist)][1]-timelist[0][1])
+    print "Total run time =  " +str(timelist[len(timelist)-1][1]-timelist[0][1])
     print "-"*30
 
     if exit_code:
@@ -256,7 +256,7 @@ for era in arr_eras:
     if args.Signal:
         summary_file_job=path_dir_sk_datadir+era+"/Sample/SampleSummary_Signal_Type1.txt"
 
-    UpdateFiles = update_mc_samplelist_from_googledoc(array_from_googledoc,era,_skdir_list, summary_file_job ,path_sklat_dir, workdir)
+    UpdateFiles = update_mc_samplelist_from_googledoc(array_from_googledoc,era,var_skflat_wd+"/data/"+FLAT_Version+"/"+era+"/Sample/CommonSampleInfo/",var_sk_out+"/"+FLAT_Version+"/SampleCheck/"+era+"/",_skdir_list, summary_file_job ,path_sklat_dir, workdir)
     
     vtimes.append(["post_update_file_time",time.time()])
 

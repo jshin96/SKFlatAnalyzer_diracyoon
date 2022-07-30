@@ -150,6 +150,7 @@ void SKFlatNtuple::Loop(){
       cout << "[SKFlatNtuple::Loop RUNNING] " << jentry << "/" << nentries << " ("<<100.*jentry/nentries<<" %) @ " << printcurrunttime() << endl;
     }
 
+    _jentry = jentry;
     if(fChain->GetEntry(jentry)<0) exit(EIO);
 
     // added by jalmond: if Event lists are added then check if event should be skipped
