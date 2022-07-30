@@ -8,6 +8,7 @@
 #pragma link C++ class SKFlatNtuple+;
 #pragma link C++ class AnalyzerCore+;
 #pragma link C++ class HNL_LeptonCore+;
+#pragma link C++ class HNL_RegionDefinitions+;
 #pragma link C++ class HNL_SignalStudies+;
 #pragma link C++ class HNL_SR3KinVar+;
 #pragma link C++ class GetEffLumi+;

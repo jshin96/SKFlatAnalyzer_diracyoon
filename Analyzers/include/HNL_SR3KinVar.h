@@ -1,9 +1,9 @@
 #ifndef HNL_SR3KinVar_h
 #define HNL_SR3KinVar_h
 
-#include "HNL_LeptonCore.h"
+#include "HNL_RegionDefinitions.h"
 
-class HNL_SR3KinVar : public HNL_LeptonCore {
+class HNL_SR3KinVar : public HNL_RegionDefinitions {
 
  public:
 

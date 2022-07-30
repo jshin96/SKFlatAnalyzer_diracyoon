@@ -1,9 +1,9 @@
 #ifndef HNL_SignalStudies_h
 #define HNL_SignalStudies_h
 
-#include "HNL_LeptonCore.h"
+#include "HNL_RegionDefinitions.h"
 
-class HNL_SignalStudies : public HNL_LeptonCore {
+class HNL_SignalStudies : public HNL_RegionDefinitions {
 
  public:
 

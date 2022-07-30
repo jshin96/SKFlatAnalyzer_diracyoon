@@ -120,63 +120,51 @@ void HNL_SignalStudies::RunSignalPlotter(TString process){
     
   }
 
-
-  vector<Electron> this_AllElectrons = AllElectrons;
-  vector<Muon>     this_AllMuons     = AllMuons;
-  vector<Jet>      this_AllJets      = AllJets;
-  vector<FatJet>   this_AllFatJets   = AllFatJets;
-  vector<Tau>      this_AllTaus      = AllTaus;
-
-  
   
   // HL ID
-  std::vector<Electron>   myelectrons = SelectElectrons(this_AllElectrons, "HNTightV2", 10., 2.5);
-  std::vector<Muon>       mymuons     = SelectMuons    (this_AllMuons,     "HNTightV2", 5., 2.4);
+  std::vector<Electron>   myelectrons = GetElectrons( "HNTightV2", 10., 2.5);
+  std::vector<Muon>       mymuons     = GetMuons    ( "HNTightV2", 5., 2.4);
 
   // EXO17028 ID
   
-  std::vector<Electron>   myelectrons_js = SelectElectrons(this_AllElectrons, "HNTight_17028", 10., 2.5);
-  std::vector<Muon>       mymuons_js     = SelectMuons    (this_AllMuons,     "HNTight_17028", 5., 2.4);
+  std::vector<Electron>   myelectrons_js = GetElectrons("HNTight_17028", 10., 2.5);  
+  std::vector<Muon>       mymuons_js     = GetMuons    ("HNTight_17028", 5., 2.4);
 
 
-  std::vector<Electron>   vetoelectrons = SelectElectrons(this_AllElectrons, "HNVeto2016", 10., 2.5);
-  std::vector<Muon>       vetomuons     = SelectMuons    (this_AllMuons,     "HNVeto2016", 5., 2.4);
+  std::vector<Electron>   vetoelectrons = GetElectrons("HNVeto2016", 10., 2.5); 
+  std::vector<Muon>       vetomuons     = GetMuons    ("HNVeto2016", 5., 2.4);
 
-  std::vector<Tau>        mytaus      = SelectTaus(this_AllTaus,"HNVeto",20., 2.3);
-  std::vector<Tau>        alltaus      = SelectTaus(this_AllTaus,"NoCut",20., 2.3);
+  std::vector<Tau>        mytaus      = GetTaus("HNVeto",20., 2.3); 
+  std::vector<Tau>        alltaus     = GetTaus("NoCut", 20., 2.3);
   
 
-  std::vector<FatJet>   fatjets_tmp  = SelectFatJets(this_AllFatJets, param.FatJet_ID, 200, 5.);
-  std::vector<Jet>      jets_tmp     = SelectJets   (this_AllJets,    param.Jet_ID,    15., 5.);
-
+  std::vector<FatJet>   fatjets_tmp  = GetFatJets( param.FatJet_ID, 200, 5.);
+  std::vector<Jet>      jets_tmp     = GetJets   ( param.Jet_ID,    15., 5.);
 
   std::vector<FatJet> fatjets                  = GetAK8Jets(fatjets_tmp, 200., 2.7, true,  1., true, -999, true, 40., 130., vetoelectrons, vetomuons);
   std::vector<Jet> jets                        = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8,"loose",        vetoelectrons, vetomuons,fatjets);
-
   std::vector<Jet> vbf_jets                    = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8,"loose",   vetoelectrons, vetomuons,fatjets);
 
   
   int njets = vbf_jets.size() + fatjets.size();
 
-
-  if (process.Contains("MuMu") or   process.Contains("Mu+Mu") or   process.Contains("Mu-Mu") ){
+  if ( process.Contains("Mu+Mu+") or   process.Contains("Mu-Mu-") ){
     
-    param.Name = "MuonChannelSiganls";
-    FillEventCutflow(sigmm,weight, "NoCut", param.Name);
+    param.Name = "MuonChannelSignals";
+    FillEventCutflow(sigmm,weight, "SSNoCut", param.Name);
     
     if(SameCharge(mymuons) && vetomuons.size()==2 && vetoelectrons.size()==0 ) {
       
       FillEventCutflow(sigmm,weight, "SSMM",  param.Name);
      
-      if(njets > 0 && GetLLMass(mymuons) > 10.)            FillEventCutflow(sigmm,weight, "SSMM_Jet",  param.Name);
       if(GetLLMass(mymuons) > 10.)            FillEventCutflow(sigmm,weight, "SSMM_LLMass",  param.Name);
+      if(njets > 0 && GetLLMass(mymuons) > 10.)            FillEventCutflow(sigmm,weight, "SSMM_Jet",  param.Name);
 
       TString channel_string= GetChannelString(MuMu, SS);
       
       if(GetLLMass(mymuons) > 10. && mytaus.size()==0 ) {
 	
 	if(njets > 0) FillEventCutflow(sigmm,weight, "SSMM_Jet_vTau",  param.Name);
-	
       
 	if(fatjets.size() > 0){
 	  if(RunSignalRegionAK8( MuMu, SS, myelectrons, vetoelectrons, mymuons, vetomuons, jets, fatjets, "Medium", ev, param,  channel_string, weight ))
@@ -196,13 +184,11 @@ void HNL_SignalStudies::RunSignalPlotter(TString process){
 	    
 	    if(RunSignalRegionAK4(MuMu, SS, myelectrons, vetoelectrons, mymuons, vetomuons, jets, fatjets, "Medium", ev, param,  channel_string, weight ))             FillEventCutflow(sigmm,weight, "SSMM_SR3",  param.Name);
 	    
-	    
+   
 	    else if(jets.size() < 2 && mymuons[1].Pt() > 100)             FillEventCutflow(sigmm,weight, "SSMM_SR4",  param.Name);
-	    
-	    
+
 	    else             FillEventCutflow(sigmm,weight, "SSMM_Fail",  param.Name);
-	    
-	    
+
 	  }
 	}
       }
@@ -300,381 +286,7 @@ void HNL_SignalStudies::RunSignalPlotter(TString process){
 
 
 
-  std::vector<Muon>       mymuons_mva     = SelectMuons    (this_AllMuons,     "HNTightMVA", 5., 2.4);
-  std::vector<Muon>       mymuons_mva1     = SelectMuons    (this_AllMuons,     "HNTightMVAVL", 5., 2.4);
-  std::vector<Muon>       mymuons_mva2     = SelectMuons    (this_AllMuons,     "HNTightMVAL", 5., 2.4);
-  std::vector<Muon>       mymuons_mva3     = SelectMuons    (this_AllMuons,     "HNTightMVAM", 5., 2.4);
-  std::vector<Muon>       mymuons_mva4     = SelectMuons    (this_AllMuons,     "HNTightMVAT", 5., 2.4);
-  std::vector<Muon>       mymuons_mva5     = SelectMuons    (this_AllMuons,     "HNTightMVAVT", 5., 2.4);
-  std::vector<Muon>       mymuons_mva6     = SelectMuons    (this_AllMuons,     "HNTightMVAVVT", 5., 2.4);
 
-
-
-
-  vector <Muon> mva_muons_loose;
-  for(auto im : vetomuons){
-    if(im.PassMVA(-1.0,-1,-1) )mva_muons_loose.push_back(im);
-  }
-
-  if(SameCharge(mva_muons_loose)){
-    if(mva_muons_loose[0].Pt() > 20 && mva_muons_loose[1].Pt() > 10){
-      TString mutag="";
-      for(auto im: mva_muons_loose){
-	if(mutag=="_leading") mutag= "_second";
-	if(mutag=="") mutag= "_leading";
-
-
-	TString pr_label="";
-	if(!IsData) pr_label= PromptStatus(im,gens);
-	else { 
-	  if (fabs(im.IP3D()/im.IP3Derr()) > 5.){
-	    pr_label="Fake";
-	  }
-	  else  if (fabs(im.IP3D()/im.IP3Derr()) < 1.){
-            pr_label="Prompt";
-          }
-	}
-	
-	TString eta_label=GetEtaLabel(im);
-	TString pt_label=GetPtLabel(im);
-	bool IsSignal = MCSample.Contains("Type") ? true : false;
-	double sweight = IsSignal ? 1. : weight;
-
-	bool make_plot=false;
-	if(IsData){
-	  if(ev.GetMETVector().Pt() > 50 && ((mva_muons_loose[0]) + (mva_muons_loose[1])).M() < 100) make_plot=true;
-	  if(GetNBJets2a(jets,"Medium") > 0) make_plot=true;
-	}
-	else make_plot=true;
-
-	if(make_plot){
-	  FillHist( ("MVA/MVA_"+eta_label),im.MVA(), sweight, 200, -1., 1.,"");
-	  FillHist( ("MVA/MVA_"+eta_label+"_"+pt_label),im.MVA(), sweight, 200, -1., 1.,"");
-	  FillHist( ("MVA/MVA_"+eta_label+"_"+pt_label+mutag),im.MVA(), sweight, 200, -1., 1.,"");
-	  FillHist( ("MVA/"+pr_label+"MVA_"+eta_label+"_"+pt_label),im.MVA(), sweight, 200, -1., 1.,"");
-	  if(fatjets.size() > 0){
-	    FillHist( ("MVA_AK8/MVA_"+eta_label),im.MVA(), sweight, 200, -1., 1.,"");
-	    FillHist( ("MVA_AK8/MVA_"+eta_label+"_"+pt_label),im.MVA(), sweight, 200, -1., 1.,"");
-	    FillHist( ("MVA_AK8/MVA_"+eta_label+"_"+pt_label+mutag),im.MVA(), sweight, 200, -1., 1.,"");
-	    FillHist( ("MVA_AK8/"+pr_label+"MVA_"+eta_label+"_"+pt_label),im.MVA(), sweight, 200, -1., 1.,"");
-	  }
-	  else if (PassVBF(vbf_jets, MakeLeptonPointerVector(mva_muons_loose))){
-	    FillHist( ("MVA_WW/MVA_"+eta_label),im.MVA(), sweight, 200, -1., 1.,"");
-	    FillHist( ("MVA_WW/MVA_"+eta_label+"_"+pt_label),im.MVA(), sweight, 200, -1., 1.,"");
-	    FillHist( ("MVA_WW/MVA_"+eta_label+"_"+pt_label+mutag),im.MVA(), sweight, 200, -1., 1.,"");
-	    FillHist( ("MVA_WW/"+pr_label+"MVA_"+eta_label+"_"+pt_label),im.MVA(), sweight, 200, -1., 1.,"");
-	  }
-	  else if(jets.size() > 0){
-	    FillHist( ("MVA_J/MVA_"+eta_label),im.MVA(), sweight, 200, -1., 1.,"");
-	    FillHist( ("MVA_J/MVA_"+eta_label+"_"+pt_label),im.MVA(), sweight, 200, -1., 1.,"");
-	    FillHist( ("MVA_J/MVA_"+eta_label+"_"+pt_label+mutag),im.MVA(), sweight, 200, -1., 1.,"");
-	    FillHist( ("MVA_J/"+pr_label+"MVA_"+eta_label+"_"+pt_label),im.MVA(), sweight, 200, -1., 1.,"");
-	  }
-	}  
-      }
-    }
-  }
-  
-  
-  if(SameCharge(mymuons_mva) && mymuons_mva[0].Pt() > 20)       FillAllMuonPlots("SS" ,"mva",  mymuons_mva, weight);
-  if(SameCharge(mymuons_mva1) && mymuons_mva1[0].Pt() > 20)       FillAllMuonPlots("SS" ,"mva1",  mymuons_mva1, weight);
-  if(SameCharge(mymuons_mva2) && mymuons_mva2[0].Pt() > 20)       FillAllMuonPlots("SS" ,"mva2",  mymuons_mva2, weight);
-  if(SameCharge(mymuons_mva3) && mymuons_mva3[0].Pt() > 20)       FillAllMuonPlots("SS" ,"mva3",  mymuons_mva3, weight);
-  if(SameCharge(mymuons_mva4) && mymuons_mva4[0].Pt() > 20)       FillAllMuonPlots("SS" ,"mva4",  mymuons_mva4, weight);
-  if(SameCharge(mymuons) && mymuons[0].Pt() > 20)       FillAllMuonPlots("SS" ,"HNTightV2",  mymuons, weight);
-  
-  
-
-  if(SameCharge(vetomuons)){
-    if(vetomuons[1].Pt() > 10) {
-      FillAllMuonPlots("SS" ,"vetomuons",  vetomuons, weight);
-      if(vetomuons[0].Charge() < 0)       FillAllMuonPlots("SS" ,"vetomuons_minus",  vetomuons, weight);
-      else   FillAllMuonPlots("SS" ,"vetomuons_plus",  vetomuons, weight);
-
-    }
-  }
-
-  if(!IsData){
-    std::vector<Muon>  nonprompt_muons = MuonNonPromptOnly(vetomuons,gens);
-    
-    if(SameCharge(vetomuons)){
-      if(vetomuons[1].Pt() > 10)FillAllMuonPlots("SS" ,"nonpromptMC",  nonprompt_muons, weight);
-    }
-    
-    MakeType1SignalPlots(process);
-  }
-  else{
-
-
-    std::vector<Muon>  nonprompt_muons ;
-    for(auto im : mymuons_mva3){
-      if (fabs(im.IP3D()/im.IP3Derr()) > 5. || im.RelIso() > 0.2){
-	nonprompt_muons.push_back(im);
-      }
-    }
-    
-    if(SameCharge(mymuons_mva3)){
-      if(mymuons_mva3[1].Pt() > 10) {
-	if(nonprompt_muons.size() > 0){
-	  FillAllMuonPlots("SS" ,"nonprompt",  nonprompt_muons, weight);
-	  FillAllMuonPlots("SS" ,"nonpromptLL",  mymuons_mva3, weight);
-	}
-      }
-    }
-  }
-  
-  if(!PassMETFilter()) return;
-
-  Particle METv = ev.GetMETVector();
-  int NBJet = GetNBJets2a(jets,"Medium");
-
-  if(NBJet==0){
-    if(fatjets.size() > 0){
-
-
-      if(SameCharge(mymuons_mva) && mymuons_mva[0].Pt() > 20)       FillAllMuonPlots("SSAK8" ,"mva",  mymuons_mva, weight);
-      if(SameCharge(mymuons_mva1) && mymuons_mva1[0].Pt() > 20)       FillAllMuonPlots("SSAK8" ,"mva1",  mymuons_mva1, weight);
-      if(SameCharge(mymuons_mva2) && mymuons_mva2[0].Pt() > 20)       FillAllMuonPlots("SSAK8" ,"mva2",  mymuons_mva2, weight);
-      if(SameCharge(mymuons_mva3) && mymuons_mva3[0].Pt() > 20)       FillAllMuonPlots("SSAK8" ,"mva3",  mymuons_mva3, weight);
-      if(SameCharge(mymuons_mva4) && mymuons_mva4[0].Pt() > 20)       FillAllMuonPlots("SSAK8" ,"mva4",  mymuons_mva4, weight);
-      if(SameCharge(mymuons) && mymuons[0].Pt() > 20)       FillAllMuonPlots("SSAK8" ,"HNTightV2",  mymuons, weight);
-    }
-    
-  }
-
-  //  FillHist(this_region+"/NEvent_"+this_region, 0., weight_l, 1, 0., 1.);
-  FillHist( ("Signal"+process+"Reco/MET_Signal"+process+"Reco"), METv.Pt(), weight, 200, 0., 200.,"");
-  FillHist( ("Signal"+process+"Reco/N_AK4Jet_Signal"+process+"Reco"), jets.size(), weight, 10, 0., 10.,"");
-  FillHist( ("Signal"+process+"Reco/N_VBF_AK4Jet_Signal"+process+"Reco"), vbf_jets.size(), weight, 10, 0., 10.,"");
-  FillHist( ("Signal"+process+"Reco/N_AK8Jet_Signal"+process+"Reco"), fatjets.size(), weight, 5, 0., 5.,"");
-  FillHist( ("Signal"+process+"Reco/N_Muon_Signal"+process+"Reco"), mymuons.size(), weight, 8, 0., 8.,"");
-  FillHist( ("Signal"+process+"Reco/N_Electron_Signal"+process+"Reco"), myelectrons.size(), weight, 8, 0., 8.,"");
-  
-  FillHist( ("Signal"+process+"Reco/N_BJet_Signal"+process+"Reco"), NBJet, weight, 10, 0., 10.,"");
-  FillHist( ("Signal"+process+"Reco/NEvent_SR_Signal"+process+"Reco"), 0., weight, 12, 0., 12.,"SR");
-
-
-  map<TString, vector<Muon> >muonmap;
-  muonmap["TightV2"] = mymuons;
-  muonmap["HNTightMVAVL"] = mymuons_mva1;
-  muonmap["HNTightMVAL"] = mymuons_mva2;
-  muonmap["HNTightMVAM"] = mymuons_mva3;
-  muonmap["HNTightMVAT"] = mymuons_mva4;
-  muonmap["HNTightMVAVT"] = mymuons_mva5;
-  muonmap["HNTightMVAVVT"] = mymuons_mva6;
-
-  for(auto imap : muonmap){
-
-    int n_vetolep = vetoelectrons.size() + vetomuons.size();
-    int n_lep= myelectrons.size() + imap.second.size();
-    int n_mu = imap.second.size();
-    int n_el = myelectrons.size();
-    
-    
-    bool DiMu      = (n_mu==2) && (n_vetolep==2) && (imap.second[0].Pt() > 20 && imap.second[1].Pt() > 15);
-    bool DiMu_ST   = (n_mu==2) && (n_vetolep==2) && (imap.second[0].Pt() > 55 && imap.second[1].Pt() > 5);
-    bool DiEl      = (n_el==2) && (n_vetolep==2) && (myelectrons[0].Pt() > 25 && myelectrons[1].Pt() > 15);
-    bool TriMu     = (n_mu==3) && (n_vetolep==3) && (imap.second[0].Pt() > 20 && imap.second[1].Pt() > 15&& imap.second[2].Pt()>10);
-    bool TriEl     = (n_el==3) && (n_vetolep==3) && (myelectrons[0].Pt() > 25 && myelectrons[1].Pt() > 15&& myelectrons[2].Pt()>10);
-    
-    
-    bool TriSSMu  = (n_lep==3) && SameCharge(imap.second) && (n_vetolep==3) && (imap.second[0].Pt() > 20 && imap.second[1].Pt() > 15&& myelectrons[0].Pt()>10);
-    bool TriSSEl  = (n_lep==3) && SameCharge(myelectrons) && (n_vetolep==3) && (imap.second[0].Pt() > 10 && myelectrons[0].Pt() > 25&& myelectrons[1].Pt()>15);
-    
-    
-    bool SSMM   = DiMu && SameCharge(imap.second); 
-    bool OSMM   = DiMu  && !SameCharge(imap.second); 
-    bool SSEE   = DiEl && SameCharge(myelectrons);
-    bool OSEE   = DiEl && !SameCharge(myelectrons);
-    
-    std::vector<Lepton *> leps1 = MakeLeptonPointerVector(imap.second,myelectrons);
-    //std::vector<Lepton *> leps2 = MakeLeptonPointerVector(myelectrons);
-    //leps1.insert( leps1.end(), leps2.begin(), leps2.end() );
-    std::sort(leps1.begin(), leps1.end(), PtComparingPtr);
-    
-    std::map<TString, bool> map_bool_To_Region;
-    
-    map_bool_To_Region["Inclusive"]  = true;
-    
-    // SR1 = AK8 Jet = 1
-    bool HasAK8Jet = (fatjets.size() > 0);
-    bool HasDiAK4Jet = (jets.size() > 1 && jets[1].Pt() > 20.);
-    bool HasAK4Jet = (jets.size() > 0);
-    bool passVBF   = PassVBF(vbf_jets, leps1);
-    bool passVBFv2   = PassVBFv2(vbf_jets, leps1);
-    bool HasNoBJet = (NBJet==0);
-    bool DiLep     = (process.Contains("MuMu")) ?  DiMu : DiEl;
-    bool HighPt    = (DiLep&&leps1[1]->Pt() > 80.);
-    bool TriLep    = (process.Contains("MuMu")) ?  (TriMu || TriSSMu) : (TriEl || TriSSEl);
-    bool SSLL      = (process.Contains("MuMu")) ?  SSMM : SSEE;
-    bool OSLL      = (process.Contains("MuMu")) ?  OSMM : OSEE;
-    vector<TString> cutlables = {"Inclusive","Dilep","Dilep_DM","NoB","SS_Jet","SS_AK8","OS_AK8","SS_2pAK4","SS_1AK4","SS_VBF","SS_3lep","SS_HighPtAK8","SS_HighPt2pAK4","SS_HighPt1AK4","SS_HighPtVBF"};
-  
-    /*
-    HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal"+process, weight, cutlables, "Inclusive");
-    
-    if(DiLep||DiMu_ST) HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal"+process, weight, cutlables, "Dilep");
-    if(DiLep) HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal"+process, weight, cutlables, "Dilep_DM");
-    
-    HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal2"+process, weight, cutlables, "Inclusive");
-    if(DiLep||DiMu_ST) HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal2"+process, weight, cutlables, "Dilep");
-    if(DiLep) HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal2"+process, weight, cutlables, "Dilep_DM");
-    if(HasNoBJet && DiLep){
-      map_bool_To_Region["DiLep_SR_"+process]  = true;
-      
-      HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal"+process, weight, cutlables, "NoB");
-      HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal2"+process, weight, cutlables, "NoB");
-      
-      if (HasAK8Jet && SSLL) {
-      HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal"+process, weight, cutlables, "SS_AK8");
-      HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal"+process, weight, cutlables, "SS_Jet");
-      HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal2"+process, weight, cutlables, "SS_AK8");
-      HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal2"+process, weight, cutlables, "SS_Jet");
-      if(HighPt){
-        HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal2"+process, weight, cutlables, "SS_HighPtAK8");
-	HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal"+process, weight, cutlables, "SS_HighPtAK8");
-  }
-  }
-      else     if (HasAK8Jet && OSLL){
-    HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal"+process, weight, cutlables, "OS_AK8");
-    HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal2"+process, weight, cutlables, "OS_AK8");
-  }
-      else if(!HasAK8Jet){
-    
-    
-    if (!passVBF && SSLL&& HasDiAK4Jet){
-    HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal"+process, weight, cutlables, "SS_2pAK4");
-    HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal"+process, weight, cutlables, "SS_Jet");
-    if(HighPt)HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal"+process, weight, cutlables, "SS_HighPt2pAK4");
-  }
-    else if (!passVBF && SSLL&& HasAK4Jet){
-    HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal"+process, weight, cutlables, "SS_1AK4");
-    HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal"+process, weight, cutlables, "SS_Jet");
-    if(HighPt)          HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal"+process, weight, cutlables, "SS_HighPt1AK4");
-  }
-    
-    else if (passVBF &&SSLL){
-    HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal"+process, weight, cutlables, "SS_VBF");
-    if(HighPt)           HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal"+process, weight, cutlables, "SS_HighPtVBF");
-    HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal"+process, weight, cutlables, "SS_Jet");
-  }
-    
-    if (!passVBFv2 && SSLL&& HasDiAK4Jet){
-    if(HighPt)          HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal2"+process, weight, cutlables, "SS_HighPt2pAK4");
-    HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal2"+process, weight, cutlables, "SS_2pAK4");
-    HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal2"+process, weight, cutlables, "SS_Jet");
-      
-  }
-    else if (!passVBFv2 && SSLL&& HasAK4Jet){
-    if(HighPt)          HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal2"+process, weight, cutlables, "SS_HighPt1AK4");
-    HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal2"+process, weight, cutlables, "SS_1AK4");
-    HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal2"+process, weight, cutlables, "SS_Jet");
-      
-  }
-    
-    else if (passVBFv2 &&SSLL){
-    if(HighPt)          HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal2"+process, weight, cutlables, "SS_HighPtVBF");
-    HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal2"+process, weight, cutlables, "SS_VBF");
-    HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal2"+process, weight, cutlables, "SS_Jet");
-  }
-    
-  }
-  }
-    
-    else   if(HasNoBJet && TriLep){
-    map_bool_To_Region["TriLep_SR_"+process]  = true;
-    HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal"+process, weight, cutlables, "SS_3lep");
-    HNL_LeptonCore::FillEventCutflow( imap.first+"_Signal2"+process, weight, cutlables, "SS_3lep");
-  }
-    
-    
-    for(std::map<TString, bool>::iterator it_map = map_bool_To_Region.begin(); it_map != map_bool_To_Region.end(); it_map++){
-      
-    TString this_region = it_map->first+'_'+process;
-    if(it_map->second){
-    
-    //cout << MCSample << " weight= " << weight << endl;
-    // for(auto im : leps1) cout << "Lep pt = "  << im->Pt() << endl;
-    FillHist(this_region+"/NEvent_"+this_region, 0., weight, 1, 0., 1.);
-    FillHist(this_region+"/MET_"+this_region, METv.Pt(), weight, 500, 0., 500.);
-        
-    
-    
-    if(leps1.size()==2){
-    FillHist(this_region+"/LL_Mass_"+this_region, ((*leps1[0]) + (*leps1[1])).M(), weight, 100, 0., 1000.);
-  }
-    if(leps1.size()==3){
-    FillHist(this_region+"/LLL_Mass_"+this_region, ((*leps1[0]) + (*leps1[1])+ (*leps1[2])).M(), weight, 100, 0., 1000.);
-  } 
-    
-    
-    for(auto i  : leps1) FillHist(this_region+"/Lep_Pt_"+this_region, i->Pt(), weight, 100, 0., 1000.);
-    for(auto i  : leps1) FillHist(this_region+"/Lep_now_Pt_"+this_region, i->Pt(), 1., 100, 0., 1000.);
-    
-    if(leps1.size() > 0)       FillHist(this_region+"/Lep0_Pt_"+this_region, leps1[0]->Pt(), weight, 100, 0., 1000.);
-    if(leps1.size() > 1)       FillHist(this_region+"/Lep1_Pt_"+this_region, leps1[1]->Pt(), weight, 100, 0., 500.);
-    if(leps1.size() > 2)       FillHist(this_region+"/Lep2_Pt_"+this_region, leps1[2]->Pt(), weight, 50, 0., 200.);
-    
-    if(leps1.size() > 0)       FillHist(this_region+"/Lep0_Eta_"+this_region, leps1[0]->Eta(), weight, 100, -2.5, 2.5);
-    if(leps1.size() > 1)       FillHist(this_region+"/Lep1_Eta_"+this_region, leps1[1]->Eta(), weight, 100, -2.5, 2.5);
-    if(leps1.size() > 2)       FillHist(this_region+"/Lep2_Eta_"+this_region, leps1[2]->Eta(), weight, 100, -2.5, 2.5);
-    
-    if(leps1.size() > 0)       FillHist(this_region+"/Lep0_dXY_"+this_region, leps1[0]->dXY(), weight, 100, -0.5, 0.5);
-    if(leps1.size() > 1)       FillHist(this_region+"/Lep1_dXY_"+this_region, leps1[1]->dXY(), weight, 100, -0.5, 0.5);
-    
-    if(leps1.size() > 0)       FillHist(this_region+"/Lep0_RelIso_"+this_region, leps1[0]->RelIso(), weight, 100, 0., 0.5);
-    if(leps1.size() > 1)       FillHist(this_region+"/Lep1_RelIso_"+this_region, leps1[1]->RelIso(), weight, 100, 0., 0.5);
-    
-    if(vbf_jets.size() < 2) return;
-    
-    double maxDiJetDeta=0.;
-    int ijet1(-1), ijet2(-1);
-    for(unsigned int ij = 0; ij < vbf_jets.size()-1; ij++){
-      
-    for(unsigned int ij2 = ij+1; ij2 < vbf_jets.size(); ij2++){
-    double deta = fabs(vbf_jets[ij].Eta() - vbf_jets[ij2].Eta());
-    if(deta > maxDiJetDeta) {
-    maxDiJetDeta=deta;
-    ijet1=ij;
-    ijet2=ij2;
-  }
-  }
-  }
-    
-    if(leps1.size()==2){
-      
-    double ll_dphi = fabs(TVector2::Phi_mpi_pi( ( (*leps1[0]).Phi() - (*leps1[1]).Phi() )) );
-    FillHist(this_region+"/VBF_DPhi_"+this_region ,  ll_dphi , weight, 320, 0., 3.2);
-  }
-    
-    
-    if(jets.size() > 1){
-    FillHist(this_region+"/Jet0_Eta_"+this_region ,  jets[0].Eta()  , weight, 300, -3., 3.);
-    FillHist(this_region+"/Jet1_Eta_"+this_region ,  jets[1].Eta()  , weight, 300, -3., 3.);
-      
-      
-  }
-    if( ijet1  > 0 &&  ijet2 > 0 &&leps1.size()==2){
-      
-      
-    Particle JJ = vbf_jets[ijet1] + vbf_jets[ijet2];
-      
-    FillHist(this_region+"/VBF_Jet0_Eta_"+this_region ,  vbf_jets[ijet1].Eta()  , weight, 320, 0., 3.2);
-    FillHist(this_region+"/VBF_Jet1_Eta_"+this_region ,  vbf_jets[ijet2].Eta()  , weight, 320, 0., 3.2);
-      
-    double Av_JetEta= 0.5*(vbf_jets[ijet1].Eta()+ vbf_jets[ijet2].Eta());
-      
-    double zeppenfeld = TMath::Max((*leps1[0]).Eta()  - Av_JetEta , (*leps1[1]).Eta()  - Av_JetEta ) /maxDiJetDeta;
-      
-    FillHist(this_region+"/VBF_MJJ_"+this_region ,  JJ.M() , weight, 100, 0., 2000.);
-    FillHist(this_region+"/VBF_DEta_"+this_region, maxDiJetDeta, weight, 100, 0., 10.);
-    FillHist(this_region+"/MaxZeppen_"+this_region, zeppenfeld , weight, 100, 0., 1.);
-  }
-  }
-  }
- 
-    */
-  }
   return;
   
 }

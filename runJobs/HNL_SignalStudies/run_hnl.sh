@@ -5,7 +5,6 @@ njobs=5
 nmax=300
 skim=' '
 declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
-declare  -a era_list=("2016postVFP" )
 
 if [[ $1 == "DY" ]]; then
 

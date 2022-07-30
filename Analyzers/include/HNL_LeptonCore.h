@@ -61,27 +61,6 @@ class HNL_LeptonCore : public AnalyzerCore {
   HNL_LeptonCore();
   ~HNL_LeptonCore();
 
-  // analyis functions to run SR
-  void RunElectronChannel(int ptbin , std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<Jet> jets_vbf,  std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param,  float w);
-			  
-  void RunMuonChannel(HNL_LeptonCore::Channel    channel, HNL_LeptonCore::ChargeType dilep_charge,std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto,  std::vector<Jet> jets, std::vector<Jet> jets_vbf,  std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param,  float w);
-
-
-  bool  RunSignalRegionAK8(HNL_LeptonCore::Channel channel,HNL_LeptonCore::ChargeType q,std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet>  fatjets, TString bjet_wp, Event ev, AnalyzerParameter param, TString channel_string ,  float w);
-
-
-
-  bool RunSignalRegionWW(HNL_LeptonCore::Channel channel,HNL_LeptonCore::ChargeType q,std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet>  fatjets, TString bjet_wp, Event ev, AnalyzerParameter param, TString channel_string ,  float w);
-
-
-  bool  RunSignalRegionAK4(HNL_LeptonCore::Channel channel,HNL_LeptonCore::ChargeType q,std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet>  fatjets, TString bjet_wp, Event ev, AnalyzerParameter param, TString channel_string ,  float w);
-
-
-
-  bool RunSignalRegionTrilepton(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet>  fatjets, TString bjet_wp, Event ev, AnalyzerParameter param, TString channel_string ,  float w);
-
- // bool RunElectronChannelSR4(HNL_LeptonCore::Channel channel ,std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet>  fatjets, TString bjet_wp,  Event ev, AnalyzerParameter param,  TString channel_string ,float w);
-  
   void PrintParam(AnalyzerParameter param);
   AnalyzerParameter InitialiseHNLParameters( TString analysis_tag, vector<vector<TString> >  param_vec);
 
@@ -93,8 +72,8 @@ class HNL_LeptonCore : public AnalyzerCore {
   bool HasLowMassMeson(std::vector<Lepton *> leps);
 
   TString GetProcess();
-  bool PassVBF(vector<Jet>  jets,std::vector<Lepton *> leps1);
-  bool PassVBFInitial(vector<Jet>  jets);
+  //bool PassVBF(vector<Jet>  jets,std::vector<Lepton *> leps1);
+  //bool PassVBFInitial(vector<Jet>  jets);
 
   double M_T(Particle a, Particle b);
 
