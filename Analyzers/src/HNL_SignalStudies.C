@@ -12,6 +12,38 @@ void HNL_SignalStudies::initializeAnalyzer(){
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepCSV, JetTagging::Tight, JetTagging::incl, JetTagging::comb) );
 
 
+  if(DataYear==2016){ 
+    
+    Trigger_HNL_Muon = {
+      "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v", 
+      "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v",
+      "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
+      "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"
+    };
+    Trigger_HNL_MuonH = {
+      "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
+      "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"
+    };                 // 35918.219492947
+  
+  }  // END OF 2016 Triggers
+  else if(DataYear==2017){
+    Trigger_HNL_Muon = {
+      "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
+      "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v",
+      "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v"
+    };
+      
+  } // end of 2017 triggers
+  else if(DataYear==2018){
+    
+    Trigger_HNL_Muon = {
+      "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v"
+    };
+    
+
+  } // end of 20
+
+
   //--- Method 1d using JetTagging::iterativefit needs csv file changing in histmap to run
   // jtps.push_back( JetTagging::Parameters(JetTagging::DeepCSV, JetTagging::Medium, JetTagging::iterativefit, JetTagging::iterativefit) );
   mcCorr->SetJetTaggingParameters(jtps);
@@ -92,20 +124,9 @@ void HNL_SignalStudies::RunSignalPlotter(TString process){
   //************************************************/// 
   // setup vector of all objects
   //************************************************///
-  AllMuons     = GetAllMuons();
-  AllElectrons = GetAllElectrons();
-  AllTaus      = GetAllTaus();
   AllJets      = GetAllJets();
   AllFatJets   = puppiCorr->Correct(GetAllFatJets());
 
-  vector<Electron> this_AllElectrons1 = AllElectrons;
-  vector<Muon>     this_AllMuons1     = AllMuons;
-
-  std::vector<Electron>   my_electrons = SelectElectrons(this_AllElectrons1, "NoCut", 10., 2.5);
-  std::sort(my_electrons.begin(),       my_electrons.end(),        PtComparing);
-
-  std::vector<Muon>   my_muons = SelectMuons(this_AllMuons1, "NoCut", 10., 2.5);
-  std::sort(my_muons.begin(),       my_muons.end(),        PtComparing);
   
   double weight(1.);
 
@@ -138,154 +159,178 @@ void HNL_SignalStudies::RunSignalPlotter(TString process){
   std::vector<Tau>        alltaus     = GetTaus("NoCut", 20., 2.3);
   
 
-  std::vector<FatJet>   fatjets_tmp  = GetFatJets( param.FatJet_ID, 200, 5.);
+  vector<FatJet>   this_AllFatJets   = AllFatJets;
+
+  std::vector<FatJet>   fatjets_tmp  = SelectFatJets(this_AllFatJets, param.FatJet_ID, 200, 5.);
   std::vector<Jet>      jets_tmp     = GetJets   ( param.Jet_ID,    15., 5.);
 
   std::vector<FatJet> fatjets                  = GetAK8Jets(fatjets_tmp, 200., 2.7, true,  1., true, -999, true, 40., 130., vetoelectrons, vetomuons);
+  std::vector<FatJet> fatjets_notag            = GetAK8Jets(fatjets_tmp, 200., 2.7, true,  1., false, -999, true, 40., 130., vetoelectrons, vetomuons);
   std::vector<Jet> jets                        = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8,"loose",        vetoelectrons, vetomuons,fatjets);
   std::vector<Jet> vbf_jets                    = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8,"loose",   vetoelectrons, vetomuons,fatjets);
 
+  if (IsData || ( process.Contains("Mu+Mu+") or   process.Contains("Mu-Mu-") )){
+    RunMuonChannel(myelectrons,vetoelectrons, mymuons,vetomuons, mytaus, jets, vbf_jets, fatjets,ev, param, weight );
+
+    param.Name = param.Name + "_LAK8";
+    RunMuonChannel(myelectrons,vetoelectrons, mymuons,vetomuons, mytaus, jets, vbf_jets, fatjets_notag,ev, param, weight );
+    
+  }
+
+}
+
+
+void HNL_SignalStudies::RunMuonChannel(std::vector<Electron> ElectronColl, std::vector<Electron> VetoElectronColl, std::vector<Muon> MuonColl,  std::vector<Muon> VetoMuonColl, std::vector<Tau> TauColl,  std::vector<Jet> JetColl, std::vector<Jet> VBFJetColl,  std::vector<FatJet> FatjetColl,  Event Ev, AnalyzerParameter param,  float _weight)   {
+
+  Particle METUnsmearedv = Ev.GetMETVector();
+  Particle METv =UpdateMETSmearedJet(METUnsmearedv, JetColl);
+
+  if(IsData && ! DataStream.Contains("DoubleMuon")) return;
+
+
+  std::vector<Lepton *> leps       = MakeLeptonPointerVector(MuonColl,ElectronColl);
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(VetoMuonColl,VetoElectronColl);
+
   
-  int njets = vbf_jets.size() + fatjets.size();
+  int njets =  (VBFJetColl.size() + FatjetColl.size()) ;
+  if( int(JetColl.size() + FatjetColl.size()) > njets) njets = JetColl.size() + FatjetColl.size();
+  
+  bool dijet = (FatjetColl.size() > 0) || (JetColl.size() > 1);
 
-  if ( process.Contains("Mu+Mu+") or   process.Contains("Mu-Mu-") ){
+  
+  int  NBJets_medium      =  GetNBJets2a("tight","Medium");
+  bool PassBJetMVeto = (NBJets_medium==0);
+  
+  param.Name = "MuonChannelSignals_"+param.Name;
+  FillEventCutflow(sigmm,_weight, "SSNoCut", param.Name);
+  FillEventCutflow(sigmm_17028,_weight, "SSNoCut", param.Name);
+  
+  // UL ANALYSIS
+  
+  if(!IsData){
     
-    param.Name = "MuonChannelSignals";
-    FillEventCutflow(sigmm,weight, "SSNoCut", param.Name);
     
-    if(SameCharge(mymuons) && vetomuons.size()==2 && vetoelectrons.size()==0 ) {
-      
-      FillEventCutflow(sigmm,weight, "SSMM",  param.Name);
-     
-      if(GetLLMass(mymuons) > 10.)            FillEventCutflow(sigmm,weight, "SSMM_LLMass",  param.Name);
-      if(njets > 0 && GetLLMass(mymuons) > 10.)            FillEventCutflow(sigmm,weight, "SSMM_Jet",  param.Name);
+    vector<Gen> gen_lep= GetGenLepronsSignal();
+    std::sort(gen_lep.begin(),   gen_lep.end(),        PtComparing);
 
-      TString channel_string= GetChannelString(MuMu, SS);
+    if(gen_lep.size() == 2){
+      if( (fabs(gen_lep[0].Eta()) < 2.4 && gen_lep[0].Pt() > 20) &&
+	  (fabs(gen_lep[1].Eta()) < 2.4 && gen_lep[1].Pt() > 10)){
+	FillEventCutflow(sigmm,_weight, "SSGen", param.Name);
+	FillEventCutflow(sigmm_17028,_weight, "SSGen", param.Name);
+
+      }
+      else return;
+    }
+    else return;
+  }
+  if(!Ev.PassTrigger(Trigger_HNL_Muon)) return;
+  FillEventCutflow(sigmm,_weight, "SSMMTrig",  param.Name);
+  FillEventCutflow(sigmm_17028,_weight, "SSMMTrig",  param.Name);
+
+
+  
+  if(SameCharge(VetoMuonColl)) {
+    
+    FillEventCutflow(sigmm,_weight, "SSMMLoose",  param.Name);
+    FillEventCutflow(sigmm_17028,_weight, "SSMMLoose",  param.Name);
+
+  }
+
+  if(MuonColl.size()!=2)  return;
+  if(!SameCharge(MuonColl)) return;
+  FillEventCutflow(sigmm,_weight, "SSMM",  param.Name);
+  FillEventCutflow(sigmm_17028,_weight, "SSMM",  param.Name);
+
+  
+  if(MuonColl[0].Pt() < 20) return;
+  if(MuonColl[1].Pt() < 10) return;
+
+  FillEventCutflow(sigmm,_weight, "SSMM_Pt",  param.Name);
+  FillEventCutflow(sigmm_17028,_weight, "SSMM_Pt",  param.Name);
+
+  
+  if(SameCharge(MuonColl) && VetoMuonColl.size()==2 && VetoElectronColl.size()==0 ) {
+    
+    FillEventCutflow(sigmm,_weight, "SSMM_LepVeto",  param.Name);
+
+    if(GetLLMass(leps) > 10.)            FillEventCutflow(sigmm,_weight, "SSMM_LLMass",  param.Name);
+    if(njets > 0 && GetLLMass(leps) > 10.)            FillEventCutflow(sigmm,_weight, "SSMM_Jet",  param.Name);
+    if(dijet && GetLLMass(leps) > 10.)            FillEventCutflow(sigmm,_weight, "SSMM_DiJet",  param.Name);
+    
+    if(PassBJetMVeto && GetLLMass(leps) > 10.)            FillEventCutflow(sigmm,_weight, "SSMM_BJet",  param.Name);
+    
+    TString channel_string= GetChannelString(MuMu, SS);
+    bool tau_veto = (TauColl.size()==0);
+    
+    if(GetLLMass(leps) > 10. && tau_veto && PassBJetMVeto) {
       
-      if(GetLLMass(mymuons) > 10. && mytaus.size()==0 ) {
+      FillEventCutflow(sigmm,_weight, "SSMM_vTau",  param.Name);
+      
+      if(FatjetColl.size() > 0){
+	if(RunSignalRegionAK8( MuMu, SS, leps, leps_veto, JetColl, FatjetColl, "Medium", METv, param,  channel_string, _weight ))   FillEventCutflow(sigmm,_weight, "SSMM_SR1",  param.Name);
+	else FillEventCutflow(sigmm,_weight, "SSMM_SR1Fail",  param.Name);
+      }
+      else{
 	
-	if(njets > 0) FillEventCutflow(sigmm,weight, "SSMM_Jet_vTau",  param.Name);
-      
-	if(fatjets.size() > 0){
-	  if(RunSignalRegionAK8( MuMu, SS, myelectrons, vetoelectrons, mymuons, vetomuons, jets, fatjets, "Medium", ev, param,  channel_string, weight ))
-	    FillEventCutflow(sigmm,weight, "SSMM_SR1",  param.Name);
+	// 2 methods:
+	//1) cut on ht/pt  < 1 and Zepp -> Cut and count in SR2
+	//2) use ht/pt shape in SR2 and keep events
+	
+	//if(PassVBFInitial(vbf_jets)) {
+	
+	if(PassVBFInitial(VBFJetColl)&&RunSignalRegionWW( MuMu,SS, leps, leps_veto,  VBFJetColl, FatjetColl, "Medium", METv, param,  channel_string, _weight )){    
+	  FillEventCutflow(sigmm,_weight, "SSMM_SR2",  param.Name);
+	  
+	  
 	}
 	else{
 	  
-	  if(PassVBFInitial(vbf_jets)) {
-	    
-	    FillEventCutflow(sigmm,weight, "SSMM_SR2a",  param.Name);
-	    
-	    if(PassVBFInitial(vbf_jets)&&RunSignalRegionWW( MuMu,SS, myelectrons, vetoelectrons, mymuons, vetomuons,  vbf_jets, fatjets, "Medium", ev, param,  channel_string, weight ))             FillEventCutflow(sigmm,weight, "SSMM_SR2b",  param.Name);
-
+	  if(RunSignalRegionAK4(MuMu, SS, leps, leps_veto, JetColl, FatjetColl, "Medium", METv, param,  channel_string, _weight ))             FillEventCutflow(sigmm,_weight, "SSMM_SR3",  param.Name);
 	  
-	  }
-	  else{
-	    
-	    if(RunSignalRegionAK4(MuMu, SS, myelectrons, vetoelectrons, mymuons, vetomuons, jets, fatjets, "Medium", ev, param,  channel_string, weight ))             FillEventCutflow(sigmm,weight, "SSMM_SR3",  param.Name);
-	    
-   
-	    else if(jets.size() < 2 && mymuons[1].Pt() > 100)             FillEventCutflow(sigmm,weight, "SSMM_SR4",  param.Name);
-
-	    else             FillEventCutflow(sigmm,weight, "SSMM_Fail",  param.Name);
-
-	  }
-	}
-      }
-    }
+	  
+	  else if(JetColl.size() < 2 && leps[1]->Pt() >80.)             FillEventCutflow(sigmm,_weight, "SSMM_SR4",  param.Name);
+	  
+	  else             FillEventCutflow(sigmm,_weight, "SSMM_SR3Fail",  param.Name);
+	  
+	}// SR3
+      } // NO AK8
+    } // LLMASS
   }
-  return;
-
-  if(SameCharge(myelectrons))  FillHist (process + "/SSEE", 1, weight, 2, 0., 2.,"");
-  if(SameCharge(myelectrons,mymuons))  FillHist (process + "/SSEM", 1, weight, 2, 0., 2.,"");
-
-
-
   
-
-  if(SameCharge(mymuons,-1))   FillHist (process + "/SSmm_MM", 1, weight, 2, 0., 2.,"");
-  if(SameCharge(myelectrons,-1))  FillHist (process + "/SSmm_EE", 1, weight, 2, 0., 2.,"");
-  if(SameCharge(myelectrons,mymuons,-1))  FillHist (process + "/SSmm_EM", 1, weight, 2, 0., 2.,"");
-
-  if(SameCharge(mymuons,1))   FillHist (process + "/SSpp_MM", 1, weight, 2, 0., 2.,"");
-  if(SameCharge(myelectrons,1))  FillHist (process + "/SSpp_EE", 1, weight, 2, 0., 2.,"");
-  if(SameCharge(myelectrons,mymuons,1))  FillHist (process + "/SSpp_EM", 1, weight, 2, 0., 2.,"");
   
+  
+  // 17028 ANALYSIS                                                                                                                                                                                                                                                                                                            
+  
+  if(SameCharge(MuonColl) && VetoMuonColl.size()==2 && VetoElectronColl.size()==0 ) {
+    
 
-
-
-  return;
-
-  if (SameCharge(mymuons) || SameCharge(myelectrons)){
-    FillHist("Taus/NEv",0,weight, 1., 0., 1.,"");
-    int ntau = 0;
-    vector<int> ntaus;
-
-    for(unsigned int ij = 0 ; ij < 7; ij++){
-      for(unsigned int ie = 0 ; ie < 7; ie++){
-	for(unsigned int im = 0 ; im < 4; im++){
-	  ntaus.push_back(0);
-	}
+    FillEventCutflow(sigmm_17028,_weight, "SSMM_LepVeto",  param.Name);
+    if(GetLLMass(MuonColl) > 10.)            FillEventCutflow(sigmm_17028,_weight, "SSMM_LLMass",  param.Name);
+    if(njets > 0 && GetLLMass(MuonColl) > 10.)            FillEventCutflow(sigmm_17028,_weight, "SSMM_Jet",  param.Name);
+    if(dijet  && GetLLMass(MuonColl) > 10.)            FillEventCutflow(sigmm_17028,_weight, "SSMM_DiJet",  param.Name);
+    if(PassBJetMVeto&& dijet > 0 && GetLLMass(MuonColl) > 10.)            FillEventCutflow(sigmm_17028,_weight, "SSMM_BJet",  param.Name);
+    
+    
+    TString channel_string= GetChannelString(MuMu, SS);
+    if(GetLLMass(MuonColl) > 10.&&PassBJetMVeto) {
+      
+      if(FatjetColl.size() > 0){
+	if(RunSignalRegionAK8( MuMu, SS, leps, leps_veto, JetColl, FatjetColl, "Medium", METv, param,  channel_string, _weight ))   FillEventCutflow(sigmm_17028,_weight, "SSMM_SR1",  param.Name);
+	else             FillEventCutflow(sigmm_17028,_weight, "SSMM_SR1Fail",  param.Name);
+	
       }
-    }
-
-    int itau(0);
-    for(auto i : alltaus){
-      itau++;
-
-      if(i.DecayMode() == 0 || i.DecayMode() ==1 || i.DecayMode() ==10 || i.DecayMode() ==11){
-	if(i.DecayModeNewDM()){
-	    
-	  if(i.passVVLIDvJet()) FillHist("Taus/IDcheckJet",0,weight, 10., 0., 10.,"");
-	  if(i.passVLIDvJet()) FillHist("Taus/IDcheckJet",1,weight, 10., 0., 10.,"");
-	  if(i.passLIDvJet()) FillHist("Taus/IDcheckJet",2,weight, 10., 0., 10.,"");
-	  if(i.passMIDvJet()) FillHist("Taus/IDcheckJet",3,weight, 10., 0., 10.,"");
-	  if(i.passTIDvJet()) FillHist("Taus/IDcheckJet",4,weight, 10., 0., 10.,"");
-	  if(i.passVTIDvJet()) FillHist("Taus/IDcheckJet",5,weight, 10., 0., 10.,"");
-	  if(i.passVVTIDvJet()) FillHist("Taus/IDcheckJet",6,weight, 10., 0., 10.,"");
-	    
-	  if(i.passVVLIDvEl()) FillHist("Taus/IDcheckEl",0,weight, 10., 0., 10.,"");
-	  if(i.passVLIDvEl()) FillHist("Taus/IDcheckEl",1,weight, 10., 0., 10.,"");
-	  if(i.passLIDvEl()) FillHist("Taus/IDcheckEl",2,weight, 10., 0., 10.,"");
-	  if(i.passMIDvEl()) FillHist("Taus/IDcheckEl",3,weight, 10., 0., 10.,"");
-	  if(i.passTIDvEl()) FillHist("Taus/IDcheckEl",4,weight, 10., 0., 10.,"");
-	  if(i.passVTIDvEl()) FillHist("Taus/IDcheckEl",5,weight, 10., 0., 10.,"");
-	  if(i.passVVTIDvEl()) FillHist("Taus/IDcheckEl",6,weight, 10., 0., 10.,"");
-	    
-	  if(i.passVVLIDvMu()) FillHist("Taus/IDcheckMu",0,weight, 10., 0., 10.,"");
-	  if(i.passVLIDvMu()) FillHist("Taus/IDcheckMu",1,weight, 10., 0., 10.,"");
-	  if(i.passLIDvMu()) FillHist("Taus/IDcheckMu",2,weight, 10., 0., 10.,"");
-	  if(i.passMIDvMu()) FillHist("Taus/IDcheckMu",3,weight, 10., 0., 10.,"");
-	  if(i.passTIDvMu()) FillHist("Taus/IDcheckMu",4,weight, 10., 0., 10.,"");
-	  if(i.passVTIDvMu()) FillHist("Taus/IDcheckMu",5,weight, 10., 0., 10.,"");
-	  if(i.passVVTIDvMu()) FillHist("Taus/IDcheckMu",6,weight, 10., 0., 10.,"");
-	    
-	  vector<bool> vj = {i.passVVLIDvJet(),i.passVLIDvJet(),i.passLIDvJet(),i.passMIDvJet(), i.passTIDvJet(), i.passVTIDvJet(), i.passVVTIDvJet()};
-	  vector<bool> ve = {i.passVVLIDvEl(),i.passVLIDvEl(),i.passLIDvEl(),i.passMIDvEl(), i.passTIDvEl(), i.passVTIDvEl(), i.passVVTIDvEl()};
-	  vector<bool> vm = {i.passVLIDvMu(),i.passLIDvMu(),i.passMIDvMu(),i.passTIDvMu()};
-	    
-	  int j(0);
-	  for(unsigned int ij = 0 ; ij < vj.size(); ij++){
-	    for(unsigned int ie = 0 ; ie < ve.size(); ie++){
-	      for(unsigned int im = 0 ; im < vm.size(); im++){
-		if(vj[ij] && ve[ie] && vm[im]) ntaus[j] = ntaus[j] +1;
-		j++;
-	      }
-	    }
-	  }
-	  if(i.passVLIDvJet() && i.passMIDvEl()&& i.passMIDvMu()) ntau++;
-	}
-      }
-    }
-    for(unsigned int j = 0 ; j < ntaus.size(); j ++){
-      if(ntaus[j]==0)FillHist("Taus/NTaus",j, weight, ntaus.size(), 0., ntaus.size(),"");
-    }
-
-    FillHist("Taus/NTau",ntau,weight, 10., 0., 10.,"");
-  }
-
-
-
+      else{
+	
+	if(RunSignalRegionAK4(MuMu, SS, leps, leps_veto, JetColl, FatjetColl, "Medium", METv, param,  channel_string, _weight ))             FillEventCutflow(sigmm_17028,_weight, "SSMM_SR3",  param.Name);
+	
+	
+	else             FillEventCutflow(sigmm_17028,_weight, "SSMM_SR3Fail",  param.Name);
+	
+      }// SR3                                                                                                                                                                                                                                                                                                             
+    } // NO AK8                                                                                                                                                                                                                                                                                                           
+  } // LLMASS                                                                                                                                                                                                                                                                                                             
+  
 
   return;
   

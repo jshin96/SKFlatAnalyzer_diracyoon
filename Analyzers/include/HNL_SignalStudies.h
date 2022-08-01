@@ -15,6 +15,14 @@ class HNL_SignalStudies : public HNL_RegionDefinitions {
   ~HNL_SignalStudies();
 
 
+
+  void RunMuonChannel(std::vector<Electron> ElectronColl, std::vector<Electron> VetoElectronColl, std::vector<Muon> MuonColl,  std::vector<Muon> VetoMuonColl,std::vector<Tau> TauColl,  std::vector<Jet> JetColl, std::vector<Jet> VBFJetColl,  std::vector<FatJet> FatjetColl,  Event Ev, AnalyzerParameter param,  float _weight)   ;
+
+
+
+
+
+
   void RunLeptonValidation(std::vector<Lepton *> leps,std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param,  float weight_l );
   bool PassVBF(vector<Jet>  jets,std::vector<Lepton *> leps1);
   bool PassVBFv2(vector<Jet>  jets,std::vector<Lepton *> leps1);

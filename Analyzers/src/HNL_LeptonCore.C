@@ -613,6 +613,8 @@ void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, bool plot
      
   if(!plotCR) return;
 
+  
+
   /// Draw N leptons
   FillHist( label_2+"/RegionPlots_"+ label_1+ "/" +  "N_El", els.size(),  w, 5, 0, 5, "El size");
   FillHist( label_2+"/RegionPlots_"+ label_1+ "/" +  "N_Mu", mus.size(),  w, 5, 0, 5, "Mu size");
@@ -627,6 +629,8 @@ void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, bool plot
   int NBJetsT=GetNBJets2a("tight","Tight");
   
   if(leps.size() < 2) return;
+
+  FillHist( label_2+"/RegionPlots_"+ label_1+ "/" +  "SumQ", leps[0]->Charge() + leps[1]->Charge(),  w, 5, 0, 5, "Q size");
 
   Particle llCand = *leps[0] + *leps[1];
   Particle lllCand = (threelep) ? *leps[0] + *leps[1] + *leps[2] :  Particle();
@@ -1003,9 +1007,13 @@ void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::Region sr, float event_wei
   }
 
   if(sr==sigmm){
-    labels = {"NoCut", "SSMM", "SSMM_LLMass", "SSMM_Jet", "SSMM_Jet_vTau", "SSMM_SR1","SSMM_SR2a","SSMM_SR2b","SSMM_SR3","SSMM_SR4","SSMM_Fail"};
-
+    labels = {"SSNoCut", "SSGen", "SSMMTrig", "SSMMLoose","SSMM", "SSMM_Pt","SSMM_LepVeto", "SSMM_LLMass", "SSMM_Jet","SSMM_DiJet", "SSMM_BJet", "SSMM_vTau", "SSMM_SR1","SSMM_SR1Fail", "SSMM_SR2","SSMM_SR3","SSMM_SR4","SSMM_SR3Fail"};
     EVhitname ="SR_Summary";
+  }
+
+  if(sr==sigmm_17028){
+    labels = {"SSNoCut", "SSMMTrig", "SSMMLoose", "SSMM","SSMM_Pt", "SSMM_LepVeto", "SSMM_LLMass", "SSMM_Jet", "SSMM_DiJet", "SSMM_BJet",  "SSMM_SR1","SSMM_SR1Fail","SSMM_SR3","SSMM_SR3Fail"};
+    EVhitname ="SR_Summary_17028";
   }
 
 
@@ -1162,6 +1170,62 @@ TString HNL_LeptonCore::QToString(HNL_LeptonCore::ChargeType q){
 
 
 
+vector<Gen> HNL_LeptonCore::GetGenLepronsSignal(){
+
+  bool isDYVBF=false;
+  vector<Gen> gens= GetGens();
+  vector<Gen> gen_lep;
+  int N_Mother(0);
+
+  for (auto i : gens){ Gen gen = i; if(gen.PID() == 9900012 || gen.PID() == 9900014) isDYVBF=true; }
+
+  if(isDYVBF){
+
+    for(unsigned int i=2; i<gens.size(); i++){
+
+      Gen gen = gens.at(i);
+
+      if((gen.PID() == 9900012 || gen.PID() == 9900014)  && gen.Status()==22) {
+        N_Mother= gen.MotherIndex();
+      }
+    }
+
+    for(unsigned int i=2; i<gens.size(); i++){
+      Gen gen = gens.at(i);     TString lep_ch="";
+
+      if((gens.at(gen.MotherIndex()).PID() == 9900012|| gens.at(gen.MotherIndex()).PID() == 9900014) && !(gens.at(i).PID() == 9900012 || gens.at(i).PID() == 9900014)){
+
+        if(fabs(gen.PID()) == 15)     gen_lep.push_back(gen);
+
+        if(fabs(gen.PID()) == 13)     gen_lep.push_back(gen);
+        if(fabs(gen.PID()) == 11)     gen_lep.push_back(gen);
+
+      }
+      else if(gen.MotherIndex() == N_Mother&& !(gens.at(i).PID() == 9900012 || gens.at(i).PID() == 9900014)){
+
+
+        if(fabs(gen.PID()) == 15) gen_lep.push_back(gen);
+
+        if(fabs(gen.PID()) == 13) gen_lep.push_back(gen);
+        if(fabs(gen.PID()) == 11) gen_lep.push_back(gen);
+      }
+    }
+  }
+  
+  
+  else{
+
+    
+    for(unsigned int i=2; i<gens.size(); i++){
+      Gen gen = gens.at(i);
+      if (fabs(gen.PID()) == 13 && gen.Status() == 23) gen_lep.push_back(gen);
+      if (fabs(gen.PID()) == 11 && gen.Status() == 23) gen_lep.push_back(gen);
+      if (fabs(gen.PID()) == 15 && gen.Status() == 23)gen_lep.push_back(gen);
+    }
+  }
+  
+  return gen_lep;
+}
 
 TString HNL_LeptonCore::GetProcess(){
 
@@ -1184,9 +1248,6 @@ TString HNL_LeptonCore::GetProcess(){
     }
 
     
-    if(isVBF){
-
-    }
 
     for(unsigned int i=2; i<gens.size(); i++){
 
@@ -1503,39 +1564,15 @@ float  HNL_LeptonCore::GetMassMinSSSF(std::vector<Lepton *> leps){
 
 
 
-bool  HNL_LeptonCore::ZmasslllWindowCheck(vector<Muon> muons, vector<Electron> electrons){
+bool  HNL_LeptonCore::ZmasslllWindowCheck(std::vector<Lepton *> leps){
 
-  if (muons.size() == 3){
+  if (leps.size() == 3){
 
-    Particle lll = muons[0] + muons[1]+ muons[2];
-
-    bool passZmass_lll_Window = (fabs(lll.M() - 90.1) < 15.);
-    return passZmass_lll_Window;
-
-  }
-  if (muons.size() == 2 && electrons.size()==1){
-
-    Particle lll = muons[0] + muons[1]+ electrons[0];
+    Particle lll = *leps[0] + *leps[1]+ *leps[2];
 
     bool passZmass_lll_Window = (fabs(lll.M() - 90.1) < 15.);
     return passZmass_lll_Window;
 
-  }
-  if (muons.size() == 1 && electrons.size()==2){
-
-    Particle lll = muons[0] + electrons[0]+ electrons[1];
-
-    bool passZmass_lll_Window = (fabs(lll.M() - 90.1) < 15.);
-    return passZmass_lll_Window;
-
-  }
-
-  if (electrons.size() == 3){
-
-    Particle lll = electrons[0] + electrons[1]+ electrons[2];
-
-    bool passZmass_lll_Window = (fabs(lll.M() - 90.1) < 15.);
-    return passZmass_lll_Window;
   }
 
   return true;
@@ -1668,31 +1705,16 @@ float HNL_LeptonCore::GetMassBestZ(std::vector<Lepton *> leps,  bool bestZ){
   return massBestZ;
 
 }
-bool  HNL_LeptonCore::ZmassOSWindowCheck(vector<Muon> muons, vector<Electron> electrons){
+bool  HNL_LeptonCore::ZmassOSWindowCheck(std::vector<Lepton *> leps){
 
   bool passZmass_os_Window=false;
 
-  if (muons.size() == 3){
+  if (leps.size() == 3){
 
-    //if (ZmasslllWindowCheck(muons)) return false;                                                                                                                                                         
 
-    Particle ll1 = muons[0] + muons[1];
-    Particle ll2 = muons[0] + muons[2];
-    Particle ll3 = muons[1] + muons[2];
-
-    if(ll1.Charge() == 0 && (fabs(ll1.M() - 90.1) < 15.)) passZmass_os_Window=true;
-    if(ll2.Charge() == 0 && (fabs(ll2.M() - 90.1) < 15.)) passZmass_os_Window=true;
-    if(ll3.Charge() == 0 && (fabs(ll3.M() - 90.1) < 15.)) passZmass_os_Window=true;
-
-  }
-
-  if (electrons.size() == 3){
-
-    //if (ZmasslllWindowCheck(els)) return false;                                            
-
-    Particle ll1 = electrons[0] + electrons[1];
-    Particle ll2 = electrons[0] + electrons[2];
-    Particle ll3 = electrons[1] + electrons[2];
+    Particle ll1 = *leps[0] + *leps[1];
+    Particle ll2 = *leps[0] + *leps[2];
+    Particle ll3 = *leps[1] + *leps[2];
 
     if(ll1.Charge() == 0 && (fabs(ll1.M() - 90.1) < 15.)) passZmass_os_Window=true;
     if(ll2.Charge() == 0 && (fabs(ll2.M() - 90.1) < 15.)) passZmass_os_Window=true;
@@ -1700,19 +1722,6 @@ bool  HNL_LeptonCore::ZmassOSWindowCheck(vector<Muon> muons, vector<Electron> el
 
   }
 
-  if (muons.size() == 2 && electrons.size()==1){
-
-    Particle ll1 = muons[0] + muons[1];
-    if(ll1.Charge() == 0 && (fabs(ll1.M() - 90.1) < 15.)) passZmass_os_Window=true;
-
-  }
-
-  if (muons.size() == 1 && electrons.size()==2){
-
-    Particle ll1 = electrons[0] + electrons[1];
-    if(ll1.Charge() == 0 && (fabs(ll1.M() - 90.1) < 15.)) passZmass_os_Window=true;
-
-  }
   return passZmass_os_Window;
 }
 

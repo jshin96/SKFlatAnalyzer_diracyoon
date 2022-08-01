@@ -31,7 +31,7 @@ class HNL_LeptonCore : public AnalyzerCore {
     MuMuE=14,
     MuMuMuMu=15,
     EMu=16,
-    MuE=17
+    MuE=17,
     
 
   };
@@ -48,6 +48,10 @@ class HNL_LeptonCore : public AnalyzerCore {
     sigmm=28,
     sigee=29,
     sigem=30,
+    sigmm_17028=31,
+    sigee_17028=32,
+    sigem_17028=33,
+
 
   };
 
@@ -71,6 +75,7 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   bool HasLowMassMeson(std::vector<Lepton *> leps);
 
+  vector<Gen> GetGenLepronsSignal();
   TString GetProcess();
   //bool PassVBF(vector<Jet>  jets,std::vector<Lepton *> leps1);
   //bool PassVBFInitial(vector<Jet>  jets);
@@ -91,8 +96,9 @@ class HNL_LeptonCore : public AnalyzerCore {
   double GetST( std::vector<Lepton *> leps, std::vector<Jet> jets, std::vector<FatJet> fatjets, Particle met);
 
 
-  bool  ZmasslllWindowCheck(vector<Muon> muons, vector<Electron> els);
-  bool  ZmassOSWindowCheck(vector<Muon> muons,vector<Electron> els);
+  bool  ZmasslllWindowCheck(std::vector<Lepton *> leps);
+  bool  ZmassOSWindowCheck(std::vector<Lepton *> leps);
+
 
   int GetIndexNonMinOSSF(std::vector<Lepton *> leps);
   float GetMassMinOSSF(std::vector<Lepton *> leps);
