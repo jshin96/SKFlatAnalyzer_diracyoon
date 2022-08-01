@@ -2421,7 +2421,7 @@ bool AnalyzerCore::IsFromHadron(const Gen& me, const std::vector<Gen>& gens){
 bool AnalyzerCore::ConversionVeto(std::vector<Lepton *> leps,const std::vector<Gen>& gens){
 
   // function vetos conversion events in DY/X+G                                                                                                  
-  // since Z/G and WG have cut on phootn in GEN need to overlap with DY                                                                          
+  // since Z/G and WG have cut on photon in GEN need to overlap with DY                                                                          
   // Photon Cut is 15 GeV                                                                                                                        
   //                                                                                                                                             
 
