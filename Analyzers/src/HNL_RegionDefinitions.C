@@ -413,7 +413,7 @@ bool HNL_RegionDefinitions::PassVBFInitial(vector<Jet>  jets){
 
 }
 
-bool HNL_RegionDefinitions::PassVBF(vector<Jet>  jets,std::vector<Lepton *> leps){
+bool HNL_RegionDefinitions::PassVBF(vector<Jet>  jets,std::vector<Lepton *> leps, bool use_leadjets){
 
   if(leps.size() != 2) return false;
   double ll_dphi = fabs(TVector2::Phi_mpi_pi( ( (*leps[0]).Phi() - (*leps[1]).Phi() )) );
@@ -434,7 +434,8 @@ bool HNL_RegionDefinitions::PassVBF(vector<Jet>  jets,std::vector<Lepton *> leps
       }
     }
   }
-
+  if(use_leadjets){ijet1=0;ijet2=1;}
+  
   if(maxDiJetDeta < 2.5) return false;
   Particle JJ = jets[ijet1] + jets[ijet2];
   if(JJ.M() < 450.) return false;

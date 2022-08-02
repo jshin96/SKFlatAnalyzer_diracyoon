@@ -1,5 +1,115 @@
 #include "HNL_LeptonCore.h"
 
+void HNL_LeptonCore::initializeAnalyzer(){
+
+
+  SglMuon_Channel    =   (IsDATA && (this->DataStream == "SingleMuon"        )); //--> Needed when adding Mu50 + validation                 
+  DblEG_Channel      =   (IsDATA && (this->DataStream == DoubleElectronPD()  ));
+  DblMuon_Channel    =   (IsDATA && (this->DataStream == DoubleMuonPD()      ));
+  SglEG_Channel      =   (IsDATA && (this->DataStream == SingleElectronPD()      ));
+  MuonEG_Channel     =  (IsDATA && (this->DataStream == MuonEGPD()      ));
+    
+  //=== VERBOSE                                                                                                                                        
+  run_Debug = HasFlag("DEBUG");
+
+  //=== bkg flags                                                                                                                                      
+  RunFake   = HasFlag("RunFake");
+  RunCF     = HasFlag("RunCF");
+
+  IncludeFakeLepton = HasFlag("IncludeFakeLepton");
+
+  /// Other flags                                                                                                                                      
+  RunSyst = HasFlag("RunSyst");
+  HEM1516 = HasFlag("HEM1516");
+
+
+  std::vector<JetTagging::Parameters> jtps;
+  jtps.push_back( JetTagging::Parameters(JetTagging::DeepCSV, JetTagging::Loose, JetTagging::incl, JetTagging::comb) );
+  jtps.push_back( JetTagging::Parameters(JetTagging::DeepCSV, JetTagging::Medium, JetTagging::incl, JetTagging::comb) );
+  jtps.push_back( JetTagging::Parameters(JetTagging::DeepCSV, JetTagging::Tight, JetTagging::incl, JetTagging::comb) );
+
+  Trigger_Full_HNL_Muon.clear();
+  Trigger_HNL_Muon.clear();
+  Trigger_HNL_MuonH.clear();
+  Triggers_POG_Muon.clear();
+  Trigger_HNL_HighPtMuon.clear();
+
+  if(DataYear==2016){
+      
+    Trigger_HNL_Muon = { "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v",      "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v",      "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",      "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v" };
+    Trigger_HNL_MuonH = {  "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",      "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"    };                 // 35918.219492947     
+
+    Triggers_POG_Muon = {
+      "HLT_IsoMu24_v",
+      "HLT_IsoTkMu24_v",
+    };
+
+    Trigger_HNL_HighPtMuon = {"HLT_Mu50_v","HLT_TkMu50_v"};
+
+    
+
+  }  // END OF 2016 Triggers                                                                                                                 
+  else if(DataYear==2017){
+    Trigger_HNL_Muon = { "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",  "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v",   "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v" };
+
+
+    Triggers_POG_Muon = {
+      "HLT_IsoMu27_v",
+    };
+
+    Trigger_HNL_HighPtMuon = {"HLT_Mu50_v"};
+
+  } // end of 2017 triggers                                                                                                                  
+
+  else if(DataYear==2018){
+
+    Trigger_HNL_Muon = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v"};
+
+    Trigger_HNL_HighPtMuon = {"HLT_Mu50_v"};
+    Triggers_POG_Muon = {   "HLT_IsoMu24_v"};
+  }   
+
+  //--- Method 1d using JetTagging::iterativefit needs csv file changing in histmap to run                                                   
+  // jtps.push_back( JetTagging::Parameters(JetTagging::DeepCSV, JetTagging::Medium, JetTagging::iterativefit, JetTagging::iterativefit) );  
+  mcCorr->SetJetTaggingParameters(jtps);
+
+  
+  Trigger_Full_HNL_Muon.clear();
+  for(auto itrig : Trigger_HNL_Muon) Trigger_Full_HNL_Muon.push_back(itrig);
+  for(auto itrig : Trigger_HNL_HighPtMuon) Trigger_Full_HNL_Muon.push_back(itrig);
+  for(auto itrig : Triggers_POG_Muon) Trigger_Full_HNL_Muon.push_back(itrig);
+
+}
+
+
+AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup){
+  
+  AnalyzerParameter param  ;
+  param.Clear();
+
+  if (s_setup=="SignalStudy"){
+
+    param.syst_ = AnalyzerParameter::Central;
+    param.Name  = "SignalStudy";
+    param.MCCorrrectionIgnoreNoHist = false;
+
+    param.Jet_ID                     = "tight";
+    param.FatJet_ID                  = "tight";
+    param.BJet_Method                = "2a";
+    
+    param.Muon_Tight_ID = "HNTightV2";
+    param.Electron_Tight_ID = "HNTightV2";
+
+    param.Muon_Veto_ID = "HNVeto2016";
+    param.Electron_Veto_ID = "HNVeto2016";
+
+    param.Tau_Veto_ID = "HNVeto";
+
+  }
+
+  return param;
+}
+
 AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameters( TString param_name, vector<vector<TString> >  hnl_run_param){
 
   AnalyzerParameter param  ;
@@ -219,13 +329,47 @@ void HNL_LeptonCore::Fill_All_SignalRegion1(HNL_LeptonCore::Channel channel, TSt
 
 
 
+bool HNL_LeptonCore::CheckStream(Event ev, vector<TString> triglist){
+
+
+  if(!IsData) return true;
+  bool trig_ok_for_data=true;
+  for(auto itrig : triglist){
+    if(!ev.IsPDForTrigger(itrig, this->DataStream)) trig_ok_for_data=false;
+  }
+  
+  return trig_ok_for_data;
+}
+
+
+TString HNL_LeptonCore::MuonEGPD(){
+
+  /// --- return PD name for EE channel data                                                                                                 
+  return "MuonEG";
+  return "";
+
+
+}
 
 
 
 TString HNL_LeptonCore::DoubleElectronPD(){
 
-  /// --- return PD name for EE channel data
+  /// --- return PD name for EE channel data                                                                                                 
   if(DataYear==2016) return "DoubleEG";
+  if(DataYear==2017) return "SingleElectron";
+  if(DataYear==2018) return "EGamma";
+
+  return "";
+
+
+}
+
+
+TString HNL_LeptonCore::SingleElectronPD(){
+
+  /// --- return PD name for EE channel data
+  if(DataYear==2016) return "SingleElectron";
   if(DataYear==2017) return "SingleElectron";
   if(DataYear==2018) return "EGamma";
 
@@ -1007,12 +1151,12 @@ void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::Region sr, float event_wei
   }
 
   if(sr==sigmm){
-    labels = {"SSNoCut", "SSGen", "SSMMTrig", "SSMMLoose","SSMM", "SSMM_Pt","SSMM_LepVeto", "SSMM_LLMass", "SSMM_Jet","SSMM_DiJet", "SSMM_BJet", "SSMM_vTau", "SSMM_SR1","SSMM_SR1Fail", "SSMM_SR2","SSMM_SR3","SSMM_SR4","SSMM_SR3Fail"};
+    labels = {"SSNoCut", "SSGen", "SSGen2", "SSMMTrig", "SSMMTrig2", "SSMMLoose","SSMM", "SSMM_Pt","SSMM_LepVeto", "SSMM_LLMass",  "SSMM_vTau","SSMM_Jet","SSMM_BJet", "SSMM_DiJet",  "SSMM_SR1","SSMM_SR1Fail", "SSMM_SR2","SSMM_SR3","SSMM_SR4","SSMM_SR5","SSMM_SR3Fail"};
     EVhitname ="SR_Summary";
   }
 
   if(sr==sigmm_17028){
-    labels = {"SSNoCut", "SSMMTrig", "SSMMLoose", "SSMM","SSMM_Pt", "SSMM_LepVeto", "SSMM_LLMass", "SSMM_Jet", "SSMM_DiJet", "SSMM_BJet",  "SSMM_SR1","SSMM_SR1Fail","SSMM_SR3","SSMM_SR3Fail"};
+    labels = {"SSNoCut", "SSGen","SSGen2", "SSMMTrig", "SSMMTrig2", "SSMMLoose", "SSMM","SSMM_Pt", "SSMM_LepVeto", "SSMM_LLMass", "SSMM_Jet", "SSMM_BJet", "SSMM_DiJet",  "SSMM_SR1","SSMM_SR1Fail","SSMM_SR3","SSMM_SR3Fail"};
     EVhitname ="SR_Summary_17028";
   }
 
@@ -2055,3 +2199,124 @@ bool HNL_LeptonCore::SameCharge(std::vector<Lepton *> leps, int ch){
   return false;
 }
 
+
+void HNL_LeptonCore::FillAllMuonPlots(TString label , TString cut,  std::vector<Muon> muons, float w){
+
+  for(unsigned int i=0; i <  muons.size(); i++){
+
+    TString mu_lab="muon1";
+    if(i==1) mu_lab="muon2";
+    if(i==2) mu_lab="muon3";
+
+    TString eta_label="";
+    if(fabs(muons.at(i).Eta()) < 1.5) eta_label = "_barrel";
+    else eta_label = "_endcap";
+
+
+    FillAllMuonPlots(mu_lab+label, cut, muons.at(i), w);
+    FillAllMuonPlots(mu_lab+label+eta_label, cut, muons.at(i), w);
+
+    FillAllMuonPlots("muon"+label, cut, muons.at(i), w);
+    FillAllMuonPlots("muon"+label+eta_label, cut, muons.at(i), w);
+
+    if(muons.at(i).MVA() < 0.5)     FillAllMuonPlots("muon"+label+eta_label+"_lowmva", cut, muons.at(i), w);
+    else FillAllMuonPlots("muon"+label+eta_label+"_highmva", cut, muons.at(i), w);
+
+
+  }
+
+  return;
+}
+
+
+void HNL_LeptonCore::FillAllMuonPlots(TString label , TString cut,  Muon mu, float w){
+
+  vector<Jet> JetAllColl = GetJets("NoID", 10., 3.0);
+  int IdxMatchJet=-1;
+  double mindR(999.);
+
+  double PtRelv0(0.);
+  double PtRelv1(0.);
+  double PtRatio(1.);
+  double jet_disc(-1);
+  for(unsigned int ij=0; ij<JetAllColl.size(); ij++){
+    float dR=mu.DeltaR(JetAllColl.at(ij));
+    if(dR>0.4) continue;
+    if(dR<mindR){ mindR=dR; IdxMatchJet=ij; }
+  }
+  if(IdxMatchJet!=-1){
+    PtRatio = mu.Pt()/JetAllColl.at(IdxMatchJet).Pt();
+    TLorentzVector JetNoLep(JetAllColl.at(IdxMatchJet));
+    JetNoLep -= mu;
+    PtRelv0 = mu.Perp(JetAllColl.at(IdxMatchJet).Vect());
+    PtRelv1 = mu.Perp(JetNoLep.Vect());
+    jet_disc = JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepCSV);
+
+  }
+  FillHist( cut+ "/ID_POGLoose_"+label, mu.PassID("POGLoose"), w, 2, 0., 2.);
+  FillHist( cut+ "/ID_POGMedium_"+label, mu.PassID("POGMedium"), w, 2, 0., 2.);
+  FillHist( cut+ "/ID_POGTight_"+label, mu.PassID("POGTight"), w, 2, 0., 2.);
+  FillHist( cut+ "/ID_POGHighPt_"+label, mu.PassID("POGHighPt"), w, 2, 0., 2.);
+
+  FillHist( cut+ "/ptrel_0_"+label , PtRelv0 , w, 200, 0., 20., "");
+  FillHist( cut+ "/ptrel_1_"+label , PtRelv1 , w, 200, 0., 20., "");
+  FillHist( cut+ "/ptrel_def_"+label , mu.lep_jet_ptrel() , w, 200, 0., 20., "");
+  FillHist( cut+ "/ptratio_def_"+label , mu.lep_jet_ptratio() , w, 100, 0., 2., "");
+  FillHist( cut+ "/ptratio_"+label , PtRatio , w, 100, 0., 2., "");
+  FillHist( cut+ "/jet_disc_"+label , jet_disc , w, 400, -2., 2., "");
+
+  double new_iso = mu.RelIso() / (PtRatio * PtRelv1);
+  double new_miso = mu.MiniRelIso() / (PtRatio * PtRelv1);
+  FillHist( cut+ "/new_iso_"+label , new_iso , fabs(w), 100000, 0., 1., "");
+  FillHist( cut+ "/new_miso_"+label , new_miso , fabs(w), 100000, 0., 1., "");
+  FillHist( cut+ "/ptratio_rel", PtRelv1, PtRatio, fabs(w), 200, 0., 20., 100, 0., 2.);
+
+  if(mu.MiniRelIso() < 0.2)   FillHist( cut+ "/ptratio_rel_miso02", PtRelv1, PtRatio, fabs(w), 200, 0., 20., 100, 0., 2.);
+  if(mu.MiniRelIso() < 0.1)   FillHist( cut+ "/ptratio_rel_miso01", PtRelv1, PtRatio, fabs(w), 200, 0., 20., 100, 0., 2.);
+  if(mu.MiniRelIso() < 0.08)   FillHist( cut+ "/ptratio_rel_miso008", PtRelv1, PtRatio, fabs(w), 200, 0., 20., 100, 0., 2.);
+  if(mu.MiniRelIso() < 0.05)   FillHist( cut+ "/ptratio_rel_miso005", PtRelv1, PtRatio, fabs(w), 200, 0., 20., 100, 0., 2.);
+  if(mu.RelIso() < 0.2)   FillHist( cut+ "/ptratio_rel_iso02", PtRelv1, PtRatio, fabs(w), 200, 0., 20., 100, 0., 2.);
+  if(mu.RelIso() < 0.1)   FillHist( cut+ "/ptratio_rel_iso01", PtRelv1, PtRatio, fabs(w), 200, 0., 20., 100, 0., 2.);
+  if(mu.RelIso() < 0.08)   FillHist( cut+ "/ptratio_rel_iso008", PtRelv1, PtRatio, fabs(w), 200, 0., 20., 100, 0., 2.);
+  if(mu.RelIso() < 0.05)   FillHist( cut+ "/ptratio_rel_iso005", PtRelv1, PtRatio, fabs(w), 200, 0., 20., 100, 0., 2.);
+
+  FillHist( cut+ "/pt_mu_"+label , mu.Pt() , w, 500, 0., 1000., "muon p_{T} GeV");
+  FillHist( cut+ "/dxy_mu_"+label , mu.dXY() , w, 500, -0.2, 0.2, "dXY");
+  FillHist( cut+ "/dz_mu_"+label , mu.dZ() , w, 500, -0.5, 0.5, "dZ");
+  FillHist( cut+ "/reliso_mu_"+label , mu.RelIso() , w, 50, 0., 1., "R_{ISO} GeV");
+  FillHist( cut+ "/eta_"+label  , mu.Eta() , w, 60, -3., 3.,"muon #eta");
+  FillHist( cut+ "/IP3D_"+label  , mu.IP3D()/mu.IP3Derr(), w, 400, -20., 20., "IP3D");
+
+  FillHist( cut+ "/mva_"+label  , mu.MVA(), w, 400, -1., 1., "MVA");
+  FillHist( cut+ "/pt_mva_"+label , mu.Pt() , mu.MVA(), fabs(w), 200, 0., 1000., 400, -1., 1.);
+
+  FillHist( cut+ "/chi2_"+label  , mu.Chi2(), w, 1000,0., 100., "chi2");
+  FillHist( cut+ "/validhits_"+label  , mu.ValidMuonHits(), w, 100,0., 100., "");
+  FillHist( cut+ "/matched_stations_"+label  , mu.MatchedStations(), w, 10,0., 10., "");
+  FillHist( cut+ "/pixel_hits_"+label  , mu.PixelHits(), w, 10,0., 10., "");
+  FillHist( cut+ "/minireliso_mu_"+label , mu.MiniRelIso() , w, 50, 0., 1., "R_{ISO} GeV");
+  FillHist( cut+ "/tracker_layers_"+label  , mu.TrackerLayers(), w, 50,0., 50., "");
+
+  return;
+}
+
+
+void HNL_LeptonCore::FillAllElectronPlots(TString label , TString cut,  std::vector<Electron> els, float w){
+
+  FillHist( cut+ "/nelectrons"+label , size(els) , w, 5, 0., 5., "n_{el}");
+
+  for(unsigned int i=0; i < els.size(); i++){
+    TString el_lab="el1";
+    if(i==1) el_lab="el2";
+    if(i==2) el_lab="el3";
+    if(!els[i].IsGsfCtfScPixChargeConsistent()){
+      FillHist( cut+ "/pt_vetoel_cc_"+el_lab+label , els.at(i).Pt() , w, 500, 0., 1000., "el p_{T} GeV");
+
+    }
+
+    //FillAllElectronPlots(el_label+label, cut, el, w);                                                                                         
+
+  }
+  return;
+
+}

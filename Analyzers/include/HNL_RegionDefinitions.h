@@ -38,7 +38,7 @@ class HNL_RegionDefinitions : public HNL_LeptonCore {
 
  // bool RunElectronChannelSR4(HNL_LeptonCore::Channel channel ,std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet>  fatjets, TString bjet_wp,  Event ev, AnalyzerParameter param,  TString channel_string ,float w);
 
-  bool PassVBF(vector<Jet>  jets,std::vector<Lepton *> leps1);
+  bool PassVBF(vector<Jet>  jets,std::vector<Lepton *> leps1, bool use_leadjet=false);
   bool PassVBFInitial(vector<Jet>  jets);
   
 

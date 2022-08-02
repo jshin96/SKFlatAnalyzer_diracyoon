@@ -20,13 +20,11 @@ class HNL_LeptonCore : public AnalyzerCore {
   {
     El=0,
     EE=1,
-    EEL=2,
-    EEE=3,
+    EEE=2,
     EEMu=4,
     EEEE=5,
     Mu=10,
     MuMu=11,
-    MuMuL=12,    
     MuMuMu=13,
     MuMuE=14,
     MuMuMuMu=15,
@@ -65,29 +63,37 @@ class HNL_LeptonCore : public AnalyzerCore {
   HNL_LeptonCore();
   ~HNL_LeptonCore();
 
-  void PrintParam(AnalyzerParameter param);
+
+  //========== MAIN ANALYZER FUNCTIONS
+
+  void initializeAnalyzer();
+
   AnalyzerParameter InitialiseHNLParameters( TString analysis_tag, vector<vector<TString> >  param_vec);
+  AnalyzerParameter InitialiseHNLParameter(TString s_setup);  
 
+
+  // ============= HELPER FUNCTIONS
+  void PrintParam(AnalyzerParameter param);
   TString QToString(HNL_LeptonCore::ChargeType q);
-  
+ 
+  bool CheckStream(Event ev,vector<TString> triglist);
   TString  DoubleElectronPD();
+  TString  SingleElectronPD();
+  TString  MuonEGPD();
   TString  DoubleMuonPD();
-
   bool HasLowMassMeson(std::vector<Lepton *> leps);
 
+  ///=============== GET/SELECT OBJECT
   vector<Gen> GetGenLepronsSignal();
   TString GetProcess();
-  //bool PassVBF(vector<Jet>  jets,std::vector<Lepton *> leps1);
-  //bool PassVBFInitial(vector<Jet>  jets);
-
-  double M_T(Particle a, Particle b);
-
+  TString GetChannelString(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType  q);
   std::vector<Jet> SelBJets(std::vector<Jet>& jetColl, JetTagging::Parameters jtp);
   TLorentzVector GetvMET(TString METType, TString Option="");
 
 
-  TString GetChannelString(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType  q);
 
+  //================== KINEMATIC HELPER
+  double M_T(Particle a, Particle b);
   float GetLT(std::vector<Lepton *> leps);
   double GetHT( std::vector<Jet> jets, std::vector<FatJet> fatjets);
   double GetST( std::vector<Electron> electrons, std::vector<Muon> muons, std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev);
@@ -95,21 +101,20 @@ class HNL_LeptonCore : public AnalyzerCore {
   double GetST( std::vector<Lepton *> leps, std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev);
   double GetST( std::vector<Lepton *> leps, std::vector<Jet> jets, std::vector<FatJet> fatjets, Particle met);
 
-
   bool  ZmasslllWindowCheck(std::vector<Lepton *> leps);
   bool  ZmassOSWindowCheck(std::vector<Lepton *> leps);
+  bool  ZmassOSSFWindowCheck(std::vector<Lepton *> leps, double mass_diff);
 
 
-  int GetIndexNonMinOSSF(std::vector<Lepton *> leps);
   float GetMassMinOSSF(std::vector<Lepton *> leps);
-  int GetIndexNonMinSSSF(std::vector<Lepton *> leps);
   float GetMassMinSSSF(std::vector<Lepton *> leps);
+  int GetIndexNonMinOSSF(std::vector<Lepton *> leps);
+  int GetIndexNonMinSSSF(std::vector<Lepton *> leps);
   int GetIndexNonBestZ(std::vector<Lepton *> leps,double mass_diff);
+
   float GetLLMass(std::vector<Lepton *> leps);
   float GetLLMass(std::vector<Muon> leps);
   float GetLLMass(std::vector<Electron> leps);
-
-  bool  ZmassOSSFWindowCheck(std::vector<Lepton *> leps, double mass_diff);
 
   float GetMassBestZ(std::vector<Lepton *> leps,  bool bestZ);
   double  GetMass(TString type , std::vector<Jet> jets, std::vector<FatJet> fatjets);
@@ -127,7 +132,7 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   double GetIsoFromID(HNL_LeptonCore::LeptonType lep, TString id, double eta, double pt);
 
-  //==== JA                                                                                                                                                                                            
+  //==== LEPTON CHARGE                                                                                                                                                                                           
   bool SameCharge(vector<Electron> els, int ch=0);
   bool SameCharge(vector<Electron> els, vector<Muon> mus,  int ch=0);
   bool SameCharge(vector<Muon> mus, int ch=0);
@@ -156,6 +161,7 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   vector<TString> Trigger_HNL_HighPtMuon;
   vector<TString> Trigger_HNL_Muon;
+  vector<TString> Trigger_Full_HNL_Muon;
   vector<TString> Trigger_HNL_MuonH;
   vector<TString> Trigger_HNL_Electron;
   vector<TString> Trigger_HNL_SingleElectron;
@@ -209,6 +215,13 @@ class HNL_LeptonCore : public AnalyzerCore {
 
 
   //==== My tool 
+
+  // PLOTS
+
+  void FillAllMuonPlots(TString label , TString cut,  Muon mu, float w);
+  void FillAllMuonPlots(TString label , TString cut,  std::vector<Muon> muons, float w);
+  void FillAllElectronPlots(TString label , TString cut,  std::vector<Electron> els, float w);
+
 
   // === Cut flow                                                                                                                                                                                      
   void FillTypeCutflow(TString histname, double weight, vector<TString> lables, TString label1, TString label2);

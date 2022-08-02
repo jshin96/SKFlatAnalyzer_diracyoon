@@ -1,12 +1,21 @@
 analyzer=SkimTree_AK8
 rundir=runSkims
-mcpath=${SKFlat_WD}/SkimScripts/${analyzer}/mc_list/
+mcpath=${SKFlat_WD}/SkimScripts/${analyzer}/Bkg/
 datapath=${SKFlat_WD}/SkimScripts/${analyzer}/data_list/
 njobs=50
 njobs_data=100
 nmax=150
 skim=' '
 declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
+
+
+if [[ $1 == "MC" ]]; then
+    for i in "${era_list[@]}"
+    do
+        SKFlat.py -a $analyzer  -l $mcpath/${i}/MC.txt   -n ${njobs}  --nmax ${nmax}    -e ${i} &
+    done
+
+fi
 
 
 if [[ $1 == "DATA" ]]; then

@@ -25,8 +25,13 @@ void AnalyzerParameter::Clear(){
   Electron_UsePtCone = false;
   Electron_MinPt = 10.;
 
-  Muon_Tight_ID = "";
 
+  
+  Tau_Tight_ID = "";
+  Tau_Loose_ID = "";
+  Tau_Veto_ID = "";
+
+  Muon_Tight_ID = "";
   Muon_Loose_ID = "";
   Muon_Veto_ID = "";
   Muon_RECO_SF_Key = "";
@@ -71,6 +76,11 @@ AnalyzerParameter::AnalyzerParameter(){
   Electron_Veto_ID = "passVetoID";
   Electron_ID_SF_Key = "passTightID";
   Electron_Trigger_NameForSF = "Ele32_WPTight_Gsf";
+
+
+  Tau_Tight_ID = "NoCut";
+  Tau_Loose_ID = "NoCut";
+  Tau_Veto_ID = "NoCut";
 
   Muon_Tight_ID = "POGTightWithTightIso";
   Muon_Loose_ID = "POGLoose";

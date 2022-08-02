@@ -30,6 +30,9 @@ public:
   bool Muon_UseMini, Muon_UsePtCone, Muon_UseTuneP;
   double Muon_MinPt;
 
+  TString Tau_Tight_ID, Tau_Loose_ID, Tau_Veto_ID;
+
+
   int SystDir_ElectronRecoSF, SystDir_ElectronIDSF, SystDir_MuonRecoSF, SystDir_MuonIDSF, SystDir_PU;
 
   std::string SystDir_BTag,  BJet_Method;
