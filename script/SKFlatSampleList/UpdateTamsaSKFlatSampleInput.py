@@ -3,8 +3,6 @@
 ### Include ROOT for TH1 GetEffectiveLumi integration 
 import os,ROOT
 
-
-
 def Exit(timelist, exit_code):
     
     Initial_time=0.
@@ -13,6 +11,13 @@ def Exit(timelist, exit_code):
             Initial_time=x[1]
         print str(x[0]) + '  ' + str(x[1]-Initial_time) +' s'
         Initial_time=x[1]
+    print "-"*30
+    print "-"*30
+    if len(timelist) == 0:
+        exit()
+
+    print "Total run time =  " +str(timelist[len(timelist)-1][1]-timelist[0][1])
+    print "-"*30
 
     if exit_code:
         exit()
@@ -33,6 +38,10 @@ from SampleFileCore   import *
 
 os.system("rm *~;rm -rf tmp*")
 
+#############################################################################################################################
+#############################################################################################################################
+#############################################################################################################################
+
 ##---------------- SET ARG INPUT
 import argparse
 parser = argparse.ArgumentParser(description='option')
@@ -47,6 +56,9 @@ input_era=args.era
 input_skim=args.skim
 update_script='script/UpdateSampleForSNULatest.sh'
 
+#############################################################################################################################
+#############################################################################################################################
+#############################################################################################################################
 
 user = os.getenv("USER")
 
@@ -82,6 +94,12 @@ else:
         print ("git co " + GIT_BRANCH)
 
         exit()
+
+
+#############################################################################################################################
+#############################################################################################################################
+#############################################################################################################################
+
 
 if args.UserInput:
     update_script=os.getenv("SKFlat_WD")+'/bin/UpdateSampleForSNU.sh'
@@ -131,6 +149,13 @@ else:
 if tmpDir(os.getenv("PWD")):
     os.system('rm -r tmp_*')
 
+
+#############################################################################################################################
+#############################################################################################################################
+#############################################################################################################################
+#############################################################################################################################
+
+
 for era in arr_eras:
 
     print '-'*70
@@ -165,7 +190,7 @@ for era in arr_eras:
 
 
 
-  ##--- Get list of samples on tamsa server (with samples remmoved if in SKip file)                                                        
+    ##--- Get list of samples on tamsa server (with samples removed if in SKip file)                                                        
     _skdir_list=get_skflat_on_tamsa(path_sklat_dir,era)
 
 
@@ -174,7 +199,7 @@ for era in arr_eras:
 
 
     if check_processed_status(_skdir_list,era):
-        exit ()
+        Exit(vtimes,True)
 
     print 'UpdateTamsaSKFlatSampleInput [post check_processed_status] : Processing time = ' + str(round(up_start_era_time - start_time,2)) + ' s'
 
@@ -193,13 +218,13 @@ for era in arr_eras:
     print 'UpdateTamsaSKFlatSampleInput [post get_array_from_googledoc : Processing time = ' + str(round(up2_start_era_time - start_time,2)) + ' s'
 
 
-    AssignTimeStamp(path_sklat_dir+era+'/MC/',array_from_googledoc)
-
+    TimeStamps=AssignTimeStamp(path_sklat_dir+era+'/MC/',array_from_googledoc)
+    
     MissingSamples(get_array_from_googledoc(era,miniaod_versions,False),array_from_googledoc_sig,path_sklat_dir+era+'/MC/',era)
+    
 
     up3_start_era_time = time.time()
     vtimes.append(["Missing_file_time",time.time()])
-    
     
     print 'UpdateTamsaSKFlatSampleInput [post MissingSamples : Processing time = ' + str(round(up3_start_era_time - start_time,2)) + ' s'
 
@@ -219,12 +244,19 @@ for era in arr_eras:
     era_time_v1 = time.time()
     vtimes.append(["Pre_sample_setup_time",time.time()])
     
+    VSampleSummary= [path_dir_sk_datadir+era+"/Sample/SampleSummary_MC.txt",
+                    path_dir_sk_datadir+era+"/Sample/SampleSummary_Signal_Type1.txt"]
+    
 
-    CopyCommonSampleFiles(era,var_skflat_wd+"/data/"+FLAT_Version+"/"+era+"/Sample/CommonSampleInfo/",var_sk_out+"/"+FLAT_Version+"/SampleCheck/"+era+"/", path_dir_sk_datadir+era+"/Sample/SampleSummary_MC.txt",_skdir_list)
+    CopyCommonSampleFiles(era,var_skflat_wd+"/data/"+FLAT_Version+"/"+era+"/Sample/CommonSampleInfo/",var_sk_out+"/"+FLAT_Version+"/SampleCheck/"+era+"/", VSampleSummary, _skdir_list)
 
     vtimes.append(["post_sample_setup_time",time.time()])
 
-    UpdateFiles = update_mc_samplelist_from_googledoc(array_from_googledoc,era,_skdir_list,path_dir_sk_datadir+era+"/Sample/SampleSummary_MC.txt" ,path_sklat_dir, workdir)
+    summary_file_job= path_dir_sk_datadir+era+"/Sample/SampleSummary_MC.txt"
+    if args.Signal:
+        summary_file_job=path_dir_sk_datadir+era+"/Sample/SampleSummary_Signal_Type1.txt"
+
+    UpdateFiles = update_mc_samplelist_from_googledoc(array_from_googledoc,era,var_skflat_wd+"/data/"+FLAT_Version+"/"+era+"/Sample/CommonSampleInfo/",var_sk_out+"/"+FLAT_Version+"/SampleCheck/"+era+"/",_skdir_list, summary_file_job ,path_sklat_dir, workdir)
     
     vtimes.append(["post_update_file_time",time.time()])
 
@@ -254,7 +286,7 @@ for era in arr_eras:
             
             if CheckDuplicates(array_from_googledoc):
                 print '-----------------------'*3
-            update_summarymc_file(_era)
+            update_summarymc_file(era)
 
             continue
             
@@ -275,7 +307,7 @@ for era in arr_eras:
 
     up_start_sdiff_time = time.time()
 
-    check_samplefile_diff(var_skflat_wd+"/data/"+FLAT_Version+"/"+era+"/Sample/ForSNU/", workdir + "/ForSNU/" , var_sk_out+"/"+FLAT_Version+"/SampleCheck/"+era+"/")
+    check_samplefile_diff(var_skflat_wd+"/data/"+FLAT_Version+"/"+era+"/Sample/ForSNU/", workdir + "/ForSNU/" , var_sk_out+"/"+FLAT_Version+"/GetEffLumi/"+era+"/",var_sk_out+"/"+FLAT_Version+"/SampleCheck/"+era+"/")
 
     vtimes.append(["post_check_samplefile_diff_time",time.time()])
 
@@ -291,7 +323,7 @@ for era in arr_eras:
     up_start_comm_time = time.time()
 
 
-    make_common_sampleinfo(array_from_googledoc,era,_skdir_list,var_skflat_wd+"/data/"+FLAT_Version+"/"+era+"/Sample/CommonSampleInfo/",var_sk_out+"/"+FLAT_Version+"/SampleCheck/")
+    make_common_sampleinfo(array_from_googledoc,era,_skdir_list,var_skflat_wd+"/data/"+FLAT_Version+"/"+era+"/Sample/CommonSampleInfo/",var_sk_out+"/"+FLAT_Version+"/SampleCheck/",args.VERBOSE)
     up_end_comm_time = time.time()
 
     if args.VERBOSE:
@@ -302,7 +334,7 @@ for era in arr_eras:
     up_start_eff_time = time.time()
 
     #''' check if sample is new and run eff lumi, and fill summary and input files with nevent info'''
-    updated_list = get_effective_lumi(array_from_googledoc,era,var_sk_out+"/"+FLAT_Version+"/", var_sk_out+"/"+FLAT_Version+"/SampleCheck/"+era+"/", path_dir_sk_datadir, _skdir_list,path_dir_sk_datadir+era+"/Sample/SampleSummary_MC.txt",skim_list, workdir,args.Full)
+    updated_list = get_effective_lumi(array_from_googledoc,era,var_sk_out+"/"+FLAT_Version+"/", var_sk_out+"/"+FLAT_Version+"/SampleCheck/"+era+"/", path_dir_sk_datadir, _skdir_list,summary_file_job,skim_list, workdir,args.Full,args.VERBOSE)
 
 
     vtimes.append(["post_get_effective_lumi_diff_time",time.time()])
