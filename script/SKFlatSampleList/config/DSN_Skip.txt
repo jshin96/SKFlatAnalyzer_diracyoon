@@ -999,3 +999,6 @@
 2016preVFP WtoLNtoLNuHtoLNuBB_TypeIHeavyN-Mu_MN200_TuneCP5_13TeV-amcatnlo-pythia8
 2016postVFP WtoLNtoLNuHtoLNuBB_TypeIHeavyN-Mu_MN2500_TuneCP5_13TeV-amcatnlo-pythia8
 2016postVFP GGToLL_TuneCP5_13TeV-pythia8
+2016preVFP GGToLL_TuneCP5_13TeV-pythia8
+2017 GGToLL_TuneCP5_13TeV-pythia8
+2018 GGToLL_TuneCP5_13TeV-pythia8

@@ -757,8 +757,10 @@ def update_mc_samplelist_from_googledoc(array_from_googledoc,_era, commonpath,sa
 
 def check_bad_files(badfile_dir,_era, _dir, RunFull):
     
-    #if not RunFull:
-    #    return 
+    #if not "mix" in _dir or "WG" in _dir:
+    #    return
+    if not RunFull:
+        return 
     print_message(1,"check_bad_files ["+_era+"] ["+ _dir +"]")
     currentdir = os.getenv("PWD")
     os.chdir(badfile_dir)
@@ -821,6 +823,8 @@ def CopyCommonSampleFiles(_era,commonpath, geteff_path, vsummary,gd_list_wo_skip
     for line in r_type1_outfile:
         if "#" in line:
             w_type1_outfile.write(line)
+        elif len(line.split()) < 1:
+            continue
         else:
 
             alias=line.split()[0]

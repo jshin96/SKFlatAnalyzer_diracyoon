@@ -17,8 +17,8 @@ for line in lines:
   alias = line.replace('CommonSampleInfo/','').replace('.txt','')
 
   infoline = open(line).readlines()[1]
-
-  if "Type" in alias or "private" in alias or "WZJJToLNu" == alias or "WGJJToLNu" == alias :
+  
+  if "Type" in alias or "private" in alias :
     out_Sig_Type1.write(infoline)
   else:
     out_MC.write(infoline)
