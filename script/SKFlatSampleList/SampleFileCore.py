@@ -97,8 +97,10 @@ def nevents(_era,_skoutput,_alias, _filename):
     if os.path.exists( _skoutput + "/GetEffLumi/"+_era + "/GetEffLumi_"+ _alias+".root"):
 
         _file = ROOT.TFile(_skoutput + "/GetEffLumi/"+_era + "/GetEffLumi_"+ _alias+".root")
-        _hist      = _file.Get("sumEvents")
-        nevents_tree = int(_hist.Integral())
+
+        _hist      = _file.Get("sumW")
+        nevents_tree = int(_hist.GetEntries())
+
         _file.Close()
         return nevents_tree
 
@@ -358,6 +360,7 @@ def MissingSamples(array_gd,array_gd_sig,sk_path,_era):
 
         if not row[1] == "" and row[2] == "Y":
             if not os.path.exists(sk_path+"/"+row[1]):
+                print "Wrong " + sk_path+"/"+row[1]
                 wrong_assign.append(row[0])
         else:
             if not os.path.exists(sk_path+"/"+row[1]):
@@ -754,8 +757,8 @@ def update_mc_samplelist_from_googledoc(array_from_googledoc,_era, commonpath,sa
 
 def check_bad_files(badfile_dir,_era, _dir, RunFull):
     
-    if not RunFull:
-        return 
+    #if not RunFull:
+    #    return 
     print_message(1,"check_bad_files ["+_era+"] ["+ _dir +"]")
     currentdir = os.getenv("PWD")
     os.chdir(badfile_dir)
