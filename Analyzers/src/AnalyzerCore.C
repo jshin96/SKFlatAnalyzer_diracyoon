@@ -1112,6 +1112,85 @@ double AnalyzerCore::GetFatJetSF(FatJet fatjet, TString tag,  int dir){
 }
 
 
+
+vector<Jet>   AnalyzerCore::GetBJets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag,std::vector<Lepton *> leps_veto,  vector<FatJet> fatjets, JetTagging::Parameters jtp){
+
+  vector<Jet> output_jets;
+  for(unsigned int ijet =0; ijet < jets.size(); ijet++){
+    bool jetok=true;
+
+    if(fabs(jets[ijet].Eta()) > eta_cut) continue;
+    if(jets[ijet].Pt() < pt_cut)continue;
+
+    for(auto ilep : leps_veto){
+      if(ilep->DeltaR(jets[ijet]) < dr_lep_clean) jetok = false;
+    }
+
+    for(unsigned int ifjet =0; ifjet < fatjets.size(); ifjet++){
+      if(jets[ijet].DeltaR(fatjets[ifjet]) <dr_ak8_clean) jetok = false;
+    }
+
+    if(!jetok) continue;
+
+    if( jets[ijet].GetTaggerResult(jtp.j_Tagger) <= mcCorr->GetJetTaggingCutValue(jtp.j_Tagger, jtp.j_WP) ) continue;
+    
+
+    if(pu_tag=="")output_jets.push_back(jets[ijet]);
+    else if(jets[ijet].PassPileupMVA(pu_tag,GetEra())) output_jets.push_back(jets[ijet]);
+  }
+
+  std::sort(output_jets.begin(),       output_jets.end(),        PtComparing);
+
+
+
+
+  return output_jets;
+
+}
+
+
+
+vector<Jet>   AnalyzerCore::GetBJets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag, vector<Electron>  veto_electrons, vector<Muon>  veto_muons, vector<FatJet> fatjets, JetTagging::Parameters jtp){
+
+
+
+  vector<Jet> output_jets;
+  for(unsigned int ijet =0; ijet < jets.size(); ijet++){
+    bool jetok=true;
+
+    if(fabs(jets[ijet].Eta()) > eta_cut) continue;
+    if(jets[ijet].Pt() < pt_cut)continue;
+
+    for(unsigned int iel=0 ; iel < veto_electrons.size(); iel++){
+      if(jets[ijet].DeltaR(veto_electrons[iel]) < dr_lep_clean) jetok = false;
+    }
+
+    for(unsigned int iel=0 ; iel < veto_muons.size(); iel++){
+      if(jets[ijet].DeltaR(veto_muons[iel]) < dr_lep_clean) jetok = false;
+    }
+    for(unsigned int ifjet =0; ifjet < fatjets.size(); ifjet++){
+      if(jets[ijet].DeltaR(fatjets[ifjet]) <dr_ak8_clean) jetok = false;
+    }
+
+    if(!jetok) continue;
+
+    if( jets[ijet].GetTaggerResult(jtp.j_Tagger) <= mcCorr->GetJetTaggingCutValue(jtp.j_Tagger, jtp.j_WP) ) continue;
+
+    if(pu_tag=="")output_jets.push_back(jets[ijet]);
+
+    else if(jets[ijet].PassPileupMVA(pu_tag,GetEra())) output_jets.push_back(jets[ijet]);
+  }
+  std::sort(output_jets.begin(),       output_jets.end(),        PtComparing);
+
+  return output_jets;
+}
+
+
+
+
+
+
+
 vector<Jet>   AnalyzerCore::GetAK4Jets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag,std::vector<Lepton *> leps_veto,  vector<FatJet> fatjets){
 
   vector<Jet> output_jets;

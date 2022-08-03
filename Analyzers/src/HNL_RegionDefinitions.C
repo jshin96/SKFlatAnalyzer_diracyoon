@@ -25,22 +25,50 @@
  */
 
 
+bool  HNL_RegionDefinitions::PassPreselection(HNL_LeptonCore::Channel channel,HNL_LeptonCore::ChargeType q, std::vector<Lepton *> leps,std::vector<Lepton *> leps_veto, std::vector<Jet> jets, std::vector<Jet> vbf_jets,std::vector<FatJet>  fatjets, std::vector<Jet> bjets, Event ev, Particle METv, AnalyzerParameter param, TString channel_string ,  float w){
 
-bool  HNL_RegionDefinitions::RunSignalRegionAK8(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType analysis_charge ,std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet>  fatjets, TString bjet_wp, Event ev, AnalyzerParameter param, TString channel_string ,  float w){
+  //  FillSSPreselectionPlots(leps ,leps_veto, jets, fatjets, bjets, ev, METv, param);
+
+
+
+
+  return true;
+}
+
+
+void HNL_RegionDefinitions::RunSignalRegions(HNL_LeptonCore::Channel channel,HNL_LeptonCore::ChargeType q, std::vector<Lepton *> leps,std::vector<Lepton *> leps_veto, std::vector<Jet> jets, std::vector<Jet> vbf_jets,std::vector<FatJet>  fatjets, std::vector<Jet> bjets, Event ev, Particle METv, AnalyzerParameter param, TString channel_string ,  float w){
+  
+  
+  if(!PassPreselection(channel,q, leps, leps_veto, jets, vbf_jets, fatjets, bjets,ev, METv ,param,channel_string, w)) return;
+  
+  if(fatjets.size() > 0) RunSignalRegionAK8 (channel,q, leps, leps_veto, jets, fatjets, bjets,ev, METv ,param,channel_string, w) ;
+  else{
+    if(!(PassVBFInitial(vbf_jets)&&RunSignalRegionWW( channel,q, leps, leps_veto,  vbf_jets, fatjets, bjets,ev, METv, param,  channel_string, w))){
+      
+      RunSignalRegionAK4 (channel,q, leps, leps_veto, jets, fatjets, bjets, ev, METv ,param,channel_string, w);
+    } 
+    
+  }
+  
+}
+					     
+
+
+bool  HNL_RegionDefinitions::RunSignalRegionAK8(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType analysis_charge ,std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet>  fatjets, std::vector<Jet> bjets, Event ev, Particle METv,  AnalyzerParameter param, TString channel_string ,  float w){
 			    
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
+  //Particle METUnsmearedv = ev.GetMETVector();
+  //Event ev, Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
 
   std::vector<Lepton *> leps       = MakeLeptonPointerVector(muons,electrons);
   std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
   
   
-  return RunSignalRegionAK8(channel, analysis_charge, leps, leps_veto, jets, fatjets, bjet_wp, METv, param, channel_string, w);
+  return RunSignalRegionAK8(channel, analysis_charge, leps, leps_veto, jets, fatjets, bjets, ev, METv, param, channel_string, w);
 
   
 }
 
-bool  HNL_RegionDefinitions::RunSignalRegionAK8(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType analysis_charge , std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto , std::vector<Jet> jets, std::vector<FatJet>  fatjets, TString bjet_wp, Particle METv, AnalyzerParameter param, TString channel_string ,  float w){
+bool  HNL_RegionDefinitions::RunSignalRegionAK8(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType analysis_charge , std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto , std::vector<Jet> jets, std::vector<FatJet>  fatjets, std::vector<Jet> bjets, Event ev, Particle METv, AnalyzerParameter param, TString channel_string ,  float w){
 
   double lep1_ptcut= (channel==MuMu) ?   20. : 25.;
   double lep2_ptcut= (channel==MuMu) ?   10. : 15.;
@@ -53,6 +81,8 @@ bool  HNL_RegionDefinitions::RunSignalRegionAK8(HNL_LeptonCore::Channel channel,
       !( (leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::MUON) ||
 	 (leps[0]->LeptonFlavour() == Lepton::MUON && leps[1]->LeptonFlavour() == Lepton::ELECTRON) ))  return false;
 
+
+  if(fatjets.size() == 0) return false;;
 
 
   TString analyis_string = GetChannelString(channel, analysis_charge);
@@ -79,7 +109,7 @@ bool  HNL_RegionDefinitions::RunSignalRegionAK8(HNL_LeptonCore::Channel channel,
   double met2_st = pow(METv.Pt(),2.)/ ST;
   bool PassHMMet    = (met2_st < 15);
 
-  int  NBJets_medium      =  GetNBJets2a(param.Jet_ID,"Medium");
+  int  NBJets_medium      =  bjets.size();
   bool PassBJetMVeto = (NBJets_medium==0);
  
   double LowerMassSR1WmassCut = 40.;
@@ -98,28 +128,54 @@ bool  HNL_RegionDefinitions::RunSignalRegionAK8(HNL_LeptonCore::Channel channel,
     if(PassHMMet&&PassBJetMVeto) PrintEvent(param, "SR1",w);    
     //if(PassHMMet&&PassBJetMVeto) Fill_All_SignalRegion1(channel, signal_region1, IsDATA, QToString(analysis_charge), param.Name, jets, fatjets,  leps,  METv, nPV  ,w,true);
 
+    if(PassHMMet&&PassBJetMVeto) {
+
+      //Fill Limit plot
+
+      float dijetmass_tmp=999.;
+      float dijetmass=9990000.;
+
+      int m=-999;
+      double ST(0.);
+      for(UInt_t emme=0; emme<jets.size(); emme++){
+	ST += jets[emme].Pt();
+      }
+      for(UInt_t emme=0; emme<fatjets.size(); emme++){
+	ST += fatjets[emme].Pt();
+	dijetmass_tmp = fatjets[emme].SDMass();
+	if ( fabs(dijetmass_tmp-80.4) < fabs(dijetmass-80.4) ) {
+	  dijetmass = dijetmass_tmp;
+	  m = emme;
+	}
+      }
+
+      Particle N1cand = fatjets[m] + *leps[0];
+
+      double ml1jbins[7] = { 0., 100.,200.,300.,500., 1000., 2000.};
+
+      FillHist( "SR1/" +  param.Name + "/N1Mass_Central",  N1cand.M(),  w, 6, ml1jbins, "Reco M_{l1jj}");
+    }
+
     /// return true if SR is filled
     if(PassHMMet&&PassBJetMVeto) return true;
   }
   return false;
 }
 
-bool  HNL_RegionDefinitions::RunSignalRegionWW(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType analysis_charge, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet>  fatjets, TString bjet_wp, Event ev, AnalyzerParameter param, TString channel_string ,  float w){
+bool  HNL_RegionDefinitions::RunSignalRegionWW(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType analysis_charge, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet>  fatjets, std::vector<Jet> bjets, Event ev, Particle METv,AnalyzerParameter param, TString channel_string ,  float w){
 
 
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
 
   std::vector<Lepton *> leps       = MakeLeptonPointerVector(muons,electrons);
   std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
 
 
 
-  return RunSignalRegionWW(channel,analysis_charge, leps, leps_veto, jets,fatjets, bjet_wp, METv, param,channel_string, w);
+  return RunSignalRegionWW(channel,analysis_charge, leps, leps_veto, jets,fatjets, bjets, ev, METv, param,channel_string, w);
   
 }
 
-bool  HNL_RegionDefinitions::RunSignalRegionWW(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType analysis_charge ,std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto ,  std::vector<Jet> jets, std::vector<FatJet>  fatjets, TString bjet_wp, Particle METv, AnalyzerParameter param, TString channel_string ,  float w){
+bool  HNL_RegionDefinitions::RunSignalRegionWW(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType analysis_charge ,std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto ,  std::vector<Jet> jets, std::vector<FatJet>  fatjets, std::vector<Jet> bjets, Event ev, Particle METv, AnalyzerParameter param, TString channel_string ,  float w){
 
 
 
@@ -151,7 +207,7 @@ bool  HNL_RegionDefinitions::RunSignalRegionWW(HNL_LeptonCore::Channel channel, 
 
   FillEventCutflow(HNL_LeptonCore::SR2, w, "SR2_VBF",param.Name);
 
-  int  NBJets_medium      =  GetNBJets2a(param.Jet_ID,"Medium");
+  int  NBJets_medium      =  bjets.size();
   bool PassBJetMVeto = (NBJets_medium==0);
 
   double HT(0.);
@@ -164,9 +220,14 @@ bool  HNL_RegionDefinitions::RunSignalRegionWW(HNL_LeptonCore::Channel channel, 
     
     if(PassBJetMVeto){
       FillEventCutflow(HNL_LeptonCore::SR2, w, "SR2_bveto",param.Name);
-      PrintEvent(param,"SR2_"+channel_string,w);
+      //PrintEvent(param,"SR2_"+channel_string,w);
       //      Fill_RegionPlots(channel,true,"HNL_"+QToString(analysis_charge)+"WW", param.Name, jets,  fatjets,  leps, METv, nPV, w);
-      FillHist( param.Name+"/HNL_"+QToString(analysis_charge)+"WW/"+ param.Name+"HNL_SSWW_nevent_" ,  1.,  w, 2, 0.,2. );
+      //FillHist( param.Name+"/HNL_"+QToString(analysis_charge)+"WW/"+ param.Name+"HNL_SSWW_nevent_" ,  1.,  w, 2, 0.,2. );
+
+      
+      double HTLT[2] = { 0., 2};
+      FillHist( "SR2/" +  param.Name + "/HT_LT1_Central",  HT/leps[1]->Pt(),  w, 1, HTLT, "Reco HT/LT1");
+      
       return true;
     }
   }
@@ -175,20 +236,18 @@ bool  HNL_RegionDefinitions::RunSignalRegionWW(HNL_LeptonCore::Channel channel, 
 }
 
 
-bool  HNL_RegionDefinitions::RunSignalRegionAK4(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType analysis_charge, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet>  fatjets, TString bjet_wp, Event ev, AnalyzerParameter param, TString channel_string ,  float w){
+bool  HNL_RegionDefinitions::RunSignalRegionAK4(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType analysis_charge, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet>  fatjets, std::vector<Jet> bjets, Event ev,Particle METv,  AnalyzerParameter param, TString channel_string ,  float w){
 
 
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
 
   std::vector<Lepton *> leps       = MakeLeptonPointerVector(muons,electrons);
   std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
 
 
-  return RunSignalRegionAK4(channel, analysis_charge, leps, leps_veto, jets, fatjets, bjet_wp, METv,param, channel_string, w);
+  return RunSignalRegionAK4(channel, analysis_charge, leps, leps_veto, jets, fatjets, bjets, ev ,METv,param, channel_string, w);
 }
 
-bool  HNL_RegionDefinitions::RunSignalRegionAK4(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType analysis_charge ,std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto ,  std::vector<Jet> jets,std::vector<FatJet>  fatjets, TString bjet_wp, Particle METv, AnalyzerParameter param, TString channel_string ,  float w){
+bool  HNL_RegionDefinitions::RunSignalRegionAK4(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType analysis_charge ,std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto ,  std::vector<Jet> jets,std::vector<FatJet>  fatjets, std::vector<Jet> bjets, Event ev, Particle METv, AnalyzerParameter param, TString channel_string ,  float w){
 						
 
 
@@ -250,7 +309,7 @@ bool  HNL_RegionDefinitions::RunSignalRegionAK4(HNL_LeptonCore::Channel channel,
   FillEventCutflow(HNL_LeptonCore::SR3, w, "SR3_MET",param.Name);
 
 
-  int  NBJets      =  GetNBJets2a(param.Jet_ID,"Medium");
+  int  NBJets      =  bjets.size();
   if(NBJets>  0) return false;
 
   FillEventCutflow(HNL_LeptonCore::SR3, w, "SR3_bveto",param.Name);
@@ -258,6 +317,64 @@ bool  HNL_RegionDefinitions::RunSignalRegionAK4(HNL_LeptonCore::Channel channel,
   //  Run High Mass with main jet collections                                                                                                                
   double FatJetTau21_SF = GetEventFatJetSF(fatjets,"ak8_type1", 0);      
   FillWeightHist(param.Name+"/fatjet_ak8_type1_sf_"+param.Name,FatJetTau21_SF);
+
+  //FIll Limit 
+  bool fill_limit_hist=true;
+  if(fill_limit_hist){
+    int bin = 0;
+    
+    float dijetmass_tmp=999.;
+    float dijetmass=9990000.;
+    int m=-999;
+    int n=-999;
+    double ST(0.);
+    for(UInt_t emme=0; emme<jets.size(); emme++){
+      ST += jets[emme].Pt();
+      for(UInt_t enne=1; enne<jets.size(); enne++) {
+
+	dijetmass_tmp = (jets[emme]+jets[enne]).M();
+	if(emme == enne) continue;
+
+	if ( fabs(dijetmass_tmp-80.4) < fabs(dijetmass-80.4) ) {
+	  dijetmass = dijetmass_tmp;
+	  m = emme;
+	  n = enne;
+	}
+      }
+    }
+    
+
+    if(jets.size() == 0 && leps[1]->Pt() > 100.) bin=1;
+    else     if(jets.size() == 1 && leps[1]->Pt() > 80.) bin=2;
+    else{
+      
+      Particle N1cand = jets[m] + jets[n]+ *leps[0];
+      Particle N2cand = jets[m] + jets[n]+ *leps[1];
+
+      if(leps[1]->Pt() < 100) {
+	if(N2cand.M() < 100.) bin=3;
+	else if(N2cand.M() < 125.) bin=4;
+	else if(N2cand.M() < 150.) bin=5;
+	else if(N2cand.M() < 175.) bin=6;
+	else if(N2cand.M() < 200.) bin=7;
+	else bin=8;
+      }
+      else{
+	if(N1cand.M() < 200)  bin=9;
+	else  if(N1cand.M() < 250.) bin=10;
+	else if(N1cand.M() < 300.) bin=11;
+	else if(N1cand.M() < 500.) bin=12;
+	else if(N1cand.M() < 1000.) bin=13;
+	else bin = 14;
+	
+      }
+    }
+    
+
+
+    FillHist( "SR3/" +  param.Name + "/SignalBins",   bin, w, 14, 0, 14, "Signalbins");
+  }
+
   
   if(jets.size() > 1 && fatjets.size()==0)  {  
 
@@ -268,6 +385,7 @@ bool  HNL_RegionDefinitions::RunSignalRegionAK4(HNL_LeptonCore::Channel channel,
     //    Fill_RegionPlots      (channel,true,signal_region+"_Highmass" , param.Name, jets,  fatjets,  leps,  METv, nPV, w);
     //Fill_All_SignalRegion3 (channel, signal_region, IsDATA,  analysis_charge, param.Name, jets, fatjets,  electrons, muons,  METv, nPV ,w ,true);
 
+
     return true;
   }// 0 AK8                                                                                                                                                                                 
   
@@ -277,22 +395,20 @@ bool  HNL_RegionDefinitions::RunSignalRegionAK4(HNL_LeptonCore::Channel channel,
 
 
 
-bool HNL_RegionDefinitions::RunSignalRegionTrilepton(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet>  fatjets, TString bjet_wp, Event ev, AnalyzerParameter param, TString channel_string ,  float w){
+bool HNL_RegionDefinitions::RunSignalRegionTrilepton(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet>  fatjets, std::vector<Jet> bjets, Event ev, Particle METv, AnalyzerParameter param, TString channel_string ,  float w){
 
 
 
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
 
   std::vector<Lepton *> leps       = MakeLeptonPointerVector(muons,electrons);
   std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
 
 
-  return RunSignalRegionTrilepton(channel, leps, leps_veto, jets, fatjets, bjet_wp, METv,param, channel_string, w);
+  return RunSignalRegionTrilepton(channel, leps, leps_veto, jets, fatjets, bjets,ev, METv,param, channel_string, w);
 
 }
 
-bool HNL_RegionDefinitions::RunSignalRegionTrilepton(HNL_LeptonCore::Channel channel,std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto ,  std::vector<Jet> jets ,std::vector<FatJet>  fatjets, TString bjet_wp, Particle METv, AnalyzerParameter param, TString channel_string ,  float w){
+bool HNL_RegionDefinitions::RunSignalRegionTrilepton(HNL_LeptonCore::Channel channel,std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto ,  std::vector<Jet> jets ,std::vector<FatJet>  fatjets, std::vector<Jet> bjets, Event ev, Particle METv, AnalyzerParameter param, TString channel_string ,  float w){
   
   
   
@@ -338,7 +454,7 @@ bool HNL_RegionDefinitions::RunSignalRegionTrilepton(HNL_LeptonCore::Channel cha
  
   if(pass_sr1)FillEventCutflow(HNL_LeptonCore::SR4,w, "SR4_3lep_chargereq",param.Name);
 
-  int  NBJets      =  GetNBJets2a(param.Jet_ID,bjet_wp);
+  int  NBJets      = bjets.size();
 
   if (NBJets > 0)pass_sr1=false;
   
@@ -451,7 +567,7 @@ bool HNL_RegionDefinitions::PassVBF(vector<Jet>  jets,std::vector<Lepton *> leps
 
 
 
-void HNL_RegionDefinitions::RunElectronChannelCR(std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<Jet> jets_vbf,   std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param,  float weight_ee ){
+void HNL_RegionDefinitions::RunElectronChannelCR(std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<Jet> jets_vbf,   std::vector<FatJet> fatjets, std::vector<Jet> bjets,  Event ev, Particle METv, AnalyzerParameter param,  float weight_ee ){
 
 
   if(IsDATA &&  DataYear==2016 &&   !(this->DataStream == "DoubleEG"  )) return;
@@ -484,36 +600,38 @@ void HNL_RegionDefinitions::RunElectronChannelCR(std::vector<Electron> electrons
 
   Fill_RegionPlots(EE, true,"Inclusive" , param.Name+"_Electron", jets,  fatjets,  electrons, muons,  ev.GetMETVector(), nPV, weight_ee);
   Fill_RegionPlots(EE, false,"Inclusive" , param.Name+"_Electron", jets_vbf,  fatjets,  electrons, muons,  ev.GetMETVector(), nPV, weight_ee);
+  
+
 
 
   //OS CR                                                                                                                                                                                                          
 
   vector<TString> passed;
-  if(FillZCRPlots  (EE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_ee)) passed.push_back("ZAK8_CR");
-  if(FillTopCRPlots(EE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_ee)) passed.push_back("TopAK8_CR");
-  if(FillSSPreselectionPlots(EE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_ee)) passed.push_back("SSPresel");
-  if(FillSSVBFPreselectionPlots(EE, electrons, electrons_veto, muons,  muons_veto, jets_vbf, fatjets, ev, param, weight_ee)) passed.push_back("SSVBFPresel");
-  if(FillOSPreselectionPlots(EE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_ee)) passed.push_back("OSPresel");
+  if(FillZCRPlots  (EE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_ee)) passed.push_back("ZAK8_CR");
+  if(FillTopCRPlots(EE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_ee)) passed.push_back("TopAK8_CR");
+  if(FillSSPreselectionPlots(EE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_ee)) passed.push_back("SSPresel");
+  if(FillSSVBFPreselectionPlots(EE, electrons, electrons_veto, muons,  muons_veto, jets_vbf, fatjets, bjets, ev, METv, param, weight_ee)) passed.push_back("SSVBFPresel");
+  if(FillOSPreselectionPlots(EE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_ee)) passed.push_back("OSPresel");
   //VBF CR                                                                                                                                                                                                         
-  if(FillWWCRPlots  (EE, electrons, electrons_veto, muons,  muons_veto, jets_vbf, fatjets, ev, param, weight_ee)) passed.push_back("WpWp_CR");
-  if(FillWWNPCRPlots(EE, electrons, electrons_veto, muons,  muons_veto, jets_vbf, fatjets, ev, param, weight_ee)) passed.push_back("WpWpNP_CR");
-  if(FillWZ2CRPlots (EEE, electrons, electrons_veto, muons,  muons_veto, jets_vbf, fatjets, ev, param, weight_ee)) passed.push_back("WZ2_CR");
-  if(FillWZBCRPlots (EEE, electrons, electrons_veto, muons,  muons_veto, jets_vbf, fatjets, ev, param, weight_ee)) passed.push_back("WZB_CR");
+  if(FillWWCRPlots  (EE, electrons, electrons_veto, muons,  muons_veto, jets_vbf, fatjets, bjets, ev, METv, param, weight_ee)) passed.push_back("WpWp_CR");
+  if(FillWWNPCRPlots(EE, electrons, electrons_veto, muons,  muons_veto, jets_vbf, fatjets, bjets, ev, METv, param, weight_ee)) passed.push_back("WpWpNP_CR");
+  if(FillWZ2CRPlots (EEE, electrons, electrons_veto, muons,  muons_veto, jets_vbf, fatjets, bjets, ev, METv, param, weight_ee)) passed.push_back("WZ2_CR");
+  if(FillWZBCRPlots (EEE, electrons, electrons_veto, muons,  muons_veto, jets_vbf, fatjets, bjets, ev, METv, param, weight_ee)) passed.push_back("WZB_CR");
 
   // LLL+                                                                                                                                                                                                          
-  if(FillZZCRPlots( EEEE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_ee)) passed.push_back("ZZ_CR");
-  if(FillZZ2CRPlots( EEEE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_ee)) passed.push_back("ZZLoose_CR");
-  if(FillWZCRPlots( EEE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_ee)) passed.push_back("WZ_CR");
-  if(FillWGCRPlots( EEE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_ee)) passed.push_back("WG_CR");
-  if(FillZGCRPlots( EEE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_ee)) passed.push_back("ZG_CR");
-  if(FillZNPCRPlots(EEE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_ee)) passed.push_back("ZNP_CR");
+  if(FillZZCRPlots( EEEE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_ee)) passed.push_back("ZZ_CR");
+  if(FillZZ2CRPlots( EEEE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_ee)) passed.push_back("ZZLoose_CR");
+  if(FillWZCRPlots( EEE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_ee)) passed.push_back("WZ_CR");
+  if(FillWGCRPlots( EEE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_ee)) passed.push_back("WG_CR");
+  if(FillZGCRPlots( EEE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_ee)) passed.push_back("ZG_CR");
+  if(FillZNPCRPlots(EEE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_ee)) passed.push_back("ZNP_CR");
 
   // 17-028 +CR                                                                                                                                                                                                    
-  if(FillHighMassSR1CRPlots(EE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_ee)) passed.push_back("HighMassSR1_CR");
-  if(FillHighMassSR2CRPlots(EE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_ee)) passed.push_back("HighMassSR2_CR");
-  if(FillHighMass1JetCRPlots(EE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_ee)) passed.push_back("HighMass1Jet_CR");
-  if(FillHighMassBJetCRPlots(EE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_ee)) passed.push_back("HighMassBJet_CR");
-  if(FillHighMassNPCRPlots(EE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_ee)) passed.push_back("HighMassNP_CR");
+  if(FillHighMassSR1CRPlots(EE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_ee)) passed.push_back("HighMassSR1_CR");
+  if(FillHighMassSR2CRPlots(EE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_ee)) passed.push_back("HighMassSR2_CR");
+  if(FillHighMass1JetCRPlots(EE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_ee)) passed.push_back("HighMass1Jet_CR");
+  if(FillHighMassBJetCRPlots(EE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_ee)) passed.push_back("HighMassBJet_CR");
+  if(FillHighMassNPCRPlots(EE, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_ee)) passed.push_back("HighMassNP_CR");
 
 
   vector<TString> cutlabels = { "TopAK8_CR","ZAK8_CR","WpWp_CR","WpWpNP_CR","ZZ_CR","ZZLoose_CR","ZG_CR","WG_CR","WZ_CR","WZ2_CR","WZB_CR","HighMassSR1_CR","HighMassSR2_CR","HighMass1Jet_CR","HighMassBJet_CR","HighMassNP_CR","ZNP_CR","SSPresel","OSPresel","SSVBFPresel"};
@@ -532,24 +650,22 @@ void HNL_RegionDefinitions::RunElectronChannelCR(std::vector<Electron> electrons
 
 
 
-void HNL_RegionDefinitions::RunMuonChannelCR(std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<Jet> jets_vbf, std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param,  float weight_mm ){
+void HNL_RegionDefinitions::RunMuonChannelCR(std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<Jet> jets_vbf, std::vector<FatJet> fatjets, std::vector<Jet> bjets,  Event ev, Particle METv, AnalyzerParameter param,  float weight_mm ){
 
 
   if(IsDATA &&  !(this->DataStream.Contains("Muon"))) return;  // SingleMuon + DoubleMuon                                                                                                                          
 
   if(!IsDATA) weight_mm*= GetMuonSFEventWeight(muons, param);
 
-HNL_LeptonCore::Channel  channel  = MuMu;
+  //HNL_LeptonCore::Channel  channel  = MuMu;
 
   /// Get MET l corrected for jet smearing in MC                                                                                                                                                                   
-  Particle METunsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METunsmearedv, jets);
 
   if(!PassMETFilter()) return;
 
   //=== Apply trigger                                                                                                                                                                                              
   bool PassDoubleMuonTrig = ev.PassTrigger(Trigger_HNL_Muon);
-  bool PassHighPtMuonTrig = ev.PassTrigger(Trigger_HNL_HighPtMuon);
+  //bool PassHighPtMuonTrig = ev.PassTrigger(Trigger_HNL_HighPtMuon);
 
   if(!(PassDoubleMuonTrig)) return;
 
@@ -578,31 +694,31 @@ HNL_LeptonCore::Channel  channel  = MuMu;
 
 
   vector<TString> passed;
-  if(FillZCRPlots  (MuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_mm)) passed.push_back("ZAK8_CR");
-  if(FillTopCRPlots(MuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_mm)) passed.push_back("TopAK8_CR");
-  if(FillSSPreselectionPlots(MuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_mm)) passed.push_back("SSPresel");
-  if(FillSSVBFPreselectionPlots(MuMu, electrons, electrons_veto, muons,  muons_veto, jets_vbf, fatjets, ev, param, weight_mm)) passed.push_back("SSVBFPresel");
-  if(FillOSPreselectionPlots(MuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_mm)) passed.push_back("OSPresel");
+  if(FillZCRPlots  (MuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_mm)) passed.push_back("ZAK8_CR");
+  if(FillTopCRPlots(MuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_mm)) passed.push_back("TopAK8_CR");
+  if(FillSSPreselectionPlots(MuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_mm)) passed.push_back("SSPresel");
+  if(FillSSVBFPreselectionPlots(MuMu, electrons, electrons_veto, muons,  muons_veto, jets_vbf, fatjets, bjets, ev, METv, param, weight_mm)) passed.push_back("SSVBFPresel");
+  if(FillOSPreselectionPlots(MuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_mm)) passed.push_back("OSPresel");
   //VBF CR                                                                                                                                                                                                         
-  if(FillWWCRPlots  (MuMu, electrons, electrons_veto, muons,  muons_veto, jets_vbf, fatjets, ev, param, weight_mm)) passed.push_back("WpWp_CR");
-  if(FillWWNPCRPlots(MuMu, electrons, electrons_veto, muons,  muons_veto, jets_vbf, fatjets, ev, param, weight_mm)) passed.push_back("WpWpNP_CR");
-  if(FillWZ2CRPlots (MuMuMu, electrons, electrons_veto, muons,  muons_veto, jets_vbf, fatjets, ev, param, weight_mm)) passed.push_back("WZ2_CR");
-  if(FillWZBCRPlots (MuMuMu, electrons, electrons_veto, muons,  muons_veto, jets_vbf, fatjets, ev, param, weight_mm)) passed.push_back("WZB_CR");
+  if(FillWWCRPlots  (MuMu, electrons, electrons_veto, muons,  muons_veto, jets_vbf, fatjets, bjets, ev, METv, param, weight_mm)) passed.push_back("WpWp_CR");
+  if(FillWWNPCRPlots(MuMu, electrons, electrons_veto, muons,  muons_veto, jets_vbf, fatjets, bjets, ev, METv, param, weight_mm)) passed.push_back("WpWpNP_CR");
+  if(FillWZ2CRPlots (MuMuMu, electrons, electrons_veto, muons,  muons_veto, jets_vbf, fatjets, bjets, ev, METv, param, weight_mm)) passed.push_back("WZ2_CR");
+  if(FillWZBCRPlots (MuMuMu, electrons, electrons_veto, muons,  muons_veto, jets_vbf, fatjets, bjets, ev, METv, param, weight_mm)) passed.push_back("WZB_CR");
 
   // LLL+                                                                                                                                                                                                          
-  if(FillZZCRPlots( MuMuMuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_mm)) passed.push_back("ZZ_CR");
-  if(FillZZ2CRPlots( MuMuMuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_mm)) passed.push_back("ZZLoose_CR");
-  if(FillWZCRPlots( MuMuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_mm)) passed.push_back("WZ_CR");
-  if(FillWGCRPlots( MuMuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_mm)) passed.push_back("WG_CR");
-  if(FillZGCRPlots( MuMuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_mm)) passed.push_back("ZG_CR");
-  if(FillZNPCRPlots(MuMuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_mm)) passed.push_back("ZNP_CR");
+  if(FillZZCRPlots( MuMuMuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_mm)) passed.push_back("ZZ_CR");
+  if(FillZZ2CRPlots( MuMuMuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_mm)) passed.push_back("ZZLoose_CR");
+  if(FillWZCRPlots( MuMuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_mm)) passed.push_back("WZ_CR");
+  if(FillWGCRPlots( MuMuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_mm)) passed.push_back("WG_CR");
+  if(FillZGCRPlots( MuMuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_mm)) passed.push_back("ZG_CR");
+  if(FillZNPCRPlots(MuMuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_mm)) passed.push_back("ZNP_CR");
 
   // 17-028 +CR                                                                                                                                                                                                    
-  if(FillHighMassSR1CRPlots(MuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_mm)) passed.push_back("HighMassSR1_CR");
-  if(FillHighMassSR2CRPlots(MuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_mm)) passed.push_back("HighMassSR2_CR");
-  if(FillHighMass1JetCRPlots(MuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_mm)) passed.push_back("HighMass1Jet_CR");
-  if(FillHighMassBJetCRPlots(MuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_mm)) passed.push_back("HighMassBJet_CR");
-  if(FillHighMassNPCRPlots(MuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, ev, param, weight_mm)) passed.push_back("HighMassNP_CR");
+  if(FillHighMassSR1CRPlots(MuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_mm)) passed.push_back("HighMassSR1_CR");
+  if(FillHighMassSR2CRPlots(MuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_mm)) passed.push_back("HighMassSR2_CR");
+  if(FillHighMass1JetCRPlots(MuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_mm)) passed.push_back("HighMass1Jet_CR");
+  if(FillHighMassBJetCRPlots(MuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_mm)) passed.push_back("HighMassBJet_CR");
+  if(FillHighMassNPCRPlots(MuMu, electrons, electrons_veto, muons,  muons_veto, jets, fatjets, bjets, ev, METv, param, weight_mm)) passed.push_back("HighMassNP_CR");
 
 
 
@@ -620,28 +736,36 @@ HNL_LeptonCore::Channel  channel  = MuMu;
 }
 
 
-bool HNL_RegionDefinitions::FillTopCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector< Jet> jets, std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param, float w){
-
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
-
-  TString channel_string= (channel==EE) ?  "Electron" : "Muon";
-
-  double lep1_ptcut= (channel==EE) ?   25. : 20.;
-  double lep2_ptcut= (channel==EE) ?   15. : 10.;
+bool HNL_RegionDefinitions::FillTopCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector< Jet> jets, std::vector<FatJet> fatjets, std::vector< Jet> bjets,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
 
-  if (channel==EE && electrons.size() != 2) return false;
-  if (channel==MuMu && muons.size() != 2) return false;
-  if (channel==EE && electrons_veto.size() != 2) return false;
-  if (channel==MuMu && muons_veto.size() != 2) return false;
+  TString channel_string = GetChannelString(channel);
 
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
   std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
+
+
+  double lep1_ptcut= (channel==MuMu) ?   20. : 25.;
+  double lep2_ptcut= (channel==MuMu) ?   10. : 15.;
+
+
+  if (leps.size() != 2 and leps_veto.size() != 2) return false;
+
+  if (channel==EE     && !(leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::ELECTRON)) return false;
+  if (channel==MuMu   && !(leps[0]->LeptonFlavour() == Lepton::MUON     && leps[1]->LeptonFlavour() == Lepton::MUON))    return false;
+  if ((channel==EMu || channel==MuE)  &&
+      !( (leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::MUON) ||
+         (leps[0]->LeptonFlavour() == Lepton::MUON && leps[1]->LeptonFlavour() == Lepton::ELECTRON) ))  return false;
+
+
+
+
   if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut)) return false;
 
   if(METv.Pt() < 50) return false;
-  std::pair<int, double>  NBJets=GetNBJets(jets,param,"Medium");
-  if(NBJets.first == 0) return false;
+  
+  int NBJets = bjets.size();
+  if(NBJets == 0) return false;
   if(fatjets.size() == 0) return false;
 
   if(run_Debug){
@@ -657,15 +781,13 @@ bool HNL_RegionDefinitions::FillTopCRPlots(HNL_LeptonCore::Channel channel, std:
 
 
 
-bool HNL_RegionDefinitions::FillZNPCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param, float w){
-
-
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
+bool HNL_RegionDefinitions::FillZNPCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Jet> bjets,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
   TString channel_string= (channel==EEE) ?  "Electron" : "Muon";
 
   std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
+
 
   if(channel==MuMuMu && !(muons.size() ==3 && electrons_veto.size() == 0 && muons_veto.size()==3)) return false;
   if(channel==EEE   && !(electrons.size() ==3 && electrons_veto.size() == 3 && muons_veto.size()==0)) return false;
@@ -699,32 +821,38 @@ bool HNL_RegionDefinitions::FillZNPCRPlots(HNL_LeptonCore::Channel channel, std:
 
 }
 
-bool HNL_RegionDefinitions::FillZCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param, float w){
+bool HNL_RegionDefinitions::FillZCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector< Jet> bjets,Event ev, Particle METv, AnalyzerParameter param, float w){
 
 
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
+  std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
 
-  TString channel_string= (channel==EE) ?  "Electron" : "Muon";
 
-  double lep1_ptcut= (channel==EE) ?   25. : 20.;
-  double lep2_ptcut= (channel==EE) ?   15. : 10.;
+  TString channel_string = GetChannelString(channel);
+
+
+  double lep1_ptcut= (channel==MuMu) ?   20. : 25.;
+  double lep2_ptcut= (channel==MuMu) ?   10. : 15.;
+
   if(DataEra=="2017" || DataEra=="2018"){
     lep2_ptcut= 15;
   }
 
+  if (leps.size() != 2 and leps_veto.size() != 2) return false;
+  
+  if (channel==EE     && !(leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::ELECTRON)) return false;
+  if (channel==MuMu   && !(leps[0]->LeptonFlavour() == Lepton::MUON     && leps[1]->LeptonFlavour() == Lepton::MUON))    return false;
+  if ((channel==EMu || channel==MuE)  &&
+      !( (leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::MUON) ||
+         (leps[0]->LeptonFlavour() == Lepton::MUON && leps[1]->LeptonFlavour() == Lepton::ELECTRON) ))  return false;
 
-  if (channel==EE && electrons.size() != 2) return false;
-  if (channel==MuMu && muons.size() != 2) return false;
-  if (channel==EE && electrons_veto.size() != 2) return false;
-  if (channel==MuMu && muons_veto.size() != 2) return false;
-
-  std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
+  
+  
   if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut)) return false;
-
+  
   if(METv.Pt() > 30) return false;
-  std::pair<int, double>  NBJets=GetNBJets(jets,param,"Medium");
-  if(NBJets.first > 0) return false;
+  int NBJets = bjets.size();
+  if(NBJets > 0) return false;
   if(fatjets.size() == 0) return false;
 
   Particle  ll = (*leps[0]) + (*leps[1]);
@@ -744,44 +872,46 @@ bool HNL_RegionDefinitions::FillZCRPlots(HNL_LeptonCore::Channel channel, std::v
 }
 
 
-bool HNL_RegionDefinitions::FillWWCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets_eta5, std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param, float w){
+bool HNL_RegionDefinitions::FillWWCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets_eta5, std::vector<FatJet> fatjets,  std::vector< Jet> bjets,Event ev, Particle METv, AnalyzerParameter param, float w){
+  
+  
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
+  std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
+  
+  TString channel_string = GetChannelString(channel);
+  
 
-
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets_eta5);
-
-  TString channel_string= (channel==EE) ?  "Electron" : "Muon";
-
-  double lep1_ptcut= (channel==EE) ?   25. : 20.;
-  double lep2_ptcut= (channel==EE) ?   15. : 10.;
+  double lep1_ptcut= (channel==MuMu) ?   20. : 25.;
+  double lep2_ptcut= (channel==MuMu) ?   10. : 15.;
+  
   if(DataEra=="2017" || DataEra=="2018"){
     lep2_ptcut= 15;
   }
+  
+  if (leps.size() != 2 and leps_veto.size() != 2) return false;
+
+  if (channel==EE     && !(leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::ELECTRON)) return false;
+  if (channel==MuMu   && !(leps[0]->LeptonFlavour() == Lepton::MUON     && leps[1]->LeptonFlavour() == Lepton::MUON))    return false;
+  if ((channel==EMu || channel==MuE)  &&
+      !( (leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::MUON) ||
+         (leps[0]->LeptonFlavour() == Lepton::MUON && leps[1]->LeptonFlavour() == Lepton::ELECTRON) ))  return false;
+
+
 
   if(jets_eta5.size() < 2) return false;
 
-  if (channel==EE && electrons.size() != 2) return false;
-  if (channel==MuMu && muons.size() != 2) return false;
-  if (channel==EE && electrons_veto.size() != 2) return false;
-  if (channel==MuMu && muons_veto.size() != 2) return false;
 
-  Particle lep1,lep2;
-  if(channel==EE) {lep1=electrons[0]; lep2=electrons[1];}
-  else            {lep1=muons[0]; lep2=muons[1];}
-
-  if (lep1.Pt() <  lep1_ptcut) return false;
-  if (lep2.Pt() <  lep2_ptcut) return false;
-
+  if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut)) return false;
+  
   if(!RunCF){
-    if(lep1.Charge() != lep2.Charge()) return false;
+    if(leps[0]->Charge() == leps[1]->Charge()) return false;
   }
   else{
-    if(lep1.Charge() == lep2.Charge()) return false;
-
+    if(leps[0]->Charge() != leps[1]->Charge()) return false;
   }
 
   std::vector<Jet> jets                  = GetAK4Jets(jets_eta5, 20., 2.5, true,  0.4,0.8,"",    electrons_veto, muons_veto,fatjets);
-  std::pair<int, double>  NBJets=GetNBJets(jets,param,"Medium");
+  int NBJets = bjets.size();
   /***
    //file:///Users/john/Downloads/AN2019_089_v7.pdf SSWW +WZ  + AN2020_045  
    //https://arxiv.org/pdf/2005.01173.pdf 
@@ -790,7 +920,6 @@ bool HNL_RegionDefinitions::FillWWCRPlots(HNL_LeptonCore::Channel channel, std::
   
   Particle ll =  (channel==EE) ?  electrons[0]  + electrons[1] : muons[0]+muons[1];
 
-  std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
 
   // two highest pt jets with    
   Jet j1 = jets_eta5[0] ;
@@ -798,14 +927,14 @@ bool HNL_RegionDefinitions::FillWWCRPlots(HNL_LeptonCore::Channel channel, std::
   if(!(j1.Pt() > 30.) && (j2.Pt() > 30.)) return false;
   if ( ll.M() < 20.) return false;
   if ( METv.Pt() < 30.) return false;
-  if (NBJets.first>0) return false;
+  if (NBJets>0) return false;
   if ((j1+j2).M() < 500.) return false;
 
   double DiJetDeta = fabs(j1.Eta() - j2.Eta());
   if (DiJetDeta  <2.5) return false;
 
   double Av_JetEta= 0.5*(j1.Eta()+ j2.Eta());
-  double zeppenfeld = TMath::Max((lep1).Eta()  - Av_JetEta , (lep2).Eta()  - Av_JetEta ) /DiJetDeta;
+  double zeppenfeld = TMath::Max(leps[0]->Eta()  - Av_JetEta , (leps[1])->Eta()  - Av_JetEta ) /DiJetDeta;
   if (zeppenfeld > 0.75) return false;
   if (channel==EE  && (fabs(ll.M()-90.) < 15)) return false;
 
@@ -825,67 +954,70 @@ bool HNL_RegionDefinitions::FillWWCRPlots(HNL_LeptonCore::Channel channel, std::
 
 
 
-bool HNL_RegionDefinitions::FillWWNPCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets_eta5, std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param, float w){
+bool HNL_RegionDefinitions::FillWWNPCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets_eta5, std::vector<FatJet> fatjets,std::vector< Jet> bjets,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
 
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets_eta5);
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
+  std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
+  
+  TString channel_string = GetChannelString(channel);
 
-  TString channel_string= (channel==EE) ?  "Electron" : "Muon";
 
-  double lep1_ptcut= (channel==EE) ?   25. : 20.;
-  double lep2_ptcut= (channel==EE) ?   15. : 10.;
+  double lep1_ptcut= (channel==MuMu) ?   20. : 25.;
+  double lep2_ptcut= (channel==MuMu) ?   10. : 15.;
+
   if(DataEra=="2017" || DataEra=="2018"){
     lep2_ptcut= 15;
   }
-
+  
+  if (leps.size() != 2 and leps_veto.size() != 2) return false;
+  
+  if (channel==EE     && !(leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::ELECTRON)) return false;
+  if (channel==MuMu   && !(leps[0]->LeptonFlavour() == Lepton::MUON     && leps[1]->LeptonFlavour() == Lepton::MUON))    return false;
+  if ((channel==EMu || channel==MuE)  &&
+      !( (leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::MUON) ||
+         (leps[0]->LeptonFlavour() == Lepton::MUON && leps[1]->LeptonFlavour() == Lepton::ELECTRON) ))  return false;
+  
+  
   if(jets_eta5.size() < 2) return false;
-
-  if (channel==EE && electrons.size() != 2) return false;
-  if (channel==MuMu && muons.size() != 2) return false;
-  if (channel==EE && electrons_veto.size() != 2) return false;
-  if (channel==MuMu && muons_veto.size() != 2) return false;
-
-  Particle lep1,lep2;
-  if(channel==EE) {lep1=electrons[0]; lep2=electrons[1];}
-  else            {lep1=muons[0]; lep2=muons[1];}
-
-  if (lep1.Pt() <  lep1_ptcut) return false;
-  if (lep2.Pt() <  lep2_ptcut) return false;
+  
+  if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut)) return false;
 
   if(!RunCF){
-    if(lep1.Charge() != lep2.Charge()) return false;
+    if(leps[0]->Charge() == leps[1]->Charge()) return false;
   }
   else{
-    if(lep1.Charge() == lep2.Charge()) return false;
+    if(leps[0]->Charge() != leps[1]->Charge()) return false;
   }
+
+
+
   std::vector<Jet> jets                  = GetAK4Jets(jets_eta5, 20., 2.5, true,  0.4,0.8,"",    electrons_veto, muons_veto,fatjets);
-  std::pair<int, double>  NBJets=GetNBJets(jets,param,"Medium");
+  int NBJets = bjets.size();
   //file:///Users/john/Downloads/AN2019_089_v7.pdf SSWW +WZ  + AN2020_045
   //https://arxiv.org/pdf/2005.01173.pdf 
-
+  
   Particle ll =  (channel==EE) ?  electrons[0]  + electrons[1] : muons[0]+muons[1];
-
+  
   // two highest pt jets with   
   
   Jet j1 = jets_eta5[0] ;
   Jet j2 = jets_eta5[1];
   if(!(j1.Pt() > 30.) && (j2.Pt() > 30.)) return false;
-
+  
   if ( METv.Pt() < 30.) return false;
-  if (NBJets.first>0) return false;
+  if (NBJets>0) return false;
   if ((j1+j2).M() < 500.) return false;
-
+  
   double DiJetDeta = fabs(j1.Eta() - j2.Eta());
   if (DiJetDeta  <2.5) return false;
 
   double Av_JetEta= 0.5*(j1.Eta()+ j2.Eta());
-  double zeppenfeld = TMath::Max((lep1).Eta()  - Av_JetEta , lep2.Eta()  - Av_JetEta ) /DiJetDeta;
+  double zeppenfeld = TMath::Max((leps[0])->Eta()  - Av_JetEta , leps[1]->Eta()  - Av_JetEta ) /DiJetDeta;
   if (zeppenfeld > 0.75) return false;
   if (channel==EE  && (fabs(ll.M()-90.) < 15)) return false;
 
 
-  std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
 
   if(run_Debug){
     cout << "HNL_WpWpNP_TwoLepton_CR " << param.Name+"_"+channel_string << " " << event  << endl;
@@ -901,27 +1033,31 @@ bool HNL_RegionDefinitions::FillWWNPCRPlots(HNL_LeptonCore::Channel channel, std
 }
 
 
-bool HNL_RegionDefinitions::FillOSPreselectionPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param, float w){
+bool HNL_RegionDefinitions::FillOSPreselectionPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Jet> bjets,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
 
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
-
-  TString channel_string= (channel==EE) ?  "Electron" : "Muon";
-
-  double lep1_ptcut= (channel==EE) ?   25. : 20.;
-  double lep2_ptcut= (channel==EE) ?   15. : 10.;
-
-
-  if (channel==EE && electrons.size() != 2) return false;
-  if (channel==MuMu && muons.size() != 2) return false;
-  if (channel==EE && electrons_veto.size() != 2) return false;
-  if (channel==MuMu && muons_veto.size() != 2) return false;
-
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
   std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
-  if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut)) return false;
 
-  std::pair<int, double>  NBJets=GetNBJets(jets,param,"Medium");
+  TString channel_string = GetChannelString(channel);
+
+
+  double lep1_ptcut= (channel==MuMu) ?   20. : 25.;
+  double lep2_ptcut= (channel==MuMu) ?   10. : 15.;
+
+  if(DataEra=="2017" || DataEra=="2018"){
+    lep2_ptcut= 15;
+  }
+
+  if (leps.size() != 2 and leps_veto.size() != 2) return false;
+
+  if (channel==EE     && !(leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::ELECTRON)) return false;
+  if (channel==MuMu   && !(leps[0]->LeptonFlavour() == Lepton::MUON     && leps[1]->LeptonFlavour() == Lepton::MUON))    return false;
+  if ((channel==EMu || channel==MuE)  &&
+      !( (leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::MUON) ||
+         (leps[0]->LeptonFlavour() == Lepton::MUON && leps[1]->LeptonFlavour() == Lepton::ELECTRON) ))  return false;
+
+  if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut)) return false;
 
   if(!RunCF){
     if(leps[0]->Charge() == leps[1]->Charge()) return false;
@@ -933,8 +1069,8 @@ bool HNL_RegionDefinitions::FillOSPreselectionPlots(HNL_LeptonCore::Channel chan
   if (channel==EE  && (fabs(ll.M()-90.) < 15)) return false;
   if(ll.M() < 110) return false;
 
-  double ST = GetST(electrons, muons, jets, fatjets, ev);
-  double met2_st = pow(METv.Pt(),2.)/ ST;
+  //double ST = GetST(electrons, muons, jets, fatjets, ev);
+  //  double met2_st = pow(METv.Pt(),2.)/ ST;
 
   int njet = fatjets.size();
 
@@ -950,26 +1086,32 @@ bool HNL_RegionDefinitions::FillOSPreselectionPlots(HNL_LeptonCore::Channel chan
 }
 
 
-bool HNL_RegionDefinitions::FillSSPreselectionPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param, float w){
-
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
-
-  TString channel_string= (channel==EE) ?  "Electron" : "Muon";
-
-  double lep1_ptcut= (channel==EE) ?   25. : 20.;
-  double lep2_ptcut= (channel==EE) ?   15. : 10.;
+bool HNL_RegionDefinitions::FillSSPreselectionPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Jet> bjets,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
 
-  if (channel==EE && electrons.size() != 2) return false;
-  if (channel==MuMu && muons.size() != 2) return false;
-  if (channel==EE && electrons_veto.size() != 2) return false;
-  if (channel==MuMu && muons_veto.size() != 2) return false;
 
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
   std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
+
+  TString channel_string = GetChannelString(channel);
+
+
+  double lep1_ptcut= (channel==MuMu) ?   20. : 25.;
+  double lep2_ptcut= (channel==MuMu) ?   10. : 15.;
+
+
+  if (leps.size() != 2 and leps_veto.size() != 2) return false;
+
+  if (channel==EE     && !(leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::ELECTRON)) return false;
+  if (channel==MuMu   && !(leps[0]->LeptonFlavour() == Lepton::MUON     && leps[1]->LeptonFlavour() == Lepton::MUON))    return false;
+  if ((channel==EMu || channel==MuE)  && 
+      !( (leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::MUON) ||
+         (leps[0]->LeptonFlavour() == Lepton::MUON && leps[1]->LeptonFlavour() == Lepton::ELECTRON) ))  return false;
+
+
+
   if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut)) return false;
 
-  std::pair<int, double>  NBJets=GetNBJets(jets,param,"Medium");
 
   if(!RunCF){
     if(leps[0]->Charge() != leps[1]->Charge()) return false;
@@ -981,8 +1123,8 @@ bool HNL_RegionDefinitions::FillSSPreselectionPlots(HNL_LeptonCore::Channel chan
   if (channel==EE  && (fabs(ll.M()-90.) < 15)) return false;
   if(ll.M() < 20) return false;
 
-  double ST = GetST(electrons, muons, jets, fatjets, ev);
-  double met2_st = pow(METv.Pt(),2.)/ ST;
+  //double ST = GetST(electrons, muons, jets, fatjets, ev);
+  //double met2_st = pow(METv.Pt(),2.)/ ST;
 
   int njets = jets.size() + fatjets.size();
 
@@ -996,29 +1138,34 @@ bool HNL_RegionDefinitions::FillSSPreselectionPlots(HNL_LeptonCore::Channel chan
 
 
 
-bool HNL_RegionDefinitions::FillSSVBFPreselectionPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto , std::vector<Jet> jets_vbf, std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param, float w){
+bool HNL_RegionDefinitions::FillSSVBFPreselectionPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto , std::vector<Jet> jets_vbf, std::vector<FatJet> fatjets, std::vector<Jet> bjets,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
 
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets_vbf);
-
-  TString channel_string= (channel==EE) ?  "Electron" : "Muon";
-
-  double lep1_ptcut= (channel==EE) ?   25. : 20.;
-  double lep2_ptcut= (channel==EE) ?   15. : 10.;
-
-
-  if (channel==EE && electrons.size() != 2) return false;
-  if (channel==MuMu && muons.size() != 2) return false;
-  if (channel==EE && electrons_veto.size() != 2) return false;
-  if (channel==MuMu && muons_veto.size() != 2) return false;
-
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
   std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
+
+  TString channel_string = GetChannelString(channel);
+
+
+  double lep1_ptcut= (channel==MuMu) ?   20. : 25.;
+  double lep2_ptcut= (channel==MuMu) ?   10. : 15.;
+
+  if(DataEra=="2017" || DataEra=="2018"){
+    lep2_ptcut= 15;
+  }
+
+  if (leps.size() != 2 and leps_veto.size() != 2) return false;
+
+  if (channel==EE     && !(leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::ELECTRON)) return false;
+  if (channel==MuMu   && !(leps[0]->LeptonFlavour() == Lepton::MUON     && leps[1]->LeptonFlavour() == Lepton::MUON))    return false;
+  if ((channel==EMu || channel==MuE)  &&
+      !( (leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::MUON) ||
+         (leps[0]->LeptonFlavour() == Lepton::MUON && leps[1]->LeptonFlavour() == Lepton::ELECTRON) ))  return false;
+
   if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut)) return false;
 
 
   std::vector<Jet> jets                  = GetAK4Jets(jets_vbf, 20., 2.5, true,  0.4,0.8,"",    electrons_veto, muons_veto,fatjets);
-  std::pair<int, double>  NBJets=GetNBJets(jets,param,"Medium");
 
   if(!RunCF){
     if(leps[0]->Charge() != leps[1]->Charge()) return false;
@@ -1040,30 +1187,34 @@ bool HNL_RegionDefinitions::FillSSVBFPreselectionPlots(HNL_LeptonCore::Channel c
 
 }
 
-bool HNL_RegionDefinitions::FillHighMassSR1CRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param, float w){
+bool HNL_RegionDefinitions::FillHighMassSR1CRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Jet> bjets,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
 
-  TString channel_string= (channel==EE) ?  "Electron" : "Muon";
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
+  std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
 
-  double lep1_ptcut= (channel==EE) ?   25. : 20.;
-  double lep2_ptcut= (channel==EE) ?   15. : 10.;
+  TString channel_string = GetChannelString(channel);
+
+
+  double lep1_ptcut= (channel==MuMu) ?   20. : 25.;
+  double lep2_ptcut= (channel==MuMu) ?   10. : 15.;
 
   if(DataEra=="2017" || DataEra=="2018"){
     lep2_ptcut= 15;
   }
 
+  if (leps.size() != 2 and leps_veto.size() != 2) return false;
 
-  if (channel==EE && electrons.size() != 2) return false;
-  if (channel==MuMu && muons.size() != 2) return false;
-  if (channel==EE && electrons_veto.size() != 2) return false;
-  if (channel==MuMu && muons_veto.size() != 2) return false;
+  if (channel==EE     && !(leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::ELECTRON)) return false;
+  if (channel==MuMu   && !(leps[0]->LeptonFlavour() == Lepton::MUON     && leps[1]->LeptonFlavour() == Lepton::MUON))    return false;
+  if ((channel==EMu || channel==MuE)  &&
+      !( (leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::MUON) ||
+         (leps[0]->LeptonFlavour() == Lepton::MUON && leps[1]->LeptonFlavour() == Lepton::ELECTRON) ))  return false;
 
-  std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
+
   if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut)) return false;
 
-  std::pair<int, double>  NBJets=GetNBJets(jets,param,"Medium");
+  int NBJets = bjets.size();
 
   if(!RunCF){
     if(leps[0]->Charge() != leps[1]->Charge()) return false;
@@ -1087,7 +1238,7 @@ bool HNL_RegionDefinitions::FillHighMassSR1CRPlots(HNL_LeptonCore::Channel chann
 
   if(!(GetMass("HNL_SR1", jets, fatjets) < UpperMassSR1WmassCut && GetMass("HNL_SR1", jets, fatjets) > LowerMassSR1WmassCut)) return false;
 
-  if(PassHMMet && NBJets.first==0) return false;
+  if(PassHMMet && NBJets==0) return false;
 
   if(run_Debug){
     cout << "HNL_HighMassSR1_TwoLepton_CR " << param.Name+"_"+channel_string << " " << event  << endl;
@@ -1113,25 +1264,32 @@ bool HNL_RegionDefinitions::FillHighMassSR1CRPlots(HNL_LeptonCore::Channel chann
 }
 
 
-bool HNL_RegionDefinitions::FillHighMass1JetCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param, float w){
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
+bool HNL_RegionDefinitions::FillHighMass1JetCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Jet> bjets,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
-  TString channel_string= (channel==EE) ?  "Electron" : "Muon";
 
-  double lep1_ptcut= (channel==EE) ?   25. : 20.;
-  double lep2_ptcut= (channel==EE) ?   15. : 10.;
+
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
+  std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
+
+  TString channel_string = GetChannelString(channel);
+
+
+  double lep1_ptcut= (channel==MuMu) ?   20. : 25.;
+  double lep2_ptcut= (channel==MuMu) ?   10. : 15.;
+
   if(DataEra=="2017" || DataEra=="2018"){
     lep2_ptcut= 15;
   }
 
+  if (leps.size() != 2 and leps_veto.size() != 2) return false;
 
-  if (channel==EE && electrons.size() != 2) return false;
-  if (channel==MuMu && muons.size() != 2) return false;
-  if (channel==EE && electrons_veto.size() != 2) return false;
-  if (channel==MuMu && muons_veto.size() != 2) return false;
+  if (channel==EE     && !(leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::ELECTRON)) return false;
+  if (channel==MuMu   && !(leps[0]->LeptonFlavour() == Lepton::MUON     && leps[1]->LeptonFlavour() == Lepton::MUON))    return false;
+  if ((channel==EMu || channel==MuE)  &&
+      !( (leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::MUON) ||
+         (leps[0]->LeptonFlavour() == Lepton::MUON && leps[1]->LeptonFlavour() == Lepton::ELECTRON) ))  return false;
 
-  std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
+
   if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut)) return false;
 
   if(!RunCF){
@@ -1152,23 +1310,33 @@ bool HNL_RegionDefinitions::FillHighMass1JetCRPlots(HNL_LeptonCore::Channel chan
 }
 
 
-bool HNL_RegionDefinitions::FillHighMassBJetCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param, float w){
-
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
-
-  TString channel_string= (channel==EE) ?  "Electron" : "Muon";
-
-  double lep1_ptcut= (channel==EE) ?   25. : 20.;
-  double lep2_ptcut= (channel==EE) ?   15. : 10.;
+bool HNL_RegionDefinitions::FillHighMassBJetCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Jet> bjets,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
 
-  if (channel==EE && electrons.size() != 2) return false;
-  if (channel==MuMu && muons.size() != 2) return false;
-  if (channel==EE && electrons_veto.size() != 2) return false;
-  if (channel==MuMu && muons_veto.size() != 2) return false;
 
+
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
   std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
+
+  TString channel_string = GetChannelString(channel);
+
+
+  double lep1_ptcut= (channel==MuMu) ?   20. : 25.;
+  double lep2_ptcut= (channel==MuMu) ?   10. : 15.;
+
+  if(DataEra=="2017" || DataEra=="2018"){
+    lep2_ptcut= 15;
+  }
+
+  if (leps.size() != 2 and leps_veto.size() != 2) return false;
+
+  if (channel==EE     && !(leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::ELECTRON)) return false;
+  if (channel==MuMu   && !(leps[0]->LeptonFlavour() == Lepton::MUON     && leps[1]->LeptonFlavour() == Lepton::MUON))    return false;
+  if ((channel==EMu || channel==MuE)  &&
+      !( (leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::MUON) ||
+         (leps[0]->LeptonFlavour() == Lepton::MUON && leps[1]->LeptonFlavour() == Lepton::ELECTRON) ))  return false;
+
+
   if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut)) return false;
 
   if(!RunCF){
@@ -1181,9 +1349,9 @@ bool HNL_RegionDefinitions::FillHighMassBJetCRPlots(HNL_LeptonCore::Channel chan
   Particle ll =  (*leps[0]) + (*leps[1]);
   if (channel==EE  && (fabs(ll.M()-90.) > 10)) return false;
   if(ll.M() < 10) return false;
-  std::pair<int, double>  NBJets=GetNBJets(jets,param,"Medium");
+  int NBJets = bjets.size();
 
-  if(NBJets.first == 0) return false;
+  if(NBJets == 0) return false;
   Fill_RegionPlots(channel,true,"HNL_HighMassBJet_TwoLepton_CR"  , param.Name+"_"+channel_string, jets,  fatjets,  electrons, muons,  METv, nPV, w);
   if(!param.Name.Contains("_noconv")) Fill_RegionPlots(channel, true,"HNL_HighMassBJet_TwoLepton_CR" , param.Name, jets,  fatjets,  electrons, muons,  METv, nPV, w);
 
@@ -1192,26 +1360,32 @@ bool HNL_RegionDefinitions::FillHighMassBJetCRPlots(HNL_LeptonCore::Channel chan
 }
 
 
-bool HNL_RegionDefinitions::FillHighMassNPCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param, float w){
+bool HNL_RegionDefinitions::FillHighMassNPCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Jet> bjets,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
 
-  TString channel_string= (channel==EE) ?  "Electron" : "Muon";
 
-  double lep1_ptcut= (channel==EE) ?   25. : 20.;
-  double lep2_ptcut= (channel==EE) ?   15. : 10.;
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
+  std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
+
+  TString channel_string = GetChannelString(channel);
+
+
+  double lep1_ptcut= (channel==MuMu) ?   20. : 25.;
+  double lep2_ptcut= (channel==MuMu) ?   10. : 15.;
+
   if(DataEra=="2017" || DataEra=="2018"){
     lep2_ptcut= 15;
   }
 
+  if (leps.size() != 2 and leps_veto.size() != 2) return false;
 
-  if (channel==EE && electrons.size() != 2) return false;
-  if (channel==MuMu && muons.size() != 2) return false;
-  if (channel==EE && electrons_veto.size() != 2) return false;
-  if (channel==MuMu && muons_veto.size() != 2) return false;
+  if (channel==EE     && !(leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::ELECTRON)) return false;
+  if (channel==MuMu   && !(leps[0]->LeptonFlavour() == Lepton::MUON     && leps[1]->LeptonFlavour() == Lepton::MUON))    return false;
+  if ((channel==EMu || channel==MuE)  &&
+      !( (leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::MUON) ||
+         (leps[0]->LeptonFlavour() == Lepton::MUON && leps[1]->LeptonFlavour() == Lepton::ELECTRON) ))  return false;
 
-  std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
+
   if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut)) return false;
 
   if(jets.size() > 0) return false;
@@ -1237,27 +1411,37 @@ bool HNL_RegionDefinitions::FillHighMassNPCRPlots(HNL_LeptonCore::Channel channe
 
 
 
-bool HNL_RegionDefinitions::FillHighMassSR2CRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param, float w){
+bool HNL_RegionDefinitions::FillHighMassSR2CRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Jet> bjets,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
 
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
-
-  TString channel_string= (channel==EE) ?  "Electron" : "Muon";
-
-  double lep1_ptcut= (channel==EE) ?   25. : 20.;
-  double lep2_ptcut= (channel==EE) ?   15. : 10.;
 
 
-  if (channel==EE && electrons.size() != 2) return false;
-  if (channel==MuMu && muons.size() != 2) return false;
-  if (channel==EE && electrons_veto.size() != 2) return false;
-  if (channel==MuMu && muons_veto.size() != 2) return false;
-
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
   std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
+
+  TString channel_string = GetChannelString(channel);
+
+
+  double lep1_ptcut= (channel==MuMu) ?   20. : 25.;
+  double lep2_ptcut= (channel==MuMu) ?   10. : 15.;
+
+  if(DataEra=="2017" || DataEra=="2018"){
+    lep2_ptcut= 15;
+  }
+
+  if (leps.size() != 2 and leps_veto.size() != 2) return false;
+
+  if (channel==EE     && !(leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::ELECTRON)) return false;
+  if (channel==MuMu   && !(leps[0]->LeptonFlavour() == Lepton::MUON     && leps[1]->LeptonFlavour() == Lepton::MUON))    return false;
+  if ((channel==EMu || channel==MuE)  &&
+      !( (leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::MUON) ||
+         (leps[0]->LeptonFlavour() == Lepton::MUON && leps[1]->LeptonFlavour() == Lepton::ELECTRON) ))  return false;
+
+
+
   if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut)) return false;
 
-  std::pair<int, double>  NBJets=GetNBJets(jets,param,"Medium");
+  int NBJets = bjets.size();
   if(!RunCF){
     if(leps[0]->Charge() != leps[1]->Charge()) return false;
   }
@@ -1272,7 +1456,7 @@ bool HNL_RegionDefinitions::FillHighMassSR2CRPlots(HNL_LeptonCore::Channel chann
   double met2_st = pow(METv.Pt(),2.)/ ST;
   bool PassHMMet    = (met2_st < 20);
 
-  if(PassHMMet && NBJets.first==0) return false;
+  if(PassHMMet && NBJets==0) return false;
 
 
   double LowerMassSR2WmassCut = 50.;
@@ -1290,11 +1474,9 @@ bool HNL_RegionDefinitions::FillHighMassSR2CRPlots(HNL_LeptonCore::Channel chann
   return true;
 }
 
-bool HNL_RegionDefinitions::FillWZ2CRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets_eta5, std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param, float w){
+bool HNL_RegionDefinitions::FillWZ2CRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets_eta5, std::vector<FatJet> fatjets, std::vector<Jet> bjets,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
 
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets_eta5);
 
   TString channel_string= (channel==EEE) ?  "Electron" : "Muon";
 
@@ -1305,6 +1487,7 @@ bool HNL_RegionDefinitions::FillWZ2CRPlots(HNL_LeptonCore::Channel channel, std:
   if(jets_eta5.size() < 2) return false;
 
   std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
 
   if(channel==MuMuMu && !(muons.size() ==3 && electrons_veto.size() == 0 && muons_veto.size()==3)) return false;
   if(channel==EEE   && !(electrons.size() ==3 && electrons_veto.size() == 3 && muons_veto.size()==0)) return false;
@@ -1315,7 +1498,7 @@ bool HNL_RegionDefinitions::FillWZ2CRPlots(HNL_LeptonCore::Channel channel, std:
   if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut && leps[2]->Pt()  > lep3_ptcut)) return false;
 
   std::vector<Jet> jets                  = GetAK4Jets(jets_eta5, 20., 2.5, true,  0.4,0.8,"",    electrons_veto, muons_veto,fatjets);
-  std::pair<int, double>  NBJets=GetNBJets(jets,param,"Medium");
+  int NBJets = bjets.size();
 
   ////file:///Users/john/Downloads/AN2019_089_v7.pdf SSWW +WZ  + AN2020_045                                                                                                                                        
   double maxDiJetDeta=0.;
@@ -1340,7 +1523,7 @@ bool HNL_RegionDefinitions::FillWZ2CRPlots(HNL_LeptonCore::Channel channel, std:
   Jet j2 = jets_eta5[ijet2];
   if(!(j1.Pt() > 30.) && (j2.Pt() > 30.)) return false;
   if ( METv.Pt() < metcut) return false;
-  if (NBJets.first>0) return false;
+  if (NBJets>0) return false;
   if ((j1+j2).M() < 500.) return false;
   if (maxDiJetDeta<2.5) return false;
 
@@ -1360,12 +1543,10 @@ bool HNL_RegionDefinitions::FillWZ2CRPlots(HNL_LeptonCore::Channel channel, std:
 
 }
 
-bool HNL_RegionDefinitions::FillWZBCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets_eta5, std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param, float w){
+bool HNL_RegionDefinitions::FillWZBCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto   , std::vector<Jet> jets_eta5, std::vector<FatJet> fatjets, std::vector<Jet> bjets,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
 
 
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets_eta5);
 
   TString channel_string= (channel==EEE) ?  "Electron" : "Muon";
   double lep1_ptcut= (channel==EEE) ?   25. : 20.;
@@ -1375,6 +1556,7 @@ bool HNL_RegionDefinitions::FillWZBCRPlots(HNL_LeptonCore::Channel channel, std:
   if(jets_eta5.size() < 2) return false;
 
   std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
 
   if(channel==MuMuMu && !(muons.size() ==3 && electrons_veto.size() == 0 && muons_veto.size()==3)) return false;
   if(channel==EEE   && !(electrons.size() ==3 && electrons_veto.size() == 3 && muons_veto.size()==0)) return false;
@@ -1385,7 +1567,7 @@ bool HNL_RegionDefinitions::FillWZBCRPlots(HNL_LeptonCore::Channel channel, std:
   if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut && leps[2]->Pt()  > lep3_ptcut)) return false;
 
   std::vector<Jet> jets                  = GetAK4Jets(jets_eta5, 20., 2.5, true,  0.4,0.8,"",    electrons_veto, muons_veto,fatjets);
-  std::pair<int, double>  NBJets=GetNBJets(jets,param,"Medium");
+  int NBJets = bjets.size();
   //file:///Users/john/Downloads/AN2019_089_v7.pdf SSWW +WZ  + AN2020_045                                                                                                                                          
 
 
@@ -1410,7 +1592,7 @@ bool HNL_RegionDefinitions::FillWZBCRPlots(HNL_LeptonCore::Channel channel, std:
   Jet j2 = jets_eta5[ijet2];
   if(!(j1.Pt() > 30.) && (j2.Pt() > 30.)) return false;
   if ( METv.Pt() < metcut) return false;
-  if (NBJets.first==0) return false;
+  if (NBJets==0) return false;
   if ((j1+j2).M() < 500.) return false;
   if (maxDiJetDeta<2.5) return false;
 
@@ -1432,15 +1614,14 @@ bool HNL_RegionDefinitions::FillWZBCRPlots(HNL_LeptonCore::Channel channel, std:
 }
 
 
-bool HNL_RegionDefinitions::FillZZCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param, float w){
+bool HNL_RegionDefinitions::FillZZCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Jet> bjets,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
 
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
 
   TString channel_string= (channel==EEEE) ?  "Electron" : "Muon";
 
   std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
 
   if(channel==MuMuMuMu && !(muons.size() ==4 && electrons_veto.size() == 0 && muons_veto.size()==4)) return false;
   if(channel==EEEE   && !(electrons.size() ==4 && electrons_veto.size() == 4 && muons_veto.size()==0)) return false;
@@ -1472,9 +1653,10 @@ bool HNL_RegionDefinitions::FillZZCRPlots(HNL_LeptonCore::Channel channel, std::
     exit(EXIT_FAILURE);
   }
 
-  std::pair<int, double> NBJets=GetNBJets(jets,param,"Medium");
+  int NBJets=bjets.size();
 
-  if(NBJets.first  > 0 ) return false;
+
+  if(NBJets  > 0 ) return false;
   bool m_llos_l10(false), z_cr_pass(false);
 
   Particle Z1Cand;
@@ -1514,15 +1696,14 @@ bool HNL_RegionDefinitions::FillZZCRPlots(HNL_LeptonCore::Channel channel, std::
 }
 
 
-bool HNL_RegionDefinitions::FillZZ2CRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param, float w){
+bool HNL_RegionDefinitions::FillZZ2CRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Jet> bjets,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
 
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
 
   TString channel_string= (channel==EEEE) ?  "Electron" : "Muon";
 
   std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
 
   if(channel==MuMuMuMu && !(muons.size() ==4 && electrons_veto.size() == 0 && muons_veto.size()==4)) return false;
   if(channel==EEEE   && !(electrons.size() ==4 && electrons_veto.size() == 4 && muons_veto.size()==0)) return false;
@@ -1536,9 +1717,10 @@ bool HNL_RegionDefinitions::FillZZ2CRPlots(HNL_LeptonCore::Channel channel, std:
   if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut && leps[2]->Pt()  > lep3_ptcut && leps[3]->Pt()  > lep4_ptcut)) return false;
 
 
-  std::pair<int, double> NBJets=GetNBJets(jets,param,"Medium");
+  int NBJets=bjets.size();
 
-  if(NBJets.first  > 0 ) return false;
+
+  if(NBJets  > 0 ) return false;
   bool m_llos_l10(false), z_cr_pass(false);
 
   Particle Z1Cand;
@@ -1567,16 +1749,15 @@ bool HNL_RegionDefinitions::FillZZ2CRPlots(HNL_LeptonCore::Channel channel, std:
 }
 
 
-bool HNL_RegionDefinitions::FillZGCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param, float w){
+bool HNL_RegionDefinitions::FillZGCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Jet> bjets,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
   if(MCSample.Contains("DY")) return false;
 
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
 
   TString channel_string= (channel==EEE) ?  "Electron" : "Muon";
 
   std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
 
   if(channel==MuMuMu && !(muons.size() ==3 && electrons_veto.size() == 0 && muons_veto.size()==3)) return false;
   if(channel==EEE   && !(electrons.size() ==3 && electrons_veto.size() == 3 && muons_veto.size()==0)) return false;
@@ -1610,7 +1791,8 @@ bool HNL_RegionDefinitions::FillZGCRPlots(HNL_LeptonCore::Channel channel, std::
   if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut && leps[2]->Pt()  > lep3_ptcut)) return false;
 
   double metcut = 50.;
-  std::pair<int, double> NBJets=GetNBJets(jets,param,"Medium");
+  int NBJets=bjets.size();
+
 
   Particle lll = (*leps[0]) + (*leps[1])+ (*leps[2]);
   bool passZmass_lll_Window = (fabs(lll.M() - 90.1) < 15.);
@@ -1620,7 +1802,7 @@ bool HNL_RegionDefinitions::FillZGCRPlots(HNL_LeptonCore::Channel channel, std::
   Particle ll2 = *leps[0] + *leps[2];
   Particle ll3 = *leps[1] + *leps[2];
   if(!ZmassOSSFWindowCheck(leps,15.)) return false;
-  if(NBJets.first > 0) return false;
+  if(NBJets > 0) return false;
   if(METv.Pt() > metcut) return false;
 
   if(run_Debug){
@@ -1629,7 +1811,7 @@ bool HNL_RegionDefinitions::FillZGCRPlots(HNL_LeptonCore::Channel channel, std::
     for(auto ilep: leps){
       Gen gen_closest = GetGenMatchedLepton(*ilep, gens);
       Gen gen_photon_closest = GetGenMatchedPhoton(*ilep, gens);
-      int NearPhotonType = GetGenPhotonType(gen_photon_closest,gens);
+      //int NearPhotonType = GetGenPhotonType(gen_photon_closest,gens);
 
       FillHist("Photon_pt_HNL_ZG_ThreeLepton_CR",gen_photon_closest.Pt() , w, 100., 0.,  200.);
     }
@@ -1646,15 +1828,14 @@ bool HNL_RegionDefinitions::FillZGCRPlots(HNL_LeptonCore::Channel channel, std::
 
 
 
-bool HNL_RegionDefinitions::FillWGCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param, float w){
+bool HNL_RegionDefinitions::FillWGCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Jet> bjets,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
 
 
   TString channel_string= (channel==EEE) ?  "Electron" : "Muon";
 
   std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
 
   if(HasLowMassMeson(leps)) return false;
   if(channel==MuMuMu && !(muons.size() ==3 && electrons_veto.size() == 0 && muons_veto.size()==3)) return false;
@@ -1669,7 +1850,8 @@ bool HNL_RegionDefinitions::FillWGCRPlots(HNL_LeptonCore::Channel channel, std::
   }
   double metcut = 30.;
   double mt_cut = 30.;
-  std::pair<int, double> NBJets=GetNBJets(jets,param,"Medium");
+  int NBJets=bjets.size();
+
 
   if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut && leps[2]->Pt()  > lep3_ptcut)) return false;
 
@@ -1685,7 +1867,7 @@ bool HNL_RegionDefinitions::FillWGCRPlots(HNL_LeptonCore::Channel channel, std::
   double MT_lll = M_T(METv,lll);
 
   if(MT_lll <= mt_cut) return false;
-  if(NBJets.first > 0)return false;
+  if(NBJets > 0)return false;
   if(METv.Pt() < metcut)return false;
 
   if(run_Debug){
@@ -1700,15 +1882,13 @@ bool HNL_RegionDefinitions::FillWGCRPlots(HNL_LeptonCore::Channel channel, std::
 }
 
 
-bool HNL_RegionDefinitions::FillWZCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev, AnalyzerParameter param, float w){
+bool HNL_RegionDefinitions::FillWZCRPlots(HNL_LeptonCore::Channel channel, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Jet> bjets,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
-
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
 
   TString channel_string= (channel==EEE) ?  "Electron" : "Muon";
 
   std::vector<Lepton *> leps  = MakeLeptonPointerVector(muons,electrons);
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto);
 
   if(channel==MuMuMu && !(muons.size() ==3 && electrons_veto.size() == 0 && muons_veto.size()==3)) return false;
   if(channel==EEE   && !(electrons.size() ==3 && electrons_veto.size() == 3 && muons_veto.size()==0)) return false;
@@ -1727,19 +1907,19 @@ bool HNL_RegionDefinitions::FillWZCRPlots(HNL_LeptonCore::Channel channel, std::
 
   if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut && leps[2]->Pt()  > lep3_ptcut)) return false;
 
-  std::pair<int, double> NBJets=GetNBJets(jets,param,"Medium");
-
+  int NBJets=bjets.size();
+  
 
   if(METv.Pt() < metcut) return false;
-  if(NBJets.first > 0) return false;
+  if(NBJets > 0) return false;
   if(GetIndexNonBestZ(leps,15.) < 0) return false;
   if(M_T((*leps[GetIndexNonBestZ(leps,15.)]), METv)  < mtcut) return false;
   if(GetMassMinOSSF(leps)  < 10.) return false;
   if(((*leps[0])+ (*leps[1]) + (*leps[2])).M() <  trilep_masscut) return false;
-
+  
   Fill_RegionPlots(channel,true,"HNL_WZ_ThreeLepton_CR" , param.Name+"_"+channel_string, jets,  fatjets,  electrons, muons,  METv, nPV, w);
   if(!param.Name.Contains("_noconv"))Fill_RegionPlots(channel,true,"HNL_WZ_ThreeLepton_CR" , param.Name, jets,  fatjets,  electrons, muons,  METv, nPV, w);
-
+  
   return true;
 }
 

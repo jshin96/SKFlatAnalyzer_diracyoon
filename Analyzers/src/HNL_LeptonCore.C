@@ -27,7 +27,7 @@ void HNL_LeptonCore::initializeAnalyzer(){
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepCSV, JetTagging::Loose, JetTagging::incl, JetTagging::comb) );
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepCSV, JetTagging::Medium, JetTagging::incl, JetTagging::comb) );
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepCSV, JetTagging::Tight, JetTagging::incl, JetTagging::comb) );
-
+  jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets));
   Trigger_Full_HNL_Muon.clear();
   Trigger_HNL_Muon.clear();
   Trigger_HNL_MuonH.clear();
@@ -1299,7 +1299,8 @@ TString HNL_LeptonCore::GetChannelString(HNL_LeptonCore::Channel channel, HNL_Le
   if (channel == MuE) channel_string+="MuE";
   
   if (q == OS) channel_string+="_OS";
-  if (q == SS) channel_string+="_SS";
+  else if (q == SS) channel_string+="_SS";
+  else   return channel_string;
 
   return channel_string;
 }

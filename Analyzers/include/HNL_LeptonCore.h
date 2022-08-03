@@ -13,7 +13,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   {
     Inclusive=0,
     SS=1,
-    OS=-1
+    OS=-1,
   };
 
   enum Channel
@@ -86,7 +86,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   ///=============== GET/SELECT OBJECT
   vector<Gen> GetGenLepronsSignal();
   TString GetProcess();
-  TString GetChannelString(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType  q);
+  TString GetChannelString(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType  q=HNL_LeptonCore::ChargeType::Inclusive);
   std::vector<Jet> SelBJets(std::vector<Jet>& jetColl, JetTagging::Parameters jtp);
   TLorentzVector GetvMET(TString METType, TString Option="");
 

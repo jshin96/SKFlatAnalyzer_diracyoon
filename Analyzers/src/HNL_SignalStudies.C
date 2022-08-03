@@ -118,20 +118,25 @@ void HNL_SignalStudies::RunSignalPlotter(TString process){
   std::vector<FatJet> FatjetColl                  = GetAK8Jets(fatjets_tmp, 200., 2.7, true,  1., true, -999, true, 40., 130., ElectronCollV, MuonCollV);
   std::vector<FatJet> FatjetColl_notag            = GetAK8Jets(fatjets_tmp, 200., 2.7, true,  1., false, -999, true, 40., 130., ElectronCollV, MuonCollV);
   std::vector<Jet> JetColl                        = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8,"loose",   ElectronCollV,MuonCollV, FatjetColl);
+  // select B jets
+  JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
+
+  std::vector<Jet> BJetColl                       = GetBJets(jets_tmp,     20., 2.5, false,  0.4,0.8,"loose",   ElectronCollV,MuonCollV, FatjetColl,param_jets);
   std::vector<Jet> VBF_JetColl                    = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8,"loose",  ElectronCollV,MuonCollV, FatjetColl); 
 
   if (IsData || ( process.Contains("Mu+Mu+") or   process.Contains("Mu-Mu-") )){
-    RunMuonChannel(ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, mytaus, JetColl, VBF_JetColl, FatjetColl,ev, param, weight );
+    RunMuonChannel(ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, mytaus, JetColl, VBF_JetColl, FatjetColl, BJetColl, ev, param, weight );
 
     param.Name = param.Name + "_LAK8";
-    RunMuonChannel(ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, mytaus, JetColl, VBF_JetColl, FatjetColl_notag,ev, param, weight );
+    RunMuonChannel(ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, mytaus, JetColl, VBF_JetColl, FatjetColl_notag,BJetColl, ev, param, weight );
 
   }
 
 }
 
 
-void HNL_SignalStudies::RunMuonChannel(std::vector<Electron> ElectronColl, std::vector<Electron> VetoElectronColl, std::vector<Muon> MuonColl,  std::vector<Muon> VetoMuonColl, std::vector<Tau> TauColl,  std::vector<Jet> JetColl, std::vector<Jet> VBFJetColl,  std::vector<FatJet> FatjetColl,  Event Ev, AnalyzerParameter param,  float _weight)   {
+void HNL_SignalStudies::RunMuonChannel(std::vector<Electron> ElectronColl, std::vector<Electron> VetoElectronColl, std::vector<Muon> MuonColl,  std::vector<Muon> VetoMuonColl, std::vector<Tau> TauColl,  std::vector<Jet> JetColl, std::vector<Jet> VBFJetColl,  std::vector<FatJet> FatjetColl,std::vector<Jet> BJetColl,   Event Ev, AnalyzerParameter param,  float _weight)   {
+
 
   Particle METUnsmearedv = Ev.GetMETVector();
   Particle METv =UpdateMETSmearedJet(METUnsmearedv, JetColl);
@@ -154,10 +159,15 @@ void HNL_SignalStudies::RunMuonChannel(std::vector<Electron> ElectronColl, std::
   
   bool dijet = (FatjetColl.size() > 0) || (JetColl.size() > 1);
 
-  
-  int  NBJets_medium      =  GetNBJets2a("tight","Medium");
+
+
+  //TLorentzVector HNL_LeptonCore::GetvMET(TString METType, TString Option){
+    
+			       
+  int  NBJets_medium      = BJetColl.size();
   bool PassBJetMVeto = (NBJets_medium==0);
   
+
   param.Name = "MuonChannelSignals_"+param.Name;
   FillEventCutflow(sigmm,_weight, "SSNoCut", param.Name);
   FillEventCutflow(sigmm_17028,_weight, "SSNoCut", param.Name);
@@ -244,7 +254,7 @@ void HNL_SignalStudies::RunMuonChannel(std::vector<Electron> ElectronColl, std::
 	    TString channel_string= GetChannelString(MuMu, SS);
       
 	    if(FatjetColl.size() > 0){
-	      if(RunSignalRegionAK8( MuMu, SS, leps, leps_veto, JetColl, FatjetColl, "Medium", METv, param,  channel_string, _weight ))   FillEventCutflow(sigmm,_weight, "SSMM_SR1",  param.Name);
+	      if(RunSignalRegionAK8( MuMu, SS, leps, leps_veto, JetColl, FatjetColl, BJetColl, Ev, METv, param,  channel_string, _weight ))   FillEventCutflow(sigmm,_weight, "SSMM_SR1",  param.Name);
 	      else FillEventCutflow(sigmm,_weight, "SSMM_SR1Fail",  param.Name);
 	    }
 	    else{
@@ -255,14 +265,14 @@ void HNL_SignalStudies::RunMuonChannel(std::vector<Electron> ElectronColl, std::
 	      
 	      //if(PassVBFInitial(vbf_jets)) {
 	      
-	      if(PassVBFInitial(VBFJetColl)&&RunSignalRegionWW( MuMu,SS, leps, leps_veto,  VBFJetColl, FatjetColl, "Medium", METv, param,  channel_string, _weight )){    
+	      if(PassVBFInitial(VBFJetColl)&&RunSignalRegionWW( MuMu,SS, leps, leps_veto,  VBFJetColl, FatjetColl, BJetColl, Ev,  METv, param,  channel_string, _weight )){    
 		FillEventCutflow(sigmm,_weight, "SSMM_SR2",  param.Name);
 		
 		
 	      }
 	      else{
 		
-		if(RunSignalRegionAK4(MuMu, SS, leps, leps_veto, JetColl, FatjetColl, "Medium", METv, param,  channel_string, _weight ))             FillEventCutflow(sigmm,_weight, "SSMM_SR3",  param.Name);
+		if(RunSignalRegionAK4(MuMu, SS, leps, leps_veto, JetColl, FatjetColl, BJetColl, Ev, METv, param,  channel_string, _weight ))             FillEventCutflow(sigmm,_weight, "SSMM_SR3",  param.Name);
 		
 		
 		else if(JetColl.size() < 2 && leps[1]->Pt() >80.)             FillEventCutflow(sigmm,_weight, "SSMM_SR4",  param.Name);
@@ -298,13 +308,13 @@ void HNL_SignalStudies::RunMuonChannel(std::vector<Electron> ElectronColl, std::
 	  TString channel_string= GetChannelString(MuMu, SS);
       
 	  if(FatjetColl.size() > 0){
-	    if(RunSignalRegionAK8( MuMu, SS, leps, leps_veto, JetColl, FatjetColl, "Medium", METv, param,  channel_string, _weight ))   FillEventCutflow(sigmm_17028,_weight, "SSMM_SR1",  param.Name);
+	    if(RunSignalRegionAK8( MuMu, SS, leps, leps_veto, JetColl, FatjetColl, BJetColl, Ev, METv, param,  channel_string, _weight ))   FillEventCutflow(sigmm_17028,_weight, "SSMM_SR1",  param.Name);
 	    else             FillEventCutflow(sigmm_17028,_weight, "SSMM_SR1Fail",  param.Name);
 	    
 	  }
 	  else{
 	    
-	    if(RunSignalRegionAK4(MuMu, SS, leps, leps_veto, JetColl, FatjetColl, "Medium", METv, param,  channel_string, _weight ))             FillEventCutflow(sigmm_17028,_weight, "SSMM_SR3",  param.Name);
+	    if(RunSignalRegionAK4(MuMu, SS, leps, leps_veto, JetColl, FatjetColl, BJetColl, Ev, METv, param,  channel_string, _weight ))             FillEventCutflow(sigmm_17028,_weight, "SSMM_SR3",  param.Name);
 	    
 	    
 	    else             FillEventCutflow(sigmm_17028,_weight, "SSMM_SR3Fail",  param.Name);
