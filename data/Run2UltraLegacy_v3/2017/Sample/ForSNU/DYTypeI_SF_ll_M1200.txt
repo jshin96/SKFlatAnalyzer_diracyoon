@@ -1,0 +1,1 @@
+/gv0/DATA/SKFlat/Run2UltraLegacy_v3/2017/MC/DYTypeIHeavyN-SFmix_Dilepton_MN1200_TuneCP5_13TeV-amcatnlo-pythia8/220801_130431/0000/SKFlatNtuple_2017_MC_1.root

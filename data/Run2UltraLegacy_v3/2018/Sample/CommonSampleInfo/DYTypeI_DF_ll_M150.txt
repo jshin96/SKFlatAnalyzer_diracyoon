@@ -1,0 +1,2 @@
+# alias PD xsec nmc sumsign sumw
+DYTypeI_DF_ll_M150	DYTypeIHeavyN-DFmix_Dilepton_MN150_TuneCP5_13TeV-amcatnlo-pythia8	9.327822441	80000	73580.0	37.3925956991 

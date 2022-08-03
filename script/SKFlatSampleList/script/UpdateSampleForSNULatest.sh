@@ -42,15 +42,16 @@ while read line <&3; do
 	test "${#array[@]}" -eq "$(($VI+4))" || continue
 	## get info for MC
 	SAMPLE="${array[$(($VI+3))]}"
-	ALIAS=$(grep $SAMPLE $SKFlat_WD/data/$SKFlatV/$YEAR/Sample/SampleSummary_MC.txt|awk '{print $1}'|head -n1)
+	ALIAS=$(grep -P "$SAMPLE\t" $SKFlat_WD/data/$SKFlatV/$YEAR/Sample/SampleSummary_MC.txt|awk '{print $1}'|head -n1)
 	if [ "$ALIAS" = "" ]; then
-	    ALIAS=$(cat $SKFlat_WD/data/$SKFlatV/*/Sample/SampleSummary_MC.txt|grep $SAMPLE|awk '{print $1}'|head -n1)
+	    ALIAS=$(cat $SKFlat_WD/data/$SKFlatV/*/Sample/SampleSummary_MC.txt|grep -P "$SAMPLE\t"|awk '{print $1}'|head -n1)
 	fi 
 	if [ "$ALIAS" = "" ]; then
-            ALIAS=$(cat $SKFlat_WD/data/$SKFlatV/*/Sample/SampleSummary_Signal_Type1.txt|grep $SAMPLE|awk '{print $1}'|head -n1)
+	    cat $SKFlat_WD/data/$SKFlatV/*/Sample/SampleSummary_Signal_Type1.txt|grep -P "$SAMPLE\t"|awk '{print $1}'|head -n1
+            ALIAS=$(cat $SKFlat_WD/data/$SKFlatV/*/Sample/SampleSummary_Signal_Type1.txt|grep -P  "$SAMPLE\t"|awk '{print $1}'|head -n1)
         fi
 	if [ "$ALIAS" = "" ]; then
-	    ALIAS=$(cat $SKFlat_WD/data/*/*/Sample/SampleSummary_MC.txt|grep $SAMPLE|awk '{print $1}'|head -n1)
+	    ALIAS=$(cat $SKFlat_WD/data/*/*/Sample/SampleSummary_MC.txt|grep -P "$SAMPLE\t"|awk '{print $1}'|head -n1)
 	fi  
 	if [ "$ALIAS" = "" ]; then
 	    read -p "cannot find alias for $SAMPLE. exit or insert alias: " ALIAS
@@ -58,6 +59,8 @@ while read line <&3; do
     else continue;
     fi
 
+    
+    echo "ALIAS="$ALIAS
     SKIM=$(echo $TYPE|grep -o "SkimTree_.*$")
     
     NTIMESTAMP=$(ls $line|sort -V|wc -l)

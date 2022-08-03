@@ -1,0 +1,2 @@
+# alias PD xsec nmc sumsign sumw
+VBFTypeI_SF_ll_M3000	VBFTypeIHeavyN-SFmix_Dilepton_MN3000_TuneCP5_13TeV-amcatnlo-pythia8	3.50E-05	40000	21712.0	0.000143557252798 

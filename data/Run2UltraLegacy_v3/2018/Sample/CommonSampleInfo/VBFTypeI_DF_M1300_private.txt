@@ -1,0 +1,2 @@
+# alias PD xsec nmc sumsign sumw
+VBFTypeI_DF_M1300_private	VBFTypeI_NLO_DF_M1300	0.002476850137	431000	213064.0	0.0541672248939 

@@ -207,6 +207,8 @@ for era in arr_eras:
     array_from_googledoc        = get_array_from_googledoc(era,miniaod_versions,False)
     array_from_googledoc_sig    = get_array_from_googledoc(era,miniaod_versions,True)
 
+    array_from_googledoc_SM     = array_from_googledoc
+
     if args.Signal:
         array_from_googledoc = array_from_googledoc_sig
     
@@ -220,9 +222,8 @@ for era in arr_eras:
 
     TimeStamps=AssignTimeStamp(path_sklat_dir+era+'/MC/',array_from_googledoc)
     
-    MissingSamples(get_array_from_googledoc(era,miniaod_versions,False),array_from_googledoc_sig,path_sklat_dir+era+'/MC/',era)
+    MissingSamples(array_from_googledoc_SM,array_from_googledoc_sig,path_sklat_dir+era+'/MC/',era)
     
-
     up3_start_era_time = time.time()
     vtimes.append(["Missing_file_time",time.time()])
     

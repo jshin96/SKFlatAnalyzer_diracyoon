@@ -1,0 +1,2 @@
+# alias PD xsec nmc sumsign sumw
+SSWWTypeI_DF_M5000_private	SSWWTypeI_NLO_DF_M5000	0.003256	394000	153792.0	0.130942126281 

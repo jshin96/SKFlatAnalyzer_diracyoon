@@ -1,0 +1,2 @@
+# alias PD xsec nmc sumsign sumw
+DYTypeI_SF_ll_M1300	DYTypeIHeavyN-SFmix_Dilepton_MN1300_TuneCP5_13TeV-amcatnlo-pythia8	0.0005388388143	40000	37136.0	0.00215243440215 

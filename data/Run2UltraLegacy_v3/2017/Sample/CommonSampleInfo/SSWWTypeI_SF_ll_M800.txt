@@ -1,0 +1,2 @@
+# alias PD xsec nmc sumsign sumw
+SSWWTypeI_SF_ll_M800	SSWWTypeIHeavyN-SFmix_Dilepton_NLO_MN800_TuneCP5_13TeV-madgraph-pythia8	0.02994	129000	46864.0	3946.08403206 

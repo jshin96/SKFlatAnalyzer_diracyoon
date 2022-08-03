@@ -1,0 +1,2 @@
+# alias PD xsec nmc sumsign sumw
+DYTypeI_DF_M95_private	DYTypeI_NLO_DF_M95	92.90789133	433800	389502.0	2014.27718371 

@@ -1,0 +1,3 @@
+/gv0/DATA/SKFlat/Run2UltraLegacy_v3/2016preVFP/MC/SSWWTypeIHeavyN-SFmix_Dilepton_NLO_MN1000_TuneCP5_13TeV-madgraph-pythia8/220801_123838/0000/SKFlatNtuple_2016preVFP_MC_1.root
+/gv0/DATA/SKFlat/Run2UltraLegacy_v3/2016preVFP/MC/SSWWTypeIHeavyN-SFmix_Dilepton_NLO_MN1000_TuneCP5_13TeV-madgraph-pythia8/220801_123838/0000/SKFlatNtuple_2016preVFP_MC_3.root
+/gv0/DATA/SKFlat/Run2UltraLegacy_v3/2016preVFP/MC/SSWWTypeIHeavyN-SFmix_Dilepton_NLO_MN1000_TuneCP5_13TeV-madgraph-pythia8/220801_123838/0000/SKFlatNtuple_2016preVFP_MC_4.root
