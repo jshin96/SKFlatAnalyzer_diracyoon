@@ -171,22 +171,39 @@ void HNL_LeptonCore::initializeAnalyzer(){
 }
 
 
-bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selection){
+bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selection, bool apply_ptcut){
 
   bool PassTrigger(false);
   if (channel == MuMu){
     
+    std::vector<Lepton *> leps_muon;
+    for(auto ilep : leps) {
+      if(ilep->LeptonFlavour() == Lepton::MUON) leps_muon.push_back(ilep);
+    }
     if(selection == "Dilep"){
       
       // Check It passes DiMu Trigger
 
-
       // Check if for data we are running on correct data stream
       if (!CheckStream(ev, TrigList_HNL_Mu)) return false;
-      PassTrigger = ev.PassTrigger(TrigList_HNL_Mu);
-      if (leps.size() < 2) return false;
-      if(leps[0]->Pt() < 20) PassTrigger=false;
-      if(leps[1]->Pt() < 10) PassTrigger=false;
+ 
+     PassTrigger = ev.PassTrigger(TrigList_HNL_Mu);
+
+      if (leps_muon.size() < 2) return false;
+      if(apply_ptcut){
+	if(leps_muon[0]->Pt() < 20) PassTrigger=false;
+	if(leps_muon[1]->Pt() < 10) PassTrigger=false;
+      }
+    }
+    else if(selection == "Full"){
+      
+      if (!CheckStream(ev, TrigList_Full_Mu)) return false;
+      PassTrigger = ev.PassTrigger(TrigList_Full_Mu);
+      if (leps_muon.size() < 2) return false;
+      if(apply_ptcut){
+	if(leps_muon[0]->Pt() < 20) PassTrigger=false;
+	if(leps_muon[1]->Pt() < 5) PassTrigger=false;
+      }
     }
     else {
       cout << "[HNL_LeptonCore::PassTriggerSelection ] selection not found.." << endl;
@@ -197,22 +214,39 @@ bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event 
   
   if (channel == EE){
 
+    std::vector<Lepton *> leps_eg;
+    for(auto ilep : leps) {
+      if(ilep->LeptonFlavour() == Lepton::ELECTRON) leps_eg.push_back(ilep);
+    }
+
     if(selection == "Dilep"){
 
       // Check It passes DiEl Trigger                                                                                                                                                                       
       // Check if for data we are running on correct data stream                                                                                                                                            
       if (!CheckStream(ev, TrigList_HNL_DblEG)) return false;
       PassTrigger = ev.PassTrigger(TrigList_HNL_DblEG);
-      if (leps.size() < 2) return false;
-      if(leps[0]->Pt() < 25) PassTrigger=false;
-      if(leps[1]->Pt() < 15) PassTrigger=false;
+      if (leps_eg.size() < 2) return false;
+      if(apply_ptcut){
+	if(leps_eg[0]->Pt() < 25) PassTrigger=false;
+	if(leps_eg[1]->Pt() < 15) PassTrigger=false;
+      }
+    }
+
+    else if(selection == "Full"){
+
+      if (!CheckStream(ev, TrigList_Full_EG)) return false;
+      PassTrigger = ev.PassTrigger(TrigList_Full_EG);
+      if (leps_eg.size() < 2) return false;
+      if(apply_ptcut){
+	if(leps_eg[0]->Pt() < 25) PassTrigger=false;
+	if(leps_eg[1]->Pt() < 15) PassTrigger=false;
+      }
     }
     else {
       cout << "[HNL_LeptonCore::PassTriggerSelection ] selection not found.." << endl;
       exit(EXIT_FAILURE);
     }
   }
-
 
 
 
@@ -225,9 +259,24 @@ bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event 
       if (!CheckStream(ev, TrigList_HNL_MuEG)) return false;
       PassTrigger = ev.PassTrigger(TrigList_HNL_MuEG);
       if (leps.size() < 2) return false;
-      if(leps[0]->Pt() < 20) PassTrigger=false;
-      if(leps[1]->Pt() < 10) PassTrigger=false;
+      if(apply_ptcut){
+	if(leps[0]->Pt() < 20) PassTrigger=false;
+	if(leps[1]->Pt() < 10) PassTrigger=false;
+      }
     }
+
+    else 
+      if(selection == "Dilep"){
+
+	if (!CheckStream(ev, TrigList_Full_MuEG)) return false;
+	PassTrigger = ev.PassTrigger(TrigList_Full_MuEG);
+	if (leps.size() < 2) return false;
+	if(apply_ptcut){
+	  if(leps[0]->Pt() < 20) PassTrigger=false;
+	  if(leps[1]->Pt() < 10) PassTrigger=false;
+	}
+      }
+
     else {
       cout << "[HNL_LeptonCore::PassTriggerSelection ] selection not found.." << endl;
       exit(EXIT_FAILURE);
@@ -488,6 +537,78 @@ void HNL_LeptonCore::Fill_All_SignalRegion1(HNL_LeptonCore::Channel channel, TSt
 }
 
 
+
+bool HNL_LeptonCore::CheckChannelEvent(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps){
+  
+  int n_el(0);
+  int n_mu(0);
+  for(auto ilep : leps)  {
+    if(ilep->LeptonFlavour() == Lepton::MUON) n_mu++;
+    if(ilep->LeptonFlavour() == Lepton::ELECTRON) n_el++;
+  }
+  
+  if(channel==MuMu  || channel==EE || channel== EMu  ){
+    
+    if (leps.size() != 2) return false;
+
+    if (channel==EE     && !(leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::ELECTRON)) return false;
+    if (channel==MuMu   && !(leps[0]->LeptonFlavour() == Lepton::MUON     && leps[1]->LeptonFlavour() == Lepton::MUON))    return false;
+    if ((channel==EMu || channel==MuE)  &&
+	!( (leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::MUON) ||
+	   (leps[0]->LeptonFlavour() == Lepton::MUON && leps[1]->LeptonFlavour() == Lepton::ELECTRON) ))  return false;
+  
+    double lep1_ptcut= (channel==MuMu) ?   20. : 25.;
+    double lep2_ptcut= (channel==MuMu) ?   10. : 15.;
+
+    if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut)) return false;
+    
+    return true;
+
+  }
+
+  
+  if(channel==MuMuMu  || channel==EEE || channel==EEMu || channel==MuMuE ){
+    
+    if( leps.size() != 3) return false;
+    if(channel==MuMuMu && n_mu != 3) return false;
+    if(channel==EEE && n_el != 3) return false;
+    if((channel==EEMu || channel==MuMuE ) &&  (n_el == 3  || n_mu == 3)) return false;
+    
+    
+    double lep1_ptcut= (channel==MuMuMu) ?   20. : 25.;
+    double lep2_ptcut= (channel==MuMuMu) ?   10. : 15.;
+    double lep3_ptcut= (channel==MuMuMu) ?   10. : 10.;
+
+    if(DataEra=="2017" ||DataEra=="2018"){
+      lep2_ptcut=17;
+      lep3_ptcut= 17;
+    }
+
+    if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut && leps[2]->Pt()  > lep3_ptcut)) return false;
+
+    return true;
+  }
+
+  if(channel == MuMuMuMu || channel == EEEE || channel == EEMuMu ) {
+
+    if( leps.size() != 4) return false;
+    if( channel==MuMuMuMu && n_mu != 4) return false;
+    if( channel==EEEE && n_el != 4) return false;
+    if( channel == EEMuMu && (n_mu == 0 || n_mu == 4)) return false;
+    
+    double lep1_ptcut= (channel==MuMuMuMu) ?   20. : 25.;
+    double lep2_ptcut= (channel==MuMuMuMu) ?   10. : 15.;
+    double lep3_ptcut= (channel==MuMuMuMu) ?   10. : 10.;
+    double lep4_ptcut= (channel==MuMuMuMu) ?   10. : 10.;
+
+    if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut && leps[2]->Pt()  > lep3_ptcut && leps[3]->Pt()  > lep4_ptcut)) return false;
+
+    return true;
+  }
+
+  return true;
+
+}
 
 bool HNL_LeptonCore::CheckStream(Event ev, vector<TString> triglist){
 
@@ -890,24 +1011,21 @@ void HNL_LeptonCore::Fill_SigRegionPlots1(HNL_LeptonCore::Channel channel,TStrin
 }
 
 
-void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, bool plotCR, TString label_1, TString label_2,  std::vector<Jet> jets,   std::vector<FatJet> fatjets,  std::vector<Electron> els, std::vector<Muon> mus, Particle  met, double nvtx,  double w){
+void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, bool plotCR, TString label_1, TString label_2,  std::vector<Jet> jets,   std::vector<FatJet> fatjets, std::vector<Lepton *> Leps, Particle  met, double nvtx,  double w){
   
   std::vector<Jet> jets_vbf;
-  Fill_RegionPlots(channel, plotCR, label_1, label_2, jets, jets_vbf,fatjets, els, mus, met, nvtx, w );
+  Fill_RegionPlots(channel, plotCR, label_1, label_2, jets, jets_vbf,fatjets, Leps, met, nvtx, w );
 
 }
 
-void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, bool plotCR, TString label_1, TString label_2,  std::vector<Jet> jets, std::vector<Jet> jets_vbf,   std::vector<FatJet> fatjets,  std::vector<Electron> els, std::vector<Muon> mus, Particle  met, double nvtx,  double w){
+void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, bool plotCR, TString label_1, TString label_2,  std::vector<Jet> jets, std::vector<Jet> jets_vbf,   std::vector<FatJet> fatjets, std::vector<Lepton *> leps , Particle  met, double nvtx,  double w){
   
   if(!IsCentral) return;
 
   bool debug(false);
-  if(debug && channel < 6)  cout << "Fill_RegionPlots [Electron]: " << label_1 << " " << label_2 << " plotCR = " << plotCR << " nel = " << els.size()  <<  endl;
-  if(debug && channel >= 6) cout << "Fill_RegionPlots [Muon]: " << label_1 << " " << label_2 << " plotCR = " << plotCR << " nel = " << els.size()  <<  endl; 
 
   // merger labels
 
-  std::vector<Lepton *> leps  = MakeLeptonPointerVector(mus,els);
 
   bool threelep = (leps.size()  == 3);
   bool fourlep  = (leps.size()  == 4);
@@ -917,11 +1035,15 @@ void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, bool plot
      
   if(!plotCR) return;
 
-  
+  int nel(0), nmu(0);
+  for(auto ilep: leps) {
+    if(ilep->LeptonFlavour() == Lepton::ELECTRON) nel++;
+    if(ilep->LeptonFlavour() == Lepton::MUON) nmu++;
+  }
 
   /// Draw N leptons
-  FillHist( label_2+"/RegionPlots_"+ label_1+ "/" +  "N_El", els.size(),  w, 5, 0, 5, "El size");
-  FillHist( label_2+"/RegionPlots_"+ label_1+ "/" +  "N_Mu", mus.size(),  w, 5, 0, 5, "Mu size");
+  FillHist( label_2+"/RegionPlots_"+ label_1+ "/" +  "N_El", nel,  w, 5, 0, 5, "El size");
+  FillHist( label_2+"/RegionPlots_"+ label_1+ "/" +  "N_Mu", nmu,  w, 5, 0, 5, "Mu size");
   // Draw N jets
   FillHist( label_2+"/RegionPlots_"+ label_1+ "/"+  "N_AK4Jets", jets.size() , w, 10, 0., 10., "N_{AK4 jets}");
   FillHist( label_2+"/RegionPlots_"+ label_1+ "/"+  "N_AK4VBFJets", jets_vbf.size() , w, 10, 0., 10., "N_{AK4 jets}");
@@ -1067,7 +1189,7 @@ void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, bool plot
   
   FillHist( label_2+"/RegionPlots_"+ label_1+ "/"+ "nPV",  nvtx , w, 60, 0., 60.);
   
-  double ST = GetST(els, mus, jets, fatjets, met);
+  double ST = GetST(leps, jets, fatjets, met);
   double met2_st = pow(met.Pt(),2.)/ ST;  
 
   FillHist( label_2+"/RegionPlots_"+ label_1+ "/"+  "Ev_ST", ST  , w, 500, 0., 10000.,"ST GeV");
@@ -1453,11 +1575,17 @@ void HNL_LeptonCore::FillCutFlow(bool IsCentral, TString suffix, TString histnam
 TString HNL_LeptonCore::GetChannelString(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType q){
 
   TString channel_string="";
-  if (channel == EE) channel_string+="EE";
-  if (channel == MuMu) channel_string+="MuMu";
-  if (channel == EMu) channel_string+="EMu";
-  if (channel == MuE) channel_string+="MuE";
+  if (channel == EE) channel_string="EE";
+  if (channel == MuMu) channel_string="MuMu";
+  if (channel == EMu) channel_string="EMu";
+  if (channel == MuE) channel_string="MuE";
   
+  if (channel == EEE) channel_string="EEE";
+  if (channel == EEMu) channel_string="EEMu";
+  if (channel == MuMuMu) channel_string="MuMuMu";
+  if (channel == MuMuE) channel_string="MuMuE";
+  
+
   if (q == OS) channel_string+="_OS";
   else if (q == SS) channel_string+="_SS";
   else   return channel_string;

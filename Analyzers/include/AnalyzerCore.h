@@ -65,7 +65,8 @@ public:
   Event GetEvent();
 
   // MC weight functions                                                                                                                         
-  double GetMuonSFEventWeight(std::vector<Muon> muons,AnalyzerParameter param );
+  double GetLeptonSFEventWeight   (std::vector<Lepton *> leps,AnalyzerParameter param );
+  double GetMuonSFEventWeight    (std::vector<Muon> muons,AnalyzerParameter param );
   double GetElectronSFEventWeight(std::vector<Electron> electrons, AnalyzerParameter param );
 
   // FR functions                                                                                                                                

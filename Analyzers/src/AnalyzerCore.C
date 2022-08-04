@@ -1553,6 +1553,52 @@ double AnalyzerCore::GetMuonSFEventWeight(std::vector<Muon> muons,AnalyzerParame
 }
 
 
+double AnalyzerCore::GetLeptonSFEventWeight(std::vector<Lepton *> leps, AnalyzerParameter param ){
+
+  double this_weight(1.);
+  if(!IsDATA){
+
+    mcCorr->IgnoreNoHist = param.MCCorrrectionIgnoreNoHist;
+
+    for (auto lep: leps){
+      if(lep->LeptonFlavour() == Lepton::ELECTRON){
+	double this_recosf  = mcCorr->ElectronReco_SF(lep->Eta(),lep->Pt(), param.SystDir_ElectronRecoSF);
+	double this_idsf    = mcCorr->ElectronID_SF(param.Electron_ID_SF_Key, lep->Eta(), lep->Pt(), param.SystDir_ElectronIDSF);
+	
+	this_weight *= this_recosf*this_idsf;
+
+	//double this_trigsf = mcCorr->ElectronTrigger_SF(param.Electron_Trigger_SF_Key, param.Electron_Trigger_NameForSF, electrons);
+
+	//this_weight  *= this_trigsf;
+
+      }
+      if(lep->LeptonFlavour() == Lepton::MUON){
+	
+	double this_pt  = lep->Pt();
+	double this_eta = lep->Eta();
+
+
+	double this_idsf   = mcCorr->MuonID_SF (param.Muon_ID_SF_Key,  this_eta, this_pt);
+	double this_isosf  = mcCorr->MuonISO_SF(param.Muon_ISO_SF_Key, this_eta, this_pt);
+	double this_trigsf = 1.;//mcCorr->MuonTrigger_SF(param.Muon_Trigger_SF_Key, param.Muon_Trigger_NameForSF, muons);
+
+	this_weight *= this_idsf*this_isosf*this_trigsf;
+
+	//double reco_pt = (param.Muon_RECO_SF_Key  == "HighPtMuonRecoSF") ?  MiniAODP : this_pt;
+	double reco_pt =this_pt;
+	double this_recosf = mcCorr->MuonReco_SF(param.Muon_RECO_SF_Key, this_eta, reco_pt);
+
+	this_weight *= this_recosf;
+
+      }
+      
+    }
+
+  }
+  return this_weight;
+
+
+}
 double AnalyzerCore::GetElectronSFEventWeight(std::vector<Electron> electrons, AnalyzerParameter param ){
 
   double this_weight(1.);

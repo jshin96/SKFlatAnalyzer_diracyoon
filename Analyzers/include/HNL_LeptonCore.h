@@ -30,6 +30,7 @@ class HNL_LeptonCore : public AnalyzerCore {
     MuMuMuMu=15,
     EMu=16,
     MuE=17,
+    EEMuMu=18,
     
 
   };
@@ -75,11 +76,12 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   //===== TRIGGER
 
-  bool PassTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selection);
+  bool PassTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selection, bool applt_ptcut=true);
   // ============= HELPER FUNCTIONS
   void PrintParam(AnalyzerParameter param);
   TString QToString(HNL_LeptonCore::ChargeType q);
  
+  bool CheckChannelEvent(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps);
   bool CheckStream(Event ev,vector<TString> triglist);
   TString  DoubleElectronPD();
   TString  SingleElectronPD();
@@ -242,8 +244,8 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   //// ===============================  SR PLOTS =============================== ////
 
-  void Fill_RegionPlots(HNL_LeptonCore::Channel channel, bool plotCR,TString label_1, TString label_2,  std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Electron> els, std::vector<Muon> mus, Particle  met, double nvtx, double w);
-  void Fill_RegionPlots(HNL_LeptonCore::Channel channel, bool plotCR,TString label_1, TString label_2,  std::vector<Jet> jets, std::vector<Jet> jets_vbf, std::vector<FatJet> fatjets,  std::vector<Electron> els, std::vector<Muon> mus, Particle  met, double nvtx, double w);
+  void Fill_RegionPlots(HNL_LeptonCore::Channel channel, bool plotCR,TString label_1, TString label_2,  std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Lepton *> leps, Particle  met, double nvtx, double w);
+  void Fill_RegionPlots(HNL_LeptonCore::Channel channel, bool plotCR,TString label_1, TString label_2,  std::vector<Jet> jets, std::vector<Jet> jets_vbf, std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w);
 
 
   void Fill_SigRegionPlots1(HNL_LeptonCore::Channel channel,TString label_1, TString label_2, TString label_3,  std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Electron> els, std::vector<Muon> mus, Particle  met, double nvtx, double w, double var1,  double var2, double var3, double var4, double var5, double var6, double var7);

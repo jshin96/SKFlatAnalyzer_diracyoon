@@ -7,10 +7,9 @@ void HNL_SignalStudies::initializeAnalyzer(){
 }
 
 
-
-
 void HNL_SignalStudies::executeEvent(){
 
+  
   FillHist ("NoCut", 1, 1, 2, 0., 2.,"");
   
   //==== Gen for genmatching
@@ -42,12 +41,8 @@ void HNL_SignalStudies::executeEvent(){
     else process = "EE";
   }
   
+  if(MCSample.Contains("Type") || MCSample.Contains("private"))  MakeType1SignalPlots(process);
   
-  RunSignalPlotter(process);
-}
-
-void HNL_SignalStudies::RunSignalPlotter(TString process){
-
 
   AnalyzerParameter param  = InitialiseHNLParameter("SignalStudy");
 
@@ -85,7 +80,6 @@ void HNL_SignalStudies::RunSignalPlotter(TString process){
 
   
   vector<FatJet>   this_AllFatJets   =  puppiCorr->Correct(GetAllFatJets());
-
   std::vector<FatJet>   fatjets_tmp  = SelectFatJets(this_AllFatJets, param.FatJet_ID, 200, 5.);
   std::vector<Jet>      jets_tmp     = GetJets   ( param.Jet_ID,    15., 5.);
 

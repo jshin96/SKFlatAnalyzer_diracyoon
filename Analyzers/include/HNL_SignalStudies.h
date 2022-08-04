@@ -19,7 +19,6 @@ class HNL_SignalStudies : public HNL_RegionDefinitions {
   void RunMuonChannel(std::vector<Lepton *> LepsT,std::vector<Lepton *> LepsV,std::vector<Tau> TauColl,  std::vector<Jet> JetColl, std::vector<Jet> VBFJetColl,  std::vector<FatJet> FatjetColl,  std::vector<Jet> bjets, Event Ev, AnalyzerParameter param,  float _weight)   ;
 
 
-  void RunSignalPlotter(TString process);
   void MakeType1SignalPlots(TString a);
 
 };
