@@ -4,7 +4,7 @@ mcpath=${SKFlat_WD}/runJobs/${analyzer}/Signals/
 datapath=${SKFlat_WD}/runJobs/${analyzer}/DATA/
 njobs=5
 njobs_data=25
-nmax=400
+nmax=200
 skim=' '
 declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
 
@@ -51,8 +51,8 @@ if [[ $1 == "" ]]; then
     do
 	SKFlat.py -a $analyzer  -l $mcpath/${i}/DY.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
 	SKFlat.py -a $analyzer  -l $mcpath/${i}/VBF.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
-	SKFlat.py -a $analyzer  -l $mcpath/${i}/SSWW.txt  -n $njobs  --nmax ${nmax}   -e ${i} 
-
+	SKFlat.py -a $analyzer  -l $mcpath/${i}/SSWW.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
+	SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_mm.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_SS2lOR3l 
 
     done
 

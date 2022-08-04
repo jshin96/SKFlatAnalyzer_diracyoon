@@ -123,7 +123,7 @@ void HNL_SignalStudies::RunMuonChannel(std::vector<Lepton *> LepsT,std::vector<L
   Particle METv =UpdateMETSmearedJet(METUnsmearedv, JetColl);
 
   // check FOR data that data stream is correct for trigger list
-  if(!CheckStream(Ev,Trigger_HNL_Muon)) {
+  if(!CheckStream(Ev,TrigList_HNL_DblMu)) {
     cout << "[HNL_SignalStudies::RunMuonChannel] wronmg data stream ran for Trigger_HNL_Muon.." << endl;
     exit(EXIT_FAILURE);
 
@@ -172,13 +172,15 @@ void HNL_SignalStudies::RunMuonChannel(std::vector<Lepton *> LepsT,std::vector<L
 
 
   // PASS ANY MUON TRIGGER
-  if(!Ev.PassTrigger(Trigger_Full_HNL_Muon)) return;
+
+  if (!PassTriggerSelection(MuMu, Ev, LepsT,"Full")) return; 
+
 
   FillEventCutflow(sigmm,_weight, "SSMMTrig",  param.Name);
   FillEventCutflow(sigmm_17028,_weight, "SSMMTrig",  param.Name);
 
   // PASS DIMUON TRIGGER
-  if(!Ev.PassTrigger(Trigger_HNL_Muon)) return;
+  if (!PassTriggerSelection(MuMu, Ev, LepsT,"Dilep")) return;
   FillEventCutflow(sigmm,_weight, "SSMMTrig2",  param.Name);
   FillEventCutflow(sigmm_17028,_weight, "SSMMTrig2",  param.Name);
 

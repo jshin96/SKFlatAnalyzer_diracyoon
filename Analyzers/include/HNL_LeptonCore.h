@@ -72,6 +72,10 @@ class HNL_LeptonCore : public AnalyzerCore {
   AnalyzerParameter InitialiseHNLParameter(TString s_setup);  
 
 
+
+  //===== TRIGGER
+
+  bool PassTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selection);
   // ============= HELPER FUNCTIONS
   void PrintParam(AnalyzerParameter param);
   TString QToString(HNL_LeptonCore::ChargeType q);
@@ -159,16 +163,27 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   // Trigger vectors used to store year dependant trigger lists
 
-  vector<TString> Trigger_HNL_HighPtMuon;
-  vector<TString> Trigger_HNL_Muon;
-  vector<TString> Trigger_Full_HNL_Muon;
-  vector<TString> Trigger_HNL_MuonH;
-  vector<TString> Trigger_HNL_Electron;
-  vector<TString> Trigger_HNL_SingleElectron;
-  vector<TString> Triggers_POG_Electron;
-  vector<TString> Triggers_POG_ElectronMuon;
-  vector<TString> Triggers_POG_Muon;
+  vector<TString> TrigList_HNL_HighPtMu;
+  vector<TString> TrigList_HNL_DblMu;
+  vector<TString> TrigList_HNL_Mu;
+  vector<TString> TrigList_Full_Mu;
+  vector<TString> TrigList_POG_Mu;
+  
+  // EG
+  vector<TString> TrigList_HNL_DblEG;
+  vector<TString> TrigList_HNL_EG;
+  vector<TString> TrigList_POG_EG;
+  vector<TString> TrigList_HNL_HighPtEG;
 
+  vector<TString> TrigList_Full_EG;
+  
+  // MUG
+  vector<TString> TrigList_HNL_MuEG;
+  vector<TString> TrigList_POG_MuEG;
+  vector<TString> TrigList_Full_MuEG;
+
+  
+  
   // Lepton ID
   vector<TString> MuonVetoIDs;
   vector<TString> MuonLooseIDs;
@@ -183,22 +198,6 @@ class HNL_LeptonCore : public AnalyzerCore {
   bool run_Debug;
   // Lepton pT cut
 
-  double TriggerSafePt_POG_Electron;
-  double TriggerSafePt_POG_Muon;
-  double TriggerSafePt_HNL_MuonPtCut1;
-  double TriggerSafePt_HNL_MuonPtCut2;
-  double TriggerSafePt_HNL_HighPtCut;
-  double TriggerSafePt_HNL_ElectronPtCut1;
-  double TriggerSafePt_HNL_ElectronPtCut2;
-  double TriggerSafePt_HNL_EMuPtCut1;
-  double TriggerSafePt_HNL_EMuPtCut2;
-
-  TString     TriggerNameForSF_HNL_Electron;
-  TString TriggerNameForSF_HNL_Muon;
-  TString     TriggerNameForSF_POG_Electron;
-  TString TriggerNameForSF_POG_Muon;
-
-
   // obj vectors
   vector<Gen> gens;
   vector<Electron> AllElectrons;
@@ -208,10 +207,6 @@ class HNL_LeptonCore : public AnalyzerCore {
   vector<FatJet> AllFatJets;
 
   double weight_Prefire, weight_Prefire_Up, weight_Prefire_Down;
-
-  vector<TString> Triggers_Electron, Triggers_Muon;
-  TString TriggerNameForSF_Electron, TriggerNameForSF_Muon;
-  double TriggerSafePt_Electron, TriggerSafePt_Muon;
 
 
   //==== My tool 
