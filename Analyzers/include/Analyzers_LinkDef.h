@@ -11,6 +11,8 @@
 #pragma link C++ class HNL_RegionDefinitions+;
 #pragma link C++ class HNL_SignalStudies+;
 #pragma link C++ class HNL_SR3KinVar+;
+#pragma link C++ class HNL_ControlRegionPlotter+;
+#pragma link C++ class HNL_SignalRegionPlotter+;
 #pragma link C++ class GetEffLumi+;
 #pragma link C++ class ExampleRun+;
 #pragma link C++ class SKFlatValidation+;

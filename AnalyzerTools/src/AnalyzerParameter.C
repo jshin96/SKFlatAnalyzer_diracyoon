@@ -3,6 +3,7 @@
 void AnalyzerParameter::Clear(){
 
   Name = "";
+  DefName = "";
 
   MCCorrrectionIgnoreNoHist = false;
   DEBUG = false;
@@ -67,6 +68,7 @@ void AnalyzerParameter::Clear(){
 AnalyzerParameter::AnalyzerParameter(){
 
   Name = "Default";
+  DefName = "Default";
 
   MCCorrrectionIgnoreNoHist = false;
   DEBUG = false;

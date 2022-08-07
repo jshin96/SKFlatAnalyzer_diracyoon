@@ -1673,6 +1673,53 @@ double AnalyzerCore::GetFakeWeightElectron(std::vector<Electron> electrons , Ana
 
 
 
+double AnalyzerCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParameter param, bool apply_r){
+
+  if(!IsData) return 1.;
+
+  double this_weight = -1.;
+  if(leps.size() == 1){
+    TString fr_key1 = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  param.Electron_FR_Key : param.Muon_FR_Key;
+    TString pr_key1 = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ? "ptcone_eta_Prescaled" : "ptcone_eta_Prescaled";
+
+    double this_fr1 = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ? fakeEst->GetElectronFakeRate(param.Electron_Tight_ID, fr_key1, fabs(leps[0]->Eta()), leps[0]->Pt()) : fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, fr_key1, fabs(leps[0]->Eta()), leps[0]->Pt()); 
+    double this_pr1 = (apply_r) ? 0.9 : 1.;
+
+    TString lep1_ID = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  param.Electron_Tight_ID : param.Muon_Tight_ID;
+
+    this_weight=  fakeEst->CalculateLepWeight(this_pr1, this_fr1, lep1_ID );
+
+    return this_weight;
+
+
+
+    // fakeEst->GetElectronPromptRate(param.Electron_Tight_ID, pr_key1, fabs(electrons[0].Eta()), electrons[0].Pt());
+    // fakeEst->GetMuonPromptRate(param.Muon_Tight_ID, pr_key1, fabs(muons[0].Eta()), muons[0].Pt());
+  }
+  if (leps.size() == 2){
+
+    TString fr_key1 = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  param.Electron_FR_Key : param.Muon_FR_Key;
+    TString fr_key2 = (leps[1]->LeptonFlavour() == Lepton::ELECTRON) ?  param.Electron_FR_Key : param.Muon_FR_Key;
+    TString pr_key1 = "ptcone_eta_Prescaled";
+    TString pr_key2 = "ptcone_eta_Prescaled";
+
+    double this_fr1 =  (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ? fakeEst->GetElectronFakeRate(param.Electron_Tight_ID, fr_key1, fabs(leps[0]->Eta()), leps[0]->Pt()) : fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, fr_key1, fabs(leps[0]->Eta()), leps[0]->Pt()); 
+    double this_fr2 = (leps[1]->LeptonFlavour() == Lepton::ELECTRON) ? fakeEst->GetElectronFakeRate(param.Electron_Tight_ID, fr_key1, fabs(leps[1]->Eta()), leps[1]->Pt()) : fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, fr_key1, fabs(leps[1]->Eta()), leps[1]->Pt()); 
+
+    double this_pr1 = (apply_r) ? 0.9 : 1.;
+    double this_pr2 = (apply_r) ? 0.9 : 1.;
+
+    TString lep1_ID = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  param.Electron_Tight_ID : param.Muon_Tight_ID;
+    TString lep2_ID = (leps[1]->LeptonFlavour() == Lepton::ELECTRON) ?  param.Electron_Tight_ID : param.Muon_Tight_ID;
+
+    this_weight = fakeEst->CalculateDilepWeight(this_pr1,this_fr1, this_pr2, this_fr2, lep1_ID,lep2_ID,0);
+
+    return this_weight;
+  }
+
+  return -999.;
+}
+
 
 double AnalyzerCore::GetFakeWeightElectron(std::vector<Electron> electrons , vector<TString> trigs, AnalyzerParameter param){
 

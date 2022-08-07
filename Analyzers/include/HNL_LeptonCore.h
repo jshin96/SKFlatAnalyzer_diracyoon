@@ -12,29 +12,27 @@ class HNL_LeptonCore : public AnalyzerCore {
   enum ChargeType
   {
     Inclusive=0,
-    SS=1,
-    OS=-1,
+    Plus=1,
+    Minus=-1,
   };
 
   enum Channel
   {
-    El=0,
+    E=0,
     EE=1,
     EEE=2,
-    EEMu=4,
-    EEEE=5,
+    EEEE=3,
     Mu=10,
     MuMu=11,
-    MuMuMu=13,
-    MuMuE=14,
-    MuMuMuMu=15,
-    EMu=16,
-    MuE=17,
-    EEMuMu=18,
+    MuMuMu=12,
+    MuMuMuMu=13,
+    EMu=15,
+    EMuL=16,
+    EMuLL=17,
     
 
   };
-  enum Region
+  enum SearchRegion
   {
     SR1=20,
     SR2=21,
@@ -76,12 +74,16 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   //===== TRIGGER
 
+  bool PassPtTrigger(Event ev, vector<TString> triglist,std::vector<Lepton *> leps);
   bool PassTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selection, bool applt_ptcut=true);
   // ============= HELPER FUNCTIONS
   void PrintParam(AnalyzerParameter param);
   TString QToString(HNL_LeptonCore::ChargeType q);
  
-  bool CheckChannelEvent(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps);
+  bool CorrectChannelStream(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps);
+
+  double GetPtCutTrigger(TString trigname, int nlep);
+  bool CheckSRStream(Event ev,HNL_LeptonCore::Channel channel_ID);
   bool CheckStream(Event ev,vector<TString> triglist);
   TString  DoubleElectronPD();
   TString  SingleElectronPD();
@@ -202,10 +204,6 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   // obj vectors
   vector<Gen> gens;
-  vector<Electron> AllElectrons;
-  vector<Muon> AllMuons, AllTriggerSafePt_HNL_ElTunePMuons;
-  vector<Jet> AllJets;
-  vector<Tau> AllTaus;
   vector<FatJet> AllFatJets;
 
   double weight_Prefire, weight_Prefire_Up, weight_Prefire_Down;
@@ -213,7 +211,7 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   //==== My tool 
 
-  // PLOTS
+  // PLEP LOTS
 
   void FillAllMuonPlots(TString label , TString cut,  Muon mu, float w);
   void FillAllMuonPlots(TString label , TString cut,  std::vector<Muon> muons, float w);
@@ -230,9 +228,9 @@ class HNL_LeptonCore : public AnalyzerCore {
 
 
   void FillCutFlow(bool IsCentral, TString suffix, TString histname, double weight);
-  void FillEventCutflow(HNL_LeptonCore::Region sr,float wt,TString cut,    TString label);
-  void FillEventCutflowSR(TString analysis_dir_name,HNL_LeptonCore::Region sr, float event_weight, TString label);
-  void FillEventCutflowPerMass(TString dirname,Region sr, float event_weight, TString region_name,   TString label);
+  void FillEventCutflow(HNL_LeptonCore::SearchRegion sr,float wt,TString cut,    TString label);
+  void FillEventCutflowSR(TString analysis_dir_name,HNL_LeptonCore::SearchRegion sr, float event_weight, TString label);
+  void FillEventCutflowPerMass(TString dirname,HNL_LeptonCore::SearchRegion sr, float event_weight, TString region_name,   TString label);
 
 
 
@@ -248,33 +246,24 @@ class HNL_LeptonCore : public AnalyzerCore {
   void Fill_RegionPlots(HNL_LeptonCore::Channel channel, bool plotCR,TString label_1, TString label_2,  std::vector<Jet> jets, std::vector<Jet> jets_vbf, std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w);
 
 
-  void Fill_SigRegionPlots1(HNL_LeptonCore::Channel channel,TString label_1, TString label_2, TString label_3,  std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Electron> els, std::vector<Muon> mus, Particle  met, double nvtx, double w, double var1,  double var2, double var3, double var4, double var5, double var6, double var7);
+  void Fill_SigRegionPlots1(HNL_LeptonCore::Channel channel,TString label_1, TString label_2, TString label_3,  std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w, double var1,  double var2, double var3, double var4, double var5, double var6, double var7);
 
 
-  void Fill_SigRegionPlots3(HNL_LeptonCore::Channel channel, TString label_1, TString label_2, TString label_3,  std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Electron> els, std::vector<Muon> mus, Particle  met, double nvtx, double w, double var1,  double var2, double var3, double var4, double var5, double var6, double var7, double var8, double var9, double var10, double var11);
+  void Fill_SigRegionPlots3(HNL_LeptonCore::Channel channel, TString label_1, TString label_2, TString label_3,  std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Lepton *> leps , Particle  met, double nvtx, double w, double var1,  double var2, double var3, double var4, double var5, double var6, double var7, double var8, double var9, double var10, double var11);
 
 
-  void Fill_SigRegionPlots4(HNL_LeptonCore::Channel channel,TString label_1,std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Electron> els, std::vector<Muon> mus, Particle  met, double nvtx, double w );
+  void Fill_SigRegionPlots4(HNL_LeptonCore::Channel channel,TString label_1,std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w );
 
 
-  bool RunHighMassSR(ChargeType charge_i, TString channel_s,HNL_LeptonCore::Channel channel, TString charge_s,Particle llCand, TString label, std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Electron> , std::vector<Muon> muons, Particle METv, int mPV, double w, Event ev, AnalyzerParameter param, bool FullAnalysis);
-
-
-
-  bool  Fill_DefSigRegionPlots3(HNL_LeptonCore::Channel channel, TString label_sr, TString label_mass, TString label_anid,  std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Electron> els, std::vector<Muon> mus, Particle  met, double nvtx,  double w,  double var1,  double var2, double var3, double var4, double var5, double var6, double var7, double var8, double var9, double var10, double var11);
+  bool  Fill_DefSigRegionPlots3(HNL_LeptonCore::Channel channel, TString label_sr, TString label_mass, TString label_anid,  std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx,  double w,  double var1,  double var2, double var3, double var4, double var5, double var6, double var7, double var8, double var9, double var10, double var11);
 					       
 					       
-  void Fill_All_SignalRegion3(HNL_LeptonCore::Channel channel, TString signal_region, bool isdata, TString charge_s, TString label, std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Electron> electrons, std::vector<Muon> muons,  Particle _met,int _npv , double w , bool full);
+  void Fill_All_SignalRegion3(HNL_LeptonCore::Channel channel, TString signal_region, bool isdata, TString charge_s, TString label, std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Lepton *> leps,  Particle _met,int _npv , double w , bool full);
 					
-  void Fill_All_SignalRegion1(HNL_LeptonCore::Channel channel, TString signal_region, bool isdata, TString charge_s, TString label, std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Electron> electrons, std::vector<Muon> muons,  Particle _met,int _npv , double w , bool full);
+  void Fill_All_SignalRegion1(HNL_LeptonCore::Channel channel, TString signal_region, bool isdata, TString charge_s, TString label, std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Lepton *> leps,  Particle _met,int _npv , double w , bool full);
 
-  void MakeSignalPlots();
-  
 
   //// ===============================  GLOBAL VAR =============================== ////
-
-
-  int SignalLeptonChannel;
 
 
   TH1D *hist_PUReweight;

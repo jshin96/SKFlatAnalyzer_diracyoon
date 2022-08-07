@@ -76,6 +76,7 @@ public:
   double GetFakeWeightElectron(std::vector<Electron> electrons , AnalyzerParameter param);
   double GetFakeRateEl(double eta, double pt, AnalyzerParameter param);
   double GetFakeRateM(double eta, double pt, AnalyzerParameter param);
+  double GetFakeWeight(std::vector<Lepton *> leps,  AnalyzerParameter param, bool apply_r);
 
   double GetCFWeightElectron(std::vector<Electron> electrons ,  AnalyzerParameter param);
 

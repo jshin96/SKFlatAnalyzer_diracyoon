@@ -11,6 +11,7 @@ class AnalyzerParameter{
 public:
 
   TString Name;
+  TString DefName;
 
   bool MCCorrrectionIgnoreNoHist,DEBUG;
 

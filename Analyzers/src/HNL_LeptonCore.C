@@ -168,7 +168,20 @@ void HNL_LeptonCore::initializeAnalyzer(){
 
   for(auto itrig : TrigList_HNL_MuEG) TrigList_Full_MuEG.push_back(itrig);
 
+
+  for(auto itrig : TrigList_Full_Mu){
+    cout << "TrigList_Full_Mu  : "<< itrig << endl;
+  }
+  for(auto itrig : TrigList_Full_EG){
+    cout << "TrigList_Full_EG  : "<< itrig << endl;
+  } 
+
 }
+
+
+//====================================================/====================================================
+//====================================================/====================================================
+//====================================================/====================================================
 
 
 bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selection, bool apply_ptcut){
@@ -186,23 +199,34 @@ bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event 
 
       // Check if for data we are running on correct data stream
       if (!CheckStream(ev, TrigList_HNL_Mu)) return false;
- 
-     PassTrigger = ev.PassTrigger(TrigList_HNL_Mu);
-
-      if (leps_muon.size() < 2) return false;
+      
+      PassTrigger = ev.PassTrigger(TrigList_HNL_Mu);
+      
       if(apply_ptcut){
-	if(leps_muon[0]->Pt() < 20) PassTrigger=false;
-	if(leps_muon[1]->Pt() < 10) PassTrigger=false;
+        if(!PassPtTrigger(ev, TrigList_HNL_Mu, leps_muon)) PassTrigger=false;
+      }
+
+    }
+    else if(selection == "HighPt"){
+
+      if (!CheckStream(ev, TrigList_HNL_HighPtMu)) return false;                                                                                
+      PassTrigger = ev.PassTrigger(TrigList_HNL_HighPtMu);
+
+      if(apply_ptcut){
+
+	if(!PassPtTrigger(ev, TrigList_Full_Mu, leps_muon)) PassTrigger=false;
+	
       }
     }
     else if(selection == "Full"){
-      
+
       if (!CheckStream(ev, TrigList_Full_Mu)) return false;
+      
       PassTrigger = ev.PassTrigger(TrigList_Full_Mu);
-      if (leps_muon.size() < 2) return false;
+
       if(apply_ptcut){
-	if(leps_muon[0]->Pt() < 20) PassTrigger=false;
-	if(leps_muon[1]->Pt() < 5) PassTrigger=false;
+        if(!PassPtTrigger(ev, TrigList_Full_Mu, leps_muon)) PassTrigger=false;
+	
       }
     }
     else {
@@ -213,33 +237,46 @@ bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event 
   
   
   if (channel == EE){
-
+    
     std::vector<Lepton *> leps_eg;
+    
     for(auto ilep : leps) {
       if(ilep->LeptonFlavour() == Lepton::ELECTRON) leps_eg.push_back(ilep);
     }
-
+    
     if(selection == "Dilep"){
-
+      
       // Check It passes DiEl Trigger                                                                                                                                                                       
       // Check if for data we are running on correct data stream                                                                                                                                            
       if (!CheckStream(ev, TrigList_HNL_DblEG)) return false;
+      
       PassTrigger = ev.PassTrigger(TrigList_HNL_DblEG);
-      if (leps_eg.size() < 2) return false;
+      
       if(apply_ptcut){
-	if(leps_eg[0]->Pt() < 25) PassTrigger=false;
-	if(leps_eg[1]->Pt() < 15) PassTrigger=false;
+	if(!PassPtTrigger(ev, TrigList_HNL_DblEG, leps_eg)) PassTrigger=false;
       }
     }
 
-    else if(selection == "Full"){
+    else if(selection == "HighPt"){
 
+      if (!CheckStream(ev, TrigList_HNL_HighPtEG)) return false;
+      PassTrigger = ev.PassTrigger(TrigList_HNL_HighPtEG);
+
+      if(apply_ptcut){
+	if(!PassPtTrigger(ev, TrigList_HNL_HighPtEG, leps_eg)) PassTrigger=false;
+	
+      }
+    }
+    
+    
+    else if(selection == "Full"){
+      
       if (!CheckStream(ev, TrigList_Full_EG)) return false;
       PassTrigger = ev.PassTrigger(TrigList_Full_EG);
-      if (leps_eg.size() < 2) return false;
+      
       if(apply_ptcut){
-	if(leps_eg[0]->Pt() < 25) PassTrigger=false;
-	if(leps_eg[1]->Pt() < 15) PassTrigger=false;
+	if(!PassPtTrigger(ev, TrigList_Full_EG, leps_eg)) PassTrigger=false;
+	
       }
     }
     else {
@@ -250,41 +287,45 @@ bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event 
 
 
 
-  if (channel == EMu || channel == MuE){
-
+  if (channel == EMu){
+    
     if(selection == "Dilep"){
-
-      // Check It passes DiLep Trigger                                                                                                                                                                       
-      // Check if for data we are running on correct data stream                                                                                                                                            
+      
       if (!CheckStream(ev, TrigList_HNL_MuEG)) return false;
+      
       PassTrigger = ev.PassTrigger(TrigList_HNL_MuEG);
-      if (leps.size() < 2) return false;
       if(apply_ptcut){
-	if(leps[0]->Pt() < 20) PassTrigger=false;
-	if(leps[1]->Pt() < 10) PassTrigger=false;
+        if(!PassPtTrigger(ev, TrigList_HNL_MuEG, leps)) PassTrigger=false;
       }
     }
-
-    else 
-      if(selection == "Dilep"){
-
-	if (!CheckStream(ev, TrigList_Full_MuEG)) return false;
-	PassTrigger = ev.PassTrigger(TrigList_Full_MuEG);
-	if (leps.size() < 2) return false;
-	if(apply_ptcut){
-	  if(leps[0]->Pt() < 20) PassTrigger=false;
-	  if(leps[1]->Pt() < 10) PassTrigger=false;
-	}
+    
+    else if(selection == "HighPt"){
+      
+      PassTrigger = ev.PassTrigger(TrigList_HNL_HighPtMu);
+      if(apply_ptcut){
+	if(!PassPtTrigger(ev, TrigList_HNL_HighPtMu, leps)) PassTrigger=false;
       }
-
+    }
+    
+    else    if(selection == "Full"){
+      
+      //if (!CheckStream(ev, TrigList_Full_MuEG)) return false;
+      PassTrigger = ev.PassTrigger(TrigList_Full_MuEG);
+      
+      if(apply_ptcut){
+	if(!PassPtTrigger(ev, TrigList_Full_MuEG, leps)) PassTrigger=false;
+	
+      }
+    }
+    
     else {
       cout << "[HNL_LeptonCore::PassTriggerSelection ] selection not found.." << endl;
       exit(EXIT_FAILURE);
     }
   }
-
-
-
+  
+    
+    
 
 
 
@@ -300,6 +341,7 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup){
 
     param.syst_ = AnalyzerParameter::Central;
     param.Name  = "SignalStudy";
+    param.DefName  = "SignalStudy";
     param.MCCorrrectionIgnoreNoHist = false;
 
     param.Jet_ID                     = "tight";
@@ -315,6 +357,31 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup){
     param.Tau_Veto_ID = "HNVeto";
 
   }
+  else if (s_setup=="SignalStudy"){
+
+    param.syst_ = AnalyzerParameter::Central;
+    param.Name  = "SignalRegion";
+    param.DefName  = "SignalRegion";
+    param.MCCorrrectionIgnoreNoHist = false;
+
+    param.Jet_ID                     = "tight";
+    param.FatJet_ID                  = "tight";
+    param.BJet_Method                = "2a";
+
+    param.Muon_Tight_ID = "HNTightV2";
+    param.Electron_Tight_ID = "HNTightV2";
+
+    param.Muon_Veto_ID = "HNVeto2016";
+    param.Electron_Veto_ID = "HNVeto2016";
+
+    param.Tau_Veto_ID = "HNVeto";
+
+  }
+  else{
+    cout << "[HNL_LeptonCore::InitialiseHNLParameters ] ID not found.." << endl;
+    exit(EXIT_FAILURE);
+
+  }
 
   return param;
 }
@@ -326,6 +393,7 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameters( TString param_name, v
 
   param.syst_ = AnalyzerParameter::Central;
   param.Name  = param_name;
+  param.DefName  = param_name;
 
   param.MCCorrrectionIgnoreNoHist = false;
 
@@ -371,6 +439,7 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameters( TString param_name, v
 void HNL_LeptonCore::PrintParam(AnalyzerParameter param){
   
   cout << "param name = " << param.Name << endl;
+  cout << "param Default name = " << param.DefName << endl;
   cout << "Electron_Tight_ID = " << param.Electron_Tight_ID << endl;
   cout << "Electron_Loose_ID = " << param.Electron_Loose_ID << endl;
   cout << "Electron_Veto_ID = " << param.Electron_Veto_ID << endl;
@@ -398,67 +467,67 @@ void HNL_LeptonCore::PrintParam(AnalyzerParameter param){
 
 
 
-void HNL_LeptonCore::Fill_All_SignalRegion3(HNL_LeptonCore::Channel channel, TString signal_region3, bool isdata, TString charge_s, TString label, std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Electron> electrons, std::vector<Muon> muons,   Particle _MET,int _npv  , double w    , bool FullAnalysis ){
+void HNL_LeptonCore::Fill_All_SignalRegion3(HNL_LeptonCore::Channel channel, TString signal_region3, bool isdata, TString charge_s, TString label, std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Lepton *> leps,   Particle _MET,int _npv  , double w    , bool FullAnalysis ){
 
-  Fill_SigRegionPlots3(channel,signal_region3 + "_highmass","", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 9999.,9999.,9999.,9999.,9999.,9999.,9999.,9999.,9999.,9999.,9999.);
+  Fill_SigRegionPlots3(channel,signal_region3 + "_highmass","", label, jets,  fatjets,  leps,  _MET, _npv, w, 9999.,9999.,9999.,9999.,9999.,9999.,9999.,9999.,9999.,9999.,9999.);
   
   if(!FullAnalysis)  return;
   if (channel == EE){
     
     // EE SR1/3
     
-    Fill_SigRegionPlots3(channel,signal_region3 , "_mn100", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 3.1, 25., 15., 50.,120., 120., 50., 110., 6.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "_mn125", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 3.1, 30., 25., 50.,120., 120., 90., 140., 6.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "_mn200", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 3.1, 55., 40., 50.,120., 220.,160., 225.,  6.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "_mn250", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 999, 70., 60., 50.,120., 310.,220., 270.,  6.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "_mn300", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 999., 80., 60., 50.,120., 370.,235., 335.,  6.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "_mn400", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 999., 100., 65., 50.,120., 450.,335., 450.,  6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "_mn100", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 3.1, 25., 15., 50.,120., 120., 50., 110., 6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "_mn125", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 3.1, 30., 25., 50.,120., 120., 90., 140., 6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "_mn200", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 3.1, 55., 40., 50.,120., 220.,160., 225.,  6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "_mn250", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 999, 70., 60., 50.,120., 310.,220., 270.,  6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "_mn300", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 999., 80., 60., 50.,120., 370.,235., 335.,  6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "_mn400", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 999., 100., 65., 50.,120., 450.,335., 450.,  6.);
 
     
-    Fill_SigRegionPlots3(channel, signal_region3 , "_mn500", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 125., 65., 50.,120., 560.,400., 555., 6.);
-    Fill_SigRegionPlots3(channel, signal_region3 , "_mn600", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 690., 6.);
-    Fill_SigRegionPlots3(channel, signal_region3 , "_mn700", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 966., 6.);
-    Fill_SigRegionPlots3(channel, signal_region3 , "_mn800", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 1130., 6.);
-    Fill_SigRegionPlots3(channel, signal_region3 , "_mn900", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 1300., 6.);
-    Fill_SigRegionPlots3(channel, signal_region3 , "_mn1000", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 1490., 6.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "_mn1100", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 1490., 6.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "_mn1200", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 1600., 6.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "_mn1300", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 1930., 6.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "_mn1400", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 1930., 6.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "_mn1500", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 1930., 6.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "_mn1700", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 2130., 6.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "_mn2000", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 2530., 6.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "_mn2500", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 9999., 6.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "_mn5000", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 9999., 6.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "_mn20000", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 999999., 6.);
+    Fill_SigRegionPlots3(channel, signal_region3 , "_mn500", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 125., 65., 50.,120., 560.,400., 555., 6.);
+    Fill_SigRegionPlots3(channel, signal_region3 , "_mn600", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 690., 6.);
+    Fill_SigRegionPlots3(channel, signal_region3 , "_mn700", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 966., 6.);
+    Fill_SigRegionPlots3(channel, signal_region3 , "_mn800", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 1130., 6.);
+    Fill_SigRegionPlots3(channel, signal_region3 , "_mn900", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 1300., 6.);
+    Fill_SigRegionPlots3(channel, signal_region3 , "_mn1000", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 1490., 6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "_mn1100", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 1490., 6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "_mn1200", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 1600., 6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "_mn1300", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 1930., 6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "_mn1400", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 1930., 6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "_mn1500", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 1930., 6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "_mn1700", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 2130., 6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "_mn2000", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 2530., 6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "_mn2500", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 9999., 6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "_mn5000", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 9999., 6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "_mn20000", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 125., 0., 50.,120., 760.,400., 999999., 6.);
 
     
   }
   if (channel == MuMu){
     
     // CC limits                                                                                                                                                                                                                                                                                                                                             
-    Fill_SigRegionPlots3(channel,signal_region3 , "mn100", label, jets,  fatjets ,  electrons, muons,  _MET, _npv, w, 4, 25., 3.1, 25., 15., 50.,120., 110., 55., 115., 9.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "mn125", label, jets,  fatjets ,  electrons, muons,  _MET, _npv, w, 4, 25., 3.1, 25., 25., 50.,120., 140., 85., 140., 7.);      
-    Fill_SigRegionPlots3(channel,signal_region3 , "mn200", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 3.1, 50., 40., 50.,120., 250.,160., 215.,  7.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "mn250", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 3.1, 85., 45., 50.,120., 310.,215., 270.,  7.);      
-    Fill_SigRegionPlots3(channel,signal_region3 , "mn300", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 999., 100., 50., 50.,120., 370.,225., 340.,  7.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "mn400", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 999., 110., 60., 50.,120., 490.,296., 490.,  7.);
-    Fill_SigRegionPlots3(channel, signal_region3 , "mn500", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 110., 60., 50.,120., 610.,370., 550., 7.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "mn600", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 999., 110., 0., 50.,120., 680.,370., 630.,  7.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "mn700", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 999., 110., 0., 50.,120., 800.,370., 885.,  7.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "mn800", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 999., 110., 0., 50.,120., 800.,370., 890.,  7.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "mn900", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 999., 110., 0., 50.,120., 800.,370., 1225.,  7.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "mn1000", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 999., 110., 0., 50.,120., 800.,370., 1230.,  7.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "mn1100", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 110., 0., 50.,120., 800.,370., 1245., 6.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "mn1200", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 999., 110., 0., 50.,120., 800.,370., 1690.,  7.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "mn1300", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 999., 110., 0., 50.,120., 800.,370., 1890.,  7.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "mn1400", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 999., 110., 0., 50.,120., 800.,370., 1940.,  7.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "mn1500", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 110., 0., 50.,120., 800.,370., 2220., 6.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "mn1700", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 110., 0., 50.,120., 800.,370., 2520., 6.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "mn2000", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 110., 0., 50.,120., 800.,370., 2720., 6.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "mn2500", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 110., 0., 50.,120., 800.,370., 3220., 6.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "mn5000", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 110., 0., 50.,120., 800.,370., 99999., 6.);
-    Fill_SigRegionPlots3(channel,signal_region3 , "mn20000", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 4, 25., 9999., 110., 0., 50.,120., 800.,370., 9999999., 6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "mn100", label, jets,  fatjets ,  leps,  _MET, _npv, w, 4, 25., 3.1, 25., 15., 50.,120., 110., 55., 115., 9.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "mn125", label, jets,  fatjets ,  leps,  _MET, _npv, w, 4, 25., 3.1, 25., 25., 50.,120., 140., 85., 140., 7.);      
+    Fill_SigRegionPlots3(channel,signal_region3 , "mn200", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 3.1, 50., 40., 50.,120., 250.,160., 215.,  7.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "mn250", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 3.1, 85., 45., 50.,120., 310.,215., 270.,  7.);      
+    Fill_SigRegionPlots3(channel,signal_region3 , "mn300", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 999., 100., 50., 50.,120., 370.,225., 340.,  7.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "mn400", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 999., 110., 60., 50.,120., 490.,296., 490.,  7.);
+    Fill_SigRegionPlots3(channel, signal_region3 , "mn500", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 110., 60., 50.,120., 610.,370., 550., 7.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "mn600", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 999., 110., 0., 50.,120., 680.,370., 630.,  7.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "mn700", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 999., 110., 0., 50.,120., 800.,370., 885.,  7.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "mn800", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 999., 110., 0., 50.,120., 800.,370., 890.,  7.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "mn900", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 999., 110., 0., 50.,120., 800.,370., 1225.,  7.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "mn1000", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 999., 110., 0., 50.,120., 800.,370., 1230.,  7.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "mn1100", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 110., 0., 50.,120., 800.,370., 1245., 6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "mn1200", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 999., 110., 0., 50.,120., 800.,370., 1690.,  7.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "mn1300", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 999., 110., 0., 50.,120., 800.,370., 1890.,  7.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "mn1400", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 999., 110., 0., 50.,120., 800.,370., 1940.,  7.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "mn1500", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 110., 0., 50.,120., 800.,370., 2220., 6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "mn1700", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 110., 0., 50.,120., 800.,370., 2520., 6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "mn2000", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 110., 0., 50.,120., 800.,370., 2720., 6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "mn2500", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 110., 0., 50.,120., 800.,370., 3220., 6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "mn5000", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 110., 0., 50.,120., 800.,370., 99999., 6.);
+    Fill_SigRegionPlots3(channel,signal_region3 , "mn20000", label, jets,  fatjets,  leps,  _MET, _npv, w, 4, 25., 9999., 110., 0., 50.,120., 800.,370., 9999999., 6.);
     
   } // MM
 
@@ -466,65 +535,65 @@ void HNL_LeptonCore::Fill_All_SignalRegion3(HNL_LeptonCore::Channel channel, TSt
   return;
 }
 
-void HNL_LeptonCore::Fill_All_SignalRegion1(HNL_LeptonCore::Channel channel, TString signal_region1, bool isdata, TString charge_s, TString label, std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Electron> electrons, std::vector<Muon> muons, Particle _MET,int _npv  , double w, bool FullAnalysis){
+void HNL_LeptonCore::Fill_All_SignalRegion1(HNL_LeptonCore::Channel channel, TString signal_region1, bool isdata, TString charge_s, TString label, std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Lepton *> leps, Particle _MET,int _npv  , double w, bool FullAnalysis){
   
   // get loop of systs + one nominal                                                                                                                         
   
-  Fill_SigRegionPlots1(channel,signal_region1 + "_highmass","", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w,  9999.,  9999.,  9999.,  9999.,  9999.,  9999.,  9999.);
+  Fill_SigRegionPlots1(channel,signal_region1 + "_highmass","", label, jets,  fatjets,  leps,  _MET, _npv, w,  9999.,  9999.,  9999.,  9999.,  9999.,  9999.,  9999.);
 
   if(!FullAnalysis)  return;
   
   if(channel == EE){
     // EE SR2/4
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn100", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 25.,15., 40.,130., 90., 220., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn125", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 60.,15., 40.,130., 123., 145., 15.);////////////////
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn200", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 100., 20., 40., 130., 173., 220., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn250", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 100., 25., 40., 130., 220., 305., 15.);//////////////
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn300", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 100., 30., 40., 130., 270, 330., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn400", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 100., 35., 40., 130., 330., 440., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn500", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 120., 35., 40., 130., 440., 565., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn600", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 120., 0., 40., 130., 565., 675., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn700", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0., 40., 130., 635., 775., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn800", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0., 40., 130., 740., 1005., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn900", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0., 40., 130., 865., 1030., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn1000", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0., 40., 130., 890., 1185., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn1100", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0.,40., 130., 1035., 1395., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn1200", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0.,40., 130., 1085., 1460., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn1300", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0.,40., 130., 1140., 1590., 15.);///////////
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn1400", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0.,40., 130., 1245., 1700., 15.);///////
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn1500", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0.,40., 130., 1300., 1800., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn1700", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0.,40., 130., 1300., 2000., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn2000", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0.,40., 130., 1300., 2800., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn2500", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0.,40., 130., 1300., 3800., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn5000", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0.,40., 130., 1300., 5800., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn20000", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0.,40., 130., 1300., 99999., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn100", label, jets,  fatjets,  leps,  _MET, _npv, w, 25.,15., 40.,130., 90., 220., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn125", label, jets,  fatjets,  leps,  _MET, _npv, w, 60.,15., 40.,130., 123., 145., 15.);////////////////
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn200", label, jets,  fatjets,  leps,  _MET, _npv, w, 100., 20., 40., 130., 173., 220., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn250", label, jets,  fatjets,  leps,  _MET, _npv, w, 100., 25., 40., 130., 220., 305., 15.);//////////////
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn300", label, jets,  fatjets,  leps,  _MET, _npv, w, 100., 30., 40., 130., 270, 330., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn400", label, jets,  fatjets,  leps,  _MET, _npv, w, 100., 35., 40., 130., 330., 440., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn500", label, jets,  fatjets,  leps,  _MET, _npv, w, 120., 35., 40., 130., 440., 565., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn600", label, jets,  fatjets,  leps,  _MET, _npv, w, 120., 0., 40., 130., 565., 675., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn700", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0., 40., 130., 635., 775., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn800", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0., 40., 130., 740., 1005., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn900", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0., 40., 130., 865., 1030., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn1000", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0., 40., 130., 890., 1185., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn1100", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0.,40., 130., 1035., 1395., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn1200", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0.,40., 130., 1085., 1460., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn1300", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0.,40., 130., 1140., 1590., 15.);///////////
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn1400", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0.,40., 130., 1245., 1700., 15.);///////
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn1500", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0.,40., 130., 1300., 1800., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn1700", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0.,40., 130., 1300., 2000., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn2000", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0.,40., 130., 1300., 2800., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn2500", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0.,40., 130., 1300., 3800., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn5000", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0.,40., 130., 1300., 5800., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn20000", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0.,40., 130., 1300., 99999., 15.);
     
   }
   if(channel == MuMu){
     // fill mass binned selections                                                                                                                                                                                                                                                                                                                           
     // MM SR2/4
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn100", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 25.,  15., 40.,130., 98., 145., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn125", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 60.,  15., 40.,130., 110., 150., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn200", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 100., 20., 40., 130., 175., 235., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn250", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 25., 40., 130., 226., 280., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn300", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 20., 40., 130., 280., 340., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn400", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 65., 40., 130., 340., 445., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn500", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 65., 40., 130., 445., 560., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn600", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0., 40., 130., 560., 685., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn700", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0., 40., 130., 635., 825., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn800", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0., 40., 130., 755., 960., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn900", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0., 40., 130., 840., 1055., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn1000", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0., 40., 130., 900., 1205., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn1100", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0.,40., 130., 990., 1250., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn1200", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0.,40., 130., 1035., 1430., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn1300", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0.,40., 130., 1110., 1595., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn1400", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0.,40., 130., 1285., 1700., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn1500", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0.,40., 130., 1330., 1800., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn1700", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0.,40., 130., 1330., 2200., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn2000", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0.,40., 130., 1330., 99999., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn2500", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0.,40., 130., 1330., 99999., 15.);
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn5000", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0.,40., 130., 1330., 9999., 15.);    
-    Fill_SigRegionPlots1(channel,signal_region1 , "mn20000", label, jets,  fatjets,  electrons, muons,  _MET, _npv, w, 140., 0.,40., 130., 1330., 999999., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn100", label, jets,  fatjets,  leps,  _MET, _npv, w, 25.,  15., 40.,130., 98., 145., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn125", label, jets,  fatjets,  leps,  _MET, _npv, w, 60.,  15., 40.,130., 110., 150., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn200", label, jets,  fatjets,  leps,  _MET, _npv, w, 100., 20., 40., 130., 175., 235., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn250", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 25., 40., 130., 226., 280., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn300", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 20., 40., 130., 280., 340., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn400", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 65., 40., 130., 340., 445., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn500", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 65., 40., 130., 445., 560., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn600", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0., 40., 130., 560., 685., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn700", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0., 40., 130., 635., 825., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn800", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0., 40., 130., 755., 960., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn900", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0., 40., 130., 840., 1055., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn1000", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0., 40., 130., 900., 1205., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn1100", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0.,40., 130., 990., 1250., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn1200", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0.,40., 130., 1035., 1430., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn1300", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0.,40., 130., 1110., 1595., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn1400", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0.,40., 130., 1285., 1700., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn1500", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0.,40., 130., 1330., 1800., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn1700", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0.,40., 130., 1330., 2200., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn2000", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0.,40., 130., 1330., 99999., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn2500", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0.,40., 130., 1330., 99999., 15.);
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn5000", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0.,40., 130., 1330., 9999., 15.);    
+    Fill_SigRegionPlots1(channel,signal_region1 , "mn20000", label, jets,  fatjets,  leps,  _MET, _npv, w, 140., 0.,40., 130., 1330., 999999., 15.);
 
 
   }
@@ -538,7 +607,7 @@ void HNL_LeptonCore::Fill_All_SignalRegion1(HNL_LeptonCore::Channel channel, TSt
 
 
 
-bool HNL_LeptonCore::CheckChannelEvent(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps){
+bool HNL_LeptonCore::CorrectChannelStream(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps){
   
   int n_el(0);
   int n_mu(0);
@@ -553,7 +622,7 @@ bool HNL_LeptonCore::CheckChannelEvent(HNL_LeptonCore::Channel channel, std::vec
 
     if (channel==EE     && !(leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::ELECTRON)) return false;
     if (channel==MuMu   && !(leps[0]->LeptonFlavour() == Lepton::MUON     && leps[1]->LeptonFlavour() == Lepton::MUON))    return false;
-    if ((channel==EMu || channel==MuE)  &&
+    if (channel==EMu  &&
 	!( (leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::MUON) ||
 	   (leps[0]->LeptonFlavour() == Lepton::MUON && leps[1]->LeptonFlavour() == Lepton::ELECTRON) ))  return false;
   
@@ -567,12 +636,12 @@ bool HNL_LeptonCore::CheckChannelEvent(HNL_LeptonCore::Channel channel, std::vec
   }
 
   
-  if(channel==MuMuMu  || channel==EEE || channel==EEMu || channel==MuMuE ){
+  if(channel==MuMuMu  || channel==EEE || channel==EMuL ){
     
     if( leps.size() != 3) return false;
     if(channel==MuMuMu && n_mu != 3) return false;
     if(channel==EEE && n_el != 3) return false;
-    if((channel==EEMu || channel==MuMuE ) &&  (n_el == 3  || n_mu == 3)) return false;
+    if(channel==EMuL&&  (n_el == 3  || n_mu == 3)) return false;
     
     
     double lep1_ptcut= (channel==MuMuMu) ?   20. : 25.;
@@ -589,12 +658,12 @@ bool HNL_LeptonCore::CheckChannelEvent(HNL_LeptonCore::Channel channel, std::vec
     return true;
   }
 
-  if(channel == MuMuMuMu || channel == EEEE || channel == EEMuMu ) {
+  if(channel == MuMuMuMu || channel == EEEE || channel == EMuLL ) {
 
     if( leps.size() != 4) return false;
     if( channel==MuMuMuMu && n_mu != 4) return false;
     if( channel==EEEE && n_el != 4) return false;
-    if( channel == EEMuMu && (n_mu == 0 || n_mu == 4)) return false;
+    if( channel == EMuLL && (n_mu == 0 || n_mu == 4)) return false;
     
     double lep1_ptcut= (channel==MuMuMuMu) ?   20. : 25.;
     double lep2_ptcut= (channel==MuMuMuMu) ?   10. : 15.;
@@ -610,13 +679,162 @@ bool HNL_LeptonCore::CheckChannelEvent(HNL_LeptonCore::Channel channel, std::vec
 
 }
 
+double HNL_LeptonCore::GetPtCutTrigger(TString trigname, int nlep){
+  
+  if(trigname.Contains("HLT_Mu17") && trigname.Contains("HLT_TkMu17")) {
+    if(trigname.Contains("Mu8") && trigname.Contains("TkMu8")) {
+    if(nlep==0) return 20;
+    if(nlep==1) return 10;
+    if(nlep>1) return 5.;
+    }  
+  }
+
+  if(trigname.Contains("HLT_Mu50") && trigname.Contains("HLT_TkMu50")) {
+    if(nlep==0) return 55;
+    if(nlep>0) return 5.;
+  }
+
+  if(trigname.Contains("HLT_Iso") && trigname.Contains("Mu24")) {
+    if(nlep==0) return 26;
+    if(nlep>0) return 5.;
+  }
+
+  if(trigname.Contains("HLT_Iso") && trigname.Contains("Mu27")) {
+    if(nlep==0) return 30;
+    if(nlep>0) return 5.;
+  }
+
+  if(trigname.Contains("HLT_Ele23_Ele12")){
+    if(nlep==0) return 25;
+    if(nlep==1) return 15.;
+    if(nlep>1) return 10.;
+  }
+
+  if(trigname.Contains("HLT_Ele27_WPTight")){
+    if(nlep==0) return 30;
+    if(nlep>0) return 5.;
+  }
+
+  if(trigname.Contains("HLT_Ele25_eta2p1")){
+    if(nlep==0) return 27;
+    if(nlep>0) return 5.;
+  }
+
+  if(trigname.Contains("HLT_Ele115")){
+    if(nlep==0) return 120;
+    if(nlep>0) return 5.;
+  }
+  
+  if(trigname.Contains("HLT_Photon175")){
+    if(nlep==0) return 180;
+    if(nlep>0) return 5.;
+  }
+
+  if(trigname.Contains("HLT_Ele45_CaloIdVT")){
+    if(nlep==0) return 50;
+    if(nlep>0) return 5.;
+  }
+
+  if(trigname.Contains("HLT_Ele50_CaloIdVT")){
+    if(nlep==0) return 55;
+    if(nlep>0) return 5.;
+  }
+
+  if(trigname.Contains("HLT_DoubleEle33")){
+    if(nlep==0) return 35;
+    if(nlep==1) return 35;
+    if(nlep>0) return 5.;
+  }
+
+  if(trigname.Contains("HLT_DoubleEle37_Ele27")){
+    if(nlep==0) return 40;
+    if(nlep==1) return 30;
+    if(nlep>0) return 5.;
+  }
+
+  if(trigname.Contains("HLT_DoublePhoton60")){
+    if(nlep==0) return 65;
+    if(nlep>0) return 5.;
+  }
+
+  if(trigname.Contains("HLT_Mu8_TrkIsoVVL_Ele23")){
+    if(nlep==0) return 25;
+    if(nlep==1) return 10;
+    if(nlep>0) return 5.;
+  }
+
+  if(trigname.Contains("HLT_Mu23_TrkIsoVVL_Ele8")){
+    if(nlep==0) return 25;
+    if(nlep==1) return 10;
+    if(nlep>0) return 5.;
+  }
+
+  if(trigname.Contains("HLT_IsoMu27")){
+    if(nlep==0) return 30;
+    if(nlep>0) return 5.;
+  }
+
+  if(trigname.Contains("HLT_Ele32_WPTigh")){
+    if(nlep==0) return 35;
+    if(nlep>0) return 5.;
+  }
+
+  if(trigname.Contains("HLT_Photon200")){
+    if(nlep==0) return 210;
+    if(nlep>0) return 5.;
+  }
+  if(trigname.Contains("HLT_DoublePhoton70")){
+    if(nlep==0) return 80;
+    if(nlep==1) return 80;
+    if(nlep>0) return 5.;
+  }
+
+  if(trigname.Contains("HLT_DoubleEle25")){
+    if(nlep==0) return 28;
+    if(nlep==1) return 28;
+    if(nlep>0) return 5.;
+  }
+
+  return 0.;
+}
+bool HNL_LeptonCore::PassPtTrigger(Event ev, vector<TString> triglist,std::vector<Lepton *> leps){
+  
+  for(auto itrig : triglist){
+    if(ev.IsPDForTrigger(itrig, this->DataStream)) {
+
+      double lep1_ptcut = GetPtCutTrigger(itrig,0);
+      double lep2_ptcut = GetPtCutTrigger(itrig,1);
+      
+      if(leps.size() >0 && lep1_ptcut >= 0){
+	if(leps[0]->Pt() > lep1_ptcut) return true;
+      } 
+      if(leps.size() >1 && lep2_ptcut >= 0){
+        if(leps[1]->Pt() > lep2_ptcut) return true;
+      } 
+    }
+  }
+
+  return false;
+}
+
+bool HNL_LeptonCore::CheckSRStream(Event ev,HNL_LeptonCore::Channel channel_ID){
+
+  if(!IsData) return true;
+  cout << "Running on data " << endl;
+  if(channel_ID==MuMu) return CheckStream(ev, TrigList_HNL_DblMu);
+  if(channel_ID==EE) return CheckStream(ev, TrigList_HNL_DblEG);
+  if(channel_ID==EMu) return CheckStream(ev, TrigList_HNL_MuEG);
+  
+  return true;
+}
+
 bool HNL_LeptonCore::CheckStream(Event ev, vector<TString> triglist){
 
 
   if(!IsData) return true;
-  bool trig_ok_for_data=true;
+  bool trig_ok_for_data=false;
   for(auto itrig : triglist){
-    if(!ev.IsPDForTrigger(itrig, this->DataStream)) trig_ok_for_data=false;
+    if(ev.IsPDForTrigger(itrig, this->DataStream)) trig_ok_for_data=true;
   }
   
   return trig_ok_for_data;
@@ -689,16 +907,10 @@ HNL_LeptonCore::HNL_LeptonCore(){
 
 
 
-void HNL_LeptonCore::Fill_SigRegionPlots4(HNL_LeptonCore::Channel channel, TString label, std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Electron> els, std::vector<Muon> mus, Particle  met, double nvtx,  double w){
+void HNL_LeptonCore::Fill_SigRegionPlots4(HNL_LeptonCore::Channel channel, TString label, std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx,  double w){
 
 
-  std::vector<Lepton *> leps  = MakeLeptonPointerVector(mus,els);
-
-  if(channel == EEE    && els.size() != 3&&mus.size()!=0) return;
-  if(channel == EEMu   && els.size() != 2&&mus.size()!=1) return;
-  if(channel == MuMuMu && els.size() != 0&&mus.size()!=3) return;
-  if(channel == MuMuE  && els.size() != 1&&mus.size()!=2) return;
-
+  if(!CorrectChannelStream(channel, leps)) return;
 
   double HT(0.);
   for(auto ij : jets) HT += ij.Pt();
@@ -736,21 +948,19 @@ void HNL_LeptonCore::Fill_SigRegionPlots4(HNL_LeptonCore::Channel channel, TStri
 
 }
 
-void HNL_LeptonCore::Fill_SigRegionPlots3(HNL_LeptonCore::Channel channel, TString label_sr, TString label_mass, TString label_anid,  std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Electron> els, std::vector<Muon> mus, Particle  met, double nvtx,  double w,  double var1,  double var2, double var3, double var4, double var5, double var6, double var7, double var8, double var9, double var10, double var11){
+void HNL_LeptonCore::Fill_SigRegionPlots3(HNL_LeptonCore::Channel channel, TString label_sr, TString label_mass, TString label_anid,  std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Lepton *> leps , Particle  met, double nvtx,  double w,  double var1,  double var2, double var3, double var4, double var5, double var6, double var7, double var8, double var9, double var10, double var11){
   
-  bool pass = Fill_DefSigRegionPlots3(channel, label_sr, label_mass, label_anid, jets, fatjets, els, mus, met, nvtx, w, var1, var2, var3, var4, var5, var6, var7, var8, var9, var10, var11 );
+  bool pass = Fill_DefSigRegionPlots3(channel, label_sr, label_mass, label_anid, jets, fatjets, leps, met, nvtx, w, var1, var2, var3, var4, var5, var6, var7, var8, var9, var10, var11 );
   
   //Fill_RegionPlots      (channel,true, "FailSR3/"+label_mass , label_anid, jets, fatjets, els, mus,  met, nvtx, w);
 
   return;
 }
 
-bool  HNL_LeptonCore::Fill_DefSigRegionPlots3(HNL_LeptonCore::Channel channel, TString label_sr, TString label_mass, TString label_anid,  std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Electron> els, std::vector<Muon> mus, Particle  met, double nvtx,  double w,  double var1,  double var2, double var3, double var4, double var5, double var6, double var7, double var8, double var9, double var10, double var11){
+bool  HNL_LeptonCore::Fill_DefSigRegionPlots3(HNL_LeptonCore::Channel channel, TString label_sr, TString label_mass, TString label_anid,  std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Lepton *> leps, Particle  met, double nvtx,  double w,  double var1,  double var2, double var3, double var4, double var5, double var6, double var7, double var8, double var9, double var10, double var11){
   
   
-
-  if(channel == EE && els.size() < 2) return false;
-  if(channel == MuMu && mus.size() < 2) return false ;
+  if(!CorrectChannelStream(channel, leps)) return false;
   
   if(jets.size() < 2) return false;
   
@@ -775,7 +985,6 @@ bool  HNL_LeptonCore::Fill_DefSigRegionPlots3(HNL_LeptonCore::Channel channel, T
     }
   }
 
-  std::vector<Lepton *> leps  = MakeLeptonPointerVector(mus,els);
 
   ST += leps[0]->Pt() + leps[1]->Pt() + met.Pt();
   double met2 = pow(met.Pt(),2.);
@@ -791,7 +1000,7 @@ bool  HNL_LeptonCore::Fill_DefSigRegionPlots3(HNL_LeptonCore::Channel channel, T
 
   if(!label_sr.Contains("highmass")){
 
-    HNL_LeptonCore::Region cutflow_SR_index = SR3;
+    HNL_LeptonCore::SearchRegion cutflow_SR_index = SR3;
     //if  (label_anid.Contains("OS")) label_mass+="OS";
     FillEventCutflowPerMass(label_anid,cutflow_SR_index, w, "SR3_default","SR3_"+label_mass);
     
@@ -835,67 +1044,12 @@ bool  HNL_LeptonCore::Fill_DefSigRegionPlots3(HNL_LeptonCore::Channel channel, T
   }
   
 
-  //double sum_eta = fabs(leps[0].Eta()) + fabs(lep2.Eta());
-  int bin = 0;
-  double dRW_lep2 = Wcand.DeltaR(*leps[1]);
-  float met2st = met2/ST;
-  if(leps[0]->Pt() < 150.){
-    if(met2st < 5. && dRW_lep2 < 2.){
-      if(N2cand.M() < 100.) bin=0;
-      else if(N2cand.M() < 125.) bin=1;
-      else if(N2cand.M() < 150.) bin=2;
-      else if(N2cand.M() < 175.) bin=3;
-      else if(N2cand.M() < 200.) bin=4;
-      else bin=5;
-    }
-    else{
-      if(N2cand.M() < 100.) bin=6;
-      else if(N2cand.M() < 125.) bin=7;
-      else if(N2cand.M() < 150.) bin=8;
-      else if(N2cand.M() < 175.) bin=9;
-      else if(N2cand.M() < 200.) bin=10;
-      else bin=5;
-    }
-  }
-  else{
-    
-    if(N1cand.M() < 200)  bin=11;
-    else  if(N1cand.M() < 250.) bin=12;
-    else if(N1cand.M() < 300.) bin=13;
-    else if(N1cand.M() < 500.) bin=14;
-    else if(N1cand.M() < 700.) bin=15;
-    else if(N1cand.M() < 1000.) bin=16;
-    else if(N1cand.M() < 1250.) bin=17;
-    else if(N1cand.M() < 1500.) bin=18;
-    else if(N1cand.M() < 2000.) bin=19;
-    else bin=20;
-    
-  }
-  
-  FillHist( label_anid+"/"+label_sr+ "/"+label_mass+"signalbin",  bin,  w, 20, 0.,20., "SRs");
-  	   
-  double ml1jbins[7] = { 0., 100.,200.,300.,500., 1000., 2000.};
-  double ml2jbins[7] = { 0., 100.,200.,300.,500., 1000., 2000.};
-  double mlljbins[7] = { 0., 100.,200.,300.,500., 1000., 2000.};
-
-  FillHist( label_anid+"/"+label_sr+ "/"+ label_mass +  "reco_mlljj" ,  W1cand.M(),  w, 6,mlljbins, "Reco M_{lljj}");
-  FillHist( label_anid+"/"+label_sr+ "/"+ label_mass+  "reco_ml1jj" ,  N1cand.M(),  w, 6,ml1jbins , "Reco M_{l1jj}");
-  FillHist( label_anid+"/"+label_sr+ "/"+ label_mass +  "reco_ml2jj"  ,  N2cand.M(),  w, 6, ml2jbins, "Reco M_{l2jj}");
-  FillHist( label_anid+"/"+label_sr+ "/"+ label_mass+  "njets" , jets.size() , w, 10, 0., 10., "N_{jets}");
-
-
   return true;
 }
 
-void HNL_LeptonCore::Fill_SigRegionPlots1(HNL_LeptonCore::Channel channel,TString label_sr, TString label_mass, TString label_anid,  std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Electron> els, std::vector<Muon> mus, Particle  met, double nvtx,  double w,  double var1,  double var2, double var3, double var4, double var5, double var6, double var7){
+void HNL_LeptonCore::Fill_SigRegionPlots1(HNL_LeptonCore::Channel channel,TString label_sr, TString label_mass, TString label_anid,  std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Lepton *> leps, Particle  met, double nvtx,  double w,  double var1,  double var2, double var3, double var4, double var5, double var6, double var7){
 
-
-  std::vector<Lepton *> leps  = MakeLeptonPointerVector(mus,els);
-
-  if(channel == EE   && els.size() < 2) return;
-  if(channel == MuMu && mus.size() < 2) return;
-  
-  if(channel == EMu && mus.size() != 1 && els.size() != 1) return;
+  if(!CorrectChannelStream(channel, leps)) return;
   
   if(fatjets.size() == 0) return;
 
@@ -925,7 +1079,7 @@ void HNL_LeptonCore::Fill_SigRegionPlots1(HNL_LeptonCore::Channel channel,TStrin
 
   if(!label_sr.Contains("highmass")){
     
-    HNL_LeptonCore::Region  cutflow_SR_index = SR1;
+    HNL_LeptonCore::SearchRegion  cutflow_SR_index = SR1;
     TString label_mass_tmp=label_mass;
     //if  (label_anid.Contains("OS")) label_mass_tmp+="OS";
 
@@ -959,54 +1113,8 @@ void HNL_LeptonCore::Fill_SigRegionPlots1(HNL_LeptonCore::Channel channel,TStrin
     return;
   }
 
-  double ml1jbins[7] = { 0., 100.,200.,300.,500., 1000., 2000.};
-  double ml2jbins[7] = { 0., 100.,200.,300.,500., 1000., 2000.};
-  double mlljbins[7] = { 0., 100.,200.,300.,500., 1000., 2000.};
-
-  float Nmass2 = (N1cand.M() + N2cand.M())  / 2.;
-  float sumpt=  leps[1]->Pt() + leps[0]->Pt();
-
-
-  int bin = 0;
-  if(sumpt < 100){
-    if( Nmass2 < 100) bin = 0;
-    else  bin = 1;
-  }
-  else   if(sumpt < 200){
-
-    if(Nmass2 < 200) bin = 2;
-    else if(Nmass2 < 250) bin = 3;
-    else if(Nmass2 < 300) bin = 4;
-    else if(Nmass2 < 350) bin = 5;
-    else if(Nmass2 < 400) bin = 6;
-    else  bin =7;
-  }
-  else{
-    if(Nmass2 < 200) bin = 8;
-    else if(Nmass2 < 400) bin = 9;
-    else     if(Nmass2 < 500) bin = 9;
-    else     if(Nmass2 < 600) bin = 10;
-    else     if(Nmass2 < 600) bin = 11;
-    else     if(Nmass2 < 800) bin = 12;
-    else     if(Nmass2 < 900) bin = 13;
-    else     if(Nmass2 < 1000) bin = 14;
-    else     if(Nmass2 < 1250) bin = 15;
-    else     if(Nmass2 < 1500) bin = 16;
-    else     if(Nmass2 < 2000) bin = 17;
-    else bin = 18;
-
-  }
-
-
-  FillHist( label_anid+"/"+label_sr+ "/"+ label_mass +  "signalbin"  ,  bin,  w, 18, 0.,18., "SRs");
-  FillHist( label_anid+"/"+ label_sr+ "/"+ label_mass +  "reco_mllJ"  ,  W1cand.M(),  w, 6, mlljbins, "Reco M_{lljj}");
-  FillHist( label_anid+"/"+ label_sr+ "/"+ label_mass+  "reco_ml1J"  ,  N1cand.M(),  w, 6, ml1jbins, "Reco M_{l1jj}");
-  FillHist( label_anid+"/"+ label_sr+ "/" +label_mass+  "reco_ml2J"  ,  N2cand.M(),  w, 6, ml2jbins, "Reco M_{l2jj}");
-  FillHist( label_anid+"/"+ label_sr+ "/" +label_mass+  "njets", jets.size() , w, 10, 0., 10., "N_{jets}");
-
 
   return;
-
 
 }
 
@@ -1030,8 +1138,8 @@ void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, bool plot
   bool threelep = (leps.size()  == 3);
   bool fourlep  = (leps.size()  == 4);
   
-  if(threelep && !(channel == EEE  || channel == EEMu || channel == MuMuMu || channel == MuMuE)) return;
-  if(fourlep  && !(channel == EEEE  || channel == MuMuMuMu)) return;
+  if(threelep && !(channel == EEE  || channel == EMuL || channel == MuMuMu )) return;
+  if(fourlep  && !(channel == EEEE  || channel == MuMuMuMu || channel == EMuLL)) return;
      
   if(!plotCR) return;
 
@@ -1388,7 +1496,7 @@ void HNL_LeptonCore::FillEventCutflowDef(TString analysis_dir_name,TString histn
 
 
 
-void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::Region sr, float event_weight, TString label,   TString analysis_dir_name){
+void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::SearchRegion sr, float event_weight, TString label,   TString analysis_dir_name){
   
   if (run_Debug) cout << "FillEventCutflow " << label << " " << analysis_dir_name <<  endl;
 
@@ -1397,7 +1505,7 @@ void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::Region sr, float event_wei
   
   
   if(sr==SR1 ){
-    labels = {  "Presel", "AK8Jet",   "SR1_lep_charge",  "SR1_lep_pt", "SR1_dilep_mass" , "SR1_Wmass",  "SR1_MET" , "SR1_bveto" };
+    labels = {  "Presel", "AK8Jet", "SR1_Init",   "SR1_lep_charge",  "SR1_lep_pt", "SR1_dilep_mass" , "SR1_Wmass",  "SR1_MET" , "SR1_bveto" };
     EVhitname= "SR1";
   }
   
@@ -1433,14 +1541,38 @@ void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::Region sr, float event_wei
   }
 
   if(sr==sigmm){
-    labels = {"SSNoCut", "SSGen", "SSGen2", "SSMMTrig", "SSMMTrig2", "SSMMLoose","SSMM", "SSMM_Pt","SSMM_LepVeto", "SSMM_LLMass",  "SSMM_vTau","SSMM_Jet","SSMM_BJet", "SSMM_DiJet",  "SSMM_SR1","SSMM_SR1Fail", "SSMM_SR2","SSMM_SR3","SSMM_SR4","SSMM_SR5","SSMM_SR3Fail"};
+    labels = {"SSNoCut", "SSGen", "SSGen2", "SSMuMuTrig", "SSMuMuTrig2", "SSMuMuTrig2L", "SSMuMu", "SSMuMu_Pt", "SSMuMu_HEMVeto","SSMuMu_LepVeto", "SSMuMu_LLMass",  "SSMuMu_vTau","SSMuMu_Jet","SSMuMu_BJet", "SSMuMu_DiJet",  "SSMuMu_SR1","SSMuMu_SR1Fail", "SSMuMu_SR2","SSMuMu_SR3","SSMuMu_SR4","SSMuMu_SR5","SSMuMu_SR3Fail"};
     EVhitname ="SR_Summary";
   }
 
   if(sr==sigmm_17028){
-    labels = {"SSNoCut", "SSGen","SSGen2", "SSMMTrig", "SSMMTrig2", "SSMMLoose", "SSMM","SSMM_Pt", "SSMM_LepVeto", "SSMM_LLMass", "SSMM_Jet", "SSMM_BJet", "SSMM_DiJet",  "SSMM_SR1","SSMM_SR1Fail","SSMM_SR3","SSMM_SR3Fail"};
+    labels = {"SSNoCut", "SSGen","SSGen2", "SSMuMuTrig", "SSMuMuTrig2","SSMuMuTrig2L" , "SSMuMu","SSMuMu_Pt", "SSMuMu_HEMVeto","SSMuMu_LepVeto", "SSMuMu_LLMass", "SSMuMu_Jet", "SSMuMu_BJet", "SSMuMu_DiJet",  "SSMuMu_SR1","SSMuMu_SR1Fail","SSMuMu_SR3","SSMuMu_SR3Fail"};
     EVhitname ="SR_Summary_17028";
   }
+  
+  if(sr==sigee){
+    labels = {"SSNoCut", "SSGen", "SSGen2", "SSEETrig", "SSEETrig2", "SSEETrig2L","SSEE", "SSEE_Pt","SSEE_LepVeto", "SSEE_HEMVeto","SSEE_LLMass",  "SSEE_vTau","SSEE_Jet","SSEE_BJet", "SSEE_DiJet",  "SSEE_SR1","SSEE_SR1Fail", "SSEE_SR2","SSEE_SR3","SSEE_SR4","SSEE_SR5","SSEE_SR3Fail"};
+    EVhitname ="SR_Summary";
+  }
+
+  if(sr==sigee_17028){
+    labels = {"SSNoCut", "SSGen","SSGen2", "SSEETrig", "SSEETrig2", "SSEETrig2L", "SSEE","SSEE_Pt", "SSEE_HEMVeto", "SSEE_LepVeto", "SSEE_LLMass", "SSEE_Jet", "SSEE_BJet", "SSEE_DiJet",  "SSEE_SR1","SSEE_SR1Fail","SSEE_SR3","SSEE_SR3Fail"};
+    EVhitname ="SR_Summary_17028";
+  }
+
+
+
+  if(sr==sigem){
+    labels = {"SSNoCut", "SSGen", "SSGen2", "SSEMuTrig", "SSEMuTrig2","SSEMuTrig2L","SSEMu", "SSEMu_Pt","SSEMu_LepVeto", "SSEMu_LLMass",  "SSEMu_vTau","SSEMu_Jet","SSEMu_BJet", "SSEMu_DiJet",  "SSEMu_SR1","SSEMu_SR1Fail", "SSEMu_SR2","SSEMu_SR3","SSEMu_SR4","SSEMu_SR5","SSEMu_SR3Fail"};
+    EVhitname ="SR_Summary";
+  }
+
+  if(sr==sigem_17028){
+    labels = {"SSNoCut", "SSGen","SSGen2", "SSEMuTrig", "SSEMuTrig2", "SSEMuTrig2L", "SSEMu","SSEMu_Pt", "SSEMu_LepVeto", "SSEMu_LLMass", "SSEMu_Jet", "SSEMu_BJet", "SSEMu_DiJet",  "SSEMu_SR1","SSEMu_SR1Fail","SSEMu_SR3","SSEMu_SR3Fail"};
+    EVhitname ="SR_Summary_17028";
+  }
+
+
 
 
 
@@ -1450,7 +1582,7 @@ void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::Region sr, float event_wei
   return;
 }      
  
-void HNL_LeptonCore::FillEventCutflowPerMass(TString analysis_dir_name,Region sr, float event_weight, TString label,   TString massname){
+void HNL_LeptonCore::FillEventCutflowPerMass(TString analysis_dir_name,SearchRegion sr, float event_weight, TString label,   TString massname){
 
   if(sr==SR3 ){
 
@@ -1496,7 +1628,7 @@ void HNL_LeptonCore::FillEventCutflowPerMass(TString analysis_dir_name,Region sr
 }
 
  
-void HNL_LeptonCore::FillEventCutflowSR(TString analysis_dir_name,HNL_LeptonCore::Region sr, float event_weight, TString label){                                                            
+void HNL_LeptonCore::FillEventCutflowSR(TString analysis_dir_name,HNL_LeptonCore::SearchRegion sr, float event_weight, TString label){                                                            
 
   vector<TString> masses = {"100","125","200","250","300","400","500","600","700","800","900","1000","1100","1200","1300","1400","1500","1700","2000","2500","5000","20000"};
   
@@ -1578,16 +1710,19 @@ TString HNL_LeptonCore::GetChannelString(HNL_LeptonCore::Channel channel, HNL_Le
   if (channel == EE) channel_string="EE";
   if (channel == MuMu) channel_string="MuMu";
   if (channel == EMu) channel_string="EMu";
-  if (channel == MuE) channel_string="MuE";
   
   if (channel == EEE) channel_string="EEE";
-  if (channel == EEMu) channel_string="EEMu";
+  if (channel == EMuL) channel_string="EMuL";
   if (channel == MuMuMu) channel_string="MuMuMu";
-  if (channel == MuMuE) channel_string="MuMuE";
-  
 
-  if (q == OS) channel_string+="_OS";
-  else if (q == SS) channel_string+="_SS";
+  
+  if (channel == EEEE) channel_string="EEEE";
+  if (channel == MuMuMuMu) channel_string="MuMuMuMu";
+  if (channel == EMuLL) channel_string="EMuLL";
+
+
+  if (q == Plus) channel_string+="_+";
+  else if (q == Minus) channel_string+="_-";
   else   return channel_string;
 
   return channel_string;
@@ -1595,8 +1730,8 @@ TString HNL_LeptonCore::GetChannelString(HNL_LeptonCore::Channel channel, HNL_Le
 
 TString HNL_LeptonCore::QToString(HNL_LeptonCore::ChargeType q){
 
-  if (q==SS) return "SS";
-  if (q==OS) return "OS";
+  if (q==Plus) return "Plus";
+  if (q==Minus) return "Minus";
   else return "";
   
 }
