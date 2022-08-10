@@ -44,7 +44,7 @@ void HNL_SignalStudies::executeEvent(){
   if(MCSample.Contains("Type") || MCSample.Contains("private"))  MakeType1SignalPlots(process);
   
 
-  AnalyzerParameter param  = InitialiseHNLParameter("SignalStudy");
+  AnalyzerParameter param  = InitialiseHNLParameter("SignalStudy","UL");
 
   double weight(1.);
   Event ev = GetEvent();

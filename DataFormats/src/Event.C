@@ -1315,7 +1315,7 @@ bool Event::IsPDForTrigger(TString trig, TString PD){
       if(trig=="HLT_TriplePhoton_30_30_10_CaloIdLV2_v")  return true;
       if(trig=="HLT_TriplePhoton_35_35_5_CaloIdLV2_R9IdVL_v")  return true;
     }
-    
+
     if(PD=="SingleElectron"){
       if(trig=="HLT_Ele115_CaloIdVT_GsfTrkIdT_v")  return true;
       if(trig=="HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30_v")  return true;

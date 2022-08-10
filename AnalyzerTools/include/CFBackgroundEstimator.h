@@ -40,6 +40,8 @@ public:
   std::map< TString, TH1D* > map_hist_Electron;
   std::map< TString, TH1D* > map_hist_Muon;
 
+  bool IgnoreNoHist;
+
   double GetElectronCFRate(TString ID, TString key, double eta, double pt, int sys=0);
   double GetElectronCFRate2D(TString ID, TString key, double eta, double pt, int sys=0);
   double GetMuonCFRate(TString ID, TString key, double eta, double pt, int sys=0);

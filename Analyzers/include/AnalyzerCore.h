@@ -79,7 +79,8 @@ public:
   double GetFakeWeight(std::vector<Lepton *> leps,  AnalyzerParameter param, bool apply_r);
 
   double GetCFWeightElectron(std::vector<Electron> electrons ,  AnalyzerParameter param);
-
+  double GetCFWeightElectron(vector<double> el_pt, vector<double> el_eta ,  AnalyzerParameter param);
+  double GetCFWeightElectron(std::vector<Lepton* > leps ,  AnalyzerParameter param);
   std::vector<Electron> GetAllElectrons();
   std::vector<Electron> GetElectrons(TString id, double ptmin, double fetamax, bool vetoHEM = false);
 

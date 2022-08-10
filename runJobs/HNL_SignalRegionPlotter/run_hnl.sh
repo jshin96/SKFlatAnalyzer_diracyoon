@@ -8,6 +8,7 @@ nmax=200
 skim=' '
 declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
 
+
 if [[ $1 == "DY" ]]; then
 
     for i in "${era_list[@]}"
@@ -45,22 +46,22 @@ if [[ $1 == "SSWW" ]]; then
 
 fi
 
+
+
+if [[ $1 == "DATA" ]]; then
+
+    for i in "${era_list[@]}"
+    do
+        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_SS2lOR3l & 
+    done
+    
+fi
+
 if [[ $1 == "" ]]; then
 
     for i in "${era_list[@]}"
     do
-	SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_mm.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_SS2lOR3l 
-
+        SKFlat.py -a $analyzer  -i  DoubleMuon:C  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_SS2lOR3l &
     done
 
-fi
-
-
-if [[ $1 == "DATA" ]]; then
-    for i in "${era_list[@]}"
-    do
-        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_mm.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_SS2lOR3l & 
-        #SKFlat.py -a $analyzer  -l $datapath/DATA_l_${i}.txt   -n ${njobs_data}  --nmax ${nmax}    -e ${i} --skim
-    done
-    
 fi

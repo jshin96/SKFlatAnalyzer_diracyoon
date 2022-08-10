@@ -11,6 +11,7 @@ void HNL_LeptonCore::initializeAnalyzer(){
     
   //=== VERBOSE                                                                                                                                        
   run_Debug = HasFlag("DEBUG");
+  
 
   //=== bkg flags                                                                                                                                      
   RunFake   = HasFlag("RunFake");
@@ -178,6 +179,41 @@ void HNL_LeptonCore::initializeAnalyzer(){
 
 }
 
+void HNL_LeptonCore::TriggerPrintOut(Event ev){
+  
+  vector<TString> PDs = {"DoubleEG","DoubleMuon","MuonEG","SingleElectron","SingleMuon", "EGamma"};
+
+  cout << "TriggerPrintOut: MuMu" << endl;
+  for(auto itrig : TrigList_HNL_DblMu){
+    for(auto ipd : PDs){
+      if(ev.IsPDForTrigger(itrig, ipd)) cout << "Trigger " << itrig << " In dataset " << ipd << endl; 
+    }
+  }
+  
+  cout << " " << endl;
+
+  cout << "TriggerPrintOut: EE" << endl;
+  for(auto itrig : TrigList_HNL_DblEG){
+    for(auto ipd : PDs){
+      if(ev.IsPDForTrigger(itrig, ipd)) cout << "Trigger " << itrig << " In dataset " << ipd << endl;
+    }
+  }
+
+  cout << " " << endl;
+
+
+  cout << "TriggerPrintOut: EMu" << endl;
+  for(auto itrig : TrigList_HNL_MuEG){
+    for(auto ipd : PDs){
+      if(ev.IsPDForTrigger(itrig, ipd)) cout << "Trigger " << itrig << " In dataset " << ipd << endl;
+    }
+  }
+
+  cout << " " << endl;
+
+  return;
+
+}
 
 //====================================================/====================================================
 //====================================================/====================================================
@@ -187,6 +223,7 @@ void HNL_LeptonCore::initializeAnalyzer(){
 bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selection, bool apply_ptcut){
 
   bool PassTrigger(false);
+
   if (channel == MuMu){
     
     std::vector<Lepton *> leps_muon;
@@ -196,17 +233,32 @@ bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event 
     if(selection == "Dilep"){
       
       // Check It passes DiMu Trigger
-
       // Check if for data we are running on correct data stream
+      if (!CheckStream(ev, TrigList_HNL_DblMu)) return false;
+      
+      PassTrigger = ev.PassTrigger(TrigList_HNL_DblMu);
+
+      if(apply_ptcut){
+        if(!PassPtTrigger(ev, TrigList_HNL_DblMu, leps_muon)) PassTrigger=false;
+
+      }
+
+    }
+    
+    else     if(selection == "lep"){
+
+      // Check It passes DiMu Trigger                                                                                                                                                                         
+      // Check if for data we are running on correct data stream                                                                                                                                              
       if (!CheckStream(ev, TrigList_HNL_Mu)) return false;
-      
+
       PassTrigger = ev.PassTrigger(TrigList_HNL_Mu);
-      
+
       if(apply_ptcut){
         if(!PassPtTrigger(ev, TrigList_HNL_Mu, leps_muon)) PassTrigger=false;
       }
 
     }
+
     else if(selection == "HighPt"){
 
       if (!CheckStream(ev, TrigList_HNL_HighPtMu)) return false;                                                                                
@@ -309,7 +361,6 @@ bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event 
     
     else    if(selection == "Full"){
       
-      //if (!CheckStream(ev, TrigList_Full_MuEG)) return false;
       PassTrigger = ev.PassTrigger(TrigList_Full_MuEG);
       
       if(apply_ptcut){
@@ -324,25 +375,25 @@ bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event 
     }
   }
   
-    
-    
+       
 
 
 
   return PassTrigger;
 }
 
-AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup){
+AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TString tag){
   
   AnalyzerParameter param  ;
   param.Clear();
 
+  param.Name  = s_setup+tag;
+  param.DefName  =s_setup+tag;
   if (s_setup=="SignalStudy"){
 
     param.syst_ = AnalyzerParameter::Central;
-    param.Name  = "SignalStudy";
-    param.DefName  = "SignalStudy";
-    param.MCCorrrectionIgnoreNoHist = false;
+
+    param.MCCorrrectionIgnoreNoHist = true;
 
     param.Jet_ID                     = "tight";
     param.FatJet_ID                  = "tight";
@@ -357,12 +408,10 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup){
     param.Tau_Veto_ID = "HNVeto";
 
   }
-  else if (s_setup=="SignalStudy"){
+  else if (s_setup=="SignalRegion"){
 
     param.syst_ = AnalyzerParameter::Central;
-    param.Name  = "SignalRegion";
-    param.DefName  = "SignalRegion";
-    param.MCCorrrectionIgnoreNoHist = false;
+    param.MCCorrrectionIgnoreNoHist = true;
 
     param.Jet_ID                     = "tight";
     param.FatJet_ID                  = "tight";
@@ -375,6 +424,27 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup){
     param.Electron_Veto_ID = "HNVeto2016";
 
     param.Tau_Veto_ID = "HNVeto";
+
+  }
+  else if (s_setup=="EXO17028SR"){
+
+    param.syst_ = AnalyzerParameter::Central;
+
+    param.MCCorrrectionIgnoreNoHist = true;
+
+    param.Jet_ID                     = "tight";
+    param.FatJet_ID                  = "tight";
+    param.BJet_Method                = "2a";
+
+    param.Muon_Tight_ID = "HNTight_17028";
+    param.Electron_Tight_ID = "HNTight_17028";
+
+    param.Muon_Tight_ID = "HNLoose_17028";
+    param.Electron_Tight_ID = "HNLoose_17028";
+
+    param.Muon_Veto_ID = "HNVeto_17028";
+    param.Electron_Veto_ID = "HNVeto_17028";
+
 
   }
   else{
@@ -465,6 +535,23 @@ void HNL_LeptonCore::PrintParam(AnalyzerParameter param){
   
 }
 
+double HNL_LeptonCore::SetupWeight(Event ev, TString Option){
+
+  //=== Apply MC weight                                                                                                                                                                                    
+  if(IsDATA) return 1.;
+
+  double this_mc_weight = ev.GetTriggerLumi("Full") * MCweight(true, true) *GetPileUpWeight(nPileUp,0) * GetKFactor();
+  if(Option.Contains("pileup:0")) this_mc_weight = ev.GetTriggerLumi("Full") * MCweight(true, true) *GetPileUpWeight(nPileUp,0) * GetKFactor();
+  if(Option.Contains("pileup:-1")) this_mc_weight = ev.GetTriggerLumi("Full") * MCweight(true, true) *GetPileUpWeight(nPileUp,-1) * GetKFactor();
+  if(Option.Contains("pileup:1")) this_mc_weight = ev.GetTriggerLumi("Full") * MCweight(true, true) *GetPileUpWeight(nPileUp,1) * GetKFactor();
+
+  FillWeightHist("MCWeight_" ,MCweight(true, true));
+  FillWeightHist("MCFullWeight_" , this_mc_weight);
+  FillWeightHist("PileupWeight_" , GetPileUpWeight(nPileUp,0));
+
+  return this_mc_weight;
+  
+}
 
 
 void HNL_LeptonCore::Fill_All_SignalRegion3(HNL_LeptonCore::Channel channel, TString signal_region3, bool isdata, TString charge_s, TString label, std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Lepton *> leps,   Particle _MET,int _npv  , double w    , bool FullAnalysis ){
@@ -798,20 +885,26 @@ double HNL_LeptonCore::GetPtCutTrigger(TString trigname, int nlep){
   return 0.;
 }
 bool HNL_LeptonCore::PassPtTrigger(Event ev, vector<TString> triglist,std::vector<Lepton *> leps){
-  
-  for(auto itrig : triglist){
-    if(ev.IsPDForTrigger(itrig, this->DataStream)) {
 
-      double lep1_ptcut = GetPtCutTrigger(itrig,0);
-      double lep2_ptcut = GetPtCutTrigger(itrig,1);
-      
-      if(leps.size() >0 && lep1_ptcut >= 0){
-	if(leps[0]->Pt() > lep1_ptcut) return true;
-      } 
-      if(leps.size() >1 && lep2_ptcut >= 0){
-        if(leps[1]->Pt() > lep2_ptcut) return true;
-      } 
+  /// Code to check if event passes trigger/ Trigger is in PD running on for DAta and pt cuts are applied
+  
+
+  for(auto itrig : triglist){
+
+    bool pass_trig_pt=true;    
+    if(IsData&&!ev.IsPDForTrigger(itrig, this->DataStream)) continue;
+
+    double lep1_ptcut = GetPtCutTrigger(itrig,0);
+    double lep2_ptcut = GetPtCutTrigger(itrig,1);
+    
+    if(leps.size() >0 && lep1_ptcut >= 0){
+      if(leps[0]->Pt() < lep1_ptcut) pass_trig_pt=false;
+    } 
+    if(leps.size() >1 && lep2_ptcut >= 0){
+      if(leps[1]->Pt() < lep2_ptcut) pass_trig_pt= false;
     }
+    
+    if(pass_trig_pt) return true;
   }
 
   return false;
@@ -820,7 +913,6 @@ bool HNL_LeptonCore::PassPtTrigger(Event ev, vector<TString> triglist,std::vecto
 bool HNL_LeptonCore::CheckSRStream(Event ev,HNL_LeptonCore::Channel channel_ID){
 
   if(!IsData) return true;
-  cout << "Running on data " << endl;
   if(channel_ID==MuMu) return CheckStream(ev, TrigList_HNL_DblMu);
   if(channel_ID==EE) return CheckStream(ev, TrigList_HNL_DblEG);
   if(channel_ID==EMu) return CheckStream(ev, TrigList_HNL_MuEG);
@@ -1533,7 +1625,11 @@ void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::SearchRegion sr, float eve
 	      "OS_Dilep" ,"OS_lep_veto", "OS_Dilep_mass", "OS_Presel"};
     EVhitname ="OS_Presel";
   }
-  
+  if(sr==ChannelDep){
+    labels = {"MuMu_Presel","EE_Presel","EMu_Presel","MuMu_SR1","EE_SR1","EMu_SR1","MuMu_SR2","EE_SR2","EMu_SR2","MuMu_SR3","EE_SR3","EMu_SR3"};
+    EVhitname ="ChannelDependant";
+  }
+
   if(sr==SR){
     labels = {"SR1Pass","SR1Fail","SR2Pass","SR2Fail","SR3Pass","SR3Fail","SR4Pass","SR4Fail"
     };

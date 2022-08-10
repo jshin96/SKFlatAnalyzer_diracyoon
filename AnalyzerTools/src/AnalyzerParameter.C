@@ -2,23 +2,23 @@
 
 void AnalyzerParameter::Clear(){
 
-  Name = "";
-  DefName = "";
+  Name = "Default";
+  DefName = "Default";
 
   MCCorrrectionIgnoreNoHist = false;
   DEBUG = false;
 
-  Electron_Tight_ID = "";
-  Electron_Loose_ID = "";
-  Electron_Veto_ID = "";
-  Electron_ID_SF_Key = "";
+  Electron_Tight_ID = "Default";
+  Electron_Loose_ID = "Default";
+  Electron_Veto_ID = "Default";
+  Electron_ID_SF_Key = "Default";
   Electron_Trigger_SF_Key = "Default";
   Electron_Trigger_NameForSF = "Default";
 
-  Electron_FR_ID = "";
-  Electron_FR_Key = "";
-  Electron_CF_ID = "";
-  Electron_CF_Key = "";
+  Electron_FR_ID = "Default";
+  Electron_FR_Key = "Default";
+  Electron_CF_ID = "Default";
+  Electron_CF_Key = "Default";
   Electron_Tight_RelIso = 999.;
   Electron_Loose_RelIso = 999.;
   Electron_Veto_RelIso = 999.;
@@ -28,23 +28,23 @@ void AnalyzerParameter::Clear(){
 
 
   
-  Tau_Tight_ID = "";
-  Tau_Loose_ID = "";
-  Tau_Veto_ID = "";
+  Tau_Tight_ID = "Default";
+  Tau_Loose_ID = "Default";
+  Tau_Veto_ID = "Default";
 
-  Muon_Tight_ID = "";
-  Muon_Loose_ID = "";
-  Muon_Veto_ID = "";
-  Muon_RECO_SF_Key = "";
-  Muon_Trigger_SF_Key = "";
+  Muon_Tight_ID = "Default";
+  Muon_Loose_ID = "Default";
+  Muon_Veto_ID = "Default";
+  Muon_RECO_SF_Key = "Default";
+  Muon_Trigger_SF_Key = "Default";
   Muon_Trigger_NameForSF = "Default";
-  Muon_ID_SF_Key = "";
-  Muon_ISO_SF_Key = "";
-  Muon_Trigger_SF_Key = "";
-  Muon_FR_ID = "";
-  Muon_FR_Key = "";
-  Muon_CF_ID = "";
-  Muon_CF_Key = "";
+  Muon_ID_SF_Key = "Default";
+  Muon_ISO_SF_Key = "Default";
+  Muon_Trigger_SF_Key = "Default";
+  Muon_FR_ID = "Default";
+  Muon_FR_Key = "Default";
+  Muon_CF_ID = "Default";
+  Muon_CF_Key = "Default";
   Muon_Tight_RelIso = 999.;
   Muon_Loose_RelIso = 999.;
   Muon_Veto_RelIso = 999.;
@@ -53,13 +53,15 @@ void AnalyzerParameter::Clear(){
   Muon_UseTuneP = false;
   Muon_MinPt = 10.;
 
+  SystDir_ElectronIDSF=0;
+  SystDir_ElectronRecoSF=0;
   SystDir_PU=0;
   SystDir_BTag="central";
   BJet_Method="2a";
 
 
-  Jet_ID = "";
-  FatJet_ID = "";
+  Jet_ID = "Default";
+  FatJet_ID = "Default";
 
   syst_ = Central;
 
@@ -73,34 +75,37 @@ AnalyzerParameter::AnalyzerParameter(){
   MCCorrrectionIgnoreNoHist = false;
   DEBUG = false;
 
-  Electron_Tight_ID = "passTightID";
-  Electron_Loose_ID = "passLooseID";
-  Electron_Veto_ID = "passVetoID";
-  Electron_ID_SF_Key = "passTightID";
-  Electron_Trigger_NameForSF = "Ele32_WPTight_Gsf";
+  Electron_Tight_ID = "Default";
+  Electron_Loose_ID = "Default";
+  Electron_Veto_ID = "Default";
+  Electron_ID_SF_Key = "Default";
+  Electron_Trigger_NameForSF = "Default";
+  Electron_Trigger_SF_Key = "Default";
 
 
-  Tau_Tight_ID = "NoCut";
-  Tau_Loose_ID = "NoCut";
-  Tau_Veto_ID = "NoCut";
+  Tau_Tight_ID = "Default";
+  Tau_Loose_ID = "Default";
+  Tau_Veto_ID = "Default";
 
-  Muon_Tight_ID = "POGTightWithTightIso";
-  Muon_Loose_ID = "POGLoose";
-  Muon_Veto_ID = "POGLoose";
-  Muon_RECO_SF_Key = "";
-  Muon_ID_SF_Key = "NUM_TightID_DEN_genTracks";
-  Muon_ISO_SF_Key = "NUM_TightRelIso_DEN_TightIDandIPCut";
-  Muon_Trigger_SF_Key = "POGTight";
-  Muon_Trigger_NameForSF = "IsoMu24";
+  Muon_Tight_ID = "Default";
+  Muon_Loose_ID = "Default";
+  Muon_Veto_ID = "Default";
+  Muon_RECO_SF_Key = "Default";
+  Muon_ID_SF_Key = "Default";
+  Muon_ISO_SF_Key = "Default";
+  Muon_Trigger_SF_Key = "Default";
+  Muon_Trigger_NameForSF = "Default";
+    
 
 
-
+  SystDir_ElectronIDSF=0;
+  SystDir_ElectronRecoSF=0;
   SystDir_PU=0;
-  SystDir_BTag="central";
-  BJet_Method="2a";
+  SystDir_BTag="Default";
+  BJet_Method="Default";
 
-  Jet_ID = "HN";
-  FatJet_ID = "HN";
+  Jet_ID = "Default";
+  FatJet_ID = "Default";
 
   syst_ = Central;
 

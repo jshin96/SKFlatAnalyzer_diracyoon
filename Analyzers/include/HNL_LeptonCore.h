@@ -34,6 +34,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   };
   enum SearchRegion
   {
+    ChannelDep=19,
     SR1=20,
     SR2=21,
     SR3=22,
@@ -68,13 +69,14 @@ class HNL_LeptonCore : public AnalyzerCore {
   void initializeAnalyzer();
 
   AnalyzerParameter InitialiseHNLParameters( TString analysis_tag, vector<vector<TString> >  param_vec);
-  AnalyzerParameter InitialiseHNLParameter(TString s_setup);  
+  AnalyzerParameter InitialiseHNLParameter(TString s_setup, TString tag);  
 
 
 
   //===== TRIGGER
 
   bool PassPtTrigger(Event ev, vector<TString> triglist,std::vector<Lepton *> leps);
+  void TriggerPrintOut(Event ev);
   bool PassTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selection, bool applt_ptcut=true);
   // ============= HELPER FUNCTIONS
   void PrintParam(AnalyzerParameter param);
@@ -82,6 +84,8 @@ class HNL_LeptonCore : public AnalyzerCore {
  
   bool CorrectChannelStream(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps);
 
+
+  double SetupWeight(Event ev, TString Option="");
   double GetPtCutTrigger(TString trigname, int nlep);
   bool CheckSRStream(Event ev,HNL_LeptonCore::Channel channel_ID);
   bool CheckStream(Event ev,vector<TString> triglist);

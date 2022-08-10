@@ -182,6 +182,7 @@ bool Electron::PassID(TString ID) const{
 
   //==== HN
   if(ID=="HNVeto2016") return Pass_HNVeto2016(); // --- vet MVA + VVLoose ISO/IP
+  if(ID=="HNVeto_17028") return Pass_HNVeto2016(); // --- vet MVA + VVLoose ISO/IP
   if(ID=="HNVeto") return Pass_HNVeto(0.6); // -- VETO POG + VVLoose ISO/IP        
 
   if(ID=="HNLoosest") return Pass_HNLoosest(); // OR of VETO IDs
@@ -306,8 +307,8 @@ int  Electron::PassIDOptLoose(TString ID) const{
   if(ID=="passMVAID_noIso_WP90LooseV2") return Pass_HNLoose2016MVANonIso(0.6,0.02,0.05,5)? 1 : 0 ;
   if(ID=="HNMVALoose") return Pass_HNMVALoose(0.6, 999., 999.)? 1 : 0 ;
 
-  if(ID=="HNLoose_17028_LooseIP")       return Pass_HNLoose2016(0.6, 0.2, 0.1, 10.)? 1 : 0 ;
-  if(ID=="HNLoose_17028")  return Pass_HNLoose2016(0.6, 0.01, 0.04, 4.)? 1 : 0 ;
+  if(ID=="HNLoose_17028")       return Pass_HNLoose2016(0.6, 0.2, 0.1, 10.)? 1 : 0 ;
+  if(ID=="HNLoose_17028_TightIP")  return Pass_HNLoose2016(0.6, 0.01, 0.04, 4.)? 1 : 0 ;
   if(ID=="HNLoose_17028_TOP")   return Pass_HNLoose2016(0.6, 0.02, 0.04, 4.)? 1 : 0 ;
 
 

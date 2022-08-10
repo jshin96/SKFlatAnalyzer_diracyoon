@@ -1567,9 +1567,9 @@ double AnalyzerCore::GetLeptonSFEventWeight(std::vector<Lepton *> leps, Analyzer
 	
 	this_weight *= this_recosf*this_idsf;
 
-	//double this_trigsf = mcCorr->ElectronTrigger_SF(param.Electron_Trigger_SF_Key, param.Electron_Trigger_NameForSF, electrons);
+	double this_trigsf = mcCorr->ElectronTrigger_SF(param.Electron_Trigger_SF_Key, param.Electron_Trigger_NameForSF,leps);
 
-	//this_weight  *= this_trigsf;
+	this_weight  *= this_trigsf;
 
       }
       if(lep->LeptonFlavour() == Lepton::MUON){
@@ -1580,7 +1580,7 @@ double AnalyzerCore::GetLeptonSFEventWeight(std::vector<Lepton *> leps, Analyzer
 
 	double this_idsf   = mcCorr->MuonID_SF (param.Muon_ID_SF_Key,  this_eta, this_pt);
 	double this_isosf  = mcCorr->MuonISO_SF(param.Muon_ISO_SF_Key, this_eta, this_pt);
-	double this_trigsf = 1.;//mcCorr->MuonTrigger_SF(param.Muon_Trigger_SF_Key, param.Muon_Trigger_NameForSF, muons);
+	double this_trigsf = mcCorr->MuonTrigger_SF(param.Muon_Trigger_SF_Key, param.Muon_Trigger_NameForSF, leps);
 
 	this_weight *= this_idsf*this_isosf*this_trigsf;
 
@@ -1645,34 +1645,6 @@ double AnalyzerCore::GetFakeRateM(double eta, double pt, AnalyzerParameter param
 
 
 
-
-double AnalyzerCore::GetFakeWeightElectron(std::vector<Electron> electrons , AnalyzerParameter param){
-
-
-  double this_weight = -1.;
-  vector<double> FRs;
-
-  double this_fr = -999.;
-  for(auto el : electrons){
-
-    if( el.PassID(param.Electron_Tight_ID) ) continue;
-    this_fr = fakeEst->GetElectronFakeRate(param.Electron_Tight_ID, param.Electron_FR_Key, fabs(el.scEta()), el.Pt());
-    this_weight *= -1.*this_fr/(1.-this_fr);
-
-    FRs.push_back(this_fr);
-
-  }
-  if(FRs.size()==0){
-    return 0;
-  }
-  else{
-    return this_weight;
-  }
-  return 0.;
-}
-
-
-
 double AnalyzerCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParameter param, bool apply_r){
 
   if(!IsData) return 1.;
@@ -1721,150 +1693,49 @@ double AnalyzerCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParameter
 }
 
 
-double AnalyzerCore::GetFakeWeightElectron(std::vector<Electron> electrons , vector<TString> trigs, AnalyzerParameter param){
-
-  double this_weight = -1.;
-  if (electrons.size() ==1){
-    TString fr_key1 = param.Electron_FR_Key;
-    TString pr_key1 = "ptcone_eta_Prescaled";
-
-    double this_fr1 = fakeEst->GetElectronFakeRate(param.Electron_Tight_ID, fr_key1, fabs(electrons[0].Eta()), electrons[0].Pt());
-    double this_pr1 = fakeEst->GetElectronPromptRate(param.Electron_Tight_ID, pr_key1, fabs(electrons[0].Eta()), electrons[0].Pt());
-
-    this_weight=  fakeEst->CalculateLepWeight(this_pr1, this_fr1, electrons[0].PassID(param.Electron_Tight_ID));
 
 
-    return this_weight;
+double AnalyzerCore::GetCFWeightElectron(std::vector<Lepton* > leps ,  AnalyzerParameter param){
 
-  }
-
-  if (electrons.size() ==2){
-
-    TString fr_key1 = param.Electron_FR_Key;
-    TString fr_key2 = param.Electron_FR_Key;
-    TString pr_key1 = "ptcone_eta_Prescaled";
-    TString pr_key2 = "ptcone_eta_Prescaled";
-
-    double this_fr1 = fakeEst->GetElectronFakeRate(param.Electron_Tight_ID, fr_key1, fabs(electrons[0].Eta()), electrons[0].Pt());
-    double this_fr2 = fakeEst->GetElectronFakeRate(param.Electron_Tight_ID, fr_key2, fabs(electrons[1].Eta()), electrons[1].Pt());
-
-    double this_pr1 = fakeEst->GetElectronPromptRate(param.Electron_Tight_ID, pr_key1, fabs(electrons[0].Eta()), electrons[0].Pt());
-    double this_pr2 = fakeEst->GetElectronPromptRate(param.Electron_Tight_ID, pr_key2, fabs(electrons[1].Eta()), electrons[1].Pt());
-
-    this_weight = fakeEst->CalculateDilepWeight(this_pr1,this_fr1, this_pr2, this_fr2, electrons[0].PassID(param.Electron_Tight_ID) , electrons[1].PassID(param.Electron_Tight_ID), 0);
-
-                                                                                                                                                 
-    return this_weight;
-  }
-  else{
-    return GetFakeWeightElectron(electrons, param);
-  }
-  return -999.;
-
-
-}
-
-
-
-double AnalyzerCore::GetFakeWeightMuon(std::vector<Muon> muons , vector<TString> trigs, AnalyzerParameter param){
-
-
-  double this_weight = -1.;
-  if (muons.size() ==1){
-    TString fr_key1 = param.Muon_FR_Key;
-    TString pr_key1 = "ptcone_eta_Prescaled";
-    if(trigs[0].Contains("IsoMu")) {
-      fr_key1 = fr_key1.ReplaceAll("AwayJetPt","UnPrescaled_AwayJetPt");
-      pr_key1 = pr_key1.ReplaceAll("Prescaled","UnPrescaled");
+  vector<double> el_pt,el_eta;
+  for(auto ilep : leps){
+    if(ilep->LeptonFlavour()==Lepton::ELECTRON){
+      el_pt.push_back(ilep->Pt());
+      el_eta.push_back(ilep->Eta());
     }
-    double this_fr1 = fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, fr_key1, fabs(muons[0].Eta()), muons[0].Pt());
-    double this_pr1 = fakeEst->GetMuonPromptRate(param.Muon_Tight_ID, pr_key1, fabs(muons[0].Eta()), muons[0].Pt());
-
-    this_weight=  fakeEst->CalculateLepWeight(this_pr1, this_fr1, muons[0].PassID(param.Muon_Tight_ID));
-
-
-    return this_weight;
-
   }
 
-
-  if (muons.size() ==2){
-
-    TString fr_key1 = param.Muon_FR_Key;
-    TString fr_key2 = param.Muon_FR_Key;
-    TString pr_key1 = "ptcone_eta_Prescaled";
-    TString pr_key2 = "ptcone_eta_Prescaled";
-
-    if(trigs[0].Contains("IsoMu")) {
-      fr_key1 = fr_key1.ReplaceAll("AwayJetPt","UnPrescaled_AwayJetPt");
-      pr_key1 = pr_key1.ReplaceAll("Prescaled","UnPrescaled");
-    }
-
-    double this_fr1 = fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, fr_key1, fabs(muons[0].Eta()), muons[0].Pt());
-    double this_fr2 = fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, fr_key2, fabs(muons[1].Eta()), muons[1].Pt());
-
-    double this_pr1 = fakeEst->GetMuonPromptRate(param.Muon_Tight_ID, pr_key1, fabs(muons[0].Eta()), muons[0].Pt());
-    double this_pr2 = fakeEst->GetMuonPromptRate(param.Muon_Tight_ID, pr_key2, fabs(muons[1].Eta()), muons[1].Pt());
-
-    this_weight = fakeEst->CalculateDilepWeight(this_pr1,this_fr1, this_pr2, this_fr2, muons[0].PassID(param.Muon_Tight_ID) , muons[1].PassID(param.Muon_Tight_ID), 0);
-
-    return this_weight;
-  }
-  else {
-    return GetFakeWeightMuon(muons, param);
-  }
-  return -999.;
-
+  return GetCFWeightElectron(el_pt,el_eta, param);
 }
-
-
-
-double AnalyzerCore::GetFakeWeightMuon(std::vector<Muon> muons , AnalyzerParameter param){
-
-
-
-  double this_weight = -1.;
-  vector<double> FRs;
-
-  double this_fr = -999.;
-  for(auto mu : muons){
-
-    if( mu.PassID(param.Muon_Tight_ID) ) continue;
-    this_fr = fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, param.Muon_FR_Key, fabs(mu.Eta()), mu.Pt());
-    this_weight *= -1.*this_fr/(1.-this_fr);
-
-    FRs.push_back(this_fr);
-
-  }
-
-
-  if(FRs.size()==0){
-    return 0;
-  }
-  else{
-    return this_weight;
-  }
-
-}
-
-
 
 double AnalyzerCore::GetCFWeightElectron(std::vector<Electron> electrons ,  AnalyzerParameter param){
+
+  vector<double> el_pt, el_eta;
+  for(auto ilep : electrons){
+    el_pt.push_back(ilep.Pt());
+    el_eta.push_back(ilep.scEta());
+    
+  }
+
+  return GetCFWeightElectron(el_pt,el_eta, param);
+}
+
+
+double AnalyzerCore::GetCFWeightElectron(vector<double> el_pt, vector<double> el_eta ,  AnalyzerParameter param){
   //double CFBackgroundEstimator::GetElectronCFRate(TString ID, TString key, double eta, double pt, int sys){                                    
 
-  //  cout << "GetCFWeightElectron" << endl;                                                                                                       
-
-  double el1_cf_rate =   cfEst->GetElectronCFRate2D(param.Electron_Tight_ID,"central",(electrons[0].scEta()), electrons[0].Pt(), 0);
-  double el2_cf_rate =   cfEst->GetElectronCFRate2D(param.Electron_Tight_ID,"central",(electrons[1].scEta()), electrons[1].Pt(), 0);
-
-  // for(auto iel : electrons) cout << iel.Pt() << " " << iel.Eta() << endl;                                                                     
-  //cout << "GetCFWeightElectron " << el1_cf_rate<< endl;                                                                                        
-  //  cout << "GetCFWeightElectron " << el2_cf_rate<< endl;                                                                                      
+  cfEst->IgnoreNoHist = param.MCCorrrectionIgnoreNoHist;
 
 
-  if((electrons[0].scEta()) < 1.5) el1_cf_rate *= 0.95;
+  if(el_pt.size()  != 2) return 1.;
+
+  double el1_cf_rate =   cfEst->GetElectronCFRate2D(param.Electron_Tight_ID,"central",el_eta[0], el_pt[0], 0);
+  double el2_cf_rate =   cfEst->GetElectronCFRate2D(param.Electron_Tight_ID,"central",el_eta[1], el_pt[1], 0);
+
+
+  if((el_eta[0]) < 1.5) el1_cf_rate *= 0.95;
   else el1_cf_rate *= 0.95;
-  if((electrons[1].scEta()) < 1.5) el2_cf_rate *= 0.95;
+  if((el_eta[1]) < 1.5) el2_cf_rate *= 0.95;
   else el2_cf_rate *= 0.95;
 
   double cf_weight = (el1_cf_rate / (1.-el1_cf_rate))  + (el2_cf_rate/(1.-el2_cf_rate));

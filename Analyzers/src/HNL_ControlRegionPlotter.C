@@ -10,7 +10,7 @@ void HNL_ControlRegionPlotter::initializeAnalyzer(){
 void HNL_ControlRegionPlotter::executeEvent(){
 
 
-  AnalyzerParameter param  = InitialiseHNLParameter("ControlRegionPlotter");
+  AnalyzerParameter param  = InitialiseHNLParameter("ControlRegionPlotter","UL");
 
   double weight(1.);
   Event ev = GetEvent();

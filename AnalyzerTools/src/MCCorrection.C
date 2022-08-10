@@ -423,9 +423,38 @@ double MCCorrection::MuonTrigger_Eff(TString ID, TString trig, int DataOrMC, dou
 
 }
 
+
+double MCCorrection::MuonTrigger_SF(TString ID, TString trig, std::vector<Lepton *> leps, int sys){
+
+  vector<double> mu_pt;
+  vector<double> mu_eta;
+  for(auto ilep : leps){
+    if(ilep->LeptonFlavour() != Lepton::MUON) continue;
+    mu_pt.push_back(ilep->Pt());
+    mu_eta.push_back(ilep->Eta());
+  }
+
+  return MuonTrigger_SF(ID, trig, mu_pt, mu_eta, sys);
+
+}
+
 double MCCorrection::MuonTrigger_SF(TString ID, TString trig, const std::vector<Muon>& muons, int sys){
 
-  if(muons.size() == 0) return 1.;
+  vector<double> mu_pt;
+  vector<double> mu_eta;
+  for(auto ilep : muons){
+    mu_pt.push_back(ilep.MiniAODPt());
+    mu_eta.push_back(ilep.Eta());
+  }
+
+  return MuonTrigger_SF(ID, trig, mu_pt, mu_eta, sys);
+
+}
+
+
+double MCCorrection::MuonTrigger_SF(TString ID, TString trig, vector<double> mu_pt, vector<double> mu_eta, int sys){
+
+  if(mu_pt.size() == 0) return 1.;
 
   if(ID=="Default") return 1.;
   if(trig=="Default") return 1.;
@@ -437,9 +466,9 @@ double MCCorrection::MuonTrigger_SF(TString ID, TString trig, const std::vector<
     double eff_DATA = 1.;
     double eff_MC = 1.;
 
-    for(unsigned int i=0; i<muons.size(); i++){
-      eff_DATA *= ( 1.-MuonTrigger_Eff(ID, trig, 0, muons.at(i).Eta(), muons.at(i).MiniAODPt(), sys) );
-      eff_MC   *= ( 1.-MuonTrigger_Eff(ID, trig, 1, muons.at(i).Eta(), muons.at(i).MiniAODPt(), -sys) );
+    for(unsigned int i=0; i< mu_pt.size(); i++){
+      eff_DATA *= ( 1.-MuonTrigger_Eff(ID, trig, 0, mu_eta[i], mu_pt[i], sys) );
+      eff_MC   *= ( 1.-MuonTrigger_Eff(ID, trig, 1, mu_eta[i], mu_pt[i], -sys) );
     }
 
     eff_DATA = 1.-eff_DATA;
@@ -644,6 +673,37 @@ double MCCorrection::ElectronTrigger_Eff(TString ID, TString trig, int DataOrMC,
 
 double MCCorrection::ElectronTrigger_SF(TString ID, TString trig, const std::vector<Electron>& electrons, int sys){
 
+  vector<double> el_pt;
+  vector<double> el_eta;
+  for(auto ilep : electrons){
+    el_pt.push_back(ilep.Pt());
+    el_eta.push_back(ilep.scEta());
+  }
+
+  return ElectronTrigger_SF(ID, trig, el_pt, el_eta, sys);
+
+
+}
+
+double MCCorrection::ElectronTrigger_SF(TString ID, TString trig, std::vector<Lepton *> leps, int sys){
+
+  vector<double> el_pt;
+  vector<double> el_eta;
+  for(auto ilep : leps){
+    if(ilep->LeptonFlavour() != Lepton::ELECTRON) continue;
+
+    el_pt.push_back(ilep->Pt());
+    el_eta.push_back(ilep->Eta());
+  }
+
+  return ElectronTrigger_SF(ID, trig, el_pt, el_eta, sys);
+  
+}
+
+
+
+double MCCorrection::ElectronTrigger_SF(TString ID, TString trig, vector<double> el_pt, vector<double> el_eta, int sys){
+
   if(ID=="Default") return 1.;
   if(trig=="Default") return 1.;
 
@@ -654,9 +714,9 @@ double MCCorrection::ElectronTrigger_SF(TString ID, TString trig, const std::vec
     double eff_DATA = 1.;
     double eff_MC = 1.;
 
-    for(unsigned int i=0; i<electrons.size(); i++){
-      eff_DATA *= ( 1.-ElectronTrigger_Eff(ID, trig, 0, electrons.at(i).scEta(), electrons.at(i).Pt(), sys) );
-      eff_MC   *= ( 1.-ElectronTrigger_Eff(ID, trig, 1, electrons.at(i).scEta(), electrons.at(i).Pt(), -sys) );
+    for(unsigned int i=0; i<el_pt.size(); i++){
+      eff_DATA *= ( 1.-ElectronTrigger_Eff(ID, trig, 0, el_eta[i], el_pt[i], sys) );
+      eff_MC   *= ( 1.-ElectronTrigger_Eff(ID, trig, 1, el_eta[i], el_pt[i], -sys) );
     }
 
     eff_DATA = 1.-eff_DATA;
@@ -665,15 +725,6 @@ double MCCorrection::ElectronTrigger_SF(TString ID, TString trig, const std::vec
     value = eff_DATA/eff_MC;
     if(IsFastSim) value = eff_DATA;
 
-
-/*
-    if(eff_DATA==0||eff_MC==0){
-      cout << "==== Zero Trigger Eff ====" << endl;
-      for(unsigned int i=0;i<electrons.size();i++){
-        cout << electrons.at(i).Pt() << "\t" << electrons.at(i).Pt() << endl;
-      }
-    }
-*/
 
   }
 

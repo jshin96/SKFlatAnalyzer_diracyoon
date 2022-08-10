@@ -3,6 +3,8 @@
 CFBackgroundEstimator::CFBackgroundEstimator()
 {
 
+  IgnoreNoHist = false;
+    
   histDir = TDirectoryHelper::GetTempDirectory("CFBackgroundEstimator");
 
 }
@@ -115,12 +117,17 @@ double CFBackgroundEstimator::GetElectronCFRate2D(TString ID, TString key, doubl
 
   std::map< TString, TH1D* >::const_iterator mapit;
   mapit = map_hist_Electron.find("Rate_" + ID+"_"+key);
-
+  
   if(mapit==map_hist_Electron.end()){
+    if(IgnoreNoHist) return 1.;
+    
     cout << "[CFBackgroundEstimator::GetElectronCFRate] No"<< ID+"_"+key+"_pteta" <<endl;
     exit(ENODATA);
   }
 
+  if(!mapit->second) {
+    if(IgnoreNoHist) return 1.;
+  }
   int this_bin = (mapit->second)->FindBin(pt,eta);
   value = (mapit->second)->GetBinContent(this_bin);
   error = (mapit->second)->GetBinError(this_bin);
