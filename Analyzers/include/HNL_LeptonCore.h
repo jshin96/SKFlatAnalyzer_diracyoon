@@ -34,7 +34,10 @@ class HNL_LeptonCore : public AnalyzerCore {
   };
   enum SearchRegion
   {
-    ChannelDep=19,
+    ChannelDepPresel=101,
+    ChannelDepSR1=102,
+    ChannelDepSR2=103, 
+    ChannelDepSR3=104,
     SR1=20,
     SR2=21,
     SR3=22,
@@ -85,7 +88,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   bool CorrectChannelStream(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps);
 
 
-  double SetupWeight(Event ev, TString Option="");
+  double SetupWeight(Event ev, AnalyzerParameter param);
   double GetPtCutTrigger(TString trigname, int nlep);
   bool CheckSRStream(Event ev,HNL_LeptonCore::Channel channel_ID);
   bool CheckStream(Event ev,vector<TString> triglist);
@@ -100,7 +103,8 @@ class HNL_LeptonCore : public AnalyzerCore {
   TString GetProcess();
   TString GetChannelString(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType  q=HNL_LeptonCore::ChargeType::Inclusive);
   std::vector<Jet> SelBJets(std::vector<Jet>& jetColl, JetTagging::Parameters jtp);
-  TLorentzVector GetvMET(TString METType, TString Option="");
+  Particle GetvMET(TString METType, AnalyzerParameter param);
+  Particle GetvMET(TString METType);
 
 
 
@@ -246,8 +250,8 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   //// ===============================  SR PLOTS =============================== ////
 
-  void Fill_RegionPlots(HNL_LeptonCore::Channel channel, bool plotCR,TString label_1, TString label_2,  std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Lepton *> leps, Particle  met, double nvtx, double w);
-  void Fill_RegionPlots(HNL_LeptonCore::Channel channel, bool plotCR,TString label_1, TString label_2,  std::vector<Jet> jets, std::vector<Jet> jets_vbf, std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w);
+  void Fill_RegionPlots(HNL_LeptonCore::Channel channel, int plotCR,TString label_1, TString label_2,  std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Lepton *> leps, Particle  met, double nvtx, double w);
+  void Fill_RegionPlots(HNL_LeptonCore::Channel channel, int plotCR,TString label_1, TString label_2,  std::vector<Jet> jets, std::vector<Jet> jets_vbf, std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w);
 
 
   void Fill_SigRegionPlots1(HNL_LeptonCore::Channel channel,TString label_1, TString label_2, TString label_3,  std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w, double var1,  double var2, double var3, double var4, double var5, double var6, double var7);

@@ -83,9 +83,13 @@ public:
   double GetCFWeightElectron(std::vector<Lepton* > leps ,  AnalyzerParameter param);
   std::vector<Electron> GetAllElectrons();
   std::vector<Electron> GetElectrons(TString id, double ptmin, double fetamax, bool vetoHEM = false);
+  std::vector<Electron> GetElectrons(AnalyzerParameter param, TString id, double ptmin, double fetamax, bool vetoHEM=false);
 
+  std::vector<Electron> GetElectrons(AnalyzerParameter param,  bool vetoHEM = false);
   std::vector<Muon> GetAllMuons();
   std::vector<Muon> GetMuons(TString id, double ptmin, double fetamax);
+  std::vector<Muon> GetMuons(AnalyzerParameter param, TString id, double ptmin, double fetamax);
+  std::vector<Muon> GetMuons(AnalyzerParameter param);
 
   std::vector<Tau> GetAllTaus();
   std::vector<Tau> GetTaus(TString id, double ptmin, double fetamax);
@@ -104,9 +108,13 @@ public:
   std::vector<Lepton *> MakeLeptonPointerVector(const std::vector<Electron>& electrons, double TightIso=-999, bool UseMini=false);
 
   std::vector<Jet> GetAllJets();
-  std::vector<Jet> GetJets(TString id, double ptmin, double fetamax);
+  std::vector<Jet> GetJets(AnalyzerParameter param);
+  std::vector<Jet> GetJets(AnalyzerParameter param,TString ID, double ptmin, double fetamax);
+  std::vector<Jet> GetJets(TString ID, double ptmin, double fetamax);
 
   std::vector<FatJet> GetAllFatJets();
+  std::vector<FatJet> GetFatJets(AnalyzerParameter param);
+  std::vector<FatJet> GetFatJets(AnalyzerParameter param,TString ID, double ptmin, double fetamax);
   std::vector<FatJet> GetFatJets(TString id, double ptmin, double fetamax);
 
   std::vector<Gen> GetGens();
@@ -138,8 +146,8 @@ public:
   //==== BJets                                                                                                                                   
   pair<int,double> GetNBJets(vector<Jet>       jets,  TString WP="Medium", TString method="2a");
   pair<int,double> GetNBJets(vector<Jet>       jets,  AnalyzerParameter param, TString WP="Medium");
-  pair<int,double> GetNBJets(TString ID,              TString WP="Medium", TString method="2a");
-  pair<int,double> GetNBJets(AnalyzerParameter param, TString WP="Medium");
+  //pair<int,double> GetNBJets(TString ID,              TString WP="Medium", TString method="2a");
+  //pair<int,double> GetNBJets(AnalyzerParameter param, TString WP="Medium");
   int GetNBJets2a(TString ID, TString WP="Medium");
   int GetNBJets2a( vector<Jet> jets, TString WP="Medium");
   int GetNBJets2a( vector<Jet> jets, AnalyzerParameter param,TString WP="Medium");
@@ -153,9 +161,9 @@ public:
   //===== Detailed jet selection                                                                                                                 
   vector<Jet>   GetAK4Jets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean,   TString pu_tag,std::vector<Lepton *> leps_veto,  vector<FatJet> fatjets);
 
-  vector<Jet>   GetBJets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean,   TString pu_tag,std::vector<Lepton *> leps_veto,  vector<FatJet> fatjets, JetTagging::Parameters jtp);
+  vector<Jet>   GetBJets(AnalyzerParameter param, vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean,   TString pu_tag,std::vector<Lepton *> leps_veto,  vector<FatJet> fatjets, JetTagging::Parameters jtp);
 
-  vector<Jet>  GetBJets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag, vector<Electron>  veto_electrons, vector<Muon>  veto_muons, vector<FatJet> fatjets, JetTagging::Parameters jtp);
+  vector<Jet>  GetBJets(AnalyzerParameter param,vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag, vector<Electron>  veto_electrons, vector<Muon>  veto_muons, vector<FatJet> fatjets, JetTagging::Parameters jtp);
 
   vector<Jet>  GetAK4Jets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag, vector<Electron>  veto_electrons, vector<Muon>  veto_muons, vector<FatJet> fatjets);
 
@@ -231,7 +239,7 @@ public:
   double projectedMET(TLorentzVector a, TLorentzVector b, Particle METv);
   bool HasFlag(TString flag);
   std::vector<Muon> MuonWithoutGap(const std::vector<Muon>& muons);
-  std::vector<Muon> MuonPromptOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens);
+  std::vector<Muon> MuonPromptOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens,AnalyzerParameter param);
   std::vector<Muon> MuonNonPromptOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens);
   TString PromptStatus(Muon mu, const std::vector<Gen>& gens);
   
@@ -241,7 +249,7 @@ public:
   Particle UpdateMETSmearedJet(const Particle& METv, const std::vector<Jet>& jets);
 
   std::vector<Muon> MuonApplyPtCut(const std::vector<Muon>& muons, double ptcut);
-  std::vector<Electron> ElectronPromptOnly(const std::vector<Electron>& electrons, const std::vector<Gen>& gens);
+  std::vector<Electron> ElectronPromptOnly(const std::vector<Electron>& electrons, const std::vector<Gen>& gens,AnalyzerParameter param);
   std::vector<Electron> ElectronUsePtCone(const std::vector<Electron>& electrons);
   Electron ElectronUsePtCone(const Electron& electron);
   std::vector<Electron> ElectronApplyPtCut(const std::vector<Electron>& electrons, double ptcut);

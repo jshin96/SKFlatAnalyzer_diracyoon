@@ -89,7 +89,7 @@ void HNL_SignalStudies::executeEvent(){
   // select B jets
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
 
-  std::vector<Jet> BJetColl                       = GetBJets(jets_tmp,     20., 2.7, false,  0.4,0.8,"loose",   ElectronCollV,MuonCollV, FatjetColl, param_jets);
+  std::vector<Jet> BJetColl                       = GetBJets(param,jets_tmp,     20., 2.7, false,  0.4,0.8,"loose",   ElectronCollV,MuonCollV, FatjetColl, param_jets);
 
   std::vector<Jet> VBF_JetColl                    = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8,"loose",  ElectronCollV,MuonCollV, FatjetColl); 
 
@@ -124,7 +124,7 @@ void HNL_SignalStudies::RunLeptonChannel(HNL_LeptonCore::Channel channel_ID, std
   if(channel_ID == EE) {  Region1 = sigee;   Region2 = sigee_17028;}
   if(channel_ID == EMu){ Region1 = sigem; Region2 = sigem_17028;}
   
-  Particle METUnsmearedv = GetvMET("T1xyCorr","");
+  Particle METUnsmearedv = GetvMET("T1xyCorr",param);
   Particle METv =UpdateMETSmearedJet(METUnsmearedv, JetColl);
 
 

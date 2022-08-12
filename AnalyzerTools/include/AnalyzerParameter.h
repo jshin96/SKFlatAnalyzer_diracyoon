@@ -21,7 +21,7 @@ public:
   TString Electron_CF_ID, Electron_CF_Key;
   double Electron_Tight_RelIso, Electron_Loose_RelIso, Electron_Veto_RelIso;
   bool Electron_UseMini, Electron_UsePtCone;
-  double Electron_MinPt;
+  double Electron_MinPt, Electron_MaxEta ;
 
   TString Muon_Tight_ID, Muon_Loose_ID, Muon_Veto_ID;
   TString Muon_RECO_SF_Key, Muon_ID_SF_Key, Muon_ISO_SF_Key, Muon_Trigger_SF_Key,Muon_Trigger_NameForSF;
@@ -29,14 +29,18 @@ public:
   TString Muon_CF_ID, Muon_CF_Key;
   double Muon_Tight_RelIso, Muon_Loose_RelIso, Muon_Veto_RelIso;
   bool Muon_UseMini, Muon_UsePtCone, Muon_UseTuneP;
-  double Muon_MinPt;
+  double Muon_MinPt, Muon_MaxEta ;
+
+  double Jet_MinPt, Jet_MaxEta ;
+  double FatJet_MinPt, FatJet_MaxEta ;
 
   TString Tau_Tight_ID, Tau_Loose_ID, Tau_Veto_ID;
 
 
-  int SystDir_ElectronRecoSF, SystDir_ElectronIDSF, SystDir_MuonRecoSF, SystDir_MuonIDSF, SystDir_PU;
+  int SystDir_PU;
 
-  std::string SystDir_BTag,  BJet_Method;
+  std::string SystDir_BTag,  BJet_Method,   ElFakeMethod, MuFakeMethod, CFMethod;
+;
 
 
   TString Jet_ID, FatJet_ID;
@@ -45,9 +49,25 @@ public:
     Central,
     JetResUp, JetResDown,
     JetEnUp, JetEnDown,
-    MuonEnUp, MuonEnDown,
-    ElectronResUp, ElectronResDown,
-    ElectronEnUp, ElectronEnDown,
+    
+    JetMassUp,JetMassDown,
+    JetMassSmearUp,JetMassSmearDown,
+    MuonRecoSFUp,MuonRecoSFDown,
+    MuonEnUp,MuonEnDown,
+    MuonIDSFUp,MuonIDSFDown,
+    MuonISOSFUp,MuonISOSFDown,
+    MuonTriggerSFUp,MuonTriggerSFDown,
+    ElectronRecoSFUp,ElectronRecoSFDown,
+    ElectronResUp,ElectronResDown,
+    ElectronEnUp,ElectronEnDown,
+    ElectronIDSFUp,ElectronIDSFDown,
+    ElectronTriggerSFUp,ElectronTriggerSFDown,
+    BTagUp,BTagDown,
+    METUnclUp,METUnclDown,
+    CFUp,CFDown,
+    FRUp,FRDown,
+    PrefireUp,PrefireDown,
+    PUUp,PUDown,
     NSyst
   };
   Syst syst_;

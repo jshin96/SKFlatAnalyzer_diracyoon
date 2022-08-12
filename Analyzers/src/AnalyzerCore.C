@@ -180,6 +180,8 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
 
 }
 
+
+
 std::vector<Muon> AnalyzerCore::GetMuons(TString id, double ptmin, double fetamax){
 
   std::vector<Muon> muons = GetAllMuons();
@@ -202,6 +204,41 @@ std::vector<Muon> AnalyzerCore::GetMuons(TString id, double ptmin, double fetama
   return out;
 
 }
+
+std::vector<Muon> AnalyzerCore::GetMuons(AnalyzerParameter param){
+  return GetMuons(param, param.Muon_Tight_ID, param.Muon_MinPt, param.Muon_MaxEta);
+}
+
+std::vector<Muon> AnalyzerCore::GetMuons(AnalyzerParameter param, TString id, double ptmin, double fetamax){
+
+  std::vector<Muon> this_AllMuons = GetAllMuons();
+  std::vector<Muon> muons ;
+
+  if(param.syst_ == AnalyzerParameter::MuonEnUp)    muons = ScaleMuons( this_AllMuons, +1 );
+  else if(param.syst_ == AnalyzerParameter::MuonEnDown)    muons = ScaleMuons( this_AllMuons, -1 );
+  else muons = this_AllMuons;
+
+  std::vector<Muon> out;
+  for(unsigned int i=0; i<muons.size(); i++){
+    if(!( muons.at(i).Pt()> param.Muon_MinPt )){
+      //cout << "Fail Pt : pt = " << muons.at(i).Pt() << ", cut = " << ptmin << endl;                                                     
+      continue;
+    }
+    if(!( fabs(muons.at(i).Eta())<param.Muon_MaxEta )){
+      //cout << "Fail Eta : eta = " << fabs(muons.at(i).Eta()) << ", cut = " << fetamax << endl;                                          
+      continue;
+    }
+    if(!( muons.at(i).PassID(param.Muon_Tight_ID) )){
+      //cout << "Fail ID" << endl;                                                                                                        
+      continue;
+    }
+    out.push_back( muons.at(i) );
+  }
+  return out;
+
+}
+
+
 
 std::vector<Electron> AnalyzerCore::GetAllElectrons(){
 
@@ -279,21 +316,57 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
 
 }
 
-std::vector<Electron> AnalyzerCore::GetElectrons(TString id, double ptmin, double fetamax, bool vetoHEM){
+std::vector<Electron> AnalyzerCore::GetElectrons(AnalyzerParameter param,  bool vetoHEM){
+  return GetElectrons(param, param.Electron_Tight_ID, param.Electron_MinPt, param.Electron_MaxEta, vetoHEM);
+}
 
-  std::vector<Electron> electrons = GetAllElectrons();
+std::vector<Electron> AnalyzerCore::GetElectrons(AnalyzerParameter param, TString id, double ptmin, double fetamax, bool vetoHEM){
+  
+  std::vector<Electron> this_AllElectrons = GetAllElectrons();
+  std::vector<Electron> electrons ;
+
+  if(param.syst_ == AnalyzerParameter::ElectronResUp)   electrons = SmearElectrons( this_AllElectrons, +1 );
+  else if(param.syst_ == AnalyzerParameter::ElectronResDown)   electrons = SmearElectrons( this_AllElectrons, -1 );
+  else if(param.syst_ == AnalyzerParameter::ElectronEnUp)    electrons = ScaleElectrons( this_AllElectrons, +1 );
+  else if(param.syst_ == AnalyzerParameter::ElectronEnDown)    electrons = ScaleElectrons( this_AllElectrons, -1 );
+  else electrons = this_AllElectrons;
+
   std::vector<Electron> out;
   for(unsigned int i=0; i<electrons.size(); i++){
-    if(!( electrons.at(i).Pt()>ptmin )){
-      //cout << "Fail Pt : pt = " << electrons.at(i).Pt() << ", cut = " << ptmin << endl;
+    if(!( electrons.at(i).Pt()> ptmin )){
       continue;
     }
-    if(!( fabs(electrons.at(i).scEta())<fetamax )){
-      //cout << "Fail Eta : eta = " << fabs(electrons.at(i).scEta()) << ", cut = " << fetamax << endl;
+    if(!( fabs(electrons.at(i).scEta())< fetamax )){
       continue;
     }
     if(!( electrons.at(i).PassID(id) )){
-      //cout << "Fail ID" << endl;
+      continue;
+    }
+    if(vetoHEM){
+      if ( FindHEMElectron (electrons.at(i)) ){
+        continue;
+      }
+    }
+
+    out.push_back( electrons.at(i) );
+  }
+  return out;
+
+}
+
+std::vector<Electron> AnalyzerCore::GetElectrons(TString id, double ptmin, double fetamax, bool vetoHEM){
+
+  std::vector<Electron> electrons = GetAllElectrons();
+
+  std::vector<Electron> out;
+  for(unsigned int i=0; i<electrons.size(); i++){
+    if(!( electrons.at(i).Pt()>ptmin )){
+      continue;
+    }
+    if(!( fabs(electrons.at(i).scEta())<fetamax )){
+      continue;
+    }
+    if(!( electrons.at(i).PassID(id) )){
       continue;
     }
     if(vetoHEM){
@@ -565,20 +638,62 @@ std::vector<Jet> AnalyzerCore::GetAllJets(){
 
 }
 
-std::vector<Jet> AnalyzerCore::GetJets(TString id, double ptmin, double fetamax){
+std::vector<Jet> AnalyzerCore::GetJets(TString ID, double ptmin, double fetamax){
 
   std::vector<Jet> jets = GetAllJets();
+
   std::vector<Jet> out;
   for(unsigned int i=0; i<jets.size(); i++){
     if(!( jets.at(i).Pt()>ptmin )){
-      //cout << "Fail Pt : pt = " << jets.at(i).Pt() << ", cut = " << ptmin << endl;
       continue;
     }
     if(!( fabs(jets.at(i).Eta())<fetamax )){
+      //cout << "Fail Eta : eta = " << fabs(jets.at(i).Eta()) << ", cut = " << fetamax << endl;                                           
+      continue;
+    }
+    if(!( jets.at(i).PassID(ID) )){
+      //cout << "Fail ID" << endl;                                                                                                        
+      continue;
+    }
+    out.push_back( jets.at(i) );
+  }
+
+  
+  
+  std::sort(out.begin(),       out.end(),        PtComparing);
+  
+  return out;
+  
+}
+    
+
+std::vector<Jet> AnalyzerCore::GetJets(AnalyzerParameter param){
+
+  return GetJets(param, param.Jet_ID, param.Jet_MinPt, param.Jet_MaxEta);
+
+}
+std::vector<Jet> AnalyzerCore::GetJets(AnalyzerParameter param,TString id, double ptmin, double fetamax){
+
+  std::vector<Jet> jets_uncorr = GetAllJets();
+  std::vector<Jet> jets;
+  if(param.syst_ == AnalyzerParameter::JetEnUp)            jets    = ScaleJets( jets_uncorr, +1 );
+  else if(param.syst_ == AnalyzerParameter::JetEnDown)     jets    = ScaleJets( jets_uncorr, -1 );
+  else if(param.syst_ == AnalyzerParameter::JetResUp)      jets    = SmearJets(jets_uncorr, +1 );
+  else if(param.syst_ == AnalyzerParameter::JetResDown)    jets    = SmearJets(jets_uncorr, -1 );
+  else jets =jets_uncorr;
+
+  
+  std::vector<Jet> out;
+  for(unsigned int i=0; i<jets.size(); i++){
+    if(!( jets.at(i).Pt()> param.Jet_MinPt )){
+      //cout << "Fail Pt : pt = " << jets.at(i).Pt() << ", cut = " << ptmin << endl;
+      continue;
+    }
+    if(!( fabs(jets.at(i).Eta())<param.Jet_MaxEta )){
       //cout << "Fail Eta : eta = " << fabs(jets.at(i).Eta()) << ", cut = " << fetamax << endl;
       continue;
     }
-    if(!( jets.at(i).PassID(id) )){
+    if(!( jets.at(i).PassID(param.Jet_ID) )){
       //cout << "Fail ID" << endl;
       continue;
     }
@@ -662,6 +777,49 @@ std::vector<FatJet> AnalyzerCore::GetFatJets(TString id, double ptmin, double fe
   std::sort(out.begin(),       out.end(),        PtComparing);
 
 }
+
+std::vector<FatJet> AnalyzerCore::GetFatJets(AnalyzerParameter param){
+  
+  return GetFatJets(param, param.FatJet_ID, param.FatJet_MinPt, param.FatJet_MaxEta);
+
+}
+std::vector<FatJet> AnalyzerCore::GetFatJets(AnalyzerParameter param,TString id, double ptmin, double fetamax){
+
+  std::vector<FatJet> jets_pc = puppiCorr->Correct(GetAllFatJets());
+  std::vector<FatJet> jets;
+  if(param.syst_ == AnalyzerParameter::JetEnUp)            jets    = ScaleFatJets( jets_pc, -1 );
+  else if(param.syst_ == AnalyzerParameter::JetEnDown)     jets    = ScaleFatJets( jets_pc, -1 );
+  else if(param.syst_ == AnalyzerParameter::JetResUp)      jets    = SmearFatJets(jets_pc, +1 );
+  else if(param.syst_ == AnalyzerParameter::JetResDown)    jets    = SmearFatJets(jets_pc, -1 );
+  else if(param.syst_ == AnalyzerParameter::JetMassUp)     jets    = ScaleSDMassFatJets( jets_pc, +1 );
+  else if(param.syst_ == AnalyzerParameter::JetMassDown)   jets    = ScaleSDMassFatJets( jets_pc, -1 );
+  else if(param.syst_ == AnalyzerParameter::JetMassSmearUp)     jets    = SmearSDMassFatJets( jets_pc, +1 );
+  else if(param.syst_ == AnalyzerParameter::JetMassSmearDown)   jets    = SmearSDMassFatJets( jets_pc, -1 );
+  else jets = jets_pc;
+
+
+  std::vector<FatJet> out;
+  for(unsigned int i=0; i<jets.size(); i++){
+    if(!( jets.at(i).Pt()>  ptmin )){
+      //cout << "Fail Pt : pt = " << jets.at(i).Pt() << ", cut = " << ptmin << endl;                                                      
+      continue;
+    }
+    if(!( fabs(jets.at(i).Eta())< fetamax )){
+      //cout << "Fail Eta : eta = " << fabs(jets.at(i).Eta()) << ", cut = " << fetamax << endl;                                           
+      continue;
+    }
+    if(!( jets.at(i).PassID(id) )){
+      //cout << "Fail ID" << endl;                                                                                                        
+      continue;
+    }
+    out.push_back( jets.at(i) );
+  }
+  return out;
+
+  std::sort(out.begin(),       out.end(),        PtComparing);
+
+}
+
 
 std::vector<Gen> AnalyzerCore::GetGens(){
 
@@ -936,23 +1094,6 @@ std::vector<FatJet> AnalyzerCore::SelectFatJets(const std::vector<FatJet>& jets,
 }
 
 
-pair<int,double> AnalyzerCore::GetNBJets(AnalyzerParameter param, TString WP){
-
-  //=== This function uses param to get bjets + apply syst, but jets used have no Syst effects                                                   
-  vector<Jet> this_AllJets = GetAllJets();
-  vector<Jet>       jets   = SelectJets(this_AllJets,param.Jet_ID, 20., 2.4);
-
-  return GetNBJets(jets, param, WP);
-
-}
-
-pair<int,double> AnalyzerCore::GetNBJets(TString ID, TString WP, TString method){
-
-  vector<Jet> this_AllJets = GetAllJets();
-  vector<Jet>       jets   = SelectJets(this_AllJets,ID, 20., 2.4);
-
-  return GetNBJets(jets, WP, method);
-}
 
 pair<int,double> AnalyzerCore::GetNBJets(vector<Jet> jets, AnalyzerParameter param,TString WP){
 
@@ -963,18 +1104,26 @@ pair<int,double> AnalyzerCore::GetNBJets(vector<Jet> jets, AnalyzerParameter par
   else  if  (WP == "Tight")  jwp = JetTagging::Tight;
   else return make_pair(-1,1.);
 
-  JetTagging::Parameters jtp_DeepCSV = JetTagging::Parameters(JetTagging::DeepCSV,
+  JetTagging::Tagger    tagger = JetTagging::DeepCSV;
+  if  (WP.Contains("DeepJet")) tagger = JetTagging::DeepJet;
+
+  JetTagging::MeasurmentType type = JetTagging::comb;
+  if  (WP.Contains("DeepJet")) type =  JetTagging::mujets;
+
+
+
+  JetTagging::Parameters jtp = JetTagging::Parameters(tagger,
 							      jwp,
-							      JetTagging::incl, JetTagging::comb);
+							      JetTagging::incl, type);
 
 
-  double btagWeight_1a = mcCorr->GetBTaggingReweight_1a(jets, jtp_DeepCSV);
+  double btagWeight_1a = mcCorr->GetBTaggingReweight_1a(jets, jtp);
   double btagWeight_1d = 1.;//mcCorr->GetBTaggingReweight_1d(jets, jtp_DeepCSV_Reshape);                                                         
 
 
   for(auto ij : jets)  {
-    double this_discr = ij.GetTaggerResult(JetTagging::DeepCSV);
-    if( this_discr > mcCorr->GetJetTaggingCutValue(JetTagging::DeepCSV, JetTagging::Medium) ) NBJets_NoSF++;
+    double this_discr = ij.GetTaggerResult(tagger);
+    if( this_discr > mcCorr->GetJetTaggingCutValue(tagger, jwp) ) NBJets_NoSF++;
   }
 
   if(param.BJet_Method=="1a") return make_pair(NBJets_NoSF,btagWeight_1a);
@@ -997,21 +1146,24 @@ pair<int,double> AnalyzerCore::GetNBJets(vector<Jet> jets, TString WP, TString m
   else  if  (WP == "Tight")  jwp = JetTagging::Tight;
   else return make_pair(-1,1.);
 
+  JetTagging::Tagger    tagger = JetTagging::DeepCSV;
+  if  (WP.Contains("DeepJet")) tagger = JetTagging::DeepJet;
 
-  JetTagging::Parameters jtp_DeepCSV = JetTagging::Parameters(JetTagging::DeepCSV,
+  JetTagging::MeasurmentType type = JetTagging::comb;
+  if  (WP.Contains("DeepJet")) type =  JetTagging::mujets;
+
+
+  JetTagging::Parameters jtp= JetTagging::Parameters(tagger,
 							      jwp,
-							      JetTagging::incl, JetTagging::comb);
-  //  JetTagging::Parameters jtp_DeepCSV_Reshape = JetTagging::Parameters(JetTagging::DeepCSV//,                                                 
-  //jwp,                                                                                                                                         
-  //                                                                         JetTagging::iterativefit, JetTagging::iterativefit);                
+							      JetTagging::incl, type);
 
-  double btagWeight_1a = mcCorr->GetBTaggingReweight_1a(jets, jtp_DeepCSV);
+  double btagWeight_1a = mcCorr->GetBTaggingReweight_1a(jets, jtp);
   double btagWeight_1d = 1.;//mcCorr->GetBTaggingReweight_1d(jets, jtp_DeepCSV_Reshape);                                                         
 
 
   for(auto ij : jets)  {
-    double this_discr = ij.GetTaggerResult(JetTagging::DeepCSV);
-    if( this_discr > mcCorr->GetJetTaggingCutValue(JetTagging::DeepCSV, JetTagging::Medium) ) NBJets_NoSF++;
+    double this_discr = ij.GetTaggerResult(tagger);
+    if( this_discr > mcCorr->GetJetTaggingCutValue(tagger, jwp) ) NBJets_NoSF++;
   }
 
   if(method=="1a") return make_pair(NBJets_NoSF,btagWeight_1a);
@@ -1031,14 +1183,21 @@ int AnalyzerCore::GetNBJets2a(TString ID, TString WP){
   vector<Jet>       jets   = SelectJets(this_AllJets,ID, 20., 2.4);
 
   int NBJets_WithSF_2a(0);
+  //  JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
 
   JetTagging::WP             jwp = JetTagging::Medium;
-  if  (WP == "Loose")        jwp = JetTagging::Loose;
-  else if  (WP == "Medium")  jwp = JetTagging::Medium;
-  else  if  (WP == "Tight")  jwp = JetTagging::Tight;
+  if  (WP.Contains("Loose"))        jwp = JetTagging::Loose;
+  else if  (WP.Contains("Medium"))  jwp = JetTagging::Medium;
+  else  if  (WP.Contains("Tight"))  jwp = JetTagging::Tight;
   else return -1;
+
+  JetTagging::Tagger    tagger = JetTagging::DeepCSV;
+  if  (WP.Contains("DeepJet")) tagger = JetTagging::DeepJet;
+
+  JetTagging::MeasurmentType type = JetTagging::comb;
+  if  (WP.Contains("DeepJet")) type =  JetTagging::mujets;
   for( auto i  :  jets)
-    if( mcCorr->IsBTagged_2a(JetTagging::Parameters(JetTagging::DeepCSV,       jwp, JetTagging::incl, JetTagging::comb), i) ) NBJets_WithSF_2a++;
+    if( mcCorr->IsBTagged_2a(JetTagging::Parameters(tagger,       jwp, JetTagging::incl,type), i) ) NBJets_WithSF_2a++;
 
 
   return NBJets_WithSF_2a;
@@ -1055,9 +1214,17 @@ int AnalyzerCore::GetNBJets2a( vector<Jet> jets, AnalyzerParameter param, TStrin
   else if  (WP == "Medium")  jwp = JetTagging::Medium;
   else  if  (WP == "Tight")  jwp = JetTagging::Tight;
   else return -1;
+
+
+  JetTagging::Tagger    tagger = JetTagging::DeepCSV;
+  if  (WP.Contains("DeepJet")) tagger = JetTagging::DeepJet;
+
+  JetTagging::MeasurmentType type = JetTagging::comb;
+  if  (WP.Contains("DeepJet")) type =  JetTagging::mujets;
+
   for( auto i  :  jets){
     if(fabs(i.Eta()) >2.4) continue;
-    if( mcCorr->IsBTagged_2a(JetTagging::Parameters(JetTagging::DeepCSV,       jwp, JetTagging::incl, JetTagging::comb), i,param.SystDir_BTag)	) NBJets_WithSF_2a++;
+    if( mcCorr->IsBTagged_2a(JetTagging::Parameters(tagger,       jwp, JetTagging::incl, type), i,param.SystDir_BTag)	) NBJets_WithSF_2a++;
   }
   
   return NBJets_WithSF_2a;
@@ -1073,8 +1240,17 @@ int AnalyzerCore::GetNBJets2a( vector<Jet> jets, TString WP){
   else if  (WP == "Medium")  jwp = JetTagging::Medium;
   else  if  (WP == "Tight")  jwp = JetTagging::Tight;
   else return -1;
+
+
+  JetTagging::Tagger    tagger = JetTagging::DeepCSV;
+  if  (WP.Contains("DeepJet")) tagger = JetTagging::DeepJet;
+
+  JetTagging::MeasurmentType type = JetTagging::comb;
+  if  (WP.Contains("DeepJet")) type =  JetTagging::mujets;
+
+
   for(unsigned int i=0; i<jets.size(); i++)
-    if( mcCorr->IsBTagged_2a(JetTagging::Parameters(JetTagging::DeepCSV,       jwp, JetTagging::incl, JetTagging::comb), jets.at(i)) ) NBJets_WithSF_2a++;
+    if( mcCorr->IsBTagged_2a(JetTagging::Parameters(tagger,       jwp, JetTagging::incl, type), jets.at(i)) ) NBJets_WithSF_2a++;
 
 
   return NBJets_WithSF_2a;
@@ -1113,7 +1289,7 @@ double AnalyzerCore::GetFatJetSF(FatJet fatjet, TString tag,  int dir){
 
 
 
-vector<Jet>   AnalyzerCore::GetBJets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag,std::vector<Lepton *> leps_veto,  vector<FatJet> fatjets, JetTagging::Parameters jtp){
+vector<Jet>   AnalyzerCore::GetBJets(AnalyzerParameter param,vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag,std::vector<Lepton *> leps_veto,  vector<FatJet> fatjets, JetTagging::Parameters jtp){
 
   vector<Jet> output_jets;
   for(unsigned int ijet =0; ijet < jets.size(); ijet++){
@@ -1150,7 +1326,7 @@ vector<Jet>   AnalyzerCore::GetBJets(vector<Jet> jets, double pt_cut ,  double e
 
 
 
-vector<Jet>   AnalyzerCore::GetBJets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag, vector<Electron>  veto_electrons, vector<Muon>  veto_muons, vector<FatJet> fatjets, JetTagging::Parameters jtp){
+vector<Jet>   AnalyzerCore::GetBJets(AnalyzerParameter param, vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag, vector<Electron>  veto_electrons, vector<Muon>  veto_muons, vector<FatJet> fatjets, JetTagging::Parameters jtp){
 
 
 
@@ -1520,22 +1696,29 @@ double AnalyzerCore::GetMuonSFEventWeight(std::vector<Muon> muons,AnalyzerParame
       double this_pt  = mu.MiniAODPt();
       double this_eta = mu.Eta();
 
+      int SystDir_MuonIDSF(0), SystDir_MuonISOSF(0), SystDir_MuonRecoSF (0), SystDir_MuonTriggerSF(0);
+      if(param.syst_ == AnalyzerParameter::MuonRecoSFUp)SystDir_MuonRecoSF = +1;
+      else if(param.syst_ == AnalyzerParameter::MuonRecoSFDown)SystDir_MuonRecoSF = -1;
+      else if(param.syst_ == AnalyzerParameter::MuonIDSFUp)  SystDir_MuonIDSF = +1;
+      else if(param.syst_ == AnalyzerParameter::MuonIDSFDown)  SystDir_MuonIDSF = -1;
+      else if(param.syst_ == AnalyzerParameter::MuonISOSFUp) SystDir_MuonISOSF  = +1;
+      else if(param.syst_ == AnalyzerParameter::MuonISOSFDown) SystDir_MuonISOSF  = -1;
+      else if(param.syst_ == AnalyzerParameter::MuonTriggerSFUp)SystDir_MuonTriggerSF = +1;
+      else if(param.syst_ == AnalyzerParameter::MuonTriggerSFDown)SystDir_MuonTriggerSF = -1;
+      
 
-      double this_idsf   = mcCorr->MuonID_SF (param.Muon_ID_SF_Key,  this_eta, this_pt);
-      double this_isosf  = mcCorr->MuonISO_SF(param.Muon_ISO_SF_Key, this_eta, this_pt);
-      double this_trigsf = mcCorr->MuonTrigger_SF(param.Muon_Trigger_SF_Key, param.Muon_Trigger_NameForSF, muons);
+
+      double this_idsf   = mcCorr->MuonID_SF (param.Muon_ID_SF_Key,  this_eta, this_pt,SystDir_MuonIDSF);
+      double this_isosf  = mcCorr->MuonISO_SF(param.Muon_ISO_SF_Key, this_eta, this_pt,SystDir_MuonISOSF);
+      double this_trigsf = mcCorr->MuonTrigger_SF(param.Muon_Trigger_SF_Key, param.Muon_Trigger_NameForSF, muons,SystDir_MuonTriggerSF);
 
       this_weight *= this_idsf*this_isosf*this_trigsf;
       if(param.DEBUG) cout << "GetMuonSFEventWeight this_idsf=" << this_idsf << " this_isosf=" << this_isosf << " this_trigsf=" << this_trigsf << endl;
-      /*if(param.Muon_RECO_SF_Key  == "HighPtMuonRecoSF"){                                                                                       
-        double this_recosf = mcCorr->MuonReco_SF("HighPtMuonRecoSF", this_eta, MiniAODP);                                                        
-        this_weight *= this_recosf;                                                                                                              
-        FillWeightHist("RecoMuWeight_"+param.Name,this_recosf);                                                                                  
-        }*/
+
 
       double reco_pt = (param.Muon_RECO_SF_Key  == "HighPtMuonRecoSF") ?  MiniAODP : this_pt;
 
-      double this_recosf = mcCorr->MuonReco_SF(param.Muon_RECO_SF_Key, this_eta, reco_pt);
+      double this_recosf = mcCorr->MuonReco_SF(param.Muon_RECO_SF_Key, this_eta, reco_pt,SystDir_MuonRecoSF);
 
       this_weight *= this_recosf;		      
       FillWeightHist(param.Name+"/RecoMuWeight_"+param.Name,this_recosf); 
@@ -1560,14 +1743,37 @@ double AnalyzerCore::GetLeptonSFEventWeight(std::vector<Lepton *> leps, Analyzer
 
     mcCorr->IgnoreNoHist = param.MCCorrrectionIgnoreNoHist;
 
+    int SystDir_MuonIDSF(0), SystDir_MuonISOSF(0), SystDir_MuonRecoSF (0), SystDir_MuonTriggerSF(0);
+    if(param.syst_ == AnalyzerParameter::MuonRecoSFUp)SystDir_MuonRecoSF = +1;
+    else if(param.syst_ == AnalyzerParameter::MuonRecoSFDown)SystDir_MuonRecoSF = -1;
+    else if(param.syst_ == AnalyzerParameter::MuonIDSFUp)  SystDir_MuonIDSF = +1;
+    else if(param.syst_ == AnalyzerParameter::MuonIDSFDown)  SystDir_MuonIDSF = -1;
+    else if(param.syst_ == AnalyzerParameter::MuonISOSFUp) SystDir_MuonISOSF  = +1;
+    else if(param.syst_ == AnalyzerParameter::MuonISOSFDown) SystDir_MuonISOSF  = -1;
+    else if(param.syst_ == AnalyzerParameter::MuonTriggerSFUp)SystDir_MuonTriggerSF = +1;
+    else if(param.syst_ == AnalyzerParameter::MuonTriggerSFDown)SystDir_MuonTriggerSF = -1;
+
+    int SystDir_ElectronIDSF(0),SystDir_ElectronRecoSF (0), SystDir_ElectronTriggerSF(0);
+    if(param.syst_ == AnalyzerParameter::ElectronRecoSFUp)SystDir_ElectronRecoSF = +1;
+    else if(param.syst_ == AnalyzerParameter::ElectronRecoSFDown)SystDir_ElectronRecoSF = -1;
+    else if(param.syst_ == AnalyzerParameter::ElectronIDSFUp)  SystDir_ElectronIDSF = +1;
+    else if(param.syst_ == AnalyzerParameter::ElectronIDSFDown)  SystDir_ElectronIDSF = -1;
+    else if(param.syst_ == AnalyzerParameter::ElectronTriggerSFUp)SystDir_ElectronTriggerSF = +1;
+    else if(param.syst_ == AnalyzerParameter::ElectronTriggerSFDown)SystDir_ElectronTriggerSF = -1;
+
+
+
+
+
+
     for (auto lep: leps){
       if(lep->LeptonFlavour() == Lepton::ELECTRON){
-	double this_recosf  = mcCorr->ElectronReco_SF(lep->Eta(),lep->Pt(), param.SystDir_ElectronRecoSF);
-	double this_idsf    = mcCorr->ElectronID_SF(param.Electron_ID_SF_Key, lep->Eta(), lep->Pt(), param.SystDir_ElectronIDSF);
+	double this_recosf  = mcCorr->ElectronReco_SF(lep->Eta(),lep->Pt(), SystDir_ElectronRecoSF);
+	double this_idsf    = mcCorr->ElectronID_SF(param.Electron_ID_SF_Key, lep->Eta(), lep->Pt(), SystDir_ElectronIDSF);
 	
 	this_weight *= this_recosf*this_idsf;
 
-	double this_trigsf = mcCorr->ElectronTrigger_SF(param.Electron_Trigger_SF_Key, param.Electron_Trigger_NameForSF,leps);
+	double this_trigsf = mcCorr->ElectronTrigger_SF(param.Electron_Trigger_SF_Key, param.Electron_Trigger_NameForSF,leps, SystDir_ElectronTriggerSF);
 
 	this_weight  *= this_trigsf;
 
@@ -1578,15 +1784,15 @@ double AnalyzerCore::GetLeptonSFEventWeight(std::vector<Lepton *> leps, Analyzer
 	double this_eta = lep->Eta();
 
 
-	double this_idsf   = mcCorr->MuonID_SF (param.Muon_ID_SF_Key,  this_eta, this_pt);
-	double this_isosf  = mcCorr->MuonISO_SF(param.Muon_ISO_SF_Key, this_eta, this_pt);
-	double this_trigsf = mcCorr->MuonTrigger_SF(param.Muon_Trigger_SF_Key, param.Muon_Trigger_NameForSF, leps);
+	double this_idsf   = mcCorr->MuonID_SF (param.Muon_ID_SF_Key,  this_eta, this_pt,SystDir_MuonIDSF);
+	double this_isosf  = mcCorr->MuonISO_SF(param.Muon_ISO_SF_Key, this_eta, this_pt,SystDir_MuonISOSF);
+	double this_trigsf = mcCorr->MuonTrigger_SF(param.Muon_Trigger_SF_Key, param.Muon_Trigger_NameForSF, leps,SystDir_MuonTriggerSF);
 
 	this_weight *= this_idsf*this_isosf*this_trigsf;
 
 	//double reco_pt = (param.Muon_RECO_SF_Key  == "HighPtMuonRecoSF") ?  MiniAODP : this_pt;
 	double reco_pt =this_pt;
-	double this_recosf = mcCorr->MuonReco_SF(param.Muon_RECO_SF_Key, this_eta, reco_pt);
+	double this_recosf = mcCorr->MuonReco_SF(param.Muon_RECO_SF_Key, this_eta, reco_pt,SystDir_MuonRecoSF);
 
 	this_weight *= this_recosf;
 
@@ -1606,17 +1812,28 @@ double AnalyzerCore::GetElectronSFEventWeight(std::vector<Electron> electrons, A
 
     mcCorr->IgnoreNoHist = param.MCCorrrectionIgnoreNoHist;
 
+    
+   int SystDir_ElectronIDSF(0), SystDir_ElectronRecoSF (0), SystDir_ElectronTriggerSF(0);
+    if(param.syst_ == AnalyzerParameter::ElectronRecoSFUp)SystDir_ElectronRecoSF = +1;
+    else if(param.syst_ == AnalyzerParameter::ElectronRecoSFDown)SystDir_ElectronRecoSF = -1;
+    else if(param.syst_ == AnalyzerParameter::ElectronIDSFUp)  SystDir_ElectronIDSF = +1;
+    else if(param.syst_ == AnalyzerParameter::ElectronIDSFDown)  SystDir_ElectronIDSF = -1;
+    else if(param.syst_ == AnalyzerParameter::ElectronTriggerSFUp)SystDir_ElectronTriggerSF = +1;
+    else if(param.syst_ == AnalyzerParameter::ElectronTriggerSFDown)SystDir_ElectronTriggerSF = -1;
+
+
+
     for (auto el: electrons){
 
-      double this_recosf  = mcCorr->ElectronReco_SF(el.scEta(),el.Pt(), param.SystDir_ElectronRecoSF);
-      double this_idsf    = mcCorr->ElectronID_SF(param.Electron_ID_SF_Key, el.scEta(), el.Pt(), param.SystDir_ElectronIDSF);
+      double this_recosf  = mcCorr->ElectronReco_SF(el.scEta(),el.Pt(), SystDir_ElectronRecoSF);
+      double this_idsf    = mcCorr->ElectronID_SF(param.Electron_ID_SF_Key, el.scEta(), el.Pt(), SystDir_ElectronIDSF);
 
       this_weight *= this_recosf*this_idsf;
       FillWeightHist(param.Name+"/el_reco_sf_"+param.Name, this_recosf);
       FillWeightHist(param.Name+"/el_id_sf_"+param.Name, this_idsf);
 
     }
-    double this_trigsf = mcCorr->ElectronTrigger_SF(param.Electron_Trigger_SF_Key, param.Electron_Trigger_NameForSF, electrons);
+    double this_trigsf = mcCorr->ElectronTrigger_SF(param.Electron_Trigger_SF_Key, param.Electron_Trigger_NameForSF, electrons,SystDir_ElectronTriggerSF);
 
     this_weight  *= this_trigsf;
 
@@ -1968,14 +2185,16 @@ std::vector<Muon> AnalyzerCore::MuonNonPromptOnly(const std::vector<Muon>& muons
 
 }
 
-std::vector<Muon> AnalyzerCore::MuonPromptOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens){
+std::vector<Muon> AnalyzerCore::MuonPromptOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens, AnalyzerParameter param){
 
   if(IsDATA) return muons;
 
   std::vector<Muon> out;
 
   for(unsigned int i=0; i<muons.size(); i++){
-    if(GetLeptonType(muons.at(i), gens)<=0) continue;
+    if(param.MuFakeMethod == "Data"){
+      if(GetLeptonType(muons.at(i), gens)<=0) continue;
+    }
     out.push_back( muons.at(i) );
   }
 
@@ -2081,7 +2300,7 @@ std::vector<Muon> AnalyzerCore::MuonApplyPtCut(const std::vector<Muon>& muons, d
 
 }
 
-std::vector<Electron> AnalyzerCore::ElectronPromptOnly(const std::vector<Electron>& electrons, const std::vector<Gen>& gens){
+std::vector<Electron> AnalyzerCore::ElectronPromptOnly(const std::vector<Electron>& electrons, const std::vector<Gen>& gens, AnalyzerParameter param){
 
   if(IsDATA) return electrons;
 
@@ -2089,10 +2308,18 @@ std::vector<Electron> AnalyzerCore::ElectronPromptOnly(const std::vector<Electro
   for(unsigned int i=0; i<electrons.size(); i++){
     bool pass=false;
     //if(GetLeptonType(electrons.at(i), gens)<=0) continue;
-    if(GetLeptonType(electrons.at(i), gens) > 0)pass=true;
-    if(GetLeptonType(electrons.at(i), gens)== -5)pass=true;
-    if(GetLeptonType(electrons.at(i), gens)== -6)pass=true;
-    if(IsCF(electrons.at(i), gens)) pass=false;
+
+    if(param.ElFakeMethod == "Data"){
+      if(GetLeptonType(electrons.at(i), gens) > 0)pass=true;
+    }
+    if(param.ElFakeMethod == "DataNoConv"){
+      if(GetLeptonType(electrons.at(i), gens) > 0)pass=true;
+      if(GetLeptonType(electrons.at(i), gens)== -5)pass=true;
+      if(GetLeptonType(electrons.at(i), gens)== -6)pass=true;
+    }
+    if(param.CFMethod == "Data"){
+      if(IsCF(electrons.at(i), gens)) pass=false;
+    }
 
     if(pass)out.push_back( electrons.at(i) );
   }
