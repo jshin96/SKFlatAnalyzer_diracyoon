@@ -258,7 +258,11 @@ double MCCorrection::MuonID_SF(TString ID, double eta, double pt, int sys){
     if(pt>=120.) pt = 119.9;
     if(eta>=2.4) eta = 2.39;
   }
-
+  else{
+    if(pt<15.) pt = 15.1;
+    if(pt>=2000.) pt = 1999.9;
+    if(eta>=2.4) eta = 2.39;
+  }
   TH2F *this_hist = map_hist_Muon["ID_SF_"+ID];
   if(!this_hist){
     if(IgnoreNoHist) return 1.;

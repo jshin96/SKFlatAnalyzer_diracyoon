@@ -38,6 +38,7 @@ class HNL_LeptonCore : public AnalyzerCore {
     ChannelDepSR1=102,
     ChannelDepSR2=103, 
     ChannelDepSR3=104,
+    ChannelDepFAILSR3=105,
     SR1=20,
     SR2=21,
     SR3=22,
@@ -91,7 +92,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   double SetupWeight(Event ev, AnalyzerParameter param);
   double GetPtCutTrigger(TString trigname, int nlep);
   bool CheckSRStream(Event ev,HNL_LeptonCore::Channel channel_ID);
-  bool CheckStream(Event ev,vector<TString> triglist);
+  bool PassTriggerAndCheckStream(Event ev, vector<TString> triglist);
   TString  DoubleElectronPD();
   TString  SingleElectronPD();
   TString  MuonEGPD();
@@ -145,8 +146,6 @@ class HNL_LeptonCore : public AnalyzerCore {
   TString GetElTypeString(Electron el, const std::vector<Gen>& gens);
   TString GetElTypeTString(Electron el, const std::vector<Gen>& gens);
   TString GetLepTypeTString(const Lepton& lep, const std::vector<Gen>& gens);
-
-  double GetIsoFromID(HNL_LeptonCore::LeptonType lep, TString id, double eta, double pt);
 
   //==== LEPTON CHARGE                                                                                                                                                                                           
   bool SameCharge(vector<Electron> els, int ch=0);

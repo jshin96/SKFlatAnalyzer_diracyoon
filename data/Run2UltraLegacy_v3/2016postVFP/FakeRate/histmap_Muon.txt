@@ -1,1 +1,7 @@
 HNTightV2	Muon_FakeRate_HNTightV2_2016postVFP.root
+HNTightV2_AwayJetPt40       FakeRate13TeV_mu_2016postVFP.root
+HNTightV2_AwayJetPt40       FakeRate13TeV_mu_ptfix_2016postVFP.root
+HNTight_17028_AwayJetPt40   FakeRate13TeV_mu_2016postVFP.root
+HNTight_17028_AwayJetPt40   FakeRate13TeV_mu_ptfix_2016postVFP.root
+POGTightWithTightIso_AwayJetPt40        FakeRate13TeV_mu_2016postVFP.root
+POGTightWithTightIso_AwayJetPt40        FakeRate13TeV_mu_ptfix_2016postVFP.root

@@ -8,6 +8,9 @@
 #pragma link C++ class SKFlatNtuple+;
 #pragma link C++ class AnalyzerCore+;
 #pragma link C++ class HNL_LeptonCore+;
+#pragma link C++ class HNL_IDSFTmp+;
+#pragma link C++ class HNL_FakeRate+;
+#pragma link C++ class HNL_FakeRateOpt+;
 #pragma link C++ class HNL_RegionDefinitions+;
 #pragma link C++ class HNL_SignalStudies+;
 #pragma link C++ class HNL_SR3KinVar+;

@@ -1,1 +1,7 @@
 HNTightV2	Electron_FakeRate_HNTightV2_2017.root
+HNTightV2_AwayJetPt40   FakeRate13TeV_el_2017.root
+HNTightV2_AwayJetPt40   FakeRate13TeV_el_ptfix_2017.root
+HNTight_17028_AwayJetPt40	FakeRate13TeV_el_2017.root
+HNTight_17028_AwayJetPt40	FakeRate13TeV_el_ptfix_2017.root
+passPOGTight_AwayJetPt40	FakeRate13TeV_el_2017.root
+passPOGTight_AwayJetPt40	FakeRate13TeV_el_ptfix_2017.root

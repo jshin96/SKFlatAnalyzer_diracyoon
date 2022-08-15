@@ -77,8 +77,8 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
   // HL ID
   std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5); 
   std::vector<Muon>       MuonCollV     = GetMuons    (param.Muon_Veto_ID, 5., 2.4);
-  std::vector<Muon>       MuonCollT     = MuonPromptOnly    ( GetMuons    ( param,param.Muon_Tight_ID, 5, 2.4)      ,gens,param);
-  std::vector<Electron>   ElectronCollT = ElectronPromptOnly( GetElectrons( param,param.Electron_Tight_ID, 10, 2.5) ,gens,param);
+  std::vector<Muon>       MuonCollT     = MuonPromptOnly    ( GetMuons    ( param,param.Muon_Tight_ID, 5, 2.4, RunFake)      ,gens,param);
+  std::vector<Electron>   ElectronCollT = ElectronPromptOnly( GetElectrons( param,param.Electron_Tight_ID, 10, 2.5, RunFake) ,gens,param);
 
   std::vector<Tau>        mytaus        = GetTaus     (param.Tau_Veto_ID,20., 2.3); 
 
@@ -130,8 +130,8 @@ void HNL_SignalRegionPlotter::RunEXO17028Analysis(AnalyzerParameter param){
 
   std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5);
   std::vector<Muon>       MuonCollV     = GetMuons    (param.Muon_Veto_ID, 5., 2.4);
-  std::vector<Muon>       MuonCollT     = MuonPromptOnly    ( GetMuons    ( param,param.Muon_Tight_ID, 5, 2.4)      ,gens,param);
-  std::vector<Electron>   ElectronCollT = ElectronPromptOnly( GetElectrons( param,param.Electron_Tight_ID, 10, 2.5) ,gens,param);
+  std::vector<Muon>       MuonCollT     = MuonPromptOnly    ( GetMuons    ( param,param.Muon_Tight_ID, 5, 2.4, RunFake)      ,gens,param);
+  std::vector<Electron>   ElectronCollT = ElectronPromptOnly( GetElectrons( param,param.Electron_Tight_ID, 10, 2.5, RunFake) ,gens,param);
 
 
 

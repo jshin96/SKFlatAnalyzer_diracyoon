@@ -205,11 +205,11 @@ std::vector<Muon> AnalyzerCore::GetMuons(TString id, double ptmin, double fetama
 
 }
 
-std::vector<Muon> AnalyzerCore::GetMuons(AnalyzerParameter param){
-  return GetMuons(param, param.Muon_Tight_ID, param.Muon_MinPt, param.Muon_MaxEta);
+std::vector<Muon> AnalyzerCore::GetMuons(AnalyzerParameter param, bool Run_Fake){
+  return GetMuons(param, param.Muon_Tight_ID, param.Muon_MinPt, param.Muon_MaxEta, Run_Fake);
 }
 
-std::vector<Muon> AnalyzerCore::GetMuons(AnalyzerParameter param, TString id, double ptmin, double fetamax){
+std::vector<Muon> AnalyzerCore::GetMuons(AnalyzerParameter param, TString id, double ptmin, double fetamax, bool Run_Fake){
 
   std::vector<Muon> this_AllMuons = GetAllMuons();
   std::vector<Muon> muons ;
@@ -220,19 +220,28 @@ std::vector<Muon> AnalyzerCore::GetMuons(AnalyzerParameter param, TString id, do
 
   std::vector<Muon> out;
   for(unsigned int i=0; i<muons.size(); i++){
-    if(!( muons.at(i).Pt()> param.Muon_MinPt )){
+    if(!( muons.at(i).Pt()> ptmin )){
       //cout << "Fail Pt : pt = " << muons.at(i).Pt() << ", cut = " << ptmin << endl;                                                     
       continue;
     }
-    if(!( fabs(muons.at(i).Eta())<param.Muon_MaxEta )){
-      //cout << "Fail Eta : eta = " << fabs(muons.at(i).Eta()) << ", cut = " << fetamax << endl;                                          
+    if(!( fabs(muons.at(i).Eta())< fetamax )){
+      // cout << "Fail Eta : eta = " << fabs(muons.at(i).Eta()) << ", cut = " << fetamax << endl;                                          
       continue;
     }
-    if(!( muons.at(i).PassID(param.Muon_Tight_ID) )){
-      //cout << "Fail ID" << endl;                                                                                                        
+    if(!( muons.at(i).PassID(id) )){
+      // cout << "Fail ID" << endl;                                                                                                        
       continue;
     }
-    out.push_back( muons.at(i) );
+ 
+    if(Run_Fake){
+
+      double isocut_mu = GetIsoFromID("Muon", param.Muon_Tight_ID,muons.at(i).Eta(), muons.at(i).Pt());
+      Muon this_muon = muons.at(i);
+      this_muon.SetPtEtaPhiM( muons.at(i).CalcPtCone(muons.at(i).RelIso(), isocut_mu), muons.at(i).Eta(), muons.at(i).Phi(), muons.at(i).M() );
+      out.push_back( this_muon);
+
+    }
+    else   out.push_back( muons.at(i) );
   }
   return out;
 
@@ -316,11 +325,11 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
 
 }
 
-std::vector<Electron> AnalyzerCore::GetElectrons(AnalyzerParameter param,  bool vetoHEM){
-  return GetElectrons(param, param.Electron_Tight_ID, param.Electron_MinPt, param.Electron_MaxEta, vetoHEM);
+std::vector<Electron> AnalyzerCore::GetElectrons(AnalyzerParameter param,  bool run_fake, bool vetoHEM){
+  return GetElectrons(param, param.Electron_Tight_ID, param.Electron_MinPt, param.Electron_MaxEta, run_fake, vetoHEM);
 }
 
-std::vector<Electron> AnalyzerCore::GetElectrons(AnalyzerParameter param, TString id, double ptmin, double fetamax, bool vetoHEM){
+std::vector<Electron> AnalyzerCore::GetElectrons(AnalyzerParameter param, TString id, double ptmin, double fetamax, bool run_fake, bool vetoHEM){
   
   std::vector<Electron> this_AllElectrons = GetAllElectrons();
   std::vector<Electron> electrons ;
@@ -330,6 +339,7 @@ std::vector<Electron> AnalyzerCore::GetElectrons(AnalyzerParameter param, TStrin
   else if(param.syst_ == AnalyzerParameter::ElectronEnUp)    electrons = ScaleElectrons( this_AllElectrons, +1 );
   else if(param.syst_ == AnalyzerParameter::ElectronEnDown)    electrons = ScaleElectrons( this_AllElectrons, -1 );
   else electrons = this_AllElectrons;
+
 
   std::vector<Electron> out;
   for(unsigned int i=0; i<electrons.size(); i++){
@@ -348,7 +358,18 @@ std::vector<Electron> AnalyzerCore::GetElectrons(AnalyzerParameter param, TStrin
       }
     }
 
-    out.push_back( electrons.at(i) );
+
+    if(run_fake){
+
+      double isocut_el = GetIsoFromID("Electron",param.Electron_Tight_ID,electrons.at(i).Eta(), electrons.at(i).Pt());   
+      Electron this_electron = electrons.at(i);
+      this_electron.SetPtEtaPhiM( electrons.at(i).CalcPtCone(electrons.at(i).RelIso(), isocut_el), electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() );
+
+      out.push_back( this_electron);
+      
+    }
+    else   out.push_back( electrons.at(i) );
+    
   }
   return out;
 
@@ -427,6 +448,98 @@ std::vector<Tau> AnalyzerCore::GetTaus(TString id, double ptmin, double fetamax)
 
 }
 
+double AnalyzerCore::GetIsoFromID(TString  lep_type, TString id, double eta, double pt){
+
+  if (lep_type == "Muon") {
+    if (id == "HNTight_17028") return 0.07;
+    if (id == "HNTightV1") return 0.07;
+    if (id == "HNTightV2") return 0.07;
+
+    if (id == "POGTightPFIsoVeryVeryTight") return 0.05;
+    if (id == "HNTight_Iso07_dxy_02_ip_3")  return 0.07;
+    if (id == "POGTightPFIsoVeryTight") return 0.1;
+    if (id == "POGTightPFIsoTight") return 0.15;
+    if (id == "POGTightWithTightIso") return 0.15;
+    if (id == "POGTightStandardPFIsoTight") return 0.15;
+    if (id == "POGTightPFIsoMedium") return 0.2;
+    if (id == "POGTightPFIsoLoose") return 0.25;
+    if (id == "POGTightPFIsoVeto") return 0.4;
+
+    if (id == "POGHighPtTight") return 0.1;
+    if (id == "POGHighPtMixTight") return 0.1;
+    if (id.Contains("MVA")) return 0.4;
+  }
+  else if(lep_type == "Electron"){
+
+    if( id == "HNTight_17028") return 0.08;
+
+    if( id.Contains("HNTightV")) {
+      if(fabs(eta) < 1.479) return (0.0287 + (0.506/pt));
+      else  return (0.0445 + (0.963/pt));
+    }
+    if( id = "HN2016") {
+      if(fabs(eta) < 1.479) return 0.1;
+      else  return (0.06);
+    }
+    if( id = "HN2017") {
+      if(fabs(eta) < 1.479) return 0.085;
+      else  return (0.05);
+    }
+    if( id = "HN2018") {
+      if(fabs(eta) < 1.479) return 0.095;
+      else  return (0.07);
+    }
+    if( id = "HNRelaxedIP2016") {
+      if(fabs(eta) < 1.479) return 0.1;
+      else  return (0.05);
+    }
+    if( id = "HNRelaxedIP2017") {
+      if(fabs(eta) < 1.479) return 0.1;
+      else  return (0.05);
+    }
+    if( id = "HNRelaxedIP2018") {
+      if(fabs(eta) < 1.479) return 0.095;
+      else  return (0.07);
+    }
+    if( id == "passTightID_nocc") {
+      if(fabs(eta) < 1.479) return (0.0287 + (0.506/pt));
+      else  return (0.0445 + (0.963/pt));
+    }
+    if( id.Contains("passPOGTight")){
+      if(fabs(eta) < 1.479) return (0.0287 + (0.506/pt));
+      else  return (0.0445 + (0.963/pt));
+
+    }
+    if( id.Contains("passPOGMedium")){
+      if(fabs(eta) < 1.479) return (0.0478 + (0.506/pt));
+      else  return (0.0658 + (0.963/pt));
+    }
+    if( id == "passTightID") {
+      if(fabs(eta) < 1.479) return (0.0287 + (0.506/pt));
+      else  return (0.0445 + (0.963/pt));
+    }
+    if( id.Contains("HNMediumV")) {
+      if(fabs(eta) < 1.479) return (0.0478 + (0.506/pt));
+      else  return (0.0658 + (0.963/pt));
+    }
+    if( id == "passMediumID") {
+      if(fabs(eta) < 1.479) return (0.0478 + (0.506/pt));
+      else  return (0.0658 + (0.963/pt));
+    }
+
+    if( id == "passMVAID_noIso_WP90V16") return 0.05;
+    if( id == "passMVAID_noIso_WP80") return 0.08;
+    if( id == "passMVAID_noIso_WP90") return 0.08;
+    if( id == "passMVAID_Iso_WP80") return 999.0;
+    if( id == "passMVAID_Iso_WP90") return 999.0;
+
+  }
+  cout << "[HNL_LeptonCore::GetIsoFromID ] ID not found.." << endl;
+  exit(EXIT_FAILURE);
+
+  return -999999999.;
+
+}
 
 bool AnalyzerCore::PassID(std::vector<Electron> electrons, TString ID){
 
@@ -685,15 +798,15 @@ std::vector<Jet> AnalyzerCore::GetJets(AnalyzerParameter param,TString id, doubl
   
   std::vector<Jet> out;
   for(unsigned int i=0; i<jets.size(); i++){
-    if(!( jets.at(i).Pt()> param.Jet_MinPt )){
+    if(!( jets.at(i).Pt()> ptmin )){
       //cout << "Fail Pt : pt = " << jets.at(i).Pt() << ", cut = " << ptmin << endl;
       continue;
     }
-    if(!( fabs(jets.at(i).Eta())<param.Jet_MaxEta )){
+    if(!( fabs(jets.at(i).Eta() )< fetamax )){
       //cout << "Fail Eta : eta = " << fabs(jets.at(i).Eta()) << ", cut = " << fetamax << endl;
       continue;
     }
-    if(!( jets.at(i).PassID(param.Jet_ID) )){
+    if(!( jets.at(i).PassID( id) )){
       //cout << "Fail ID" << endl;
       continue;
     }

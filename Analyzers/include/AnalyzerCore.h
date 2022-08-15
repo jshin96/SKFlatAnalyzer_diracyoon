@@ -83,13 +83,13 @@ public:
   double GetCFWeightElectron(std::vector<Lepton* > leps ,  AnalyzerParameter param);
   std::vector<Electron> GetAllElectrons();
   std::vector<Electron> GetElectrons(TString id, double ptmin, double fetamax, bool vetoHEM = false);
-  std::vector<Electron> GetElectrons(AnalyzerParameter param, TString id, double ptmin, double fetamax, bool vetoHEM=false);
+  std::vector<Electron> GetElectrons(AnalyzerParameter param, TString id, double ptmin, double fetamax ,bool Run_Fake=false, bool vetoHEM=false);
 
-  std::vector<Electron> GetElectrons(AnalyzerParameter param,  bool vetoHEM = false);
+  std::vector<Electron> GetElectrons(AnalyzerParameter param  ,bool Run_Fake=false, bool vetoHEM = false);
   std::vector<Muon> GetAllMuons();
   std::vector<Muon> GetMuons(TString id, double ptmin, double fetamax);
-  std::vector<Muon> GetMuons(AnalyzerParameter param, TString id, double ptmin, double fetamax);
-  std::vector<Muon> GetMuons(AnalyzerParameter param);
+  std::vector<Muon> GetMuons(AnalyzerParameter param, TString id, double ptmin, double fetamax,bool Run_Fake=false);
+  std::vector<Muon> GetMuons(AnalyzerParameter param,bool Run_Fake=false);
 
   std::vector<Tau> GetAllTaus();
   std::vector<Tau> GetTaus(TString id, double ptmin, double fetamax);
@@ -97,6 +97,8 @@ public:
   std::vector<Photon> GetAllPhotons();
   std::vector<Photon> GetPhotons(TString id, double ptmin, double fetamax);
 
+
+  double GetIsoFromID(TString type_lep, TString id, double eta, double pt);
 
   bool PassID(std::vector<Electron> electrons, TString ID);
 

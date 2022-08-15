@@ -123,7 +123,7 @@ void HNL_LeptonCore::initializeAnalyzer(){
 			"HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165_v",
 			"HLT_Photon200_v",
 			"HLT_DoubleEle33_CaloIdL_MW_v"};
-    TrigList_POG_EG = {"HLT_Ele32_WPTight_Gsf_v", "HLT_Ele32_WPTight_Gsf_L1DoubleEG_v"};
+    TrigList_POG_EG = {"HLT_Ele35_WPTight_Gsf_v","HLT_Ele32_WPTight_Gsf_v", "HLT_Ele32_WPTight_Gsf_L1DoubleEG_v"};
     TrigList_HNL_HighPtEG = {"HLT_Photon200_v","HLT_DoublePhoton70_v"};
 
     TrigList_HNL_MuEG  = {"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v"};
@@ -236,52 +236,35 @@ bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event 
       
       // Check It passes DiMu Trigger
       // Check if for data we are running on correct data stream
-      if (!CheckStream(ev, TrigList_HNL_DblMu)) return false;
       
-      PassTrigger = ev.PassTrigger(TrigList_HNL_DblMu);
+      PassTrigger = PassTriggerAndCheckStream(ev,TrigList_HNL_DblMu);
 
-      if(apply_ptcut){
-        if(!PassPtTrigger(ev, TrigList_HNL_DblMu, leps_muon)) PassTrigger=false;
-
-      }
+      if(apply_ptcut  && !PassPtTrigger(ev, TrigList_HNL_DblMu, leps_muon)) PassTrigger=false;
 
     }
     
     else     if(selection == "lep"){
+      
+      PassTrigger = PassTriggerAndCheckStream(ev,TrigList_HNL_Mu);
+      if(apply_ptcut  && !PassPtTrigger(ev, TrigList_HNL_Mu, leps_muon)) PassTrigger=false;
+    }
+    else     if(selection == "POG"){
 
-      // Check It passes DiMu Trigger                                                                                                                                                                         
-      // Check if for data we are running on correct data stream                                                                                                                                              
-      if (!CheckStream(ev, TrigList_HNL_Mu)) return false;
-
-      PassTrigger = ev.PassTrigger(TrigList_HNL_Mu);
-
-      if(apply_ptcut){
-        if(!PassPtTrigger(ev, TrigList_HNL_Mu, leps_muon)) PassTrigger=false;
-      }
-
+      PassTrigger = PassTriggerAndCheckStream(ev,TrigList_POG_Mu);
+      if(apply_ptcut  && !PassPtTrigger(ev, TrigList_POG_Mu, leps_muon)) PassTrigger=false;
     }
 
     else if(selection == "HighPt"){
 
-      if (!CheckStream(ev, TrigList_HNL_HighPtMu)) return false;                                                                                
-      PassTrigger = ev.PassTrigger(TrigList_HNL_HighPtMu);
+      PassTrigger = PassTriggerAndCheckStream(ev,TrigList_HNL_HighPtMu);
+      if(apply_ptcut  && !PassPtTrigger(ev, TrigList_HNL_HighPtMu, leps_muon)) PassTrigger=false;
 
-      if(apply_ptcut){
-
-	if(!PassPtTrigger(ev, TrigList_Full_Mu, leps_muon)) PassTrigger=false;
-	
-      }
     }
     else if(selection == "Full"){
 
-      if (!CheckStream(ev, TrigList_Full_Mu)) return false;
-      
-      PassTrigger = ev.PassTrigger(TrigList_Full_Mu);
+      PassTrigger = PassTriggerAndCheckStream(ev,TrigList_Full_Mu);
+      if(apply_ptcut  && !PassPtTrigger(ev, TrigList_Full_Mu, leps_muon)) PassTrigger=false;
 
-      if(apply_ptcut){
-        if(!PassPtTrigger(ev, TrigList_Full_Mu, leps_muon)) PassTrigger=false;
-	
-      }
     }
     else {
       cout << "[HNL_LeptonCore::PassTriggerSelection ] selection not found.." << endl;
@@ -300,38 +283,31 @@ bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event 
     
     if(selection == "Dilep"){
       
-      // Check It passes DiEl Trigger                                                                                                                                                                       
-      // Check if for data we are running on correct data stream                                                                                                                                            
-      if (!CheckStream(ev, TrigList_HNL_DblEG)) return false;
-      
-      PassTrigger = ev.PassTrigger(TrigList_HNL_DblEG);
-      
-      if(apply_ptcut){
-	if(!PassPtTrigger(ev, TrigList_HNL_DblEG, leps_eg)) PassTrigger=false;
-      }
+      PassTrigger = PassTriggerAndCheckStream(ev,TrigList_HNL_DblEG);
+      if(apply_ptcut  && !PassPtTrigger(ev, TrigList_HNL_DblEG, leps_eg)) PassTrigger=false;
     }
+
+    else     if(selection == "POG"){
+
+      PassTrigger = PassTriggerAndCheckStream(ev,TrigList_POG_EG);
+      if(apply_ptcut  && !PassPtTrigger(ev, TrigList_POG_EG, leps_eg)) PassTrigger=false;
+    }
+
+
 
     else if(selection == "HighPt"){
 
-      if (!CheckStream(ev, TrigList_HNL_HighPtEG)) return false;
-      PassTrigger = ev.PassTrigger(TrigList_HNL_HighPtEG);
-
-      if(apply_ptcut){
-	if(!PassPtTrigger(ev, TrigList_HNL_HighPtEG, leps_eg)) PassTrigger=false;
-	
-      }
+      PassTrigger = PassTriggerAndCheckStream(ev,TrigList_HNL_HighPtEG);
+      if(apply_ptcut  && !PassPtTrigger(ev, TrigList_HNL_HighPtEG, leps_eg)) PassTrigger=false;
+ 
     }
     
     
     else if(selection == "Full"){
       
-      if (!CheckStream(ev, TrigList_Full_EG)) return false;
-      PassTrigger = ev.PassTrigger(TrigList_Full_EG);
-      
-      if(apply_ptcut){
-	if(!PassPtTrigger(ev, TrigList_Full_EG, leps_eg)) PassTrigger=false;
-	
-      }
+      PassTrigger = PassTriggerAndCheckStream(ev,TrigList_Full_EG);
+      if(apply_ptcut  && !PassPtTrigger(ev, TrigList_Full_EG, leps_eg)) PassTrigger=false;
+
     }
     else {
       cout << "[HNL_LeptonCore::PassTriggerSelection ] selection not found.." << endl;
@@ -345,30 +321,24 @@ bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event 
     
     if(selection == "Dilep"){
       
-      if (!CheckStream(ev, TrigList_HNL_MuEG)) return false;
-      
-      PassTrigger = ev.PassTrigger(TrigList_HNL_MuEG);
-      if(apply_ptcut){
-        if(!PassPtTrigger(ev, TrigList_HNL_MuEG, leps)) PassTrigger=false;
-      }
+      PassTrigger = PassTriggerAndCheckStream(ev,TrigList_HNL_MuEG);
+      if(apply_ptcut  && !PassPtTrigger(ev, TrigList_HNL_MuEG, leps)) PassTrigger=false;
+
     }
     
     else if(selection == "HighPt"){
-      
-      PassTrigger = ev.PassTrigger(TrigList_HNL_HighPtMu);
-      if(apply_ptcut){
-	if(!PassPtTrigger(ev, TrigList_HNL_HighPtMu, leps)) PassTrigger=false;
-      }
+
+
+      PassTrigger = PassTriggerAndCheckStream(ev,TrigList_HNL_HighPtMu);
+      if(apply_ptcut  && !PassPtTrigger(ev, TrigList_HNL_HighPtMu, leps)) PassTrigger=false;
+
     }
     
     else    if(selection == "Full"){
       
-      PassTrigger = ev.PassTrigger(TrigList_Full_MuEG);
-      
-      if(apply_ptcut){
-	if(!PassPtTrigger(ev, TrigList_Full_MuEG, leps)) PassTrigger=false;
-	
-      }
+      PassTrigger = PassTriggerAndCheckStream(ev,TrigList_Full_MuEG);
+      if(apply_ptcut  && !PassPtTrigger(ev, TrigList_Full_MuEG, leps)) PassTrigger=false;
+
     }
     
     else {
@@ -391,130 +361,107 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
 
   param.Name  = s_setup+tag;
   param.DefName  =s_setup+tag;
+
+
+  // Default settings
+  
+  param.syst_ = AnalyzerParameter::Central;
+  param.MCCorrrectionIgnoreNoHist = true;
+
+  param.MuFakeMethod = "Data";
+  param.ElFakeMethod = "DataNoConv";
+  param.CFMethod   = "Data";
+
+  param.Jet_ID                     = "tight";
+  param.Jet_MinPt = 10.;
+  param.Jet_MaxEta = 5.;
+
+  param.FatJet_ID                  = "tight";
+  param.FatJet_MinPt = 200.;
+  param.FatJet_MaxEta = 5.;
+
+  param.BJet_Method                = "2a";
+
+  param.Muon_MinPt = 5.;
+  param.Muon_MaxEta = 2.4;
+
+  param.Electron_MinPt = 10.;
+  param.Electron_MaxEta = 2.5;
+
+  param.Muon_Veto_ID = "HNVeto2016";
+  param.Electron_Veto_ID = "HNVeto2016";
+
+  param.Tau_Veto_ID = "HNVeto";
+
+
   if (s_setup=="SignalStudy"){
 
-    param.syst_ = AnalyzerParameter::Central;
+    param.CFMethod   = "MC";
 
-    param.MCCorrrectionIgnoreNoHist = true;
-
-    param.MuFakeMethod = "Data";
-    param.ElFakeMethod = "DataNoConv";
-    param.CFMethod   = "Data";
-
-
-    param.Jet_ID                     = "tight";
-    param.Jet_MinPt = 10.;
-    param.Jet_MaxEta = 5.;
-
-    param.FatJet_ID                  = "tight";
-    param.FatJet_MinPt = 200.;
-    param.FatJet_MaxEta = 5.;
-
-    param.BJet_Method                = "2a";
-    
     param.Muon_Tight_ID = "HNTightV2";
-    param.Muon_MinPt = 5.;
-    param.Muon_MaxEta = 2.4;
     
     param.Electron_Tight_ID = "HNTightV2";
-    param.Electron_MinPt = 10.;
-    param.Electron_MaxEta = 2.5;
+
 
     if(RunFake){
-      param.Muon_Tight_ID = "FIX";
-      param.Electron_Tight_ID = "FIX";
+      param.Muon_Tight_ID = "HNLooseV1";
+      param.Electron_Tight_ID = "HNLooseV4";
     }
-
-    param.Muon_Veto_ID = "HNVeto2016";
-    param.Electron_Veto_ID = "HNVeto2016";
-
-    param.Tau_Veto_ID = "HNVeto";
+    return param;
 
   }
   else if (s_setup=="HNL"){
 
-    param.syst_ = AnalyzerParameter::Central;
-    param.MCCorrrectionIgnoreNoHist = true;
 
-
-    param.MuFakeMethod = "Data";
-    param.ElFakeMethod = "DataNoConv";
-    param.CFMethod   = "Data";
-
-    param.Jet_ID                     = "tight";
-    param.Jet_MinPt = 10.;
-    param.Jet_MaxEta = 5.;
-
-    param.FatJet_ID                  = "tight";
-    param.FatJet_MinPt = 200.;
-    param.FatJet_MaxEta = 5.;
-
-    param.BJet_Method                = "2a";
+    param.CFMethod   = "MC";
 
     param.Muon_Tight_ID = "HNTightV2";
-    param.Muon_MinPt = 5.;
-    param.Muon_MaxEta = 2.4;
-
     param.Electron_Tight_ID = "HNTightV2";
-    param.Electron_MinPt = 10.;
-    param.Electron_MaxEta = 2.5;
 
     if(RunFake){
-      param.Muon_Tight_ID = "FIX";
-      param.Electron_Tight_ID = "FIX";
+      param.Muon_Tight_ID = "HNLooseV4";
+      param.Electron_Tight_ID = "HNLooseV1";
 
     }
 
-    param.Muon_Veto_ID = "HNVeto2016";
-    param.Electron_Veto_ID = "HNVeto2016";
-
-    param.Tau_Veto_ID = "HNVeto";
+    return param;
 
   }
   else if (s_setup=="EXO17028"){
-
-    param.syst_ = AnalyzerParameter::Central;
-
-    param.MCCorrrectionIgnoreNoHist = true;
     
-    param.MuFakeMethod = "Data";
-    param.ElFakeMethod = "DataNoConv";
-    param.CFMethod   = "Data";
-
-    param.Jet_ID                     = "tight";
-    param.Jet_MinPt = 10.;
-    param.Jet_MaxEta = 5.;
-
-    param.FatJet_ID                  = "tight";
-    param.FatJet_MinPt = 200.;
-    param.FatJet_MaxEta = 5.;
-
-    param.BJet_Method                = "2a";
-
+    param.CFMethod   = "MC";
+    
     param.Muon_Tight_ID = "HNTight_17028";
-    param.Muon_MinPt = 5.;
-    param.Muon_MaxEta = 2.4;
-
     param.Electron_Tight_ID = "HNTight_17028";
-    param.Electron_MinPt = 10.;
-    param.Electron_MaxEta = 2.5;
-
+    
     if(RunFake){
       param.Muon_Tight_ID = "HNLoose_17028";
       param.Electron_Tight_ID = "HNLoose_17028";
     }
-    param.Muon_Veto_ID = "HNVeto_17028";
-    param.Electron_Veto_ID = "HNVeto_17028";
-
-
-  }
-  else{
-    cout << "[HNL_LeptonCore::InitialiseHNLParameters ] ID not found.." << endl;
-    exit(EXIT_FAILURE);
-
+    
+    return param;
   }
 
-  return param;
+  else if (s_setup=="POGTight"){
+
+    param.CFMethod   = "MC";
+
+    param.Muon_Tight_ID = "POGTightWithTightIso";
+    param.Electron_Tight_ID = "passPOGTight";
+
+    if(RunFake){
+      param.Muon_Tight_ID = "HNLooseV1";
+      param.Electron_Tight_ID = "HNLoosePOG";
+    }
+
+    return param;
+  }
+
+
+  cout << "[HNL_LeptonCore::InitialiseHNLParameters ] ID not found.." << endl;
+  exit(EXIT_FAILURE);
+  
+  
 }
 
 AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameters( TString param_name, vector<vector<TString> >  hnl_run_param){
@@ -840,118 +787,130 @@ bool HNL_LeptonCore::CorrectChannelStream(HNL_LeptonCore::Channel channel, std::
 
 double HNL_LeptonCore::GetPtCutTrigger(TString trigname, int nlep){
   
-  if(trigname.Contains("HLT_Mu17") && trigname.Contains("HLT_TkMu17")) {
-    if(trigname.Contains("Mu8") && trigname.Contains("TkMu8")) {
+  if(trigname.Contains("HLT_Mu17") ||  trigname.Contains("HLT_TkMu17")) {
+    if(trigname.Contains("Mu8") || trigname.Contains("TkMu8")) {
     if(nlep==0) return 20;
     if(nlep==1) return 10;
     if(nlep>1) return 5.;
     }  
   }
 
-  if(trigname.Contains("HLT_Mu50") && trigname.Contains("HLT_TkMu50")) {
+  else if(trigname.Contains("HLT_Mu50") && trigname.Contains("HLT_TkMu50")) {
     if(nlep==0) return 55;
     if(nlep>0) return 5.;
   }
 
-  if(trigname.Contains("HLT_Iso") && trigname.Contains("Mu24")) {
+  else if(trigname.Contains("HLT_Iso") && trigname.Contains("Mu24")) {
     if(nlep==0) return 26;
     if(nlep>0) return 5.;
   }
 
-  if(trigname.Contains("HLT_Iso") && trigname.Contains("Mu27")) {
+  else if(trigname.Contains("HLT_Iso") && trigname.Contains("Mu27")) {
     if(nlep==0) return 30;
     if(nlep>0) return 5.;
   }
 
-  if(trigname.Contains("HLT_Ele23_Ele12")){
+  else if(trigname.Contains("HLT_Ele23_Ele12")){
     if(nlep==0) return 25;
     if(nlep==1) return 15.;
     if(nlep>1) return 10.;
   }
 
-  if(trigname.Contains("HLT_Ele27_WPTight")){
+  else if(trigname.Contains("HLT_Ele27_WPTight")){
     if(nlep==0) return 30;
     if(nlep>0) return 5.;
   }
 
-  if(trigname.Contains("HLT_Ele25_eta2p1")){
+  else if(trigname.Contains("HLT_Ele25_eta2p1")){
     if(nlep==0) return 27;
     if(nlep>0) return 5.;
   }
 
-  if(trigname.Contains("HLT_Ele115")){
+  else if(trigname.Contains("HLT_Ele115")){
     if(nlep==0) return 120;
     if(nlep>0) return 5.;
   }
   
-  if(trigname.Contains("HLT_Photon175")){
+  else if(trigname.Contains("HLT_Photon175")){
     if(nlep==0) return 180;
     if(nlep>0) return 5.;
   }
 
-  if(trigname.Contains("HLT_Ele45_CaloIdVT")){
+  else if(trigname.Contains("HLT_Ele45_CaloIdVT")){
     if(nlep==0) return 50;
     if(nlep>0) return 5.;
   }
 
-  if(trigname.Contains("HLT_Ele50_CaloIdVT")){
+  else if(trigname.Contains("HLT_Ele50_CaloIdVT")){
     if(nlep==0) return 55;
     if(nlep>0) return 5.;
   }
 
-  if(trigname.Contains("HLT_DoubleEle33")){
+  else if(trigname.Contains("HLT_DoubleEle33")){
     if(nlep==0) return 35;
     if(nlep==1) return 35;
     if(nlep>0) return 5.;
   }
 
-  if(trigname.Contains("HLT_DoubleEle37_Ele27")){
+  else if(trigname.Contains("HLT_DoubleEle37_Ele27")){
     if(nlep==0) return 40;
     if(nlep==1) return 30;
     if(nlep>0) return 5.;
   }
 
-  if(trigname.Contains("HLT_DoublePhoton60")){
+  else if(trigname.Contains("HLT_DoublePhoton60")){
     if(nlep==0) return 65;
     if(nlep>0) return 5.;
   }
 
-  if(trigname.Contains("HLT_Mu8_TrkIsoVVL_Ele23")){
+  else if(trigname.Contains("HLT_Mu8_TrkIsoVVL_Ele23")){
     if(nlep==0) return 25;
     if(nlep==1) return 10;
     if(nlep>0) return 5.;
   }
 
-  if(trigname.Contains("HLT_Mu23_TrkIsoVVL_Ele8")){
+  else if(trigname.Contains("HLT_Mu23_TrkIsoVVL_Ele8")){
     if(nlep==0) return 25;
     if(nlep==1) return 10;
     if(nlep>0) return 5.;
   }
 
-  if(trigname.Contains("HLT_IsoMu27")){
+  else if(trigname.Contains("HLT_IsoMu27")){
     if(nlep==0) return 30;
     if(nlep>0) return 5.;
   }
 
-  if(trigname.Contains("HLT_Ele32_WPTigh")){
+  else if(trigname.Contains("HLT_Ele27_")){
+    if(nlep==0) return 30;
+    if(nlep>0) return 5.;
+  }
+  else if(trigname.Contains("HLT_Ele32_")){
     if(nlep==0) return 35;
     if(nlep>0) return 5.;
   }
-
-  if(trigname.Contains("HLT_Photon200")){
+  else if(trigname.Contains("HLT_Ele35")){
+    if(nlep==0) return 37;
+    if(nlep>0) return 5.;
+  }
+  else if(trigname.Contains("HLT_Photon200")){
     if(nlep==0) return 210;
     if(nlep>0) return 5.;
   }
-  if(trigname.Contains("HLT_DoublePhoton70")){
+  else if(trigname.Contains("HLT_DoublePhoton70")){
     if(nlep==0) return 80;
     if(nlep==1) return 80;
     if(nlep>0) return 5.;
   }
 
-  if(trigname.Contains("HLT_DoubleEle25")){
+  else if(trigname.Contains("HLT_DoubleEle25")){
     if(nlep==0) return 28;
     if(nlep==1) return 28;
     if(nlep>0) return 5.;
+  }
+  else{
+    cout << "[HNL_LeptonCore::GetPtTrigger ] ID not found.. " << trigname << endl;
+    exit(EXIT_FAILURE);
+
   }
 
   return 0.;
@@ -985,23 +944,24 @@ bool HNL_LeptonCore::PassPtTrigger(Event ev, vector<TString> triglist,std::vecto
 bool HNL_LeptonCore::CheckSRStream(Event ev,HNL_LeptonCore::Channel channel_ID){
 
   if(!IsData) return true;
-  if(channel_ID==MuMu) return CheckStream(ev, TrigList_HNL_DblMu);
-  if(channel_ID==EE) return CheckStream(ev, TrigList_HNL_DblEG);
-  if(channel_ID==EMu) return CheckStream(ev, TrigList_HNL_MuEG);
+  //  if(channel_ID==MuMu) return CheckStream(ev, TrigList_HNL_DblMu);
+  //if(channel_ID==EE) return CheckStream(ev, TrigList_HNL_DblEG);
+  //if(channel_ID==EMu) return CheckStream(ev, TrigList_HNL_MuEG);
   
   return true;
 }
 
-bool HNL_LeptonCore::CheckStream(Event ev, vector<TString> triglist){
+bool HNL_LeptonCore::PassTriggerAndCheckStream(Event ev, vector<TString> triglist){
 
-
-  if(!IsData) return true;
-  bool trig_ok_for_data=false;
+  bool trig_passed=false;
   for(auto itrig : triglist){
-    if(ev.IsPDForTrigger(itrig, this->DataStream)) trig_ok_for_data=true;
+    if(!IsData) {
+      if(ev.PassTrigger(itrig))  trig_passed=true;
+    }
+    else if(ev.PassTrigger(itrig) && ev.IsPDForTrigger(itrig, this->DataStream)) trig_passed=true;
   }
   
-  return trig_ok_for_data;
+  return trig_passed;
 }
 
 
@@ -1721,6 +1681,10 @@ void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::SearchRegion sr, float eve
     EVhitname ="ChannelDependantSR3";
   }
 
+  if(sr==ChannelDepSR3){
+    labels = {"MuMu_SR3Fail_0j","MuMu_SR3Fail_1j","MuMu_SR3Fail_2j", "EE_SR3Fail_0j","EE_SR3Fail_1j","EE_SR3Fail_2j","EMu_SR3Fail_0j","EMu_SR3Fail_1j","EMu_SR3Fail_2j"};
+    EVhitname ="ChannelDependantSR3Fail";
+  }
 
   if(sr==SR){
     labels = {"SR1Pass","SR1Fail","SR2Pass","SR2Fail","SR3Pass","SR3Fail","SR4Pass","SR4Fail"
@@ -2142,14 +2106,21 @@ std::vector<Jet> HNL_LeptonCore::SelBJets(std::vector<Jet>& jetColl, JetTagging:
 
 
 Particle HNL_LeptonCore::GetvMET(TString METType){
+
   bool IsType1   = METType.Contains("T1");
   bool IsxyCorr  = METType.Contains("xyCorr");
+  bool UsePuppi  = METType.Contains("Puppi");
 
   Particle vMET;
-
-  if(IsType1){
-    if(IsxyCorr) vMET.SetPtEtaPhiM(PuppiMET_Type1_PhiCor_pt, 0., PuppiMET_Type1_PhiCor_phi, 0.);
-    else         vMET.SetPtEtaPhiM(PuppiMET_Type1_pt, 0., PuppiMET_Type1_phi, 0.);
+  if(UsePuppi){
+    if(IsType1){
+      if(IsxyCorr) vMET.SetPtEtaPhiM(PuppiMET_Type1_PhiCor_pt, 0., PuppiMET_Type1_PhiCor_phi, 0.);
+      else         vMET.SetPtEtaPhiM(PuppiMET_Type1_pt, 0., PuppiMET_Type1_phi, 0.);
+    }
+  }
+  else{
+    if(IsxyCorr) vMET.SetPtEtaPhiM(pfMET_Type1_PhiCor_pt, 0., pfMET_Type1_PhiCor_phi, 0.); 
+    else         vMET.SetPtEtaPhiM(pfMET_Type1_pt, 0., pfMET_Type1_phi, 0.); 
   }
   return vMET;
 
@@ -2159,34 +2130,61 @@ Particle HNL_LeptonCore::GetvMET(TString METType, AnalyzerParameter param){
 
   bool IsType1   = METType.Contains("T1");
   bool IsxyCorr  = METType.Contains("xyCorr");
+  bool UsePuppi  = METType.Contains("Puppi");
 
   bool IsJetSmear  = METType.Contains("JetSmear");
 
-  int IdxSyst = -1, SystDir = 0;
+  int IdxSyst = -1;
 
-  if(param.syst_ == AnalyzerParameter::METUnclUp)   {IdxSyst = 10, SystDir = 1;};
-  if(param.syst_ == AnalyzerParameter::METUnclDown)   {IdxSyst = 11, SystDir = -1;};
+  if(param.syst_ == AnalyzerParameter::METUnclUp)   IdxSyst = 10;
+  if(param.syst_ == AnalyzerParameter::METUnclDown)   IdxSyst = 11;
 
+  // Use CMSSW MET SYSTa
+  if(METType.Contains("CMSSW")){
+    if(param.syst_ == AnalyzerParameter::JetEnUp)  IdxSyst = 2;
+    if(param.syst_ == AnalyzerParameter::JetEnDown)  IdxSyst = 3;
+    if(param.syst_ == AnalyzerParameter::JetResUp)  IdxSyst = 0;
+    if(param.syst_ == AnalyzerParameter::JetResDown)  IdxSyst = 1;
+  }
   bool ApplySyst = (!IsDATA) && IdxSyst >= 0;
 
   Particle vMET;
 
-  if(IsType1){
-    if( (!ApplySyst) or ( IdxSyst>=0 && (!isfinite(pfMET_Type1_PhiCor_pt_shifts->at(IdxSyst))) ) ){
-      if(IsxyCorr) vMET.SetPtEtaPhiM(PuppiMET_Type1_PhiCor_pt, 0., PuppiMET_Type1_PhiCor_phi, 0.); 
-      else         vMET.SetPtEtaPhiM(PuppiMET_Type1_pt, 0., PuppiMET_Type1_phi, 0.); 
+  if(UsePuppi){
+    if(IsType1){
+      if( (!ApplySyst) ){
+	if(IsxyCorr) vMET.SetPtEtaPhiM(PuppiMET_Type1_PhiCor_pt, 0., PuppiMET_Type1_PhiCor_phi, 0.); 
+	else         vMET.SetPtEtaPhiM(PuppiMET_Type1_pt, 0., PuppiMET_Type1_phi, 0.); 
+      }
+      else{
+	if(IsxyCorr)  vMET.SetPtEtaPhiM(PuppiMET_Type1_PhiCor_pt, 0., PuppiMET_Type1_PhiCor_phi, 0.);
+	else         vMET.SetPtEtaPhiM(PuppiMET_Type1_pt_shifts->at(IdxSyst), 0.,  PuppiMET_Type1_phi_shifts->at(IdxSyst), 0.); 
+      }
     }
-    else{
-      if(IsxyCorr) vMET.SetPtEtaPhiM(pfMET_Type1_PhiCor_pt_shifts->at(IdxSyst), 0., pfMET_Type1_PhiCor_phi_shifts->at(IdxSyst), 0.); 
-      else         vMET.SetPtEtaPhiM(pfMET_Type1_pt_shifts->at(IdxSyst), 0., pfMET_Type1_phi_shifts->at(IdxSyst), 0.); 
+    
+  }
+  else{
+    if(IsType1){
+      if( (!ApplySyst) or ( IdxSyst>=0 && (!isfinite(pfMET_Type1_PhiCor_pt_shifts->at(IdxSyst))) ) ){
+	if(IsxyCorr) vMET.SetPtEtaPhiM(pfMET_Type1_PhiCor_pt, 0., pfMET_Type1_PhiCor_phi, 0.); 
+	else         vMET.SetPtEtaPhiM(pfMET_Type1_pt, 0., pfMET_Type1_phi, 0.); 
+      }
+      else{
+	if(IsxyCorr) vMET.SetPtEtaPhiM(pfMET_Type1_PhiCor_pt_shifts->at(IdxSyst), 0., pfMET_Type1_PhiCor_phi_shifts->at(IdxSyst), 0.); 
+	else         vMET.SetPtEtaPhiM(pfMET_Type1_pt_shifts->at(IdxSyst), 0., pfMET_Type1_phi_shifts->at(IdxSyst), 0.); 
+      }
     }
+
   }
 
-  if (IsJetSmear) vMET = UpdateMETSmearedJet(vMET, GetJets(param, param.Jet_ID, 10., 5.));
+  if (!IsJetSmear && param.syst_ == AnalyzerParameter::Central) return vMET;
+  
+  Particle vMETSmeared;
+  if (IsJetSmear) vMETSmeared = UpdateMETSmearedJet(vMET, GetJets(param, param.Jet_ID, 10., 5.));
 
-  if(param.syst_ == AnalyzerParameter::Central) return vMET;
-  double MET = vMET.Pt();
-  double METPhi = vMET.Pt();
+  if(param.syst_ == AnalyzerParameter::Central) return vMETSmeared;
+  double MET = vMETSmeared.Pt();
+  double METPhi = vMETSmeared.Pt();
   //if(param.syst_ == AnalyzerParameter::JetResUp ) CorrectedMETJER(1, GetJets(param, 10., 5.), GetFatJets(param, 200., 5.), MET,METPhi);
   //if(param.syst_ == AnalyzerParameter::JetResDown) CorrectedMETJER(-11, GetJets(param, 10., 5.), GetFatJets(param, 200., 5.), MET,METPhi);
   // Write CorrectedMETXXhttps://github.com/jedori0228/LQanalyzer/blob/CatAnalyzer_13TeV_v8-0-7.36_HNAnalyzer/LQAnalysis/Analyzers/src/AnalyzerCore.cc#L4826
@@ -2579,101 +2577,6 @@ double HNL_LeptonCore::GetHT(std::vector<Jet> jets, std::vector<FatJet> fatjets)
   for(unsigned int i=0; i<jets.size(); i++)_ht += jets.at(i).Pt();
   for(unsigned int i=0; i<fatjets.size(); i++)_ht += fatjets.at(i).Pt();
   return _ht;
-
-}
-
-double HNL_LeptonCore::GetIsoFromID(HNL_LeptonCore::LeptonType lep_type, TString id, double eta, double pt){
-
-  //====== For ptcone variable                                                                                                                                                                             
-
-  if (lep_type == MuonLep) {
-    if (id == "HNTight_17028") return 0.07;
-    if (id == "HNTightV1") return 0.07;
-    if (id == "HNTightV2") return 0.07;
-
-    if (id == "POGTightPFIsoVeryVeryTight") return 0.05;
-    if (id == "HNTight_Iso07_dxy_02_ip_3")  return 0.07;
-    if (id == "POGTightPFIsoVeryTight") return 0.1;
-    if (id == "POGTightPFIsoTight") return 0.15;
-    if (id == "POGTightWithTightIso") return 0.15;
-    if (id == "POGTightStandardPFIsoTight") return 0.15;
-    if (id == "POGTightPFIsoMedium") return 0.2;
-    if (id == "POGTightPFIsoLoose") return 0.25;
-    if (id == "POGTightPFIsoVeto") return 0.4;
-
-    if (id == "POGHighPtTight") return 0.1;
-    if (id == "POGHighPtMixTight") return 0.1;
-    if (id.Contains("MVA")) return 0.4;
-  }
-  else if(lep_type == ElectronLep){
-    
-    if( id == "HNTight_17028") return 0.08;
-
-    if( id.Contains("HNTightV")) {
-      if(fabs(eta) < 1.479) return (0.0287 + (0.506/pt));
-      else  return (0.0445 + (0.963/pt));
-    }
-    if( id = "HN2016") {
-      if(fabs(eta) < 1.479) return 0.1;
-      else  return (0.06);
-    }
-    if( id = "HN2017") {
-      if(fabs(eta) < 1.479) return 0.085;
-      else  return (0.05);
-    }
-    if( id = "HN2018") {
-      if(fabs(eta) < 1.479) return 0.095;
-      else  return (0.07);
-    }
-    if( id = "HNRelaxedIP2016") {
-      if(fabs(eta) < 1.479) return 0.1;
-      else  return (0.05);
-    }
-    if( id = "HNRelaxedIP2017") {
-      if(fabs(eta) < 1.479) return 0.1;
-      else  return (0.05);
-    }
-    if( id = "HNRelaxedIP2018") {
-      if(fabs(eta) < 1.479) return 0.095;
-      else  return (0.07);
-    }
-    if( id == "passTightID_nocc") {
-      if(fabs(eta) < 1.479) return (0.0287 + (0.506/pt));
-      else  return (0.0445 + (0.963/pt));
-    }
-    if( id.Contains("passPOGTight")){
-      if(fabs(eta) < 1.479) return (0.0287 + (0.506/pt));
-      else  return (0.0445 + (0.963/pt));
-
-    }
-    if( id.Contains("passPOGMedium")){
-      if(fabs(eta) < 1.479) return (0.0478 + (0.506/pt));
-      else  return (0.0658 + (0.963/pt));
-    }
-    if( id == "passTightID") {
-      if(fabs(eta) < 1.479) return (0.0287 + (0.506/pt));
-      else  return (0.0445 + (0.963/pt));
-    }
-    if( id.Contains("HNMediumV")) {
-      if(fabs(eta) < 1.479) return (0.0478 + (0.506/pt));
-      else  return (0.0658 + (0.963/pt));
-    }
-    if( id == "passMediumID") {
-      if(fabs(eta) < 1.479) return (0.0478 + (0.506/pt));
-      else  return (0.0658 + (0.963/pt));
-    }
-
-    if( id == "passMVAID_noIso_WP90V16") return 0.05;
-    if( id == "passMVAID_noIso_WP80") return 0.08;
-    if( id == "passMVAID_noIso_WP90") return 0.08;
-    if( id == "passMVAID_Iso_WP80") return 999.0;
-    if( id == "passMVAID_Iso_WP90") return 999.0;
-
-  }
-  cout << "[HNL_LeptonCore::GetIsoFromID ] ID not found.." << endl;
-  exit(EXIT_FAILURE);
-
-  return -999999999.;
 
 }
 

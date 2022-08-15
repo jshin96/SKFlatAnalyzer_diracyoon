@@ -361,7 +361,7 @@ bool Muon::PassMVA(double mva1, double mva2, double mva3) const {
   if (this->Pt() < 5) return false;
   if(!( isPOGLoose() )) return false;
   if(MiniRelIso() > 0.4)  return false;
-  if(!( fabs(dXY())< 0.05 && fabs(dZ())< 0.1 && fabs(IP3D()/IP3Derr())< 8.) ) return false;
+  if(!( fabs(dXY())< 0.01 && fabs(dZ())< 0.1 && fabs(IP3D()/IP3Derr())< 5.) ) return false;
 
   if( fabs(this->Eta()) <= 0.8 ){
     if(! (MVA()>mva1) ) return false;
@@ -450,6 +450,7 @@ bool Muon::Pass_HNVeto2016() const {
 }
 
 bool Muon::Pass_HNLoose2016(double relisoCut, double dxyCut, double dzCut, double sipCut) const {
+  cout << isPOGLoose() << " " << endl;
   if(!( isPOGLoose() )) return false;
   if(!( fabs(dXY())<dxyCut && fabs(dZ())<dzCut && fabs(IP3D()/IP3Derr())<sipCut) ) return false;
   if(!( RelIso()<relisoCut ))  return false;

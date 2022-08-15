@@ -209,7 +209,6 @@ int  Electron::PassIDTight(TString ID) const{
 
   // same ID used by Haneol excpet with conv                                                                                                                                                                                         
   if(ID=="HNTightV2")  return passTightID_NoCC() &&PassHNID()  &&(fabs(IP3D()/IP3Derr())<4.)? 1 : 0 ;
-  //if(ID=="HNTightV2") return Pass_HNTight(0.05, 0.1, 4., true)? 1 : 0 ;                                                                                                                                    
   if(ID=="HNTight_17028") return Pass_HNTight2016()? 1 : 0 ;  // EXO-17-028                                                                                                               
   //=== POG
   if(ID=="passPOGTight")                  return passTightID_NoCC()? 1 : 0 ;
@@ -234,7 +233,18 @@ int  Electron::PassIDTight(TString ID) const{
   if(ID=="SUSYTight") return Pass_SUSYTight()? 1 : 0 ;
   if(ID=="SUSYLoose") return Pass_SUSYLoose()? 1 : 0 ;
 
-  // ===== Type-1                                                                                                                                                                                   
+  // ===== Type-1                                                   
+
+
+  if(ID=="HNMVA_") {
+    TString mva_st = ID.ReplaceAll("HNMVA_","");
+    std::string mva_s = std::string(mva_st);
+    std::string::size_type sz;     // alias of size_t                                                                                                                      
+
+    double mva_d = std::stod (mva_s,&sz);
+
+    return ((passIDHN(3,0.02, 0.02, 0.1,0.1, 5.,5., 0.1, 0.1, -999., -999.)&&PassMVA(mva_d,mva_d,mva_d))  ? 1 : 0);
+  }                                                                                                                              
   if(ID=="HN2016")                 return passIDHN(3,0.01, 0.01, 0.04,0.04, 4.,4., 0.1, 0.06, -999., -999.)&&PassMVA(0.65,0.81, 0.89) ? 1 : 0 ;
   if(ID=="HNRelaxedIP2016")        return passIDHN(3,0.05, 0.05, 0.1,0.1, 4.,4., 0.1, 0.05, -999., -999.)&&PassMVA(0.65,0.81, 0.89) ? 1 : 0 ;
   if(ID=="HN2017")                 return passIDHN(3,0.01, 0.01, 0.04,0.04, 5.,5., 0.085, 0.05, -999., -999.)&&PassMVA(0.65,0.67, 0.89) ? 1 : 0 ;
@@ -255,6 +265,10 @@ int  Electron::PassIDLoose(TString ID) const{
   if(ID=="HNHEEPLoose")  return passLooseHEEPID()&&PassHNID() ? 1 : 0; 
 
   //=== loose user                                                                                                                                                                                       
+
+  if(ID=="HNLooseMVA") return ((passIDHN(3,0.2, 0.2, 0.5,0.5, 10.,10., 0.6, 0.6, -999., -999.)&&PassMVA(-0.1,0.1, -0.1))  ? 1 : 0);
+;
+  
   if(ID=="HNLooseV1")   return      Pass_HNLooseID(0.6,0.2,0.1,10) ? 1 : 0;  // V POG IP/ISO   17028 IP                                                                                                                   
   if(ID=="HNLooseV2")   return  Pass_HNLooseID(0.6,0.2,0.1,9999) ? 1 : 0;  // V POG IP/ISO                                                                                                                   
   if(ID=="HNLooseV3")    return  Pass_HNLooseID(0.6,0.02,0.1,4.) ? 1 : 0;  // V POG IP/ISO                                                                                                                    
