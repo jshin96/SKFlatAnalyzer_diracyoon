@@ -56,7 +56,7 @@ void HNL_SignalRegionPlotter::executeEvent(){
 
   //  RunEXO17028Analysis(HNL_LeptonCore::InitialiseHNLParameter("HNL","_2016Anal"));
   
-  RunULAnalysis(HNL_LeptonCore::InitialiseHNLParameter("EXO17028","_UL"));
+  //RunULAnalysis(HNL_LeptonCore::InitialiseHNLParameter("EXO17028","_UL"));
   //RunEXO17028Analysis(HNL_LeptonCore::InitialiseHNLParameter("EXO17028","_2016Anal"));
   return ;
 }
@@ -77,8 +77,12 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
   // HL ID
   std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5); 
   std::vector<Muon>       MuonCollV     = GetMuons    (param.Muon_Veto_ID, 5., 2.4);
-  std::vector<Muon>       MuonCollT     = MuonPromptOnly    ( GetMuons    ( param,param.Muon_Tight_ID, 5, 2.4, RunFake)      ,gens,param);
-  std::vector<Electron>   ElectronCollT = ElectronPromptOnly( GetElectrons( param,param.Electron_Tight_ID, 10, 2.5, RunFake) ,gens,param);
+
+  TString el_ID = (RunFake) ?  param.Electron_FR_ID : param.Electron_Tight_ID ;
+  TString mu_ID = (RunFake) ?  param.Muon_FR_ID :  param.Muon_Tight_ID ;
+
+  std::vector<Muon>       MuonCollT     = MuonPromptOnly    ( GetMuons    ( param,mu_ID, 5, 2.4, RunFake)      ,gens,param);
+  std::vector<Electron>   ElectronCollT = ElectronPromptOnly( GetElectrons( param,el_ID, 10, 2.5, RunFake) ,gens,param);
 
   std::vector<Tau>        mytaus        = GetTaus     (param.Tau_Veto_ID,20., 2.3); 
 
@@ -95,8 +99,15 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
   // AK4 JET
   std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 10., 5.);
 
-  std::vector<Jet> JetColl                        = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8,"loose",   ElectronCollV,MuonCollV, FatjetColl);
-  std::vector<Jet> VBF_JetColl                    = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8,"loose",  ElectronCollV,MuonCollV, FatjetColl);    // High ETa jets 
+
+  TString PUIDWP="loose";
+  std::vector<Jet> JetColl                        = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, PUIDWP,   ElectronCollV,MuonCollV, FatjetColl);
+  std::vector<Jet> VBF_JetColl                    = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, PUIDWP,  ElectronCollV,MuonCollV, FatjetColl);    // High ETa jets 
+
+  double PJet_PUID_weight = GetJetPileupIDSF(JetColl, PUIDWP, param);
+  weight*= PJet_PUID_weight; 
+  FillWeightHist("PJet_PUID_weight_" ,PJet_PUID_weight);
+
 
   // select B jets
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
@@ -104,8 +115,8 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
   std::vector<Jet> BJetColl                       = GetBJets(param, jets_tmp,     20., 2.7, false,  0.4,0.8,"loose",   ElectronCollV,MuonCollV, FatjetColl, param_jets);
 
   // Chose Typ1 Phi corr MET + smear jets 
-  Particle METUnsmearedv = GetvMET("T1xyCorr",param); // reyturns MET with systematic correction
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets_tmp); // smears MET
+  Particle METv = GetvMET("T1xyCorr",param); // reyturns MET with systematic correction
+  //Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets_tmp); // smears MET
   
   RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV,  JetColl,VBF_JetColl,FatjetColl, BJetColl, ev,METv, param, weight);
 
@@ -130,8 +141,14 @@ void HNL_SignalRegionPlotter::RunEXO17028Analysis(AnalyzerParameter param){
 
   std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5);
   std::vector<Muon>       MuonCollV     = GetMuons    (param.Muon_Veto_ID, 5., 2.4);
-  std::vector<Muon>       MuonCollT     = MuonPromptOnly    ( GetMuons    ( param,param.Muon_Tight_ID, 5, 2.4, RunFake)      ,gens,param);
-  std::vector<Electron>   ElectronCollT = ElectronPromptOnly( GetElectrons( param,param.Electron_Tight_ID, 10, 2.5, RunFake) ,gens,param);
+
+
+  TString el_ID = (RunFake) ?  param.Electron_FR_ID : param.Electron_Tight_ID ;
+  TString mu_ID = (RunFake) ?  param.Muon_FR_ID :  param.Muon_Tight_ID ;
+
+  std::vector<Muon>       MuonCollT     = MuonPromptOnly    ( GetMuons    ( param,mu_ID, 5, 2.4, RunFake)      ,gens,param);
+  std::vector<Electron>   ElectronCollT = ElectronPromptOnly( GetElectrons( param,el_ID, 10, 2.5, RunFake) ,gens,param);
+
 
 
 

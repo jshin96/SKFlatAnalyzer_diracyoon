@@ -45,12 +45,17 @@ public:
     NONE, ELECTRON, MUON, TAU
   };
 
+  inline bool PassID()  const {return j_passID;}
+
   inline int LeptonType() const {return j_LeptonType;}
   void SetLeptonType(int t);
 
 
   inline Flavour LeptonFlavour() const {return j_LeptonFlavour;}
   void SetLeptonFlavour(Flavour f);
+
+  void SetPassID(bool p);
+
   inline bool IsElectron() const {return j_LeptonFlavour==ELECTRON;}
   inline bool IsMuon() const {return j_LeptonFlavour==MUON;}
 
@@ -91,6 +96,8 @@ private:
   Flavour j_LeptonFlavour;
 
   int j_LeptonType;
+
+  bool j_passID;
 
   ClassDef(Lepton,1)
 

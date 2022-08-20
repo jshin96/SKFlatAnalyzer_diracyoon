@@ -5,7 +5,6 @@ TG
 tHq
 TTG
 ttHToNonbb
-TTTT
 ttWToLNu
 ttZToLLNuNu
 tZq

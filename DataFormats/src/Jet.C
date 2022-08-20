@@ -280,7 +280,7 @@ bool Jet::PassPileupMVA(TString WP, TString Era) const {
         else if(this->Pt() < 20.){ if(PileupJetId() > 0.77) pass=true; }
         else if(this->Pt() < 30.){ if(PileupJetId() > 0.90) pass=true; }
         else if(this->Pt() < 40.){ if(PileupJetId() > 0.96) pass=true; }
-        else if(this->Pt() < 50.){ if(PileupJetId() > 0.96) pass=true; }
+        else if(this->Pt() < 50.){ if(PileupJetId() > 0.98) pass=true; }
         else pass=true;
       }
       else if(fabs(this->Eta()) < 2.75){

@@ -21,6 +21,8 @@ public:
   void SetTaggerResults(std::vector<double> ds);
   void SetEnergyFractions(double cH, double nH, double nEM, double cEM, double muE);
   inline double ChargedEmEnergyFraction() const { return j_chargedEmEnergyFraction;}
+  inline double ChargedHadEnergyFraction() const { return j_chargedHadronEnergyFraction;}
+
   void SetMultiplicities(double cM, double nM);
   void SetPileupJetId(double v);
   inline double PileupJetId() const { return j_PileupJetId; }

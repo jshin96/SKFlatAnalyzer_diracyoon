@@ -450,7 +450,7 @@ bool Muon::Pass_HNVeto2016() const {
 }
 
 bool Muon::Pass_HNLoose2016(double relisoCut, double dxyCut, double dzCut, double sipCut) const {
-  cout << isPOGLoose() << " " << endl;
+
   if(!( isPOGLoose() )) return false;
   if(!( fabs(dXY())<dxyCut && fabs(dZ())<dzCut && fabs(IP3D()/IP3Derr())<sipCut) ) return false;
   if(!( RelIso()<relisoCut ))  return false;

@@ -4,11 +4,11 @@
     <Info name="TMVA Release" value="4.2.1 [262657]"/>
     <Info name="ROOT Release" value="6.22/09 [398857]"/>
     <Info name="Creator" value="jalmond"/>
-    <Info name="Date" value="Sat Jul 30 13:54:33 2022"/>
+    <Info name="Date" value="Thu Aug 18 16:31:31 2022"/>
     <Info name="Host" value="Linux cmsbuild03.cern.ch 3.10.0-1062.9.1.el7.x86_64 #1 SMP Fri Dec 6 15:49:49 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux"/>
     <Info name="Dir" value="/data6/Users/jalmond/2020/HL_SKFlatAnalyzer_ULv3/SKFlatAnalyzer/TMVA"/>
     <Info name="Training events" value="132755"/>
-    <Info name="TrainingTime" value="5.14406571e+01"/>
+    <Info name="TrainingTime" value="5.11166630e+01"/>
     <Info name="AnalysisType" value="Classification"/>
   </GeneralInfo>
   <Options>

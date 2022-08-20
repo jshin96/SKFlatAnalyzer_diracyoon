@@ -16,6 +16,7 @@ Lepton::Lepton() : Particle() {
   j_lep_jetptratio=-999.;
   j_LeptonFlavour = NONE;
   j_LeptonType = -999;
+  j_passID;
 
 }
 
@@ -74,6 +75,13 @@ void Lepton::SetLeptonFlavour(Flavour f){
 void Lepton::SetLeptonType(int t){
   j_LeptonType= t;
 }
+
+void Lepton::SetPassID(bool p){
+
+  j_passID = p;
+}
+
+
 
 void Lepton::Print(){
   if(IsElectron()) cout << "Electron\t";

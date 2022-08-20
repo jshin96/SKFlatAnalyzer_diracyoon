@@ -134,7 +134,7 @@ void HNL_FakeRate::executeEventFromParameter(AnalyzerParameter param, TString El
   Event ev = GetEvent();
 
   double weight = SetupWeight(ev, param) / ev.GetTriggerLumi("Full");
-
+  if(IsData) weight = 1;
   
   if(!PassMETFilter()) return;
 
@@ -582,7 +582,7 @@ bool HNL_FakeRate::UseEvent(std::vector<Lepton *> leps ,  std::vector< Jet> jets
   for(unsigned int w = 0; w < leps.size();  w++){
     METdphi = TVector2::Phi_mpi_pi(leps.at(w)->Phi()-MET.Phi());
     MT = sqrt(2.* leps.at(w)->Et()*MET.Pt() * (1 - cos( METdphi)));
-    if(( (MET.Pt() < 20) && (MT < 25.)) ) {
+    if(( (MET.Pt() < 40) && (MT < 25.)) ) {
 
       for (unsigned int ielT=0; ielT < leps.size(); ielT++){
         for(unsigned int ij=0; ij < jets.size(); ij++){
@@ -605,8 +605,8 @@ bool HNL_FakeRate::UseEvent(std::vector<Lepton *> leps ,  std::vector< Jet> jets
 void HNL_FakeRate::GetFakeRates(std::vector<Lepton *> leps,std::vector<bool> blepsT,  AnalyzerParameter param,TString tightlabel,  std::vector<Jet> jets,  std::vector<Jet> lljets, TString tag,float event_weight, float isocut){
 					 
   bool IsMuon=(leps[0]->LeptonFlavour() == Lepton::MUON);
-  int nbin_ptcone= 10;
-  int nbin_pt    = IsMuon ? 10 : 11;
+  int nbin_ptcone=  IsMuon ? 10 : 9;
+  int nbin_pt    = IsMuon ? 10 : 10;
   int nbin_eta   = 4;
   
   double ptbinscone  [nbin_ptcone+1];
@@ -619,8 +619,8 @@ void HNL_FakeRate::GetFakeRates(std::vector<Lepton *> leps,std::vector<bool> ble
     std::copy(vptbins.begin(), vptbins.end(), ptbins);
   }
   else{
-    vector<double> vptbinscone = { 10., 15.,23.,30.,35., 40.,50.,60.,80.,100.,200.};
-    vector<double> vptbins     = { 10., 15.,20.,25.,30., 35.,40.,50.,60.,80.,100., 200.};
+    vector<double> vptbinscone = { 10., 15.,23.,30.,35., 40.,50.,60.,100.,200.};
+    vector<double> vptbins     = { 10., 15.,20.,25.,30., 35.,40.,50.,60.,100., 200.};
     std::copy(vptbinscone.begin(), vptbinscone.end(), ptbinscone);
     std::copy(vptbins.begin(), vptbins.end(), ptbins);
 

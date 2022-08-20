@@ -7,7 +7,25 @@
 
 class HNL_LeptonCore : public AnalyzerCore {
 
+
  public:
+
+  enum TheRunEra{
+    y2016B,y2016C,y2016D,y2016E,y2016F,y2016G,y2016H,
+    y2017B,y2017C,y2017D,y2017E,y2017F,
+    y2018A,y2018B,y2018C,y2018D,
+    y2016MC,
+    y2017MC,
+    y2018MC,
+    yUL2016B,yUL2016C,yUL2016D,yUL2016E,yUL2016F,yUL2016Flate,yUL2016G,yUL2016H,
+    yUL2017B,yUL2017C,yUL2017D,yUL2017E,yUL2017F,
+    yUL2018A,yUL2018B,yUL2018C,yUL2018D,
+    yUL2016MCAPV,
+    yUL2016MCnonAPV,
+    yUL2017MC,
+  yUL2018MC
+  };
+
 
   enum ChargeType
   {
@@ -53,8 +71,9 @@ class HNL_LeptonCore : public AnalyzerCore {
     sigmm_17028=31,
     sigee_17028=32,
     sigem_17028=33,
-
-
+    SR1Tau=34,
+    SR2Tau,
+    SR3Tau
   };
 
   enum LeptonType
@@ -76,8 +95,13 @@ class HNL_LeptonCore : public AnalyzerCore {
   AnalyzerParameter InitialiseHNLParameter(TString s_setup, TString tag);  
 
 
+  // MET corr
+  std::pair<double,double> METXYCorr_Met_MetPhi(double uncormet, double uncormet_phi, int runnb, TString year, bool isMC, int npv, bool isUL =false,bool ispuppi=false);
+
 
   //===== TRIGGER
+
+
 
   bool PassPtTrigger(Event ev, vector<TString> triglist,std::vector<Lepton *> leps);
   void TriggerPrintOut(Event ev);
@@ -90,7 +114,7 @@ class HNL_LeptonCore : public AnalyzerCore {
 
 
   double SetupWeight(Event ev, AnalyzerParameter param);
-  double GetPtCutTrigger(TString trigname, int nlep);
+  double GetPtCutTrigger(TString trigname, int nlep, TString flavour);
   bool CheckSRStream(Event ev,HNL_LeptonCore::Channel channel_ID);
   bool PassTriggerAndCheckStream(Event ev, vector<TString> triglist);
   TString  DoubleElectronPD();

@@ -17,6 +17,8 @@ void AnalyzerParameter::Clear(){
 
   Electron_FR_ID = "Default";
   Electron_FR_Key = "Default";
+  Electron_PR_Key = "Default";
+  
   Electron_CF_ID = "Default";
   Electron_CF_Key = "Default";
   Electron_Tight_RelIso = 999.;
@@ -43,6 +45,7 @@ void AnalyzerParameter::Clear(){
   Muon_Trigger_SF_Key = "Default";
   Muon_FR_ID = "Default";
   Muon_FR_Key = "Default";
+  Muon_PR_Key = "Default";
   Muon_CF_ID = "Default";
   Muon_CF_Key = "Default";
   Muon_Tight_RelIso = 999.;
@@ -60,6 +63,7 @@ void AnalyzerParameter::Clear(){
   MuFakeMethod="MC";
   CFMethod="MC";
 
+  JetPUID="Default";
   Jet_ID = "Default";
   FatJet_ID = "Default";
 
@@ -105,6 +109,8 @@ AnalyzerParameter::AnalyzerParameter(){
   MuFakeMethod="MC";
   CFMethod="MC";
 
+  JetPUID="Default";
+
   Jet_ID = "Default";
   FatJet_ID = "Default";
 
@@ -142,6 +148,12 @@ TString AnalyzerParameter::GetSystType(){
     return "PUDown";
   }
 
+  else if(syst_==Syst::JetPUIDUp){
+    return "JetPUIDUp";
+  }
+  else if(syst_==Syst::JetPUIDDown){
+    return "JetPUIDDown";
+  }
   else if(syst_==Syst::JetMassSmearUp){
     return "JetMassSmearUp";
   }

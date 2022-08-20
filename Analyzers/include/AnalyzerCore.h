@@ -92,6 +92,7 @@ public:
   std::vector<Muon> GetMuons(AnalyzerParameter param,bool Run_Fake=false);
 
   std::vector<Tau> GetAllTaus();
+  std::vector<Tau> GetTaus(vector<Lepton*> leps, TString id, double ptmin, double fetamax);
   std::vector<Tau> GetTaus(TString id, double ptmin, double fetamax);
 
   std::vector<Photon> GetAllPhotons();
@@ -105,6 +106,7 @@ public:
   //==== If TightIso is set, it calculate ptcone
   //==== If UseMini is true, Lepton::RelIso() returns MiniRelIso
   std::vector<Lepton *> MakeLeptonPointerVector(const std::vector<Muon>& muons,const std::vector<Electron>& electrons, double TightIso=-999, bool UseMini=false);
+  std::vector<Lepton *> MakeLeptonPointerVector(const std::vector<Muon>& muons,const std::vector<Electron>& electrons, AnalyzerParameter param, double TightIso=-999, bool UseMini=false);
 
   std::vector<Lepton *> MakeLeptonPointerVector(const std::vector<Muon>& muons, double TightIso=-999, bool UseMini=false);
   std::vector<Lepton *> MakeLeptonPointerVector(const std::vector<Electron>& electrons, double TightIso=-999, bool UseMini=false);
@@ -113,6 +115,8 @@ public:
   std::vector<Jet> GetJets(AnalyzerParameter param);
   std::vector<Jet> GetJets(AnalyzerParameter param,TString ID, double ptmin, double fetamax);
   std::vector<Jet> GetJets(TString ID, double ptmin, double fetamax);
+
+  double GetJetPileupIDSF(vector<Jet> jets , TString WP, AnalyzerParameter param);
 
   std::vector<FatJet> GetAllFatJets();
   std::vector<FatJet> GetFatJets(AnalyzerParameter param);
