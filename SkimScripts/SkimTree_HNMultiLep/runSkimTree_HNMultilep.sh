@@ -18,6 +18,14 @@ if [[ $1 == "DATA" ]]; then
     
 fi
 
+if [[ $1 == "DATAEMu" ]]; then
+    for i in "${era_list[@]}"
+    do
+        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}EMu.txt  -n ${njobs_data}  --nmax 100   -e ${i} &
+
+    done
+
+fi
 if [[ $1 == "MC" ]]; then
     for i in "${era_list[@]}"
     do
