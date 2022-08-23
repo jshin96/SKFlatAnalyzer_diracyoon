@@ -4,7 +4,7 @@ mcpath=${SKFlat_WD}/SkimScripts/${analyzer}/Bkg/
 datapath=${SKFlat_WD}/SkimScripts/${analyzer}/data_lists_multilep/
 njobs=50
 njobs_data=100
-nmax=250
+nmax=100
 skim=' '
 declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
 
@@ -34,3 +34,10 @@ if [[ $1 == "MC" ]]; then
 
 fi
 
+if [[ $1 == "QCD" ]]; then
+    for i in "${era_list[@]}"
+    do
+        SKFlat.py -a $analyzer  -l $mcpath/QCD.txt  -n ${njobs}  --nmax ${nmax}   -e ${i} &
+    done
+
+fi
