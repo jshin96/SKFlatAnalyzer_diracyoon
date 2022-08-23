@@ -167,9 +167,9 @@ public:
   //===== Detailed jet selection                                                                                                                 
   vector<Jet>   GetAK4Jets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean,   TString pu_tag,std::vector<Lepton *> leps_veto,  vector<FatJet> fatjets);
 
-  vector<Jet>   GetBJets(AnalyzerParameter param, vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean,   TString pu_tag,std::vector<Lepton *> leps_veto,  vector<FatJet> fatjets, JetTagging::Parameters jtp);
+  double  GetBJetSF(AnalyzerParameter param,vector<Jet> jets, JetTagging::Parameters jtp);
+  vector<Jet>   GetBJets(AnalyzerParameter param, vector<Jet> jets, JetTagging::Parameters jtp);
 
-  vector<Jet>  GetBJets(AnalyzerParameter param,vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag, vector<Electron>  veto_electrons, vector<Muon>  veto_muons, vector<FatJet> fatjets, JetTagging::Parameters jtp);
 
   vector<Jet>  GetAK4Jets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag, vector<Electron>  veto_electrons, vector<Muon>  veto_muons, vector<FatJet> fatjets);
 
@@ -246,6 +246,7 @@ public:
   bool HasFlag(TString flag);
   std::vector<Muon> MuonWithoutGap(const std::vector<Muon>& muons);
   std::vector<Muon> MuonPromptOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens,AnalyzerParameter param);
+  std::vector<Muon> MuonPromptOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens);
   std::vector<Muon> MuonNonPromptOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens);
   TString PromptStatus(Muon mu, const std::vector<Gen>& gens);
   
@@ -256,6 +257,7 @@ public:
 
   std::vector<Muon> MuonApplyPtCut(const std::vector<Muon>& muons, double ptcut);
   std::vector<Electron> ElectronPromptOnly(const std::vector<Electron>& electrons, const std::vector<Gen>& gens,AnalyzerParameter param);
+  std::vector<Electron> ElectronPromptOnly(const std::vector<Electron>& electrons, const std::vector<Gen>& gens);
   std::vector<Electron> ElectronUsePtCone(const std::vector<Electron>& electrons);
   Electron ElectronUsePtCone(const Electron& electron);
   std::vector<Electron> ElectronApplyPtCut(const std::vector<Electron>& electrons, double ptcut);

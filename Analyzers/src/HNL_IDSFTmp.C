@@ -37,14 +37,14 @@ void HNL_IDSFTmp::MeasureMuonIDSF(AnalyzerParameter param){
 
   std::vector<FatJet>   FatjetColl  = GetFatJets(param, "tight", 200., 5.);
 
-  std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 10., 5.);
+  std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 2.5);
 
-  std::vector<Jet> JetColl   = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8,"loose",   ElectronCollProbe,MuonCollProbe, FatjetColl)
+  std::vector<Jet> JetColl   = GetAK4Jets(jets_tmp,     20., 2.5, true,  0.4,0.8,"loose",   ElectronCollProbe,MuonCollProbe, FatjetColl)
     ;
   // select B jets
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
 
-  std::vector<Jet> BJetColl  = GetBJets(param, jets_tmp,     20., 2.7, false,  0.4,0.8,"loose",   ElectronCollProbe,MuonCollProbe, FatjetColl, param_jets);
+  std::vector<Jet> BJetColl  = GetBJets(param, jets_tmp, param_jets);
   
   std::vector<Lepton *> LeptonColl      = MakeLeptonPointerVector(MuonCollProbe,ElectronCollProbe);
 
@@ -88,15 +88,15 @@ void HNL_IDSFTmp::MeasureElectronIDSF(AnalyzerParameter param){
     }
   }
 
-  std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 10., 5.);
+  std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 2.5);
 
   std::vector<FatJet>   FatjetColl  = GetFatJets(param, "tight", 200., 5.);
 
-  std::vector<Jet> JetColl                        = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8,"loose",   ElectronCollProbe,MuonCollProbe, FatjetColl);
+  std::vector<Jet> JetColl                        = GetAK4Jets(jets_tmp,     20., 2.5, true,  0.4,0.8,"loose",   ElectronCollProbe,MuonCollProbe, FatjetColl);
   // select B jets
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
 
-  std::vector<Jet> BJetColl                       = GetBJets(param, jets_tmp,     20., 2.7, false,  0.4,0.8,"loose",   ElectronCollProbe,MuonCollProbe, FatjetColl, param_jets);
+  std::vector<Jet> BJetColl                       = GetBJets(param, jets_tmp, param_jets);
   
   std::vector<Lepton *> LeptonColl      = MakeLeptonPointerVector(MuonCollProbe,ElectronCollProbe);
 

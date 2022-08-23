@@ -223,11 +223,17 @@ TString AnalyzerParameter::GetSystType(){
   else if(syst_==Syst::ElectronTriggerSFDown){
     return "ElectronTriggerSFDown";
   }
-  else if(syst_==Syst::BTagUp){
-    return "BTagUp";
+  else if(syst_==Syst::BTagSFHTagUp){
+    return "BTagSFHTagUp";
   }
-  else if(syst_==Syst::BTagDown){
-    return "BTagDown";
+  else if(syst_==Syst::BTagSFHTagDown){
+    return "BTagSFHTagDown";
+  }
+  else if(syst_==Syst::BTagSFLTagUp){
+    return "BTagSFLTagUp";
+  }
+  else if(syst_==Syst::BTagSFLTagDown){
+    return "BTagSFLTagDown";
   }
   else if(syst_==Syst::METUnclUp){
     return "METUnclUp";

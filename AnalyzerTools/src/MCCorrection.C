@@ -4881,13 +4881,18 @@ double MCCorrection::MuonISO_SF(TString ID, double eta, double pt, int sys){
 
   eta = fabs(eta);
 
+
   if(ID=="NUM_TightRelIso_DEN_TightIDandIPCut" || ID=="NUM_TightRelIso_DEN_MediumID" || ID=="NUM_LooseRelTkIso_DEN_HighPtIDandIPCut"){
     //==== boundaries
     if(pt<15.) pt = 15.1;
     if(pt>=120.) pt = 119.9;
     if(eta>=2.4) eta = 2.39;
   }
-
+  else{
+    if(pt<15.) pt = 15.1;
+    if(pt>=2000.) pt = 1999.;
+    if(eta>=2.4) eta = 2.39;
+  }
   TH2F *this_hist = map_hist_Muon["ISO_SF_"+ID];
   if(!this_hist){
     if(IgnoreNoHist) return 1.;
@@ -4899,7 +4904,8 @@ double MCCorrection::MuonISO_SF(TString ID, double eta, double pt, int sys){
 
   int this_bin(-999);
 
-  this_bin = this_hist->FindBin(eta,pt);
+  this_bin = this_hist->FindBin(pt,eta);
+  if(!ID.Contains("Tmp")) this_bin = this_hist->FindBin(eta,pt);
 
   value = this_hist->GetBinContent(this_bin);
   error = this_hist->GetBinError(this_bin);
@@ -4938,11 +4944,7 @@ double MCCorrection::MuonTrigger_Eff(TString ID, TString trig, int DataOrMC, dou
     else if(trig=="Mu50"){
       if(pt<52.) return 1.; //FIXME
       if(eta>=2.4) eta = 2.39;
-
-      if(pt>1000.) pt = 999.;
-    }
-    else{
-
+      if(pt>200.) pt = 199.;
     }
   }
   else if(DataYear==2017){
@@ -4960,9 +4962,7 @@ double MCCorrection::MuonTrigger_Eff(TString ID, TString trig, int DataOrMC, dou
       if(pt<52.) return 1.; //FIXME
       if(eta>=2.4) eta = 2.39;
 
-      if(pt>1000.) pt = 999.;
-    }
-    else{
+      if(pt>200.) pt = 199.;
 
     }
   }
@@ -4977,9 +4977,7 @@ double MCCorrection::MuonTrigger_Eff(TString ID, TString trig, int DataOrMC, dou
       if(pt<52.) return 1.; //FIXME
       if(eta>=2.4) eta = 2.39;
 
-      if(pt>1000.) pt = 999.;
-    }
-    else{
+      if(pt>200.) pt = 199.;
 
     }
   }
@@ -5174,6 +5172,9 @@ double MCCorrection::ElectronID_SF(TString ID, double sceta, double pt, int sys)
     sceta = fabs(sceta);
 
     int this_bin = this_hist->FindBin(pt,sceta);
+
+    if(!ID.Contains("Tmp")) this_bin = this_hist->FindBin(sceta,pt);
+
     value = this_hist->GetBinContent(this_bin);
     error = this_hist->GetBinError(this_bin);
 
@@ -5213,7 +5214,7 @@ double MCCorrection::ElectronReco_SF(double sceta, double pt, int sys){
 
   return value+double(sys)*error;
 
-}
+  }
 
 double MCCorrection::ElectronTrigger_Eff(TString ID, TString trig, int DataOrMC, double sceta, double pt, int sys){
 

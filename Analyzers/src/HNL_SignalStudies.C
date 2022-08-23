@@ -81,6 +81,7 @@ void HNL_SignalStudies::executeEvent(){
   vector<FatJet>   this_AllFatJets   =  puppiCorr->Correct(GetAllFatJets());
   std::vector<FatJet>   fatjets_tmp  = SelectFatJets(this_AllFatJets, param.FatJet_ID, 200, 5.);
   std::vector<Jet>      jets_tmp     = GetJets   ( param.Jet_ID,    15., 5.);
+  std::vector<Jet>      bjets_tmp     = GetJets   ( param.Jet_ID,    20., 2.5);
 
   std::vector<FatJet> FatjetColl                  = GetAK8Jets(fatjets_tmp, 200., 2.7, true,  1., true, -999, true, 40., 130., ElectronCollV, MuonCollV);
   std::vector<FatJet> FatjetColl_notag            = GetAK8Jets(fatjets_tmp, 200., 2.7, true,  1., false, -999, true, 40., 130., ElectronCollV, MuonCollV);
@@ -89,7 +90,10 @@ void HNL_SignalStudies::executeEvent(){
   // select B jets
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
 
-  std::vector<Jet> BJetColl                       = GetBJets(param,jets_tmp,     20., 2.7, false,  0.4,0.8,"loose",   ElectronCollV,MuonCollV, FatjetColl, param_jets);
+  std::vector<Jet> BJetColl    = GetBJets(param, bjets_tmp, param_jets);
+  double sf_btag               = GetBJetSF(param, bjets_tmp, param_jets);
+  if(!IsData )weight*= sf_btag;
+
 
   std::vector<Jet> VBF_JetColl                    = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8,"loose",  ElectronCollV,MuonCollV, FatjetColl); 
 

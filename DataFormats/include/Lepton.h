@@ -45,7 +45,7 @@ public:
     NONE, ELECTRON, MUON, TAU
   };
 
-  inline bool PassID()  const {return j_passID;}
+  inline bool PassLepID()  const {return j_passID;}
 
   inline int LeptonType() const {return j_LeptonType;}
   void SetLeptonType(int t);

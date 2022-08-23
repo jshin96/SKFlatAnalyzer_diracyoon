@@ -20,6 +20,8 @@ class SkimTree_HNMultiLep : public AnalyzerCore {
 
   vector<TString> triggers;
   vector<TString> triggers_dimu;
+  vector<TString> triggers_di_el;
+  vector<TString> triggers_emu;
   void WriteHist();
 
   double LeptonPtCut, AK4JetPtCut, AK8JetPtCut;

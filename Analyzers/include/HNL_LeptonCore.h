@@ -73,7 +73,12 @@ class HNL_LeptonCore : public AnalyzerCore {
     sigem_17028=33,
     SR1Tau=34,
     SR2Tau,
-    SR3Tau
+    SR3Tau,  
+    ChannelDepCR1,
+    ChannelDepCR2,
+    ChannelDepCR3,
+    CR
+
   };
 
   enum LeptonType
@@ -101,8 +106,8 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   //===== TRIGGER
 
-
-
+  vector<AnalyzerParameter::Syst> GetSystList(TString SystType);
+  double HNLZvtxSF(HNL_LeptonCore::Channel ch);
   bool PassPtTrigger(Event ev, vector<TString> triglist,std::vector<Lepton *> leps);
   void TriggerPrintOut(Event ev);
   bool PassTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selection, bool applt_ptcut=true);
@@ -275,6 +280,7 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   void Fill_RegionPlots(HNL_LeptonCore::Channel channel, int plotCR,TString label_1, TString label_2,  std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Lepton *> leps, Particle  met, double nvtx, double w);
   void Fill_RegionPlots(HNL_LeptonCore::Channel channel, int plotCR,TString label_1, TString label_2,  std::vector<Jet> jets, std::vector<Jet> jets_vbf, std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w);
+  void FillAK8Plots(HNL_LeptonCore::Channel channel, int plotCR,TString label_1, TString label_2,  std::vector<Jet> jets, std::vector<Jet> jets_vbf, std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w);
 
 
   void Fill_SigRegionPlots1(HNL_LeptonCore::Channel channel,TString label_1, TString label_2, TString label_3,  std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w, double var1,  double var2, double var3, double var4, double var5, double var6, double var7);
