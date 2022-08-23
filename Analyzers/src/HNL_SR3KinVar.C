@@ -276,7 +276,7 @@ void HNL_SR3KinVar::MakeTreeSS2L(vector<Lepton *>  LepTColl,
     Mlljj23 =  JetColl.size()<3? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(1)+JetColl.at(2)).M();
     Mlljj24 = JetColl.size()<4? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(1)+JetColl.at(3)).M();
     Mlljj34 = JetColl.size()<4? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(2)+JetColl.at(3)).M();
-    Mljj112 =  JetColl.size()<2? -2.:(*LepTColl.at(0)+JetColl.at(0)+JetColl.at(1)).M();
+    Mljj112 =  JetColl.size()<2? -1.:(*LepTColl.at(0)+JetColl.at(0)+JetColl.at(1)).M();
     Mljj113 =  JetColl.size()<3? -1.:(*LepTColl.at(0)+JetColl.at(0)+JetColl.at(2)).M();
     Mljj114 = JetColl.size()<4? -1.:(*LepTColl.at(0)+JetColl.at(0)+JetColl.at(3)).M();
     //return;
@@ -308,7 +308,7 @@ void HNL_SR3KinVar::MakeTreeSS2L(vector<Lepton *>  LepTColl,
 
     double ST = GetST( LepTColl, JetColl, FatJetColl, vMET);
     
-    MET2HT  = pow(MET,2.)/HT;
+    MET2HT  = JetColl.size()<1? -1.:pow(MET,2.)/HT;
     MET2ST  = pow(MET,2.)/ST;
 
 
