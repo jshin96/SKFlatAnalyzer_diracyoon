@@ -474,9 +474,9 @@ def PrintSampleInfo(array_gd):
             row.append('-')
             
         if not row[1] == "DS" and not row[1] == "" and row[2] == "Y":
-            dasname=row[7]
+            dasname=row[6]
             dasname=dasname.replace('MINIAODSIM','[1]')
-            print row[0] + ' '*(35 - len(row[0])) + ' | ' + row[3] + ' '*(15 - len(row[3]))  + ' | ' + row[4] + ' '*(15 - len(row[4]))+ ' | ' + dasname + ' '*(165 - len(dasname))+ ' | ' + row[13]
+            print row[0] + ' '*(35 - len(row[0])) + ' | ' + row[3] + ' '*(15 - len(row[3]))  + ' | ' + row[4] + ' '*(15 - len(row[4]))+ ' | ' + dasname + ' '*(165 - len(dasname))+ ' | ' + row[6]
     print '-'*nwidth
 
 def find_googledoc_from_dsn(array_gd,_era,_varname , _dsn):
