@@ -897,8 +897,10 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     if(FillSSVBFPreselectionPlots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("SSVBFPresel");
 
     //VBF CR                                                                                                                                                                      
-    if(FillWWCRPlots  (dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("WpWp_CR");
-    if(FillWWNPCRPlots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("WpWpNP_CR");
+    if(FillWWCR1Plots  (dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("WpWp_CR1");
+    if(FillWWCR2Plots  (dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("WpWp_CR2");
+    if(FillWWCRNPPlots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("WpWp_CRNP");
+    if(FillWWCRNP2Plots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("WpWp_CRNP2");
     if(FillWZ2CRPlots (trilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("WZ2_CR");
     if(FillWZBCRPlots (trilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("WZB_CR");
     
@@ -941,7 +943,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     
     
 
-    vector<TString> cutlabels = { "TopAK8_CR","ZAK8_CR","WpWp_CR","WpWpNP_CR","ZZ_CR","ZZLoose_CR","ZG_CR","WG_CR","WZ_CR","WG_Method2_CR","ZG_Method2_CR","WZ2_CR","WZB_CR","HighMassSR1_CR","HighMassSR2_CR","HighMassSR3_CR","HighMass1Jet_CR","HighMassBJet_CR","HighMassNP_CR","ZNP_CR","SSPresel","SSVBFPresel"};
+    vector<TString> cutlabels = { "TopAK8_CR","ZAK8_CR","WpWp_CR1","WpWp_CR2","WpWp_CRNP","WpWp_CRNP2","ZZ_CR","ZZLoose_CR","ZG_CR","WG_CR","WZ_CR","WG_Method2_CR","ZG_Method2_CR","WZ2_CR","WZB_CR","HighMassSR1_CR","HighMassSR2_CR","HighMassSR3_CR","HighMass1Jet_CR","HighMassBJet_CR","HighMassNP_CR","ZNP_CR","SSPresel","SSVBFPresel"};
     
     for(auto ip : passed) FillEventCutflow(HNL_LeptonCore::CR, weight_channel, ip, param.Name);
     
@@ -1037,16 +1039,16 @@ bool HNL_RegionDefinitions::FillZCRPlots(HNL_LeptonCore::Channel channel, std::v
 }
 
 
-bool HNL_RegionDefinitions::FillWWCRPlots(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto   , std::vector<Jet> jets_eta5, std::vector<FatJet> AK8_JetColl,  std::vector< Jet> B_JetColl,Event ev, Particle METv, AnalyzerParameter param, float w){
+bool HNL_RegionDefinitions::FillWWCR1Plots(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto   , std::vector<Jet> jets_eta5, std::vector<FatJet> AK8_JetColl,  std::vector< Jet> B_JetColl,Event ev, Particle METv, AnalyzerParameter param, float w){
   
+  // This CRis same as AN2021_008 Table 10
+  // Same as SR but Inverse DPhi cut
   
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
   if (leps_veto.size() != 2) return false;
 
   if(jets_eta5.size() < 2) return false;
 
-
-  std::vector<Jet> JetColl                  = GetAK4Jets(jets_eta5, 20., 2.5, true,  0.4,0.8,"",    leps_veto,AK8_JetColl);
   int NB_JetColl = B_JetColl.size();
   /***
    //file:///Users/john/Downloads/AN2019_089_v7.pdf SSWW +WZ  + AN2020_045  
@@ -1062,8 +1064,9 @@ bool HNL_RegionDefinitions::FillWWCRPlots(HNL_LeptonCore::Channel channel, std::
   Jet j2 = jets_eta5[1];
   if(!(j1.Pt() > 30.) && (j2.Pt() > 30.)) return false;
   if ( ll.M() < 20.) return false;
-  if ( METv.Pt() < 30.) return false;
+  //  if ( METv.Pt() < 30.) return false;
   if (NB_JetColl>0) return false;
+  
   if ((j1+j2).M() < 500.) return false;
 
   double DiJetDeta = fabs(j1.Eta() - j2.Eta());
@@ -1074,11 +1077,14 @@ bool HNL_RegionDefinitions::FillWWCRPlots(HNL_LeptonCore::Channel channel, std::
   if (zeppenfeld > 0.75) return false;
   if (channel==EE  && (fabs(ll.M()-90.) < 15)) return false;
 
+  double ll_dphi = fabs(TVector2::Phi_mpi_pi( ( (*leps[0]).Phi() - (*leps[1]).Phi() )) );
+  if(ll_dphi >  2.) return false;
+
   if(run_Debug){
     cout << "HNL_WpWp_TwoLepton_CR " << param.Name << " " << event  << endl;
     for(auto ilep: leps) cout << "HNL_WpWp_TwoLepton_CR Type " <<  GetLeptonType(*ilep, gens) << endl;
   }
-  Fill_RegionPlots(channel, true,"HNL_WpWp_TwoLepton_CR" , param.Name, jets_eta5,  AK8_JetColl,  leps,  METv, nPV, w);
+  Fill_RegionPlots(channel, true,"HNL_WpWp_TwoLepton_CR1" , param.Name, jets_eta5,  AK8_JetColl,  leps,  METv, nPV, w);
 
   return true;
 
@@ -1086,8 +1092,62 @@ bool HNL_RegionDefinitions::FillWWCRPlots(HNL_LeptonCore::Channel channel, std::
 
 
 
-bool HNL_RegionDefinitions::FillWWNPCRPlots(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto   , std::vector<Jet> jets_eta5, std::vector<FatJet> AK8_JetColl,std::vector< Jet> B_JetColl,  Event ev, Particle METv, AnalyzerParameter param, float w){
+bool HNL_RegionDefinitions::FillWWCR2Plots(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto   , std::vector<Jet> jets_eta5, std::vector<FatJet> AK8_JetColl,  std::vector< Jet> B_JetColl,Event ev, Particle METv, AnalyzerParameter param, float w){
 
+  // This CRis same as AN2021_008 Table 10                                                                                                                                                                         
+  // Same as SR but High MET
+
+  if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
+  if (leps_veto.size() != 2) return false;
+
+  if(jets_eta5.size() < 2) return false;
+
+  int NB_JetColl = B_JetColl.size();
+  /***                                                                                                                                                                                                             
+   //file:///Users/john/Downloads/AN2019_089_v7.pdf SSWW +WZ  + AN2020_045                                                                                                                                         
+   //https://arxiv.org/pdf/2005.01173.pdf                                                                                                                                                                          
+   **/
+
+
+  Particle ll =  *leps[0] + *leps[1];
+
+
+  // two highest pt jets with                                                                                                                                                                                      
+  Jet j1 = jets_eta5[0] ;
+  Jet j2 = jets_eta5[1];
+  if(!(j1.Pt() > 30.) && (j2.Pt() > 30.)) return false;
+  if ( ll.M() < 20.) return false;
+  if ( METv.Pt() < 30.) return false;                                                                                                                                                                          
+
+  if (NB_JetColl>0) return false;
+
+  if ((j1+j2).M() < 500.) return false;
+
+  double DiJetDeta = fabs(j1.Eta() - j2.Eta());
+  if (DiJetDeta  <2.5) return false;
+
+  double Av_JetEta= 0.5*(j1.Eta()+ j2.Eta());
+  double zeppenfeld = TMath::Max(leps[0]->Eta()  - Av_JetEta , (leps[1])->Eta()  - Av_JetEta ) /DiJetDeta;
+  if (zeppenfeld > 0.75) return false;
+  if (channel==EE  && (fabs(ll.M()-90.) < 15)) return false;
+
+
+  if(run_Debug){
+    cout << "HNL_WpWp_TwoLepton_CR " << param.Name << " " << event  << endl;
+    for(auto ilep: leps) cout << "HNL_WpWp_TwoLepton_CR Type " <<  GetLeptonType(*ilep, gens) << endl;
+  }
+  Fill_RegionPlots(channel, true,"HNL_WpWp_TwoLepton_CR2" , param.Name, jets_eta5,  AK8_JetColl,  leps,  METv, nPV, w);
+
+  return true;
+
+}
+
+
+
+bool HNL_RegionDefinitions::FillWWCRNPPlots(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto   , std::vector<Jet> jets_eta5, std::vector<FatJet> AK8_JetColl,std::vector< Jet> B_JetColl,  Event ev, Particle METv, AnalyzerParameter param, float w){
+
+
+  // This is the same as AN2020_045 Table 15 Nonprompt
 
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
   if (leps_veto.size() != 2) return false;
@@ -1111,7 +1171,7 @@ bool HNL_RegionDefinitions::FillWWNPCRPlots(HNL_LeptonCore::Channel channel, std
   if(!(j1.Pt() > 30.) && (j2.Pt() > 30.)) return false;
   
   if ( METv.Pt() < 30.) return false;
-  if (NB_JetColl>0) return false;
+  if (NB_JetColl==0) return false;
   if ((j1+j2).M() < 500.) return false;
   
   double DiJetDeta = fabs(j1.Eta() - j2.Eta());
@@ -1134,6 +1194,57 @@ bool HNL_RegionDefinitions::FillWWNPCRPlots(HNL_LeptonCore::Channel channel, std
   return true;
 
 }
+
+bool HNL_RegionDefinitions::FillWWCRNP2Plots(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto   , std::vector<Jet> jets_eta5, std::vector<FatJet> AK8_JetColl,std::vector< Jet> B_JetColl,  Event ev, Particle METv, AnalyzerParameter param, float w){
+
+
+  // This is the same as AN2020_045 Table 15 Nonprompt                                                                                                                                                             
+
+  if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
+  if (leps_veto.size() != 2) return false;
+
+  if(jets_eta5.size() < 2) return false;
+
+
+
+  std::vector<Jet> JetColl                  = GetAK4Jets(jets_eta5, 20., 2.5, true,  0.4,0.8,"",    leps_veto,AK8_JetColl);
+  int NB_JetColl = B_JetColl.size();
+  //file:///Users/john/Downloads/AN2019_089_v7.pdf SSWW +WZ  + AN2020_045                                                                                                                                          
+  //https://arxiv.org/pdf/2005.01173.pdf                                                                                                                                                                           
+
+  Particle ll =  *leps[0] + *leps[1];
+
+
+  // two highest pt jets with                                                                                                                                                                                      
+
+  Jet j1 = jets_eta5[0] ;
+  Jet j2 = jets_eta5[1];
+  if(!(j1.Pt() > 30.) && (j2.Pt() > 30.)) return false;
+
+  if (NB_JetColl==0) return false;
+  if ((j1+j2).M() < 500.) return false;
+
+  double DiJetDeta = fabs(j1.Eta() - j2.Eta());
+  if (DiJetDeta  <2.5) return false;
+
+  double Av_JetEta= 0.5*(j1.Eta()+ j2.Eta());
+  double zeppenfeld = TMath::Max((leps[0])->Eta()  - Av_JetEta , leps[1]->Eta()  - Av_JetEta ) /DiJetDeta;
+  if (zeppenfeld > 0.75) return false;
+  if (channel==EE  && (fabs(ll.M()-90.) < 15)) return false;
+
+
+
+  if(run_Debug){
+    cout << "HNL_WpWpNP_TwoLepton_CR " << param.Name << " " << event  << endl;
+    for(auto ilep: leps) cout << "HNL_WpWpNP_TwoLepton_CR Type " <<  GetLeptonType(*ilep, gens) << endl;
+  }
+
+  Fill_RegionPlots(channel, true,"HNL_WpWpNP2_TwoLepton_CR" , param.Name, jets_eta5,  AK8_JetColl,  leps,  METv, nPV, w);
+
+  return true;
+
+}
+
 
 
 bool HNL_RegionDefinitions::FillOSPreselectionPlots(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto   , std::vector<Jet> JetColl, std::vector<FatJet> AK8_JetColl, std::vector<Jet> B_JetColl,  Event ev, Particle METv, AnalyzerParameter param, float w){

@@ -271,7 +271,8 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   //// ===============================  TOOLS =============================== ////                                                                                                                 
 		   
-
+  double GetFilterEffType1(TString SigProcess, int mass);
+  double GetXsec(TString SigProcess, int mass);
  
 
   //// ===============================  SR PLOTS =============================== ////

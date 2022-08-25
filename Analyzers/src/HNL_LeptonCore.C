@@ -119,8 +119,8 @@ void HNL_LeptonCore::initializeAnalyzer(){
 
 
     TrigList_HNL_DblMu = { "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v", 
-			"HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v",
-			"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v" };
+			   "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v",
+			   "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v" };
     TrigList_HNL_Mu = {  "HLT_IsoMu27_v"};
     TrigList_POG_Mu = {  "HLT_IsoMu27_v"};
     TrigList_HNL_HighPtMu = {"HLT_Mu50_v"};
@@ -563,6 +563,32 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
 
     return param;
   }
+
+
+  else if (s_setup=="POGCR"){
+
+    param.CFMethod   = "MC";
+
+    param.MuFakeMethod = "Data";
+    param.ElFakeMethod = "Data";
+
+    param.Electron_ID_SF_Key = "passTightID";
+    param.Electron_Tight_ID = "passPOGTight";
+
+    param.Muon_ID_SF_Key = "NUM_TightID_DEN_TrackerMuons";
+    param.Muon_ISO_SF_Key = "NUM_TightRelIso_DEN_TightIDandIPCut";
+    param.Muon_Tight_ID = "POGTightWithTightIso";
+    param.Muon_RECO_SF_Key = "MuonRecoSF";
+
+    param.Muon_Trigger_SF_Key = "Default";
+    param.Muon_Trigger_NameForSF = "Default";
+
+    param.Muon_FR_ID = "HNLooseV1";
+    param.Electron_FR_ID = "HNLoosePOG";
+
+    return param;
+  }
+
 
 
   cout << "[HNL_LeptonCore::InitialiseHNLParameters ] ID not found.." << endl;
@@ -1758,8 +1784,8 @@ void HNL_LeptonCore::FillAK8Plots(HNL_LeptonCore::Channel channel, int plot_flag
   int NBJetsDJT=GetNBJets2a("tight","DeepJet_Tight");
   
   if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/" +  "AK8Jet_NBJetL",  NBJetsL ,  w, 5, 0, 5, "NBJetsL");
-  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/" +  "AK8Jet_NBJetL",  NBJetsL ,  w, 5, 0, 5, "NBJetsM");
-  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/" +  "AK8Jet_NBJetL",  NBJetsL ,  w, 5, 0, 5, "NBJetsT");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/" +  "AK8Jet_NBJetM",  NBJetsL ,  w, 5, 0, 5, "NBJetsM");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/" +  "AK8Jet_NBJetT",  NBJetsL ,  w, 5, 0, 5, "NBJetsT");
   if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/" +  "AK8Jet_NDeepJetBJetL",  NBJetsDJL ,  w, 5, 0, 5, "NBJetsL_DeepJet");
   if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/" +  "AK8Jet_NDeepJetBJetM",  NBJetsDJM ,  w, 5, 0, 5, "NBJetsM_DeepJet");
   if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/" +  "AK8Jet_NDeepJetBJetT",  NBJetsDJT ,  w, 5, 0, 5, "NBJetsT_DeepJet");
@@ -2753,6 +2779,35 @@ Particle HNL_LeptonCore::GetvMET(TString METType){
   vMET.SetPtEtaPhiM(Met_pt, 0., Met_phi, 0.);
   return vMET;
 
+}
+
+
+
+double HNL_LeptonCore::GetFilterEffType1(TString SigProcess, int mass){
+
+  //https://docs.google.com/spreadsheets/d/1adHrUM0I45-SUuaSzH0dh7fu9usEjJk4C_aH20bLDFA/edit#gid=0
+  if(SigProcess == "DY"){
+    if(mass == 85) return 0.417;
+    if(mass == 90) return 0.625;
+    if(mass == 95) return 0.739;
+    if(mass == 100) return 0.856;
+    if(mass == 125) return 0.978;
+    if(mass == 150) return 0.983;
+    if(mass == 200) return 0.994;
+    if(mass == 250) return 0.996;
+    if(mass == 300) return 0.996;
+    if(mass == 400) return 0.998;
+    if(mass == 500) return 0.998;
+  }
+  
+  return -1.;
+}
+
+double HNL_LeptonCore::GetXsec(TString SigProcess, int mass){
+  
+  
+  
+  return 0.;
 }
 
 Particle HNL_LeptonCore::GetvMET(TString METType, AnalyzerParameter param){

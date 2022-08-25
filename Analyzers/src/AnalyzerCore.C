@@ -2473,13 +2473,12 @@ vector<Electron> AnalyzerCore::GetLepCollByRunType(const vector<Electron>& ElCol
   bool GetHadFake=false,  GetNHIntConv=false, GetNHExtConv=false, GetCF=false;
   
   if(Option.Contains("HFake"))           GetHadFake   =true;
-  if(Option.Contains("CF"))           GetCF   =true;
+  if(Option.Contains("CF"))              GetCF   =true;
   if(Option.Contains("NHConv"))         {GetNHIntConv =true; GetNHExtConv=true;}
   else{ if(Option.Contains("NHIntConv")) GetNHIntConv =true;
     if(Option.Contains("NHExtConv")) GetNHExtConv =true; }
   
   if(     Option=="Fake"     )          {GetHadFake   =true; GetNHExtConv=true;}
-
 
   vector<Electron> ReturnVec;
   for(unsigned int i=0; i<ElColl.size(); i++){
@@ -2511,6 +2510,8 @@ vector<Muon> AnalyzerCore::SkimLepColl(const vector<Muon>& MuColl, vector<Gen>& 
     if(Option.Contains("NHExtConv")) GetNHExtConv =true; }
   if(     Option=="Fake"     )          {GetHadFake   =true; GetNHExtConv=true;}
 
+
+  cout << "El Sel : " << Option<< endl;
 
   vector<Muon> ReturnVec;
   for(unsigned int i=0; i<MuColl.size(); i++){
@@ -3025,11 +3026,19 @@ bool AnalyzerCore::IsCF(Electron el, std::vector<Gen> truthColl){
   int Idx_Closest    = GenMatchedIdx(el,truthColl);
   int IdxType_NearEl = LepType>3? GetPrElType_InSameSCRange(Idx_Closest, truthColl, "IdxType"):Idx_Closest;
   int Idx_NearEl     = LepType>3? IdxType_NearEl/10:Idx_Closest;
-  if(charge_el_reco*truthColl.at(Idx_NearEl).PID()>0) return true;
 
-  //Gen gen_el= GetGenMatchedLepton(l, gens);
+  // METHOD 1
+  // This does not include internal conv CF
+  //bool method1=false;
+  //Gen gen_el= GetGenMatchedLepton(l, truthColl);
   //int pdgid = gen_el.PID() ;
-  //if( (pdgid * charge_el_reco) > 0) return true;
+  //if( (pdgid * charge_el_reco) > 0) method1=true;
+  
+  //if((charge_el_reco*truthColl.at(Idx_NearEl).PID()>0) != method1)cout << (charge_el_reco*truthColl.at(Idx_NearEl).PID()>0) << "  method 1= " << method1 << endl;
+
+  //  if((charge_el_reco*truthColl.at(Idx_NearEl).PID()>0) != method1) cout << "Lep Type = " << LepType << endl;
+
+  if(charge_el_reco*truthColl.at(Idx_NearEl).PID()>0) return true;
 
   return false;
 }

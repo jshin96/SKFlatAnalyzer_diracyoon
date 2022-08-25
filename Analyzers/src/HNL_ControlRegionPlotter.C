@@ -14,7 +14,7 @@ void HNL_ControlRegionPlotter::executeEvent(){
 
   if(!IsData)  gens = GetGens();
 
-  AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("POG","_UL");
+  AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("POGCR","_UL");
   RunControlRegions(param_signal);
 
   //if(!IsData) RunSyst=true;
