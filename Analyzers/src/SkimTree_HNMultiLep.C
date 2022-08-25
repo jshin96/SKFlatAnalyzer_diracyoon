@@ -21,6 +21,7 @@ void SkimTree_HNMultiLep::initializeAnalyzer(){
       "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v",
     };
   }
+
   if(GetEraShort()=="2016b"){
     triggers_dimu = {
       "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
@@ -72,8 +73,7 @@ void SkimTree_HNMultiLep::initializeAnalyzer(){
   }
   else if(DataYear==2017){
     triggers_dimu = {
-      "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
-      "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v",
+      "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v",
       "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v"
 
     };
@@ -89,6 +89,7 @@ void SkimTree_HNMultiLep::initializeAnalyzer(){
       "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",                  // B
       "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v",
       "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v",
+      "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v",
       "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v",
       "HLT_Mu50_v",
       "HLT_TkMu50_v",
@@ -113,8 +114,7 @@ void SkimTree_HNMultiLep::initializeAnalyzer(){
   }
   else if(DataYear==2018){
     triggers_dimu = {
-      "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v",
-
+      "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v"
     };
     
     triggers_di_el = {

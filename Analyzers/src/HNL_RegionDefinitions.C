@@ -1729,6 +1729,8 @@ bool HNL_RegionDefinitions::FillWGCRPlots(HNL_LeptonCore::Channel channel, std::
 
 bool HNL_RegionDefinitions::FillWZCRPlots(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto, std::vector<Jet> JetColl, std::vector<FatJet> AK8_JetColl, std::vector<Jet> B_JetColl,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
+  //  cout << "FillWZCRPlots " << param.Name << " " << leps.size() << endl;
+
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
 
   double metcut = 50.;
