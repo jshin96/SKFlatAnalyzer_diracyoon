@@ -9,6 +9,7 @@
 #pragma link C++ class AnalyzerCore+;
 #pragma link C++ class HNL_LeptonCore+;
 #pragma link C++ class HNL_Validation+;
+#pragma link C++ class HNL_ConvStudy+;
 #pragma link C++ class HNL_IDSFTmp+;
 #pragma link C++ class HNL_FakeRate+;
 #pragma link C++ class HNL_FakeRateOpt+;

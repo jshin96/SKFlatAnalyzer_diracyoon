@@ -126,6 +126,7 @@ public:
   std::vector<Gen> GetGens();
   std::vector<LHE> GetLHEs();
 
+  bool ConversionSplitting(std::vector<Lepton *> leps,const std::vector<Gen>& gens);
   bool ConversionVeto(std::vector<Lepton *> leps,const std::vector<Gen>& gens);
   bool IsCF(Electron el, std::vector<Gen> gens);
 
@@ -169,6 +170,7 @@ public:
 
   double  GetBJetSF(AnalyzerParameter param,vector<Jet> jets, JetTagging::Parameters jtp);
   vector<Jet>   GetBJets(AnalyzerParameter param, vector<Jet> jets, JetTagging::Parameters jtp);
+  vector<Jet>   GetLJets(AnalyzerParameter param, vector<Jet> jets, JetTagging::Parameters jtp);
 
 
   vector<Jet>  GetAK4Jets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag, vector<Electron>  veto_electrons, vector<Muon>  veto_muons, vector<FatJet> fatjets);
@@ -244,10 +246,12 @@ public:
   double MT2(TLorentzVector a, TLorentzVector b, Particle METv, double METgap);
   double projectedMET(TLorentzVector a, TLorentzVector b, Particle METv);
   bool HasFlag(TString flag);
+
+  
+
   std::vector<Muon> MuonWithoutGap(const std::vector<Muon>& muons);
   std::vector<Muon> MuonPromptOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens,AnalyzerParameter param);
   std::vector<Muon> MuonPromptOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens);
-  std::vector<Muon> MuonNonPromptOnly(const std::vector<Muon>& muons, const std::vector<Gen>& gens);
   TString PromptStatus(Muon mu, const std::vector<Gen>& gens);
   
   std::vector<Muon> MuonUsePtCone(const std::vector<Muon>& muons);
@@ -287,7 +291,20 @@ public:
   int GetGenPhotonType(const Gen& genph, const std::vector<Gen>& gens);
   static bool IsFinalPhotonSt23_Public(const std::vector<Gen>& TruthColl);
   int  GetPrElType_InSameSCRange_Public(int TruthIdx, const std::vector<Gen>& TruthColl);
+
+  int  GenMatchedIdx(const Lepton& Lep, std::vector<Gen>& truthColl);
+  int  GetNearPhotonIdx(const Lepton& Lep, std::vector<Gen>& TruthColl);
+  int  FirstNonSelfMotherIdx(int TruthIdx, std::vector<Gen>& TruthColl);
+  int  LastSelfMotherIdx(int TruthIdx,std::vector<Gen>& TruthColl);
+  bool HasHadronicAncestor(int TruthIdx, std::vector<Gen>& TruthColl);
+  bool IsFinalPhotonSt23(std::vector<Gen>& TruthColl);
+  int  GetPrElType_InSameSCRange(int TruthIdx, std::vector<Gen>& TruthColl, TString Option="");
+
   bool IsSignalPID(int pid);
+
+  
+
+  // HEM code
   bool FindHEMElectron(Electron electron);
 
   //==== Plotting
@@ -359,6 +376,35 @@ public:
   void SwitchToTempDir();
   TFile *outfile=NULL;
   void SetOutfilePath(TString outname);
+
+
+  // JA Added functions 
+
+  vector<Muon> GetLepCollByRunType(const vector<Muon>& MuColl, vector<Gen>& TruthColl, AnalyzerParameter param, TString Option);
+  vector<Electron> GetLepCollByRunType(const vector<Electron>& ElColl, vector<Gen>& TruthColl, AnalyzerParameter param, TString Option);
+  vector<Muon> SkimLepColl(const vector<Muon>& MuColl, vector<Gen>& TruthColl, AnalyzerParameter param, TString Option);
+  vector<Electron> SkimLepColl(const vector<Electron>& ElColl, vector<Gen>& TruthColl, AnalyzerParameter param,TString Option);
+  vector<Electron> SkimLepColl(const vector<Electron>& ElColl, AnalyzerParameter param,TString Option);
+  vector<Muon> SkimLepColl(const vector<Muon>& MuColl, AnalyzerParameter param, TString Option);
+  vector<Jet> SkimJetColl(const vector<Jet>& JetColl, vector<Gen>& TruthColl, AnalyzerParameter param,TString Option);
+  bool HasEWLepInJet(Jet Jet, vector<Gen>& TruthColl, TString Option);
+
+
+  // JH functions 
+
+  // HEM code                                                                                                                                                
+
+  bool IsHEMIssueRun();
+  bool IsHEMIssueReg(Particle& Particle);
+  bool IsHEMCRReg(Particle& Particle, TString Option);
+
+  int  GetPartonType_JH(int TruthIdx, std::vector<Gen>& TruthColl);
+  int  GetLeptonType_JH(int TruthIdx, std::vector<Gen>& TruthColl);
+  int  GetLeptonType_JH(const Lepton& Lep, std::vector<Gen>& TruthColl);
+  int  GetPhotonType_JH(int PhotonIdx, std::vector<Gen>& TruthColl);
+  int  GetFakeLepSrcType(const Lepton& Lep, vector<Jet>& JetColl);
+
+
 
   string run_timestamp;
 

@@ -115,13 +115,13 @@ class HNL_LeptonCore : public AnalyzerCore {
   void PrintParam(AnalyzerParameter param);
   TString QToString(HNL_LeptonCore::ChargeType q);
  
-  bool CorrectChannelStream(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps);
+  bool CheckLeptonFlavourForChannel(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps);
 
 
   double SetupWeight(Event ev, AnalyzerParameter param);
   double GetPtCutTrigger(TString trigname, int nlep, TString flavour);
   bool CheckSRStream(Event ev,HNL_LeptonCore::Channel channel_ID);
-  bool PassTriggerAndCheckStream(Event ev, vector<TString> triglist);
+  bool PassTriggerAndCheckStream(bool apply_ptcut,vector<Lepton*> leps, Event ev, vector<TString> triglist);
   TString  DoubleElectronPD();
   TString  SingleElectronPD();
   TString  MuonEGPD();
@@ -183,26 +183,24 @@ class HNL_LeptonCore : public AnalyzerCore {
   bool SameCharge(std::vector<Lepton *> leps, int ch=0);
 
   /// global var for user flags
- bool RunFake, RunCF,  RunSyst;
- bool IsSkimmed;
- bool Signal;
- bool IncludeFakeLepton;
- bool HEM1516 ,BeforeRun319077;
- bool DEBUG;
-
+  bool RunFake, RunCF,  RunConv, RunSyst;
+  bool IsSkimmed;
+  bool Signal;
+  bool HEM1516 ,BeforeRun319077;
+  bool DEBUG;
  
- bool DblEG_Channel;
- bool DblMuon_Channel;
- bool SglMuon_Channel;
- bool SglEG_Channel;
- bool MuonEG_Channel;
- 
- bool IsCentral, RunFullAnalysis;
- TRandom3* rand_;
-
+  bool DblEG_Channel;
+  bool DblMuon_Channel;
+  bool SglMuon_Channel;
+  bool SglEG_Channel;
+  bool MuonEG_Channel;
+  
+  bool IsCentral, RunFullAnalysis;
+  TRandom3* rand_;
+  
 
   // Trigger vectors used to store year dependant trigger lists
-
+  
   vector<TString> TrigList_HNL_HighPtMu;
   vector<TString> TrigList_HNL_DblMu;
   vector<TString> TrigList_HNL_Mu;
@@ -221,7 +219,6 @@ class HNL_LeptonCore : public AnalyzerCore {
   vector<TString> TrigList_HNL_MuEG;
   vector<TString> TrigList_POG_MuEG;
   vector<TString> TrigList_Full_MuEG;
-
   
   
   // Lepton ID
@@ -252,6 +249,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   void FillAllMuonPlots(TString label , TString cut,  Muon mu, float w);
   void FillAllMuonPlots(TString label , TString cut,  std::vector<Muon> muons, float w);
   void FillAllElectronPlots(TString label , TString cut,  std::vector<Electron> els, float w);
+  void FillAllElectronPlots(TString label , TString cut,  Electron el, float w);
 
 
   // === Cut flow                                                                                                                                                                                      

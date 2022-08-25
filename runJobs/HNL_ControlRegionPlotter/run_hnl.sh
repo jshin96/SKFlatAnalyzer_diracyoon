@@ -10,11 +10,11 @@ skim=' '
 declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
 declare  -a era_list=( "2018")
 
-if [[ $1 == "DY" ]]; then
+if [[ $1 == "WZ" ]]; then
 
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -l $sigpath/${i}/DY.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
+        SKFlat.py -a $analyzer  -i WZTo3LNu_mllmin4p0_powheg  -n $njobs  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep &
     done
 
 fi
@@ -86,12 +86,9 @@ if [[ $1 == "" ]]; then
     for i in "${era_list[@]}"
     do
         SKFlat.py -a $analyzer  -l $datapath/DATA_${i}.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep --userflags RunFake  &
-	#SKFlat.py -a $analyzer  -l $datapath/DATA_${i}.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep &
-	SKFlat.py -a $analyzer  -l $sigpath/${i}/SSWW.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
-	SKFlat.py -a $analyzer  -l $sigpath/${i}/DY.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
-        SKFlat.py -a $analyzer  -l $sigpath/${i}/VBF.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
-        SKFlat.py -a $analyzer  -l $mcpath/${i}/MC.txt  -n $njobs  --nmax ${nmax}   -e ${i} --skim SkimTree_SS2lOR3l &
-        SKFlat.py -a $analyzer  -l $mcpath/${i}/CF.txt  -n $njobs_data  --nmax ${nmax}   -e ${i} --skim SkimTree_Dilepton --userflags RunCF 
+        SKFlat.py -a $analyzer  -l $mcpath/MC.txt  -n $njobs  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLep &
+        SKFlat.py -a $analyzer  -l $mcpath/Conv.txt  -n $njobs  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLep --userflags RunConv&
+        SKFlat.py -a $analyzer  -l $mcpath/CF.txt  -n $njobs_data  --nmax ${nmax}   -e ${i} --skim SkimTree_Dilepton --userflags RunCF 
 
     done
 

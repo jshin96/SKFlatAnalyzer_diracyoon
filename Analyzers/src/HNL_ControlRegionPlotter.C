@@ -14,10 +14,10 @@ void HNL_ControlRegionPlotter::executeEvent(){
 
   if(!IsData)  gens = GetGens();
 
-  AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("HNL","_UL");
+  AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("POG","_UL");
   RunControlRegions(param_signal);
 
-  if(!IsData) RunSyst=true;
+  //if(!IsData) RunSyst=true;
   if(RunSyst){
     TString param_signal_name = param_signal.Name;
     vector<AnalyzerParameter::Syst> SystList = GetSystList("Initial");
@@ -47,8 +47,15 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param){
   TString el_ID = (RunFake) ?  param.Electron_FR_ID : param.Electron_Tight_ID ;
   TString mu_ID = (RunFake) ?  param.Muon_FR_ID :  param.Muon_Tight_ID ;
 
-  std::vector<Muon>       MuonCollT     = MuonPromptOnly    ( GetMuons    ( param,mu_ID, 5, 2.4, RunFake)      ,gens,param);
-  std::vector<Electron>   ElectronCollT = ElectronPromptOnly( GetElectrons( param,el_ID, 10, 2.5, RunFake) ,gens,param);
+  double muon_pt     = (RunFake) ? 8. : 10.;
+  double electron_pt = (RunFake) ? 12. : 15.;
+
+  // 3 Methods to run MC
+  // 1) Fakes/ CF are done by data and Conv done my MC
+  // - in this case if MC should remove Fake lep and CF leps
+  // - this is done by Adding option 
+  std::vector<Muon>       MuonCollT     = GetLepCollByRunType    ( GetMuons    ( param,mu_ID, muon_pt, 2.4, RunFake)      ,gens,param,"");
+  std::vector<Electron>   ElectronCollT = GetLepCollByRunType    ( GetElectrons( param,el_ID, electron_pt, 2.5, RunFake)  ,gens,param,"");
 
   // Creat Lepton vector to have lepton blind codes                                                                                                          
   std::vector<Lepton *> LepsT       = MakeLeptonPointerVector(MuonCollT,ElectronCollT);
@@ -60,10 +67,11 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param){
   std::vector<FatJet> FatjetColl                  = GetAK8Jets(fatjets_tmp, 200., 5., true,  1., false, -999, false, 0., 20000., ElectronCollV, MuonCollV);
 
   std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
-  std::vector<Jet> bjets_tmp     = GetJets   ( param, param.Jet_ID, 20., 2.5);
+
 
   TString PUIDWP="";
-  std::vector<Jet> JetColl                        = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, PUIDWP,   ElectronCollV,MuonCollV, FatjetColl);
+  std::vector<Jet> bjets_tmp                      = GetAK4Jets(jets_tmp,     20., 2.5, true,  0.4,0.8, PUIDWP,   ElectronCollV,MuonCollV, FatjetColl);
+  std::vector<Jet> JetColl                        = GetAK4Jets(jets_tmp,     20., 2.5, true,  0.4,0.8, PUIDWP,   ElectronCollV,MuonCollV, FatjetColl);
   std::vector<Jet> VBF_JetColl                    = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, PUIDWP,  ElectronCollV,MuonCollV, FatjetColl);   // High ETa jets                                                                                                                                              
   
   double PJet_PUID_weight = GetJetPileupIDSF(JetColl, PUIDWP, param);

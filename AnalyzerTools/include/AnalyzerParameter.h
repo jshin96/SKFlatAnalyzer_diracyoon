@@ -40,7 +40,8 @@ public:
 
   int SystDir_PU;
 
-  std::string SystDir_BTag,  BJet_Method,   ElFakeMethod, MuFakeMethod, CFMethod;
+  std::string SystDir_BTag,  BJet_Method,   ElFakeMethod, MuFakeMethod, CFMethod,  ConvMethod;
+;
 ;
 
 

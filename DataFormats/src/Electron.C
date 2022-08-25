@@ -143,7 +143,7 @@ double Electron::EA(){
 }
 
 bool Electron::PassIDOpt(TString ID, bool cc, double dx_b ,double dx_e,double dz_b,double dz_e, double iso_b, double iso_e) const{
- 
+
  bool pass_id= PassID(ID);
 
   if( fabs(scEta()) <= 1.479 ){

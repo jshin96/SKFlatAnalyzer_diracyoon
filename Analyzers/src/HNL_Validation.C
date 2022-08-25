@@ -114,7 +114,7 @@ void HNL_Validation::executeEvent(){
     
     if(run_Debug) cout << "HNL_RegionDefinitions::RunAllSignalRegions " << GetChannelString(dilep_channel) <<  endl;
     
-    if(!CorrectChannelStream(dilep_channel, LepsT)) continue;
+    if(!CheckLeptonFlavourForChannel(dilep_channel, LepsT)) continue;
     
     if(run_Debug) cout << "HNL_RegionDefinitions::CorrectChannelStream " << endl;
 

@@ -16,7 +16,7 @@ class HNL_SR3KinVar : public HNL_RegionDefinitions {
   bool SystRun;
   vector<TString> TrigList_DblMu, TrigList_DblEG, TrigList_MuEG;
 
-  void MakeTreeSS2L(vector<Lepton *>  LepTColl,
+  void MakeTreeSS2L(HNL_LeptonCore::Channel, vector<Lepton *>  LepTColl,
                     vector<Jet>& JetColl, 
 		    vector<Jet>& JetVBFColl, 
 		    Particle& vMET, float weight, TString Label);

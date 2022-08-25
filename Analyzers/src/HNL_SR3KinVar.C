@@ -2,45 +2,10 @@
 
 void HNL_SR3KinVar::initializeAnalyzer(){
 
-   for(unsigned int i=0; i<Userflags.size(); i++){
-   }
-   
-  DblMuon_Channel=false, DblEG_Channel=false, MuonEG_Channel=false;
-  if     (DataStream.Contains("DoubleMuon")) DblMuon_Channel=true;
-  else if(DataStream.Contains("MuonEG"))     MuonEG_Channel =true;
-  else if(DataStream.Contains("DoubleEG"))   DblEG_Channel=true;
-  else if(DataYear==2018 and DataStream.Contains("EGamma")) DblEG_Channel=true;
-  
-
-
-  if(GetEraShort()=="2016a"){
-    TrigList_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v"};
-    TrigList_DblEG = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
-    TrigList_MuEG  = {"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v", "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v"};
-  }
-  else if(GetEraShort()=="2016b"){
-    TrigList_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v", "HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"};
-    TrigList_DblEG = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
-    TrigList_MuEG  = {"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
-  }
-  else if(DataYear==2017){
-    TrigList_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v", "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v"};
-    TrigList_DblEG = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v"};
-    TrigList_MuEG  = {"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v"};
-  }
-  else if(DataYear==2018){
-    TrigList_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v"};
-    TrigList_DblEG = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v"};
-    TrigList_MuEG  = {"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v"};
-  }
-
-
-  //Set up the tagger map only for the param settings to be used.
-  vector<JetTagging::Parameters> jtps;
-  jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets) );
-  mcCorr->SetJetTaggingParameters(jtps);
+  HNL_LeptonCore::initializeAnalyzer();
 
   InitializeTreeVars();
+  
   tree_mm->Branch("Nj", &Nj, "Nj/I");                   tree_ee->Branch("Nj", &Nj, "Nj/I");                   tree_em->Branch("Nj", &Nj, "Nj/I");
   tree_mm->Branch("Nvbfj", &Nvbfj, "Nvbfj/I");                   tree_ee->Branch("Nvbfj", &Nvbfj, "Nvbfj/I");                   tree_em->Branch("Nvbfj", &Nvbfj, "Nvbfj/I");
   tree_mm->Branch("Ptl1", &Ptl1, "Ptl1/F");             tree_ee->Branch("Ptl1", &Ptl1, "Ptl1/F");             tree_em->Branch("Ptl1", &Ptl1, "Ptl1/F");
@@ -121,224 +86,203 @@ void HNL_SR3KinVar::initializeAnalyzer(){
 
 
 void HNL_SR3KinVar::executeEvent(){
-
+  
+  AnalyzerParameter param_bdt = HNL_LeptonCore::InitialiseHNLParameter("BDT","");
+  
   Event ev = GetEvent();
-  float weight = 1., w_GenNorm=1., w_PU=1.;
-  if(!IsDATA){
-    w_GenNorm = MCweight(true,true)*GetKFactor()*ev.GetTriggerLumi("Full");
-    w_PU      = GetPileUpWeight(nPileUp, 0);
-    weight *= w_GenNorm  * w_PU;
-  }
+  double weight =SetupWeight(ev,param_bdt);
+  
   FillHist("CutFlow", 0., weight, 20, 0., 20.);
-
-  bool PassTrig=false;
-  if     (!IsDATA || DblMuon_Channel) PassTrig = ev.PassTrigger(TrigList_DblMu);
-  //else if(DblEG_Channel) PassTrig = ev.PassTrigger(TrigList_DblEG);
-  //else if(MuonEG_Channel) PassTrig = ev.PassTrigger(TrigList_MuEG);
-
-  if(!PassTrig) return;
-
+  
   if(!PassMETFilter()) return;
 
-  TString IDSSLabel = SS2l? "SS":"";
-  TString MuTID = "HNTightV2", MuLID = "HNLooseV1", MuVID="HNVeto2016";
-  TString ElTID = "HNTightV2", ElLID = "HNLooseV4", ElVID = "HNVeto2016";  
+  vector<HNL_LeptonCore::Channel> channels = {EE,MuMu, EMu};
   
-  
-  //std::vector<Electron>   myelectrons_js = GetElectrons(this_AllElectrons, "HNTight_17028", 10., 2.5);
-  //  #std::vector<Muon>       mymuons_js     = GetMuons    (this_AllMuons,     "HNTight_17028", 10., 2.4);
+  for(auto dilep_channel : channels){
+    
+    std::vector<Muon>       MuonCollT     = GetLepCollByRunType    ( GetMuons    ( param_bdt,param_bdt.Muon_Tight_ID, 10., 2.4, RunFake)      ,gens,param_bdt,"NoSel");
+    std::vector<Electron>   ElectronCollT = GetLepCollByRunType    ( GetElectrons( param_bdt,param_bdt.Electron_Tight_ID, 10., 2.5, RunFake)  ,gens,param_bdt,"NoSel");
+    
+    std::vector<Electron>   ElectronCollV = GetElectrons(param_bdt.Electron_Veto_ID, 10., 2.5);
+    std::vector<Muon>       MuonCollV     = GetMuons    (param_bdt.Muon_Veto_ID, 5., 2.4);
+    
+    std::vector<Lepton *> LepsT       = MakeLeptonPointerVector(MuonCollT,ElectronCollT);
+    std::vector<Lepton *> LepsV  = MakeLeptonPointerVector(MuonCollV,ElectronCollV);
 
+    if (!PassTriggerSelection(dilep_channel, ev, LepsT,"Dilep")) continue;
 
-  std::vector<Electron>   electronTightColl  = GetElectrons( ElTID, 10., 2.5);
-  std::vector<Muon>       muonTightColl      = GetMuons    (   MuTID, 10., 2.4);
+    std::vector<Tau>        mytaus       = GetTaus("HNVeto",20., 2.3);
+    
+    std::vector<FatJet>   fatjets_tmp  = GetFatJets("tight", 200., 5);
+    std::vector<Jet>      jets_tmp     = GetJets("tight", 15., 5);
+    
+    std::vector<FatJet> AK8_JetColl             = GetAK8Jets(fatjets_tmp,    200., 2.7, true,  1., false, -999, false, 40., 130., ElectronCollV,MuonCollV);
+    std::vector<Jet>    AK4_JetColl             = GetAK4Jets(jets_tmp,       20.,  2.5, true,  0.4,0.8,"",   ElectronCollV, MuonCollV,AK8_JetColl);
+    std::vector<Jet>    AK4_JetVBFColl          = GetAK4Jets(jets_tmp,       30.,  4.7, true,  0.4,0.8,"",   ElectronCollV, MuonCollV,AK8_JetColl);
+    
+    Particle METv = GetvMET("PuppiT1xyULCorr",param_bdt);
+    
+    std::vector<Jet> bjets_tmp                      = GetAK4Jets(jets_tmp,     20., 2.5, true,  0.4,0.8, "",   ElectronCollV,   MuonCollV, AK8_JetColl);
 
-
-  std::vector<Electron>   electronVetoColl  = GetElectrons( ElVID, 10., 2.5);
-  std::vector<Muon>       muonsVetoColl     = GetMuons    (   MuVID, 5., 2.4);
-
-  std::vector<Tau>        mytaus       = GetTaus("HNVeto",20., 2.3);
-
-  std::vector<FatJet>   fatjets_tmp  = GetFatJets("tight", 200., 5);
-  std::vector<Jet>      jets_tmp     = GetJets("tight", 15., 5);
-
-  std::vector<FatJet> fatjetColl        = GetAK8Jets(fatjets_tmp, 200., 2.7, true,  1., true, -999, true, 40., 130., electronVetoColl, muonsVetoColl);
-  std::vector<Jet>    jetColl              = GetAK4Jets(jets_tmp,       20., 2.7, true,  0.4,0.8,"loose",        electronVetoColl, muonsVetoColl,fatjetColl);
-  std::vector<Jet>    jetVBFColl          = GetAK4Jets(jets_tmp,       30., 4.7, true,  0.4,0.8,"loose",   electronVetoColl, muonsVetoColl,fatjetColl);
-
-
-
-  int  NBJets_medium      =  GetNBJets2a("tight","Medium");
-
-  //vector<Jet> bjetNoVetoColl = SelBJets(jetNoVetoColl, param_jets);
-
-  
-  Particle vMET_T1xy = GetvMET("T1xyCorr");
-
-  bool EventCand = false;
-  
-  if ((NBJets_medium==0) && SameCharge(muonTightColl) && muonsVetoColl.size()==2 && electronVetoColl.size()==0&&mytaus.size()==0){
-    if (GetLLMass(muonTightColl) > 10.){
-      if (fatjetColl.size() ==0) {
-	
-	if(!PassVBFInitial(jetVBFColl)) {
+    JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
+    std::vector<Jet> BJetColl    = GetBJets(param_bdt, bjets_tmp, param_jets);
+    double sf_btag               = GetBJetSF(param_bdt, bjets_tmp, param_jets);
+    if(!IsData )weight*= sf_btag;
+    
+    
+    bool EventCand = false;
+    
+    if ((BJetColl.size()==0) && SameCharge(LepsT) && LepsV.size()==2 ){
+      if (GetLLMass(LepsT) > 10.){
+	if (AK8_JetColl.size() ==0) {
 	  
-	  EventCand=true;
+	  if(!PassVBFInitial(AK4_JetVBFColl)) {
+	    
+	    EventCand=true;
+	    
+	  }
 	  
 	}
-	
       }
-      
     }
     
-  }
+    if(!EventCand) return;
 
-  if(!EventCand) return;
-
-  float w_Prefire = 1., sf_Trig=1.;
-  float sf_MuID = 1., sf_ElReco = 1., sf_ElID = 1., sf_BTag = 1.;
-  if((!IsDATA) and EventCand){
-    sf_MuID   = 1.;
-    sf_ElReco = 1.;
-    sf_ElID   = 1.;
-    sf_BTag   = 1.;
-    w_Prefire = GetPrefireWeight(0);
-  }
-  weight *= w_Prefire * sf_Trig;
-  weight *= sf_MuID * sf_ElReco * sf_ElID * sf_BTag;
-
- 
-  std::vector<Lepton *> leps  = MakeLeptonPointerVector(muonTightColl,electronTightColl);
-
-  MakeTreeSS2L(leps, jetColl, jetVBFColl, vMET_T1xy, weight, "");
     
-
+    MakeTreeSS2L(dilep_channel, LepsT, AK4_JetColl, AK4_JetVBFColl, METv, weight, "");
+  
+    
+  }
 }
 
-void HNL_SR3KinVar::MakeTreeSS2L(vector<Lepton *>  LepTColl, 
+void HNL_SR3KinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Lepton *>  LepTColl, 
 				 vector<Jet>& JetColl, 
 				 vector<Jet>& JetVBFColl, 
 				 Particle& vMET, float weight, TString Label)
 {
-
   
   
   if(!SameCharge(LepTColl)) return;
   
+  // CorrectChannelStream checks EE channel has only EE events
+  if(!CheckLeptonFlavourForChannel(lep_channel, LepTColl)) return;
 
-  if(LepTColl[0]->LeptonFlavour()==Lepton::MUON && LepTColl[1]->LeptonFlavour()==Lepton::MUON){
 
     // MM events
-    
-    if(!(LepTColl[0]->Pt()>20 && LepTColl[1]->Pt()>10)) return;
+  // Pt cut is set in CheckLeptonFlavourForChannel
+  if(!(LepTColl[0]->Pt()>20 && LepTColl[1]->Pt()>10)) return;
 
-    float Mll = GetLLMass(LepTColl);
-
-    InitializeTreeVars();
-
-    Nj      = JetColl.size();
-    Nvbfj   = JetVBFColl.size();
-    Ptl1    = LepTColl[0]->Pt();
-    Ptl2    = LepTColl.at(1)->Pt();
-    LT      = GetLT(LepTColl);
-    Ptj1    =  JetColl.size()<1? -1.: JetColl.at(0).Pt();
-    Ptj2    =  JetColl.size()<2? -1.:JetColl.at(1).Pt();
-    Ptj3    =  JetColl.size()<3? -1.:JetColl.at(2).Pt();
-    MET     = vMET.Pt();
-    
-    dEtall  = abs(LepTColl.at(0)->Eta()-LepTColl.at(1)->Eta());
-    dRll    = LepTColl.at(0)->DeltaR(*LepTColl.at(1));
-    dRjj12  =  JetColl.size()<2? -1.:JetColl.at(0).DeltaR(JetColl.at(1));
-    dRjj23  =  JetColl.size()<3? -1.:JetColl.at(1).DeltaR(JetColl.at(2));
-    dRjj13  =  JetColl.size()<3? -1.:JetColl.at(0).DeltaR(JetColl.at(2));
-    dRlj11  =  JetColl.size()<1? -1.:LepTColl.at(0)->DeltaR(JetColl.at(0));
-    dRlj12  =  JetColl.size()<2? -1.:LepTColl.at(0)->DeltaR(JetColl.at(1));
-    dRlj13  =  JetColl.size()<3? -1.:LepTColl.at(0)->DeltaR(JetColl.at(2));
-    dRlj21  =  JetColl.size()<1? -1.:LepTColl.at(1)->DeltaR(JetColl.at(0));
-    dRlj22  =  JetColl.size()<2? -1.:LepTColl.at(1)->DeltaR(JetColl.at(1));
-    dRlj23  =  JetColl.size()<3? -1.:LepTColl.at(1)->DeltaR(JetColl.at(2));
-
-    MSSSF   = Mll;
-    Mlj11   =  JetColl.size()<1? -1.:(*LepTColl.at(0)+JetColl.at(0)).M();
-    Mlj12   =  JetColl.size()<2? -1.:(*LepTColl.at(0)+JetColl.at(1)).M();
-    Mlj13   =  JetColl.size()<3? -1.:(*LepTColl.at(0)+JetColl.at(2)).M();
-    Mlj21   =  JetColl.size()<1? -1.:(*LepTColl.at(1)+JetColl.at(0)).M();
-    Mlj22   =  JetColl.size()<2? -1.:(*LepTColl.at(1)+JetColl.at(1)).M();
-    Mlj23   =  JetColl.size()<3? -1.:(*LepTColl.at(1)+JetColl.at(2)).M();
-    MTvl1   = MT(*LepTColl.at(0),vMET);
-    MTvl2   = MT(*LepTColl.at(1),vMET);
-    Mllj1   =  JetColl.size()<1? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(0)).M();
-    Mllj2   =  JetColl.size()<2? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(1)).M();
-    Mllj3   =  JetColl.size()<3? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(2)).M();
-    Mllj4   = JetColl.size()<4? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(3)).M();
-    Mlljj12 =  JetColl.size()<2? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(0)+JetColl.at(1)).M();
-    Mlljj13 =  JetColl.size()<3? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(0)+JetColl.at(2)).M();
-    Mlljj14 = JetColl.size()<4? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(0)+JetColl.at(3)).M();
-    Mlljj23 =  JetColl.size()<3? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(1)+JetColl.at(2)).M();
-    Mlljj24 = JetColl.size()<4? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(1)+JetColl.at(3)).M();
-    Mlljj34 = JetColl.size()<4? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(2)+JetColl.at(3)).M();
-    Mljj112 =  JetColl.size()<2? -1.:(*LepTColl.at(0)+JetColl.at(0)+JetColl.at(1)).M();
-    Mljj113 =  JetColl.size()<3? -1.:(*LepTColl.at(0)+JetColl.at(0)+JetColl.at(2)).M();
-    Mljj114 = JetColl.size()<4? -1.:(*LepTColl.at(0)+JetColl.at(0)+JetColl.at(3)).M();
-    //return;
-    Mljj123 =  JetColl.size()<3? -1.:(*LepTColl.at(0)+JetColl.at(1)+JetColl.at(2)).M();
-    Mljj124 = JetColl.size()<4? -1.:(*LepTColl.at(0)+JetColl.at(1)+JetColl.at(3)).M();
-    Mljj134 = JetColl.size()<4? -1.:(*LepTColl.at(0)+JetColl.at(2)+JetColl.at(3)).M();
-    Mljj212 =  JetColl.size()<2? -1.:(*LepTColl.at(1)+JetColl.at(0)+JetColl.at(1)).M();
-    Mljj213 =  JetColl.size()<3? -1.:(*LepTColl.at(1)+JetColl.at(0)+JetColl.at(2)).M();
-    Mljj214 = JetColl.size()<4? -1.:(*LepTColl.at(1)+JetColl.at(0)+JetColl.at(3)).M();
-    Mljj223 =  JetColl.size()<3? -1.:(*LepTColl.at(1)+JetColl.at(1)+JetColl.at(2)).M();
-    Mljj224 = JetColl.size()<4? -1.:(*LepTColl.at(1)+JetColl.at(1)+JetColl.at(3)).M();
-    Mljj234 = JetColl.size()<4? -1.:(*LepTColl.at(1)+JetColl.at(2)+JetColl.at(3)).M();
-    Mjj12   =  JetColl.size()<2? -1.:(JetColl.at(0)+JetColl.at(1)).M();
-    Mjj13   =  JetColl.size()<3? -1.:(JetColl.at(0)+JetColl.at(2)).M();
-    Mjj14   = JetColl.size()<4? -1.:(JetColl.at(0)+JetColl.at(3)).M();
-    Mjj23   =  JetColl.size()<3? -1.:(JetColl.at(1)+JetColl.at(2)).M();
-    Mjj24   = JetColl.size()<4? -1.:(JetColl.at(1)+JetColl.at(3)).M();
-    Mjj34   = JetColl.size()<4? -1.:(JetColl.at(2)+JetColl.at(3)).M();
-    
-    //Vars requiring complex algo.
-    HT      = 0;
-    for(unsigned int itj=0; itj<JetColl.size(); itj++){ HT+=JetColl.at(itj).Pt(); }
-    
-    HTLT=HT/LT;
-    HTLT1=HT/LepTColl.at(0)->Pt();
-    HTLT2=HT/LepTColl.at(1)->Pt();
-
-    std::vector<FatJet> FatJetColl;
-
-    double ST = GetST( LepTColl, JetColl, FatJetColl, vMET);
-    
-    MET2HT  = JetColl.size()<1? -1.:pow(MET,2.)/HT;
-    MET2ST  = pow(MET,2.)/ST;
-
-
-    float dijetmass_tmp=9999.;
-    float dijetmass=99990000.;
-    int m=-999;
-    int n=-999;
-
-    for(UInt_t emme=0; emme<JetColl.size(); emme++){
-      for(UInt_t enne=1; enne<JetColl.size(); enne++) {
-
-        dijetmass_tmp = (JetColl[emme]+JetColl[enne]).M();
-        if(emme == enne) continue;
-
-        if ( fabs(dijetmass_tmp-80.4) < fabs(dijetmass-80.4) ) {
-          dijetmass = dijetmass_tmp;
-          m = emme;
-          n = enne;
-        }
+  float Mll = GetLLMass(LepTColl);
+  if (lep_channel==EE  && (fabs(Mll-90.) < 15)) return;
+  
+  InitializeTreeVars();
+  
+  Nj      = JetColl.size();
+  Nvbfj   = JetVBFColl.size();
+  Ptl1    = LepTColl[0]->Pt();
+  Ptl2    = LepTColl.at(1)->Pt();
+  LT      = GetLT(LepTColl);
+  Ptj1    =  JetColl.size()<1? -1.: JetColl.at(0).Pt();
+  Ptj2    =  JetColl.size()<2? -1.:JetColl.at(1).Pt();
+  Ptj3    =  JetColl.size()<3? -1.:JetColl.at(2).Pt();
+  MET     = vMET.Pt();
+  
+  dEtall  = abs(LepTColl.at(0)->Eta()-LepTColl.at(1)->Eta());
+  dRll    = LepTColl.at(0)->DeltaR(*LepTColl.at(1));
+  dRjj12  =  JetColl.size()<2? -1.:JetColl.at(0).DeltaR(JetColl.at(1));
+  dRjj23  =  JetColl.size()<3? -1.:JetColl.at(1).DeltaR(JetColl.at(2));
+  dRjj13  =  JetColl.size()<3? -1.:JetColl.at(0).DeltaR(JetColl.at(2));
+  dRlj11  =  JetColl.size()<1? -1.:LepTColl.at(0)->DeltaR(JetColl.at(0));
+  dRlj12  =  JetColl.size()<2? -1.:LepTColl.at(0)->DeltaR(JetColl.at(1));
+  dRlj13  =  JetColl.size()<3? -1.:LepTColl.at(0)->DeltaR(JetColl.at(2));
+  dRlj21  =  JetColl.size()<1? -1.:LepTColl.at(1)->DeltaR(JetColl.at(0));
+  dRlj22  =  JetColl.size()<2? -1.:LepTColl.at(1)->DeltaR(JetColl.at(1));
+  dRlj23  =  JetColl.size()<3? -1.:LepTColl.at(1)->DeltaR(JetColl.at(2));
+  
+  MSSSF   = Mll;
+  Mlj11   =  JetColl.size()<1? -1.:(*LepTColl.at(0)+JetColl.at(0)).M();
+  Mlj12   =  JetColl.size()<2? -1.:(*LepTColl.at(0)+JetColl.at(1)).M();
+  Mlj13   =  JetColl.size()<3? -1.:(*LepTColl.at(0)+JetColl.at(2)).M();
+  Mlj21   =  JetColl.size()<1? -1.:(*LepTColl.at(1)+JetColl.at(0)).M();
+  Mlj22   =  JetColl.size()<2? -1.:(*LepTColl.at(1)+JetColl.at(1)).M();
+  Mlj23   =  JetColl.size()<3? -1.:(*LepTColl.at(1)+JetColl.at(2)).M();
+  MTvl1   = MT(*LepTColl.at(0),vMET);
+  MTvl2   = MT(*LepTColl.at(1),vMET);
+  Mllj1   =  JetColl.size()<1? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(0)).M();
+  Mllj2   =  JetColl.size()<2? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(1)).M();
+  Mllj3   =  JetColl.size()<3? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(2)).M();
+  Mllj4   = JetColl.size()<4? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(3)).M();
+  Mlljj12 =  JetColl.size()<2? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(0)+JetColl.at(1)).M();
+  Mlljj13 =  JetColl.size()<3? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(0)+JetColl.at(2)).M();
+  Mlljj14 = JetColl.size()<4? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(0)+JetColl.at(3)).M();
+  Mlljj23 =  JetColl.size()<3? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(1)+JetColl.at(2)).M();
+  Mlljj24 = JetColl.size()<4? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(1)+JetColl.at(3)).M();
+  Mlljj34 = JetColl.size()<4? -1.:(*LepTColl.at(0)+*LepTColl.at(1)+JetColl.at(2)+JetColl.at(3)).M();
+  Mljj112 =  JetColl.size()<2? -1.:(*LepTColl.at(0)+JetColl.at(0)+JetColl.at(1)).M();
+  Mljj113 =  JetColl.size()<3? -1.:(*LepTColl.at(0)+JetColl.at(0)+JetColl.at(2)).M();
+  Mljj114 = JetColl.size()<4? -1.:(*LepTColl.at(0)+JetColl.at(0)+JetColl.at(3)).M();
+  //return;
+  Mljj123 =  JetColl.size()<3? -1.:(*LepTColl.at(0)+JetColl.at(1)+JetColl.at(2)).M();
+  Mljj124 = JetColl.size()<4? -1.:(*LepTColl.at(0)+JetColl.at(1)+JetColl.at(3)).M();
+  Mljj134 = JetColl.size()<4? -1.:(*LepTColl.at(0)+JetColl.at(2)+JetColl.at(3)).M();
+  Mljj212 =  JetColl.size()<2? -1.:(*LepTColl.at(1)+JetColl.at(0)+JetColl.at(1)).M();
+  Mljj213 =  JetColl.size()<3? -1.:(*LepTColl.at(1)+JetColl.at(0)+JetColl.at(2)).M();
+  Mljj214 = JetColl.size()<4? -1.:(*LepTColl.at(1)+JetColl.at(0)+JetColl.at(3)).M();
+  Mljj223 =  JetColl.size()<3? -1.:(*LepTColl.at(1)+JetColl.at(1)+JetColl.at(2)).M();
+  Mljj224 = JetColl.size()<4? -1.:(*LepTColl.at(1)+JetColl.at(1)+JetColl.at(3)).M();
+  Mljj234 = JetColl.size()<4? -1.:(*LepTColl.at(1)+JetColl.at(2)+JetColl.at(3)).M();
+  Mjj12   =  JetColl.size()<2? -1.:(JetColl.at(0)+JetColl.at(1)).M();
+  Mjj13   =  JetColl.size()<3? -1.:(JetColl.at(0)+JetColl.at(2)).M();
+  Mjj14   = JetColl.size()<4? -1.:(JetColl.at(0)+JetColl.at(3)).M();
+  Mjj23   =  JetColl.size()<3? -1.:(JetColl.at(1)+JetColl.at(2)).M();
+  Mjj24   = JetColl.size()<4? -1.:(JetColl.at(1)+JetColl.at(3)).M();
+  Mjj34   = JetColl.size()<4? -1.:(JetColl.at(2)+JetColl.at(3)).M();
+  
+  //Vars requiring complex algo.
+  HT      = 0;
+  for(unsigned int itj=0; itj<JetColl.size(); itj++){ HT+=JetColl.at(itj).Pt(); }
+  
+  HTLT=HT/LT;
+  HTLT1=HT/LepTColl.at(0)->Pt();
+  HTLT2=HT/LepTColl.at(1)->Pt();
+  
+  std::vector<FatJet> FatJetColl;
+  
+  double ST = GetST( LepTColl, JetColl, FatJetColl, vMET);
+  
+  MET2HT  = JetColl.size()<1? -1.:pow(MET,2.)/HT;
+  MET2ST  = pow(MET,2.)/ST;
+  
+  
+  float dijetmass_tmp=9999.;
+  float dijetmass=99990000.;
+  int m=-999;
+  int n=-999;
+  
+  for(UInt_t emme=0; emme<JetColl.size(); emme++){
+    for(UInt_t enne=1; enne<JetColl.size(); enne++) {
+      
+      dijetmass_tmp = (JetColl[emme]+JetColl[enne]).M();
+      if(emme == enne) continue;
+      
+      if ( fabs(dijetmass_tmp-80.4) < fabs(dijetmass-80.4) ) {
+	dijetmass = dijetmass_tmp;
+	m = emme;
+	n = enne;
       }
     }
-    
-    M_W2_jj  =   JetColl.size() > 1 ? (JetColl[m] +  JetColl[n]).M() : -1;
-    M_W1_lljj = JetColl.size() > 1 ? (JetColl[m] + JetColl[n]+*LepTColl.at(0)+*LepTColl.at(1)).M() : -1;
-    M_N1_l1jj = JetColl.size() > 1 ? (JetColl[m] + JetColl[n]+*LepTColl.at(0)).M() : -1;
-    M_N2_l2jj = JetColl.size() > 1 ? (JetColl[m] + JetColl[n]+*LepTColl.at(1)).M() : -1;
-
-    w_tot    = !IsDATA? weight:-1.;
-    tree_mm->Fill();
   }
+  
+  M_W2_jj  =   JetColl.size() > 1 ? (JetColl[m] +  JetColl[n]).M() : -1;
+  M_W1_lljj = JetColl.size() > 1 ? (JetColl[m] + JetColl[n]+*LepTColl.at(0)+*LepTColl.at(1)).M() : -1;
+  M_N1_l1jj = JetColl.size() > 1 ? (JetColl[m] + JetColl[n]+*LepTColl.at(0)).M() : -1;
+  M_N2_l2jj = JetColl.size() > 1 ? (JetColl[m] + JetColl[n]+*LepTColl.at(1)).M() : -1;
+  
+  w_tot    = !IsDATA? weight:-1.;
+  if(lep_channel == MuMu)tree_mm->Fill();
+  if(lep_channel == EE)  tree_ee->Fill();
+  if(lep_channel == EMu) tree_em->Fill();
+  
 
 }
 

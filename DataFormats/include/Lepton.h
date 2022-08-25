@@ -59,6 +59,11 @@ public:
   inline bool IsElectron() const {return j_LeptonFlavour==ELECTRON;}
   inline bool IsMuon() const {return j_LeptonFlavour==MUON;}
 
+  inline TString GetFlavour() const {
+    if (j_LeptonFlavour==ELECTRON) return "Electron";
+    else return "Muon";
+  }
+
   inline float miniIsoDr() const {
     float mindr = 0.05;
     float maxdr = 0.2;

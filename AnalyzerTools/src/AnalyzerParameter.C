@@ -19,6 +19,7 @@ void AnalyzerParameter::Clear(){
   Electron_FR_Key = "Default";
   Electron_PR_Key = "Default";
   
+  
   Electron_CF_ID = "Default";
   Electron_CF_Key = "Default";
   Electron_Tight_RelIso = 999.;
@@ -62,7 +63,7 @@ void AnalyzerParameter::Clear(){
   ElFakeMethod="MC";
   MuFakeMethod="MC";
   CFMethod="MC";
-
+  ConvMethod="MC";
   JetPUID="Default";
   Jet_ID = "Default";
   FatJet_ID = "Default";
@@ -108,6 +109,7 @@ AnalyzerParameter::AnalyzerParameter(){
   ElFakeMethod="MC";
   MuFakeMethod="MC";
   CFMethod="MC";
+  ConvMethod="MC";
 
   JetPUID="Default";
 

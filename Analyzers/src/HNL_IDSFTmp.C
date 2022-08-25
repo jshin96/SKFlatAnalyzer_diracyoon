@@ -60,7 +60,7 @@ void HNL_IDSFTmp::MeasureMuonIDSF(AnalyzerParameter param){
 
   HNL_LeptonCore::Channel dilep_channel = MuMu;
 
-  if(!CorrectChannelStream(dilep_channel, LeptonColl)) return;
+  if(!CheckLeptonFlavourForChannel(dilep_channel, LeptonColl)) return;
   if (!PassTriggerSelection(dilep_channel, ev, LeptonColl,"Dilep")) return;
 
   MeasureIDSF(dilep_channel, MuonCollProbe, param.Muon_Tight_ID, weight);
@@ -111,7 +111,7 @@ void HNL_IDSFTmp::MeasureElectronIDSF(AnalyzerParameter param){
 
   HNL_LeptonCore::Channel dilep_channel= EE;
 
-  if(!CorrectChannelStream(dilep_channel, LeptonColl)) return; // Check if EE cahnnel has 2 el...
+  if(!CheckLeptonFlavourForChannel(dilep_channel, LeptonColl)) return; // Check if EE cahnnel has 2 el...
   if(!PassTriggerSelection(dilep_channel, ev, LeptonColl,"Dilep")) return; // check if trigger passes and steam is correct and pt applied
 
   MeasureIDSF(dilep_channel, ElectronCollProbe, param.Electron_Tight_ID, weight);
