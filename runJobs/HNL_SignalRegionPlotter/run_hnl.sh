@@ -37,6 +37,13 @@ if [[ $1 == "VBF1500" ]]; then
 
 fi
 
+if [[ $1 == "DY300" ]]; then
+
+    SKFlat.py -a $analyzer  -i DYTypeI_DF_M300_private  -n 1  --nmax ${nmax}   -e 2018 &
+
+fi
+
+
 
 if [[ $1 == "SSWW" ]]; then
 
@@ -85,13 +92,16 @@ if [[ $1 == "" ]]; then
 
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep --userflags RunFake  &
+	
+	SKFlat.py -a $analyzer  -l $datapath/DATA_${i}.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep   &                                                                                                   
+	
+        #SKFlat.py -a $analyzer  -l $datapath/DATA_${i}.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep --userflags RunFake  &
 	#SKFlat.py -a $analyzer  -l $datapath/DATA_${i}.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep &
-	SKFlat.py -a $analyzer  -l $sigpath/${i}/SSWW.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
-	SKFlat.py -a $analyzer  -l $sigpath/${i}/DY.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
-        SKFlat.py -a $analyzer  -l $sigpath/${i}/VBF.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
-        SKFlat.py -a $analyzer  -l $mcpath/${i}/MC.txt  -n $njobs  --nmax ${nmax}   -e ${i} --skim SkimTree_SS2lOR3l &
-        SKFlat.py -a $analyzer  -l $mcpath/${i}/CF.txt  -n $njobs_data  --nmax ${nmax}   -e ${i} --skim SkimTree_Dilepton --userflags RunCF 
+	SKFlat.py -a $analyzer  -l $sigpath/SSWW.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
+	#SKFlat.py -a $analyzer  -l $sigpath/${i}/DY.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
+        SKFlat.py -a $analyzer  -l $sigpath/VBF.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
+        #SKFlat.py -a $analyzer  -l $mcpath/${i}/MC.txt  -n $njobs  --nmax ${nmax}   -e ${i} --skim SkimTree_SS2lOR3l &
+        #SKFlat.py -a $analyzer  -l $mcpath/${i}/CF.txt  -n $njobs_data  --nmax ${nmax}   -e ${i} --skim SkimTree_Dilepton --userflags RunCF 
 
     done
 

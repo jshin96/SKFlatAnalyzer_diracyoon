@@ -46,6 +46,8 @@ public:
   };
 
   inline bool PassLepID()  const {return j_passID;}
+  inline bool LepIDSet()  const {return j_IDSet;}
+
 
   inline int LeptonType() const {return j_LeptonType;}
   void SetLeptonType(int t);
@@ -55,6 +57,7 @@ public:
   void SetLeptonFlavour(Flavour f);
 
   void SetPassID(bool p);
+  void SetID();
 
   inline bool IsElectron() const {return j_LeptonFlavour==ELECTRON;}
   inline bool IsMuon() const {return j_LeptonFlavour==MUON;}
@@ -103,6 +106,8 @@ private:
   int j_LeptonType;
 
   bool j_passID;
+  
+  bool j_IDSet;
 
   ClassDef(Lepton,1)
 

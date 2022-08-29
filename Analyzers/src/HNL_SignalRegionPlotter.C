@@ -92,6 +92,8 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
     std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
     
     TString PUIDWP="loose";
+
+    std::vector<Jet> BJetColltmp                       = GetAK4Jets(jets_tmp,     20., 2.4, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl_1);
     std::vector<Jet> JetColl                        = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, PUIDWP,   ElectronCollV,MuonCollV, FatjetColl_1);
     std::vector<Jet> VBF_JetColl                    = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, PUIDWP,  ElectronCollV,MuonCollV, FatjetColl_1);    // High ETa jets 
   
@@ -105,8 +107,8 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
     JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
     
     // Get BJets  and EV weight to corr BTag Eff                                                                                                                       
-    std::vector<Jet> BJetColl    = GetBJets(param,  jets_tmp, param_jets);
-    double sf_btag               = GetBJetSF(param, jets_tmp, param_jets);
+    std::vector<Jet> BJetColl    = GetBJets(param,  BJetColltmp, param_jets);
+    double sf_btag               = GetBJetSF(param, BJetColltmp, param_jets);
     if(!IsData )weight*= sf_btag;
 
     
@@ -116,31 +118,60 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
   
   else{
 
-    std::vector<FatJet> fatjets_tmp  = GetFatJets(param, param.FatJet_ID, 200., 5.);
+    std::vector<FatJet> fatjets_tmp                 = GetFatJets(param, param.FatJet_ID, 200., 5.);
 
-    std::vector<FatJet> FatjetColl                  = GetAK8Jets(fatjets_tmp, 200., 5., true,  1., false, -999, false, 0., 20000., ElectronCollV, MuonCollV);
+    std::vector<FatJet> AK8_JetColl                  = GetAK8Jets(fatjets_tmp, 200., 5., true,  1., false, -999, false, 0., 20000., ElectronCollV, MuonCollV);
     
 
     // AK4 JET                                                                                                                                                                              
     std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
 
     TString PUIDWP="";
-    std::vector<Jet> JetColl                        = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, PUIDWP,   ElectronCollV,MuonCollV, FatjetColl);
-    std::vector<Jet> VBF_JetColl                    = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, PUIDWP,  ElectronCollV,MuonCollV, FatjetColl);    // High ETa jets                 
+    std::vector<Jet> JetColl                           = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, PUIDWP,   ElectronCollV,MuonCollV, AK8_JetColl);
+    std::vector<Jet> VBF_JetColl                       = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, PUIDWP,  ElectronCollV,MuonCollV, AK8_JetColl);    // High ETa jets                 
+    std::vector<Jet> BJetColltmp                       = GetAK4Jets(jets_tmp,     20., 2.4, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetColl);
+
+    cout << "Number of VBF_JetColl = " << VBF_JetColl.size() << endl;
+    
+    if(AK8_JetColl.size() > 0){
+
+      if(AK8_JetColl[0].SDMass() < 20){
+
+	cout << "SDMass = " << AK8_JetColl[0].SDMass()  << endl;
+							
+	if(MCSample.Contains("Type")){
+	  Particle W2 = GetSignalObject("W2","DY");
+	  cout << "W2 = " << W2.M() << " Eta " << W2.Eta()  << " phi = " << W2.Phi() << endl;
+	  Particle j1 = GetSignalObject("j1","DY");
+	  Particle j2 = GetSignalObject("j2","DY");
+	  cout << "J1   pt" << j1.Pt() << " Eta " << j1.Eta()  << " phi = " << j1.Phi() <<endl;
+	  cout << "J2   pt" << j2.Pt() << " Eta " << j2.Eta()  << " phi = " << j2.Phi() <<endl;
+	}
+
+	std::vector<Lepton *> leps       = MakeLeptonPointerVector(MuonCollV,ElectronCollV);
+	cout << "-----------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+	for(auto ilep : leps) cout << ilep->GetFlavour() << " pt= " << ilep->Pt() << " Eta = " << ilep->Eta() << "  phi = " << ilep->Phi() << endl; 
+	cout << "-----------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+	for(auto ilep : JetColl) cout << "AK4Jet  pt= " << ilep.Pt() << " Eta = " << ilep.Eta() << "  phi = " << ilep.Phi() << endl; 
+	for(auto ilep : VBF_JetColl) cout << "VBF Jet pt= " << ilep.Pt() << " Eta = " << ilep.Eta() << "  phi = " << ilep.Phi() << endl; 
+	for(auto ilep : AK8_JetColl) cout << "AK8Jet  pt= " << ilep.Pt() << " Eta = " << ilep.Eta() << "  phi = " << ilep.Phi() << endl;
+      }
+
+    }
 
     double PJet_PUID_weight = GetJetPileupIDSF(JetColl, PUIDWP, param);
-    weight*= PJet_PUID_weight;
-    FillWeightHist("PJet_PUID_weight_" ,PJet_PUID_weight);
+    //    weight*= PJet_PUID_weight;
+    //FillWeightHist("PJet_PUID_weight_" ,PJet_PUID_weight);
 
 
     // select B jets                                                                                                                                                                        
     JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
 
     // Get BJets  and EV weight to corr BTag Eff                                                                                                                       
-    std::vector<Jet> BJetColl    = GetBJets(param, jets_tmp, param_jets);
-    double sf_btag               = GetBJetSF(param, jets_tmp, param_jets);
+    std::vector<Jet> BJetColl    = GetBJets(param, BJetColltmp, param_jets);
+    double sf_btag               = GetBJetSF(param, BJetColltmp, param_jets);
     if(!IsData )weight*= sf_btag;
-    RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV,  JetColl,VBF_JetColl,FatjetColl, BJetColl, ev,METv, param, weight);
+    RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV,  JetColl,VBF_JetColl,AK8_JetColl, BJetColl, ev,METv, param, weight);
 
   }
 
@@ -180,10 +211,10 @@ void HNL_SignalRegionPlotter::RunEXO17028Analysis(AnalyzerParameter param){
 
   // JET COLLECTION                                                                                                                                                                                        
   std::vector<FatJet>   fatjets_tmp  = GetFatJets(param,param.FatJet_ID, 200, 5.);
-  std::vector<FatJet> FatjetColl                  = GetAK8Jets(fatjets_tmp, 200., 2.7, true,  1., true, -999, true, 40., 130., ElectronCollV, MuonCollV);
+  std::vector<FatJet> AK8_JetColl                  = GetAK8Jets(fatjets_tmp, 200., 2.7, true,  1., true, -999, true, 40., 130., ElectronCollV, MuonCollV);
   // AK4 JET                                                                                                                                                                                               
   std::vector<Jet> jets_tmp     = GetJets   ( param,   param.Jet_ID, 10., 5.);
-  std::vector<Jet> JetColl                        = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8,"loose",   ElectronCollV,MuonCollV, FatjetColl);
+  std::vector<Jet> JetColl                        = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8,"loose",   ElectronCollV,MuonCollV, AK8_JetColl);
 
   // select B jets                                                                                                                                                                                         
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
@@ -195,7 +226,7 @@ void HNL_SignalRegionPlotter::RunEXO17028Analysis(AnalyzerParameter param){
   Particle METUnsmearedv = GetvMET("T1xyCorr",param);
   Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets_tmp);
 
-  RunEXO17028SignalRegions(ElectronCollT,ElectronCollV,MuonCollT,MuonCollV,  JetColl,FatjetColl, BJetColl, ev,METv, param, weight);
+  RunEXO17028SignalRegions(ElectronCollT,ElectronCollV,MuonCollT,MuonCollV,  JetColl,AK8_JetColl, BJetColl, ev,METv, param, weight);
 
 
 

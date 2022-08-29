@@ -1,0 +1,5 @@
+DYJets
+WGToLNuG_MG
+WGToLNuG
+WJets_amcatnlo
+ZGToLLG

@@ -16,8 +16,8 @@ Lepton::Lepton() : Particle() {
   j_lep_jetptratio=-999.;
   j_LeptonFlavour = NONE;
   j_LeptonType = -999;
-  j_passID;
-
+  j_passID = false;
+  j_IDSet= false;
 }
 
 Lepton::~Lepton(){
@@ -76,8 +76,15 @@ void Lepton::SetLeptonType(int t){
   j_LeptonType= t;
 }
 
+
+
+void Lepton::SetID(){
+  j_IDSet = true;
+}
+
 void Lepton::SetPassID(bool p){
 
+  j_IDSet= true;
   j_passID = p;
 }
 

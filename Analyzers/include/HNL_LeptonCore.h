@@ -57,6 +57,7 @@ class HNL_LeptonCore : public AnalyzerCore {
     ChannelDepSR2=103, 
     ChannelDepSR3=104,
     ChannelDepFAILSR3=105,
+    ChannelDepInc=100,
     SR1=20,
     SR2=21,
     SR3=22,
@@ -130,12 +131,13 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   ///=============== GET/SELECT OBJECT
   vector<Gen> GetGenLepronsSignal();
+  bool SelectChannel(HNL_LeptonCore::Channel channel);
   TString GetProcess();
   TString GetChannelString(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType  q=HNL_LeptonCore::ChargeType::Inclusive);
   std::vector<Jet> SelBJets(std::vector<Jet>& jetColl, JetTagging::Parameters jtp);
   Particle GetvMET(TString METType, AnalyzerParameter param);
   Particle GetvMET(TString METType);
-
+  Particle GetSignalObject(TString obj, TString Sig);
 
 
   //================== KINEMATIC HELPER
@@ -163,7 +165,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   float GetLLMass(std::vector<Electron> leps);
 
   float GetMassBestZ(std::vector<Lepton *> leps,  bool bestZ);
-  double  GetMass(TString type , std::vector<Jet> jets, std::vector<FatJet> fatjets);
+  double  GetMass(TString type , std::vector<Jet> jets, std::vector<FatJet> fatjets, vector<Lepton*> leps);
 
   //================                                                                                                                                                                                        
   //==== Functions                                                                                                                                                                                          
@@ -183,7 +185,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   bool SameCharge(std::vector<Lepton *> leps, int ch=0);
 
   /// global var for user flags
-  bool RunFake, RunCF,  RunConv, RunSyst;
+  bool RunFake, RunCF,  RunConv, RunSyst,RunPromptTLRemoval;
   bool IsSkimmed;
   bool Signal;
   bool HEM1516 ,BeforeRun319077;

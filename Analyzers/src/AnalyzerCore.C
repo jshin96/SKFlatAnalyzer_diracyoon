@@ -676,6 +676,7 @@ std::vector<Lepton *> AnalyzerCore::MakeLeptonPointerVector(const std::vector<Mu
 
     }
     l->SetPassID(muons[i].PassID(param_.Muon_Tight_ID));
+    //cout << "MakeLeptonPointerVector Muon " << param_.Muon_Tight_ID << " " <<  l->Pt() << endl;
     out.push_back(l);
   }
 
@@ -694,6 +695,8 @@ std::vector<Lepton *> AnalyzerCore::MakeLeptonPointerVector(const std::vector<Mu
 
     }
     l->SetPassID(electrons[i].PassID(param_.Electron_Tight_ID));
+
+    //cout << "MakeLeptonPointerVector Electron " << param_.Electron_Tight_ID <<" " <<  l->Pt() << endl;
 
     out.push_back(l);
   }
@@ -2103,6 +2106,10 @@ double AnalyzerCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParameter
     TString fr_key1 = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  param.Electron_FR_Key : param.Muon_FR_Key;
     TString pr_key1 = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ? param.Electron_PR_Key : param.Muon_PR_Key;
 
+    if(!leps[0]->LepIDSet()) {
+      cout << "Lepton ID not set" << endl;
+      exit(EXIT_FAILURE);
+    }
     double this_fr1 = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ? fakeEst->GetElectronFakeRate(param.Electron_Tight_ID, fr_key1, fabs(leps[0]->Eta()), leps[0]->Pt()) : fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, fr_key1, fabs(leps[0]->Eta()), leps[0]->Pt()); 
     double this_pr1 = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ? fakeEst->GetElectronPromptRate(param.Electron_Tight_ID,pr_key1 , fabs(leps[0]->Eta()), leps[0]->Pt()) :fakeEst->GetMuonPromptRate(param.Muon_Tight_ID, pr_key1 , fabs(leps[0]->Eta()), leps[0]->Pt()) ;
     
@@ -2121,6 +2128,11 @@ double AnalyzerCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParameter
   }
   if (leps.size() == 2){
 
+    if(! (leps[0]->LepIDSet() || leps[1]->LepIDSet())) {
+      cout << "Lepton ID not set" << endl;
+      exit(EXIT_FAILURE);
+    }
+
     TString fr_key1 = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  param.Electron_FR_Key : param.Muon_FR_Key;
     TString fr_key2 = (leps[1]->LeptonFlavour() == Lepton::ELECTRON) ?  param.Electron_FR_Key : param.Muon_FR_Key;
     TString pr_key1 =  (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  param.Electron_PR_Key : param.Muon_PR_Key;
@@ -2135,11 +2147,15 @@ double AnalyzerCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParameter
     if(!apply_r) this_pr1 =1.;
     if(!apply_r) this_pr2 =1.;
     
-    //    cout  << this_fr1 << " " << this_fr2  << " " << this_pr1 << " " << this_pr2 <<  " pass " << leps[0]->PassID() << " " << leps[1]->PassID() << endl;
+    TString ID1 =  (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  param.Electron_Tight_ID : param.Muon_Tight_ID;
+    TString ID2 =  (leps[1]->LeptonFlavour() == Lepton::ELECTRON) ?  param.Electron_Tight_ID : param.Muon_Tight_ID;
     
+    //cout  << this_fr1 << " " << this_fr2  << " " << this_pr1 << " " << this_pr2 <<  " pass " << leps[0]->PassLepID() << " " << leps[1]->PassLepID() << endl;
+    //cout << "Pt/Eta 1 " << fabs(leps[0]->Eta()) << " " <<  leps[0]->Pt() << endl;
+    //cout << "Pt/Eta 2 " << fabs(leps[1]->Eta()) << " " <<  leps[1]->Pt() << endl;
     this_weight = fakeEst->CalculateDilepWeight(this_pr1,this_fr1, this_pr2, this_fr2, leps[0]->PassLepID(),leps[1]->PassLepID(),0);
 
-    ///    cout << this_weight << " 2L"<<endl;
+    //cout << this_weight << " 2L"<<endl;
     return this_weight;
   }
 
@@ -2148,6 +2164,7 @@ double AnalyzerCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParameter
     
 
     double this_weight = -1.;
+    vector<double> FRs;
 
     double this_fr = -999.;
     for(auto lep : leps){
@@ -2156,14 +2173,20 @@ double AnalyzerCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParameter
       
       this_fr =  (lep->LeptonFlavour() == Lepton::ELECTRON) ? fakeEst->GetElectronFakeRate(param.Electron_Tight_ID, param.Electron_FR_Key, fabs(lep->Eta()), lep->Pt()) : fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, param.Muon_FR_Key, fabs(lep->Eta()), lep->Pt()); 
       this_weight *= -1.*this_fr/(1.-this_fr);
+      FRs.push_back(this_fr);
       
     }
     
-    //    cout << this_weight<< " ML"<<endl;
-
-    return this_weight;
-    
+    if(FRs.size()==0){
+      return 0.;
+    }
+    else{
+      //cout << this_weight<< " ML"<<endl;
+      
+      return this_weight;
+    }
   }
+  
   return -999.;
 }
 
@@ -2428,8 +2451,10 @@ vector<Muon> AnalyzerCore::GetLepCollByRunType(const std::vector<Muon>& MuColl, 
 
   if(Option == ""){
     if(param.MuFakeMethod == "MC") Option+="HFake";
-    if(param.ConvMethod == "MC") Option+="HNConv";
+    if(param.ConvMethod == "MC") Option+="NHConv";
   }
+
+  ///cout << "AnalyzerCore::GetLepCollByRunType  Muon Option = " << Option << endl;
 
   bool GetHadFake=false,  GetNHIntConv=false, GetNHExtConv=false;
 
@@ -2440,10 +2465,11 @@ vector<Muon> AnalyzerCore::GetLepCollByRunType(const std::vector<Muon>& MuColl, 
 
   if(     Option=="Fake"     )          {GetHadFake   =true; GetNHExtConv=true;}
 
+  
+  if(IsData)  return MuColl;
 
   vector<Muon> ReturnVec;
   for(unsigned int i=0; i<MuColl.size(); i++){
-    if(IsData) ReturnVec.push_back(MuColl.at(i));
     if(Option=="NoSel")  ReturnVec.push_back(MuColl.at(i));
     else {
       int LepType=GetLeptonType_JH(MuColl.at(i), TruthColl); bool PassSel=true;
@@ -2466,10 +2492,11 @@ vector<Electron> AnalyzerCore::GetLepCollByRunType(const vector<Electron>& ElCol
   
   if(Option == ""){
     if(param.ElFakeMethod == "MC") Option+="HFake";
-    if(param.ConvMethod == "MC") Option+="HNConv";
+    if(param.ConvMethod == "MC") Option+="NHConv";
     if(param.CFMethod == "MC")     Option+="CF";
   }
 
+  //cout << "AnalyzerCore::GetLepCollByRunType Electron  Option = " << Option << endl;
   bool GetHadFake=false,  GetNHIntConv=false, GetNHExtConv=false, GetCF=false;
   
   if(Option.Contains("HFake"))           GetHadFake   =true;
@@ -2480,10 +2507,12 @@ vector<Electron> AnalyzerCore::GetLepCollByRunType(const vector<Electron>& ElCol
   
   if(     Option=="Fake"     )          {GetHadFake   =true; GetNHExtConv=true;}
 
+
+  if(IsData)  return ElColl;
+
   vector<Electron> ReturnVec;
   for(unsigned int i=0; i<ElColl.size(); i++){
-    if(IsData) ReturnVec.push_back(ElColl.at(i));
-    else if (Option == "NoSel") ReturnVec.push_back(ElColl.at(i));
+    if (Option == "NoSel") ReturnVec.push_back(ElColl.at(i));
     else {
       int LepType=GetLeptonType_JH(ElColl.at(i), TruthColl); bool PassSel=true;
       if( LepType > 0 && LepType < 4) PassSel=true;
@@ -3210,6 +3239,9 @@ bool AnalyzerCore::IsFromHadron(const Gen& me, const std::vector<Gen>& gens){
 
 bool AnalyzerCore::ConversionSplitting(std::vector<Lepton *> leps,const std::vector<Gen>& gens){
   
+
+  if(IsData) return true;
+
   int nlep_pt20(0);
 
   for(auto ilep : leps){
@@ -3238,13 +3270,19 @@ bool AnalyzerCore::ConversionVeto(std::vector<Lepton *> leps,const std::vector<G
   // since Z/G and WG have cut on photon in GEN need to overlap with DY                                                                          
   // Photon Cut is 15 GeV                                                                                                                        
   //                                                                                                                                             
-
+  
+  if (IsData) return true;
+  
+  double ph_pt=-1;
+  bool photon_found=false;
   bool GENTMatched=false;
   for(auto ilep : leps){
     for(unsigned int i=2; i<gens.size(); i++){
       Gen gen = gens.at(i);
       if(ilep->DeltaR(gen) < 0.2) {
+	if(gen.PID() == 22 && gen.isPromptFinalState()) ph_pt = gen.Pt();
         if(gen.PID() == 22 && gen.isPromptFinalState() && gen.Pt()> 15.) {
+	  photon_found=true;
           GENTMatched=true;
           for(unsigned int j=2; j<gens.size(); j++){
             if(!(fabs(gens.at(j).PID()) <7 || fabs(gens.at(j).PID()) == 21)) continue;
@@ -3257,10 +3295,24 @@ bool AnalyzerCore::ConversionVeto(std::vector<Lepton *> leps,const std::vector<G
     if(GENTMatched) break;
   }
 
-  if(MCSample.Contains("WG") ||MCSample.Contains("ZG") || MCSample.Contains("TG"))   return GENTMatched;
-  else if(MCSample.Contains("DY") || MCSample.Contains("WJ") || MCSample.Contains("TTLL") || MCSample.Contains("Single")) return !GENTMatched;
+  if(!photon_found) {
+    cout << "No Matching photon found " << endl;
+    PrintGen(gens);
+  }
+  
+  if(MCSample.Contains("WG") ||MCSample.Contains("ZG") || MCSample.Contains("TG"))   {
+    if(!photon_found) return true;
+    if(!GENTMatched)cout << "GHENT Conv event removed in " << MCSample << endl;
+    cout << "Matched photon pt = " << ph_pt << endl;
+    return GENTMatched;
+  }
+  else if(MCSample.Contains("DY") || MCSample.Contains("WJ") || MCSample.Contains("TTLL") || MCSample.Contains("Single")) {
+    if(!photon_found) return true;
+    cout << "Matched photon pt = " << ph_pt << endl;
+    return !GENTMatched;
+  }
 
-  return false;
+  return true;
 }
 
 
