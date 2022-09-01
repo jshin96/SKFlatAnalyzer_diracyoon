@@ -70,15 +70,16 @@ void HNL_SR3KinVar::initializeAnalyzer(){
   tree_mm->Branch("Mjj24", &Mjj24, "Mjj24/F");          tree_ee->Branch("Mjj24", &Mjj24, "Mjj24/F");            tree_em->Branch("Mjj24", &Mjj24, "Mjj24/F");
   tree_mm->Branch("Mjj34", &Mjj34, "Mjj34/F");          tree_ee->Branch("Mjj34", &Mjj34, "Mjj34/F");            tree_em->Branch("Mjj34", &Mjj34, "Mjj34/F");
   tree_mm->Branch("M_W2_jj", &M_W2_jj, "M_W2_jj/F");    tree_ee->Branch("M_W2_jj", &M_W2_jj, "M_W2_jj/F");     tree_em->Branch("M_W2_jj", &M_W2_jj, "M_W2_jj/F");    
-  tree_mm->Branch("M_W1_lljj", &M_W1_lljj, "M_W1_lljj/F");    tree_ee->Branch("M_W1_lljj", &M_W1_lljj, "M_W1_lljj/F");    tree_em->Branch("M_W1_lljj", &M_W1_lljj, "M_W1_lljj/F");    
 
-  tree_mm->Branch("M_N1_l1jj", &M_N1_l1jj, "M_N1_l1jj/F");      tree_ee->Branch("M_N1_l1jj", &M_N1_l1jj, "M_N1_l1jj/F");      tree_em->Branch("M_N1_l1jj", &M_N1_l1jj, "M_N1_l1jj/F");    
-
-  tree_mm->Branch("M_N2_l2jj", &M_N2_l2jj, "M_N2_l2jj/F");      tree_ee->Branch("M_N2_l2jj", &M_N2_l2jj, "M_N2_l2jj/F");      tree_em->Branch("M_N2_l2jj", &M_N2_l2jj, "M_N2_l2jj/F");    
+  tree_mm->Branch("PtWj1", &PtWj1, "PtWj1/F");          tree_ee->Branch("PtWj1", &PtWj1, "PtWj1/F");               tree_em->Branch("PtWj1", &PtWj1, "PtWj1/F");
+  tree_mm->Branch("PtWj2", &PtWj2, "PtWj2/F");          tree_ee->Branch("PtWj2", &PtWj2, "PtWj2/F");               tree_em->Branch("PtWj2", &PtWj2, "PtWj2/F");
+  tree_mm->Branch("dRlW12", &dRlW12, "dRlW12/F");       tree_ee->Branch("dRlW12", &dRlW12, "dRlW12/F");            tree_em->Branch("dRlW12", &dRlW12, "dRlW12/F");
+  tree_mm->Branch("dRlW22", &dRlW22, "dRlW22/F");       tree_ee->Branch("dRlW22", &dRlW22, "dRlW22/F");            tree_em->Branch("dRlW22", &dRlW22, "dRlW22/F");
+  tree_mm->Branch("M_W1_lljj", &M_W1_lljj, "M_W1_lljj/F");    tree_ee->Branch("M_W1_lljj", &M_W1_lljj, "M_W1_lljj/F");    tree_em->Branch("M_W1_lljj", &M_W1_lljj, "M_W1_lljj/F");
+  tree_mm->Branch("M_N1_l1jj", &M_N1_l1jj, "M_N1_l1jj/F");      tree_ee->Branch("M_N1_l1jj", &M_N1_l1jj, "M_N1_l1jj/F");      tree_em->Branch("M_N1_l1jj", &M_N1_l1jj, "M_N1_l1jj/F");
+  tree_mm->Branch("M_N2_l2jj", &M_N2_l2jj, "M_N2_l2jj/F");      tree_ee->Branch("M_N2_l2jj", &M_N2_l2jj, "M_N2_l2jj/F");      tree_em->Branch("M_N2_l2jj", &M_N2_l2jj, "M_N2_l2jj/F");
 
   tree_mm->Branch("w_tot", &w_tot, "w_tot/F");          tree_ee->Branch("w_tot", &w_tot, "w_tot/F");
-
-
 
   outfile->cd();
 
@@ -99,7 +100,7 @@ void HNL_SR3KinVar::executeEvent(){
   vector<HNL_LeptonCore::Channel> channels = {EE,MuMu, EMu};
   
   for(auto dilep_channel : channels){
-    
+
     std::vector<Muon>       MuonCollT     = GetLepCollByRunType    ( GetMuons    ( param_bdt,param_bdt.Muon_Tight_ID, 10., 2.4, RunFake)      ,gens,param_bdt,"NoSel");
     std::vector<Electron>   ElectronCollT = GetLepCollByRunType    ( GetElectrons( param_bdt,param_bdt.Electron_Tight_ID, 10., 2.5, RunFake)  ,gens,param_bdt,"NoSel");
     
@@ -110,6 +111,12 @@ void HNL_SR3KinVar::executeEvent(){
     std::vector<Lepton *> LepsV  = MakeLeptonPointerVector(MuonCollV,ElectronCollV);
 
     if (!PassTriggerSelection(dilep_channel, ev, LepsT,"Dilep")) continue;
+
+    if(DataEra=="2017" && dilep_channel==MuMu){
+      
+      if(ev.PassTrigger("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v") && !ev.PassTrigger("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v")) weight = weight*4803.366325775/ev.GetTriggerLumi("Full");
+
+    }
 
     std::vector<Tau>        mytaus       = GetTaus("HNVeto",20., 2.3);
     
@@ -129,10 +136,15 @@ void HNL_SR3KinVar::executeEvent(){
     double sf_btag               = GetBJetSF(param_bdt, bjets_tmp, param_jets);
     if(!IsData )weight*= sf_btag;
     
-    
+    bool passCharge = false;
+    if(MCSample.Contains("TypeI")) passCharge = true;
+    else{
+      if(SameCharge(LepsT)) passCharge = true;
+    }
+
     bool EventCand = false;
     
-    if ((BJetColl.size()==0) && SameCharge(LepsT) && LepsV.size()==2 ){
+    if ((BJetColl.size()==0) && passCharge && LepsV.size()==2 ){
       if (GetLLMass(LepsT) > 10.){
 	if (AK8_JetColl.size() ==0) {
 	  
@@ -162,18 +174,16 @@ void HNL_SR3KinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Lept
 {
   
   
-  if(!SameCharge(LepTColl)) return;
+  //if(!SameCharge(LepTColl)) return;
   
   // CorrectChannelStream checks EE channel has only EE events
   if(!CheckLeptonFlavourForChannel(lep_channel, LepTColl)) return;
 
-
-    // MM events
   // Pt cut is set in CheckLeptonFlavourForChannel
-  if(!(LepTColl[0]->Pt()>20 && LepTColl[1]->Pt()>10)) return;
+  //if(!(LepTColl[0]->Pt()>20 && LepTColl[1]->Pt()>10)) return;
 
   float Mll = GetLLMass(LepTColl);
-  if (lep_channel==EE  && (fabs(Mll-90.) < 15)) return;
+  if (lep_channel==EE && (fabs(Mll-90.) < 10.)) return;
   
   InitializeTreeVars();
   
@@ -253,30 +263,34 @@ void HNL_SR3KinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Lept
   MET2HT  = JetColl.size()<1? -1.:pow(MET,2.)/HT;
   MET2ST  = pow(MET,2.)/ST;
   
-  
+  const float MW = 80.379;
   float dijetmass_tmp=9999.;
   float dijetmass=99990000.;
   int m=-999;
   int n=-999;
   
   for(UInt_t emme=0; emme<JetColl.size(); emme++){
-    for(UInt_t enne=1; enne<JetColl.size(); enne++) {
+    for(UInt_t enne=emme+1; enne<JetColl.size(); enne++) {
       
       dijetmass_tmp = (JetColl[emme]+JetColl[enne]).M();
-      if(emme == enne) continue;
+      //if(emme == enne) continue;
       
-      if ( fabs(dijetmass_tmp-80.4) < fabs(dijetmass-80.4) ) {
+      if ( fabs(dijetmass_tmp-MW) < fabs(dijetmass-MW) ) {
 	dijetmass = dijetmass_tmp;
 	m = emme;
 	n = enne;
       }
     }
   }
-  
-  M_W2_jj  =   JetColl.size() > 1 ? (JetColl[m] +  JetColl[n]).M() : -1;
-  M_W1_lljj = JetColl.size() > 1 ? (JetColl[m] + JetColl[n]+*LepTColl.at(0)+*LepTColl.at(1)).M() : -1;
-  M_N1_l1jj = JetColl.size() > 1 ? (JetColl[m] + JetColl[n]+*LepTColl.at(0)).M() : -1;
-  M_N2_l2jj = JetColl.size() > 1 ? (JetColl[m] + JetColl[n]+*LepTColl.at(1)).M() : -1;
+
+  PtWj1     = JetColl.size() > 1 ? JetColl[m].Pt() : -1.;
+  PtWj2     = JetColl.size() > 1 ? JetColl[n].Pt() : -1.;
+  dRlW12    = JetColl.size() > 1 ? LepTColl.at(0)->DeltaR(JetColl[m] + JetColl[n]) : -1.;
+  dRlW22    = JetColl.size() > 1 ? LepTColl.at(1)->DeltaR(JetColl[m] + JetColl[n]) : -1.;
+  M_W2_jj   = JetColl.size() > 1 ? (JetColl[m] + JetColl[n]).M() : -1.;
+  M_W1_lljj = JetColl.size() > 1 ? (JetColl[m] + JetColl[n] + *LepTColl.at(0) + *LepTColl.at(1)).M() : -1.;
+  M_N1_l1jj = JetColl.size() > 1 ? (JetColl[m] + JetColl[n] + *LepTColl.at(0)).M() : -1.;
+  M_N2_l2jj = JetColl.size() > 1 ? (JetColl[m] + JetColl[n] + *LepTColl.at(1)).M() : -1.;
   
   w_tot    = !IsDATA? weight:-1.;
   if(lep_channel == MuMu)tree_mm->Fill();
@@ -306,6 +320,9 @@ void HNL_SR3KinVar::InitializeTreeVars(){
   Mljj112=-1, Mljj113=-1, Mljj114=-1, Mljj123=-1, Mljj124=-1, Mljj134=-1;
   Mljj212=-1, Mljj213=-1, Mljj214=-1, Mljj223=-1, Mljj224=-1, Mljj234=-1;
   Mjj12=-1, Mjj13=-1, Mjj14=-1, Mjj23=-1, Mjj24=-1, Mjj34=-1;
+
+  PtWj1=-1, PtWj2=-1;
+  dRlW12=-1, dRlW22=-1;
   M_W2_jj=-1, M_W1_lljj=-1, M_N1_l1jj=-1, M_N2_l2jj=-1;
 
   w_tot=-1;
