@@ -89,7 +89,7 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param){
   //cout << "ElectronCollTInit size = " << ElectronCollTInit.size() << endl;
 
   std::vector<Muon>       MuonCollT     = GetLepCollByRunType    ( MuonCollTInit,gens,param,"");  
-  std::vector<Electron>   ElectronCollT  = GetLepCollByRunType   ( ElectronCollTInit,gens,param,"");
+  std::vector<Electron>   ElectronCollT  =  GetLepCollByRunType   ( ElectronCollTInit,gens,param,"");
 
 
   if(run_Debug) {

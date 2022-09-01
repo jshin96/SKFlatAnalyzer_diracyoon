@@ -1583,7 +1583,15 @@ double AnalyzerCore::GetJetPileupIDSF(vector<Jet> jets , TString WP, AnalyzerPar
   return JPU_W;
 }
 
+
+
 vector<FatJet>  AnalyzerCore::GetAK8Jets(vector<FatJet> fatjets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean , bool apply_tau21, double tau21_cut , bool apply_masscut, double sdmass_lower_cut,  double sdmass_upper_cut, vector<Electron>  veto_electrons, vector<Muon>  veto_muons){
+
+
+  return GetAK8Jetsv2(fatjets,pt_cut,eta_cut, lepton_cleaning, dr_lep_clean,apply_tau21, tau21_cut,apply_masscut,sdmass_lower_cut,sdmass_upper_cut, -999., veto_electrons,veto_muons);
+}
+
+vector<FatJet>  AnalyzerCore::GetAK8Jetsv2(vector<FatJet> fatjets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean , bool apply_tau21, double tau21_cut , bool apply_masscut, double sdmass_lower_cut,  double sdmass_upper_cut, double WQCDTagger, vector<Electron>  veto_electrons, vector<Muon>  veto_muons){
 
   vector<FatJet> output_fatjets;
   for(unsigned int ijet =0; ijet < fatjets.size(); ijet++){
@@ -1598,6 +1606,9 @@ vector<FatJet>  AnalyzerCore::GetAK8Jets(vector<FatJet> fatjets, double pt_cut ,
       if(fatjets[ijet].DeltaR(veto_muons[iel]) < dr_lep_clean) jetok = false;
     }
 
+    if(WQCDTagger > 0){
+      if (fatjets[ijet].GetTaggerResult(JetTagging::particleNet_WvsQCD) < WQCDTagger) continue;
+    }
 
     double lower_sd_mass_cut=sdmass_lower_cut;
     double upper_sd_mass_cut=sdmass_upper_cut;
@@ -1966,6 +1977,10 @@ double AnalyzerCore::GetMuonSFEventWeight(std::vector<Muon> muons,AnalyzerParame
     
     FillWeightHist(param.Name+"/TrackerMuWeight_"+param.Name,MuonTrackineSF);
   }
+
+  FillWeightHist(param.Name+"/FullMuWeight_"+param.Name,this_weight);
+
+
   return this_weight;
 
 }
@@ -2467,6 +2482,8 @@ vector<Muon> AnalyzerCore::GetLepCollByRunType(const std::vector<Muon>& MuColl, 
 
   
   if(IsData)  return MuColl;
+  if(MCSample.Contains("Type")) return MuColl;
+
 
   vector<Muon> ReturnVec;
   for(unsigned int i=0; i<MuColl.size(); i++){
@@ -2509,6 +2526,7 @@ vector<Electron> AnalyzerCore::GetLepCollByRunType(const vector<Electron>& ElCol
 
 
   if(IsData)  return ElColl;
+  if(MCSample.Contains("Type")) return ElColl;
 
   vector<Electron> ReturnVec;
   for(unsigned int i=0; i<ElColl.size(); i++){

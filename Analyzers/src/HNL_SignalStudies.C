@@ -154,7 +154,11 @@ void HNL_SignalStudies::executeEvent(){
     
     std::vector<Jet> JetColl                        = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8,"",   ElectronCollV,MuonCollV, FatjetColl);
     
-    std::vector<Tau>        mytaus      = GetTaus("JetMElMMuM",20., 2.3); 
+
+    std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(MuonCollV,ElectronCollV);
+
+    std::vector<Tau>        TauColl        = GetTaus     (leps_veto,param.Tau_Veto_ID,20., 2.3);
+
     
     
     // select B jets
@@ -170,46 +174,20 @@ void HNL_SignalStudies::executeEvent(){
     TString def_paramName =param.Name;
     
     if (IsData || ( process.Contains("Mu+Mu+") or   process.Contains("Mu-Mu-") )){
-      RunLeptonChannel(MuMu,LepsT, LepsV, mytaus, JetColl, VBF_JetColl, FatjetColl, BJetColl, ev, param, weight );
-      param.Name = def_paramName + "_JS";
-      RunLeptonChannel(MuMu,LepsJS, LepsV, mytaus, JetColl, VBF_JetColl, FatjetColl,BJetColl, ev, param, weight );
-
-      param.Name = def_paramName + "_POG";
-      RunLeptonChannel(MuMu,LepsP, LepsV, mytaus, JetColl, VBF_JetColl, FatjetColl,BJetColl, ev, param, weight );
-      param.Name = def_paramName + "_HighPt";
-      RunLeptonChannel(MuMu,LepsH, LepsV, mytaus, JetColl, VBF_JetColl, FatjetColl,BJetColl, ev, param, weight );
+      RunLeptonChannel(MuMu,LepsT, LepsV,  TauColl, JetColl, VBF_JetColl, FatjetColl, BJetColl, ev, param, weight );
 
     }
     
     param.Name=param.DefName;
     
     if (IsData || ( process.Contains("El+El+") or   process.Contains("El-El-") )){
-      RunLeptonChannel(EE,LepsT, LepsV, mytaus, JetColl, VBF_JetColl, FatjetColl, BJetColl, ev, param, weight );
-      param.Name = def_paramName + "_JS";
-
-      RunLeptonChannel(EE,LepsJS, LepsV, mytaus, JetColl, VBF_JetColl, FatjetColl,BJetColl, ev, param, weight );
-
-      param.Name = def_paramName + "_POG";
-      RunLeptonChannel(EE,LepsP, LepsV, mytaus, JetColl, VBF_JetColl, FatjetColl,BJetColl, ev, param, weight );
-      param.Name = def_paramName + "_HighPt";
-      RunLeptonChannel(EE,LepsH, LepsV, mytaus, JetColl, VBF_JetColl, FatjetColl,BJetColl, ev, param, weight );
-
+      RunLeptonChannel(EE,LepsT, LepsV,  TauColl, JetColl, VBF_JetColl, FatjetColl, BJetColl, ev, param, weight );
     }
   
     param.Name=param.DefName;
     
     if (IsData || ( process.Contains("El+Mu+") or   process.Contains("El-Mu-") )){
-      RunLeptonChannel(EMu,LepsT, LepsV, mytaus, JetColl, VBF_JetColl, FatjetColl, BJetColl, ev, param, weight );
-      param.Name = def_paramName + "_JS";
-
-      
-      RunLeptonChannel(EMu,LepsJS, LepsV, mytaus, JetColl, VBF_JetColl, FatjetColl,BJetColl, ev, param, weight );
-
-      param.Name = def_paramName + "_POG";
-      RunLeptonChannel(EMu,LepsP, LepsV, mytaus, JetColl, VBF_JetColl, FatjetColl,BJetColl, ev, param, weight );
-      param.Name = def_paramName + "_HighPt";
-      RunLeptonChannel(EMu,LepsH, LepsV, mytaus, JetColl, VBF_JetColl, FatjetColl,BJetColl, ev, param, weight );
-
+      RunLeptonChannel(EMu,LepsT, LepsV,  TauColl, JetColl, VBF_JetColl, FatjetColl, BJetColl, ev, param, weight );
     }
     
     
@@ -253,48 +231,119 @@ void HNL_SignalStudies::RunLeptonChannel(HNL_LeptonCore::Channel channel_ID, std
 
   // Update NAME for Muon channel                                                                                               
 
-  TString region1 = GetChannelString(channel_ID)+"_ChannelSignalsNewSel_"+param.Name;                                                       
-  TString region2 =GetChannelString(channel_ID)+"_ChannelSignalsOldSel_"+param.Name;                                                       
+  TString region1 = GetChannelString(channel_ID)+"_"+param.Name;                                                       
   
   FillEventCutflow(Region1,_weight, "SSNoCut",region1);
-  FillEventCutflow(Region2,_weight, "SSNoCut",region2);
 
   // UL ANALYSIS                                                                                                                
   
-  Fill_RegionPlots(channel_ID, 0, param.Name,"SSInclusive" ,  JetColl, VBFJetColl, FatjetColl, LepsT,  METv, nPV, _weight);
+  Fill_RegionPlots(channel_ID, 0, param.Name,"SSInclusive" ,  VBFJetColl, FatjetColl, LepsT,  METv, nPV, _weight);
 
+
+  // UL ANALYSIS
+  
+  if(MCSample.Contains("Type") || MCSample.Contains("private")){
+    
+    vector<Gen> gen_lep= GetGenLepronsSignal();
+    std::sort(gen_lep.begin(),   gen_lep.end(),        PtComparing);
+
+    
+    if(gen_lep.size() == 2){
+      
+      if(fabs(gen_lep[0].PID()) == 11 && fabs(gen_lep[1].PID()) ==11 ){
+	
+	if( (fabs(gen_lep[0].Eta()) < 2.5 && gen_lep[0].Pt() > 25) &&
+	    (fabs(gen_lep[1].Eta()) < 2.5 && gen_lep[1].Pt() > 15)){
+	  FillEventCutflow(Region1,_weight, "SSGen",  region1);
+	  FillEventCutflow(Region1,_weight, "SSGen2", region1);
+	  
+	}
+	else       if( (fabs(gen_lep[0].Eta()) < 2.5 && gen_lep[0].Pt() > 30) &&
+		       (fabs(gen_lep[1].Eta()) < 2.5 && gen_lep[1].Pt() > 10)){
+	  FillEventCutflow(Region1,_weight, "SSGen",  region1);
+	}
+	
+	else return;
+      }
+      
+      else       if(fabs(gen_lep[0].PID()) == 13 && fabs(gen_lep[1].PID()) ==13 ){
+
+        if( (fabs(gen_lep[0].Eta()) < 2.4 && gen_lep[0].Pt() > 20) &&
+            (fabs(gen_lep[1].Eta()) < 2.4 && gen_lep[1].Pt() > 10)){
+          FillEventCutflow(Region1,_weight, "SSGen", region1);
+          FillEventCutflow(Region1,_weight, "SSGen2", region1);
+
+        }
+        else       if( (fabs(gen_lep[0].Eta()) < 2.4 && gen_lep[0].Pt() > 30) &&
+                       (fabs(gen_lep[1].Eta()) < 2.4 && gen_lep[1].Pt() > 5)){
+          FillEventCutflow(Region1,_weight, "SSGen", region1);
+        }
+
+        else return;
+      }
+      else       if(fabs(gen_lep[0].PID()) == 13 && fabs(gen_lep[1].PID()) ==11 ){
+
+        if( (fabs(gen_lep[0].Eta()) < 2.4 && gen_lep[0].Pt() > 25) &&
+            (fabs(gen_lep[1].Eta()) < 2.5 && gen_lep[1].Pt() > 15)){
+          FillEventCutflow(Region1,_weight, "SSGen", region1);
+          FillEventCutflow(Region1,_weight, "SSGen2", region1);
+
+        }
+        else       if( (fabs(gen_lep[0].Eta()) < 2.4 && gen_lep[0].Pt() > 30) &&
+                       (fabs(gen_lep[1].Eta()) < 2.5 && gen_lep[1].Pt() > 10)){
+          FillEventCutflow(Region1,_weight, "SSGen", region1);
+
+        }
+
+        else return;
+      }
+
+      else       if(fabs(gen_lep[0].PID()) == 11 && fabs(gen_lep[1].PID()) ==13 ){
+
+        if( (fabs(gen_lep[0].Eta()) < 2.5 && gen_lep[0].Pt() > 25) &&
+            (fabs(gen_lep[1].Eta()) < 2.4 && gen_lep[1].Pt() > 15)){
+          FillEventCutflow(Region1,_weight, "SSGen", region1);
+          FillEventCutflow(Region1,_weight, "SSGen2", region1);
+
+        }
+        else       if( (fabs(gen_lep[0].Eta()) < 2.5 && gen_lep[0].Pt() > 30) &&
+                       (fabs(gen_lep[1].Eta()) < 2.4 && gen_lep[1].Pt() > 5)){
+          FillEventCutflow(Region1,_weight, "SSGen", region1);
+
+	}
+
+	else return;
+      }
+    }      
+  }
+  
+  
   if (!PassTriggerSelection(channel_ID, Ev, LepsT,"Full",false)) return;
 
 
   FillEventCutflow(Region1,_weight, "SS"+GetChannelString(channel_ID)+"Trig",region1);
-  FillEventCutflow(Region2,_weight, "SS"+GetChannelString(channel_ID)+"Trig",region2);
 
   if (!(PassTriggerSelection(channel_ID, Ev, LepsT,"Dilep",false) || PassTriggerSelection(channel_ID, Ev, LepsT,"HighPt",false) || PassTriggerSelection(channel_ID, Ev, LepsT,"Lep",false))) return;
 
   FillEventCutflow(Region1,_weight, "SS"+GetChannelString(channel_ID)+"Trig2",region1);
-  FillEventCutflow(Region2,_weight, "SS"+GetChannelString(channel_ID)+"Trig2",region2);
 
   if (LepsT.size() != 2) return;
 
   if(!SameCharge(LepsT)) return;
 
   FillEventCutflow(Region1,_weight, "SS"+GetChannelString(channel_ID),region1);
-  FillEventCutflow(Region2,_weight, "SS"+GetChannelString(channel_ID),region2);
 
   // PASS DIMUON TRIGGER                                                                                                                                             
   if (!PassTriggerSelection(channel_ID, Ev, LepsT,"Dilep",false)) return;
   FillEventCutflow(Region1,_weight, "SS"+GetChannelString(channel_ID)+"Trig2L",region1);
-  FillEventCutflow(Region2,_weight, "SS"+GetChannelString(channel_ID)+"Trig2L",region2);
 
 
   if (!CheckLeptonFlavourForChannel(channel_ID, LepsV)) return;
 
   FillEventCutflow(Region1,_weight, "SS"+GetChannelString(channel_ID)+"_Pt",region1);
-  FillEventCutflow(Region2,_weight, "SS"+GetChannelString(channel_ID)+"_Pt",region2);
 
   if (LepsV.size() != 2) return;
   FillEventCutflow(Region1,_weight, "SS"+GetChannelString(channel_ID)+"_LepVeto",region1);
-  FillEventCutflow(Region2,_weight, "SS"+GetChannelString(channel_ID)+"_LepVeto",region2);
   
   int nel_hem(0);   
   if (channel_ID==EE){
@@ -308,7 +357,6 @@ void HNL_SignalStudies::RunLeptonChannel(HNL_LeptonCore::Channel channel_ID, std
   }
   if(nel_hem == 0) {
     FillEventCutflow(Region1,_weight, "SS"+GetChannelString(channel_ID)+"_HEMVeto",region1);
-    FillEventCutflow(Region2,_weight, "SS"+GetChannelString(channel_ID)+"_HEMVeto",region2);
   }
 
   if (channel_ID==EE  && (fabs(GetLLMass(LepsT)-90.) < 15)) return;
@@ -330,7 +378,7 @@ void HNL_SignalStudies::RunLeptonChannel(HNL_LeptonCore::Channel channel_ID, std
 	
 	if(FatjetColl.size() > 0){
 	  
-	  if(RunSignalRegionAK8( channel_ID, Inclusive, LepsT, LepsV, JetColl, FatjetColl, BJetColl, Ev, METv, param,  "", _weight ))  
+	  if(RunSignalRegionAK8( channel_ID, Inclusive, LepsT, LepsV, TauColl,JetColl, FatjetColl, BJetColl, Ev, METv, param,  "", _weight ))  
 	    {
 	      FillEventCutflow(Region1,_weight, "SS"+GetChannelString(channel_ID)+"_SR1",region1);
 	      
@@ -340,14 +388,14 @@ void HNL_SignalStudies::RunLeptonChannel(HNL_LeptonCore::Channel channel_ID, std
 	}
 	else{
 	  
-	  if(PassVBFInitial(VBFJetColl)&&RunSignalRegionWW(channel_ID, Inclusive, LepsT, LepsV,  VBFJetColl, FatjetColl, BJetColl, Ev,  METv, param,  "", _weight )){
+	  if(PassVBFInitial(VBFJetColl)&&RunSignalRegionWW(channel_ID, Inclusive, LepsT, LepsV, TauColl,  VBFJetColl, FatjetColl, BJetColl, Ev,  METv, param,  "", _weight )){
 	    FillEventCutflow(Region1,_weight, "SS"+GetChannelString(channel_ID)+"_SR2",region1);
 	    
 	    
 	  }
 	  else{
 	    
-	    if(RunSignalRegionAK4(channel_ID, Inclusive, LepsT, LepsV , JetColl, FatjetColl, BJetColl, Ev, METv, param, "", _weight ))             FillEventCutflow(Region1,_weight, "SS"+GetChannelString(channel_ID)+"_SR3",region1);
+	    if(RunSignalRegionAK4(channel_ID, Inclusive, LepsT, LepsV ,TauColl, JetColl, FatjetColl, BJetColl, Ev, METv, param, "", _weight ))             FillEventCutflow(Region1,_weight, "SS"+GetChannelString(channel_ID)+"_SR3",region1);
 	    
 	    
 	    else if(JetColl.size() < 2 && LepsT[1]->Pt() >80.)             FillEventCutflow(Region1,_weight, "SS"+GetChannelString(channel_ID)+"_SR4",region1);
@@ -363,46 +411,7 @@ void HNL_SignalStudies::RunLeptonChannel(HNL_LeptonCore::Channel channel_ID, std
   
   
   return;
-  param.Name=param.DefName;
 
-
-  // EXO17028 ANALYSIS STRUCTURE
- 
-  if(GetLLMass(LepsT) > 10.) {
-
-    param.Name = GetChannelString(channel_ID)+"_ChannelSignalsOldSel_"+param.DefName;
-
-
-    FillEventCutflow(Region2,_weight, "SS"+GetChannelString(channel_ID)+"_LLMass",region2);
-    
-    if(njets_old > 0){
-      FillEventCutflow(Region2,_weight, "SS"+GetChannelString(channel_ID)+"_Jet",region2);
-   
-      if(PassBJetMVeto) {
-        
-	FillEventCutflow(Region2,_weight, "SS"+GetChannelString(channel_ID)+"_BJet",region2);
-        if(dijet)            FillEventCutflow(Region2,_weight, "SS"+GetChannelString(channel_ID)+"_DiJet",region2);
-	
-	
-        if(FatjetColl.size() > 0){
-          if(RunSignalRegionAK8( channel_ID, Inclusive, LepsT, LepsV,JetColl, FatjetColl, BJetColl, Ev, METv, param,  "", _weight ))   FillEventCutflow(Region2,_weight, "SS"+GetChannelString(channel_ID)+"_SR1",region2);
-	  
-          else             FillEventCutflow(Region2,_weight, "SS"+GetChannelString(channel_ID)+"_SR1Fail",region2);
-	  
-        }
-	else{
-	  
-	  if(RunSignalRegionAK4(channel_ID, Inclusive, LepsT, LepsV, JetColl, FatjetColl, BJetColl, Ev, METv, param, "", _weight ))             FillEventCutflow(Region2,_weight, "SS"+GetChannelString(channel_ID)+"_SR3",region2);
-				
-	  
-
-	  else             FillEventCutflow(Region2,_weight, "SS"+GetChannelString(channel_ID)+"_SR3Fail",region2);
-
-	}
-
-      }
-    }
-  }
   
 }
 

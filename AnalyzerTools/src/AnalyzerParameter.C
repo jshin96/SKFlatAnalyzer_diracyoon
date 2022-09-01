@@ -8,6 +8,7 @@ void AnalyzerParameter::Clear(){
   MCCorrrectionIgnoreNoHist = false;
   DEBUG = false;
 
+  OnlyCutFlow = false;
   Electron_Tight_ID = "Default";
   Electron_Loose_ID = "Default";
   Electron_Veto_ID = "Default";
@@ -79,6 +80,8 @@ AnalyzerParameter::AnalyzerParameter(){
 
   MCCorrrectionIgnoreNoHist = false;
   DEBUG = false;
+
+  OnlyCutFlow= false;
 
   Electron_Tight_ID = "Default";
   Electron_Loose_ID = "Default";

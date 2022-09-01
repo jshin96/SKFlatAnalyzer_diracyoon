@@ -28,7 +28,7 @@ public:
   TString Muon_FR_ID, Muon_FR_Key, Muon_PR_Key;
   TString Muon_CF_ID, Muon_CF_Key;
   double Muon_Tight_RelIso, Muon_Loose_RelIso, Muon_Veto_RelIso;
-  bool Muon_UseMini, Muon_UsePtCone, Muon_UseTuneP;
+  bool Muon_UseMini, Muon_UsePtCone, Muon_UseTuneP,OnlyCutFlow;
   double Muon_MinPt, Muon_MaxEta ;
 
   TString JetPUID;

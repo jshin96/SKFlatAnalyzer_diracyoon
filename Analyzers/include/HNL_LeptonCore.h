@@ -47,32 +47,41 @@ class HNL_LeptonCore : public AnalyzerCore {
     EMu=15,
     EMuL=16,
     EMuLL=17,
-    
+    LL=18
 
   };
   enum SearchRegion
   {
-    ChannelDepPresel=101,
-    ChannelDepSR1=102,
-    ChannelDepSR2=103, 
-    ChannelDepSR3=104,
-    ChannelDepFAILSR3=105,
-    ChannelDepInc=100,
-    SR1=20,
-    SR2=21,
-    SR3=22,
-    SR4=23,
-    Presel=24,
-    PreselSS=25,
-    PreselOS=26,
-    SR=27,
-    sigmm=28,
-    sigee=29,
-    sigem=30,
-    sigmm_17028=31,
-    sigee_17028=32,
-    sigem_17028=33,
-    SR1Tau=34,
+    ChannelDepPresel,
+    ChannelDepSR1,
+    ChannelDepSR2, 
+    ChannelDepSR3,
+    ChannelDepFAILSR3,
+    ChannelDepDilep,
+    ChannelDepTrigger,
+    ChannelDepInc,
+    ChannelDepIncQ,
+    MuonSR,
+    ElectronSR,
+    ElectronMuonSR,
+    MuonSRQQ,
+    ElectronSRQQ,
+    ElectronMuonSRQQ,
+    SR1,
+    SR2,
+    SR3,
+    SR4,
+    Presel,
+    PreselSS,
+    PreselOS,
+    SR,
+    sigmm,
+    sigee,
+    sigem,
+    sigmm_17028,
+    sigee_17028,
+    sigem_17028,
+    SR1Tau,
     SR2Tau,
     SR3Tau,  
     ChannelDepCR1,
@@ -185,7 +194,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   bool SameCharge(std::vector<Lepton *> leps, int ch=0);
 
   /// global var for user flags
-  bool RunFake, RunCF,  RunConv, RunSyst,RunPromptTLRemoval;
+  bool RunFake, RunCF,  RunConv, RunSyst,RunPromptTLRemoval,run_ORTrigger;
   bool IsSkimmed;
   bool Signal;
   bool HEM1516 ,BeforeRun319077;
@@ -280,8 +289,12 @@ class HNL_LeptonCore : public AnalyzerCore {
   //// ===============================  SR PLOTS =============================== ////
 
   void Fill_RegionPlots(HNL_LeptonCore::Channel channel, int plotCR,TString label_1, TString label_2,  std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Lepton *> leps, Particle  met, double nvtx, double w);
-  void Fill_RegionPlots(HNL_LeptonCore::Channel channel, int plotCR,TString label_1, TString label_2,  std::vector<Jet> jets, std::vector<Jet> jets_vbf, std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w);
-  void FillAK8Plots(HNL_LeptonCore::Channel channel, int plotCR,TString label_1, TString label_2,  std::vector<Jet> jets, std::vector<Jet> jets_vbf, std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w);
+  void Fill_RegionPlots(HNL_LeptonCore::Channel channel, int plotCR,TString label_1, TString label_2,  std::vector<Tau> Taus, std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w);
+  void Fill_RegionPlots(HNL_LeptonCore::Channel channel,TString label_1, TString label_2,std::vector<Tau> Taus,  std::vector<Jet> jets,  std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w);
+
+
+
+  void FillAK8Plots(HNL_LeptonCore::Channel channel, TString label_1, TString label_2,  std::vector<Tau> Taus, std::vector<Jet> jets,  std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w);
 
 
   void Fill_SigRegionPlots1(HNL_LeptonCore::Channel channel,TString label_1, TString label_2, TString label_3,  std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w, double var1,  double var2, double var3, double var4, double var5, double var6, double var7);
