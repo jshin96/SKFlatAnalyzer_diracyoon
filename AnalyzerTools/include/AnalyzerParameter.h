@@ -36,7 +36,8 @@ public:
   double FatJet_MinPt, FatJet_MaxEta ;
 
   TString Tau_Tight_ID, Tau_Loose_ID, Tau_Veto_ID;
-
+  
+  TString SROpt;
 
   int SystDir_PU;
 

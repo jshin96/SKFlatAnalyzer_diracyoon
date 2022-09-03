@@ -1523,7 +1523,7 @@ vector<Jet>   AnalyzerCore::GetAK4Jets(vector<Jet> jets, double pt_cut ,  double
       if(jets[ijet].DeltaR(fatjets[ifjet]) <dr_ak8_clean) jetok = false;
     }
 
-    if(!jetok) continue;
+    if(lepton_cleaning&&!jetok) continue;
     if(pu_tag=="")output_jets.push_back(jets[ijet]);
     else {
       if(jets[ijet].PassPileupMVA(pu_tag,GetEra())) output_jets.push_back(jets[ijet]);
@@ -1558,7 +1558,7 @@ vector<Jet>   AnalyzerCore::GetAK4Jets(vector<Jet> jets, double pt_cut ,  double
       if(jets[ijet].DeltaR(fatjets[ifjet]) <dr_ak8_clean) jetok = false;
     }
 
-    if(!jetok) continue;
+    if(lepton_cleaning&&!jetok) continue;
     if(pu_tag=="")output_jets.push_back(jets[ijet]);
     else if(jets[ijet].PassPileupMVA(pu_tag,GetEra())) output_jets.push_back(jets[ijet]);
   }

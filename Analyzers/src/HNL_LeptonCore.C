@@ -2140,31 +2140,31 @@ void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::SearchRegion sr, float eve
   }
 
   if(sr==MuonSR){
-    labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8","SR3_bin9","SR3_bin10","SR3_bin11","SR3_bin12","SR3_bin13","SR3_bin14", "SR3_bin15","SR3_bin16"};
+    labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1", "SR2_bin2", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8","SR3_bin9","SR3_bin10","SR3_bin11","SR3_bin12","SR3_bin13","SR3_bin14", "SR3_bin15","SR3_bin16"};
     EVhitname ="MuonSR";
   }
   if(sr==ElectronSR){
-    labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8","SR3_bin9","SR3_bin10","SR3_bin11","SR3_bin12","SR3_bin13","SR3_bin14", "SR3_bin15","SR3_bin16"};
+    labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1","SR2_bin2", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8","SR3_bin9","SR3_bin10","SR3_bin11","SR3_bin12","SR3_bin13","SR3_bin14", "SR3_bin15","SR3_bin16"};
     EVhitname ="ElectronSR";
   }
   if(sr==ElectronMuonSR){
-    labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8","SR3_bin9","SR3_bin10","SR3_bin11","SR3_bin12","SR3_bin13","SR3_bin14", "SR3_bin15","SR3_bin16"};
+    labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1","SR2_bin2", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8","SR3_bin9","SR3_bin10","SR3_bin11","SR3_bin12","SR3_bin13","SR3_bin14", "SR3_bin15","SR3_bin16"};
     EVhitname ="ElectronMuonSR";
   }
 
 
 
   if(sr==MuonSRQQ){
-    labels = {"QMSR1_bin1","QMSR1_bin2","QMSR1_bin3","QMSR1_bin4","QMSR1_bin5","QMSR1_bin6","QMSR1_bin7","QMSR2_bin1", "QMSR3_bin1","QMSR3_bin2","QMSR3_bin3","QMSR3_bin4","QMSR3_bin5","QMSR3_bin6","QMSR3_bin7","QMSR3_bin8","QMSR3_bin9","QMSR3_bin10","QMSR3_bin11","QMSR3_bin12","QMSR3_bin13","QMSR3_bin14", "QMSR3_bin15","QMSR3_bin16",     "QPSR1_bin1","QPSR1_bin2","QPSR1_bin3","QPSR1_bin4","QPSR1_bin5","QPSR1_bin6","QPSR1_bin7","QPSR2_bin1", "QPSR3_bin1","QPSR3_bin2","QPSR3_bin3","QPSR3_bin4","QPSR3_bin5","QPSR3_bin6","QPSR3_bin7","QPSR3_bin8","QPSR3_bin9","QPSR3_bin10","QPSR3_bin11","QPSR3_bin12","QPSR3_bin13","QPSR3_bin14", "QPSR3_bin15","QPSR3_bin16"};
+    labels = {"QMSR1_bin1","QMSR1_bin2","QMSR1_bin3","QMSR1_bin4","QMSR1_bin5","QMSR1_bin6","QMSR1_bin7","QMSR2_bin1", "QMSR2_bin2",  "QMSR3_bin1","QMSR3_bin2","QMSR3_bin3","QMSR3_bin4","QMSR3_bin5","QMSR3_bin6","QMSR3_bin7","QMSR3_bin8","QMSR3_bin9","QMSR3_bin10","QMSR3_bin11","QMSR3_bin12","QMSR3_bin13","QMSR3_bin14", "QMSR3_bin15","QMSR3_bin16",     "QPSR1_bin1","QPSR1_bin2","QPSR1_bin3","QPSR1_bin4","QPSR1_bin5","QPSR1_bin6","QPSR1_bin7","QPSR2_bin1","QPSR2_bin2",  "QPSR3_bin1","QPSR3_bin2","QPSR3_bin3","QPSR3_bin4","QPSR3_bin5","QPSR3_bin6","QPSR3_bin7","QPSR3_bin8","QPSR3_bin9","QPSR3_bin10","QPSR3_bin11","QPSR3_bin12","QPSR3_bin13","QPSR3_bin14", "QPSR3_bin15","QPSR3_bin16"};
     EVhitname ="MuonChargeSplitSR";
   }
  
   if(sr==ElectronSRQQ){
-    labels = {"QMSR1_bin1","QMSR1_bin2","QMSR1_bin3","QMSR1_bin4","QMSR1_bin5","QMSR1_bin6","QMSR1_bin7","QMSR2_bin1", "QMSR3_bin1","QMSR3_bin2","QMSR3_bin3","QMSR3_bin4","QMSR3_bin5","QMSR3_bin6","QMSR3_bin7","QMSR3_bin8","QMSR3_bin9","QMSR3_bin10","QMSR3_bin11","QMSR3_bin12","QMSR3_bin13","QMSR3_bin14", "QMSR3_bin15","QMSR3_bin16"   , "QPSR1_bin1","QPSR1_bin2","QPSR1_bin3","QPSR1_bin4","QPSR1_bin5","QPSR1_bin6","QPSR1_bin7","QPSR2_bin1", "QPSR3_bin1","QPSR3_bin2","QPSR3_bin3","QPSR3_bin4","QPSR3_bin5","QPSR3_bin6","QPSR3_bin7","QPSR3_bin8","QPSR3_bin9","QPSR3_bin10","QPSR3_bin11","QPSR3_bin12","QPSR3_bin13","QPSR3_bin14", "QPSR3_bin15","QPSR3_bin16"   };
+    labels = {"QMSR1_bin1","QMSR1_bin2","QMSR1_bin3","QMSR1_bin4","QMSR1_bin5","QMSR1_bin6","QMSR1_bin7","QMSR2_bin1","QMSR2_bin2",  "QMSR3_bin1","QMSR3_bin2","QMSR3_bin3","QMSR3_bin4","QMSR3_bin5","QMSR3_bin6","QMSR3_bin7","QMSR3_bin8","QMSR3_bin9","QMSR3_bin10","QMSR3_bin11","QMSR3_bin12","QMSR3_bin13","QMSR3_bin14", "QMSR3_bin15","QMSR3_bin16"   , "QPSR1_bin1","QPSR1_bin2","QPSR1_bin3","QPSR1_bin4","QPSR1_bin5","QPSR1_bin6","QPSR1_bin7","QPSR2_bin1","QPSR2_bin2",  "QPSR3_bin1","QPSR3_bin2","QPSR3_bin3","QPSR3_bin4","QPSR3_bin5","QPSR3_bin6","QPSR3_bin7","QPSR3_bin8","QPSR3_bin9","QPSR3_bin10","QPSR3_bin11","QPSR3_bin12","QPSR3_bin13","QPSR3_bin14", "QPSR3_bin15","QPSR3_bin16"   };
     EVhitname ="ElectronChargeSplitSR";
   }
   if(sr==ElectronMuonSRQQ){
-    labels = {"QMSR1_bin1","QMSR1_bin2","QMSR1_bin3","QMSR1_bin4","QMSR1_bin5","QMSR1_bin6","QMSR1_bin7","QMSR2_bin1", "QMSR3_bin1","QMSR3_bin2","QMSR3_bin3","QMSR3_bin4","QMSR3_bin5","QMSR3_bin6","QMSR3_bin7","QMSR3_bin8","QMSR3_bin9","QMSR3_bin10","QMSR3_bin11","QMSR3_bin12","QMSR3_bin13","QMSR3_bin14", "QMSR3_bin15","QMSR3_bin16"   , "QPSR1_bin1","QPSR1_bin2","QPSR1_bin3","QPSR1_bin4","QPSR1_bin5","QPSR1_bin6","QPSR1_bin7","QPSR2_bin1", "QPSR3_bin1","QPSR3_bin2","QPSR3_bin3","QPSR3_bin4","QPSR3_bin5","QPSR3_bin6","QPSR3_bin7","QPSR3_bin8","QPSR3_bin9","QPSR3_bin10","QPSR3_bin11","QPSR3_bin12","QPSR3_bin13","QPSR3_bin14", "QPSR3_bin15","QPSR3_bin16"};
+    labels = {"QMSR1_bin1","QMSR1_bin2","QMSR1_bin3","QMSR1_bin4","QMSR1_bin5","QMSR1_bin6","QMSR1_bin7","QMSR2_bin1","QMSR2_bin2",  "QMSR3_bin1","QMSR3_bin2","QMSR3_bin3","QMSR3_bin4","QMSR3_bin5","QMSR3_bin6","QMSR3_bin7","QMSR3_bin8","QMSR3_bin9","QMSR3_bin10","QMSR3_bin11","QMSR3_bin12","QMSR3_bin13","QMSR3_bin14", "QMSR3_bin15","QMSR3_bin16"   , "QPSR1_bin1","QPSR1_bin2","QPSR1_bin3","QPSR1_bin4","QPSR1_bin5","QPSR1_bin6","QPSR1_bin7","QPSR2_bin1","QPSR2_bin2",  "QPSR3_bin1","QPSR3_bin2","QPSR3_bin3","QPSR3_bin4","QPSR3_bin5","QPSR3_bin6","QPSR3_bin7","QPSR3_bin8","QPSR3_bin9","QPSR3_bin10","QPSR3_bin11","QPSR3_bin12","QPSR3_bin13","QPSR3_bin14", "QPSR3_bin15","QPSR3_bin16"};
     EVhitname ="ElectronMuonChargeSplitSR";
   }
 

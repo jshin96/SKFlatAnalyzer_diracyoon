@@ -33,7 +33,7 @@ fi
 
 if [[ $1 == "SSWW1000" ]]; then
 
-    SKFlat.py -a $analyzer  -i SSWWTypeI_SF_M1000_private  -n 1  --nmax ${nmax}   -e 2018 &
+    SKFlat.py -a $analyzer  -i SSWWTypeI_SF_M1000_private  -n 10  --nmax ${nmax}   -e 2018 &
     
 
 fi

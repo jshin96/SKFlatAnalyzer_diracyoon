@@ -153,6 +153,7 @@ void HNL_SignalStudies::executeEvent(){
     std::vector<FatJet> FatjetColl                  = GetAK8Jets(fatjets_tmp, 200., 5., true,  1., false, -999, false, 0., 99999., ElectronCollV, MuonCollV);
     
     std::vector<Jet> JetColl                        = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8,"",   ElectronCollV,MuonCollV, FatjetColl);
+    std::vector<Jet> JetCollLoose                        = GetAK4Jets(jets_tmp,     15., 4.7, true,  0.4,0.8,"",   ElectronCollV,MuonCollV, FatjetColl);
     
 
     std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(MuonCollV,ElectronCollV);
@@ -174,27 +175,27 @@ void HNL_SignalStudies::executeEvent(){
     TString def_paramName =param.Name;
     
     if (IsData || ( process.Contains("Mu+Mu+") or   process.Contains("Mu-Mu-") )){
-      RunLeptonChannel(MuMu,LepsT, LepsV,  TauColl, JetColl, VBF_JetColl, FatjetColl, BJetColl, ev, param, weight );
+      RunLeptonChannel(MuMu,LepsT, LepsV,  TauColl, JetCollLoose, JetColl, VBF_JetColl, FatjetColl, BJetColl, ev, param, weight );
 
     }
     
     param.Name=param.DefName;
     
     if (IsData || ( process.Contains("El+El+") or   process.Contains("El-El-") )){
-      RunLeptonChannel(EE,LepsT, LepsV,  TauColl, JetColl, VBF_JetColl, FatjetColl, BJetColl, ev, param, weight );
+      RunLeptonChannel(EE,LepsT, LepsV,  TauColl, JetCollLoose, JetColl, VBF_JetColl, FatjetColl, BJetColl, ev, param, weight );
     }
   
     param.Name=param.DefName;
     
     if (IsData || ( process.Contains("El+Mu+") or   process.Contains("El-Mu-") )){
-      RunLeptonChannel(EMu,LepsT, LepsV,  TauColl, JetColl, VBF_JetColl, FatjetColl, BJetColl, ev, param, weight );
+      RunLeptonChannel(EMu,LepsT, LepsV,  TauColl, JetCollLoose, JetColl, VBF_JetColl, FatjetColl, BJetColl, ev, param, weight );
     }
     
     
   }
 }
 
-void HNL_SignalStudies::RunLeptonChannel(HNL_LeptonCore::Channel channel_ID, std::vector<Lepton *> LepsT,std::vector<Lepton *> LepsV, std::vector<Tau> TauColl,  std::vector<Jet> JetColl, std::vector<Jet> VBFJetColl,  std::vector<FatJet> FatjetColl,std::vector<Jet> BJetColl,   Event Ev, AnalyzerParameter param,  float _weight)   {
+void HNL_SignalStudies::RunLeptonChannel(HNL_LeptonCore::Channel channel_ID, std::vector<Lepton *> LepsT,std::vector<Lepton *> LepsV, std::vector<Tau> TauColl,  std::vector<Jet> JetCollLoose, std::vector<Jet> JetColl, std::vector<Jet> VBFJetColl,  std::vector<FatJet> FatjetColl,std::vector<Jet> BJetColl,   Event Ev, AnalyzerParameter param,  float _weight)   {
   
 
   FillHist (GetChannelString(channel_ID)+"_NoCut", 1, _weight, 2, 0., 2.,"");
@@ -388,7 +389,7 @@ void HNL_SignalStudies::RunLeptonChannel(HNL_LeptonCore::Channel channel_ID, std
 	}
 	else{
 	  
-	  if(PassVBFInitial(VBFJetColl)&&RunSignalRegionWW(channel_ID, Inclusive, LepsT, LepsV, TauColl,  VBFJetColl, FatjetColl, BJetColl, Ev,  METv, param,  "", _weight )){
+	  if(PassVBFInitial(VBFJetColl)&&RunSignalRegionWW(channel_ID, Inclusive, LepsT, LepsV, TauColl,  JetCollLoose, VBFJetColl, FatjetColl, BJetColl, Ev,  METv, param,  "", _weight )){
 	    FillEventCutflow(Region1,_weight, "SS"+GetChannelString(channel_ID)+"_SR2",region1);
 	    
 	    

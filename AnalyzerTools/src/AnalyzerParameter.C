@@ -9,6 +9,7 @@ void AnalyzerParameter::Clear(){
   DEBUG = false;
 
   OnlyCutFlow = false;
+  SROpt="";
   Electron_Tight_ID = "Default";
   Electron_Loose_ID = "Default";
   Electron_Veto_ID = "Default";
@@ -82,6 +83,7 @@ AnalyzerParameter::AnalyzerParameter(){
   DEBUG = false;
 
   OnlyCutFlow= false;
+  SROpt="";
 
   Electron_Tight_ID = "Default";
   Electron_Loose_ID = "Default";
