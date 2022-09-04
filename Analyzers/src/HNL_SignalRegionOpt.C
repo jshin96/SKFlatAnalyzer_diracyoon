@@ -1,6 +1,6 @@
-#include "HNL_SignalRegionPlotter.h"
+#include "HNL_SignalRegionOpt.h"
 
-void HNL_SignalRegionPlotter::initializeAnalyzer(){
+void HNL_SignalRegionOpt::initializeAnalyzer(){
 
   // All default settings like trigger/ PD/ BJet are decalred in HNL_LeptonCore::initializeAnalyzer to make them consistent for all HNL codes
 
@@ -9,7 +9,7 @@ void HNL_SignalRegionPlotter::initializeAnalyzer(){
 }
 
 
-void HNL_SignalRegionPlotter::executeEvent(){
+void HNL_SignalRegionOpt::executeEvent(){
   
   if((_jentry==0)){ 
     // Print out trigger info in HNL_LeptonCore::initializeAnalyzer
@@ -39,9 +39,9 @@ void HNL_SignalRegionPlotter::executeEvent(){
   return ;
 }
 
-void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
+void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
 
-  if(run_Debug) cout << "HNL_SignalRegionPlotter::executeEvent " << endl;
+  if(run_Debug) cout << "HNL_SignalRegionOpt::executeEvent " << endl;
 
   Event ev = GetEvent();
   double weight =SetupWeight(ev,param);
@@ -73,7 +73,7 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
 
   
   // JET COLLECTION
-  bool CheckJetOpt=true;
+  bool CheckJetOpt=false;
 
   if(CheckJetOpt){
     std::vector<FatJet> fatjets_tmp  = GetFatJets(param, param.FatJet_ID, 200., 5.);
@@ -83,23 +83,24 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
 
     map<TString,   std::vector<FatJet> > fatjet_map;
     fatjet_map["ak8_type1"]   = FatjetColl_1;
-    //fatjet_map["ak8_type2"]                  = GetAK8Jetsv2(fatjets_tmp, 200., 5.,  true,  1., true, -999, true, 40., 130.,-999, ElectronCollV, MuonCollV);
+    //fatjet_map["ak8_type2"]                  = GetAK8Jetsv2(fatjets_tmp, 200., 4.7,  true,  1., true, -999, true, 40., 130.,-999, ElectronCollV, MuonCollV);
     //fatjet_map["ak8_type3"]                  = GetAK8Jetsv2(fatjets_tmp, 200., 2.7, true,  1., false, -999, true, 40., 130.,-999, ElectronCollV, MuonCollV);
-    //fatjet_map["ak8_type4"]                  = GetAK8Jetsv2(fatjets_tmp, 200., 5., true,  1., false, -999, true, 40., 130.,-999, ElectronCollV, MuonCollV);
-    fatjet_map["ak8_type5"]                  = GetAK8Jetsv2(fatjets_tmp, 200., 5., true,  1., false, -999, false, 0., 999.,-999, ElectronCollV, MuonCollV);
+    //fatjet_map["ak8_type4"]                  = GetAK8Jetsv2(fatjets_tmp, 200., 4.7, true,  1., false, -999, true, 40., 130.,-999, ElectronCollV, MuonCollV);
+    fatjet_map["ak8_type5"]                  = GetAK8Jetsv2(fatjets_tmp, 200., 4.7, true,  1., false, -999, false, 0., 999.,-999, ElectronCollV, MuonCollV);
     //fatjet_map["ak8_type6"]                  = GetAK8Jetsv2(fatjets_tmp, 200., 2.7, true,  1., false, -999, false, 0., 20000,-999, ElectronCollV, MuonCollV);
 
     fatjet_map["ak8_type7"]                  = GetAK8Jetsv2(fatjets_tmp, 200., 2.7, true,  1., true, -999, true, 40., 130.,0.6, ElectronCollV, MuonCollV);
-    //fatjet_map["ak8_type8"]                  = GetAK8Jetsv2(fatjets_tmp, 200., 5.,  true,  1., true, -999, true, 40., 130.,0.6, ElectronCollV, MuonCollV);
+    //fatjet_map["ak8_type8"]                  = GetAK8Jetsv2(fatjets_tmp, 200., 4.7,  true,  1., true, -999, true, 40., 130.,0.6, ElectronCollV, MuonCollV);
     //fatjet_map["ak8_type9"]                  = GetAK8Jetsv2(fatjets_tmp, 200., 2.7, true,  1., false, -999, true, 40., 130.,0.6, ElectronCollV, MuonCollV);
-    //fatjet_map["ak8_type10"]                  = GetAK8Jetsv2(fatjets_tmp, 200., 5., true,  1., false, -999, true, 40., 130.,0.6, ElectronCollV, MuonCollV);
-    fatjet_map["ak8_type11"]                  = GetAK8Jetsv2(fatjets_tmp, 200., 5., true,  1., false, -999, false, 0., 999.,0.6, ElectronCollV, MuonCollV);
+    //fatjet_map["ak8_type10"]                  = GetAK8Jetsv2(fatjets_tmp, 200., 4.7, true,  1., false, -999, true, 40., 130.,0.6, ElectronCollV, MuonCollV);
+    fatjet_map["ak8_type11"]                  = GetAK8Jetsv2(fatjets_tmp, 200., 4.7, true,  1., false, -999, false, 0., 999.,0.6, ElectronCollV, MuonCollV);
+    fatjet_map["ak8_type12"]                  = GetAK8Jetsv2(fatjets_tmp, 200., 4.7, true,  1., false, -999, false, 0., 999.,0.8, ElectronCollV, MuonCollV);
     //fatjet_map["ak8_type12"]                  = GetAK8Jetsv2(fatjets_tmp, 200., 2.7, true,  1., false, -999, false, 0., 20000,0.6, ElectronCollV, MuonCollV);
 
 
     
     // AK4 JET
-    std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
+    std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 15., 5.);
     
     std::vector<Jet> JetCollLoose                    = GetAK4Jets(jets_tmp,     15., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl_1);
 
@@ -185,8 +186,8 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
 	for(std::map<TString, std::vector<Jet> >::iterator ak4_vbf_it = vbfjet_map.begin(); ak4_vbf_it != vbfjet_map.end(); ak4_vbf_it++){
 	  for(std::map<TString, std::vector<Jet> >::iterator ak4_b_it =  bjet_map.begin(); ak4_b_it != bjet_map.end(); ak4_b_it++){
 	    
-	    param.WriteOutVerbose = 1;
-   
+	    param.WriteOutVerbose=1; // Does not Fill Cutflow OR Region Plotter
+	    
 	    param.Name = param.DefName + ak8_it->first + "_"+ak4_it->first + "_"+ak4_vbf_it->first + "_"+ak4_b_it->first;
 	    double weight_optjet = weight;
 	    if (ak4_b_it->first == "ak4_b_type1_L") weight_optjet*= sf_btagL;
@@ -215,41 +216,115 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
     
     return;
   }
-  
-  
-  else{
 
-    std::vector<FatJet> fatjets_tmp                 = GetFatJets(param, param.FatJet_ID, 200., 5.);
 
-    std::vector<FatJet> AK8_JetColl                  = GetAK8Jets(fatjets_tmp, 200., 5., true,  1., false, -999, false, 0., 20000., ElectronCollV, MuonCollV);
+  std::vector<FatJet> fatjets_tmp  = GetFatJets(param, param.FatJet_ID, 200., 5.);
+  std::vector<FatJet> FatjetColl                  = GetAK8Jetsv2(fatjets_tmp, 200., 2.7, true,  1., true, -999, true, 40., 130.,-999, ElectronCollV, MuonCollV);
+  std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
+
+  std::vector<Jet> JetCollLoose                    = GetAK4Jets(jets_tmp,     15., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl);
+  std::vector<Jet> BJetCollNLV                    = GetAK4Jets(jets_tmp,     20., 2.4, false,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl);
+  std::vector<Jet> JetColl                        = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl);
+  std::vector<Jet> VBF_JetColl                    = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, "",  ElectronCollV,MuonCollV, FatjetColl);    // High ETa j\                                                                  
+
+  JetTagging::Parameters param_jetsM = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
+  std::vector<Jet> BJetColl    = GetBJets(param,  BJetCollNLV, param_jetsM);
+  double sf_btagM_NLV               = GetBJetSF(param, BJetCollNLV, param_jetsM);
+  param.WriteOutVerbose=1; // Does not Fill Cutflow OR Region Plotter  
+  
+  bool opt_sr2=true;
+  if(opt_sr2){
     
+    vector<TString> SR2Opt = {};
+    vector<TString> HTLTcut = {"HTLT1_","HTLT125_","HTLT15_","HTLT175_","HTLT2_"};
+    vector<TString> JetSel = {"VBFLeadJetLooseJet_","VBFAwayJetLooseJet_","VBFLeadJet_","VBFAwayJet_"};
+    vector<TString> MassCut = {"MJJ450","MJJ500","MJJ600","MJJ700","MJJ750","MJJ800","MJJ850"};
+    
+    for(auto iht : HTLTcut){
+      for(auto ij : JetSel){
+	for(auto im : MassCut){
+	  SR2Opt.push_back(iht+ ij+im);
 
-    // AK4 JET                                                                                                                                                                              
-    std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
+	}
+      }
+    }
+    
+    if(!IsData )weight = weight*sf_btagM_NLV;
 
-    std::vector<Jet> JetCollLoose                    = GetAK4Jets(jets_tmp,     15., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetColl);
+    for (auto is2 : SR2Opt){
 
-    TString PUIDWP="";
-    std::vector<Jet> JetColl                           = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, PUIDWP,   ElectronCollV,MuonCollV, AK8_JetColl);
-    std::vector<Jet> VBF_JetColl                       = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, PUIDWP,  ElectronCollV,MuonCollV, AK8_JetColl);    // High ETa jets                 
-    std::vector<Jet> BJetColltmp                       = GetAK4Jets(jets_tmp,     20., 2.4, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetColl);
-
-    double PJet_PUID_weight = GetJetPileupIDSF(JetColl, PUIDWP, param);
-    //    weight*= PJet_PUID_weight;
-    //FillWeightHist("PJet_PUID_weight_" ,PJet_PUID_weight);
-
-
-    // select B jets                                                                                                                                                                        
-    JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
-
-    // Get BJets  and EV weight to corr BTag Eff                                                                                                                       
-    std::vector<Jet> BJetColl    = GetBJets(param, BJetColltmp, param_jets);
-    double sf_btag               = GetBJetSF(param, BJetColltmp, param_jets);
-    if(!IsData )weight*= sf_btag;
-    RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV,  TauColl,JetCollLoose, JetColl,VBF_JetColl,AK8_JetColl, BJetColl, ev,METv, param, weight);
+      param.Name = param.DefName + is2;
+      param.SRConfig  = is2;    
+      RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,FatjetColl , BJetColl, ev,METv, param,weight);
+      // reset param
+      param.Name = param.DefName;
+      param.SRConfig  = "";
+    }
     
   }
 
+  
+  bool opt_trig=true;
+  if(opt_trig){
+
+    if(!IsData )weight = weight*sf_btagM_NLV;
+
+    param.Name = param.DefName + "Nom";
+    param.SRConfig  =  "";
+    RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,FatjetColl , BJetColl, ev,METv, param,weight);
+
+    param.Name = param.DefName + "Trig1OR";
+    param.SRConfig = "Trig1OR";
+    RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,FatjetColl , BJetColl, ev,METv, param,weight);
+    
+    param.Name = param.DefName + "Trig2OR";
+    param.SRConfig = "Trig2OR";
+    RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,FatjetColl , BJetColl, ev,METv, param,weight);
+
+    param.Name = param.DefName + "Trig3OR";
+    param.SRConfig = "Trig3OR";
+    RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,FatjetColl , BJetColl, ev,METv, param,weight);
+    
+    param.Name = param.DefName;
+    param.SRConfig  =  "";
+
+  }
+
+
+  bool opt_sr1=false;
+  if(opt_sr1){
+
+    vector<TString> SR1Opt = {};
+    vector<TString> METcut = {"SR1MET_10_","SR1MET_12_","SR1MET_15_","SR1MET_17_","SR1MET_20_"};
+    vector<TString> MJJSel = {"SR1MLLJJ_500_","SR1MLLJJ_600_","SR1MLLJJ_700_","SR1MLLJJ_800_","SR1MLLJJ_900_","SR1MLLJJ_1000_"};
+    vector<TString> PtCut = {"SR1PT_80_","SR1PT_90_","SR1PT_100_","SR1PT_110_","SR1PT_120_"};
+
+    for(auto iht : METcut){
+      for(auto ij : MJJSel){
+        for(auto im : PtCut){
+          SR1Opt.push_back(iht+ ij+im);
+
+        }
+      }
+    }
+
+    if(!IsData )weight = weight*sf_btagM_NLV;
+
+    for (auto is1 : SR1Opt){
+
+      param.Name = param.DefName + is1;
+      param.SRConfig  = is1;
+      RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,FatjetColl , BJetColl, ev,METv, param,weight);
+      // reset param                                                                                                                                                                                                                        
+      param.Name = param.DefName;
+      param.SRConfig  = "";
+    }
+
+  }
+
+  
+  return;
+
 }
 
 
@@ -257,12 +332,12 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
  
 
 
-HNL_SignalRegionPlotter::HNL_SignalRegionPlotter(){
+HNL_SignalRegionOpt::HNL_SignalRegionOpt(){
 
 
 }
  
-HNL_SignalRegionPlotter::~HNL_SignalRegionPlotter(){
+HNL_SignalRegionOpt::~HNL_SignalRegionOpt(){
 
 }
 

@@ -274,10 +274,47 @@ vector<AnalyzerParameter::Syst> HNL_LeptonCore::GetSystList(TString SystType){
 //====================================================/====================================================
 
 
-bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selection, bool apply_ptcut){
+bool HNL_LeptonCore::PassHEMVeto(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps){
+
+  int nel_hem(0);
+  if (channel==EE){
+    if (DataEra=="2018"){
+      for(auto iel : leps){
+        if (iel->Eta() < -1.25){
+          if((iel->Phi() < -0.82) && (iel->Phi() > -1.62)) nel_hem++;
+        }
+      }
+    }
+  }
+
+  if(nel_hem >0) return false;
+  
+  return true;
+
+}
+
+
+bool HNL_LeptonCore::PassMultiTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selectionMain, TString selectionOR){
+
+  
+  bool PassTrigger  = PassTriggerSelection(channel, ev,leps, selectionMain, true);
+  bool PassTrigger2  = PassTriggerSelection(channel, ev,leps, selectionOR, true);
+  bool PassTriggerAllPD  = PassTriggerSelection(channel, ev,leps, selectionMain, false); 
+
+  if(!IsData) return (PassTrigger || PassTrigger2);
+  
+  if(PassTrigger) return true;
+  if(PassTriggerAllPD) return false;
+  return PassTrigger2;
+  
+}
+
+bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selection, bool check_pd ){
 
   bool PassTrigger(false);
 
+  bool apply_ptcut=true;
+  
   if (channel == MuMu){
     
     std::vector<Lepton *> leps_muon;
@@ -290,30 +327,30 @@ bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event 
       // Check It passes DiMu Trigger
       // Check if for data we are running on correct data stream
       
-      return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_DblMu);
+      return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_DblMu,check_pd);
 
     }
     
     else     if(selection == "Lep"){
       
-      return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_Mu);
+      return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_Mu,check_pd);
       
     }
     else     if(selection == "POG"){
 
-      return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_POG_Mu);
+      return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_POG_Mu,check_pd);
 
     }
     
     else if(selection == "HighPt"){
 
-      return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_HighPtMu);
+      return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_HighPtMu,check_pd);
 
 
     }
     else if(selection == "Full"){
 
-      return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_Full_Mu);
+      return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_Full_Mu,check_pd);
 
     }
     else {
@@ -333,29 +370,29 @@ bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event 
     
     if(selection == "Dilep"){
       
-      return  PassTriggerAndCheckStream(apply_ptcut,leps_eg,ev,TrigList_HNL_DblEG);
+      return  PassTriggerAndCheckStream(apply_ptcut,leps_eg,ev,TrigList_HNL_DblEG,check_pd);
     }
 
     else     if(selection == "POG"){
 
-      return  PassTriggerAndCheckStream(apply_ptcut,leps_eg,ev,TrigList_POG_EG);
+      return  PassTriggerAndCheckStream(apply_ptcut,leps_eg,ev,TrigList_POG_EG,check_pd);
     }
 
     else     if(selection == "Lep"){
 
-      return  PassTriggerAndCheckStream(apply_ptcut,leps_eg,ev,TrigList_HNL_EG);
+      return  PassTriggerAndCheckStream(apply_ptcut,leps_eg,ev,TrigList_HNL_EG,check_pd);
     }
 
     else if(selection == "HighPt"){
 
-      return  PassTriggerAndCheckStream(apply_ptcut,leps_eg,ev,TrigList_HNL_HighPtEG);
+      return  PassTriggerAndCheckStream(apply_ptcut,leps_eg,ev,TrigList_HNL_HighPtEG,check_pd);
  
     }
     
     
     else if(selection == "Full"){
       
-      return  PassTriggerAndCheckStream(apply_ptcut,leps_eg,ev,TrigList_Full_EG);
+      return  PassTriggerAndCheckStream(apply_ptcut,leps_eg,ev,TrigList_Full_EG,check_pd);
 
     }
     else {
@@ -375,29 +412,29 @@ bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event 
     }
     if(selection == "Dilep"){
       
-      return  PassTriggerAndCheckStream(apply_ptcut,leps,ev,TrigList_HNL_MuEG);
+      return  PassTriggerAndCheckStream(apply_ptcut,leps,ev,TrigList_HNL_MuEG,check_pd);
 
     }
     else if(selection == "Lep"){
 
-      return  PassTriggerAndCheckStream(apply_ptcut,leps,ev,TrigList_HNL_Mu) || PassTriggerAndCheckStream(apply_ptcut,leps,ev,TrigList_HNL_EG);
+      return  PassTriggerAndCheckStream(apply_ptcut,leps,ev,TrigList_HNL_Mu,check_pd) || PassTriggerAndCheckStream(apply_ptcut,leps,ev,TrigList_HNL_EG,check_pd);
 
     }
 
     else if(selection == "HighPt"){
 
 
-      return  PassTriggerAndCheckStream(apply_ptcut,leps,ev,TrigList_HNL_HighPtMu) || PassTriggerAndCheckStream(apply_ptcut,leps,ev,TrigList_HNL_HighPtEG);
+      return  PassTriggerAndCheckStream(apply_ptcut,leps,ev,TrigList_HNL_HighPtMu,check_pd) || PassTriggerAndCheckStream(apply_ptcut,leps,ev,TrigList_HNL_HighPtEG,check_pd);
 
     }
     else     if(selection == "POG"){
 
-      return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_POG_Mu);
+      return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_POG_Mu,check_pd);
     }    
 
     else    if(selection == "Full"){
       
-      return  PassTriggerAndCheckStream(apply_ptcut,leps,ev,TrigList_Full_MuEG);
+      return  PassTriggerAndCheckStream(apply_ptcut,leps,ev,TrigList_Full_MuEG,check_pd);
 
     }
     
@@ -962,7 +999,7 @@ double HNL_LeptonCore::GetPtCutTrigger(TString trigname, int nlep, TString flavo
   }
   return 0.;
 }
-bool HNL_LeptonCore::PassPtTrigger(Event ev, vector<TString> triglist,std::vector<Lepton *> leps){
+bool HNL_LeptonCore::PassPtTrigger(Event ev, vector<TString> triglist,std::vector<Lepton *> leps, bool check_pd){
 
   /// Code to check if event passes trigger/ Trigger is in PD running on for DAta and pt cuts are applied
   
@@ -970,8 +1007,10 @@ bool HNL_LeptonCore::PassPtTrigger(Event ev, vector<TString> triglist,std::vecto
   for(auto itrig : triglist){
 
     bool pass_trig_pt=true;    
-    if(IsData&&!ev.IsPDForTrigger(itrig, this->DataStream)) continue;
-    
+    if(check_pd){
+      if(IsData&&!ev.IsPDForTrigger(itrig, this->DataStream)) continue;
+    }
+
     int nel(0);
     int nmu(0);
     for(unsigned int ilep = 0 ; ilep < leps.size(); ilep++){
@@ -1000,7 +1039,7 @@ bool HNL_LeptonCore::CheckSRStream(Event ev,HNL_LeptonCore::Channel channel_ID){
   return true;
 }
 
-bool HNL_LeptonCore::PassTriggerAndCheckStream(bool apply_ptcut,vector<Lepton*> leps, Event ev, vector<TString> triglist){
+bool HNL_LeptonCore::PassTriggerAndCheckStream(bool apply_ptcut,vector<Lepton*> leps, Event ev, vector<TString> triglist, bool check_data_pd){
 
   bool trig_passed=false;
   for(auto itrig : triglist){
@@ -1014,11 +1053,17 @@ bool HNL_LeptonCore::PassTriggerAndCheckStream(bool apply_ptcut,vector<Lepton*> 
 	if(trig_passed) return true;
       }
     }
-    else if(ev.PassTrigger(itrig) && ev.IsPDForTrigger(itrig, this->DataStream)) {
+    else if(check_data_pd){
+      if(ev.PassTrigger(itrig) && ev.IsPDForTrigger(itrig, this->DataStream)) {
+	trig_passed=true;
+	if(apply_ptcut  && !PassPtTrigger(ev, triglist, leps,check_data_pd)) trig_passed=false;
+	if(trig_passed) return true;
+      }
+    }
+    else if(ev.PassTrigger(itrig)){
       trig_passed=true;
-      if(apply_ptcut  && !PassPtTrigger(ev, triglist, leps)) trig_passed=false;
+      if(apply_ptcut  && !PassPtTrigger(ev, triglist, leps,check_data_pd)) trig_passed=false;
       if(trig_passed) return true;
-
     }
   }
   
@@ -1479,10 +1524,11 @@ std::pair<double,double> HNL_LeptonCore::METXYCorr_Met_MetPhi(double uncormet, d
 }
 
 
-void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, int plotLL, TString plot_dir, TString region,   std::vector<Jet> jets,  std::vector<FatJet> fatjets,std::vector<Lepton *> Leps, Particle  met, double nvtx,  double w){
+void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, int plotLL, TString plot_dir, TString region,   std::vector<Jet> jets,  std::vector<FatJet> fatjets,std::vector<Lepton *> Leps, Particle  met, double nvtx,  double w, int verbose_level){
 
+  if(verbose_level>0) return;
   std::vector<Tau>  Taus;
-  Fill_RegionPlots(channel, plotLL,plot_dir ,region, Taus,jets, fatjets, Leps, met, nvtx, w );
+  Fill_RegionPlots(channel, plotLL,plot_dir ,region, Taus,jets, fatjets, Leps, met, nvtx, w , verbose_level);
 
 }
 
@@ -1584,20 +1630,23 @@ void HNL_LeptonCore::FillAK8Plots(HNL_LeptonCore::Channel channel,  TString plot
 }
 
 
-void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, int fill_lep, TString plot_dir, TString region, vector<Tau> Taus,  std::vector<Jet> jets,    std::vector<FatJet> fatjets, std::vector<Lepton *> leps , Particle  met, double nvtx,  double w){
+void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, int fill_lep, TString plot_dir, TString region, vector<Tau> Taus,  std::vector<Jet> jets,    std::vector<FatJet> fatjets, std::vector<Lepton *> leps , Particle  met, double nvtx,  double w,int verbose_level){
 
-  Fill_RegionPlots(channel, plot_dir ,region, Taus, jets,fatjets, leps, met, nvtx, w);
+  if(verbose_level > 0) return;
+  Fill_RegionPlots(channel, plot_dir ,region, Taus, jets,fatjets, leps, met, nvtx, w,verbose_level);
 
   if(fill_lep ==0) {
     TString plot_dir_lep = plot_dir;
     plot_dir_lep = plot_dir_lep.ReplaceAll(GetChannelString(channel),"LL");
-    Fill_RegionPlots(channel, plot_dir_lep ,region, Taus, jets ,fatjets, leps, met, nvtx, w);
+    Fill_RegionPlots(channel, plot_dir_lep ,region, Taus, jets ,fatjets, leps, met, nvtx, w,verbose_level);
   }
   return;
 }
 
-void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, TString plot_dir, TString region, std::vector<Tau> TauColl, std::vector<Jet> jets,    std::vector<FatJet> fatjets, std::vector<Lepton *> leps , Particle  met, double nvtx,  double w){
+void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, TString plot_dir, TString region, std::vector<Tau> TauColl, std::vector<Jet> jets,    std::vector<FatJet> fatjets, std::vector<Lepton *> leps , Particle  met, double nvtx,  double w, int verbose_level){
   
+  if(verbose_level > 0) return;
+
   
   bool debug(false);
 
@@ -2041,231 +2090,238 @@ void HNL_LeptonCore::FillEventCutflowDef(TString analysis_dir_name,TString histn
 
 
 
-void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::SearchRegion sr, float event_weight, TString label,   TString analysis_dir_name){
+void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::SearchRegion sr, float event_weight, TString label,   TString analysis_dir_name, int verbose_level){
   
+
+ 
   if (run_Debug) cout << "FillEventCutflow " << label << " " << analysis_dir_name <<  endl;
 
   vector<TString> labels;
   TString EVhitname("");
   
+  /// verbose_level  sets which Cutflow to fill
+  /// by default it is 0 and ALL are filled
+  /// If set to 1 then only limits are filled
+  if (verbose_level < 0) return;
   
-  if(sr==SR1 ){
-    labels = {  "Presel", "AK8Jet", "SR1_Init",   "SR1_lep_charge",  "SR1_lep_pt", "SR1_dilep_mass" , "SR1_LepPt","SR1_DphiN_Wlep", "SR1_TauVeto", "SR1_HTPt", "SR1_Wmass",  "SR1_MET" , "SR1_bveto" };
-    EVhitname= "SR1";
-  }
-  
-  if(sr==SR2){
-    labels = {   "Presel", "NoAK8Jet", "PassVBF",       "SR2_lep_charge",       "SR2_lep_pt", "SR2_VBF",     "SR2_ht_lt1",      "SR2_bveto"};
-    EVhitname= "SR2";
-  }
-  
-  if( sr==SR3){
-    labels = {  "Presel", "NoAK8Jet", "FailVBF",    "SR3_lep_charge" ,     "SR3_lep_pt",      "SR3_dilep_mass",      "SR3_jet",       "SR3_dijet",
-		"SR3_Wmass", "SR3_J1Pt",     "SR3_MET",      "SR3_bveto"};
-    EVhitname= "SR3";
-  }
-  if(sr==SR4){
-    labels = {      "SR4_3lep",             "SR4_3lep_veto", "SR4_3lep_chargereq",   "SR4_3lep_bjet",      "SR4_3lep_Zmlll",       "SR4_3lep_Zmll_os",      "SR4_lll_mu"};
-    EVhitname= "SR4";
-  }
-  if(sr==PreselSS || sr==Presel ){
-    labels = {"NoCut", "METFilter", "Trigger", "Dilepton",
-	      "SS_Dilep" ,"SS_lep_veto", "SS_Dilep_mass", "SS_Presel"};
-    EVhitname = "SS_Presel";
-  }
-  if(sr==PreselOS || sr==Presel ){
-    labels = {"NoCut", "METFilter", "Trigger", "Dilepton",
+  if (verbose_level == 0) {
+    
+    if(sr==SR1 ){
+      labels = {  "Presel", "AK8Jet", "SR1_Init",   "SR1_lep_charge",  "SR1_lep_pt", "SR1_dilep_mass" , "SR1_LepPt","SR1_DphiN_Wlep", "SR1_TauVeto", "SR1_HTPt", "SR1_Wmass",  "SR1_MET" , "SR1_bveto" };
+      EVhitname= "SR1";
+    }
+    
+    if(sr==SR2){
+      labels = {   "Presel", "SR2_lep_charge", "SR2_lep_pt", "SR2_DPhi", "SR2_DiJet",  "SR2_DiJetEta",  "SR2_DiJetMass", "SR2_VBF",     "SR2_ht_lt1",      "SR2_bveto"};
+      EVhitname= "SR2";
+    }
+    
+    if( sr==SR3){
+      labels = {  "Presel", "NoAK8Jet", "FailVBF",    "SR3_lep_charge" ,     "SR3_lep_pt",      "SR3_dilep_mass",      "SR3_jet",       "SR3_dijet",
+		  "SR3_Wmass", "SR3_J1Pt",     "SR3_MET",      "SR3_bveto"};
+      EVhitname= "SR3";
+    }
+    if(sr==SR4){
+      labels = {      "SR4_3lep",             "SR4_3lep_veto", "SR4_3lep_chargereq",   "SR4_3lep_bjet",      "SR4_3lep_Zmlll",       "SR4_3lep_Zmll_os",      "SR4_lll_mu"};
+      EVhitname= "SR4";
+    }
+    if(sr==PreselSS || sr==Presel ){
+      labels = {"NoCut", "METFilter", "Trigger", "Dilepton",
+		"SS_Dilep" ,"SS_lep_veto", "SS_Dilep_mass", "SS_Presel"};
+      EVhitname = "SS_Presel";
+    }
+    if(sr==PreselOS || sr==Presel ){
+      labels = {"NoCut", "METFilter", "Trigger", "Dilepton",
 	      "OS_Dilep" ,"OS_lep_veto", "OS_Dilep_mass", "OS_Presel"};
-    EVhitname ="OS_Presel";
-  }
-  if(sr==ChannelDepInc ){
-    labels = {"MuMu_NoCut","EE_NoCut","EMu_NoCut"};
-    EVhitname ="ChannelDependant_Inclusive";
-  }
-  if(sr==ChannelDepIncQ ){
-    labels = {"MuMu_MMQ_NoCut","MuMu_PPQ_NoCut", "EE_MMQ_NoCut",  "EE_PPQ_NoCut","EMu_MMQ_NoCut", "EMu_PPQ_NoCut"};
-    EVhitname ="ChannelDependantQQ_Inclusive";
-  }
-  if(sr==ChannelDepDilep){
-    labels = {"MuMu_Dilep","EE_Dilep","EMu_Dilep"};
-    EVhitname ="ChannelDependantDilep";
-  }
-  if(sr==ChannelDepTrigger){
-    labels = {"MuMu_Trigger","EE_Trigger","EMu_Trigger", "MuMu_MultiTrigger","EE_MultiTrigger","EMu_MultiTrigger"};
-    EVhitname ="ChannelDependantTrigger";
-  }
-  if(sr==ChannelDepPresel){
-    labels = {"MuMu_Presel","EE_Presel","EMu_Presel"};
-    EVhitname ="ChannelDependantPresel";
+      EVhitname ="OS_Presel";
+    }
+    if(sr==ChannelDepInc ){
+      labels = {"MuMu_NoCut","EE_NoCut","EMu_NoCut"};
+      EVhitname ="ChannelDependant_Inclusive";
+    }
+    if(sr==ChannelDepIncQ ){
+      labels = {"MuMu_MMQ_NoCut","MuMu_PPQ_NoCut", "EE_MMQ_NoCut",  "EE_PPQ_NoCut","EMu_MMQ_NoCut", "EMu_PPQ_NoCut"};
+      EVhitname ="ChannelDependantQQ_Inclusive";
+    }
+    if(sr==ChannelDepDilep){
+      labels = {"MuMu_Dilep","EE_Dilep","EMu_Dilep"};
+      EVhitname ="ChannelDependantDilep";
+    }
+    if(sr==ChannelDepTrigger){
+      labels = {"MuMu_Trigger","EE_Trigger","EMu_Trigger", "MuMu_MultiTrigger","EE_MultiTrigger","EMu_MultiTrigger"};
+      EVhitname ="ChannelDependantTrigger";
+    }
+    if(sr==ChannelDepPresel){
+      labels = {"MuMu_Presel","EE_Presel","EMu_Presel"};
+      EVhitname ="ChannelDependantPresel";
+    }
+    
+    if(sr==ChannelDepSR1){
+      labels = {"MuMu_SR1","EE_SR1","EMu_SR1"};
+      EVhitname ="ChannelDependantSR1";
+    }
+    if(sr==ChannelDepSR2){
+      labels = {"MuMu_SR2","EE_SR2","EMu_SR2"};
+      EVhitname ="ChannelDependantSR2";
+    }
+    
+    if(sr==ChannelDepSR3){
+      labels = {"MuMu_SR3","EE_SR3","EMu_SR3"};
+      EVhitname ="ChannelDependantSR3";
+    }
+    
+    if(sr==ChannelDepFAILSR3){
+      labels = {"MuMu_SR3Fail_0j","MuMu_SR3Fail_1j","MuMu_SR3Fail_2j", "EE_SR3Fail_0j","EE_SR3Fail_1j","EE_SR3Fail_2j","EMu_SR3Fail_0j","EMu_SR3Fail_1j","EMu_SR3Fail_2j"};
+      EVhitname ="ChannelDependantSR3Fail";
+    }
+    
+    if(sr==SR){
+      labels = {"SR1Pass","SR1Fail","SR2Pass","SR2Fail","SR3Pass","SR3Fail","SR4Pass","SR4Fail"
+      };
+      EVhitname ="SR_Summary";
+    }
+    
+    
+    if(sr==ChannelDepCR1){
+      labels = {"MuMu_CR1","EE_CR1","EMu_CR1"};
+      EVhitname ="ChannelDependantCR1";
+    }
+    if(sr==ChannelDepCR2){
+      labels = {"MuMu_CR2","EE_CR2","EMu_CR2"};
+      EVhitname ="ChannelDependantCR2";
+    }
+    
+    if(sr==ChannelDepCR3){
+      labels = {"MuMu_CR3","EE_CR3","EMu_CR3"};
+      EVhitname ="ChannelDependantCR3";
+    }
   }
   
-  if(sr==ChannelDepSR1){
-    labels = {"MuMu_SR1","EE_SR1","EMu_SR1"};
-    EVhitname ="ChannelDependantSR1";
+  if(verbose_level >= 0){
+    if(sr==MuonSR){
+      labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1", "SR2_bin2", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8","SR3_bin9","SR3_bin10","SR3_bin11","SR3_bin12","SR3_bin13","SR3_bin14", "SR3_bin15","SR3_bin16"};
+      EVhitname ="MuonSR";
+    }
+    if(sr==ElectronSR){
+      labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1","SR2_bin2", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8","SR3_bin9","SR3_bin10","SR3_bin11","SR3_bin12","SR3_bin13","SR3_bin14", "SR3_bin15","SR3_bin16"};
+      EVhitname ="ElectronSR";
+    }
+    if(sr==ElectronMuonSR){
+      labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1","SR2_bin2", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8","SR3_bin9","SR3_bin10","SR3_bin11","SR3_bin12","SR3_bin13","SR3_bin14", "SR3_bin15","SR3_bin16"};
+      EVhitname ="ElectronMuonSR";
+    }
+    
+    
+    if(sr==MuonSRQQ){
+      labels = {"QMSR1_bin1","QMSR1_bin2","QMSR1_bin3","QMSR1_bin4","QMSR1_bin5","QMSR1_bin6","QMSR1_bin7","QMSR2_bin1", "QMSR2_bin2",  "QMSR3_bin1","QMSR3_bin2","QMSR3_bin3","QMSR3_bin4","QMSR3_bin5","QMSR3_bin6","QMSR3_bin7","QMSR3_bin8","QMSR3_bin9","QMSR3_bin10","QMSR3_bin11","QMSR3_bin12","QMSR3_bin13","QMSR3_bin14", "QMSR3_bin15","QMSR3_bin16",     "QPSR1_bin1","QPSR1_bin2","QPSR1_bin3","QPSR1_bin4","QPSR1_bin5","QPSR1_bin6","QPSR1_bin7","QPSR2_bin1","QPSR2_bin2",  "QPSR3_bin1","QPSR3_bin2","QPSR3_bin3","QPSR3_bin4","QPSR3_bin5","QPSR3_bin6","QPSR3_bin7","QPSR3_bin8","QPSR3_bin9","QPSR3_bin10","QPSR3_bin11","QPSR3_bin12","QPSR3_bin13","QPSR3_bin14", "QPSR3_bin15","QPSR3_bin16"};
+      EVhitname ="MuonChargeSplitSR";
+    }
+    
+    if(sr==ElectronSRQQ){
+      labels = {"QMSR1_bin1","QMSR1_bin2","QMSR1_bin3","QMSR1_bin4","QMSR1_bin5","QMSR1_bin6","QMSR1_bin7","QMSR2_bin1","QMSR2_bin2",  "QMSR3_bin1","QMSR3_bin2","QMSR3_bin3","QMSR3_bin4","QMSR3_bin5","QMSR3_bin6","QMSR3_bin7","QMSR3_bin8","QMSR3_bin9","QMSR3_bin10","QMSR3_bin11","QMSR3_bin12","QMSR3_bin13","QMSR3_bin14", "QMSR3_bin15","QMSR3_bin16"   , "QPSR1_bin1","QPSR1_bin2","QPSR1_bin3","QPSR1_bin4","QPSR1_bin5","QPSR1_bin6","QPSR1_bin7","QPSR2_bin1","QPSR2_bin2",  "QPSR3_bin1","QPSR3_bin2","QPSR3_bin3","QPSR3_bin4","QPSR3_bin5","QPSR3_bin6","QPSR3_bin7","QPSR3_bin8","QPSR3_bin9","QPSR3_bin10","QPSR3_bin11","QPSR3_bin12","QPSR3_bin13","QPSR3_bin14", "QPSR3_bin15","QPSR3_bin16"   };
+      EVhitname ="ElectronChargeSplitSR";
+    }
+    if(sr==ElectronMuonSRQQ){
+      labels = {"QMSR1_bin1","QMSR1_bin2","QMSR1_bin3","QMSR1_bin4","QMSR1_bin5","QMSR1_bin6","QMSR1_bin7","QMSR2_bin1","QMSR2_bin2",  "QMSR3_bin1","QMSR3_bin2","QMSR3_bin3","QMSR3_bin4","QMSR3_bin5","QMSR3_bin6","QMSR3_bin7","QMSR3_bin8","QMSR3_bin9","QMSR3_bin10","QMSR3_bin11","QMSR3_bin12","QMSR3_bin13","QMSR3_bin14", "QMSR3_bin15","QMSR3_bin16"   , "QPSR1_bin1","QPSR1_bin2","QPSR1_bin3","QPSR1_bin4","QPSR1_bin5","QPSR1_bin6","QPSR1_bin7","QPSR2_bin1","QPSR2_bin2",  "QPSR3_bin1","QPSR3_bin2","QPSR3_bin3","QPSR3_bin4","QPSR3_bin5","QPSR3_bin6","QPSR3_bin7","QPSR3_bin8","QPSR3_bin9","QPSR3_bin10","QPSR3_bin11","QPSR3_bin12","QPSR3_bin13","QPSR3_bin14", "QPSR3_bin15","QPSR3_bin16"};
+      EVhitname ="ElectronMuonChargeSplitSR";
+    }
   }
-  if(sr==ChannelDepSR2){
-    labels = {"MuMu_SR2","EE_SR2","EMu_SR2"};
-    EVhitname ="ChannelDependantSR2";
-  }
-
-  if(sr==ChannelDepSR3){
-    labels = {"MuMu_SR3","EE_SR3","EMu_SR3"};
-    EVhitname ="ChannelDependantSR3";
-  }
-
-  if(sr==ChannelDepFAILSR3){
-    labels = {"MuMu_SR3Fail_0j","MuMu_SR3Fail_1j","MuMu_SR3Fail_2j", "EE_SR3Fail_0j","EE_SR3Fail_1j","EE_SR3Fail_2j","EMu_SR3Fail_0j","EMu_SR3Fail_1j","EMu_SR3Fail_2j"};
-    EVhitname ="ChannelDependantSR3Fail";
-  }
-
-  if(sr==SR){
-    labels = {"SR1Pass","SR1Fail","SR2Pass","SR2Fail","SR3Pass","SR3Fail","SR4Pass","SR4Fail"
-    };
-    EVhitname ="SR_Summary";
-  }
-
-
-  if(sr==ChannelDepCR1){
-    labels = {"MuMu_CR1","EE_CR1","EMu_CR1"};
-    EVhitname ="ChannelDependantCR1";
-  }
-  if(sr==ChannelDepCR2){
-    labels = {"MuMu_CR2","EE_CR2","EMu_CR2"};
-    EVhitname ="ChannelDependantCR2";
-  }
-
-  if(sr==ChannelDepCR3){
-    labels = {"MuMu_CR3","EE_CR3","EMu_CR3"};
-    EVhitname ="ChannelDependantCR3";
-  }
-
-  if(sr==MuonSR){
-    labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1", "SR2_bin2", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8","SR3_bin9","SR3_bin10","SR3_bin11","SR3_bin12","SR3_bin13","SR3_bin14", "SR3_bin15","SR3_bin16"};
-    EVhitname ="MuonSR";
-  }
-  if(sr==ElectronSR){
-    labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1","SR2_bin2", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8","SR3_bin9","SR3_bin10","SR3_bin11","SR3_bin12","SR3_bin13","SR3_bin14", "SR3_bin15","SR3_bin16"};
-    EVhitname ="ElectronSR";
-  }
-  if(sr==ElectronMuonSR){
-    labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1","SR2_bin2", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8","SR3_bin9","SR3_bin10","SR3_bin11","SR3_bin12","SR3_bin13","SR3_bin14", "SR3_bin15","SR3_bin16"};
-    EVhitname ="ElectronMuonSR";
-  }
-
-
-
-  if(sr==MuonSRQQ){
-    labels = {"QMSR1_bin1","QMSR1_bin2","QMSR1_bin3","QMSR1_bin4","QMSR1_bin5","QMSR1_bin6","QMSR1_bin7","QMSR2_bin1", "QMSR2_bin2",  "QMSR3_bin1","QMSR3_bin2","QMSR3_bin3","QMSR3_bin4","QMSR3_bin5","QMSR3_bin6","QMSR3_bin7","QMSR3_bin8","QMSR3_bin9","QMSR3_bin10","QMSR3_bin11","QMSR3_bin12","QMSR3_bin13","QMSR3_bin14", "QMSR3_bin15","QMSR3_bin16",     "QPSR1_bin1","QPSR1_bin2","QPSR1_bin3","QPSR1_bin4","QPSR1_bin5","QPSR1_bin6","QPSR1_bin7","QPSR2_bin1","QPSR2_bin2",  "QPSR3_bin1","QPSR3_bin2","QPSR3_bin3","QPSR3_bin4","QPSR3_bin5","QPSR3_bin6","QPSR3_bin7","QPSR3_bin8","QPSR3_bin9","QPSR3_bin10","QPSR3_bin11","QPSR3_bin12","QPSR3_bin13","QPSR3_bin14", "QPSR3_bin15","QPSR3_bin16"};
-    EVhitname ="MuonChargeSplitSR";
-  }
- 
-  if(sr==ElectronSRQQ){
-    labels = {"QMSR1_bin1","QMSR1_bin2","QMSR1_bin3","QMSR1_bin4","QMSR1_bin5","QMSR1_bin6","QMSR1_bin7","QMSR2_bin1","QMSR2_bin2",  "QMSR3_bin1","QMSR3_bin2","QMSR3_bin3","QMSR3_bin4","QMSR3_bin5","QMSR3_bin6","QMSR3_bin7","QMSR3_bin8","QMSR3_bin9","QMSR3_bin10","QMSR3_bin11","QMSR3_bin12","QMSR3_bin13","QMSR3_bin14", "QMSR3_bin15","QMSR3_bin16"   , "QPSR1_bin1","QPSR1_bin2","QPSR1_bin3","QPSR1_bin4","QPSR1_bin5","QPSR1_bin6","QPSR1_bin7","QPSR2_bin1","QPSR2_bin2",  "QPSR3_bin1","QPSR3_bin2","QPSR3_bin3","QPSR3_bin4","QPSR3_bin5","QPSR3_bin6","QPSR3_bin7","QPSR3_bin8","QPSR3_bin9","QPSR3_bin10","QPSR3_bin11","QPSR3_bin12","QPSR3_bin13","QPSR3_bin14", "QPSR3_bin15","QPSR3_bin16"   };
-    EVhitname ="ElectronChargeSplitSR";
-  }
-  if(sr==ElectronMuonSRQQ){
-    labels = {"QMSR1_bin1","QMSR1_bin2","QMSR1_bin3","QMSR1_bin4","QMSR1_bin5","QMSR1_bin6","QMSR1_bin7","QMSR2_bin1","QMSR2_bin2",  "QMSR3_bin1","QMSR3_bin2","QMSR3_bin3","QMSR3_bin4","QMSR3_bin5","QMSR3_bin6","QMSR3_bin7","QMSR3_bin8","QMSR3_bin9","QMSR3_bin10","QMSR3_bin11","QMSR3_bin12","QMSR3_bin13","QMSR3_bin14", "QMSR3_bin15","QMSR3_bin16"   , "QPSR1_bin1","QPSR1_bin2","QPSR1_bin3","QPSR1_bin4","QPSR1_bin5","QPSR1_bin6","QPSR1_bin7","QPSR2_bin1","QPSR2_bin2",  "QPSR3_bin1","QPSR3_bin2","QPSR3_bin3","QPSR3_bin4","QPSR3_bin5","QPSR3_bin6","QPSR3_bin7","QPSR3_bin8","QPSR3_bin9","QPSR3_bin10","QPSR3_bin11","QPSR3_bin12","QPSR3_bin13","QPSR3_bin14", "QPSR3_bin15","QPSR3_bin16"};
-    EVhitname ="ElectronMuonChargeSplitSR";
-  }
-
-
-
-
-
-  if(sr==CR){
-
-    labels = { "TopAK8_CR","ZAK8_CR","WpWp_CR1","WpWp_CR2","WpWp_CRNP","WpWp_CRNP2","ZZ_CR","ZZLoose_CR","ZG_CR","WG_CR","WZ_CR","WG_Method2_CR","ZG_Method2_CR","WZ2_CR","WZB_CR","HighMassSR1_CR","HighMassSR2_CR","HighMassSR3_CR" ,"HighMass1Jet_CR","HighMassBJet_CR","HighMassNP_CR","ZNP_CR","SSPresel","SSVBFPresel"};
-
-
-    EVhitname ="ControlRegions";
-  }
-
-  if(sr==SR1Tau ){
-    vector<TString> JID = {"JetVVL","JetVL","JetL","JetM","JetT","JetVT","JetVVT"};
-    vector<TString> ElID = {"ElVVL","ElVL","ElL","ElM","ElT","ElVT","ElVVT"};
-    vector<TString> MuID = {"MuVL","MuL","MuM","MuT"};
-    labels = {"SR1"};
-    for(auto ij :  JID){
-      for(auto iel : ElID){
-        for(auto imu : MuID){
-          TString TID=ij+"_"+iel+"_"+imu;
-	  labels.push_back(TID);
+  
+  
+  if(verbose_level==0){
+    if(sr==CR){
+      
+      labels = { "TopAK8_CR","ZAK8_CR","WpWp_CR1","WpWp_CR2","WpWp_CRNP","WpWp_CRNP2","ZZ_CR","ZZLoose_CR","ZG_CR","WG_CR","WZ_CR","WG_Method2_CR","ZG_Method2_CR","WZ2_CR","WZB_CR","HighMassSR1_CR","HighMassSR2_CR","HighMassSR3_CR" ,"HighMass1Jet_CR","HighMassBJet_CR","HighMassNP_CR","ZNP_CR","SSPresel","SSVBFPresel"};
+      
+      
+      EVhitname ="ControlRegions";
+    }
+    
+    if(sr==SR1Tau ){
+      vector<TString> JID = {"JetVVL","JetVL","JetL","JetM","JetT","JetVT","JetVVT"};
+      vector<TString> ElID = {"ElVVL","ElVL","ElL","ElM","ElT","ElVT","ElVVT"};
+      vector<TString> MuID = {"MuVL","MuL","MuM","MuT"};
+      labels = {"SR1"};
+      for(auto ij :  JID){
+	for(auto iel : ElID){
+	  for(auto imu : MuID){
+	    TString TID=ij+"_"+iel+"_"+imu;
+	    labels.push_back(TID);
+	  }
 	}
       }
+      EVhitname= "SR1Tau";
     }
-    EVhitname= "SR1Tau";
-  }
-
-  if(sr==SR2Tau ){
-    vector<TString> JID = {"JetVVL","JetVL","JetL","JetM","JetT","JetVT","JetVVT"};
-    vector<TString> ElID = {"ElVVL","ElVL","ElL","ElM","ElT","ElVT","ElVVT"};
-    vector<TString> MuID = {"MuVL","MuL","MuM","MuT"};
-    labels = {"SR2"};
-    for(auto ij :  JID){
-      for(auto iel : ElID){
-        for(auto imu : MuID){
-          TString TID=ij+"_"+iel+"_"+imu;
-          labels.push_back(TID);
-        }
+    
+    if(sr==SR2Tau ){
+      vector<TString> JID = {"JetVVL","JetVL","JetL","JetM","JetT","JetVT","JetVVT"};
+      vector<TString> ElID = {"ElVVL","ElVL","ElL","ElM","ElT","ElVT","ElVVT"};
+      vector<TString> MuID = {"MuVL","MuL","MuM","MuT"};
+      labels = {"SR2"};
+      for(auto ij :  JID){
+	for(auto iel : ElID){
+	  for(auto imu : MuID){
+	    TString TID=ij+"_"+iel+"_"+imu;
+	    labels.push_back(TID);
+	  }
+	}
       }
+      EVhitname= "SR2Tau";
     }
-    EVhitname= "SR2Tau";
-  }
-
-  if(sr==SR3Tau ){
-    vector<TString> JID = {"JetVVL","JetVL","JetL","JetM","JetT","JetVT","JetVVT"};
-    vector<TString> ElID = {"ElVVL","ElVL","ElL","ElM","ElT","ElVT","ElVVT"};
-    vector<TString> MuID = {"MuVL","MuL","MuM","MuT"};
-    labels = {"SR3"};
-    for(auto ij :  JID){
-      for(auto iel : ElID){
-        for(auto imu : MuID){
-          TString TID=ij+"_"+iel+"_"+imu;
-          labels.push_back(TID);
-        }
+    
+    if(sr==SR3Tau ){
+      vector<TString> JID = {"JetVVL","JetVL","JetL","JetM","JetT","JetVT","JetVVT"};
+      vector<TString> ElID = {"ElVVL","ElVL","ElL","ElM","ElT","ElVT","ElVVT"};
+      vector<TString> MuID = {"MuVL","MuL","MuM","MuT"};
+      labels = {"SR3"};
+      for(auto ij :  JID){
+	for(auto iel : ElID){
+	  for(auto imu : MuID){
+	    TString TID=ij+"_"+iel+"_"+imu;
+	    labels.push_back(TID);
+	  }
+	}
       }
+      EVhitname= "SR3Tau";
     }
-    EVhitname= "SR3Tau";
+    
+    if(sr==sigmm){
+      labels = {"SSNoCut", "SSGen", "SSGen2", "SSMuMuTrig", "SSMuMuTrig2", "SSMuMuTrig2L", "SSMuMu", "SSMuMu_Pt", "SSMuMu_HEMVeto","SSMuMu_LepVeto", "SSMuMu_LLMass",  "SSMuMu_vTau","SSMuMu_Jet","SSMuMu_BJet", "SSMuMu_DiJet",  "SSMuMu_SR1","SSMuMu_SR1Fail", "SSMuMu_SR2","SSMuMu_SR3","SSMuMu_SR4","SSMuMu_SR5","SSMuMu_SR3Fail"};
+      EVhitname ="SR_Summary";
+    }
+    
+    if(sr==sigmm_17028){
+      labels = {"SSNoCut", "SSGen","SSGen2", "SSMuMuTrig", "SSMuMuTrig2","SSMuMuTrig2L" , "SSMuMu","SSMuMu_Pt", "SSMuMu_HEMVeto","SSMuMu_LepVeto", "SSMuMu_LLMass", "SSMuMu_Jet", "SSMuMu_BJet", "SSMuMu_DiJet",  "SSMuMu_SR1","SSMuMu_SR1Fail","SSMuMu_SR3","SSMuMu_SR3Fail"};
+      EVhitname ="SR_Summary_17028";
+    }
+    
+    if(sr==sigee){
+      labels = {"SSNoCut", "SSGen", "SSGen2", "SSEETrig", "SSEETrig2", "SSEETrig2L","SSEE", "SSEE_Pt","SSEE_LepVeto", "SSEE_HEMVeto","SSEE_LLMass",  "SSEE_vTau","SSEE_Jet","SSEE_BJet", "SSEE_DiJet",  "SSEE_SR1","SSEE_SR1Fail", "SSEE_SR2","SSEE_SR3","SSEE_SR4","SSEE_SR5","SSEE_SR3Fail"};
+      EVhitname ="SR_Summary";
+    }
+    
+    if(sr==sigee_17028){
+      labels = {"SSNoCut", "SSGen","SSGen2", "SSEETrig", "SSEETrig2", "SSEETrig2L", "SSEE","SSEE_Pt", "SSEE_HEMVeto", "SSEE_LepVeto", "SSEE_LLMass", "SSEE_Jet", "SSEE_BJet", "SSEE_DiJet",  "SSEE_SR1","SSEE_SR1Fail","SSEE_SR3","SSEE_SR3Fail"};
+      EVhitname ="SR_Summary_17028";
+    }
+    
+    
+    
+    if(sr==sigem){
+      labels = {"SSNoCut", "SSGen", "SSGen2", "SSEMuTrig", "SSEMuTrig2","SSEMuTrig2L","SSEMu", "SSEMu_Pt","SSEMu_LepVeto", "SSEMu_LLMass",  "SSEMu_vTau","SSEMu_Jet","SSEMu_BJet", "SSEMu_DiJet",  "SSEMu_SR1","SSEMu_SR1Fail", "SSEMu_SR2","SSEMu_SR3","SSEMu_SR4","SSEMu_SR5","SSEMu_SR3Fail"};
+      EVhitname ="SR_Summary";
+    }
+    
+    if(sr==sigem_17028){
+      labels = {"SSNoCut", "SSGen","SSGen2", "SSEMuTrig", "SSEMuTrig2", "SSEMuTrig2L", "SSEMu","SSEMu_Pt", "SSEMu_LepVeto", "SSEMu_LLMass", "SSEMu_Jet", "SSEMu_BJet", "SSEMu_DiJet",  "SSEMu_SR1","SSEMu_SR1Fail","SSEMu_SR3","SSEMu_SR3Fail"};
+      EVhitname ="SR_Summary_17028";
+    }
+    
   }
 
-  if(sr==sigmm){
-    labels = {"SSNoCut", "SSGen", "SSGen2", "SSMuMuTrig", "SSMuMuTrig2", "SSMuMuTrig2L", "SSMuMu", "SSMuMu_Pt", "SSMuMu_HEMVeto","SSMuMu_LepVeto", "SSMuMu_LLMass",  "SSMuMu_vTau","SSMuMu_Jet","SSMuMu_BJet", "SSMuMu_DiJet",  "SSMuMu_SR1","SSMuMu_SR1Fail", "SSMuMu_SR2","SSMuMu_SR3","SSMuMu_SR4","SSMuMu_SR5","SSMuMu_SR3Fail"};
-    EVhitname ="SR_Summary";
-  }
-
-  if(sr==sigmm_17028){
-    labels = {"SSNoCut", "SSGen","SSGen2", "SSMuMuTrig", "SSMuMuTrig2","SSMuMuTrig2L" , "SSMuMu","SSMuMu_Pt", "SSMuMu_HEMVeto","SSMuMu_LepVeto", "SSMuMu_LLMass", "SSMuMu_Jet", "SSMuMu_BJet", "SSMuMu_DiJet",  "SSMuMu_SR1","SSMuMu_SR1Fail","SSMuMu_SR3","SSMuMu_SR3Fail"};
-    EVhitname ="SR_Summary_17028";
-  }
+  if(labels.size() == 0) return;
   
-  if(sr==sigee){
-    labels = {"SSNoCut", "SSGen", "SSGen2", "SSEETrig", "SSEETrig2", "SSEETrig2L","SSEE", "SSEE_Pt","SSEE_LepVeto", "SSEE_HEMVeto","SSEE_LLMass",  "SSEE_vTau","SSEE_Jet","SSEE_BJet", "SSEE_DiJet",  "SSEE_SR1","SSEE_SR1Fail", "SSEE_SR2","SSEE_SR3","SSEE_SR4","SSEE_SR5","SSEE_SR3Fail"};
-    EVhitname ="SR_Summary";
-  }
-
-  if(sr==sigee_17028){
-    labels = {"SSNoCut", "SSGen","SSGen2", "SSEETrig", "SSEETrig2", "SSEETrig2L", "SSEE","SSEE_Pt", "SSEE_HEMVeto", "SSEE_LepVeto", "SSEE_LLMass", "SSEE_Jet", "SSEE_BJet", "SSEE_DiJet",  "SSEE_SR1","SSEE_SR1Fail","SSEE_SR3","SSEE_SR3Fail"};
-    EVhitname ="SR_Summary_17028";
-  }
-
-
-
-  if(sr==sigem){
-    labels = {"SSNoCut", "SSGen", "SSGen2", "SSEMuTrig", "SSEMuTrig2","SSEMuTrig2L","SSEMu", "SSEMu_Pt","SSEMu_LepVeto", "SSEMu_LLMass",  "SSEMu_vTau","SSEMu_Jet","SSEMu_BJet", "SSEMu_DiJet",  "SSEMu_SR1","SSEMu_SR1Fail", "SSEMu_SR2","SSEMu_SR3","SSEMu_SR4","SSEMu_SR5","SSEMu_SR3Fail"};
-    EVhitname ="SR_Summary";
-  }
-
-  if(sr==sigem_17028){
-    labels = {"SSNoCut", "SSGen","SSGen2", "SSEMuTrig", "SSEMuTrig2", "SSEMuTrig2L", "SSEMu","SSEMu_Pt", "SSEMu_LepVeto", "SSEMu_LLMass", "SSEMu_Jet", "SSEMu_BJet", "SSEMu_DiJet",  "SSEMu_SR1","SSEMu_SR1Fail","SSEMu_SR3","SSEMu_SR3Fail"};
-    EVhitname ="SR_Summary_17028";
-  }
-
-
-
-
-
   HNL_LeptonCore::FillEventCutflowAll(analysis_dir_name,EVhitname, event_weight, labels, label);
-
 
   return;
 }      
@@ -3250,6 +3306,22 @@ TString HNL_LeptonCore::GetEtaLabel(Muon mu){
   return "";
 }
 
+
+double HNL_LeptonCore::PassEventTypeFilter(vector<Lepton *> leps , vector<Gen> gens){
+  
+  if(IsData) return true;
+
+  
+  int nConv(0);
+  for(auto ilep: leps){
+    int LepType=GetLeptonType_JH(*ilep, gens);
+    if( LepType >=4 || LepType < -4) nConv++;
+  }
+  if(RunConv && nConv==0)  return false;
+  if(!RunConv && nConv > 0) return false;
+  
+  return true;
+}
 
 TString HNL_LeptonCore::GetElType(Electron el, const std::vector<Gen>& gens){
   if(IsDATA) return "";

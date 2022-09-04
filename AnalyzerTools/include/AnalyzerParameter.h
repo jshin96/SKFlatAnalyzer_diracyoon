@@ -28,7 +28,7 @@ public:
   TString Muon_FR_ID, Muon_FR_Key, Muon_PR_Key;
   TString Muon_CF_ID, Muon_CF_Key;
   double Muon_Tight_RelIso, Muon_Loose_RelIso, Muon_Veto_RelIso;
-  bool Muon_UseMini, Muon_UsePtCone, Muon_UseTuneP,OnlyCutFlow;
+  bool Muon_UseMini, Muon_UsePtCone, Muon_UseTuneP;
   double Muon_MinPt, Muon_MaxEta ;
 
   TString JetPUID;
@@ -37,9 +37,9 @@ public:
 
   TString Tau_Tight_ID, Tau_Loose_ID, Tau_Veto_ID;
   
-  TString SROpt;
+  TString SRConfig;
 
-  int SystDir_PU;
+  int SystDir_PU,WriteOutVerbose;
 
   std::string SystDir_BTag,  BJet_Method,   ElFakeMethod, MuFakeMethod, CFMethod,  ConvMethod;
 ;

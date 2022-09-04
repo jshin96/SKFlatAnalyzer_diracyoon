@@ -118,20 +118,24 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   vector<AnalyzerParameter::Syst> GetSystList(TString SystType);
   double HNLZvtxSF(HNL_LeptonCore::Channel ch);
-  bool PassPtTrigger(Event ev, vector<TString> triglist,std::vector<Lepton *> leps);
+  bool PassHEMVeto(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps);
+
+  bool PassPtTrigger(Event ev, vector<TString> triglist,std::vector<Lepton *> leps, bool check_pd=true);
   void TriggerPrintOut(Event ev);
-  bool PassTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selection, bool applt_ptcut=true);
+  bool PassTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selection, bool check_pd=true);
+  bool PassMultiTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selectionMain, TString selectionOR);
   // ============= HELPER FUNCTIONS
   void PrintParam(AnalyzerParameter param);
   TString QToString(HNL_LeptonCore::ChargeType q);
  
   bool CheckLeptonFlavourForChannel(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps);
 
+  double PassEventTypeFilter(vector<Lepton *> leps , vector<Gen> gens);
 
   double SetupWeight(Event ev, AnalyzerParameter param);
   double GetPtCutTrigger(TString trigname, int nlep, TString flavour);
   bool CheckSRStream(Event ev,HNL_LeptonCore::Channel channel_ID);
-  bool PassTriggerAndCheckStream(bool apply_ptcut,vector<Lepton*> leps, Event ev, vector<TString> triglist);
+  bool PassTriggerAndCheckStream(bool apply_ptcut,vector<Lepton*> leps, Event ev, vector<TString> triglist, bool check_pd=true);
   TString  DoubleElectronPD();
   TString  SingleElectronPD();
   TString  MuonEGPD();
@@ -273,7 +277,7 @@ class HNL_LeptonCore : public AnalyzerCore {
 
 
   void FillCutFlow(bool IsCentral, TString suffix, TString histname, double weight);
-  void FillEventCutflow(HNL_LeptonCore::SearchRegion sr,float wt,TString cut,    TString label);
+  void FillEventCutflow(HNL_LeptonCore::SearchRegion sr,float wt,TString cut,    TString label, int verbose_level=0);
   void FillEventCutflowSR(TString analysis_dir_name,HNL_LeptonCore::SearchRegion sr, float event_weight, TString label);
   void FillEventCutflowPerMass(TString dirname,HNL_LeptonCore::SearchRegion sr, float event_weight, TString region_name,   TString label);
 
@@ -288,9 +292,9 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   //// ===============================  SR PLOTS =============================== ////
 
-  void Fill_RegionPlots(HNL_LeptonCore::Channel channel, int plotCR,TString label_1, TString label_2,  std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Lepton *> leps, Particle  met, double nvtx, double w);
-  void Fill_RegionPlots(HNL_LeptonCore::Channel channel, int plotCR,TString label_1, TString label_2,  std::vector<Tau> Taus, std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w);
-  void Fill_RegionPlots(HNL_LeptonCore::Channel channel,TString label_1, TString label_2,std::vector<Tau> Taus,  std::vector<Jet> jets,  std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w);
+  void Fill_RegionPlots(HNL_LeptonCore::Channel channel, int plotCR,TString label_1, TString label_2,  std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Lepton *> leps, Particle  met, double nvtx, double w, int verbose_level=0);
+  void Fill_RegionPlots(HNL_LeptonCore::Channel channel, int plotCR,TString label_1, TString label_2,  std::vector<Tau> Taus, std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w,int verbose_level=0);
+  void Fill_RegionPlots(HNL_LeptonCore::Channel channel,TString label_1, TString label_2,std::vector<Tau> Taus,  std::vector<Jet> jets,  std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx, double w,int verbose_level=0);
 
 
 
