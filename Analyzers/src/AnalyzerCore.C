@@ -475,13 +475,23 @@ double AnalyzerCore::GetIsoFromID(TString  lep_type, TString id, double eta, dou
 
     if (id == "POGTightPFIsoVeryVeryTight") return 0.05;
     if (id == "HNTight_Iso07_dxy_02_ip_3")  return 0.07;
-    if (id == "POGTightPFIsoVeryTight") return 0.1;
-    if (id == "POGTightPFIsoTight") return 0.15;
-    if (id == "POGTightWithTightIso") return 0.15;
-    if (id == "POGTightStandardPFIsoTight") return 0.15;
-    if (id == "POGTightPFIsoMedium") return 0.2;
-    if (id == "POGTightPFIsoLoose") return 0.25;
-    if (id == "POGTightPFIsoVeto") return 0.4;
+    if (id.Contains("TightPFIsoVeryVeryTight")) return 0.05;
+    if (id.Contains("TightPFIsoVeryTight")) return 0.1;
+    if (id.Contains("TightPFIsoTight")) return 0.15;
+    if (id.Contains("TightWithTightIso")) return 0.15;
+    if (id.Contains("TightStandardPFIsoTight")) return 0.15;
+    if (id.Contains("PFIsoMedium")) return 0.2;
+    if (id.Contains("PFIsoLoose")) return 0.25;
+    if (id.Contains("PFIsoVeto")) return 0.4;
+
+    if (id.Contains("Iso05")) return 0.05;
+    if (id.Contains("Iso06")) return 0.06;
+    if (id.Contains("Iso07")) return 0.07;
+    if (id.Contains("Iso08")) return 0.08;
+    if (id.Contains("Iso09")) return 0.09;
+    if (id.Contains("Iso10")) return 0.1;
+
+    
 
     if (id == "POGHighPtTight") return 0.1;
     if (id == "POGHighPtMixTight") return 0.1;
@@ -544,7 +554,45 @@ double AnalyzerCore::GetIsoFromID(TString  lep_type, TString id, double eta, dou
       if(fabs(eta) < 1.479) return (0.0478 + (0.506/pt));
       else  return (0.0658 + (0.963/pt));
     }
+    if( id == "HN2016POG") {
+      if(fabs(eta) < 1.479) return (0.0287 + (0.506/pt));
+      else  return (0.0445 + (0.963/pt));
+    }
 
+    if( id == "Iso1") {
+      if(fabs(eta) < 1.479) return  0.08;
+      else  return 0.08;
+    }
+    if( id == "Iso2") {
+      if(fabs(eta) < 1.479) return  0.09;
+      else  return 0.08;
+    }
+    if( id == "Iso3") {
+      if(fabs(eta) < 1.479) return  0.1;
+      else  return 0.08;
+    }
+    if( id == "Iso4") {
+      if(fabs(eta) < 1.479) return  0.12;
+      else  return 0.08;
+    }
+    if( id == "Iso5") {
+      if(fabs(eta) < 1.479) return  0.09;
+      else  return 0.09;
+    }
+    if( id == "Iso6") {
+      if(fabs(eta) < 1.479) return  0.1;
+      else  return 0.1;
+    }
+    if( id == "Iso7") {
+      if(fabs(eta) < 1.479) return  0.12;
+      else  return 0.12;
+    }
+
+    
+    if( id.Contains("HNTight_Opt")) return 0.08;
+
+    if( id.Contains("HN2016MVA")) return 0.08;   
+    if( id.Contains("HN2016POG")) return 0.08;   
     if( id == "passMVAID_noIso_WP90V16") return 0.05;
     if( id == "passMVAID_noIso_WP80") return 0.08;
     if( id == "passMVAID_noIso_WP90") return 0.08;
@@ -555,7 +603,7 @@ double AnalyzerCore::GetIsoFromID(TString  lep_type, TString id, double eta, dou
 
 
   }
-  cout << "[HNL_LeptonCore::GetIsoFromID ] ID not found.." << endl;
+  cout << "[HNL_LeptonCore::GetIsoFromID ] ID not found.." << id<< endl;
   exit(EXIT_FAILURE);
 
   return -999999999.;
@@ -2197,8 +2245,8 @@ double AnalyzerCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParameter
     //cout << "Pt/Eta 2 " << fabs(leps[1]->Eta()) << " " <<  leps[1]->Pt() << endl;
 
     // TMP FIX TO PT 
-    if (leps[1]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->Pt() < 20) this_fr2*= 1.2;
-    if (leps[1]->LeptonFlavour() == Lepton::MUON && leps[1]->Pt() < 20) this_fr2*= 1.25;
+    if (leps[1]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->Pt() < 20) this_fr2*= 1.15;
+    if (leps[1]->LeptonFlavour() == Lepton::MUON && leps[1]->Pt() < 20) this_fr2*= 1.2;
     
     this_weight = fakeEst->CalculateDilepWeight(this_pr1,this_fr1, this_pr2, this_fr2, leps[0]->PassLepID(),leps[1]->PassLepID(),0);
 
@@ -2293,7 +2341,7 @@ double AnalyzerCore::GetCFrates(TString id, double pt, double eta){
   eta = fabs(eta);
   double x = 1./pt;
   double a, b, c;
-  double rate;
+  double rate (0.);
 
   if(DataEra=="2016preVFP"){ // UL MIGRATED
     if(id == "HNTightV2"){

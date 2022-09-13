@@ -165,70 +165,70 @@ bool Muon::PassID(TString ID) const {
 
 
 
+  if(ID=="HNTight_Iso05_dxy_01_ip_3") return Pass_HNTight(0.05,0.01,0.05,3.);
+  if(ID=="HNTight_Iso05_dxy_01_ip_4") return Pass_HNTight(0.05,0.01,0.05,4.);
+  if(ID=="HNTight_Iso05_dxy_01_ip_999") return Pass_HNTight(0.05,0.01,0.05,999.);
   if(ID=="HNTight_Iso05_dxy_02_ip_3") return Pass_HNTight(0.05,0.02,0.05,3.);
   if(ID=="HNTight_Iso05_dxy_02_ip_4") return Pass_HNTight(0.05,0.02,0.05,4.);
   if(ID=="HNTight_Iso05_dxy_02_ip_999") return Pass_HNTight(0.05,0.02,0.05,999.);
-  if(ID=="HNTight_Iso05_dxy_05_ip_3") return Pass_HNTight(0.05,0.05,0.05,3.);
-  if(ID=="HNTight_Iso05_dxy_05_dz_01_ip_3") return Pass_HNTight(0.05,0.05,0.1,3.);
-  if(ID=="HNTight_Iso05_dxy_05_ip_4") return Pass_HNTight(0.05,0.05,0.05,4.);
-  if(ID=="HNTight_Iso05_dxy_05_ip_999") return Pass_HNTight(0.05,0.05,0.05,999.);
-  if(ID=="HNTight_Iso05_dxy_20_ip_3") return Pass_HNTight(0.05,0.2, 0.5,3.);
-  if(ID=="HNTight_Iso05_dxy_20_ip_4") return Pass_HNTight(0.05,0.2, 0.5,4.);
-  if(ID=="HNTight_Iso05_dxy_20_ip_999") return Pass_HNTight(0.05,0.2, 0.5,999.);
+  if(ID=="HNTight_Iso05_dxy_05_ip_3") return Pass_HNTight(0.05,0.05, 0.05,3.);
+  if(ID=="HNTight_Iso05_dxy_05_ip_4") return Pass_HNTight(0.05,0.05, 0.05,4.);
+  if(ID=="HNTight_Iso05_dxy_05_ip_999") return Pass_HNTight(0.05,0.05, 0.05,999.);
 
 
+  if(ID=="HNTight_Iso06_dxy_01_ip_3") return Pass_HNTight(0.06,0.01,0.05,3.);
+  if(ID=="HNTight_Iso06_dxy_01_ip_4") return Pass_HNTight(0.06,0.01,0.05,4.);
+  if(ID=="HNTight_Iso06_dxy_01_ip_999") return Pass_HNTight(0.06,0.01,0.05,999.);
   if(ID=="HNTight_Iso06_dxy_02_ip_3") return Pass_HNTight(0.06,0.02,0.05,3.);
   if(ID=="HNTight_Iso06_dxy_02_ip_4") return Pass_HNTight(0.06,0.02,0.05,4.);
   if(ID=="HNTight_Iso06_dxy_02_ip_999") return Pass_HNTight(0.06,0.02,0.05,999.);
-  if(ID=="HNTight_Iso06_dxy_05_ip_3") return Pass_HNTight(0.06,0.05,0.05,3.);
-  if(ID=="HNTight_Iso06_dxy_05_ip_4") return Pass_HNTight(0.06,0.05,0.05,4.);
-  if(ID=="HNTight_Iso06_dxy_05_ip_999") return Pass_HNTight(0.06,0.05,0.05,999.);
-  if(ID=="HNTight_Iso06_dxy_20_ip_3") return Pass_HNTight(0.05,0.2, 0.5,3.);
-  if(ID=="HNTight_Iso06_dxy_20_ip_4") return Pass_HNTight(0.05,0.2, 0.5,4.);
-  if(ID=="HNTight_Iso06_dxy_20_ip_999") return Pass_HNTight(0.05,0.2, 0.5,999.);
+  if(ID=="HNTight_Iso06_dxy_05_ip_3") return Pass_HNTight(0.06,0.05, 0.05,3.);
+  if(ID=="HNTight_Iso06_dxy_05_ip_4") return Pass_HNTight(0.06,0.05, 0.05,4.);
+  if(ID=="HNTight_Iso06_dxy_05_ip_999") return Pass_HNTight(0.06,0.05, 0.05,999.);
 
+
+  if(ID=="HNTight_Iso07_dxy_01_ip_3") return Pass_HNTight(0.07,0.01,0.05,3.);
+  if(ID=="HNTight_Iso07_dxy_01_ip_4") return Pass_HNTight(0.07,0.01,0.05,4.);
+  if(ID=="HNTight_Iso07_dxy_01_ip_999") return Pass_HNTight(0.07,0.01,0.05,999.);
   if(ID=="HNTight_Iso07_dxy_02_ip_3") return Pass_HNTight(0.07,0.02,0.05,3.);
   if(ID=="HNTight_Iso07_dxy_02_ip_4") return Pass_HNTight(0.07,0.02,0.05,4.);
   if(ID=="HNTight_Iso07_dxy_02_ip_999") return Pass_HNTight(0.07,0.02,0.05,999.);
-  if(ID=="HNTight_Iso07_dxy_05_ip_3") return Pass_HNTight(0.07,0.05,0.05,3.);
-  if(ID=="HNTight_Iso07_dxy_05_ip_4") return Pass_HNTight(0.07,0.05,0.05,4.);
-  if(ID=="HNTight_Iso07_dxy_05_ip_999") return Pass_HNTight(0.07,0.05,0.05,999.);
-  if(ID=="HNTight_Iso07_dxy_20_ip_3") return Pass_HNTight(0.07,0.2, 0.5,3.);
-  if(ID=="HNTight_Iso07_dxy_20_ip_4") return Pass_HNTight(0.07,0.2, 0.5,4.);
-  if(ID=="HNTight_Iso07_dxy_20_ip_999") return Pass_HNTight(0.07,0.2, 0.5,999.);
+  if(ID=="HNTight_Iso07_dxy_05_ip_3") return Pass_HNTight(0.07,0.05, 0.05,3.);
+  if(ID=="HNTight_Iso07_dxy_05_ip_4") return Pass_HNTight(0.07,0.05, 0.05,4.);
+  if(ID=="HNTight_Iso07_dxy_05_ip_999") return Pass_HNTight(0.07,0.05, 0.05,999.);
 
 
+  if(ID=="HNTight_Iso08_dxy_01_ip_3") return Pass_HNTight(0.08,0.01,0.05,3.);
+  if(ID=="HNTight_Iso08_dxy_01_ip_4") return Pass_HNTight(0.08,0.01,0.05,4.);
+  if(ID=="HNTight_Iso08_dxy_01_ip_999") return Pass_HNTight(0.08,0.01,0.05,999.);
   if(ID=="HNTight_Iso08_dxy_02_ip_3") return Pass_HNTight(0.08,0.02,0.05,3.);
   if(ID=="HNTight_Iso08_dxy_02_ip_4") return Pass_HNTight(0.08,0.02,0.05,4.);
   if(ID=="HNTight_Iso08_dxy_02_ip_999") return Pass_HNTight(0.08,0.02,0.05,999.);
-  if(ID=="HNTight_Iso08_dxy_05_ip_3") return Pass_HNTight(0.08,0.05,0.05,3.);
-  if(ID=="HNTight_Iso08_dxy_05_ip_4") return Pass_HNTight(0.08,0.05,0.05,4.);
-  if(ID=="HNTight_Iso08_dxy_05_ip_999") return Pass_HNTight(0.08,0.05,0.05,999.);
-  if(ID=="HNTight_Iso08_dxy_20_ip_3") return Pass_HNTight(0.08,0.2, 0.5,3.);
-  if(ID=="HNTight_Iso08_dxy_20_ip_4") return Pass_HNTight(0.08,0.2, 0.5,4.);
-  if(ID=="HNTight_Iso08_dxy_20_ip_999") return Pass_HNTight(0.08,0.2, 0.5,999.);
+  if(ID=="HNTight_Iso08_dxy_05_ip_3") return Pass_HNTight(0.08,0.05, 0.05,3.);
+  if(ID=="HNTight_Iso08_dxy_05_ip_4") return Pass_HNTight(0.08,0.05, 0.05,4.);
+  if(ID=="HNTight_Iso08_dxy_05_ip_999") return Pass_HNTight(0.08,0.05, 0.05,999.);
 
 
+  if(ID=="HNTight_Iso09_dxy_01_ip_3") return Pass_HNTight(0.09,0.01,0.05,3.);
+  if(ID=="HNTight_Iso09_dxy_01_ip_4") return Pass_HNTight(0.09,0.01,0.05,4.);
+  if(ID=="HNTight_Iso09_dxy_01_ip_999") return Pass_HNTight(0.09,0.01,0.05,999.);
   if(ID=="HNTight_Iso09_dxy_02_ip_3") return Pass_HNTight(0.09,0.02,0.05,3.);
   if(ID=="HNTight_Iso09_dxy_02_ip_4") return Pass_HNTight(0.09,0.02,0.05,4.);
   if(ID=="HNTight_Iso09_dxy_02_ip_999") return Pass_HNTight(0.09,0.02,0.05,999.);
-  if(ID=="HNTight_Iso09_dxy_05_ip_3") return Pass_HNTight(0.09,0.05,0.05,3.);
-  if(ID=="HNTight_Iso09_dxy_05_ip_4") return Pass_HNTight(0.09,0.05,0.05,4.);
-  if(ID=="HNTight_Iso09_dxy_05_ip_999") return Pass_HNTight(0.09,0.05,0.05,999.);
-  if(ID=="HNTight_Iso09_dxy_20_ip_3") return Pass_HNTight(0.09,0.2, 0.5,3.);
-  if(ID=="HNTight_Iso09_dxy_20_ip_4") return Pass_HNTight(0.09,0.2, 0.5,4.);
-  if(ID=="HNTight_Iso09_dxy_20_ip_999") return Pass_HNTight(0.09,0.2, 0.5,999.);
+  if(ID=="HNTight_Iso09_dxy_05_ip_3") return Pass_HNTight(0.09,0.05, 0.05,3.);
+  if(ID=="HNTight_Iso09_dxy_05_ip_4") return Pass_HNTight(0.09,0.05, 0.05,4.);
+  if(ID=="HNTight_Iso09_dxy_05_ip_999") return Pass_HNTight(0.09,0.05, 0.05,999.);
 
-  if(ID=="HNTight_Iso10_dxy_02_ip_3") return Pass_HNTight(0.1,0.02,0.05,3.);
-  if(ID=="HNTight_Iso10_dxy_02_ip_4") return Pass_HNTight(0.1,0.02,0.05,4.);
-  if(ID=="HNTight_Iso10_dxy_02_ip_999") return Pass_HNTight(0.1,0.02,0.05,999.);
-  if(ID=="HNTight_Iso10_dxy_05_ip_3") return Pass_HNTight(0.1,0.05,0.05,3.);
-  if(ID=="HNTight_Iso10_dxy_05_ip_4") return Pass_HNTight(0.1,0.05,0.05,4.);
-  if(ID=="HNTight_Iso10_dxy_05_ip_999") return Pass_HNTight(0.1,0.05,0.05,999.);
-  if(ID=="HNTight_Iso10_dxy_20_ip_3") return Pass_HNTight(0.1,0.2, 0.5,3.);
-  if(ID=="HNTight_Iso10_dxy_20_ip_4") return Pass_HNTight(0.1,0.2, 0.5,4.);
-  if(ID=="HNTight_Iso10_dxy_20_ip_999") return Pass_HNTight(0.1,0.2, 0.5,999.);
 
+  if(ID=="HNTight_Iso10_dxy_01_ip_3") return Pass_HNTight(0.10,0.01,0.05,3.);
+  if(ID=="HNTight_Iso10_dxy_01_ip_4") return Pass_HNTight(0.10,0.01,0.05,4.);
+  if(ID=="HNTight_Iso10_dxy_01_ip_999") return Pass_HNTight(0.10,0.01,0.05,999.);
+  if(ID=="HNTight_Iso10_dxy_02_ip_3") return Pass_HNTight(0.10,0.02,0.05,3.);
+  if(ID=="HNTight_Iso10_dxy_02_ip_4") return Pass_HNTight(0.10,0.02,0.05,4.);
+  if(ID=="HNTight_Iso10_dxy_02_ip_999") return Pass_HNTight(0.10,0.02,0.05,999.);
+  if(ID=="HNTight_Iso10_dxy_05_ip_3") return Pass_HNTight(0.10,0.05, 0.05,3.);
+  if(ID=="HNTight_Iso10_dxy_05_ip_4") return Pass_HNTight(0.10,0.05, 0.05,4.);
+  if(ID=="HNTight_Iso10_dxy_05_ip_999") return Pass_HNTight(0.10,0.05, 0.05,999.);
 
 
   if(ID=="HNTightPFIsoLoose") return Pass_POGTightPFIsoLoose(true);

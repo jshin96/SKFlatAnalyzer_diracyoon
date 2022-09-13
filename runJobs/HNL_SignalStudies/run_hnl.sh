@@ -58,8 +58,6 @@ if [[ $1 == "Q" ]]; then
         SKFlat.py -a $analyzer  -l $mcpath/DYsample.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
         SKFlat.py -a $analyzer  -l $mcpath/VBFsample.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
         SKFlat.py -a $analyzer  -l $mcpath/SSWWsample.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
-        SKFlat.py -a $analyzer  -l $bkgpath/MC.txt  -n 400   --nmax ${nmax}   -e ${i}  &
-        SKFlat.py -a $analyzer  -l $bkgpath/QCD.txt  -n 100  --nmax ${nmax}   -e ${i} 
     done
 
 fi
@@ -68,11 +66,11 @@ fi
 
 if [[ $1 == "MC" ]]; then
 
-    declare  -a era_list=("2018")
+    declare  -a era_list=("2017")
 
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -l $bkgpath/MC.txt  -n 200  --nmax 300   -e ${i} &
+        SKFlat.py -a $analyzer  -i QCD_Pt-30to50_EMEnriched   -n 50  --nmax 300   -e ${i} &
     done
     
 fi

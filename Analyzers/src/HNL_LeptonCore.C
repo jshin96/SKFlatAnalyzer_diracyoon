@@ -605,7 +605,7 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
   }
   else if (s_setup=="HNL"){
 
-    param.CFMethod   = "MC";
+    param.CFMethod   = "Data";
 
     param.Muon_Tight_ID = "HNTightV2";
     param.Electron_Tight_ID = "HNTightV2";

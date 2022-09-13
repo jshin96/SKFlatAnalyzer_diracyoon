@@ -221,8 +221,8 @@ int  Electron::PassIDTight(TString ID) const{
   if(ID=="passHEEPID2018Prompt") return passHEEP2018Prompt()? 1 : 0 ;
 
   //=== MVA
-  if(ID=="passMVAID_noIso_WP80") return passMVAID_noIso_WP80()? 1 : 0 ;
-  if(ID=="passMVAID_noIso_WP90") return passMVAID_noIso_WP90()? 1 : 0 ;
+  if(ID=="passMVAID_noIso_WP80") return passMVAID_noIso_WP80HN()? 1 : 0 ;
+  if(ID=="passMVAID_noIso_WP90") return passMVAID_noIso_WP90HN()? 1 : 0 ;
   if(ID=="passMVAID_Iso_WP80") return passMVAID_Iso_WP80()? 1 : 0 ;
   if(ID=="passMVAID_Iso_WP90") return passMVAID_Iso_WP90()? 1 : 0 ;
 
@@ -255,28 +255,61 @@ int  Electron::PassIDTight(TString ID) const{
     return ((PassMVA(mva_d,mva_d,mva_d))  ? 1 : 0);
   }                   
 
-
-  if(ID=="HN2016")                 {
-    bool passID = passIDHN(3,0.015, 0.015, 0.02,0.02, 5.,5., 0.08, 0.07, -999., -999.)&&passMVAID_noIso_WP90()  ? 1 : 0 ;
-    if(! (Pass_TriggerEmulation()) ) return false;
-    if(!isEcalDriven())return false;
+  if(ID=="HN2016MVA")                 {
+    bool passID = passIDHN(3,0.02, 0.02, 0.05,0.05, 5.,5., 0.08, 0.08, -999., -999.)&&passMVAID_noIso_WP90()  ? 1 : 0 ;
+    if(! (Pass_TriggerEmulation()) ) return 0;
+    if(!isEcalDriven())return 0;
     return passID;
   };
-  if(ID=="HN2016CC")                 {
-    bool passID = passIDHN(3,0.015, 0.015, 0.02,0.02, 5.,5., 0.08, 0.07, -999., -999.)&&passMVAID_noIso_WP90()  ? 1 : 0 ;
-    if(! (PassConversionVeto()) ) return false;
-    if(! PassHNIsGsfCtfScPixChargeConsistent())  return false;
-
-    if(! (Pass_TriggerEmulation()) ) return false;
-
-    if(!isEcalDriven()) return false;
+  if(ID=="HN2016MVA2")                 {
+    bool passID = passIDHN(3,0.02, 0.02, 0.05,0.05, 5.,5., 0.08, 0.08, -999., -999.)  ? 1 : 0 ;
+    if(! (Pass_TriggerEmulation()) ) return 0;
+    if( fabs(scEta())<= 1.479){
+      if(!passMVAID_noIso_WP90() ) return 0;
+    }
+    else{
+      if(!passMVAID_noIso_WP80() ) return 0;
+    }
+    
+    if(!isEcalDriven())return 0;
     return passID;
   };
-  if(ID=="HNRelaxedIP2016")        return passIDHN(3,0.05, 0.05, 0.1,0.1, 4.,4., 0.1, 0.05, -999., -999.) &&passMVAID_noIso_WP90()  ? 1 : 0 ;
-  if(ID=="HN2017")                 return passIDHN(3,0.01, 0.01, 0.04,0.04, 5.,5., 0.085, 0.05, -999., -999.)&&passMVAID_noIso_WP90()  ? 1 : 0 ;
-  if(ID=="HNRelaxedIP2017")        return passIDHN(3,0.05, 0.05, 0.1,0.1, 5.,5., 0.1, 0.05, -999., -999.)&&passMVAID_noIso_WP90()  ? 1 : 0 ;
-  if(ID=="HN2018")                 return passIDHN(3,0.01, 0.01, 0.04,0.04, 5.,5., 0.095, 0.07, -999., -999.)&&passMVAID_noIso_WP90()  ? 1 : 0 ;
-  if(ID=="HNRelaxedIP2018")        return passIDHN(3,0.05, 0.05, 0.1,0.1, 5.,5., 0.095, 0.07, -999., -999.)&&passMVAID_noIso_WP90()  ? 1 : 0 ;
+  
+  if(ID=="HN2016MVA2CC")                 {
+    bool passID = passIDHN(3,0.02, 0.02, 0.05,0.05, 5.,5., 0.08, 0.08, -999., -999.)  ? 1 : 0 ;
+    if(! (Pass_TriggerEmulation()) ) return 0;
+    if( fabs(scEta())<= 1.479){
+      if(!passMVAID_noIso_WP90() ) return 0;
+    }   
+    else{
+      if(!passMVAID_noIso_WP80() ) return 0;
+      if(! (IsGsfCtfScPixChargeConsistent()) )return 0;
+    }
+
+    if(!isEcalDriven())return 0;
+    return passID;
+  };
+
+  if(ID=="HN2016POG")                 {
+    bool passID = passIDHN(1,0.02, 0.02, 0.05,0.05, 5.,5., 0.08, 0.08, -999., -999.)  ? 1 : 0 ;
+    if(! (Pass_TriggerEmulation()) ) return 0;
+    if(!isEcalDriven())return 0;
+    return passID;
+  };
+
+
+
+  if(ID=="HN2016POGCC")                 {
+    bool passID = passIDHN(1,0.02, 0.02, 0.05,0.05, 5.,5., 0.08, 0.08, -999., -999.)    ? 1 : 0 ;
+    if(! (PassConversionVeto()) ) return 0;
+    if(! PassHNIsGsfCtfScPixChargeConsistent())  return 0;
+
+    if(! (Pass_TriggerEmulation()) ) return 0;
+
+    if(!isEcalDriven()) return 0;
+    return passID;
+  };
+
 
   return -1;
 
@@ -291,7 +324,7 @@ int  Electron::PassIDLoose(TString ID) const{
   if(ID=="HNHEEPLoose")  return passLooseHEEPID()&&PassHNID() ? 1 : 0; 
 
   //=== loose user                                                                                                                                                                                       
-  if(ID=="HNLooseMVA") return ((passIDHN(3,0.2, 0.2, 0.2,0.2, 10.,10., 0.6, 0.6, -999., -999.)&&PassMVA(-0.1,0.1, -0.1))  ? 1 : 0);
+  if(ID=="HNLooseMVA") return ((passIDHN(3,0.2, 0.2, 0.2,0.2, 10.,10., 0.6, 0.6, -999., -999.)&&PassMVA(0.,-0.2, -0.6))  ? 1 : 0);
     
   if(ID=="HNLooseV1")   return      Pass_HNLooseID(0.6,0.2,0.1,10) ? 1 : 0;  // V POG IP/ISO   17028 IP                                                                                                                   
   if(ID=="HNLooseV2")   return  Pass_HNLooseID(0.6,0.2,0.1,9999) ? 1 : 0;  // V POG IP/ISO                                                                                                                   
@@ -317,17 +350,7 @@ int  Electron::PassIDLoose(TString ID) const{
   }
 
   // ===== Type-1                                                                                                                                                                                     
-  if(ID=="HNLoose2016")           return ((passIDHN(3,0.01, 0.01, 0.04,0.04, 4.,4., 0.6, 0.6, -999., -999.)&&PassMVA(-0.1,0.1, -0.1))  ? 1 : 0); 
-  if(ID=="HNRelaxedIPLoose2016")  return (passIDHN(3,0.05, 0.05, 0.1,0.1, 4.,4., 0.6, 0.6, -999., -999.)&&PassMVA(-0.1,0.1, -0.1))  ? 1 : 0; 
-  if(ID=="HNLoose2016_LooseIP")   return (passIDHN(3,0.2, 0.2, 0.1,0.1, 10.,10., 0.6, 0.6, -999., -999.)&&PassMVA(-0.1,0.1, -0.1))  ? 1 : 0; 
-
-  if(ID=="HNLoose2017")           return (passIDHN(3,0.01, 0.01, 0.04,0.04, 5.,5., 0.6, 0.6, -999., -999.)&&PassMVA(-0.1,0.1, -0.1))  ? 1 : 0; 
-  if(ID=="HNRelaxedIPLoose2017")  return (passIDHN(3,0.05, 0.05, 0.1,0.1, 5.,5., 0.6, 0.6, -999., -999.)&&PassMVA(-0.1,0.1, -0.1) ) ? 1 : 0; 
-  if(ID=="HNLoose2017_LooseIP")   return (passIDHN(3,0.2, 0.2, 0.1,0.1, 10.,10., 0.6, 0.6, -999., -999.)&&PassMVA(-0.1,0.1, -0.1) ) ? 1 : 0; 
-
-  if(ID=="HNLoose2018")           return (passIDHN(3,0.01, 0.01, 0.04,0.04, 5.,5., 0.6, 0.6, -999., -999.)&&PassMVA(-0.1,0.1, -0.1))  ? 1 : 0; 
-  if(ID=="HNRelaxedIPLoose2018")  return (passIDHN(3,0.05, 0.05, 0.1,0.1, 5.,5., 0.6, 0.6, -999., -999.)&&PassMVA(-0.1,0.1, -0.1) ) ? 1 : 0; 
-  if(ID=="HNLoose2018_LooseIP")   return (passIDHN(3,0.2, 0.2, 0.1,0.1, 10.,10., 0.6, 0.6, -999., -999.)&&PassMVA(-0.1,0.1, -0.1) ) ? 1 : 0; 
+  if(ID=="HNLoose2016")           return ((passIDHN(3,0.01, 0.01, 0.04,0.04, 4.,4., 0.6, 0.6, -999., -999.)&&PassMVA(0.,-0.2, -0.6))  ? 1 : 0); 
 
   
 
@@ -361,6 +384,46 @@ int Electron::PassIDOpt(TString ID) const{
 
   // updated 2016 analysis ID with looser dxy
   if(ID=="HNTight2016Update") return passIDHN(4,0.02, 0.02, 0.05,0.04, 4.9,4.9, -999., -999., 0.089, 0.05) && PassMVA(0.8,0.8,0.775)? 1 : 0 ;  // EXO-17-028                                                  
+
+
+  
+  if(ID.Contains("HNTight_Opt")){
+    
+    if(! (PassConversionVeto()) ) return 0;
+    if(ID.Contains("_CC")){
+      if(! IsGsfCtfScPixChargeConsistent())  return 0;
+    }
+    if(ID.Contains("_ECCC")){
+      if(fabs(scEta()) > 1.479 ){
+	if(! IsGsfCtfScPixChargeConsistent())  return 0;
+      }
+    }
+    if(! (Pass_TriggerEmulation()) ) return 0;
+    if(!isEcalDriven()) return 0;
+    if(ID.Contains("Iso1"))  return passIDHN(1,0.02, 0.02, 0.05,0.05, 5.,5., 0.08, 0.08, -999., -999.) ? 1 : 0 ;
+    if(ID.Contains("Iso2"))  return passIDHN(1,0.02, 0.02, 0.05,0.05, 5.,5., 0.09, 0.08, -999., -999.) ? 1 : 0 ;
+    if(ID.Contains("Iso3"))  return passIDHN(1,0.02, 0.02, 0.05,0.05, 5.,5., 0.1, 0.08, -999., -999.) ? 1 : 0 ;
+    if(ID.Contains("Iso4"))  return passIDHN(1,0.02, 0.02, 0.05,0.05, 5.,5., 0.12, 0.08, -999., -999.) ? 1 : 0 ;
+    if(ID.Contains("Iso5"))  return passIDHN(1,0.02, 0.02, 0.05,0.05, 5.,5., 0.09, 0.09, -999., -999.) ? 1 : 0 ;
+    if(ID.Contains("Iso6"))  return passIDHN(1,0.02, 0.02, 0.05,0.05, 5.,5., 0.1, 0.1, -999., -999.) ? 1 : 0 ;
+    if(ID.Contains("Iso7"))  return passIDHN(1,0.02, 0.02, 0.05,0.05, 5.,5., 0.12, 0.12, -999., -999.) ? 1 : 0 ;
+
+    if(ID.Contains("dxy1"))  return passIDHN(1,0.01, 0.01, 0.05,0.05, 5.,5., 0.08, 0.08, -999., -999.) ? 1 : 0 ;
+    if(ID.Contains("dxy2"))  return passIDHN(1,0.015, 0.015, 0.05,0.05, 5.,5., 0.08, 0.08, -999., -999.) ? 1 : 0 ;
+    if(ID.Contains("dxy3"))  return passIDHN(1,0.02, 0.02, 0.05,0.05, 5.,5., 0.08, 0.08, -999., -999.) ? 1 : 0 ;
+    if(ID.Contains("dxy4"))  return passIDHN(1,0.03, 0.03, 0.05,0.05, 5.,5., 0.08, 0.08, -999., -999.) ? 1 : 0 ;
+    if(ID.Contains("dxy5"))  return passIDHN(1,0.04, 0.04, 0.05,0.05, 5.,5., 0.08, 0.08, -999., -999.) ? 1 : 0 ;
+    if(ID.Contains("dxy6"))  return passIDHN(1,0.05, 0.05, 0.05,0.05, 5.,5., 0.08, 0.08, -999., -999.) ? 1 : 0 ;
+    
+    if(ID.Contains("dz1"))  return passIDHN(1,0.02, 0.02, 0.02,0.02, 5.,5., 0.08, 0.08, -999., -999.) ? 1 : 0 ;
+    if(ID.Contains("dz2"))  return passIDHN(1,0.02, 0.02, 0.03,0.03, 5.,5., 0.08, 0.08, -999., -999.) ? 1 : 0 ;
+    if(ID.Contains("dz3"))  return passIDHN(1,0.02, 0.02, 0.04,0.04, 5.,5., 0.08, 0.08, -999., -999.) ? 1 : 0 ;
+    if(ID.Contains("dz4"))  return passIDHN(1,0.02, 0.02, 0.05,0.05, 5.,5., 0.08, 0.08, -999., -999.) ? 1 : 0 ;
+
+
+
+  }
+
 
   // POG ID with relaxed cuts
   if(ID=="HNTight_dxyB")  return passIDHN(1,999., 0.1, 0.1,0.2, 4.,4., -999., -999., -999., -999.) ? 1 : 0 ;
@@ -649,13 +712,13 @@ bool Electron::Pass_TriggerEmulation() const{
 bool Electron::Pass_HNVeto2016() const{
 
   if( fabs(scEta()) <= 0.8 ){
-    if(! (MVANoIso()>-0.1) ) return false;
+    if(! (MVANoIso()>0.) ) return false;
   }
   else if( fabs(scEta()) > 0.8 && fabs(scEta()) <= 1.479 ){
-    if(! (MVANoIso()>0.1) ) return false;
+    if(! (MVANoIso()>-0.2) ) return false;
   }
   else{
-    if(! (MVANoIso()>-0.1) ) return false;
+    if(! (MVANoIso()>-0.6) ) return false;
   }
   if(! (fabs(dXY())<0.2 && fabs(dZ())<0.5) ) return false;
 
@@ -667,13 +730,13 @@ bool Electron::Pass_HNVeto2016() const{
 bool Electron::Pass_HNLoose2016MVAISO(double dxyCut, double dzCut, double sipCut) const{
 
   if( fabs(scEta()) <= 0.8 ){
-    if(! (MVAIso()>-0.1) ) return false;
+    if(! (MVAIso()>-0.2) ) return false;
   }
   else if( fabs(scEta()) > 0.8 && fabs(scEta()) <= 1.479 ){
-    if(! (MVAIso()>0.1) ) return false;
+    if(! (MVAIso()>-0.2) ) return false;
   }
   else{
-    if(! (MVAIso()>-0.1) ) return false;
+    if(! (MVAIso()>-0.2) ) return false;
   }
   if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut && fabs(IP3D()/IP3Derr())<sipCut) ) return false;
 
@@ -697,13 +760,13 @@ bool Electron::PassHNID() const{
 
 bool Electron::Pass_HNLoose2016MVANonIso(double relisoCut, double dxyCut, double dzCut, double sipCut) const{
   if( fabs(scEta()) <= 0.8 ){
-    if(! (MVANoIso()>-0.1) ) return false;
+    if(! (MVANoIso()>0.) ) return false;
   }
   else if( fabs(scEta()) > 0.8 && fabs(scEta()) <= 1.479 ){
-    if(! (MVANoIso()>0.1) ) return false;
+    if(! (MVANoIso()>-0.2) ) return false;
   }
   else{
-    if(! (MVANoIso()>-0.1) ) return false;
+    if(! (MVANoIso()>-0.6) ) return false;
   }
   if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut && fabs(IP3D()/IP3Derr())<sipCut) ) return false;
   if(! (RelIso()<relisoCut) ) return false;
@@ -718,13 +781,13 @@ bool Electron::Pass_HNLoose2016MVANonIso(double relisoCut, double dxyCut, double
 
 bool Electron::Pass_HNLoose2016(double relisoCut, double dxyCut, double dzCut, double sipCut) const{
   if( fabs(scEta()) <= 0.8 ){
-    if(! (MVANoIso()>-0.1) ) return false;
+    if(! (MVANoIso()>0.) ) return false;
   }
   else if( fabs(scEta()) > 0.8 && fabs(scEta()) <= 1.479 ){
-    if(! (MVANoIso()>0.1) ) return false;
+    if(! (MVANoIso()>-0.2) ) return false;
   }
   else{
-    if(! (MVANoIso()>-0.1) ) return false;
+    if(! (MVANoIso()>-0.6) ) return false;
   }
   if(! (fabs(dXY())<dxyCut && fabs(dZ())<dzCut && fabs(IP3D()/IP3Derr())<sipCut) ) return false;
   if(! (RelIso()<relisoCut) ) return false;
