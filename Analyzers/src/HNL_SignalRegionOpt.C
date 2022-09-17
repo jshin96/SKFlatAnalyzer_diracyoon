@@ -54,6 +54,9 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
   TString el_ID = (RunFake) ?  param.Electron_FR_ID : param.Electron_Tight_ID ;
   TString mu_ID = (RunFake) ?  param.Muon_FR_ID :  param.Muon_Tight_ID ;
 
+  el_ID = param.Electron_Veto_ID;
+  mu_ID = param.Muon_Veto_ID;
+
   double Min_Muon_Pt     = (RunFake) ? 3. : 5.;
   double Min_Electron_Pt = (RunFake) ? 7. : 10.;
 
@@ -250,7 +253,8 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
   std::vector<Jet> JetCollLoose                    = GetAK4Jets(jets_tmp,     15., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl);
   std::vector<Jet> BJetCollNLV                    = GetAK4Jets(jets_tmp,     20., 2.4, false,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl);
   std::vector<Jet> JetColl                        = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl);
-  std::vector<Jet> VBF_JetColl                    = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, "",  ElectronCollV,MuonCollV, FatjetColl);    // High ETa j\                                                                  
+  std::vector<Jet> VBF_JetColl                    = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, "",  ElectronCollV,MuonCollV, FatjetColl);  
+  
 
   JetTagging::Parameters param_jetsM = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
   std::vector<Jet> BJetColl    = GetBJets(param,  BJetCollNLV, param_jetsM);
@@ -261,10 +265,14 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
   if(opt_sr2){
     
     vector<TString> SR2Opt = {};
-    vector<TString> HTLTcut = {"HTLT10_","HTLT11_","HTLT12_","HTLT13_","HTLT14_","HTLT15_","HTLT16_","HTLT17_","HTLT18_","HTLT19_","HTLT20_"};
-    vector<TString> JetSel = {"VBFLeadJetLooseJet_","VBFAwayJetLooseJet_","VBFLeadJet_","VBFAwayJet_"};
-    vector<TString> MassCut = {"MJJ450","MJJ500","MJJ600","MJJ700","MJJ750","MJJ800","MJJ850","MJJ900","MJJ1000"};
+    //vector<TString> HTLTcut = {"HTLT10_","HTLT11_","HTLT12_","HTLT13_","HTLT14_","HTLT15_","HTLT16_","HTLT17_","HTLT18_","HTLT19_","HTLT20_"};
+    //vector<TString> JetSel = {"VBFLeadJetLooseJet_","VBFAwayJetLooseJet_","VBFLeadJet_","VBFAwayJet_"};
+    //vector<TString> MassCut = {"MJJ450","MJJ500","MJJ600","MJJ700","MJJ750","MJJ800","MJJ850","MJJ900","MJJ1000"};
     
+    vector<TString> HTLTcut =  {""};
+    vector<TString> JetSel = {};
+    vector<TString> MassCut = {};
+
     for(auto iht : HTLTcut){
       SR2Opt.push_back(iht);
     }
@@ -277,21 +285,57 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
     }
     
     if(!IsData )weight = weight*sf_btagM_NLV;
-
-    for (auto is2 : SR2Opt){
-
-      param.Name = param.DefName + is2;
-      param.SRConfig  = is2;    
-      RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,FatjetColl , BJetColl, ev,METv, param,weight);
-      // reset param
-      param.Name = param.DefName;
-      param.SRConfig  = "";
+    
+    vector<TString> vTrig = {"LooseTrig_"};//,"TightTrig_"};
+    vector<TString> vConv = {"","ConvBEC_"};
+    vector<TString> vCC = {"CCEC_","CCBEC_"};
+    vector<TString> vMVAB;
+    vector<TString> vMVAEC;
+    for(unsigned int imva=0 ; imva < 70 ; imva++){
+      double mva_d= -0.5 + double(imva)*0.02;
+      std::string mvaS= std::to_string(mva_d);
+      vMVAB.push_back("MVAB"+mvaS+"_");
+    }
+    for(unsigned int imva=0 ; imva < 85 ; imva++){
+      double mva_d= -0.8 + imva*0.02;
+      std::string mvaS= std::to_string(mva_d);
+      vMVAEC.push_back("MVAEC"+mvaS+"_");
     }
     
+    vector<TString> ElectronsIDs;    
+    for(auto iTrig : vTrig){
+      for(auto iConv : vConv){
+	for(auto iCC : vCC){
+	  for(auto iMVAB : vMVAB) ElectronsIDs.push_back("ElOpt_"+iTrig+iConv+iCC+iMVAB+"MVAEC-0.8_ISOB0.2_ISOEC0.2_DXYB1EC1");
+	  for(auto iMVAEC : vMVAEC) ElectronsIDs.push_back("ElOpt_"+iTrig+iConv+iCC+iMVAEC+"MVAB-0.5_ISOB0.2_ISOEC0.2_DXYB1EC1");
+	  ElectronsIDs.push_back("ElOpt_"+iTrig+iConv+iCC+"POGT_ISOB0.2_ISOEC0.2_DXYB1EC1");
+	  ElectronsIDs.push_back("ElOpt_"+iTrig+iConv+iCC+"POGM_ISOB0.2_ISOEC0.2_DXYB1EC1");
+	  ElectronsIDs.push_back("ElOpt_"+iTrig+iConv+iCC+"POGTNoIso_ISOB0.2_ISOEC0.2_DXYB1EC1");
+	  ElectronsIDs.push_back("ElOpt_"+iTrig+iConv+iCC+"POGMNoIso_ISOB0.2_ISOEC0.2_DXYB1EC1");
+
+	}
+      }
+    }
+    
+    for(auto id : ElectronsIDs){
+      for (auto is2 : SR2Opt){
+	
+	vector<Electron> ElectronCollOpt ;
+	for(auto iel : ElectronCollT) {
+	  if(iel.PassID(id)) ElectronCollOpt.push_back(iel);
+	}
+	param.Name = param.DefName + is2+id;
+	param.SRConfig  = is2;    
+	RunAllSignalRegions(Inclusive, ElectronCollOpt,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,FatjetColl , BJetColl, ev,METv, param,weight);
+      // reset param
+	param.Name = param.DefName;
+	param.SRConfig  = "";
+      }
+    }
   }
 
   
-  bool opt_trig=true;
+  bool opt_trig=false;
   if(opt_trig){
 
     if(!IsData )weight = weight*sf_btagM_NLV;
@@ -318,7 +362,7 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
   }
 
 
-  bool opt_sr1=true;
+  bool opt_sr1=false;
   if(opt_sr1){
 
     vector<TString> SR1Opt = {};
@@ -352,7 +396,7 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
 
 
 
-  bool opt_sr3=true;
+  bool opt_sr3=false;
   if(opt_sr3){
 
     vector<TString> SR3Opt = {};

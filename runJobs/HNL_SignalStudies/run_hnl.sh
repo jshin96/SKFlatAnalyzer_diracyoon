@@ -43,15 +43,27 @@ if [[ $1 == "" ]]; then
     do
 	SKFlat.py -a $analyzer  -l $mcpath/DY.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
 	SKFlat.py -a $analyzer  -l $mcpath/VBF.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
-	SKFlat.py -a $analyzer  -l $mcpath/SSWW.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
-        SKFlat.py -a $analyzer  -l $bkgpath/MC.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLep &
-	SKFlat.py -a $analyzer  -l $bkgpath/QCD.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep
+	SKFlat.py -a $analyzer  -l $mcpath/SSWW.txt  -n $njobs  --nmax ${nmax}   -e ${i} 
+        SKFlat.py -a $analyzer  -l $bkgpath/MC.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i} &
+	SKFlat.py -a $analyzer  -l $bkgpath/QCD.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i} 
+    done
+
+fi
+
+if [[ $1 == "SIG" ]]; then
+
+    for i in "${era_list[@]}"
+    do
+        SKFlat.py -a $analyzer  -l $mcpath/DY.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
+        SKFlat.py -a $analyzer  -l $mcpath/VBF.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
+        SKFlat.py -a $analyzer  -l $mcpath/SSWW.txt  -n $njobs  --nmax ${nmax}   -e ${i}
     done
 
 fi
 
 
-if [[ $1 == "Q" ]]; then
+
+if [[ $1 == "Sample" ]]; then
 
     for i in "${era_list[@]}"
     do
@@ -70,7 +82,7 @@ if [[ $1 == "MC" ]]; then
 
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -i QCD_Pt-30to50_EMEnriched   -n 50  --nmax 300   -e ${i} &
+        SKFlat.py -a $analyzer  -i TTLJ_powheg   -n 250  --nmax 400   -e ${i} --skim SkimTree_HNMultiLep &
     done
     
 fi

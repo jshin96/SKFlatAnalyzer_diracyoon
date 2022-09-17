@@ -5,12 +5,21 @@ mcpath=${SKFlat_WD}/runJobs/${analyzer}/Bkg/
 datapath=${SKFlat_WD}/runJobs/${analyzer}/DATA/
 njobs=40
 njobs_sig=20
-njobs_data=20
+njobs_data=200
 nmax=200
 skim=' '
 declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
 
+declare  -a era_list=("2017")
 
+if [[ $1 == "DATA" ]]; then
+
+    for i in "${era_list[@]}"
+    do
+        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep &
+    done
+
+fi
 
 
 if [[ $1 == "SL" ]]; then

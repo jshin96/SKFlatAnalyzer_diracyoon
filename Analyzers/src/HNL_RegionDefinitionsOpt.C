@@ -111,8 +111,14 @@ void HNL_RegionDefinitionsOpt::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq
     if (dilep_channel == EE) LimitRegionsQ =HNL_LeptonCore::ElectronSRQQ;
     if (dilep_channel == EMu) LimitRegionsQ =HNL_LeptonCore::ElectronMuonSRQQ;
 
+
     
     if(!PassPreselection(dilep_channel,qq, leps, leps_veto, TauColl, JetColl, VBF_JetColl, AK8_JetColl, B_JetColl,ev, METv ,param_channel,"", weight_channel)) continue;
+
+
+    //FillAllMuonPlots("Presel", "Muons"  , muons ,weight_channel);
+    //FillAllElectronPlots("Presel", "Electrons"  , electrons ,weight_channel);
+
 
     TString  lep_charge =  (leps[0]->Charge() < 0)  ? "QM" :  "QP";
     

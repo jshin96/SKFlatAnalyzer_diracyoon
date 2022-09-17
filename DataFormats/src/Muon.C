@@ -164,6 +164,47 @@ bool Muon::PassID(TString ID) const {
   if(ID=="HNTightV2") return Pass_HNTight(0.07, 0.05, 0.1, 3.);
 
 
+  if(ID=="HNOpt")                 {
+
+    if( fabs(this->Eta())<= 1.479 ){
+
+      double dxy_cut = 0.01 ;
+      if(this->Pt() > 10 && this->Pt()  < 60.) dxy_cut -= (this->Pt() - 10.) * 0.005/ 50.;
+      if(this->Pt() > 60.) dxy_cut = 0.005;
+      if(fabs(dXY()) >  dxy_cut)   return false;
+      if(fabs(dZ()) >  0.05)   return false;
+      if(RelIso() > 0.2) return false;
+      //if(fabs(IP3D()/IP3Derr())> 5.)  return false;
+
+      //double mva_cut_B = -0.4 ;
+      //if(this->Pt() > 10 && this->Pt()  < 60.) mva_cut_B -= (this->Pt() -10.) * 1.2/ 50.;
+      //if(this->Pt() > 60.) mva_cut_B = 0.8;
+      //if(! (MVA()> mva_cut_B) ) return false;
+
+    }
+    else{
+
+      double dxy_cut = 0.01 ;
+      if(this->Pt() > 10 && this->Pt()< 60.) dxy_cut -= (this->Pt() - 10.) * 0.005/ 50.;
+      if(this->Pt() > 60.) dxy_cut = 0.005;
+
+      if(fabs(dXY()) >  dxy_cut)   return false;
+      if(fabs(dZ()) >  0.05)   return false;
+      if(RelIso() > 0.2) return false;
+
+      // if(fabs(IP3D()/IP3Derr())> 7.5)  return false;
+      //double mva_cut_EC = -0.5 ;
+      //if(this->Pt() > 10 && this->Pt()  < 60.) mva_cut_EC -= ( this->Pt()-10.) * 1.1/ 50.;
+      //if(this->Pt() > 60.) mva_cut_EC = 0.6;
+
+      //if(! (MVA()> mva_cut_EC) ) return false;
+      
+
+    }
+    return true;
+  }
+
+
 
   if(ID=="HNTight_Iso05_dxy_01_ip_3") return Pass_HNTight(0.05,0.01,0.05,3.);
   if(ID=="HNTight_Iso05_dxy_01_ip_4") return Pass_HNTight(0.05,0.01,0.05,4.);
@@ -357,10 +398,10 @@ bool Muon::PassMVA(double mva1, double mva2, double mva3) const {
   //      if (muon.pt() > 5 and muon.isLooseMuon() and muon.passed(reco::Muon::MiniIsoLoose) and sip3D < 8.0 and                                                                                   
   //dB2D < 0.05 and dz < 0.1) {                                                                                                                                                                    
 
-  if (this->Pt() < 5) return false;
-  if(!( isPOGLoose() )) return false;
-  if(RelIso() > 0.1)  return false;
-  if(!( fabs(dXY())< 0.01 && fabs(dZ())< 0.1 && fabs(IP3D()/IP3Derr())< 5.) ) return false;
+  //if (this->Pt() < 5) return false;
+  //if(!( isPOGLoose() )) return false;
+  //if(RelIso() > 0.1)  return false;
+  //if(!( fabs(dXY())< 0.02 && fabs(dZ())< 0.1 && fabs(IP3D()/IP3Derr())< 5.) ) return false;
 
   if( fabs(this->Eta()) <= 0.8 ){
     if(! (MVA()>mva1) ) return false;
@@ -470,7 +511,7 @@ bool Muon::Pass_HNLooseMVA() const{
   if(!( isPOGLoose() )) return false;
   if(!( fabs(dXY())< 0.2 && fabs(dZ())<0.1) ) return false;
   if(!( RelIso()< 0.4 )) return false;
-  if(!(fabs(IP3D()/IP3Derr())< 3 )) return false;
+  //if(!(fabs(IP3D()/IP3Derr())< 3 )) return false;
   return true;
 
 
@@ -541,7 +582,7 @@ bool Muon::Pass_POGTightPFIsoLoose(bool applyIP) const {
   if(!( isPOGTight() )) return false;
   if(!( PassSelector(PFIsoLoose) )) return false;
   if(applyIP) {
-    if(!( fabs(dXY())< 0.02 && fabs(dZ())<0.05 &&fabs(IP3D()/IP3Derr())<3. )) return false;
+    if(!( fabs(dXY())< 0.02 && fabs(dZ())<0.05)) return false;
 
   }
   return true;
@@ -551,7 +592,7 @@ bool Muon::Pass_POGTightPFIsoMedium(bool applyIP) const {
   if(!( isPOGTight() )) return false;
   if(!( PassSelector(PFIsoMedium) )) return false;
   if(applyIP) {
-    if(!( fabs(dXY())< 0.02 && fabs(dZ())<0.05 &&fabs(IP3D()/IP3Derr())<3. )) return false;
+    if(!( fabs(dXY())< 0.02 && fabs(dZ())<0.05 )) return false;
 
   }
   return true;
@@ -561,7 +602,7 @@ bool Muon::Pass_POGTightPFIsoTight(bool applyIP) const {
   if(!( isPOGTight() )) return false;
   if(!( PassSelector(PFIsoTight) )) return false;
   if(applyIP) {
-    if(!( fabs(dXY())< 0.02 && fabs(dZ())<0.05 &&fabs(IP3D()/IP3Derr())<3. )) return false;
+    if(!( fabs(dXY())< 0.02 && fabs(dZ())<0.05)) return false;
 
   }
   return true;
@@ -571,7 +612,7 @@ bool Muon::Pass_POGTightPFIsoVeryTight(bool applyIP) const {
   if(!( isPOGTight() )) return false;
   if(!( PassSelector(PFIsoVeryTight) )) return false;
   if(applyIP) {
-    if(!( fabs(dXY())< 0.02 && fabs(dZ())<0.05 &&fabs(IP3D()/IP3Derr())<3. )) return false;
+    if(!( fabs(dXY())< 0.02 && fabs(dZ())<0.05)) return false;
   }
   return true;
 }
@@ -580,7 +621,7 @@ bool Muon::Pass_POGTightPFIsoVeryVeryTight(bool applyIP) const {
   if(!( isPOGTight() )) return false;
   if(!( RelIso()<0.05 )) return false;
   if(applyIP) {
-    if(!( fabs(dXY())< 0.02 && fabs(dZ())<0.05 &&fabs(IP3D()/IP3Derr())<3. )) return false;
+    if(!( fabs(dXY())< 0.02 && fabs(dZ())<0.05)) return false;
   }
   return true;
 }

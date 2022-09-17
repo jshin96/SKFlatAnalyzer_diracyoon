@@ -2777,7 +2777,7 @@ vector<Electron> AnalyzerCore::SkimLepColl(const vector<Electron>& ElColl, vecto
 
 
 
-vector<Electron> AnalyzerCore::SkimLepColl(const vector<Electron>& ElColl, AnalyzerParameter param,TString Option){
+vector<Electron> AnalyzerCore::SkimLepColl(const vector<Electron>& ElColl, TString Option){
   
   vector<Electron> ReturnColl;
 
@@ -2799,7 +2799,7 @@ vector<Electron> AnalyzerCore::SkimLepColl(const vector<Electron>& ElColl, Analy
 }
 
 
-vector<Muon> AnalyzerCore::SkimLepColl(const vector<Muon>& MuColl, AnalyzerParameter param, TString Option){
+vector<Muon> AnalyzerCore::SkimLepColl(const vector<Muon>& MuColl,  TString Option){
   
   vector<Muon> ReturnColl;
   bool Barrel=false, Overlap=false, Endcap=false, PtCut=false;
