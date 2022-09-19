@@ -8,6 +8,8 @@ void HNL_SR3KinVar::initializeAnalyzer(){
   
   tree_mm->Branch("Nj", &Nj, "Nj/I");                   tree_ee->Branch("Nj", &Nj, "Nj/I");                   tree_em->Branch("Nj", &Nj, "Nj/I");
   tree_mm->Branch("Nvbfj", &Nvbfj, "Nvbfj/I");                   tree_ee->Branch("Nvbfj", &Nvbfj, "Nvbfj/I");                   tree_em->Branch("Nvbfj", &Nvbfj, "Nvbfj/I");
+  tree_mm->Branch("Nb", &Nb, "Nb/I");                   tree_ee->Branch("Nb", &Nb, "Nb/I");                   tree_em->Branch("Nb", &Nb, "Nb/I");
+
   tree_mm->Branch("Ptl1", &Ptl1, "Ptl1/F");             tree_ee->Branch("Ptl1", &Ptl1, "Ptl1/F");             tree_em->Branch("Ptl1", &Ptl1, "Ptl1/F");
   tree_mm->Branch("Ptl2", &Ptl2, "Ptl2/F");             tree_ee->Branch("Ptl2", &Ptl2, "Ptl2/F");             tree_em->Branch("Ptl2", &Ptl2, "Ptl2/F");
   tree_mm->Branch("Ptj1", &Ptj1, "Ptj1/F");             tree_ee->Branch("Ptj1", &Ptj1, "Ptj1/F");            tree_em->Branch("Ptj1", &Ptj1, "Ptj1/F");
@@ -124,13 +126,13 @@ void HNL_SR3KinVar::executeEvent(){
     std::vector<FatJet>   fatjets_tmp  = GetFatJets("tight", 200., 5);
     std::vector<Jet>      jets_tmp     = GetJets("tight", 15., 5);
     
-    std::vector<FatJet> AK8_JetColl             = GetAK8Jets(fatjets_tmp,    200., 2.7, true,  1., false, -999, false, 40., 130., ElectronCollV,MuonCollV);
-    std::vector<Jet>    AK4_JetColl             = GetAK4Jets(jets_tmp,       20.,  2.5, true,  0.4,0.8,"",   ElectronCollV, MuonCollV,AK8_JetColl);
-    std::vector<Jet>    AK4_JetVBFColl          = GetAK4Jets(jets_tmp,       30.,  4.7, true,  0.4,0.8,"",   ElectronCollV, MuonCollV,AK8_JetColl);
+    std::vector<FatJet> AK8_JetColl             = GetAK8Jets(fatjets_tmp, 200., 2.7, true, 1., false, -999, false, 40., 130., ElectronCollV, MuonCollV);
+    std::vector<Jet>    AK4_JetColl             = GetAK4Jets(jets_tmp,     20., 2.7, true, 0.4, 0.8, "", ElectronCollV, MuonCollV, AK8_JetColl);
+    std::vector<Jet>    AK4_JetVBFColl          = GetAK4Jets(jets_tmp,     30., 4.7, true, 0.4, 0.8, "", ElectronCollV, MuonCollV, AK8_JetColl);
     
     Particle METv = GetvMET("PuppiT1xyULCorr",param_bdt);
     
-    std::vector<Jet> bjets_tmp                      = GetAK4Jets(jets_tmp,     20., 2.5, true,  0.4,0.8, "",   ElectronCollV,   MuonCollV, AK8_JetColl);
+    std::vector<Jet> bjets_tmp                  = GetAK4Jets(jets_tmp,     20., 2.4, true, 0.4, 0.8, "", ElectronCollV, MuonCollV, AK8_JetColl);
 
     JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
     std::vector<Jet> BJetColl    = GetBJets(param_bdt, bjets_tmp, param_jets);
@@ -145,7 +147,7 @@ void HNL_SR3KinVar::executeEvent(){
 
     bool EventCand = false;
     
-    if ((BJetColl.size()==0) && passCharge && LepsV.size()==2 ){
+    if (passCharge && LepsV.size()==2){
       if (GetLLMass(LepsT) > 10.){
 	if (AK8_JetColl.size() ==0) {
 	  
@@ -160,17 +162,17 @@ void HNL_SR3KinVar::executeEvent(){
     }
     
     if(!EventCand) return;
-
-    
-    MakeTreeSS2L(dilep_channel, LepsT, AK4_JetColl, AK4_JetVBFColl, METv, weight, "");
   
+    MakeTreeSS2L(dilep_channel, LepsT, AK4_JetColl, AK4_JetVBFColl, BJetColl, METv, weight, "");
     
   }
+
 }
 
 void HNL_SR3KinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Lepton *>  LepTColl, 
 				 vector<Jet>& JetColl, 
-				 vector<Jet>& JetVBFColl, 
+				 vector<Jet>& JetVBFColl,
+                                 vector<Jet>& JetBTagColl, 
 				 Particle& vMET, float weight, TString Label)
 {
   
@@ -190,6 +192,8 @@ void HNL_SR3KinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Lept
   
   Nj      = JetColl.size();
   Nvbfj   = JetVBFColl.size();
+  Nb      = JetBTagColl.size();
+
   Ptl1    = LepTColl[0]->Pt();
   Ptl2    = LepTColl.at(1)->Pt();
   LT      = GetLT(LepTColl);
@@ -312,7 +316,7 @@ void HNL_SR3KinVar::executeEventFromParameter(AnalyzerParameter param){
 
 void HNL_SR3KinVar::InitializeTreeVars(){
 
-  Nj=-1, Nvbfj=-1;
+  Nj=-1, Nvbfj=-1, Nb=-1;
   Ptl1=-1, Ptl2=-1, Ptj1=-1, Ptj2=-1, Ptj3=-1, MET=-1, HTLT=-1, HTLT1=-1,HTLT2=-1,LT=-1,  HT=-1, MET2HT=-1, MET2ST=-1;
   dEtall=-1, dRll=-1, dRjj12=-1, dRjj23=-1, dRjj13=-1;
   dRlj11=-1, dRlj12=-1, dRlj13=-1, dRlj21=-1, dRlj22=-1, dRlj23=-1;
