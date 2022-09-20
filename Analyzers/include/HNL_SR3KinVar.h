@@ -18,7 +18,8 @@ class HNL_SR3KinVar : public HNL_RegionDefinitions {
 
   void MakeTreeSS2L(HNL_LeptonCore::Channel, vector<Lepton *>  LepTColl,
                     vector<Jet>& JetColl, 
-		    vector<Jet>& JetVBFColl, 
+		    vector<Jet>& JetVBFColl,
+                    vector<Jet>& JetBTagColl, 
 		    Particle& vMET, float weight, TString Label);
 
   TTree *tree_mm;
@@ -27,7 +28,7 @@ class HNL_SR3KinVar : public HNL_RegionDefinitions {
   void WriteHist();
   void InitializeTreeVars();
 
-  Int_t Nj, Nvbfj;
+  Int_t Nj, Nvbfj, Nb;
   Float_t Ptl1, Ptl2, Ptj1, Ptj2, Ptj3, MET,MET2ST, HT,HTLT,HTLT1,HTLT2, LT,  MET2HT;
   Float_t dEtall, dRll, dRjj12, dRjj23, dRjj13;
   Float_t dRlj11, dRlj12, dRlj13, dRlj21, dRlj22, dRlj23;
