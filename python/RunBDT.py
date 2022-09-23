@@ -140,6 +140,9 @@ if args.Tag != "":
   os.system('mkdir -p '+ BDTOutputDir+'/'+SKFlatV +'/'+args.Analyzer+'/'+args.Tag)
 
 os.system('mkdir -p '+FinalOutputPath)
+os.system('mkdir -p '+FinalOutputPath+'/dataset/')
+os.system('mkdir -p '+FinalOutputPath+'/dataset/weights/')
+
 
 
 
@@ -163,7 +166,11 @@ for TMVADir in TMVADirs:
   commandsfilename = args.Analyzer+'-'+args.Tag
   run_commands = open(base_rundir+'/'+commandsfilename+'.sh','w')
 
+  signalName = "DY"
+  if args.IsVBF and args.Mass==500:
+    signalName = "DYVBF"
 
+  outName = 'output_'+signalName+'_'+args.Channel+'_M'+str(args.Mass)+'_Mode'+str(args.MetMode)+str(args.NbMode)+str(args.JetMode)+'__BDT'
   print>>run_commands,'''#!/bin/bash
 SECTION=`printf $1`
 WORKDIR=`pwd`
@@ -203,9 +210,10 @@ while [ "$Trial" -lt 3 ]; do
   fi
 done
 
-rm -rf {5}/dataset
-mv dataset/   {5}
-mv *.root   {5}
+mv dataset/weights/TMVAClassification_BDT.class.C    {5}/dataset/weights/{6}.class.C 
+mv dataset/weights/TMVAClassification_BDT.weights.xml    {5}/dataset/weights/{6}.weights.xml
+  
+mv *.root   {5}  
 
 if [ "$EXITCODE" -ne 0 ]; then
   echo "ERROR errno=$EXITCODE" >> err.log
@@ -213,7 +221,7 @@ fi
 
 cat err.log >&2
 exit $EXITCODE
-'''.format(MasterJobDir, base_rundir, submitMacro, SCRAM_ARCH, cmsswrel,FinalOutputPath )
+'''.format(MasterJobDir, base_rundir, submitMacro, SCRAM_ARCH, cmsswrel,FinalOutputPath , outName)
   run_commands.close()
 
   submit_command = open(base_rundir+'/submit.jds','w')
