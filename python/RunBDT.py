@@ -140,6 +140,7 @@ if args.Tag != "":
   os.system('mkdir -p '+ BDTOutputDir+'/'+SKFlatV +'/'+args.Analyzer+'/'+args.Tag)
 
 os.system('mkdir -p '+FinalOutputPath)
+os.system('mkdir -p '+FinalOutputPath+'/Logs/')
 os.system('mkdir -p '+FinalOutputPath+'/dataset/')
 os.system('mkdir -p '+FinalOutputPath+'/dataset/weights/')
 
@@ -212,8 +213,11 @@ done
 
 mv dataset/weights/TMVAClassification_BDT.class.C    {5}/dataset/weights/{6}.class.C 
 mv dataset/weights/TMVAClassification_BDT.weights.xml    {5}/dataset/weights/{6}.weights.xml
-  
+mv _condor_stdout {5}/Logs/Job_out_{6}.log
+mv _condor_stderr {5}/Logs/Job_err_{6}.log                                                                                                                                                                                                 
+
 mv *.root   {5}  
+
 
 if [ "$EXITCODE" -ne 0 ]; then
   echo "ERROR errno=$EXITCODE" >> err.log
@@ -241,7 +245,6 @@ should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
 output = job_$(Process).log
 error = job_$(Process).err
-transfer_output_remaps = "hists.root = output/hists_$(Process).root"
 {2}
 {3}
 queue {0}
