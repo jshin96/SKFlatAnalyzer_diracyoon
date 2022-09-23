@@ -32,7 +32,7 @@ void HNL_FakeRate::executeEvent(){
   //                  PassConversionVeto() IsGsfCtfScPixChargeConsistent Pass_TriggerEmulation
   // HNLoose_17028 : Pass_HNLoose2016(0.6, 0.2, 0.1, 10.) && MVA(-0.1, 0.1, -0.1) PassConversionVeto() IsGsfCtfScPixChargeConsistent Pass_TriggerEmulation
 
-  ELIDs.push_back(make_pair("HNTight_17028", "HNLoose_17028")); 
+  /*ELIDs.push_back(make_pair("HNTight_17028", "HNLoose_17028")); 
   ELIDs.push_back(make_pair("HNTightV2",    "HNLooseV4")); 
   ELIDs.push_back(make_pair("passPOGTight", "HNLoosePOG"));
   ELIDs.push_back(make_pair("passPOGMedium","HNLoosePOG"));
@@ -43,68 +43,7 @@ void HNL_FakeRate::executeEvent(){
   ELIDs.push_back(make_pair("HN2016MVA",   "HNLooseMVA"));
   ELIDs.push_back(make_pair("HN2016MVA2",   "HNLooseMVA"));
   ELIDs.push_back(make_pair("HN2016MVA2CC",   "HNLooseMVA"));
-  ELIDs.push_back(make_pair("HNLooseMVA","HNLooseMVA"));
-
-  ELIDs.push_back(make_pair("HNTight_Opt_Iso1",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_Iso2",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_Iso3",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_Iso4",   "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_Iso5",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_Iso6",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_Iso7",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_CCIso1",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_CCIso2",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_CCIso3",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_CCIso4",   "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_CCIso5",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_CCIso6",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_CCIso7",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_ECCCIso1",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_ECCCIso2",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_ECCCIso3",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_ECCCIso4",   "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_ECCCIso5",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_ECCCIso6",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_ECCCIso7",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_dxy1",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_dxy2",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_dxy3",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_dxy4",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_dxy5",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_dxy6",    "HNLoosePOG"));
-
-  ELIDs.push_back(make_pair("HNTight_Opt_CCdxy1",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_CCdxy2",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_CCdxy3",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_CCdxy4",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_CCdxy5",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_CCdxy6",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_ECCCdxy1",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_ECCCdxy2",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_ECCCdxy3",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_ECCCdxy4",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_ECCCdxy5",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_ECCCdxy6",    "HNLoosePOG"));
-
-  ELIDs.push_back(make_pair("HNTight_Opt_dz1",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_dz2",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_dz3",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_dz4",    "HNLoosePOG"));
-  
-  ELIDs.push_back(make_pair("HNTight_Opt_CCdz1",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_CCdz2",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_CCdz3",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_CCdz4",    "HNLoosePOG"));
-
-  ELIDs.push_back(make_pair("HNTight_Opt_ECCCdz1",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_ECCCdz2",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_ECCCdz3",    "HNLoosePOG"));
-  ELIDs.push_back(make_pair("HNTight_Opt_ECCCdz4",    "HNLoosePOG"));
-
-
-
-  //ELIDs.push_back(make_pair("HNTightV2","HNLooseV4_LooseIP"));
-
+ç
   paramnames.push_back("HNTight_17028"  );
   paramnames.push_back("HNTightV2"      );
   paramnames.push_back("passPOGTight"  );
@@ -115,215 +54,100 @@ void HNL_FakeRate::executeEvent(){
   paramnames.push_back("HN2016POGCC"  );
   paramnames.push_back("HN2016MVA"  );
   paramnames.push_back("HN2016MVA2"  );
-  paramnames.push_back("HN2016MVA2CC"  );
-  paramnames.push_back("HNMVA"  );
+  paramnames.push_back("HN2016MVA2CC"  );*/
 
-  paramnames.push_back("HNTight_Opt_Iso1"  );
-  paramnames.push_back("HNTight_Opt_Iso2"  );
-  paramnames.push_back("HNTight_Opt_Iso3"  );
-  paramnames.push_back("HNTight_Opt_Iso4"  );
-  paramnames.push_back("HNTight_Opt_Iso5"  );
-  paramnames.push_back("HNTight_Opt_Iso6"  );
-  paramnames.push_back("HNTight_Opt_Iso7"  );
-  paramnames.push_back("HNTight_Opt_CCIso1"  );
-  paramnames.push_back("HNTight_Opt_CCIso2"  );
-  paramnames.push_back("HNTight_Opt_CCIso3"  );
-  paramnames.push_back("HNTight_Opt_CCIso4"  );
-  paramnames.push_back("HNTight_Opt_CCIso5"  );
-  paramnames.push_back("HNTight_Opt_CCIso6"  );
-  paramnames.push_back("HNTight_Opt_CCIso7"  );
-  paramnames.push_back("HNTight_Opt_ECCCIso1"  );
-  paramnames.push_back("HNTight_Opt_ECCCIso2"  );
-  paramnames.push_back("HNTight_Opt_ECCCIso3"  );
-  paramnames.push_back("HNTight_Opt_ECCCIso4"  );
-  paramnames.push_back("HNTight_Opt_ECCCIso5"  );
-  paramnames.push_back("HNTight_Opt_ECCCIso6"  );
-  paramnames.push_back("HNTight_Opt_ECCCIso7"  );
-
-  paramnames.push_back("HNTight_Opt_dxy1"  );
-  paramnames.push_back("HNTight_Opt_dxy2"  );
-  paramnames.push_back("HNTight_Opt_dxy3"  );
-  paramnames.push_back("HNTight_Opt_dxy4"  );
-  paramnames.push_back("HNTight_Opt_dxy5"  );
-  paramnames.push_back("HNTight_Opt_dxy6"  );
-  paramnames.push_back("HNTight_Opt_CCdxy1"  );
-  paramnames.push_back("HNTight_Opt_CCdxy2"  );
-  paramnames.push_back("HNTight_Opt_CCdxy3"  );
-  paramnames.push_back("HNTight_Opt_CCdxy4"  );
-  paramnames.push_back("HNTight_Opt_CCdxy5"  );
-  paramnames.push_back("HNTight_Opt_CCdxy6"  );
-  paramnames.push_back("HNTight_Opt_ECCCdxy1"  );
-  paramnames.push_back("HNTight_Opt_ECCCdxy2"  );
-  paramnames.push_back("HNTight_Opt_ECCCdxy3"  );
-  paramnames.push_back("HNTight_Opt_ECCCdxy4"  );
-  paramnames.push_back("HNTight_Opt_ECCCdxy5"  );
-  paramnames.push_back("HNTight_Opt_ECCCdxy6"  );
-
-  paramnames.push_back("HNTight_Opt_dz1"  );
-  paramnames.push_back("HNTight_Opt_dz2"  );
-  paramnames.push_back("HNTight_Opt_dz3"  );
-  paramnames.push_back("HNTight_Opt_dz4"  );
-  paramnames.push_back("HNTight_Opt_CCdz1"  );
-  paramnames.push_back("HNTight_Opt_CCdz2"  );
-  paramnames.push_back("HNTight_Opt_CCdz3"  );
-  paramnames.push_back("HNTight_Opt_CCdz4"  );
-  paramnames.push_back("HNTight_Opt_ECCCdz1"  );
-  paramnames.push_back("HNTight_Opt_ECCCdz2"  );
-  paramnames.push_back("HNTight_Opt_ECCCdz3"  );
-  paramnames.push_back("HNTight_Opt_ECCCdz4"  );
-
-
-  if( paramnames.size() != ELIDs.size()) return;
- 
-  for (auto i: ELIDs) {
-    channel.push_back(EE);
-    MuIDs.push_back(make_pair("HNVeto2016","HNLoose_17028"));
+  bool ElectronOpt=true;
+  if (ElectronOpt){
+    vector<TString> vTrig = {"LooseTrig_","TightTrig_"};                                                                                 
+    vector<TString> vConv = {"","ConvBEC_"};
+    vector<TString> vCC = {"CCBEC_"};
+    vector<TString> vMVAB;
+    vector<TString> vMVAEC;
+    for(unsigned int imva=0 ; imva < 70 ; imva++){
+      double mva_d= -0.5 + double(imva)*0.02;
+      std::string mvaS= std::to_string(mva_d);
+      vMVAB.push_back("MVAB"+mvaS+"_");
+    }
+    for(unsigned int imva=0 ; imva < 85 ; imva++){
+      double mva_d= -0.8 + imva*0.02;
+      std::string mvaS= std::to_string(mva_d);
+      vMVAEC.push_back("MVAEC"+mvaS+"_");
+    }
+    
+    vector<TString> OptElectronsIDs;
+    for(auto iTrig : vTrig){
+      for(auto iConv : vConv){
+	for(auto iCC : vCC){
+	  for(auto iMVAB : vMVAB) OptElectronsIDs.push_back(iTrig+iConv+iCC+iMVAB+"MVAEC-0.8_ISOB0.2_ISOEC0.2_DXYB1EC1");
+	  for(auto iMVAEC : vMVAEC) OptElectronsIDs.push_back(iTrig+iConv+iCC+iMVAEC+"MVAB-0.5_ISOB0.2_ISOEC0.2_DXYB1EC1");
+	  OptElectronsIDs.push_back(iTrig+iConv+iCC+"POGT_ISOB0.2_ISOEC0.2_DXYB1EC1");
+	  OptElectronsIDs.push_back(iTrig+iConv+iCC+"POGM_ISOB0.2_ISOEC0.2_DXYB1EC1");
+	  OptElectronsIDs.push_back(iTrig+iConv+iCC+"POGTNoIso_ISOB0.2_ISOEC0.2_DXYB1EC1");
+	  OptElectronsIDs.push_back(iTrig+iConv+iCC+"POGMNoIso_ISOB0.2_ISOEC0.2_DXYB1EC1");
+	}
+      }
+    }
+    
+    for (auto i: OptElectronsIDs) {
+      paramnames.push_back("El_"+i);     
+      ELIDs.push_back(make_pair("ElOpt_"+i, "ElOptLoose_"+i));
+    }
+    for (auto i: ELIDs) {
+      channel.push_back(EE);
+      MuIDs.push_back(make_pair("HNVeto2016","HNLoose_17028"));
+    }
+    
+    if( paramnames.size() != ELIDs.size()) return;
   }
 
+  
 
   // MUON IDS
-  MuIDs.push_back(make_pair("HNTightPFIsoMedium","HNLoosePOG"));
+  /*MuIDs.push_back(make_pair("HNTightPFIsoMedium","HNLoosePOG"));
   MuIDs.push_back(make_pair("HNTightPFIsoTight","HNLoosePOG"));
   MuIDs.push_back(make_pair("HNTightPFIsoVeryTight","HNLoosePOG"));
   MuIDs.push_back(make_pair("HNTightPFIsoVeryVeryTight","HNLoosePOG"));
   MuIDs.push_back(make_pair("HNTight_17028","HNLoose_17028"));
   MuIDs.push_back(make_pair("HNTightV2","HNLooseV1"));
   MuIDs.push_back(make_pair("HNLooseMVA","HNLooseMVA"));
-
-  MuIDs.push_back(make_pair("HNTight_Iso05_dxy_01_ip_3","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso05_dxy_01_ip_4","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso05_dxy_01_ip_999","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso05_dxy_02_ip_3","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso05_dxy_02_ip_4","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso05_dxy_02_ip_999","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso05_dxy_05_ip_3","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso05_dxy_05_ip_4","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso05_dxy_05_ip_999","HNLoosePOG"));
-
-  MuIDs.push_back(make_pair("HNTight_Iso06_dxy_01_ip_3","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso06_dxy_01_ip_4","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso06_dxy_01_ip_999","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso06_dxy_02_ip_3","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso06_dxy_02_ip_4","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso06_dxy_02_ip_999","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso06_dxy_05_ip_3","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso06_dxy_05_ip_4","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso06_dxy_05_ip_999","HNLoosePOG"));
-
-  MuIDs.push_back(make_pair("HNTight_Iso07_dxy_01_ip_3","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso07_dxy_01_ip_4","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso07_dxy_02_ip_999","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso07_dxy_02_ip_3","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso07_dxy_02_ip_4","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso07_dxy_02_ip_999","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso07_dxy_05_ip_3","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso07_dxy_05_ip_4","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso07_dxy_05_ip_999","HNLoosePOG"));
-
-  MuIDs.push_back(make_pair("HNTight_Iso08_dxy_01_ip_3","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso08_dxy_01_ip_4","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso08_dxy_01_ip_999","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso08_dxy_02_ip_3","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso08_dxy_02_ip_4","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso08_dxy_02_ip_999","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso08_dxy_05_ip_3","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso08_dxy_05_ip_4","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso08_dxy_05_ip_999","HNLoosePOG"));
-
-  MuIDs.push_back(make_pair("HNTight_Iso09_dxy_01_ip_3","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso09_dxy_01_ip_4","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso09_dxy_01_ip_999","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso09_dxy_02_ip_3","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso09_dxy_02_ip_4","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso09_dxy_02_ip_999","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso09_dxy_05_ip_3","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso09_dxy_05_ip_4","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso09_dxy_05_ip_999","HNLoosePOG"));
-
-  MuIDs.push_back(make_pair("HNTight_Iso10_dxy_01_ip_3","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso10_dxy_01_ip_4","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso10_dxy_01_ip_999","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso10_dxy_02_ip_3","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso10_dxy_02_ip_4","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso10_dxy_02_ip_999","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso10_dxy_05_ip_3","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso10_dxy_05_ip_4","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_Iso10_dxy_05_ip_999","HNLoosePOG"));
-
+  
   paramnames.push_back("POGTightWithMediumIso");
   paramnames.push_back("POGTightWithTightIso");
   paramnames.push_back("POGTightWithVeryTightIso");
   paramnames.push_back("POGTightWithVeryVeryTightIso");
   paramnames.push_back("HNTight_17028");
   paramnames.push_back("HNTightV2");
-  paramnames.push_back("HNMVA");
+  paramnames.push_back("HNMVA");*/
 
 
-  paramnames.push_back("HNTight_Iso05_dxy_01_ip_3");
-  paramnames.push_back("HNTight_Iso05_dxy_01_ip_4");
-  paramnames.push_back("HNTight_Iso05_dxy_01_ip_999");
-  paramnames.push_back("HNTight_Iso05_dxy_02_ip_3");
-  paramnames.push_back("HNTight_Iso05_dxy_02_ip_4");
-  paramnames.push_back("HNTight_Iso05_dxy_02_ip_999");
-  paramnames.push_back("HNTight_Iso05_dxy_05_ip_3");
-  paramnames.push_back("HNTight_Iso05_dxy_05_ip_4");
-  paramnames.push_back("HNTight_Iso05_dxy_05_ip_999");
+  bool MuonOpt=true;
+  if (MuonOpt){
+    vector<TString> vMVAB;
+    vector<TString> vMVAEC;
+    for(unsigned int imva=0 ; imva < 65 ; imva++){
+      double mva_d= -0.4 + double(imva)*0.02;
+      std::string mvaS= std::to_string(mva_d);
+      vMVAB.push_back("MVAB"+mvaS+"_");
+    }
+    for(unsigned int imva=0 ; imva < 80 ; imva++){
+      double mva_d= -0.7 + imva*0.02;
+      std::string mvaS= std::to_string(mva_d);
+      vMVAEC.push_back("MVAEC"+mvaS+"_");
+    }
 
-  paramnames.push_back("HNTight_Iso06_dxy_01_ip_3");
-  paramnames.push_back("HNTight_Iso06_dxy_01_ip_4");
-  paramnames.push_back("HNTight_Iso06_dxy_01_ip_999");
-  paramnames.push_back("HNTight_Iso06_dxy_02_ip_3");
-  paramnames.push_back("HNTight_Iso06_dxy_02_ip_4");
-  paramnames.push_back("HNTight_Iso06_dxy_02_ip_999");
-  paramnames.push_back("HNTight_Iso06_dxy_05_ip_3");
-  paramnames.push_back("HNTight_Iso06_dxy_05_ip_4");
-  paramnames.push_back("HNTight_Iso06_dxy_05_ip_999");
+    vector<TString> OptMuonsIDs;
+    for(auto iMVAB : vMVAB) OptMuonsIDs.push_back(iMVAB+"MVAEC-0.7_ISOB0.2_ISOEC0.2_DXYB1EC1");
+    for(auto iMVAEC : vMVAEC) OptMuonsIDs.push_back(iMVAEC+"MVAB-0.4_ISOB0.2_ISOEC0.2_DXYB1EC1");
+    OptMuonsIDs.push_back("POGT_ISOB0.2_ISOEC0.2_DXYB1EC1");
+    OptMuonsIDs.push_back("POGM_ISOB0.2_ISOEC0.2_DXYB1EC1");
+    
+    for (auto i: OptMuonsIDs){
+      paramnames.push_back("Mu_"+i);
+      MuIDs.push_back(make_pair("MuOpt_"+i, "MuOptLoose_"+i));
+    }
 
-
-  paramnames.push_back("HNTight_Iso07_dxy_01_ip_3");
-  paramnames.push_back("HNTight_Iso07_dxy_01_ip_4");
-  paramnames.push_back("HNTight_Iso07_dxy_01_ip_999");
-  paramnames.push_back("HNTight_Iso07_dxy_02_ip_3");
-  paramnames.push_back("HNTight_Iso07_dxy_02_ip_4");
-  paramnames.push_back("HNTight_Iso07_dxy_02_ip_999");
-  paramnames.push_back("HNTight_Iso07_dxy_05_ip_3");
-  paramnames.push_back("HNTight_Iso07_dxy_05_ip_4");
-  paramnames.push_back("HNTight_Iso07_dxy_05_ip_999");
-
-
-  paramnames.push_back("HNTight_Iso08_dxy_01_ip_3");
-  paramnames.push_back("HNTight_Iso08_dxy_01_ip_4");
-  paramnames.push_back("HNTight_Iso08_dxy_01_ip_999");
-  paramnames.push_back("HNTight_Iso08_dxy_02_ip_3");
-  paramnames.push_back("HNTight_Iso08_dxy_02_ip_4");
-  paramnames.push_back("HNTight_Iso08_dxy_02_ip_999");
-  paramnames.push_back("HNTight_Iso08_dxy_05_ip_3");
-  paramnames.push_back("HNTight_Iso08_dxy_05_ip_4");
-  paramnames.push_back("HNTight_Iso08_dxy_05_ip_999");
-
-
-  paramnames.push_back("HNTight_Iso09_dxy_01_ip_3");
-  paramnames.push_back("HNTight_Iso09_dxy_01_ip_4");
-  paramnames.push_back("HNTight_Iso09_dxy_01_ip_999");
-  paramnames.push_back("HNTight_Iso09_dxy_02_ip_3");
-  paramnames.push_back("HNTight_Iso09_dxy_02_ip_4");
-  paramnames.push_back("HNTight_Iso09_dxy_02_ip_999");
-  paramnames.push_back("HNTight_Iso09_dxy_05_ip_3");
-  paramnames.push_back("HNTight_Iso09_dxy_05_ip_4");
-  paramnames.push_back("HNTight_Iso09_dxy_05_ip_999");
-
-
-  paramnames.push_back("HNTight_Iso10_dxy_01_ip_3");
-  paramnames.push_back("HNTight_Iso10_dxy_01_ip_4");
-  paramnames.push_back("HNTight_Iso10_dxy_01_ip_999");
-  paramnames.push_back("HNTight_Iso10_dxy_02_ip_3");
-  paramnames.push_back("HNTight_Iso10_dxy_02_ip_4");
-  paramnames.push_back("HNTight_Iso10_dxy_02_ip_999");
-  paramnames.push_back("HNTight_Iso10_dxy_05_ip_3");
-  paramnames.push_back("HNTight_Iso10_dxy_05_ip_4");
-  paramnames.push_back("HNTight_Iso10_dxy_05_ip_999");
-
-
+  }
+  
   int iel= MuIDs.size() - channel.size();
   for (int i =0; i < iel; i++){
     channel.push_back(MuMu);
@@ -424,33 +248,11 @@ void HNL_FakeRate::executeEventFromParameter(AnalyzerParameter param, TString El
 
   if(channel==EE) {
 
-    if(param.Name.Contains("MVA")){
-
-      for(unsigned int j1=0; j1 < 9; j1++){
-        double mva_1 = double(0.+0.1*double(j1));          std::string mva1= std::to_string(mva_1);
-	
-        param.Name = "HNMVA_"+mva1;
-        param.Electron_Tight_ID = "HNMVA_"+mva1;
-
-	RunE(loose_electrons,loose_muons, jets,  param, weight);
-      }
-    }
-    else   RunE(loose_electrons,loose_muons, jets,  param, weight);
+    RunE(loose_electrons,loose_muons, jets,  param, weight);
     
   }
   if(channel==MuMu){
-    if(param.Name.Contains("MVA")){
-      
-      for(unsigned int j1=0; j1 < 41; j1++){
-	double mva_1 = (0.1+0.02*double(j1));          std::string mva1= std::to_string(mva_1);
-	
-	param.Name = "HNMVA_"+mva1;
-	param.Muon_Tight_ID = "HNMVA_"+mva1;
-	
-	RunM(loose_electrons,loose_muons,  jets, param, weight);
-      }
-    }
-    else    RunM(loose_electrons,loose_muons,  jets, param, weight);
+    RunM(loose_electrons,loose_muons,  jets, param, weight);
   }
 }
 

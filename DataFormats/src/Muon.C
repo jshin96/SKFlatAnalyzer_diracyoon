@@ -1,4 +1,7 @@
 #include "Muon.h"
+#include <iostream>
+#include <sstream>
+#include <string>
 
 ClassImp(Muon)
 
@@ -141,6 +144,48 @@ bool Muon::PassID(TString ID) const {
   if(ID=="HNLooseMVA") return Pass_HNLooseMVA();
   if(ID=="HNLooseV1") return Pass_HNLoose(0.4,  0.2, 0.5,10.);
   if(ID=="HNLoosePOG") return Pass_HNLoose(0.4,  0.2, 0.5,99999.);
+
+
+  if(ID.Contains("MuOpt")){
+    
+    TString ID_sub = ID;
+    ID_sub = ID_sub.ReplaceAll("_"," ");
+    string sID_sub = string(ID_sub);
+
+    vector<TString> subStrings;
+    istringstream ID_subs(sID_sub);
+    do {
+      string subs;
+      ID_subs >> subs;
+      subStrings.push_back(TString(subs));
+    } while (ID_subs);
+
+
+    TString dxy_method = "";
+    TString iso_methodB="";
+    TString iso_methodEC="";
+    TString pog_methodB="";
+    TString pog_methodEC="";
+
+    for(unsigned int i=0; i < subStrings.size(); i++){
+      if (subStrings[i].Contains("DXY")) dxy_method=subStrings[i];
+      if (subStrings[i].Contains("MVAB")) pog_methodB=subStrings[i];
+      if (subStrings[i].Contains("MVAEC")) pog_methodEC=subStrings[i];
+
+      if (subStrings[i].Contains("POG")) pog_methodB=subStrings[i];
+      if (subStrings[i].Contains("POG")) pog_methodEC=subStrings[i];
+
+      if (subStrings[i].Contains("ISOB")) iso_methodB=subStrings[i];
+      if (subStrings[i].Contains("ISOEC")) iso_methodEC=subStrings[i];
+    }
+
+    if(ID.Contains("MuOptLoose")) return PassLooseIDOpt();
+
+    return   PassIDOptMulti(dxy_method, pog_methodB,pog_methodEC, iso_methodB,iso_methodEC);
+
+  }
+
+
 
 
   if(ID.Contains("HNMVA_")){
@@ -433,6 +478,139 @@ bool Muon::PassSoftMVA(double mva1, double mva2, double mva3) const {
   }
 
   return true;
+}
+
+int  Muon::PassLooseIDOpt( ) const{
+
+  if(!( isPOGLoose() )) return 0;
+  if(fabs(dXY()) >  0.2)   return 0;
+  if(fabs(dZ()) >  0.5)   return 0;
+  if(! (RelIso()< 0.4) ) return 0;
+
+  return 1;
+
+}
+
+int  Muon::PassIDOptMulti(TString dxy_method, TString sel_methodB,TString sel_methodEC,  TString iso_methodB,TString iso_methodEC ) const{
+
+  bool DEBUG=false;
+
+  if( fabs(this->Eta())<= 1.479 ){
+
+    double dxy_cut = 0.01 ;
+    if(dxy_method.Contains("B1")) {
+      if(this->Pt() > 10 && this->Pt()  < 60.) dxy_cut -= (this->Pt() - 10.) * 0.005/ 50.;
+      if(this->Pt() > 60.) dxy_cut = 0.005;
+      if(fabs(dXY()) >  dxy_cut)   {
+        if(DEBUG) cout << " DXY  FAIL" << endl;
+        return 0;
+      }
+    }
+    
+    if(fabs(dZ()) >  0.05)   return 0;
+
+    if(fabs(IP3D()/IP3Derr())> 5.)  return 0;
+
+    if(DEBUG) cout << " sel_methodB = " << sel_methodB << endl;
+
+     if(sel_methodB.Contains("MVA")){
+
+      TString mva_st = sel_methodB.ReplaceAll("MVAB","");
+      std::string mva_s = std::string(mva_st);
+      std::string::size_type sz;     // alias of size_t                                                                        
+
+
+      double mva_d = std::stod (mva_s,&sz);
+      double mva_cut_B =  mva_d ;//-0.5 ;                                                                                                                                                                                                      
+
+      if(this->Pt() > 10 && this->Pt()  < 60.) mva_cut_B += (this->Pt() - 10.) * (0.9 - mva_d)/ 50.;
+      if(this->Pt()  > 60.)  mva_cut_B = 0.9;
+
+      if(DEBUG) cout << "pt = " <<  this->Pt()  << " mva = " << MVA() << " cut =" << mva_cut_B << endl;
+
+      if(! (MVA()> mva_cut_B) ) return 0;
+    }
+    else{
+      if(sel_methodB == "POGT"){
+        if(! (isPOGTight()) ) return 0;
+      }
+      if(sel_methodB == "POGM"){
+        if(! (isPOGTight()) ) return 0;
+      }
+    }
+    if(iso_methodB != ""){
+
+      TString iso_st = iso_methodB.ReplaceAll("ISOB","");
+      std::string iso_s = std::string(iso_st);
+      std::string::size_type sz;     // alias of size_t                                                                                                                                                                                                                                                                                                          
+
+      double iso_d = std::stod (iso_s,&sz);
+      double iso_cut_B =  iso_d ;
+
+      if(DEBUG) cout << "RelIso " << iso_cut_B << endl;
+      if(! (RelIso()<iso_cut_B) ) return false;
+    }
+  }
+  else{
+    if(DEBUG) cout << "PassIDOpt ENDCAP " << endl;
+
+
+    if(dxy_method.Contains("EC1")) {
+
+      double dxy_cut = 0.01 ;
+      if(this->Pt() > 10 && this->Pt()< 60.) dxy_cut -= (this->Pt()- 10.) * 0.005/ 50.;
+      if(this->Pt()  > 60.) dxy_cut = 0.005;
+
+      if(DEBUG) cout << "pt = " << this->Pt() << " DXY cut = " << dxy_cut << " value = " << fabs(dXY()) <<  endl;
+      if(fabs(dXY()) >  dxy_cut)   {
+        if(DEBUG) cout << " DXY  FAIL" << endl;
+        return 0;
+      }
+    }
+    if(fabs(dZ()) >  0.07)   return 0;
+    if(fabs(IP3D()/IP3Derr())> 7.5)  return 0;
+
+    if(iso_methodEC != ""){
+
+      TString iso_st = iso_methodEC.ReplaceAll("ISOEC","");
+      std::string iso_s = std::string(iso_st);
+      std::string::size_type sz;     // alias of size_t                                                                                                                                                                                                                                                                                                          
+      double iso_d = std::stod (iso_s,&sz);
+      double iso_cut_EC =  iso_d ;
+
+      if(DEBUG) cout << "RelIso " << iso_cut_EC << endl;
+
+      if(! (RelIso()<iso_cut_EC) ) return false;
+    }
+
+    if(sel_methodEC.Contains("MVA")){
+
+      TString mva_st = sel_methodEC.ReplaceAll("MVAEC","");
+      std::string mva_s = std::string(mva_st);
+      std::string::size_type sz;     // alias of size_t                                                                                                      
+
+      double mva_d = std::stod (mva_s,&sz);
+      double mva_cut_EC =  mva_d ;//-0.5 ;                                                                                                                  
+      
+      if(this->Pt() > 10 && this->Pt()  < 60.) mva_cut_EC += (this->Pt() - 10.) * (0.9 - mva_d)/ 50.;
+      if(this->Pt()  > 60.)  mva_cut_EC = 0.9;
+
+      if(DEBUG) cout << "pt = " <<  this->Pt() << " mva = " <<MVA() << " cut =" << mva_cut_EC << endl;
+
+      if(! (MVA()> mva_cut_EC) ) return 0;
+    }
+    else{
+      if(sel_methodEC == "POGT"){
+        if(! (isPOGTight()) ) return false;
+      }
+      if(sel_methodEC == "POGM"){
+        if(! (isPOGMedium()) ) return false;
+      }
+
+    }
+  }
+  return 1;
+
 }
 
 

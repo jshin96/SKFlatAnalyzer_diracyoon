@@ -2,9 +2,9 @@ analyzer=HNL_FakeRate
 rundir=HNL_FakeRate
 mcpath=${SKFlat_WD}/runJobs/${rundir}/mc_lists/
 datapath=${SKFlat_WD}/runJobs/${rundir}/data_lists/
-njobs=200
+njobs=400
 njobs_data=100
-nmax=250
+nmax=350
 declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
 
 
