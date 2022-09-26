@@ -418,6 +418,8 @@ int  Electron::PassIDOptMulti(TString  trigger, TString dxy_method, TString sel_
     else if(sel_methodB.Contains("MVA")){
       
       TString mva_st = sel_methodB.ReplaceAll("MVAB","");
+      mva_st=mva_st.ReplaceAll("p",".");
+
       std::string mva_s = std::string(mva_st);
       std::string::size_type sz;     // alias of size_t                                                                                     
       
@@ -449,6 +451,7 @@ int  Electron::PassIDOptMulti(TString  trigger, TString dxy_method, TString sel_
     if(iso_methodB != ""){
 
       TString iso_st = iso_methodB.ReplaceAll("ISOB","");
+      iso_st = iso_st.ReplaceAll("p",".");
       std::string iso_s = std::string(iso_st);
       std::string::size_type sz;     // alias of size_t                                                                                                                                                      
                                                                                                                                                                                                               
@@ -494,6 +497,8 @@ int  Electron::PassIDOptMulti(TString  trigger, TString dxy_method, TString sel_
     if(iso_methodEC != ""){
 
       TString iso_st = iso_methodEC.ReplaceAll("ISOEC","");
+      iso_st = iso_st.ReplaceAll("p",".");
+
       std::string iso_s = std::string(iso_st);
       std::string::size_type sz;     // alias of size_t                                                                                                                                                       
       double iso_d = std::stod (iso_s,&sz);
@@ -515,6 +520,8 @@ int  Electron::PassIDOptMulti(TString  trigger, TString dxy_method, TString sel_
     else if(sel_methodEC.Contains("MVA")){
 
       TString mva_st = sel_methodEC.ReplaceAll("MVAEC","");
+      mva_st=mva_st.ReplaceAll("p",".");
+
       std::string mva_s = std::string(mva_st);
       std::string::size_type sz;     // alias of size_t                                                                                     
 

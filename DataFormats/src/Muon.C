@@ -516,6 +516,8 @@ int  Muon::PassIDOptMulti(TString dxy_method, TString sel_methodB,TString sel_me
      if(sel_methodB.Contains("MVA")){
 
       TString mva_st = sel_methodB.ReplaceAll("MVAB","");
+      mva_st=mva_st.ReplaceAll("m0","-0");
+      
       std::string mva_s = std::string(mva_st);
       std::string::size_type sz;     // alias of size_t                                                                        
 
@@ -586,6 +588,7 @@ int  Muon::PassIDOptMulti(TString dxy_method, TString sel_methodB,TString sel_me
     if(sel_methodEC.Contains("MVA")){
 
       TString mva_st = sel_methodEC.ReplaceAll("MVAEC","");
+      mva_st=mva_st.ReplaceAll("m0","-0");
       std::string mva_s = std::string(mva_st);
       std::string::size_type sz;     // alias of size_t                                                                                                      
 

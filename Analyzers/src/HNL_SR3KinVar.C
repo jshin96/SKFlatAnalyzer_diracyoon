@@ -10,6 +10,9 @@ void HNL_SR3KinVar::initializeAnalyzer(){
   tree_mm->Branch("Nvbfj", &Nvbfj, "Nvbfj/I");                     tree_ee->Branch("Nvbfj", &Nvbfj, "Nvbfj/I");                     tree_em->Branch("Nvbfj", &Nvbfj, "Nvbfj/I");
   tree_mm->Branch("Nb", &Nb, "Nb/I");                              tree_ee->Branch("Nb", &Nb, "Nb/I");                              tree_em->Branch("Nb", &Nb, "Nb/I");
 
+
+  tree_mm->Branch("LQ", &LQ, "LQ/I");                              tree_ee->Branch("LQ", &LQ, "LQ/I");                              tree_em->Branch("LQ", &LQ, "LQ/I");
+
   tree_mm->Branch("Ptl1", &Ptl1, "Ptl1/F");                        tree_ee->Branch("Ptl1", &Ptl1, "Ptl1/F");                        tree_em->Branch("Ptl1", &Ptl1, "Ptl1/F");
   tree_mm->Branch("Ptl2", &Ptl2, "Ptl2/F");                        tree_ee->Branch("Ptl2", &Ptl2, "Ptl2/F");                        tree_em->Branch("Ptl2", &Ptl2, "Ptl2/F");
   tree_mm->Branch("Ptj1", &Ptj1, "Ptj1/F");                        tree_ee->Branch("Ptj1", &Ptj1, "Ptj1/F");                        tree_em->Branch("Ptj1", &Ptj1, "Ptj1/F");
@@ -232,6 +235,7 @@ void HNL_SR3KinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Lept
   Nvbfj   = JetVBFColl.size();
   Nb      = JetBTagColl.size();
 
+  LQ      = LepTColl[0]->Charge();
   Ptl1    = LepTColl[0]->Pt();
   Ptl2    = LepTColl.at(1)->Pt();
   LT      = GetLT(LepTColl);
@@ -239,8 +243,9 @@ void HNL_SR3KinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Lept
   Ptj2    = JetColl.size()<2? -1.:JetColl.at(1).Pt();
   Ptj3    = JetColl.size()<3? -1.:JetColl.at(2).Pt();
   MET     = vMET.Pt();
-  Etal1   = LepTColl.at(0)->Eta();
-  Etal2   = LepTColl.at(1)->Eta();
+  Etal1   = fabs(LepTColl.at(0)->Eta());
+  Etal2   = fabs(LepTColl.at(1)->Eta());
+
  
   dEtall  = abs(LepTColl.at(0)->Eta()-LepTColl.at(1)->Eta());
   dRll    = LepTColl.at(0)->DeltaR(*LepTColl.at(1));
@@ -473,6 +478,7 @@ void HNL_SR3KinVar::InitializeTreeVars(){
   PtWj1=-1, PtWj2=-1;
   dRWjj=-1, dRlW12=-1, dRlW22=-1;
   M_W2_jj=-1, M_W1_lljj=-1, M_N1_l1jj=-1, M_N2_l2jj=-1;
+  LQ=-999;
 
   w_tot=-1;
 

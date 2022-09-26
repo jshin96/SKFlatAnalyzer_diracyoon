@@ -66,24 +66,29 @@ void HNL_FakeRate::executeEvent(){
     for(unsigned int imva=0 ; imva < 70 ; imva++){
       double mva_d= -0.5 + double(imva)*0.02;
       std::string mvaS= std::to_string(mva_d);
-      vMVAB.push_back("MVAB"+mvaS+"_");
+      TString mvaTS = TString(mvaS).ReplaceAll(".","p");
+      mvaTS = mvaTS.ReplaceAll("-0","m0");
+      vMVAB.push_back("MVAB"+mvaTS+"_");
+
     }
     for(unsigned int imva=0 ; imva < 85 ; imva++){
       double mva_d= -0.8 + imva*0.02;
       std::string mvaS= std::to_string(mva_d);
-      vMVAEC.push_back("MVAEC"+mvaS+"_");
+      TString mvaTS = TString(mvaS).ReplaceAll(".","p");
+      mvaTS = mvaTS.ReplaceAll("-0","m0");
+      vMVAEC.push_back("MVAEC"+mvaTS+"_");
     }
     
     vector<TString> OptElectronsIDs;
     for(auto iTrig : vTrig){
       for(auto iConv : vConv){
 	for(auto iCC : vCC){
-	  for(auto iMVAB : vMVAB) OptElectronsIDs.push_back(iTrig+iConv+iCC+iMVAB+"MVAEC-0.8_ISOB0.2_ISOEC0.2_DXYB1EC1");
-	  for(auto iMVAEC : vMVAEC) OptElectronsIDs.push_back(iTrig+iConv+iCC+iMVAEC+"MVAB-0.5_ISOB0.2_ISOEC0.2_DXYB1EC1");
-	  OptElectronsIDs.push_back(iTrig+iConv+iCC+"POGT_ISOB0.2_ISOEC0.2_DXYB1EC1");
-	  OptElectronsIDs.push_back(iTrig+iConv+iCC+"POGM_ISOB0.2_ISOEC0.2_DXYB1EC1");
-	  OptElectronsIDs.push_back(iTrig+iConv+iCC+"POGTNoIso_ISOB0.2_ISOEC0.2_DXYB1EC1");
-	  OptElectronsIDs.push_back(iTrig+iConv+iCC+"POGMNoIso_ISOB0.2_ISOEC0.2_DXYB1EC1");
+	  for(auto iMVAB : vMVAB) OptElectronsIDs.push_back(iTrig+iConv+iCC+iMVAB+"MVAECm0p8_ISOB0p15_ISOEC0p15_DXYB1EC1");
+	  for(auto iMVAEC : vMVAEC) OptElectronsIDs.push_back(iTrig+iConv+iCC+iMVAEC+"MVABm0p5_ISOB0p15_ISOEC0p15_DXYB1EC1");
+	  OptElectronsIDs.push_back(iTrig+iConv+iCC+"POGT_ISOB0p15_ISOEC0p15_DXYB1EC1");
+	  OptElectronsIDs.push_back(iTrig+iConv+iCC+"POGM_ISOB0p15_ISOEC0p15_DXYB1EC1");
+	  OptElectronsIDs.push_back(iTrig+iConv+iCC+"POGTNoIso_ISOB0p15_ISOEC0p15_DXYB1EC1");
+	  OptElectronsIDs.push_back(iTrig+iConv+iCC+"POGMNoIso_ISOB0p15_ISOEC0p15_DXYB1EC1");
 	}
       }
     }
@@ -127,19 +132,24 @@ void HNL_FakeRate::executeEvent(){
     for(unsigned int imva=0 ; imva < 65 ; imva++){
       double mva_d= -0.4 + double(imva)*0.02;
       std::string mvaS= std::to_string(mva_d);
-      vMVAB.push_back("MVAB"+mvaS+"_");
+      TString mvaTS = TString(mvaS).ReplaceAll(".","p");
+      mvaTS = mvaTS.ReplaceAll("-0","m0");
+      vMVAB.push_back("MVAB"+mvaTS+"_");
     }
     for(unsigned int imva=0 ; imva < 80 ; imva++){
       double mva_d= -0.7 + imva*0.02;
       std::string mvaS= std::to_string(mva_d);
-      vMVAEC.push_back("MVAEC"+mvaS+"_");
+      TString mvaTS = TString(mvaS).ReplaceAll(".","p");
+      mvaTS = mvaTS.ReplaceAll("-0","m0");
+      vMVAEC.push_back("MVAEC"+mvaTS+"_");
     }
 
     vector<TString> OptMuonsIDs;
-    for(auto iMVAB : vMVAB) OptMuonsIDs.push_back(iMVAB+"MVAEC-0.7_ISOB0.2_ISOEC0.2_DXYB1EC1");
-    for(auto iMVAEC : vMVAEC) OptMuonsIDs.push_back(iMVAEC+"MVAB-0.4_ISOB0.2_ISOEC0.2_DXYB1EC1");
-    OptMuonsIDs.push_back("POGT_ISOB0.2_ISOEC0.2_DXYB1EC1");
-    OptMuonsIDs.push_back("POGM_ISOB0.2_ISOEC0.2_DXYB1EC1");
+    for(auto iMVAB : vMVAB) OptMuonsIDs.push_back(iMVAB+"MVAECm0p7_ISOB0p15_ISOEC0p15_DXYB1EC1");
+    for(auto iMVAEC : vMVAEC) OptMuonsIDs.push_back(iMVAEC+"MVABm0p4_ISOB0p15_ISOEC0p15_DXYB1EC1");
+    OptMuonsIDs.push_back("POGT_ISOB0p15_ISOEC0p15_DXYB1EC1");
+    OptMuonsIDs.push_back("POGM_ISOB0p15_ISOEC0p15_DXYB1EC1");
+    
     
     for (auto i: OptMuonsIDs){
       paramnames.push_back("Mu_"+i);
@@ -1223,25 +1233,28 @@ void HNL_FakeRate::GetFakeRates(std::vector<Lepton *> leps,std::vector<bool> ble
     TString prefix = (ilep==0) ? L_prefix : T_prefix;
     if((ilep==1) && !(blepsT[0])) continue;
     if(lep_pt > ptmin){
-      FillHist((prefix + "_reliso").Data(), lep_reliso, weight_pt*prescale_lep, 50, 0., 1.);
-      FillHist((prefix + "_dXY").Data(),    lep_dxy, weight_pt*prescale_lep, 50, 0., 1.);
-      FillHist((prefix + "_IP3D").Data(),   lep_ip3d, weight_pt*prescale_lep, 50, 0., 10.);
-      FillHist((prefix + "_mva").Data(),    lep_mva, weight_pt*prescale_lep, 50, -1., 1.);
-      FillHist((prefix + "_pt_eta").Data(), lep_pt, lep_eta,weight_pt*prescale_lep, nbin_pt, ptbins, nbin_eta , etabins);
-      FillHist((prefix + "_pt").Data(),     lep_pt, weight_pt*prescale_lep, nbin_pt, ptbins, "p_{T} (GeV)");
-      FillHist((prefix + "_eta").Data(),    lep_eta, weight_pt*prescale_lep , nbin_eta, etabins,"#eta");
-      if(BJetColl.size()==0){
-	FillHist((prefix + "_0BJet_pt").Data(),     lep_pt, weight_pt*prescale_lep, nbin_pt, ptbins, "p_{T} (GeV)");
-	FillHist((prefix + "_0BJet_eta").Data(),    lep_eta, weight_pt*prescale_lep , nbin_eta, etabins,"#eta");
-      }
-      else{
-	FillHist((prefix + "_BJet_pt").Data(),     lep_pt, weight_pt*prescale_lep, nbin_pt, ptbins, "p_{T} (GeV)");
-        FillHist((prefix + "_BJet_eta").Data(),    lep_eta, weight_pt*prescale_lep , nbin_eta, etabins,"#eta");
-      }
-    }    
+
+      if(param.WriteOutVerbose ==  -3){
+	FillHist((prefix + "_reliso").Data(), lep_reliso, weight_pt*prescale_lep, 50, 0., 1.);
+	FillHist((prefix + "_dXY").Data(),    lep_dxy, weight_pt*prescale_lep, 50, 0., 1.);
+	FillHist((prefix + "_IP3D").Data(),   lep_ip3d, weight_pt*prescale_lep, 50, 0., 10.);
+	FillHist((prefix + "_mva").Data(),    lep_mva, weight_pt*prescale_lep, 50, -1., 1.);
+	FillHist((prefix + "_pt_eta").Data(), lep_pt, lep_eta,weight_pt*prescale_lep, nbin_pt, ptbins, nbin_eta , etabins);
+	FillHist((prefix + "_pt").Data(),     lep_pt, weight_pt*prescale_lep, nbin_pt, ptbins, "p_{T} (GeV)");
+	FillHist((prefix + "_eta").Data(),    lep_eta, weight_pt*prescale_lep , nbin_eta, etabins,"#eta");
+	if(BJetColl.size()==0){
+	  FillHist((prefix + "_0BJet_pt").Data(),     lep_pt, weight_pt*prescale_lep, nbin_pt, ptbins, "p_{T} (GeV)");
+	  FillHist((prefix + "_0BJet_eta").Data(),    lep_eta, weight_pt*prescale_lep , nbin_eta, etabins,"#eta");
+	}
+	else{
+	  FillHist((prefix + "_BJet_pt").Data(),     lep_pt, weight_pt*prescale_lep, nbin_pt, ptbins, "p_{T} (GeV)");
+	  FillHist((prefix + "_BJet_eta").Data(),    lep_eta, weight_pt*prescale_lep , nbin_eta, etabins,"#eta");
+	}
+      }    
+    }
     if(fill_plot) {
-      FillHist((prefix + "_ptcone_eta").Data(), lep_pt_corr, lep_eta,  weight_ptcorr, nbin_ptcone, ptbinscone, nbin_eta , etabins);
-      if(lep_pt > ptminfix) FillHist((prefix + "_ptcone_ptfix_eta").Data(), lep_pt_corr, lep_eta,  weight_ptcorr, nbin_ptcone, ptbinscone, nbin_eta , etabins);
+      FillHist((prefix + "_ptcone_nofix_eta").Data(), lep_pt_corr, lep_eta,  weight_ptcorr, nbin_ptcone, ptbinscone, nbin_eta , etabins);
+      if(lep_pt > ptminfix) FillHist((prefix + "_ptcone_eta").Data(), lep_pt_corr, lep_eta,  weight_ptcorr, nbin_ptcone, ptbinscone, nbin_eta , etabins);
     }
   }
   return;

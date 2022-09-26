@@ -490,6 +490,7 @@ double AnalyzerCore::GetIsoFromID(TString  lep_type, TString id, double eta, dou
       }
       TString iso_cut = iso_string.ReplaceAll("ISOB","");
       iso_cut = iso_cut.ReplaceAll("ISOEC","");
+      iso_cut = iso_cut.ReplaceAll("p",".");
 
       std::string iso_s = std::string(iso_cut);
       std::string::size_type sz;  
@@ -549,6 +550,7 @@ double AnalyzerCore::GetIsoFromID(TString  lep_type, TString id, double eta, dou
       } 
       TString iso_cut = iso_string.ReplaceAll("ISOB","");
       iso_cut = iso_cut.ReplaceAll("ISOEC","");
+      iso_cut = iso_cut.ReplaceAll("p",".");
 
       std::string iso_s = std::string(iso_cut);
       std::string::size_type sz;  
