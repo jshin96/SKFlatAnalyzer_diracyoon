@@ -150,6 +150,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   TString  SingleElectronPD();
   TString  MuonEGPD();
   TString  DoubleMuonPD();
+  TString DoubleToString(double d);
   bool HasLowMassMeson(std::vector<Lepton *> leps);
 
   ///=============== GET/SELECT OBJECT

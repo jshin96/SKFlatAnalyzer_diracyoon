@@ -213,8 +213,6 @@ bool Electron::PassID(TString ID) const{
     } while (ID_subs);
 
     
-    
-    
     TString  trig = "";
     TString conv_method = "";
     TString dxy_method = "";
@@ -417,16 +415,10 @@ int  Electron::PassIDOptMulti(TString  trigger, TString dxy_method, TString sel_
     
     else if(sel_methodB.Contains("MVA")){
       
-      TString mva_st = sel_methodB.ReplaceAll("MVAB","");
-      mva_st=mva_st.ReplaceAll("p",".");
+      double  mva_cut_B = StringToDouble(sel_methodB,"MVAB");
 
-      std::string mva_s = std::string(mva_st);
-      std::string::size_type sz;     // alias of size_t                                                                                     
-      
-      double mva_d = std::stod (mva_s,&sz);
-      double mva_cut_B =  mva_d ;//-0.5 ;                                                                                                                                                                                                          
-      if(this->Pt() > 15 && this->Pt()  < 60.) mva_cut_B += (this->Pt() - 15.) * (0.9 - mva_d)/ 45.;
-      if(this->Pt()  > 60.)  mva_cut_B = 0.9;                                                                                              
+      if(this->Pt() > 15 && this->Pt()  < 60.) mva_cut_B += (this->Pt() - 15.) * (0.9 - mva_cut_B)/ 45.;
+      else if(this->Pt()  > 60.)  mva_cut_B = 0.9;                                                                                              
 
       if(DEBUG) cout << "pt = " <<  this->Pt()  << " mva = " << MVANoIso() << " cut =" << mva_cut_B << endl;
 
@@ -450,14 +442,8 @@ int  Electron::PassIDOptMulti(TString  trigger, TString dxy_method, TString sel_
 
     if(iso_methodB != ""){
 
-      TString iso_st = iso_methodB.ReplaceAll("ISOB","");
-      iso_st = iso_st.ReplaceAll("p",".");
-      std::string iso_s = std::string(iso_st);
-      std::string::size_type sz;     // alias of size_t                                                                                                                                                      
-                                                                                                                                                                                                              
-      double iso_d = std::stod (iso_s,&sz);
-      double iso_cut_B =  iso_d ;
-      
+      double  iso_cut_B = StringToDouble(iso_methodB,"ISOB");
+
       if(DEBUG) cout << "RelIso " << iso_cut_B << endl;
       if(! (RelIso()<iso_cut_B) ) return false;    
     }
@@ -496,15 +482,10 @@ int  Electron::PassIDOptMulti(TString  trigger, TString dxy_method, TString sel_
 
     if(iso_methodEC != ""){
 
-      TString iso_st = iso_methodEC.ReplaceAll("ISOEC","");
-      iso_st = iso_st.ReplaceAll("p",".");
-
-      std::string iso_s = std::string(iso_st);
-      std::string::size_type sz;     // alias of size_t                                                                                                                                                       
-      double iso_d = std::stod (iso_s,&sz);
-      double iso_cut_EC =  iso_d ;                                                                                                                                                                   
-
+      double  iso_cut_EC = StringToDouble(iso_methodEC,"ISOEC");
       if(DEBUG) cout << "RelIso " << iso_cut_EC << endl;
+
+      
 
       if(! (RelIso()<iso_cut_EC) ) return false;
     }
@@ -519,15 +500,9 @@ int  Electron::PassIDOptMulti(TString  trigger, TString dxy_method, TString sel_
 
     else if(sel_methodEC.Contains("MVA")){
 
-      TString mva_st = sel_methodEC.ReplaceAll("MVAEC","");
-      mva_st=mva_st.ReplaceAll("p",".");
-
-      std::string mva_s = std::string(mva_st);
-      std::string::size_type sz;     // alias of size_t                                                                                     
-
-      double mva_d = std::stod (mva_s,&sz);
-      double mva_cut_EC =  mva_d ;//-0.5 ;                                                                                                                                                                                                                                                
-      if(this->Pt() > 15 && this->Pt()  < 60.) mva_cut_EC += (this->Pt() - 15.) * (0.9 - mva_d)/ 45.;                              
+      double  mva_cut_EC = StringToDouble(sel_methodEC,"MVAEC");
+      
+      if(this->Pt() > 15 && this->Pt()  < 60.) mva_cut_EC += (this->Pt() - 15.) * (0.9 - mva_cut_EC)/ 45.;                              
       if(this->Pt()  > 60.)  mva_cut_EC = 0.9;                                                                                                  
 
       if(DEBUG) cout << "pt = " <<  this->Pt() << " mva = " <<MVANoIso() << " cut =" << mva_cut_EC << endl;
@@ -598,7 +573,7 @@ int  Electron::PassIDTight(TString ID) const{
   if(ID.Contains("HNMVA_")) {
     TString mva_st = ID.ReplaceAll("HNMVA_","");
     std::string mva_s = std::string(mva_st);
-    std::string::size_type sz;     // alias of size_t                                                                                                                      
+    std::string::size_type sz;   
 
     double mva_d = std::stod (mva_s,&sz);
 
@@ -607,7 +582,7 @@ int  Electron::PassIDTight(TString ID) const{
   if(ID.Contains("HNMVALoose_")) {
     TString mva_st = ID.ReplaceAll("HNMVALoose_","");
     std::string mva_s = std::string(mva_st);
-    std::string::size_type sz;     // alias of size_t                                                                                                                                        
+    std::string::size_type sz; 
 
     double mva_d = std::stod (mva_s,&sz);
 
@@ -2032,4 +2007,22 @@ bool Electron::PassPath(TString path) const{
     exit(ENODATA);
   }
   return false;
+}
+
+
+
+double  Electron::StringToDouble(TString st,TString subSt) const{
+
+  st = st.ReplaceAll(subSt,"");
+  st = st.ReplaceAll("p",".");
+  st = st.ReplaceAll("neg","-");
+
+  std::string _str = std::string(st);
+  std::string::size_type sz;  
+                                                                                                                                                                                     
+  double _d = std::stod (_str,&sz);
+
+  return _d;
+
+
 }

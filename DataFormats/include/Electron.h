@@ -36,6 +36,8 @@ public:
   inline double UncorrE() const { return j_EnergyUnCorr; }
   inline double UncorrPt() const { return Pt() * j_EnergyUnCorr/E(); }
 
+  double StringToDouble(TString st,TString subSt) const;
+
 
   bool PassMVA(double mva1, double mva2, double mva3) const;
   bool PassHNID()const ;

@@ -4,6 +4,7 @@
 AnalyzerCore::AnalyzerCore(){
 
   outfile = NULL;
+  
   mcCorr = new MCCorrection();
   puppiCorr = new PuppiSoftdropMassCorr();
   fakeEst = new FakeBackgroundEstimator();

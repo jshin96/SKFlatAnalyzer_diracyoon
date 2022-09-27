@@ -1151,6 +1151,22 @@ bool HNL_LeptonCore::PassTriggerAndCheckStream(bool apply_ptcut,vector<Lepton*> 
 }
 
 
+
+TString HNL_LeptonCore::DoubleToString(double d){
+
+
+  std::string str = std::to_string (d);
+  str.erase ( str.find_last_not_of('0') + 1, std::string::npos );
+  str.erase ( str.find_last_not_of('.') + 1, std::string::npos );
+
+  TString ts_str = TString(str);
+  ts_str = ts_str.ReplaceAll(".","p");
+  ts_str = ts_str.ReplaceAll("-","neg");
+  
+  return ts_str;
+
+}
+
 TString HNL_LeptonCore::MuonEGPD(){
 
   /// --- return PD name for EE channel data                                                                                                 

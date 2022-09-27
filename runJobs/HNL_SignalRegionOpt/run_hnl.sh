@@ -8,8 +8,9 @@ njobs_sig=2
 njobs_data=5
 nmax=300
 skim=' '
+
 declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
-declare  -a era_list=("2017")
+
 
 if [[ $1 == "DATA" ]]; then
 
@@ -32,8 +33,9 @@ if [[ $1 == "Big" ]]; then
 
     for i in "${era_list[@]}"
     do
-	SKFlat.py -a $analyzer  -i ZZTo4L_powheg  -n 500  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep   &
-	SKFlat.py -a $analyzer  -i TTLL_powheg  -n 500  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep   --userflags RunCF&
+	SKFlat.py -a $analyzer  -i ZZTo4L_powheg  -n 30  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep   &
+	SKFlat.py -a $analyzer  -i TTLL_powheg  -n 30  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep   --userflags RunCF&
+
     done
 fi
 
