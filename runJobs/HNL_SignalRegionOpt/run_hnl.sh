@@ -31,10 +31,12 @@ fi
 
 if [[ $1 == "Big" ]]; then
 
+    declare  -a era_list=( "2018")
+
     for i in "${era_list[@]}"
     do
-	SKFlat.py -a $analyzer  -i ZZTo4L_powheg  -n 30  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep   &
-	SKFlat.py -a $analyzer  -i TTLL_powheg  -n 30  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep   --userflags RunCF&
+	SKFlat.py -a $analyzer  -i ZZTo4L_powheg  -n 200  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep   &
+	SKFlat.py -a $analyzer  -i TTLL_powheg  -n 200  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep   --userflags RunCF&
 
     done
 fi

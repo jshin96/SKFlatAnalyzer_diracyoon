@@ -10,11 +10,12 @@ skim=' '
 declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
 declare  -a era_list=( "2018")
 
-if [[ $1 == "WZ" ]]; then
+if [[ $1 == "WG" ]]; then
 
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -i WZTo3LNu_mllmin4p0_powheg  -n $njobs  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep &
+        SKFlat.py -a $analyzer  -l ${mcpath}/WG.txt  -n $njobs  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep --userflags RunConv &
+        SKFlat.py -a $analyzer  -l ${mcpath}/WG.txt  -n $njobs  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep &
     done
 
 fi

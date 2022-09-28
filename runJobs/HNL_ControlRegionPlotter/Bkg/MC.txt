@@ -15,10 +15,6 @@ WWW
 WWZ
 WZZ
 ZZTo4L_powheg
-ZZTo4L_m_1toInf_powheg
-ZZ_pythia
 ZZZ
 WZJJToLNu_private
-WZTo3LNu_amcatnlo
 WZTo3LNu_mllmin4p0_powheg
-WZ_pythia

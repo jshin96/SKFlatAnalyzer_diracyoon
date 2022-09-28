@@ -30,18 +30,13 @@ void HNL_SignalRegionOpt::executeEvent(){
     vector<TString> vMVAEC;
     for(unsigned int imva=0 ; imva < 70 ; imva++){
       double mva_d= -0.5 + double(imva)*0.02;
-      std::string mvaS= std::to_string(mva_d);
-      TString mvaTS = TString(mvaS).ReplaceAll(".","p");
-      mvaTS = mvaTS.ReplaceAll("-0","m0");
-
+      TString mvaTS= DoubleToString(mva_d);
       vMVAB.push_back("MVAB"+mvaTS+"_");
 
     }
     for(unsigned int imva=0 ; imva < 85 ; imva++){
       double mva_d= -0.8 + imva*0.02;
-      std::string mvaS= std::to_string(mva_d);
-      TString mvaTS = TString(mvaS).ReplaceAll(".","p");
-      mvaTS = mvaTS.ReplaceAll("-0","m0");
+      TString mvaTS= DoubleToString(mva_d);
       vMVAEC.push_back("MVAEC"+mvaTS+"_");
 
     }
@@ -51,8 +46,8 @@ void HNL_SignalRegionOpt::executeEvent(){
     for(auto iTrig : vTrig){
       for(auto iConv : vConv){
         for(auto iCC : vCC){
-          for(auto iMVAB : vMVAB) ElectronsIDs.push_back(iTrig+iConv+iCC+iMVAB+"MVAECm0p8_ISOB0p15_ISOEC0p15_DXYB1EC1");
-          for(auto iMVAEC : vMVAEC) ElectronsIDs.push_back(iTrig+iConv+iCC+iMVAEC+"MVABm0p5_ISOB0p15_ISOEC0p15_DXYB1EC1");
+          for(auto iMVAB : vMVAB) ElectronsIDs.push_back(iTrig+iConv+iCC+iMVAB+"MVAECneg0p8_ISOB0p15_ISOEC0p15_DXYB1EC1");
+          for(auto iMVAEC : vMVAEC) ElectronsIDs.push_back(iTrig+iConv+iCC+iMVAEC+"MVABneg0p5_ISOB0p15_ISOEC0p15_DXYB1EC1");
           ElectronsIDs.push_back(iTrig+iConv+iCC+"POGT_ISOB0p15_ISOEC0p15_DXYB1EC1");
           ElectronsIDs.push_back(iTrig+iConv+iCC+"POGM_ISOB0p15_ISOEC0p15_DXYB1EC1");
           ElectronsIDs.push_back(iTrig+iConv+iCC+"POGTNoIso_ISOB0p15_ISOEC0p15_DXYB1EC1");
@@ -84,23 +79,19 @@ void HNL_SignalRegionOpt::executeEvent(){
     vector<TString> vMVAEC;
     for(unsigned int imva=0 ; imva < 65 ; imva++){
       double mva_d= -0.4 + double(imva)*0.02;
-      std::string mvaS= std::to_string(mva_d);
-      TString mvaTS = TString(mvaS).ReplaceAll(".","p");
-      mvaTS = mvaTS.ReplaceAll("-0","m0");
+      TString mvaTS= DoubleToString(mva_d);
       vMVAB.push_back("MVAB"+mvaTS+"_");
     }
     for(unsigned int imva=0 ; imva < 80 ; imva++){
       double mva_d= -0.7 + imva*0.02;
-      std::string mvaS= std::to_string(mva_d);
-      TString mvaTS = TString(mvaS).ReplaceAll(".","p");
-      mvaTS = mvaTS.ReplaceAll("-0","m0");
+      TString mvaTS= DoubleToString(mva_d);
       vMVAEC.push_back("MVAEC"+mvaTS+"_");
     }
     
     
     vector<TString> MuonsIDs;
-    for(auto iMVAB : vMVAB) MuonsIDs.push_back(iMVAB+"MVAECm0p7_ISOB0p15_ISOEC0p15_DXYB1EC1");
-    for(auto iMVAEC : vMVAEC) MuonsIDs.push_back(iMVAEC+"MVABm0p4_ISOB0p15_ISOEC0p15_DXYB1EC1");
+    for(auto iMVAB : vMVAB) MuonsIDs.push_back(iMVAB+"MVAECneg0p7_ISOB0p15_ISOEC0p15_DXYB1EC1");
+    for(auto iMVAEC : vMVAEC) MuonsIDs.push_back(iMVAEC+"MVABneg0p4_ISOB0p15_ISOEC0p15_DXYB1EC1");
     MuonsIDs.push_back("POGT_ISOB0p15_ISOEC0p15_DXYB1EC1");
     MuonsIDs.push_back("POGM_ISOB0p15_ISOEC0p15_DXYB1EC1");
     

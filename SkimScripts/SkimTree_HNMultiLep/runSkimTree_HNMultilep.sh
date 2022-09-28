@@ -41,10 +41,10 @@ if [[ $1 == "Top" ]]; then
 
 fi
 
-if [[ $1 == "TTLL" ]]; then
+if [[ $1 == "W" ]]; then
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -i TTLL_powheg  -n 1000  --nmax ${nmax}   -e ${i} &
+        SKFlat.py -a $analyzer  -l $mcpath/WJet.txt  -n 1000  --nmax ${nmax}   -e ${i} &
     done
 
 fi
