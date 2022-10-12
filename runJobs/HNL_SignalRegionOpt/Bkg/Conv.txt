@@ -2,5 +2,3 @@ WGToLNuG
 ZGToLLG
 WWG
 WZG
-DYJets
-WJets_MG

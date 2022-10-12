@@ -67,6 +67,12 @@ public:
     else return "Muon";
   }
 
+  inline TString GetEtaRegion() const {
+    if(fabs(this->Eta()) < 0.8) return "BB";
+    if(fabs(this->Eta()) < 1.5) return "EB";
+    return "EE";
+  }
+
   inline float miniIsoDr() const {
     float mindr = 0.05;
     float maxdr = 0.2;

@@ -180,7 +180,8 @@ bool Muon::PassID(TString ID) const {
     }
 
     if(ID.Contains("MuOptLoose")) return PassLooseIDOpt();
-
+    
+    //cout << "ID " << ID << " pass = " << PassIDOptMulti(dxy_method, pog_methodB,pog_methodEC, iso_methodB,iso_methodEC)  << endl;
     return   PassIDOptMulti(dxy_method, pog_methodB,pog_methodEC, iso_methodB,iso_methodEC);
 
   }
@@ -514,13 +515,38 @@ int  Muon::PassIDOptMulti(TString dxy_method, TString sel_methodB,TString sel_me
     if(DEBUG) cout << " sel_methodB = " << sel_methodB << endl;
     
     if(sel_methodB.Contains("MVA")){
-       
-      double  mva_cut_B = StringToDouble(sel_methodB,"MVAB");
       
-      if(this->Pt() > 10 && this->Pt()  < 60.) mva_cut_B += (this->Pt() - 10.) * (0.9 - mva_cut_B)/ 50.;
-      if(this->Pt()  > 60.)  mva_cut_B = 0.9;
+      double high_pt_cut = 0.9;
+      TString mva_st = "MVAB";
+      if(sel_methodB.Contains("MVAB2")){
+	mva_st = "MVAB2";
+	high_pt_cut = 0.925;
+      }
+      if(sel_methodB.Contains("MVAB3")){
+        mva_st = "MVAB3";
+	high_pt_cut = 0.95;
+      }
+      if(sel_methodB.Contains("MVAB4")){
+	mva_st = "MVAB4";
+        high_pt_cut = 0.96;
+      }
+      if(sel_methodB.Contains("MVAB5")){
+	mva_st = "MVAB5";
+        high_pt_cut = 0.97;
+      }
+      if(sel_methodB.Contains("MVAB6")){
+	mva_st = "MVAB6";
+        high_pt_cut = 0.98;
+      }
+
+      
+      double  mva_cut_B = StringToDouble(sel_methodB,mva_st);
+      
+      if(this->Pt() > 10 && this->Pt()  < 60.) mva_cut_B += (this->Pt() - 10.) * (high_pt_cut - mva_cut_B)/ 50.;
+      if(this->Pt()  > 60.)  mva_cut_B =high_pt_cut;
 
       if(DEBUG) cout << "pt = " <<  this->Pt()  << " mva = " << MVA() << " cut =" << mva_cut_B << endl;
+
 
       if(! (MVA()> mva_cut_B) ) return 0;
     }
@@ -529,7 +555,7 @@ int  Muon::PassIDOptMulti(TString dxy_method, TString sel_methodB,TString sel_me
         if(! (isPOGTight()) ) return 0;
       }
       if(sel_methodB == "POGM"){
-        if(! (isPOGTight()) ) return 0;
+        if(! (isPOGMedium()) ) return 0;
       }
     }
     if(iso_methodB != ""){
@@ -537,8 +563,8 @@ int  Muon::PassIDOptMulti(TString dxy_method, TString sel_methodB,TString sel_me
 
       double  iso_cut_B = StringToDouble(iso_methodB,"ISOB");
 
-      if(DEBUG) cout << "RelIso " << iso_cut_B << endl;
-      if(! (RelIso()<iso_cut_B) ) return false;
+      if(DEBUG) cout << "RelIso " << iso_cut_B << " val= " <<  RelIso() << endl;
+      if(! (RelIso()<iso_cut_B) ) return 0;
     }
   }
   else{
@@ -564,32 +590,59 @@ int  Muon::PassIDOptMulti(TString dxy_method, TString sel_methodB,TString sel_me
 
       double  iso_cut_EC = StringToDouble(iso_methodEC,"ISOEC");
 
-      if(DEBUG) cout << "RelIso " << iso_cut_EC << endl;
+      if(DEBUG) cout << "RelIso " << iso_cut_EC << " val = " << RelIso() <<endl;
 
-      if(! (RelIso()<iso_cut_EC) ) return false;
+      if(! (RelIso()<iso_cut_EC) ) return 0;
     }
 
     if(sel_methodEC.Contains("MVA")){
 
-      double  mva_cut_EC = StringToDouble(sel_methodEC,"MVAEC");
 
-      if(this->Pt() > 10 && this->Pt()  < 60.) mva_cut_EC += (this->Pt() - 10.) * (0.9 - mva_cut_EC)/ 50.;
-      if(this->Pt()  > 60.)  mva_cut_EC = 0.9;
+      double high_pt_cut = 0.9;
+      TString mva_st = "MVAEC";
+      if(sel_methodEC.Contains("MVAEC2")){
+        mva_st = "MVAEC2";
+	high_pt_cut = 0.925;
+      }
+      if(sel_methodEC.Contains("MVAEC3")){
+	mva_st = "MVAEC3";
+	high_pt_cut = 0.95;
+      }
+      if(sel_methodB.Contains("MVAEC4")){
+	mva_st = "MVAEC4";
+        high_pt_cut = 0.96;
+      }
+      if(sel_methodB.Contains("MVAEC5")){
+	mva_st = "MVAEC5";
+        high_pt_cut = 0.97;
+      }
+      if(sel_methodB.Contains("MVAEC6")){
+	mva_st = "MVAEC6";
+        high_pt_cut = 0.98;
+      }
+
+
+      double  mva_cut_EC = StringToDouble(sel_methodEC, mva_st);
+
+      if(this->Pt() > 10 && this->Pt()  < 60.) mva_cut_EC += (this->Pt() - 10.) * (high_pt_cut - mva_cut_EC)/ 50.;
+      if(this->Pt()  > 60.)  mva_cut_EC = high_pt_cut;
 
       if(DEBUG) cout << "pt = " <<  this->Pt() << " mva = " <<MVA() << " cut =" << mva_cut_EC << endl;
+
 
       if(! (MVA()> mva_cut_EC) ) return 0;
     }
     else{
       if(sel_methodEC == "POGT"){
-        if(! (isPOGTight()) ) return false;
+        if(! (isPOGTight()) ) return 0;
       }
       if(sel_methodEC == "POGM"){
-        if(! (isPOGMedium()) ) return false;
+        if(! (isPOGMedium()) ) return 0;
       }
 
     }
   }
+
   return 1;
 
 }

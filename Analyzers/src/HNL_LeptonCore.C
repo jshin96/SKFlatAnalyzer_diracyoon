@@ -3,6 +3,7 @@
 void HNL_LeptonCore::initializeAnalyzer(){
 
 
+  
   SglMuon_Channel    =   (IsDATA && (this->DataStream == "SingleMuon"        )); //--> Needed when adding Mu50 + validation                 
   DblEG_Channel      =   (IsDATA && (this->DataStream == DoubleElectronPD()  ));
   DblMuon_Channel    =   (IsDATA && (this->DataStream == DoubleMuonPD()      ));
@@ -192,7 +193,9 @@ void HNL_LeptonCore::initializeAnalyzer(){
   } 
 
   
-  //SetupMVAReader();
+  
+  if (Analyzer == "HNL_SignalRegionPlotter")SetupMVAReader();
+  
 }
 
 void HNL_LeptonCore::SetupMVAReader(){
@@ -566,7 +569,7 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
   param.Electron_MaxEta = 2.5;
 
   param.Muon_Veto_ID = "HNVeto2016";
-  param.Electron_Veto_ID = "HNVeto2016";
+  param.Electron_Veto_ID = "HNVeto";
 
   param.Tau_Veto_ID = "JetVLElVLMuVL";
 
@@ -623,6 +626,30 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
     return param;
 
   }
+  else if (s_setup=="HNLOpt"){
+
+    param.MuFakeMethod = "MC";
+    param.ElFakeMethod = "MC";
+    param.CFMethod   = "MC";
+    param.ConvMethod = "MC";
+
+    param.Muon_Tight_ID = "HNTightV2";
+    param.Electron_Tight_ID = "HNTightV2";
+
+
+    param.Electron_ID_SF_Key = "TmpHNTightV2";
+    param.Muon_ID_SF_Key = "TmpHNTightV2";
+
+    param.Muon_FR_ID = "HNLooseV1";
+    param.Electron_FR_ID = "HNLooseV4";
+
+
+    param.Muon_RECO_SF_Key = "MuonRecoSF";
+
+    return param;
+
+  }
+
   else if (s_setup=="BDT"){
 
     param.MuFakeMethod = "MC";
@@ -3844,8 +3871,8 @@ void HNL_LeptonCore::FillAllMuonPlots(TString label , TString cut,  Muon mu, flo
   FillHist( cut+ "/Eta_"+label  , mu.Eta() , w, 60, -3., 3.,"muon #eta");
   FillHist( cut+ "/IP3D_"+label  , mu.IP3D()/mu.IP3Derr(), w, 400, -20., 20., "IP3D");
 
-  FillHist( cut+ "/Mva_"+label  , mu.MVA(), w, 400, -1., 1., "MVA");
-  FillHist( cut+ "/Pt_mva_"+label , mu.Pt() , mu.MVA(), fabs(w), 200, 0., 1000., 400, -1., 1.);
+  FillHist( cut+ "/Mva_"+label  , mu.MVA(), w, 600, -1., 2., "MVA");
+  FillHist( cut+ "/Pt_mva_"+label , mu.Pt() , mu.MVA(), fabs(w), 200, 0., 1000., 600, -1., 2.);
 
   FillHist( cut+ "/Chi2_"+label  , mu.Chi2(), w, 200,0., 20., "chi2");
   FillHist( cut+ "/Validhits_"+label  , mu.ValidMuonHits(), w, 100,0., 100., "");
@@ -3866,6 +3893,7 @@ void HNL_LeptonCore::FillAllElectronPlots(TString label , TString cut,  std::vec
 
     TString eta_label="";
     if(fabs(els.at(i).Eta()) < 1.5) eta_label = "_barrel";
+    //else if(fabs(els.at(i).Eta()) < 1.5) eta_label = "_barrel2";
     else eta_label = "_endcap";
 
     TString pt_label="";
@@ -3884,6 +3912,18 @@ void HNL_LeptonCore::FillAllElectronPlots(TString label , TString cut,  std::vec
 
 }
 
+TString HNL_LeptonCore::Category(Electron el){
+  
+  
+  TString eta_label="El";
+  if(fabs(el.Eta()) < 0.8) eta_label = "_BB";
+  else if(fabs(el.Eta()) < 1.5) eta_label = "_EB"; 
+  else eta_label = "_EE";
+  
+  return eta_label;
+  
+
+}
 
 void HNL_LeptonCore::FillAllElectronPlots(TString label , TString cut,  Electron el, float w){
 
@@ -3937,11 +3977,13 @@ void HNL_LeptonCore::FillAllElectronPlots(TString label , TString cut,  Electron
   FillHist( cut+ "/SCPhi_"+label  , el.scPhi() , w, 70, -3.5, 3.5,"electron #phi");
   FillHist( cut+ "/IP3D_"+label  , el.IP3D()/el.IP3Derr(), w, 400, -20., 20., "IP3D");
 
-  FillHist( cut+ "/Mva_"+label  , el.MVANoIso(), w, 400, -1., 1., "MVA");
+  FillHist( cut+ "/Mva_"+label  , el.MVANoIso(), w, 600, -1., 2., "MVA");
+  FillHist( cut+ "/MvaResponse_"+label  , el.MVANoIsoResponse(), w, 160, -8.,8., "MVA");
 
-  FillHist( cut+ "/MvaIso_"+label  , el.MVAIso(), w, 400, -1., 1., "MVA");
+  FillHist( cut+ "/MvaIso_"+label  , el.MVAIso(), w, 600, -1., 2., "MVA");
+  FillHist( cut+ "/Pt_mva_"+label , el.Pt() , el.MVANoIso(), fabs(w), 200, 0., 1000., 600, -1., 2.);
 
-
+  FillHist( cut+ "/Pt_mvaresponse_"+label , el.Pt() , el.MVANoIsoResponse(), fabs(w), 200, 0., 1000.,160, -8., 8.);
 
   FillHist( cut+ "/MissingHits_"+label  , el.NMissingHits(), w, 8, 0., 8., "Missing Hits");
   FillHist( cut+ "/Full5x5_sigmaIetaIeta_"+label  , el.Full5x5_sigmaIetaIeta(), w, 200, 0., 0.05, "");

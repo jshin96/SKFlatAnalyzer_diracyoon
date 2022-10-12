@@ -1,15 +1,17 @@
-
 #include "AnalyzerCore.h"
 
 AnalyzerCore::AnalyzerCore(){
 
   outfile = NULL;
+
   
   mcCorr = new MCCorrection();
   puppiCorr = new PuppiSoftdropMassCorr();
-  fakeEst = new FakeBackgroundEstimator();
-  cfEst = new CFBackgroundEstimator();
-  pdfReweight = new PDFReweight();
+  if(Analyzer == "HNL_SignalRegionPlotter"){
+    fakeEst = new FakeBackgroundEstimator();
+    cfEst = new CFBackgroundEstimator();
+    pdfReweight = new PDFReweight();
+  }
   muonGE = new GeneralizedEndpoint();
   muonGEScaleSyst = new GEScaleSyst();
 
@@ -45,9 +47,11 @@ AnalyzerCore::~AnalyzerCore(){
 
   if(mcCorr) delete mcCorr;
   if(puppiCorr) delete puppiCorr;
-  if(fakeEst) delete fakeEst;
-  if(cfEst) delete cfEst;
-  if(pdfReweight) delete pdfReweight;
+  if(Analyzer == "HNL_SignalRegionPlotter"){
+    if(fakeEst) delete fakeEst;
+    if(cfEst) delete cfEst;
+    if(pdfReweight) delete pdfReweight;
+  }
   if(muonGE) delete muonGE;
   if(muonGEScaleSyst) delete muonGEScaleSyst;
 
@@ -2572,13 +2576,15 @@ void AnalyzerCore::initializeAnalyzerTools(){
   puppiCorr->ReadHistograms();
 
   //==== FakeBackgroundEstimator
-  fakeEst->SetEra(GetEra());
-  fakeEst->ReadHistograms();
-
+  if(Analyzer == "HNL_SignalRegionPlotter"){
+    fakeEst->SetEra(GetEra());
+    fakeEst->ReadHistograms();
+  }
   //==== CFBackgroundEstimator
-  cfEst->SetEra(GetEra());
-  cfEst->ReadHistograms();
-
+  if(Analyzer == "HNL_SignalRegionPlotter"){
+    cfEst->SetEra(GetEra());
+    cfEst->ReadHistograms();
+  }
 }
 
 

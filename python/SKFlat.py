@@ -727,6 +727,7 @@ void {2}(){{
         out.write('  m.timestamp = "'+timestamp+'";\n')
 
     else:
+      out.write('  m.Analyzer = "'+args.Analyzer+'";\n');
       out.write('  m.MCSample = "'+InputSample+'";\n');
       out.write('  m.IsDATA = false;\n')
       out.write('  m.xsec = '+str(this_xsec)+';\n')

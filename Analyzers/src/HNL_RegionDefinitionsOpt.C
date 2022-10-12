@@ -29,7 +29,9 @@
 
 void HNL_RegionDefinitionsOpt::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq, std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Tau> TauColl, std::vector<Jet> JetCollLoose,std::vector<Jet> JetColl, std::vector<Jet> VBF_JetColl,std::vector<FatJet>  AK8_JetColl, std::vector<Jet> B_JetColl, Event ev,   Particle METv, AnalyzerParameter param,   float weight_ll){
 
-  vector<HNL_LeptonCore::Channel> channels = {EE,MuMu};//, EMu};
+
+  // Only opt for EE/MM
+  vector<HNL_LeptonCore::Channel> channels = {EE,MuMu};
 
   for(auto dilep_channel : channels){
     
@@ -105,7 +107,7 @@ void HNL_RegionDefinitionsOpt::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq
       if(!SameCharge(leps)) continue;
     }
 
-    if(RunFake){
+    if(RunFake&& IsData){
       
       if(run_Debug)cout << "ID2 Mu  " << param_channel.Muon_Tight_ID << " " << param_channel.Muon_FR_ID << endl;
       if(run_Debug)cout << "ID2 El  " << param_channel.Electron_Tight_ID << " " << param_channel.Electron_FR_ID << endl;
@@ -137,9 +139,20 @@ void HNL_RegionDefinitionsOpt::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq
 
 
     TString  lep_charge =  (leps[0]->Charge() < 0)  ? "QM" :  "QP";
-    
+
+    for(auto iel  : electrons){
+
+    FillHist( "MVAOpt/"+Category(iel)+"Pt_mvaresponse_"+param.Name , iel.Pt() , iel.MVANoIsoResponse(), weight_channel, 1000, 0., 1000.,160, -8., 8.);
+    }
+
     if(AK8_JetColl.size() > 0) {
       TString SRbin= RunSignalRegionAK8String (dilep_channel,qq, leps, leps_veto, TauColl, JetColl, AK8_JetColl, B_JetColl,ev, METv ,param_channel,"", weight_channel) ;
+      for(auto iel  : electrons){
+	if(SRbin != "false") FillHist( "MVAOpt/"+SRbin+"_"+Category(iel)+"Pt_mvaresponse_"+param.Name , iel.Pt() , iel.MVANoIsoResponse(), weight_channel, 1000, 0., 1000.,160, -8., 8.);
+	if(SRbin != "false") FillHist( "MVAOpt/"+SRbin+"_"+Category(iel)+"Pt_Isomvaresponse_"+param.Name , iel.Pt() , iel.MVAIsoResponse(), weight_channel, 1000, 0., 1000.,160, -8., 8.);
+
+      }
+      
       if(SRbin != "false") FillEventCutflow(LimitRegions, weight_channel, SRbin,"LimitInput/"+param.Name);
       if(SRbin != "false") FillEventCutflow(LimitRegionsQ, weight_channel, lep_charge+SRbin,"LimitInput/"+param.Name);
     }
@@ -149,6 +162,14 @@ void HNL_RegionDefinitionsOpt::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq
       
       
       if(SRbin != "false"){
+
+	for(auto iel  : electrons){
+	  if(SRbin != "false") FillHist( "MVAOpt/"+SRbin+"_"+Category(iel)+"Pt_mvaresponse_"+param.Name , iel.Pt() , iel.MVANoIsoResponse(), weight_channel, 1000, 0., 1000.,160, -8., 8.);
+	  if(SRbin != "false") FillHist( "MVAOpt/"+SRbin+"_"+Category(iel)+"Pt_Isomvaresponse_"+param.Name , iel.Pt() , iel.MVAIsoResponse(), weight_channel, 1000, 0., 1000.,160, -8., 8.);
+
+	}
+
+
 	FillEventCutflow(LimitRegions, weight_channel, SRbin,"LimitInput/"+param.Name);
 	FillEventCutflow(LimitRegionsQ, weight_channel, lep_charge+SRbin,"LimitInput/"+param.Name);
       }
@@ -156,6 +177,14 @@ void HNL_RegionDefinitionsOpt::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq
 	SRbin  = RunSignalRegionAK4String (dilep_channel,qq, leps, leps_veto, TauColl, JetColl, AK8_JetColl, B_JetColl, ev, METv ,param_channel,"", weight_channel);
 
 	if(SRbin != "false"){
+	  
+	  for(auto iel  : electrons){
+	    if(SRbin != "false") FillHist( "MVAOpt/"+SRbin+"_"+Category(iel)+"Pt_mvaresponse_"+param.Name , iel.Pt() , iel.MVANoIsoResponse(), weight_channel, 1000, 0., 1000.,160, -8., 8.);
+	    if(SRbin != "false") FillHist( "MVAOpt/"+SRbin+"_"+Category(iel)+"Pt_Isomvaresponse_"+param.Name , iel.Pt() , iel.MVAIsoResponse(), weight_channel, 1000, 0., 1000.,160, -8., 8.);
+
+	  }
+
+
 	  FillEventCutflow(LimitRegions, weight_channel, SRbin,"LimitInput/"+param.Name);
 	  FillEventCutflow(LimitRegionsQ, weight_channel, lep_charge+SRbin,"LimitInput/"+param.Name);
 
@@ -310,7 +339,7 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK8String(HNL_LeptonCore::Chann
   double HT = GetHT(JetColl, AK8_JetColl);
   double met2_st = pow(METv.Pt(),2.)/ ST;
 
-  double met_cut = 15.;
+  double met_cut = 7.;
   if (param.SRConfig.Contains("SR1MET_20_"))   met_cut = 20.;
   if (param.SRConfig.Contains("SR1MET_17_"))   met_cut = 17.;
   if (param.SRConfig.Contains("SR1MET_15_"))   met_cut = 15.;

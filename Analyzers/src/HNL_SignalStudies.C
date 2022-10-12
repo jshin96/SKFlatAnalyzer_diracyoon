@@ -59,7 +59,7 @@ void HNL_SignalStudies::executeEvent(){
   vector<Electron> CCElectrons = GetSignalLeptons(_CCElectrons,gens); 
   vector<Electron> POGElectrons = GetSignalLeptons(_POGElectrons,gens); 
   */
-  vector<HNL_LeptonCore::Channel> channels = {EE,MuMu, EMu};
+  vector<HNL_LeptonCore::Channel> channels = {EE};//,MuMu, EMu};
 
 
   for(auto dilep_channel : channels){
@@ -212,8 +212,15 @@ void HNL_SignalStudies::executeEvent(){
 
     vector<Gen> gen_lep= GetGenLepronsSignal();
     
-    std::vector<Electron>   ElectronCollAll = GetElectrons( "NoCut", 15., 2.5);
-    std::vector<Muon>       MuonCollAll     = GetMuons    (  "NoCut", 10., 2.4);
+    
+    std::vector<Electron>   ElectronCollAll = GetElectrons( "NoCut", 5., 2.5);
+    //for(auto iel: ElectronCollAll){
+    //  if(iel.passMVAID_noIso_WP90())cout << "El pt = " << iel.Pt() << "   eta = " << iel.Eta() << "  mva = " << iel.MVANoIso() << "  Pass MVA = " << iel.passMVAID_noIso_WP90() << end//l;
+    //    else if (iel.MVANoIso() > 0.9) cout << "FAIL El pt = " << iel.Pt() << "   eta = " << iel.Eta() << "  mva = " << iel.MVANoIso() << "  Pass MVA = " << iel.passMVAID_noIso_WP90() << e//ndl;
+      
+				     //  }
+
+    std::vector<Muon>       MuonCollAll     = GetMuons    (  "NoCut", 5., 2.4);
     
     std::vector<Electron>   ElectronColl;
     std::vector<Muon>       MuonColl;
@@ -265,6 +272,9 @@ void HNL_SignalStudies::executeEvent(){
       FillAllElectronPlots("CF", "Electrons"  , ElectronCollCF , weight);
       
       
+      FillAllElectronPlots("Bkg", "ElectronsPOGMVA80"  , SelectElectrons    (ElectronColl,  "passMVAID_noIso_WP80Opt", 10., 2.5) , weight);
+      FillAllElectronPlots("Bkg", "ElectronsPOGMVA90"  , SelectElectrons    (ElectronColl,  "passMVAID_noIso_WP90Opt", 10., 2.5) , weight);
+
       FillAllMuonPlots("Fake", "MuonsOpt"  , SelectMuons    ( MuonCollFake ,  "HNOpt", 5., 2.4) , weight);
       FillAllElectronPlots("Fake", "ElectronsOpt"  , SelectElectrons    (ElectronCollFake,  "HNOpt", 10., 2.5) , weight);
       FillAllElectronPlots("IntConv", "ElectronsOpt"  , SelectElectrons    (ElectronCollIntConv,  "HNOpt", 10., 2.5) , weight);
@@ -277,7 +287,8 @@ void HNL_SignalStudies::executeEvent(){
       FillAllElectronPlots("Signal", "Electrons"  , ElectronColl , weight);
       FillAllMuonPlots("Signal", "MuonsOpt"  , SelectMuons    ( MuonColl ,  "HNOpt", 5., 2.4) , weight);
       FillAllElectronPlots("Signal", "ElectronsOpt"  , SelectElectrons    (ElectronColl,  "HNOpt", 10., 2.5) , weight);
-
+      FillAllElectronPlots("Signal", "ElectronsPOGMVA80"  , SelectElectrons    (ElectronColl,  "passMVAID_noIso_WP80Opt", 10., 2.5) , weight);
+      FillAllElectronPlots("Signal", "ElectronsPOGMVA90"  , SelectElectrons    (ElectronColl,  "passMVAID_noIso_WP90Opt", 10., 2.5) , weight);
 
     }      
 
@@ -555,7 +566,7 @@ void HNL_SignalStudies::executeEvent(){
 	  double pt = (ilep.Pt() > 2000) ? 1999 : ilep.Pt();
 	  FillHist( "Reco"+channel+"/Lep_pt_"+id_mu, pt, weight, 10, ptbins);
           if(SameCharge(ElectronCollID))          FillHist( "Reco"+channel+"_SS/Lep_pt_"+id_mu, pt, weight, 10, ptbins);
-
+	  
 	}
       }
 

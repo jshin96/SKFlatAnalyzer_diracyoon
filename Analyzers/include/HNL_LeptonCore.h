@@ -126,6 +126,8 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   //===== TRIGGER
 
+  TString Category(Electron el);
+
   vector<AnalyzerParameter::Syst> GetSystList(TString SystType);
   double HNLZvtxSF(HNL_LeptonCore::Channel ch);
   bool PassHEMVeto(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps);

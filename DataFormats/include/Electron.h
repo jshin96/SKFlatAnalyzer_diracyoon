@@ -32,13 +32,49 @@ public:
   inline double MVAIso() const { return j_mvaiso; }
   inline double MVANoIso() const { return j_mvanoiso; }
 
+  inline double MVANoIsoResponse() const {
+    
+    if (j_mvanoiso == 1.) return 8;
+
+    if(MVANoIsoResponseRaw() > 8) return 8;
+    if(MVANoIsoResponseRaw() < -8) return -8;
+    return MVANoIsoResponseRaw();
+  }
+
+  inline double MVAIsoResponse() const {
+
+    if (j_mvaiso == 1.) return 8;
+
+    if(MVAIsoResponseRaw() > 8) return 8;
+    if(MVAIsoResponseRaw() < -8) return -8;
+    return MVAIsoResponseRaw();
+  }
+    
+
+  inline double MVAIsoResponseRaw() const {
+
+    return -1.0 * std::log( (2./ (j_mvaiso + 1.)) -1.)/2.;
+
+  }
+  
+  inline double MVANoIsoResponseRaw() const {
+    //https://github.com/cms-sw/cmssw/blob/master/CondFormats/GBRForest/interface/GBRForest.h
+    //  return 2.0 / (1.0 + std::exp(-2.0 * response)) - 1;  //MVA output between -1 and 1
+    
+    
+    return -1.0 * std::log( (2./ (j_mvanoiso + 1.)) -1.)/2.;
+
+  }
+
   void SetUncorrE(double une);
   inline double UncorrE() const { return j_EnergyUnCorr; }
   inline double UncorrPt() const { return Pt() * j_EnergyUnCorr/E(); }
 
   double StringToDouble(TString st,TString subSt) const;
 
-
+  bool PassMVA_UL_BB(double mva1, double mva2, double mva3) const ;
+  bool PassMVA_UL_EB(double mva1, double mva2, double mva3) const ;
+  bool PassMVA_UL_EE(double mva1, double mva2, double mva3) const ;
   bool PassMVA(double mva1, double mva2, double mva3) const;
   bool PassHNID()const ;
   void SetPassConversionVeto(bool b);
@@ -194,7 +230,7 @@ public:
 
   int  PassLooseIDOpt(TString  trigger, TString dxy_method, TString sel_methodB,TString sel_methodEC, TString conv_method, TString chg_method, TString iso_methodB,TString iso_methodEC ) const;
 
-  int  PassIDOptMulti(TString  trigger, TString dxy_method, TString mva_methodB, TString mva_methodEC, TString conv_method, TString chg_method, TString iso_methodB, TString iso_methodEC) const;
+  int  PassIDOptMulti(TString  trigger, TString dxy_method, TString mva_methodB, TString mva_methodEC, TString pog_methodBBX,TString pog_methodBBY,TString pog_methodBBZ, TString pog_methodEBX,TString pog_methodEBY,TString pog_methodEBZ,TString pog_methodEEX,TString pog_methodEEY,TString pog_methodEEZ, TString conv_method, TString chg_method, TString iso_methodB, TString iso_methodEC) const;
   bool passIDHN(int ID, double dxy_b, double dxy_e, double dz_b,double dz_e, double sip_b, double sip_e, double iso_b,double iso_e, double miso_b, double miso_e) const;
   bool PassIDOpt(TString ID, bool cc, double dx_b ,double dx_e,double dz_b,double dz_e, double iso_b, double iso_e) const;
   //==== ID
