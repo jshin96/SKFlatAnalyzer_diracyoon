@@ -16,13 +16,9 @@ AnalyzerCore::AnalyzerCore(){
   muonGEScaleSyst = new GEScaleSyst();
 
   
-  vector<TString> JECSources = {"AbsoluteStat","AbsoluteScale","AbsoluteFlavMap","AbsoluteMPFBias","Fragmentation","SinglePionECAL","SinglePionHCAL","FlavorQCD","TimePtEta","RelativeJEREC1","RelativeJEREC2","RelativeJERHF","RelativePtBB","RelativePtEC1","RelativePtEC2","RelativePtHF","RelativeBal","RelativeSample","RelativeFSR","RelativeStatFSR","RelativeStatEC","RelativeStatHF","PileUpDataMC","PileUpPtRef","PileUpPtBB","PileUpPtEC1","PileUpPtEC2","PileUpPtHF","FlavorZJet","FlavorPhotonJet","FlavorPureGluon","FlavorPureQuark","FlavorPureCharm","FlavorPureBottom"};
+  JECSources = {"AbsoluteStat","AbsoluteScale","AbsoluteFlavMap","AbsoluteMPFBias","Fragmentation","SinglePionECAL","SinglePionHCAL","FlavorQCD","TimePtEta","RelativeJEREC1","RelativeJEREC2","RelativeJERHF","RelativePtBB","RelativePtEC1","RelativePtEC2","RelativePtHF","RelativeBal","RelativeSample","RelativeFSR","RelativeStatFSR","RelativeStatEC","RelativeStatHF","PileUpDataMC","PileUpPtRef","PileUpPtBB","PileUpPtEC1","PileUpPtEC2","PileUpPtHF","FlavorZJet","FlavorPhotonJet","FlavorPureGluon","FlavorPureQuark","FlavorPureCharm","FlavorPureBottom","Total"};
   
-  bool runJEC(true);
-  if(runJEC){
-    for(auto jec_source : JECSources)   SetupJECUncertainty(jec_source);
-  }
-  
+
 }
 
 AnalyzerCore::~AnalyzerCore(){
@@ -176,21 +172,19 @@ float AnalyzerCore::GetJECUncertainty(TString type, float eta, float pt, bool up
   if(up) mapit_unc =  mapit->second.at(1).find(bin_boundary);
   else mapit_unc =  mapit->second.at(2).find(bin_boundary);
   
-  float unc = mapit_unc->second.at(ptbin); 
+  float unc = (up) ?   1+ mapit_unc->second.at(ptbin) : 1 - mapit_unc->second.at(ptbin);
 
   return unc;
 }
 
-
 void AnalyzerCore::SetupJECUncertainty(TString type){
   
-
   string analysisdir = getenv("DATA_DIR");
   
-  string file = analysisdir + string(GetEra()) + "/JEC/Summer19UL16APV_V7_MC_UncertaintySources_AK4PFchs.txt";                                                                                                                
-  if(GetEra() == "2016postVFP") file = analysisdir + string(GetEra())+ "/JEC/Summer19UL16_V7_MC_UncertaintySources_AK4PFchs.txt";
-  if(GetEra() == "2017") file = analysisdir + string(GetEra())+ "/JEC/Summer19UL17_V5_MC_UncertaintySources_AK4PFchs.txt";
-  if(GetEra() == "2018") file = analysisdir + string(GetEra())+ "/JEC/Summer19UL18_V5_MC_UncertaintySources_AK4PFchs.txt";
+  string file = analysisdir + "/"+string(GetEra()) + "/JEC/Summer19UL16APV_V7_MC_UncertaintySources_AK4PFchs.txt";                                                                                                                
+  if(GetEra() == "2016postVFP") file = analysisdir + "/"+ string(GetEra())+ "/JEC/Summer19UL16_V7_MC_UncertaintySources_AK4PFchs.txt";
+  if(GetEra() == "2017") file = analysisdir + "/"+ string(GetEra())+ "/JEC/Summer19UL17_V5_MC_UncertaintySources_AK4PFchs.txt";
+  if(GetEra() == "2018") file = analysisdir + "/"+ string(GetEra())+ "/JEC/Summer19UL18_V5_MC_UncertaintySources_AK4PFchs.txt";
   
   ifstream jec_file(file.c_str());
   
@@ -200,7 +194,7 @@ void AnalyzerCore::SetupJECUncertainty(TString type){
 
   string sline;
   
-  cout << "Setting up JEC uncertainty vector. This may time some time..." << endl;
+  cout << "Setting up JEC uncertainty vector for source ["<<type<< "]." << file << endl;
   while(getline(jec_file,sline) ){
     
     std::istringstream is( sline );
@@ -222,7 +216,7 @@ void AnalyzerCore::SetupJECUncertainty(TString type){
 	if((i %3) == 0) {ptbin.push_back(tmp);  if(tmp==6538.0) finalbin=true;}
 	if((i %3) == 1) {unc_up.push_back(tmp);}
 	if((i %3) == 2) {unc_down.push_back(tmp);}
-	if((i %3) == 2 && finalbin) break;
+	if((i %3) == 2 && finalbin)  break;
       }
       
       etaptmap[eta_min] = ptbin;
@@ -233,7 +227,7 @@ void AnalyzerCore::SetupJECUncertainty(TString type){
         
     if(sline.find(type)!=string::npos) {  found_unc=true;continue;}
     if(sline=="END") break;
-    if(sline.find("CorrelationGroupMPFInSitu")!=string::npos) break;
+    if(sline.find("CorrelationGroupUncorrelated")!=string::npos) break;
     
   }
   std::vector<std::map<float, std::vector<float> > > vec_unc;
@@ -241,7 +235,6 @@ void AnalyzerCore::SetupJECUncertainty(TString type){
   vec_unc.push_back(eta_uncupmap);
   vec_unc.push_back(eta_uncdownmap);
 
-  
   JECUncMap[type] = vec_unc;
   return;
   

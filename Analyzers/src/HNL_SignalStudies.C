@@ -3,6 +3,14 @@
 void HNL_SignalStudies::initializeAnalyzer(){
 
   HNL_LeptonCore::initializeAnalyzer();
+  
+  // Overwite JECSources in AnalyserCore
+  JECSources = {"AbsoluteStat"};
+  
+  for(auto jec_source : JECSources){
+    SetupJECUncertainty(jec_source);
+  }
+  
 
 }
 
@@ -827,12 +835,6 @@ void HNL_SignalStudies::executeEvent(){
       }
     }
     
-    
-    continue;
-
-    
-    
-    
 
 
 
@@ -858,6 +860,15 @@ void HNL_SignalStudies::executeEvent(){
     std::vector<Jet> JetColl                        = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8,"",   ElectronCollV,MuonCollV, FatjetColl);
     std::vector<Jet> JetCollLoose                        = GetAK4Jets(jets_tmp,     15., 4.7, true,  0.4,0.8,"",   ElectronCollV,MuonCollV, FatjetColl);
     
+
+    for(auto ij : JetColl) {
+      cout << "Jet pt = " << ij.Pt() << " " << ij.Eta() << endl;
+      for (auto isource : JECSources){
+	cout << isource  << " unc = " <<  GetJECUncertainty(isource , ij.Eta(),ij.Pt(), true);
+      }
+    }
+
+    continue;
 
     std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(MuonCollV,ElectronCollV);
 
