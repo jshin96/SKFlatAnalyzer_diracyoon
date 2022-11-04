@@ -43,6 +43,8 @@ elif [[ $HOSTNAME == *"tamsa2"* ]]; then
   echo "@@@@ Working on tamsa2"
   export SKFlatRunlogDir="/data6/Users/$USER/SKFlatRunlog/"
   export SKFlatOutputDir="/data6/Users/$USER/SKFlatOutput/"
+  export BDTRunlogDir="/data6/Users/$USER/BDTRunlog/"
+  export BDTOutputDir="/data6/Users/$USER/BDTOutput/"
   export SKFlatEvCompDir="/data6/Users/$USER/SKFlatOutput/EventComparisons/"
   
 
