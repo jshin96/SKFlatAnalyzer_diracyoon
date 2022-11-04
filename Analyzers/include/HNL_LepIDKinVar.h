@@ -28,16 +28,19 @@ class HNL_LepIDKinVar : public HNL_RegionDefinitions {
   void WriteHist();
   void InitializeTreeVars();
 
-  Float_t Ptl1, Ptl2, Etal1, Etal2;
-  Float_t PtRatiol1, PtRatiol2, PtRatioAJl1, PtRatioAJl2, PtRelv0l1, PtRelv1l1, PtRelv0l2, PtRelv1l2;
-  Float_t CEMFracAJl1, CEMFracAJl2, NEMFracAJl1, NEMFracAJl2, CHFracAJl1, CHFracAJl2, NHFracAJl1, NHFracAJl2, MuFracAJl1, MuFracAJl2, JetDiscAJl1, JetDiscAJl2;
-  Float_t CEMFracCJl1, CEMFracCJl2, NEMFracCJl1, NEMFracCJl2, CHFracCJl1, CHFracCJl2, NHFracCJl1, NHFracCJl2, MuFracCJl1, MuFracCJl2, JetDiscCJl1, JetDiscCJl2;
-  Float_t Dxyl1,Dxyl2,Dzl1,Dzl2,RelIsol1,RelIsol2,IP3Dl1,IP3Dl2,MVAl1,MVAl2,Chi2l1,Chi2l2, Minirelisol1,Minirelisol2,Full5x5_sigmaIetaIetal1,Full5x5_sigmaIetaIetal2,dEtaSeedl1,dEtaSeedl2,dPhiInl1,dPhiInl2,HoverEl1,HoverEl2,TrkIsol1,TrkIsol2,InvEminusInvP_l1,InvEminusInvP_l2,ecalPFClusterIsol1,ecalPFClusterIsol2,hcalPFClusterIsol1,hcalPFClusterIsol2;
+  Float_t Pt,  Eta;
+  Float_t PtRatio, PtRatioAJ, PtRelv0, PtRelv1;
+  Float_t CEMFracAJ, NEMFracAJ, CHFracAJ, NHFracAJ,MuFracAJ, JetDiscAJ;
+  Float_t CEMFracCJ, NEMFracCJ, CHFracCJ, NHFracCJ, MuFracCJ, JetDiscCJ;
+  Float_t Dxy,Dz,DxySig, DzSig, RelIso,IP3D,MVA,MVAIso,Chi2, Minireliso,Full5x5_sigmaIetaIeta,dEtaSeed,dPhiIn,HoverE,TrkIso,InvEminusInvP,ecalPFClusterIso,hcalPFClusterIso;
+  Float_t R9,dr03TkSumPt,dr03HcalTowerSumEt,dr03HcalDepth1TowerSumEt,dr03EcalRecHitSumEt, e2x5OverE5x5,e1x5OverE5x5,e15,e25,e55,EtaWidth,PhiWidth,dEtaIn,sigmaIetaIeta, MiniIsoChHad,MiniIsoNHad,MiniIsoPhHad,IsoChHad,IsoNHad,IsoPhHad;
 
-  Int_t isEcalDrivenl1,isEcalDrivenl2,Pixel_hitsl1,Pixel_hitsl2;
-  Int_t Validhitsl1,Validhitsl2,Matched_stationsl1,Matched_stationsl2,Tracker_layersl1,Tracker_layersl2,MissingHitsl1,MissingHitsl2;
-  Int_t POGTightl1,POGTightl2, POGMediuml1,POGMediuml2;
-  Int_t PassConversionVetol1,PassConversionVetol2,IsGsfCtfScPixChargeConsistentl1,IsGsfCtfScPixChargeConsistentl2;
+  Int_t isEcalDriven,Pixel_hits,JetNTrk,PileupJetId;
+  Int_t Validhits,Matched_stations,Tracker_layers,MissingHits;
+  Int_t POGTight, POGMedium;
+  
+  Int_t PassConversionVeto,IsGsfCtfScPixChargeConsistent, IsGsfScPixChargeConsistent, IsGsfCtfChargeConsistent;
+
   Float_t w_tot;
 
   HNL_LepIDKinVar();

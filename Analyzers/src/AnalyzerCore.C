@@ -27,6 +27,8 @@ AnalyzerCore::~AnalyzerCore(){
   maphist_TH1D.clear();
 
   for(std::map< TString, TH2D* >::iterator mapit = maphist_TH2D.begin(); mapit!=maphist_TH2D.end(); mapit++){
+
+    //cout << "Deleting TH2D " << mapit->first << endl;
     delete mapit->second;
   }
   maphist_TH2D.clear();
@@ -160,6 +162,8 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
     mu.SetPOGMediumHIP(muon_ismedium_hip->at(i),muon_ismedium_nohip->at(i));
     mu.SetChi2(muon_normchi->at(i));
     mu.SetIso(muon_PfChargedHadronIsoR04->at(i),muon_PfNeutralHadronIsoR04->at(i),muon_PfGammaIsoR04->at(i),muon_PFSumPUIsoR04->at(i),muon_trkiso->at(i));
+    mu.SetLepIso(muon_PfChargedHadronIsoR04->at(i),muon_PfNeutralHadronIsoR04->at(i),muon_PfGammaIsoR04->at(i));
+    
     mu.SetTrackerLayers(muon_trackerLayers->at(i));
 
     mu.SetMatchedStations(muon_matchedstations->at(i));
@@ -175,6 +179,7 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
       Rho,
       mu.EA()
     );
+    
 
     mu.SetFilterBits(muon_filterbits->at(i));
     mu.SetPathBits(muon_pathbits->at(i));
@@ -282,7 +287,8 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
     el.SetPassConversionVeto(electron_passConversionVeto->at(i));
     el.SetNMissingHits(electron_mHits->at(i));
     el.SetRho(Rho);
-    el.SetIsGsfCtfScPixChargeConsistent(electron_isGsfCtfScPixChargeConsistent->at(i));
+    el.SetIsGsfCtfScPixChargeConsistent(electron_isGsfCtfScPixChargeConsistent->at(i),   electron_isGsfScPixChargeConsistent->at(i),electron_isGsfCtfChargeConsistent->at(i));
+
     el.SetR9(electron_r9->at(i));
     el.SetL1Et(electron_l1et->at(i));
 
@@ -321,6 +327,16 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
       Rho,
       el.EA()
     );
+    el.SetEtaWidth(electron_etaWidth->at(i));
+    el.SetPhiWidth(electron_phiWidth->at(i));
+    el.SetDetaIn(electron_dEtaIn->at(i));
+    el.SetSigmaIEtaIE(electron_sigmaIEtaIEta->at(i));
+    el.SetLepIso(electron_chIso03->at(i),electron_nhIso03->at(i),electron_phIso03->at(i));
+    
+    el.SetE15(electron_E15->at(i));
+    el.SetE25(electron_E25->at(i));
+    el.SetE55(electron_E55->at(i));
+
 
     el.SetFilterBits(electron_filterbits->at(i));
     el.SetPathBits(electron_pathbits->at(i));
@@ -899,7 +915,7 @@ std::vector<Jet> AnalyzerCore::GetAllJets(){
     jet.SetPxUnSmeared(jet.Px());
     jet.SetPyUnSmeared(jet.Py());
 
-
+    //jet.SetNTracks(jet_vtxNtracks->at(i));
     //==== Jet energy up and down are 1.xx or 0.99, not energy
     jet.SetEnShift( jet_shiftedEnUp->at(i), jet_shiftedEnDown->at(i) );
     if(!IsDATA){
@@ -3972,6 +3988,7 @@ void AnalyzerCore::FillHist(TString histname,
     this_hist = new TH2D(histname, "", n_binx, xbins, n_biny, ybins);
     this_hist->SetDirectory(NULL);
     maphist_TH2D[histname] = this_hist;
+    //cout << "CReating TH2D " <<  histname << endl;
   }
 
   this_hist->Fill(value_x, value_y, weight);
@@ -4125,9 +4142,11 @@ void AnalyzerCore::WriteHist(){
     TString this_suffix=this_fullname(0,this_fullname.Last('/'));
     TDirectory *dir = outfile->GetDirectory(this_suffix);
     if(!dir){
+      cout << "Making outdir  " << this_suffix << endl;
       outfile->mkdir(this_suffix);
     }
     outfile->cd(this_suffix);
+    cout << "Writing " << this_name << endl;
     mapit->second->Write(this_name);
     outfile->cd();
   }

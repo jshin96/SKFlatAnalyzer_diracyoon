@@ -6,123 +6,109 @@ void HNL_LepIDKinVar::initializeAnalyzer(){
 
   InitializeTreeVars();
   
+  tree_mm->Branch("Pt", &Pt, "Pt/F"); 
+  tree_ee->Branch("Pt", &Pt, "Pt/F");
+  tree_mm->Branch("Eta", &Eta, "Eta/F");
+  tree_ee->Branch("Eta", &Eta, "Eta/F");
 
-  tree_mm->Branch("Ptl1", &Ptl1, "Ptl1/F");                        tree_ee->Branch("Ptl1", &Ptl1, "Ptl1/F");
-  tree_mm->Branch("Ptl2", &Ptl2, "Ptl2/F");                        tree_ee->Branch("Ptl2", &Ptl2, "Ptl2/F");                                                
-  tree_mm->Branch("Etal1", &Etal1, "Etal1/F");                        tree_ee->Branch("Etal1", &Etal1, "Etal1/F");
-  tree_mm->Branch("Etal2", &Etal2, "Etal2/F");                        tree_ee->Branch("Etal2", &Etal2, "Etal2/F");
+  tree_mm->Branch("MiniIsoChHad", &MiniIsoChHad, "MiniIsoChHad/F"); 
+  tree_ee->Branch("MiniIsoChHad", &MiniIsoChHad, "MiniIsoChHad/F");
+  tree_mm->Branch("MiniIsoNHad", &MiniIsoNHad, "MiniIsoNHad/F"); 
+  tree_ee->Branch("MiniIsoNHad", &MiniIsoNHad, "MiniIsoNHad/F");
+  tree_mm->Branch("MiniIsoPhHad", &MiniIsoPhHad, "MiniIsoPhHad/F");  
+  tree_ee->Branch("MiniIsoPhHad", &MiniIsoPhHad, "MiniIsoPhHad/F");
 
-  tree_mm->Branch("Dxyl1", &Dxyl1, "Dxyl1/F");                        tree_ee->Branch("Dxyl1", &Dxyl1, "Dxyl1/F");
-  tree_mm->Branch("Dxyl2", &Dxyl2, "Dxyl2/F");                        tree_ee->Branch("Dxyl2", &Dxyl2, "Dxyl2/F");
-  tree_mm->Branch("Dzl1", &Dzl1, "Dzl1/F");                        tree_ee->Branch("Dzl1", &Dzl1, "Dzl1/F");
-  tree_mm->Branch("Dzl2", &Dzl2, "Dzl2/F");                        tree_ee->Branch("Dzl2", &Dzl2, "Dzl2/F");
-  tree_mm->Branch("RelIsol1", &RelIsol1, "RelIsol1/F");                        tree_ee->Branch("RelIsol1", &RelIsol1, "RelIsol1/F");
-  tree_mm->Branch("RelIsol2", &RelIsol2, "RelIsol2/F");                        tree_ee->Branch("RelIsol2", &RelIsol2, "RelIsol2/F");
-  tree_mm->Branch("IP3Dl1", &IP3Dl1, "IP3Dl1/F");                        tree_ee->Branch("IP3Dl1", &IP3Dl1, "IP3Dl1/F");
-  tree_mm->Branch("IP3Dl2", &IP3Dl2, "IP3Dl2/F");                        tree_ee->Branch("IP3Dl2", &IP3Dl2, "IP3Dl2/F");
-  tree_mm->Branch("MVAl1", &MVAl1, "MVAl1/F");                        tree_ee->Branch("MVAl1", &MVAl1, "MVAl1/F");
-  tree_mm->Branch("MVAl2", &MVAl2, "MVAl2/F");                        tree_ee->Branch("MVAl2", &MVAl2, "MVAl2/F");
+  tree_mm->Branch("IsoChHad", &IsoChHad, "IsoChHad/F"); 
+  tree_ee->Branch("IsoChHad", &IsoChHad, "IsoChHad/F");
+  tree_mm->Branch("IsoNHad", &IsoNHad, "IsoNHad/F"); 
+  tree_ee->Branch("IsoNHad", &IsoNHad, "IsoNHad/F");
+  tree_mm->Branch("IsoPhHad", &IsoPhHad, "IsoPhHad/F"); 
+  tree_ee->Branch("IsoPhHad", &IsoPhHad, "IsoPhHad/F");
 
-  tree_mm->Branch("Chi2l1", &Chi2l1, "Chi2l1/F");  
-  tree_mm->Branch("Chi2l2", &Chi2l2, "Chi2l2/F");  
-  tree_mm->Branch("Validhitsl1", &Validhitsl1, "Validhitsl1/I");  
-  tree_mm->Branch("Validhitsl2", &Validhitsl2, "Validhitsl2/I");  
 
-  tree_mm->Branch("Matched_stationsl1", &Matched_stationsl1, "Matched_stationsl1/I");
-  tree_mm->Branch("Matched_stationsl2", &Matched_stationsl2, "Matched_stationsl2/I");
+  tree_mm->Branch("Dxy", &Dxy, "Dxy/F"); 
+  tree_ee->Branch("Dxy", &Dxy, "Dxy/F");
+  tree_mm->Branch("DxySig", &DxySig, "DxySig/F"); 
+  tree_ee->Branch("DxySig", &DxySig, "DxySig/F");
+  tree_mm->Branch("Dz", &Dz, "Dz/F"); 
+  tree_ee->Branch("Dz", &Dz, "Dz/F");
+  tree_mm->Branch("DzSig", &DzSig, "DzSig/F"); 
+  tree_ee->Branch("DzSig", &DzSig, "DzSig/F");
+  tree_mm->Branch("RelIso", &RelIso, "RelIso/F"); 
+  tree_ee->Branch("RelIso", &RelIso, "RelIso/F");
+  tree_mm->Branch("IP3D", &IP3D, "IP3D/F"); 
+  tree_ee->Branch("IP3D", &IP3D, "IP3D/F");
+  tree_mm->Branch("MVA", &MVA, "MVA/F"); 
+  tree_ee->Branch("MVA", &MVA, "MVA/F");
+  tree_ee->Branch("MVAIso", &MVAIso, "MVAIso/F");
 
-  tree_mm->Branch("Pixel_hitsl1", &Pixel_hitsl1, "Pixel_hitsl1/I");
-  tree_mm->Branch("Pixel_hitsl2", &Pixel_hitsl2, "Pixel_hitsl2/I");
+  tree_mm->Branch("Chi2", &Chi2, "Chi2/F");  
+  tree_mm->Branch("Validhits", &Validhits, "Validhits/I");  
 
-  tree_mm->Branch("Minirelisol1", &Minirelisol1, "Minirelisol1/F");
-  tree_mm->Branch("Minirelisol2", &Minirelisol2, "Minirelisol2/F");
+  tree_mm->Branch("Matched_stations", &Matched_stations, "Matched_stations/I");
+
+  tree_mm->Branch("Pixel_hits", &Pixel_hits, "Pixel_hits/I");
+
+  tree_mm->Branch("Minireliso", &Minireliso, "Minireliso/F");
   
-  tree_mm->Branch("Pixel_hitsl1", &Pixel_hitsl1, "Pixel_hitsl1/I");
-  tree_mm->Branch("Pixel_hitsl2", &Pixel_hitsl2, "Pixel_hitsl2/I");
+  tree_mm->Branch("Pixel_hits", &Pixel_hits, "Pixel_hits/I");
 
-  tree_mm->Branch("Tracker_layersl1", &Tracker_layersl1, "Tracker_layersl1/I");
-  tree_mm->Branch("Tracker_layersl2", &Tracker_layersl2, "Tracker_layersl2/I");
+  tree_mm->Branch("Tracker_layers", &Tracker_layers, "Tracker_layers/I");
 
-  tree_mm->Branch("POGTightl1", &POGTightl1, "POGTightl1/I");
-  tree_mm->Branch("POGMediuml1", &POGMediuml1, "POGMediuml1/I");
-  tree_mm->Branch("POGTightl2", &POGTightl2, "POGTightl2/I");
-  tree_mm->Branch("POGMediuml2", &POGMediuml2, "POGMediuml2/I");
+  tree_mm->Branch("POGTight", &POGTight, "POGTight/I");
+  tree_mm->Branch("POGMedium", &POGMedium, "POGMedium/I");
 
-  tree_ee->Branch("POGTightl1", &POGTightl1, "POGTightl1/I");
-  tree_ee->Branch("POGMediuml1", &POGMediuml1, "POGMediuml1/I");
-  tree_ee->Branch("POGTightl2", &POGTightl2, "POGTightl2/I");
-  tree_ee->Branch("POGMediuml2", &POGMediuml2, "POGMediuml2/I");
+  tree_ee->Branch("POGTight", &POGTight, "POGTight/I");
+  tree_ee->Branch("POGMedium", &POGMedium, "POGMedium/I");
 
 
-  tree_mm->Branch("PtRatiol1", &PtRatiol1, "PtRatiol1/F");         tree_ee->Branch("PtRatiol1", &PtRatiol1, "PtRatiol1/F");         
-  tree_mm->Branch("PtRatiol2", &PtRatiol2, "PtRatiol2/F");         tree_ee->Branch("PtRatiol2", &PtRatiol2, "PtRatiol2/F");         
-  tree_mm->Branch("PtRatioAJl1", &PtRatioAJl1, "PtRatioAJl1/F");   tree_ee->Branch("PtRatioAJl1", &PtRatioAJl1, "PtRatioAJl1/F");   
-  tree_mm->Branch("PtRatioAJl2", &PtRatioAJl2, "PtRatioAJl2/F");   tree_ee->Branch("PtRatioAJl2", &PtRatioAJl2, "PtRatioAJl2/F");   
-  tree_mm->Branch("PtRelv0l1", &PtRelv0l1, "PtRelv0l1/F");         tree_ee->Branch("PtRelv0l1", &PtRelv0l1, "PtRelv0l1/F");         
-  tree_mm->Branch("PtRelv0l2", &PtRelv0l2, "PtRelv0l2/F");         tree_ee->Branch("PtRelv0l2", &PtRelv0l2, "PtRelv0l2/F");         
-  tree_mm->Branch("PtRelv1l1", &PtRelv1l1, "PtRelv1l1/F");         tree_ee->Branch("PtRelv1l1", &PtRelv1l1, "PtRelv1l1/F");         
-  tree_mm->Branch("PtRelv1l2", &PtRelv1l2, "PtRelv1l2/F");         tree_ee->Branch("PtRelv1l2", &PtRelv1l2, "PtRelv1l2/F");         
-  tree_mm->Branch("CEMFracAJl1", &CEMFracAJl1, "CEMFracAJl1/F");   tree_ee->Branch("CEMFracAJl1", &CEMFracAJl1, "CEMFracAJl1/F");   
-  tree_mm->Branch("CEMFracAJl2", &CEMFracAJl2, "CEMFracAJl2/F");   tree_ee->Branch("CEMFracAJl2", &CEMFracAJl2, "CEMFracAJl2/F");   
-  tree_mm->Branch("NEMFracAJl1", &NEMFracAJl1, "NEMFracAJl1/F");   tree_ee->Branch("NEMFracAJl1", &NEMFracAJl1, "NEMFracAJl1/F");   
-  tree_mm->Branch("NEMFracAJl2", &NEMFracAJl2, "NEMFracAJl2/F");   tree_ee->Branch("NEMFracAJl2", &NEMFracAJl2, "NEMFracAJl2/F");   
-  tree_mm->Branch("CHFracAJl1", &CHFracAJl1, "CHFracAJl1/F");      tree_ee->Branch("CHFracAJl1", &CHFracAJl1, "CHFracAJl1/F");      
-  tree_mm->Branch("CHFracAJl2", &CHFracAJl2, "CHFracAJl2/F");      tree_ee->Branch("CHFracAJl2", &CHFracAJl2, "CHFracAJl2/F");      
-  tree_mm->Branch("NHFracAJl1", &NHFracAJl1, "NHFracAJl1/F");      tree_ee->Branch("NHFracAJl1", &NHFracAJl1, "NHFracAJl1/F");      
-  tree_mm->Branch("NHFracAJl2", &NHFracAJl2, "NHFracAJl2/F");      tree_ee->Branch("NHFracAJl2", &NHFracAJl2, "NHFracAJl2/F");      
-  tree_mm->Branch("MuFracAJl1", &MuFracAJl1, "MuFracAJl1/F");      tree_ee->Branch("MuFracAJl1", &MuFracAJl1, "MuFracAJl1/F");      
-  tree_mm->Branch("MuFracAJl2", &MuFracAJl2, "MuFracAJl2/F");      tree_ee->Branch("MuFracAJl2", &MuFracAJl2, "MuFracAJl2/F");      
-  tree_mm->Branch("JetDiscAJl1", &JetDiscAJl1, "JetDiscAJl1/F");   tree_ee->Branch("JetDiscAJl1", &JetDiscAJl1, "JetDiscAJl1/F");   
-  tree_mm->Branch("JetDiscAJl2", &JetDiscAJl2, "JetDiscAJl2/F");   tree_ee->Branch("JetDiscAJl2", &JetDiscAJl2, "JetDiscAJl2/F");   
-  tree_mm->Branch("CEMFracCJl1", &CEMFracCJl1, "CEMFracCJl1/F");   tree_ee->Branch("CEMFracCJl1", &CEMFracCJl1, "CEMFracCJl1/F");   
-  tree_mm->Branch("CEMFracCJl2", &CEMFracCJl2, "CEMFracCJl2/F");   tree_ee->Branch("CEMFracCJl2", &CEMFracCJl2, "CEMFracCJl2/F");   
-  tree_mm->Branch("NEMFracCJl1", &NEMFracCJl1, "NEMFracCJl1/F");   tree_ee->Branch("NEMFracCJl1", &NEMFracCJl1, "NEMFracCJl1/F");   
-  tree_mm->Branch("NEMFracCJl2", &NEMFracCJl2, "NEMFracCJl2/F");   tree_ee->Branch("NEMFracCJl2", &NEMFracCJl2, "NEMFracCJl2/F");   
-  tree_mm->Branch("CHFracCJl1", &CHFracCJl1, "CHFracCJl1/F");      tree_ee->Branch("CHFracCJl1", &CHFracCJl1, "CHFracCJl1/F");      
-  tree_mm->Branch("CHFracCJl2", &CHFracCJl2, "CHFracCJl2/F");      tree_ee->Branch("CHFracCJl2", &CHFracCJl2, "CHFracCJl2/F");      
-  tree_mm->Branch("NHFracCJl1", &NHFracCJl1, "NHFracCJl1/F");      tree_ee->Branch("NHFracCJl1", &NHFracCJl1, "NHFracCJl1/F");      
-  tree_mm->Branch("NHFracCJl2", &NHFracCJl2, "NHFracCJl2/F");      tree_ee->Branch("NHFracCJl2", &NHFracCJl2, "NHFracCJl2/F");      
-  tree_mm->Branch("MuFracCJl1", &MuFracCJl1, "MuFracCJl1/F");      tree_ee->Branch("MuFracCJl1", &MuFracCJl1, "MuFracCJl1/F");      
-  tree_mm->Branch("MuFracCJl2", &MuFracCJl2, "MuFracCJl2/F");      tree_ee->Branch("MuFracCJl2", &MuFracCJl2, "MuFracCJl2/F");      
-  tree_mm->Branch("JetDiscCJl1", &JetDiscCJl1, "JetDiscCJl1/F");   tree_ee->Branch("JetDiscCJl1", &JetDiscCJl1, "JetDiscCJl1/F");   
-  tree_mm->Branch("JetDiscCJl2", &JetDiscCJl2, "JetDiscCJl2/F");   tree_ee->Branch("JetDiscCJl2", &JetDiscCJl2, "JetDiscCJl2/F");   
+  tree_mm->Branch("PtRatio", &PtRatio, "PtRatio/F");         tree_ee->Branch("PtRatio", &PtRatio, "PtRatio/F");         
+  tree_mm->Branch("PtRatioAJ", &PtRatioAJ, "PtRatioAJ/F");   tree_ee->Branch("PtRatioAJ", &PtRatioAJ, "PtRatioAJ/F");   
+  tree_mm->Branch("PtRelv0", &PtRelv0, "PtRelv0/F");         tree_ee->Branch("PtRelv0", &PtRelv0, "PtRelv0/F");         
+  tree_mm->Branch("PtRelv1", &PtRelv1, "PtRelv1/F");         tree_ee->Branch("PtRelv1", &PtRelv1, "PtRelv1/F");         
+  tree_mm->Branch("CEMFracAJ", &CEMFracAJ, "CEMFracAJ/F");   tree_ee->Branch("CEMFracAJ", &CEMFracAJ, "CEMFracAJ/F");   
+  tree_mm->Branch("NEMFracAJ", &NEMFracAJ, "NEMFracAJ/F");   tree_ee->Branch("NEMFracAJ", &NEMFracAJ, "NEMFracAJ/F");   
+  tree_mm->Branch("CHFracAJ", &CHFracAJ, "CHFracAJ/F");      tree_ee->Branch("CHFracAJ", &CHFracAJ, "CHFracAJ/F");      
+  tree_mm->Branch("NHFracAJ", &NHFracAJ, "NHFracAJ/F");      tree_ee->Branch("NHFracAJ", &NHFracAJ, "NHFracAJ/F");      
+  tree_mm->Branch("MuFracAJ", &MuFracAJ, "MuFracAJ/F");      tree_ee->Branch("MuFracAJ", &MuFracAJ, "MuFracAJ/F");      
+  tree_mm->Branch("JetDiscAJ", &JetDiscAJ, "JetDiscAJ/F");   tree_ee->Branch("JetDiscAJ", &JetDiscAJ, "JetDiscAJ/F");   
+  tree_mm->Branch("CEMFracCJ", &CEMFracCJ, "CEMFracCJ/F");   tree_ee->Branch("CEMFracCJ", &CEMFracCJ, "CEMFracCJ/F");   
+  tree_mm->Branch("NEMFracCJ", &NEMFracCJ, "NEMFracCJ/F");   tree_ee->Branch("NEMFracCJ", &NEMFracCJ, "NEMFracCJ/F");   
+  tree_mm->Branch("CHFracCJ", &CHFracCJ, "CHFracCJ/F");      tree_ee->Branch("CHFracCJ", &CHFracCJ, "CHFracCJ/F");      
+  tree_mm->Branch("NHFracCJ", &NHFracCJ, "NHFracCJ/F");      tree_ee->Branch("NHFracCJ", &NHFracCJ, "NHFracCJ/F");      
+  tree_mm->Branch("MuFracCJ", &MuFracCJ, "MuFracCJ/F");      tree_ee->Branch("MuFracCJ", &MuFracCJ, "MuFracCJ/F");      
+  tree_mm->Branch("JetDiscCJ", &JetDiscCJ, "JetDiscCJ/F");   tree_ee->Branch("JetDiscCJ", &JetDiscCJ, "JetDiscCJ/F");   
 
-  tree_ee->Branch("MissingHitsl1", &MissingHitsl1, "MissingHitsl1/I");
-  tree_ee->Branch("MissingHitsl2", &MissingHitsl2, "MissingHitsl2/I");
-  tree_ee->Branch("Full5x5_sigmaIetaIetal1", &Full5x5_sigmaIetaIetal1, "Full5x5_sigmaIetaIetal1/F");
-  tree_ee->Branch("Full5x5_sigmaIetaIetal2", &Full5x5_sigmaIetaIetal2, "Full5x5_sigmaIetaIetal2/F");
+  tree_mm->Branch("JetNTrk", &JetNTrk, "JetNTrk/F");   tree_ee->Branch("JetNTrk", &JetNTrk, "JetNTrk/F");
+  tree_mm->Branch("PileupJetId", &PileupJetId, "PileupJetId/F");   tree_ee->Branch("PileupJetId", &PileupJetId, "PileupJetId/F");
+
+
+  tree_ee->Branch("MissingHits", &MissingHits, "MissingHits/I");
+  tree_ee->Branch("Full5x5_sigmaIetaIeta", &Full5x5_sigmaIetaIeta, "Full5x5_sigmaIetaIeta/F");
+  tree_ee->Branch("sigmaIetaIeta", &sigmaIetaIeta, "sigmaIetaIeta/F");
   
-  tree_ee->Branch("dEtaSeedl1", &dEtaSeedl1, "dEtaSeedl1/F");
-  tree_ee->Branch("dEtaSeedl2", &dEtaSeedl2, "dEtaSeedl2/F");
+  tree_ee->Branch("dEtaSeed", &dEtaSeed, "dEtaSeed/F");
+  
+  tree_ee->Branch("dPhiIn", &dPhiIn, "dPhiIn/F");
+  tree_ee->Branch("dEtaIn", &dEtaIn, "dEtaIn/F");
+  
+  tree_ee->Branch("HoverE", &HoverE, "HoverE/F");
 
+  tree_ee->Branch("TrkIso", &TrkIso, "TrkIso/F");
 
-  tree_ee->Branch("dPhiInl1", &dPhiInl1, "dPhiInl1/F");
-  tree_ee->Branch("dPhiInl2", &dPhiInl2, "dPhiInl2/F");
+  tree_ee->Branch("isEcalDriven", &isEcalDriven, "isEcalDriven/I");
 
+  tree_ee->Branch("InvEminusInvP", &InvEminusInvP, "InvEminusInvP/F");
 
-  tree_ee->Branch("HoverEl1", &HoverEl1, "HoverEl1/F");
-  tree_ee->Branch("HoverEl2", &HoverEl2, "HoverEl2/F");
+  tree_ee->Branch("PassConversionVeto", &PassConversionVeto, "PassConversionVeto/I");
 
-  tree_ee->Branch("TrkIsol1", &TrkIsol1, "TrkIsol1/F");
-  tree_ee->Branch("TrkIsol2", &TrkIsol2, "TrkIsol2/F");
+  tree_ee->Branch("ecalPFClusterIso", &ecalPFClusterIso, "ecalPFClusterIso/F");
 
-  tree_ee->Branch("isEcalDrivenl1", &isEcalDrivenl1, "isEcalDrivenl1/I");
-  tree_ee->Branch("isEcalDrivenl2", &isEcalDrivenl2, "isEcalDrivenl2/I");
+  tree_ee->Branch("hcalPFClusterIso", &hcalPFClusterIso, "hcalPFClusterIso/F");
 
-  tree_ee->Branch("InvEminusInvP_l1", &InvEminusInvP_l1, "InvEminusInvP_l1/F");
-  tree_ee->Branch("InvEminusInvP_l2", &InvEminusInvP_l2, "InvEminusInvP_l2/F");
-
-  tree_ee->Branch("PassConversionVetol1", &PassConversionVetol1, "PassConversionVetol1/I");
-  tree_ee->Branch("PassConversionVetol2", &PassConversionVetol2, "PassConversionVetol2/I");
-
-  tree_ee->Branch("ecalPFClusterIsol1", &ecalPFClusterIsol1, "ecalPFClusterIsol1/F");
-  tree_ee->Branch("ecalPFClusterIsol2", &ecalPFClusterIsol2, "ecalPFClusterIsol2/F");
-
-  tree_ee->Branch("hcalPFClusterIsol1", &hcalPFClusterIsol1, "hcalPFClusterIsol1/F");
-  tree_ee->Branch("hcalPFClusterIsol2", &hcalPFClusterIsol2, "hcalPFClusterIsol2/F");
-
-  tree_ee->Branch("IsGsfCtfScPixChargeConsistentl1", &IsGsfCtfScPixChargeConsistentl1, "IsGsfCtfScPixChargeConsistentl1/I");
-  tree_ee->Branch("IsGsfCtfScPixChargeConsistentl2", &IsGsfCtfScPixChargeConsistentl2, "IsGsfCtfScPixChargeConsistentl2/I");
+  tree_ee->Branch("IsGsfCtfScPixChargeConsistent", &IsGsfCtfScPixChargeConsistent, "IsGsfCtfScPixChargeConsistent/I");
+  tree_ee->Branch("IsGsfScPixChargeConsistent", &IsGsfScPixChargeConsistent, "IsGsfScPixChargeConsistent/I");
+  tree_ee->Branch("IsGsfCtfChargeConsistent", &IsGsfCtfChargeConsistent, "IsGsfCtfChargeConsistent/I");
 
   tree_mm->Branch("w_tot", &w_tot, "w_tot/F");                     tree_ee->Branch("w_tot", &w_tot, "w_tot/F");                     
 
@@ -138,6 +124,10 @@ void HNL_LepIDKinVar::executeEvent(){
   Event ev = GetEvent();
   double weight =SetupWeight(ev,param_bdt);
   
+  if (MCSample.Contains("Type1")) {
+    weight*=1/xsec;
+  }
+
   FillHist("CutFlow", 0., weight, 20, 0., 20.);
   
   if(!PassMETFilter()) return;
@@ -146,38 +136,34 @@ void HNL_LepIDKinVar::executeEvent(){
   
   for(auto dilep_channel : channels){
 
-    std::vector<Muon>       MuonCollT     = GetLepCollByRunType    ( GetMuons    ( param_bdt,param_bdt.Muon_Veto_ID, 10., 2.4, RunFake)    , gens,param_bdt, "NoSel");
-    std::vector<Electron>   ElectronCollT = GetLepCollByRunType    ( GetElectrons( param_bdt,param_bdt.Electron_Veto_ID, 10., 2.5, RunFake), gens,param_bdt, "NoSel");
+    std::vector<Muon>       MuonCollT     =  GetMuons    ( param_bdt,param_bdt.Muon_Veto_ID, 10., 2.4, RunFake);
+    std::vector<Electron>   ElectronCollT =  GetElectrons( param_bdt,param_bdt.Electron_Veto_ID, 10., 2.5, RunFake);
+
+ 
+    if(dilep_channel == EE) MuonCollT.clear();
+    if(dilep_channel == MuMu) ElectronCollT.clear();
+
+    TString OptionEl="CFHFakeNHConv";
+    TString OptionMu="HFakeNHConv";
+    gens = GetGens();
+
+    std::vector<Electron>   ElectronCollTSkim  = (MCSample.Contains("TypeI")) ? ElectronCollT :  SkimLepColl(ElectronCollT, gens, param_bdt, OptionEl);
+    std::vector<Muon>       MuonCollTSkim      = (MCSample.Contains("TypeI")) ? MuonCollT :  SkimLepColl(MuonCollT, gens, param_bdt, OptionMu);
+   
+
+
+
+    std::vector<Lepton *> LepsT  = MakeLeptonPointerVector(MuonCollTSkim,ElectronCollTSkim);
     
-    std::vector<Lepton *> LepsT  = MakeLeptonPointerVector(MuonCollT,ElectronCollT);
 
     if (!PassTriggerSelection(dilep_channel, ev, LepsT, "Dilep")) continue;
 
-    if(DataEra=="2017" && dilep_channel==MuMu){
-      
-      if(ev.PassTrigger("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v") && !ev.PassTrigger("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v")) weight = weight*4803.366325775/ev.GetTriggerLumi("Full");
-
-    }
-
     std::vector<Jet>    AK4_JetAllColl = GetJets("NoID", 10., 3.0);
 
-    bool passCharge = false;
-    if(MCSample.Contains("TypeI")) passCharge = true;
-    else{
-      if(SameCharge(LepsT)) passCharge = true;
-    }
-
-    bool EventCand = false;
-
-    if (passCharge && LepsT.size()==2){
-      if (GetLLMass(LepsT) > 10.){
-	EventCand=true;
-      }
-    }
 
     JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
     
-    
+
     std::vector<Electron>   ElectronCollV = GetElectrons(param_bdt.Electron_Veto_ID, 10., 2.5);
     std::vector<Muon>       MuonCollV     = GetMuons    (param_bdt.Muon_Veto_ID, 5., 2.4);
     std::vector<FatJet> fatjets_tmp    = GetFatJets("tight", 200., 5);
@@ -193,9 +179,8 @@ void HNL_LepIDKinVar::executeEvent(){
     if(BJetColl.size() > 0) return;
     Particle METv = GetvMET("PuppiT1xyULCorr",param_bdt);
     if(METv.Pt() > 70.) return;
-    if(!EventCand) return;
 
-    MakeTreeSS2L(dilep_channel, LepsT,MuonCollT,ElectronCollT, AK4_JetAllColl,  weight, "");
+    MakeTreeSS2L(dilep_channel, LepsT,MuonCollTSkim,ElectronCollTSkim, AK4_JetAllColl,  weight, "");
 
   }
   
@@ -208,7 +193,7 @@ void HNL_LepIDKinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Le
 				   float weight, TString Label)
 {
   
-  
+
   
   // CorrectChannelStream checks EE channel has only EE events
   if(!CheckLeptonFlavourForChannel(lep_channel, LepTColl)) return;
@@ -221,228 +206,168 @@ void HNL_LepIDKinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Le
   
   InitializeTreeVars();
   
+  int imu(0), iel(0);
 
-  Ptl1    = LepTColl[0]->Pt();
-  Ptl2    = LepTColl.at(1)->Pt();
-  Etal1   = fabs(LepTColl.at(0)->Eta());
-  Etal2   = fabs(LepTColl.at(1)->Eta());
- 
+  for(auto lep : LepTColl){
 
-  if (lep_channel==EE){
+    Pt    = lep->Pt();
+    Eta   = fabs(lep->Eta());
 
-    Dxyl1   = Electrons[0].dXY();
-    Dxyl2   = Electrons[1].dXY();
+    MiniIsoChHad = lep->MiniIsoChHad();
+    MiniIsoNHad = lep->MiniIsoNHad();
+    MiniIsoPhHad = lep->MiniIsoPhHad();
+    IsoChHad = lep->IsoChHad();
+    IsoNHad = lep->IsoNHad();
+    IsoPhHad = lep->IsoPhHad();
 
-    Dzl1   = Electrons[0].dZ();
-    Dzl2   = Electrons[1].dZ();
 
-    RelIsol1    = Electrons[0].RelIso();
-    RelIsol2    = Electrons[1].RelIso();
+    Dxy   = lep->LogdXY();
+    DxySig   = lep->LogdXYSig();
+    Dz   = lep->LogdZ();
+    DzSig   = lep->LogdZSig();
 
-    IP3Dl1    = Electrons[0].IP3D();
-    IP3Dl2    = Electrons[1].IP3D();
+    IP3D    = lep->IP3D()/lep->IP3Derr();
 
-    MVAl1    = Electrons[0].MVANoIso();
-    MVAl2    = Electrons[1].MVANoIso();
-
-    POGTightl1 = Electrons[0].Pass_CutBasedTightNoIso() ?  1: 0;
-    POGTightl2 = Electrons[1].Pass_CutBasedTightNoIso()?  1: 0;
+    RelIso    =  lep->RelIso();
     
-    POGMediuml1 = Electrons[0].Pass_CutBasedMediumNoIso()?  1: 0;
-    POGMediuml2 = Electrons[1].Pass_CutBasedMediumNoIso()?  1: 0;
-
-
-    Minirelisol1   = Electrons[0].MiniRelIso();
-    Minirelisol2   = Electrons[1].MiniRelIso();
+    Minireliso   = lep->MiniRelIso();
 
     
-    MissingHitsl1 = Electrons[0].NMissingHits();
-    MissingHitsl2 = Electrons[1].NMissingHits();
+    if(lep->LeptonFlavour() == Lepton::ELECTRON) {
+      
+      MVA    = Electrons[iel].MVANoIsoResponse();
+
+      MVAIso    = Electrons[iel].MVAIsoResponse();
+
+      POGTight = Electrons[iel].Pass_CutBasedTightNoIso() ?  1: 0;
     
-    Full5x5_sigmaIetaIetal1  = Electrons[0].Full5x5_sigmaIetaIeta();
-    Full5x5_sigmaIetaIetal2  = Electrons[1].Full5x5_sigmaIetaIeta();
-
-    dEtaSeedl1  = Electrons[0].dEtaSeed();
-    dEtaSeedl2  = Electrons[1].dEtaSeed();
-
-    dPhiInl1  = Electrons[0].dPhiIn();
-    dPhiInl2  = Electrons[1].dPhiIn();
-
-    HoverEl1  = Electrons[0].HoverE();
-    HoverEl2  = Electrons[1].HoverE();
+      POGMedium = Electrons[iel].Pass_CutBasedMediumNoIso()?  1: 0;
+      
+      
+      MissingHits = Electrons[iel].NMissingHits();
     
-    TrkIsol1  = Electrons[0].TrkIso();
-    TrkIsol2  = Electrons[1].TrkIso();
+      Full5x5_sigmaIetaIeta  = Electrons[iel].Full5x5_sigmaIetaIeta();
+      sigmaIetaIeta  = Electrons[iel].sigmaIetaIeta();
+      
+      dEtaSeed  = Electrons[iel].dEtaSeed();
 
-    InvEminusInvP_l1 = fabs(Electrons[0].InvEminusInvP());
-    InvEminusInvP_l2 = fabs(Electrons[1].InvEminusInvP());
+      dPhiIn  = Electrons[iel].dPhiIn();
+      dEtaIn  = Electrons[iel].dEtaIn();
+
+      EtaWidth = Electrons[iel].EtaWidth();
+      PhiWidth = Electrons[iel].PhiWidth();
+      e2x5OverE5x5 = Electrons[iel].e2x5OverE5x5();
+      e1x5OverE5x5= Electrons[iel].e1x5OverE5x5();
+      e15= Electrons[iel].e15();
+      e25= Electrons[iel].e25();
+      e55= Electrons[iel].e55();
+      dr03EcalRecHitSumEt= Electrons[iel].dr03EcalRecHitSumEt();
+      dr03HcalDepth1TowerSumEt= Electrons[iel].dr03HcalDepth1TowerSumEt();
+      dr03HcalTowerSumEt= Electrons[iel].dr03HcalTowerSumEt();
+      dr03TkSumPt= Electrons[iel].dr03TkSumPt();
+      R9= Electrons[iel].R9();
+      HoverE  = Electrons[iel].HoverE();
     
-    ecalPFClusterIsol1 = Electrons[0].ecalPFClusterIso()/Electrons[0].UncorrPt();
-    ecalPFClusterIsol2 = Electrons[1].ecalPFClusterIso()/Electrons[1].UncorrPt();
+      TrkIso  = Electrons[iel].TrkIso();
+      
+      InvEminusInvP = fabs(Electrons[iel].InvEminusInvP());
+      
+      ecalPFClusterIso = Electrons[iel].ecalPFClusterIso()/Electrons[iel].UncorrPt();
 
-    hcalPFClusterIsol1 = Electrons[0].hcalPFClusterIso()/Electrons[0].UncorrPt();
-    hcalPFClusterIsol2 = Electrons[1].hcalPFClusterIso()/Electrons[1].UncorrPt();
+      hcalPFClusterIso = Electrons[iel].hcalPFClusterIso()/Electrons[iel].UncorrPt();
 
-    isEcalDrivenl1 = Electrons[0].isEcalDriven();
-    isEcalDrivenl2 = Electrons[1].isEcalDriven();
+      isEcalDriven = Electrons[iel].isEcalDriven();
+      
+      PassConversionVeto  = (Electrons[iel].PassConversionVeto()) ? 1 : 0;
+      
+      IsGsfCtfScPixChargeConsistent  = (Electrons[iel].IsGsfCtfScPixChargeConsistent()) ? 1 : 0;
+      IsGsfScPixChargeConsistent  = (Electrons[iel].IsGsfScPixChargeConsistent()) ? 1 : 0;
+      IsGsfCtfChargeConsistent  = (Electrons[iel].IsGsfCtfChargeConsistent()) ? 1 : 0;
+      iel++;
+      
+    }
+    else{
+      
+      MVA    = Muons[imu].MVA();
+      
+      
+      POGTight = Muons[imu].isPOGTight() ?  1: 0;
+      
+      POGMedium = Muons[imu].isPOGMedium() ?  1: 0;
+      
+      Chi2 = Muons[imu].Chi2();
+      
+      Validhits = Muons[imu].ValidMuonHits();
+      
+      Matched_stations = Muons[imu].MatchedStations();
+      
+      Pixel_hits  = Muons[imu].PixelHits();
+      
+      Tracker_layers = Muons[imu].TrackerLayers();
+      
+      imu++;
+    }
+
+    //==== Vars for non-prompt lepton bkg
+    int IdxMatchJet=-1, IdxMatchAwayJet=-1;
+    float mindR1=999., maxdPhi1=-999.;
     
-    PassConversionVetol1  = (Electrons[0].PassConversionVeto()) ? 1 : 0;
-    PassConversionVetol2  = (Electrons[1].PassConversionVeto()) ? 1 : 0;
-
-    IsGsfCtfScPixChargeConsistentl1  = (Electrons[0].IsGsfCtfScPixChargeConsistent()) ? 1 : 0;
-    IsGsfCtfScPixChargeConsistentl2  = (Electrons[1].IsGsfCtfScPixChargeConsistent()) ? 1 : 0;
-
-  }
-  else{
-
-    Dxyl1   = Muons[0].dXY();
-    Dxyl2   = Muons[1].dXY();
-
-    Dzl1   = Muons[0].dZ();
-    Dzl2   = Muons[1].dZ();
-
-    RelIsol1    = Muons[0].RelIso();
-    RelIsol2    = Muons[1].RelIso();
-
-    IP3Dl1    = Muons[0].IP3D();
-    IP3Dl2    = Muons[1].IP3D();
-
-    MVAl1    = Muons[0].MVA();
-    MVAl2    = Muons[1].MVA();
-
-    Minirelisol1   = Muons[0].MiniRelIso();
-    Minirelisol2   = Muons[1].MiniRelIso();
-
-
-    POGTightl1 = Muons[0].isPOGTight() ?  1: 0;
-    POGTightl2 = Muons[1].isPOGTight() ?  1: 0;
-
-    POGMediuml1 = Muons[0].isPOGMedium() ?  1: 0;
-    POGMediuml2 = Muons[1].isPOGMedium() ?  1: 0;
-
-
-
-    Chi2l1 = Muons[0].Chi2();
-    Chi2l2 = Muons[1].Chi2();
-    
-    Validhitsl1 = Muons[0].ValidMuonHits();
-    Validhitsl2 = Muons[1].ValidMuonHits();
-
-    Matched_stationsl1 = Muons[0].MatchedStations();
-    Matched_stationsl2 = Muons[1].MatchedStations();
-
-    Pixel_hitsl1  = Muons[0].PixelHits();
-    Pixel_hitsl2  = Muons[1].PixelHits();
-    Tracker_layersl1 = Muons[0].TrackerLayers();
-    Tracker_layersl2 = Muons[1].TrackerLayers();
-
-  }
-  //==== Vars for non-prompt lepton bkg
-  int IdxMatchJetl1=-1, IdxMatchAwayJetl1=-1, IdxMatchJetl2=-1, IdxMatchAwayJetl2=-1;
-  float mindR1=999., maxdPhi1=-999., mindR2=999., maxdPhi2=-999.;
-
-  for(unsigned int ij=0; ij<JetAllColl.size(); ij++){
-
-    float dPhi1 = fabs(TVector2::Phi_mpi_pi(LepTColl.at(0)->Phi() - JetAllColl.at(ij).Phi()));
-    if(dPhi1>maxdPhi1){ maxdPhi1=dPhi1; IdxMatchAwayJetl1=ij; }
-    float dR1=LepTColl.at(0)->DeltaR(JetAllColl.at(ij));
-    if(dR1>0.4) continue;
-    if(dR1<mindR1){ mindR1=dR1; IdxMatchJetl1=ij; }
-
-  }
-
-  for(unsigned int ij=0; ij<JetAllColl.size(); ij++){
-
-    float dPhi2 = fabs(TVector2::Phi_mpi_pi(LepTColl.at(1)->Phi() - JetAllColl.at(ij).Phi()));
-    if(dPhi2>maxdPhi2){ maxdPhi2=dPhi2; IdxMatchAwayJetl2=ij; }
-    float dR2=LepTColl.at(1)->DeltaR(JetAllColl.at(ij));
-    if(dR2>0.4) continue;
-    if(dR2<mindR2){ mindR2=dR2; IdxMatchJetl2=ij; }
-
-  }
-
-  if(IdxMatchJetl1!=-1){
-
-    PtRatiol1   = LepTColl.at(0)->Pt()/JetAllColl.at(IdxMatchJetl1).Pt();
-    TLorentzVector JetNoLep1(JetAllColl.at(IdxMatchJetl1));
-    JetNoLep1  -= *LepTColl.at(0);
-    PtRelv0l1   = LepTColl.at(0)->Perp(JetAllColl.at(IdxMatchJetl1).Vect());
-    PtRelv1l1   = LepTColl.at(0)->Perp(JetNoLep1.Vect());
-    CEMFracCJl1 = JetAllColl.at(IdxMatchJetl1).ChargedEmEnergyFraction();
-    NEMFracCJl1 = JetAllColl.at(IdxMatchJetl1).NeutralEmEnergyFraction();
-    CHFracCJl1  = JetAllColl.at(IdxMatchJetl1).ChargedHadEnergyFraction();
-    NHFracCJl1  = JetAllColl.at(IdxMatchJetl1).NeutralHadEnergyFraction();
-    MuFracCJl1  = JetAllColl.at(IdxMatchJetl1).MuonEnergyFraction();
-    JetDiscCJl1 = JetAllColl.at(IdxMatchJetl1).GetTaggerResult(JetTagging::DeepJet);
-
-  }
-  else{
-
-    PtRatiol1=-1., PtRelv0l1=-1., PtRelv1l1=-1., CEMFracCJl1=-1., NEMFracCJl1=-1., CHFracCJl1=-1., NHFracCJl1=-1., MuFracCJl1=-1., JetDiscCJl1=-1.;
-
-  }
-
-  if(IdxMatchJetl2!=-1){
-
-    PtRatiol2   = LepTColl.at(1)->Pt()/JetAllColl.at(IdxMatchJetl2).Pt();
-    TLorentzVector JetNoLep2(JetAllColl.at(IdxMatchJetl2));
-    JetNoLep2  -= *LepTColl.at(1);
-    PtRelv0l2   = LepTColl.at(1)->Perp(JetAllColl.at(IdxMatchJetl2).Vect());
-    PtRelv1l2   = LepTColl.at(1)->Perp(JetNoLep2.Vect());
-    CEMFracCJl2 = JetAllColl.at(IdxMatchJetl2).ChargedEmEnergyFraction();
-    NEMFracCJl2 = JetAllColl.at(IdxMatchJetl2).NeutralEmEnergyFraction();
-    CHFracCJl2  = JetAllColl.at(IdxMatchJetl2).ChargedHadEnergyFraction();
-    NHFracCJl2  = JetAllColl.at(IdxMatchJetl2).NeutralHadEnergyFraction();
-    MuFracCJl2  = JetAllColl.at(IdxMatchJetl2).MuonEnergyFraction();
-    JetDiscCJl2 = JetAllColl.at(IdxMatchJetl2).GetTaggerResult(JetTagging::DeepJet);
-
-  }
-  else{
-
-    PtRatiol2=-1., PtRelv0l2=-1., PtRelv1l2=-1., CEMFracCJl2=-1., NEMFracCJl2=-1., CHFracCJl2=-1., NHFracCJl2=-1., MuFracCJl2=-1., JetDiscCJl2=-1.;
-
-  }
-
-  if(IdxMatchAwayJetl1!=-1){
-
-    PtRatioAJl1 = JetAllColl.at(IdxMatchAwayJetl1).Pt()/LepTColl.at(0)->Pt();
-    CEMFracAJl1 = JetAllColl.at(IdxMatchAwayJetl1).ChargedEmEnergyFraction();
-    NEMFracAJl1 = JetAllColl.at(IdxMatchAwayJetl1).NeutralEmEnergyFraction();
-    CHFracAJl1  = JetAllColl.at(IdxMatchAwayJetl1).ChargedHadEnergyFraction();
-    NHFracAJl1  = JetAllColl.at(IdxMatchAwayJetl1).NeutralHadEnergyFraction();
-    MuFracAJl1  = JetAllColl.at(IdxMatchAwayJetl1).MuonEnergyFraction();
-    JetDiscAJl1 = JetAllColl.at(IdxMatchAwayJetl1).GetTaggerResult(JetTagging::DeepJet);
-
-  }
-  else{
-
-    PtRatioAJl1=-1., CEMFracAJl1=-1., NEMFracAJl1=-1., CHFracAJl1=-1., NHFracAJl1=-1., MuFracAJl1=-1., JetDiscAJl1=-1.;
-
-  }
-
-  if(IdxMatchAwayJetl2!=-1){
-
-    PtRatioAJl2 = JetAllColl.at(IdxMatchAwayJetl2).Pt()/LepTColl.at(1)->Pt();
-    CEMFracAJl2 = JetAllColl.at(IdxMatchAwayJetl2).ChargedEmEnergyFraction();
-    NEMFracAJl2 = JetAllColl.at(IdxMatchAwayJetl2).NeutralEmEnergyFraction();
-    CHFracAJl2  = JetAllColl.at(IdxMatchAwayJetl2).ChargedHadEnergyFraction();
-    NHFracAJl2  = JetAllColl.at(IdxMatchAwayJetl2).NeutralHadEnergyFraction();
-    MuFracAJl2  = JetAllColl.at(IdxMatchAwayJetl2).MuonEnergyFraction();
-    JetDiscAJl2 = JetAllColl.at(IdxMatchAwayJetl2).GetTaggerResult(JetTagging::DeepJet);
-
-  }
-  else{
-
-    PtRatioAJl2=-1., CEMFracAJl2=-1., NEMFracAJl2=-1., CHFracAJl2=-1., NHFracAJl2=-1., MuFracAJl2=-1., JetDiscAJl2=-1.;
-
-  }
-
+    for(unsigned int ij=0; ij<JetAllColl.size(); ij++){
+      
+      float dPhi1 = fabs(TVector2::Phi_mpi_pi(lep->Phi() - JetAllColl.at(ij).Phi()));
+      if(dPhi1>maxdPhi1){ maxdPhi1=dPhi1; IdxMatchAwayJet=ij; }
+      float dR1=lep->DeltaR(JetAllColl.at(ij));
+      if(dR1>0.4) continue;
+      if(dR1<mindR1){ mindR1=dR1; IdxMatchJet=ij; }
+      
+    }
   
-  w_tot     = !IsDATA? weight:-1.;
-  if(lep_channel == MuMu) tree_mm->Fill();
-  if(lep_channel == EE)   tree_ee->Fill();
-  
+    if(IdxMatchJet!=-1){
 
+      PtRatio   = lep->Pt()/JetAllColl.at(IdxMatchJet).Pt();
+      TLorentzVector JetNoLep1(JetAllColl.at(IdxMatchJet));
+      JetNoLep1  -= *lep;
+      PtRelv0   = lep->lep_jet_ptrel();
+      PtRelv1   = lep->Perp(JetNoLep1.Vect());
+      CEMFracCJ = JetAllColl.at(IdxMatchJet).ChargedEmEnergyFraction();
+      NEMFracCJ = JetAllColl.at(IdxMatchJet).NeutralEmEnergyFraction();
+      CHFracCJ  = JetAllColl.at(IdxMatchJet).ChargedHadEnergyFraction();
+      NHFracCJ  = JetAllColl.at(IdxMatchJet).NeutralHadEnergyFraction();
+      MuFracCJ  = JetAllColl.at(IdxMatchJet).MuonEnergyFraction();
+      JetDiscCJ = JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet);
+      JetNTrk   = JetAllColl.at(IdxMatchJet).NVtxTracks();
+      PileupJetId   = JetAllColl.at(IdxMatchJet).PileupJetId();
+    }
+    else{
+      
+      PtRatio=-1., PtRelv0=-1., PtRelv1=-1., CEMFracCJ=-1., NEMFracCJ=-1., CHFracCJ=-1., NHFracCJ=-1., MuFracCJ=-1., JetDiscCJ=-1.,JetNTrk=-1,PileupJetId=-1;
+      
+    }
+    
+
+    if(IdxMatchAwayJet!=-1){
+      
+      PtRatioAJ = JetAllColl.at(IdxMatchAwayJet).Pt()/lep->Pt();
+      CEMFracAJ = JetAllColl.at(IdxMatchAwayJet).ChargedEmEnergyFraction();
+      NEMFracAJ = JetAllColl.at(IdxMatchAwayJet).NeutralEmEnergyFraction();
+      CHFracAJ  = JetAllColl.at(IdxMatchAwayJet).ChargedHadEnergyFraction();
+      NHFracAJ  = JetAllColl.at(IdxMatchAwayJet).NeutralHadEnergyFraction();
+      MuFracAJ  = JetAllColl.at(IdxMatchAwayJet).MuonEnergyFraction();
+      JetDiscAJ = JetAllColl.at(IdxMatchAwayJet).GetTaggerResult(JetTagging::DeepJet);
+      
+    }
+    else{
+      
+      PtRatioAJ=-1., CEMFracAJ=-1., NEMFracAJ=-1., CHFracAJ=-1., NHFracAJ=-1., MuFracAJ=-1., JetDiscAJ=-1.;
+      
+    }
+    
+    if(lep->LeptonFlavour() == Lepton::ELECTRON) cout <<  "Fill electron " << endl;
+    w_tot     = !IsDATA? weight:-1.;
+    if(lep->LeptonFlavour() == Lepton::MUON) tree_mm->Fill();
+    if(lep->LeptonFlavour() == Lepton::ELECTRON)   tree_ee->Fill();
+  }
+  
 }
 
 
@@ -455,41 +380,65 @@ void HNL_LepIDKinVar::executeEventFromParameter(AnalyzerParameter param){
 
 void HNL_LepIDKinVar::InitializeTreeVars(){
 
-  Ptl1=-1, Ptl2=-1, Etal1=-1, Etal2=-1;
-  PtRatiol1=-1, PtRatiol2=-1, PtRatioAJl1=-1, PtRatioAJl2=-1, PtRelv0l1=-1, PtRelv1l1=-1, PtRelv0l2=-1, PtRelv1l2=-1;
-  CEMFracAJl1=-1, CEMFracAJl2=-1, NEMFracAJl1=-1, NEMFracAJl2=-1, CHFracAJl1=-1, CHFracAJl2=-1, NHFracAJl1=-1, NHFracAJl2=-1, MuFracAJl1=-1, MuFracAJl2=-1, JetDiscAJl1=-1, JetDiscAJl2=-1;
-  CEMFracCJl1=-1, CEMFracCJl2=-1, NEMFracCJl1=-1, NEMFracCJl2=-1, CHFracCJl1=-1, CHFracCJl2=-1, NHFracCJl1=-1, NHFracCJl2=-1, MuFracCJl1=-1, MuFracCJl2=-1, JetDiscCJl1=-1, JetDiscCJl2=-1;
+  Pt=-1, Eta=-1;
+  PtRatio=-1, PtRatioAJ=-1, PtRelv0=-1, PtRelv1=-1;
+  CEMFracAJ=-1,NEMFracAJ=-1, CHFracAJ=-1, NHFracAJ=-1,  MuFracAJ=-1, JetDiscAJ=-1;
+  CEMFracCJ=-1, NEMFracCJ=-1, CHFracCJ=-1, NHFracCJ=-1, MuFracCJ=-1, JetDiscCJ=-1,JetNTrk =-1,PileupJetId=-1;
 
-  Dxyl1=-1.;  Dxyl2=-1.;
-  Dzl1=-1.;Dzl2=-1.;
-  RelIsol1=-1.;RelIsol2=-1.;
-  IP3Dl1=-1.;IP3Dl2=-1.;
-  MVAl1=-1.;MVAl2=-1.;
-  Chi2l1=-1.;Chi2l2=-1.;
-  Validhitsl1=-1.;Validhitsl2=-1.;
-  Matched_stationsl1=-1.;Matched_stationsl2=-1.;
-  Pixel_hitsl1=-1.;Pixel_hitsl2=-1.;
-  Minirelisol1=-1.;Minirelisol2=-1.;
-  Pixel_hitsl1=-1.;Pixel_hitsl2=-1.;
-  Tracker_layersl1=-1.;Tracker_layersl2=-1.;
-  MissingHitsl1=-1.;MissingHitsl2=-1.;
-  Full5x5_sigmaIetaIetal1=-1.;Full5x5_sigmaIetaIetal2=-1.;
-  dEtaSeedl1=-1.;dEtaSeedl2=-1.;
-  dPhiInl1=-1.;dPhiInl2=-1.;
-  HoverEl1=-1.;HoverEl2=-1; 
-  TrkIsol1=-1.;TrkIsol2=-1.;
-  InvEminusInvP_l1=-1.;InvEminusInvP_l2=-1.;
-  ecalPFClusterIsol1=-1.;ecalPFClusterIsol2=-1.;
-  hcalPFClusterIsol1=-1.;hcalPFClusterIsol2=-1.;
-  POGTightl1=-1;
-  POGTightl2=-1;
-  POGMediuml1 = -1;
-  POGMediuml2 = -1;
-  isEcalDrivenl1= -1;
-  isEcalDrivenl2=-1;
-  PassConversionVetol1=-1 , PassConversionVetol2= -1;
-  IsGsfCtfScPixChargeConsistentl1 =-1;
-  IsGsfCtfScPixChargeConsistentl2 = -1;
+  MiniIsoChHad=-1;
+  MiniIsoNHad=-1;
+  MiniIsoPhHad=-1;
+  IsoChHad=-1;
+  IsoNHad=-1;
+  IsoPhHad=-1;
+
+  Dxy=-1.;
+  DxySig=-1.;
+  Dz=-1.;
+  DzSig=-1.;
+  RelIso=-1.;
+  IP3D=-1.;
+  MVA=-1.;
+  MVAIso=-1.;
+  Chi2=-1.;
+  Validhits=-1.;
+  Matched_stations=-1.;
+  Pixel_hits=-1.;
+  Minireliso=-1.;
+  Pixel_hits=-1.;
+  Tracker_layers=-1.;
+  MissingHits=-1.;
+  Full5x5_sigmaIetaIeta=-1.;
+  sigmaIetaIeta=-1.;
+  dEtaSeed=-1.;
+  dPhiIn=-1.;
+  dEtaIn=-1.;
+  EtaWidth=-1.;
+  PhiWidth=-1.;
+  HoverE=-1.;
+  TrkIso=-1.;
+  e2x5OverE5x5=-1;
+  e1x5OverE5x5=-1;
+  e15=-1;
+  e25=-1;
+  e55=-1;
+  dr03EcalRecHitSumEt=-1;
+  dr03HcalDepth1TowerSumEt=-1;
+  dr03HcalTowerSumEt=-1;
+  dr03TkSumPt=-1;
+  
+  InvEminusInvP=-1.;
+  ecalPFClusterIso=-1.;
+  hcalPFClusterIso=-1.;
+  POGTight=-1;
+  POGMedium = -1;
+  isEcalDriven= -1;
+  PassConversionVeto=-1 ;
+  IsGsfCtfScPixChargeConsistent =-1;
+  IsGsfScPixChargeConsistent =-1;
+  IsGsfCtfChargeConsistent =-1;
+  
+  R9=-1;
   
   w_tot=-1;
 

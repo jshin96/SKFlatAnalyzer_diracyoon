@@ -43,7 +43,7 @@ void HNL_FakeRate::executeEvent(){
   ELIDs.push_back(make_pair("HN2016MVA",   "HNLooseMVA"));
   ELIDs.push_back(make_pair("HN2016MVA2",   "HNLooseMVA"));
   ELIDs.push_back(make_pair("HN2016MVA2CC",   "HNLooseMVA"));
-ç
+
   paramnames.push_back("HNTight_17028"  );
   paramnames.push_back("HNTightV2"      );
   paramnames.push_back("passPOGTight"  );
@@ -58,33 +58,27 @@ void HNL_FakeRate::executeEvent(){
 
   bool ElectronOpt=true;
   if (ElectronOpt){
-    vector<TString> vTrig = {"LooseTrig_","TightTrig_"};                                                                                 
-    vector<TString> vConv = {"","ConvBEC_"};
+    vector<TString> vTrig = {"LooseTrig_"};
+    vector<TString> vConv = {"ConvBEC_"};
     vector<TString> vCC = {"CCBEC_"};
-    vector<TString> vMVAB;
-    vector<TString> vMVAEC;
-    for(unsigned int imva=0 ; imva < 70 ; imva++){
-      double mva_d= -0.5 + double(imva)*0.02;
+    vector<TString> vMVA;
+    for(unsigned int imva=0 ; imva < 201 ; imva++){
+      double mva_d= -2. + double(imva)*0.05;
       TString mvaTS= DoubleToString(mva_d);
-      vMVAB.push_back("MVAB"+mvaTS+"_");
+      vMVA.push_back("MVA"+mvaTS+"_");
+    }
 
-    }
-    for(unsigned int imva=0 ; imva < 85 ; imva++){
-      double mva_d= -0.8 + imva*0.02;
-      TString mvaTS= DoubleToString(mva_d);
-      vMVAEC.push_back("MVAEC"+mvaTS+"_");
-    }
     
     vector<TString> OptElectronsIDs;
     for(auto iTrig : vTrig){
       for(auto iConv : vConv){
 	for(auto iCC : vCC){
-	  for(auto iMVAB : vMVAB) OptElectronsIDs.push_back(iTrig+iConv+iCC+iMVAB+"MVAECneg0p8_ISOB0p15_ISOEC0p15_DXYB1EC1");
-	  for(auto iMVAEC : vMVAEC) OptElectronsIDs.push_back(iTrig+iConv+iCC+iMVAEC+"MVABneg0p5_ISOB0p15_ISOEC0p15_DXYB1EC1");
-	  OptElectronsIDs.push_back(iTrig+iConv+iCC+"POGT_ISOB0p15_ISOEC0p15_DXYB1EC1");
-	  OptElectronsIDs.push_back(iTrig+iConv+iCC+"POGM_ISOB0p15_ISOEC0p15_DXYB1EC1");
-	  OptElectronsIDs.push_back(iTrig+iConv+iCC+"POGTNoIso_ISOB0p15_ISOEC0p15_DXYB1EC1");
-	  OptElectronsIDs.push_back(iTrig+iConv+iCC+"POGMNoIso_ISOB0p15_ISOEC0p15_DXYB1EC1");
+	  for(auto iMVA : vMVA) OptElectronsIDs.push_back(iTrig+iConv+iCC+iMVA+"_ISOB0p10_ISOEC0p10_DXYB1EC1");
+	  
+	  //OptElectronsIDs.push_back(iTrig+iConv+iCC+"POGT_ISOB0p15_ISOEC0p15_DXYB1EC1");
+	  //OptElectronsIDs.push_back(iTrig+iConv+iCC+"POGM_ISOB0p15_ISOEC0p15_DXYB1EC1");
+	  //OptElectronsIDs.push_back(iTrig+iConv+iCC+"POGTNoIso_ISOB0p15_ISOEC0p15_DXYB1EC1");
+	  //OptElectronsIDs.push_back(iTrig+iConv+iCC+"POGMNoIso_ISOB0p15_ISOEC0p15_DXYB1EC1");
 	}
       }
     }

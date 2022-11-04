@@ -194,8 +194,23 @@ void HNL_LeptonCore::initializeAnalyzer(){
 
   
   
-  if (Analyzer == "HNL_SignalRegionPlotter")SetupMVAReader();
+  //if (Analyzer == "HNL_SignalRegionPlotter")SetupMVAReader();
+  //if (Analyzer == "HNL_SignalLeptonOpt")SetupMVAReader();
+
+}
+
+void HNL_LeptonCore::OutCutFlow(TString lab, double w){
   
+  
+  std::map<TString, double>::iterator mapit = cfmap.find(lab);
+  if(mapit != cfmap.end()) {
+    cfmap[mapit->first] = mapit->second+w;
+  }
+  else     cfmap[lab]= w;
+
+  
+  return;
+
 }
 
 void HNL_LeptonCore::SetupMVAReader(){
@@ -867,7 +882,7 @@ double HNL_LeptonCore::SetupWeight(Event ev, AnalyzerParameter param){
   else pileup_weight= GetPileUpWeight(nPileUp,0);
   
   double this_mc_weight = ev.GetTriggerLumi("Full") * MCweight(true, true) * pileup_weight * GetKFactor()*prefire_weight;
-  if(MCSample.Contains("Type")) this_mc_weight = ev.GetTriggerLumi("Full") * MCweight(true, false) * pileup_weight * GetKFactor()*prefire_weight;
+  if(MCSample.Contains("Type") && Analyzer == "HNL_SignalLeptonOpt") this_mc_weight = MCweight(true, false) * pileup_weight * prefire_weight;
 
 
   FillWeightHist("PrefireWeight_" ,GetPrefireWeight(0));
@@ -1253,9 +1268,19 @@ HNL_LeptonCore::HNL_LeptonCore(){
 
 }
  
- HNL_LeptonCore::~HNL_LeptonCore(){
-   delete rand_;
+HNL_LeptonCore::~HNL_LeptonCore(){
+  
+  cout << "Cutflow results" << endl;
+  for(std::map< TString, double >::iterator mapit = cfmap.begin(); mapit!=cfmap.end(); mapit++){
+    cout << "Cutflow key = " <<  mapit->first << " = " << mapit->second << endl;
+  }
+  cfmap.clear();
 
+
+
+  
+  delete rand_;
+  
 }
 
 

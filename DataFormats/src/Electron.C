@@ -21,12 +21,20 @@ Electron::Electron(){
   j_passConversionVeto = false;
   j_NMissingHits = 0;
   j_Full5x5_sigmaIetaIeta = -999.;
+  j_sigmaIetaIeta = -999.;
   j_dEtaSeed = -999.;
   j_dPhiIn = -999.;
+  j_dEtaIn = -999.;
   j_HoverE  = -999.;
+  j_PhiWidth = -999.;
+  j_EtaWidth = -999.;
+
   j_InvEminusInvP = -999.;
   j_e2x5OverE5x5 = -999.;
   j_e1x5OverE5x5 = -999.;
+  j_e15 = -999.;
+  j_e25 = -999.;
+  j_e55 = -999.;
   j_trkiso = -999.;
   j_dr03EcalRecHitSumEt = -999.;
   j_dr03HcalDepth1TowerSumEt = -999.;
@@ -39,6 +47,8 @@ Electron::Electron(){
   j_IDCutBit.clear();
   j_Rho = -999.;
   j_isGsfCtfScPixChargeConsistent = false;
+  j_isGsfScPixChargeConsistent = false;
+  j_isGsfCtfChargeConsistent = false;
   this->SetLeptonFlavour(ELECTRON);
 }
 
@@ -123,6 +133,35 @@ void Electron::SetIDCutBit(vector<int> idcutbit){
   j_IDCutBit = idcutbit;
 }
 
+void Electron::SetEtaWidth(double d){
+  j_EtaWidth= d;
+}
+
+void Electron::SetPhiWidth(double d){
+  j_PhiWidth= d;
+}
+
+void Electron::SetDetaIn(double d){
+  j_dEtaIn= d;
+}
+
+void Electron::SetSigmaIEtaIE(double d){
+  j_sigmaIetaIeta= d;
+}
+
+void Electron::SetE15(double d){
+  j_e15= d;
+}
+
+void Electron::SetE25(double d){
+  j_e25= d;
+}
+
+void Electron::SetE55(double d){
+  j_e55= d;
+}
+
+
 void Electron::SetRelPFIso_Rho(double r){
   j_RelPFIso_Rho = r;
   this->SetRelIso(r);
@@ -153,13 +192,11 @@ bool Electron::PassIDOpt(TString ID, bool cc, double dx_b ,double dx_e,double dz
     if(!( fabs(dZ()) < dz_b )) return false;
     if(!( fabs(dXY()) < dx_b )) return false;
     if(!( fabs(RelIso()) < iso_b )) return false;
-    if( dx_b != 999. && fabs(IP3D()/IP3Derr())>4) return false;
   }
   else{
     if(!( fabs(dZ()) < dz_e )) return false;
     if(!( fabs(dXY()) < dx_e )) return false;
     if(!( fabs(RelIso()) < iso_e )) return false;
-    if( dx_e != 999. && fabs(IP3D()/IP3Derr())>4) return false;
   }
 
 
@@ -219,19 +256,10 @@ bool Electron::PassID(TString ID) const{
     TString chg_method= "";
     TString iso_methodB="";
     TString iso_methodEC="";
-    TString pog_methodB="";
-    TString pog_methodEC="";
-    TString pog_methodBBX="";
-    TString pog_methodBBY="";
-    TString pog_methodBBZ="";
 
-    TString pog_methodEBX="";
-    TString pog_methodEBY="";
-    TString pog_methodEBZ="";
-
-    TString pog_methodEEX="";
-    TString pog_methodEEY="";
-    TString pog_methodEEZ="";
+    TString pog_methodBB="";
+    TString pog_methodEB="";
+    TString pog_methodEE="";
 
     for(unsigned int i=0; i < subStrings.size(); i++){
       if (subStrings[i].Contains("LooseTrig")) trig ="Loose";
@@ -242,40 +270,29 @@ bool Electron::PassID(TString ID) const{
       if (subStrings[i].Contains("CCEC")) chg_method +="EC";
       if (subStrings[i].Contains("DXY")) dxy_method=subStrings[i];
 
-      if (subStrings[i].Contains("MVABBX")) pog_methodBBX=subStrings[i];
-      if (subStrings[i].Contains("MVABBY")) pog_methodBBY=subStrings[i];
-      if (subStrings[i].Contains("MVABBZ")) pog_methodBBZ=subStrings[i];
-
-      if (subStrings[i].Contains("MVAEBX")) pog_methodEBX=subStrings[i];
-      if (subStrings[i].Contains("MVAEBY")) pog_methodEBY=subStrings[i];
-      if (subStrings[i].Contains("MVAEBZ")) pog_methodEBZ=subStrings[i];
-
-      if (subStrings[i].Contains("MVAEEX")) pog_methodEEX=subStrings[i];
-      if (subStrings[i].Contains("MVAEEY")) pog_methodEEY=subStrings[i];
-      if (subStrings[i].Contains("MVAEEZ")) pog_methodEEZ=subStrings[i];
-
-      if (subStrings[i].Contains("MVABWP")) pog_methodB=subStrings[i];
-      if (subStrings[i].Contains("MVAECWP")) pog_methodEC=subStrings[i];
+      if (subStrings[i].Contains("MVABB")) pog_methodBB=subStrings[i];
+      if (subStrings[i].Contains("MVAEB")) pog_methodEB=subStrings[i];
+      if (subStrings[i].Contains("MVAEE")) pog_methodEE=subStrings[i];
+      //if (subStrings[i].Contains("MVABWP")) pog_methodB=subStrings[i];
+      //if (subStrings[i].Contains("MVAECWP")) pog_methodEC=subStrings[i];
       
 
-      if (subStrings[i].Contains("POG")) pog_methodB=subStrings[i];
-      if (subStrings[i].Contains("POG")) pog_methodEC=subStrings[i];
+      if (subStrings[i].Contains("POG")) pog_methodBB=subStrings[i];
+      if (subStrings[i].Contains("POG")) pog_methodEB=subStrings[i];
+      if (subStrings[i].Contains("POG")) pog_methodEE=subStrings[i];
 
       if (subStrings[i].Contains("ISOB")) iso_methodB=subStrings[i];
       if (subStrings[i].Contains("ISOEC")) iso_methodEC=subStrings[i];
     }
 
-    if  ((pog_methodBBX+pog_methodBBY+pog_methodBBZ).Contains("MVA")) pog_methodB = "MVA";
-    if  ((pog_methodEBX+pog_methodEBY+pog_methodEBZ).Contains("MVA")) pog_methodB = "MVA";
-    if  ((pog_methodEEX+pog_methodEEY+pog_methodEEZ).Contains("MVA")) pog_methodEC = "MVA";
     
-    if(ID.Contains("ElOptLoose")) return PassLooseIDOpt( trig, dxy_method, pog_methodB,pog_methodEC, conv_method, chg_method, iso_methodB,iso_methodEC);
+    //if(ID.Contains("ElOptLoose")) return PassLooseIDOpt( trig, dxy_method, pog_methodB,pog_methodEC, conv_method, chg_method, iso_methodB,iso_methodEC);
       
     //cout << ID << "   eta = " << this->Eta() << " MVA == " << MVANoIso() << "    MVANoIsoResponse() = " << MVANoIsoResponse()  << endl;
     
     //cout <<  "PassIDOptMulti " <<   
 
-    return PassIDOptMulti( trig, dxy_method, pog_methodB,pog_methodEC, pog_methodBBX,pog_methodBBY,pog_methodBBZ, pog_methodEBX,pog_methodEBY,pog_methodEBZ,pog_methodEEX,pog_methodEEY,pog_methodEEZ,conv_method, chg_method, iso_methodB,iso_methodEC);
+    return PassIDOptMulti( trig, dxy_method, pog_methodBB,pog_methodEB, pog_methodEE,conv_method, chg_method, iso_methodB,iso_methodEC);
     
   }
   
@@ -383,12 +400,10 @@ int  Electron::PassLooseIDOpt(TString  trigger, TString dxy_method, TString sel_
 
 
 
-int  Electron::PassIDOptMulti(TString  trigger, TString dxy_method, TString sel_methodB,TString sel_methodEC, TString sel_methodBBX, TString sel_methodBBY, TString sel_methodBBZ, TString sel_methodEBX, TString sel_methodEBY, TString sel_methodEBZ, TString sel_methodEEX, TString sel_methodEEY, TString sel_methodEEZ, TString conv_method, TString chg_method, TString iso_methodB,TString iso_methodEC ) const{
+int  Electron::PassIDOptMulti(TString  trigger, TString dxy_method, TString sel_methodBB,TString sel_methodEB, TString sel_methodEE,TString conv_method, TString chg_method, TString iso_methodB,TString iso_methodEC ) const{
 
   bool DEBUG=false;
-  
-  if(DEBUG)cout << trigger << " " << dxy_method << " " << sel_methodB << " " << conv_method << " " << chg_method << " " << iso_methodB << endl;
-  if(DEBUG)cout << trigger << " " << dxy_method << " " << sel_methodEC << " " << conv_method << " " << chg_method << " " << iso_methodEC << endl;
+  /*
 
   if(trigger == "Loose"){
     if(! (Pass_TriggerEmulationLoose()) ){
@@ -422,33 +437,22 @@ int  Electron::PassIDOptMulti(TString  trigger, TString dxy_method, TString sel_
     
     double dxy_cut = 0.02 ;
     
-    if(dxy_method.Contains("B1")) {
-      if(this->Pt() > 15 && this->Pt()  < 60.) dxy_cut -= (this->Pt() - 15.) * 0.01/ 45.;
-      if(this->Pt()  > 60.) dxy_cut = 0.01;
-      if(DEBUG) cout << "pt = " << this->Pt() << " DXY cut = " << dxy_cut << " value = " << fabs(dXY()) <<  endl;
-
-      
-      if(fabs(dXY()) >  dxy_cut)   {
-	if(DEBUG) cout << " DXY  FAIL" << endl;
-	return 0;
-      }
+    if(this->Pt() > 15 && this->Pt()  < 60.) dxy_cut -= (this->Pt() - 15.) * 0.01/ 45.;
+    if(this->Pt()  > 60.) dxy_cut = 0.01;
+    if(DEBUG) cout << "pt = " << this->Pt() << " DXY cut = " << dxy_cut << " value = " << fabs(dXY()) <<  endl;
+    
+    
+    if(fabs(dXY()) >  dxy_cut)   {
+      if(DEBUG) cout << " DXY  FAIL" << endl;
+      return 0;
     }
     
     if(fabs(dZ()) >  0.05)   return 0;
 
     if(fabs(IP3D()/IP3Derr())> 5.)  return 0;
 
-    if(DEBUG) cout << " sel_methodB = " << sel_methodB << endl;
     
-      
-    if(sel_methodB == "MVABWP90"){
-      if(!passMVAID_noIso_WP90())  return 0;
-    }
-    else if(sel_methodB == "MVABWP80"){
-      if(!passMVAID_noIso_WP80())  return 0;
-    }
-    
-    else if(sel_methodB.Contains("MVA")){
+    if(sel_methodB.Contains("MVA")){
 
       if( fabs(scEta())<=  0.8 ){
 	
@@ -577,16 +581,21 @@ int  Electron::PassIDOptMulti(TString  trigger, TString dxy_method, TString sel_
       
     }
   }
+
+  */
+
   return 1;
-  
 
 }
 
 int  Electron::PassIDTight(TString ID) const{
 
-  // same ID used by Haneol excpet with conv                                                                                                                                                                                         
+  // same ID used by Haneol expassTightID_NoCCcpet with conv                                                                                                                                                                                         
   if(ID=="HNTightV2")  return passTightID_NoCC() &&PassHNID()  &&(fabs(IP3D()/IP3Derr())<4.)? 1 : 0 ;
-  if(ID=="HNTight_17028") return Pass_HNTight2016()? 1 : 0 ;  // EXO-17-028                                                                                                               
+  if(ID=="HNTightV3")  return (PassHNOpt()==1) && passTightID_NoCC() &&PassHNID()  &&(fabs(IP3D()/IP3Derr())<4.)? 1 : 0 ;
+
+  if(ID=="HNTight_17028") return Pass_HNTight2016()? 1 : 0 ;  // EXO-17-028                                                                                  
+  if(ID=="HNTight_UL") return Pass_HNTightUL()? 1 : 0 ;  
 
   //=== POG
   if(ID=="passPOGTight")             return passTightID_NoCC()? 1 : 0 ;
@@ -664,10 +673,10 @@ int  Electron::PassIDTight(TString ID) const{
 
     if(! (Pass_TriggerEmulationLoose()) ) return 0;
     if( fabs(scEta())<= 1.479 ){
-      if(fabs(dZ()) >  0.05)   return 0;
+      if(fabs(dZ()) >  0.1)   return 0;
     }   
     else{
-      if(fabs(dZ()) >  0.05)   return 0;
+      if(fabs(dZ()) >  0.1)   return 0;
     }
     return 1;
 
@@ -679,7 +688,7 @@ int  Electron::PassIDTight(TString ID) const{
       if(fabs(IP3D()/IP3Derr())> 5.)  return 0;
     }
     else{
-      if(fabs(IP3D()/IP3Derr())> 7.5)  return 0;
+      if(fabs(IP3D()/IP3Derr())> 10)  return 0;
     }
     return 1;
 
@@ -687,41 +696,8 @@ int  Electron::PassIDTight(TString ID) const{
 
 
       
-  if(ID=="HNOpt")                 {
+  if(ID=="HNOpt")  return PassHNOpt();
 
-    if(! (Pass_TriggerEmulationLoose()) ) return 0;
-
-    if( fabs(scEta())<= 1.479 ){
-      
-      double dxy_cut = 0.02 ;
-      if(this->Pt() > 15 && this->Pt()  < 60.) dxy_cut -= (this->Pt() - 15.) * 0.01/ 45.;
-      if(this->Pt()  > 60.) dxy_cut = 0.01;
-
-      if(fabs(dXY()) >  dxy_cut)   return 0;
-      if(fabs(dZ()) >  0.05)   return 0;
-      if(fabs(IP3D()/IP3Derr())> 5.)  return 0;
-
-      //double mva_cut_B = -0.5 ;
-      //if(this->Pt() > 15 && this->Pt()  < 60.) mva_cut_B -= (this->Pt() - 15.) * 1.4/ 45.;
-      //if(this->Pt()  > 60.)  mva_cut_B = 0.9;
-      if(! (RelIso()<0.2) ) return false;
-      //if(! (MVANoIso()> mva_cut_B) ) return 0;
-
-    }
-    else{
-      double dxy_cut = 0.04 ;
-      if(this->Pt() > 15 && this->Pt()< 60.) dxy_cut -= (this->Pt()- 15.) * 0.02/ 45.;
-      if(this->Pt()  > 60.) dxy_cut = 0.02;
-     
-      if(fabs(dXY()) >  dxy_cut)   return 0;
-      if(fabs(dZ()) >  0.05)   return 0;
-      if(fabs(IP3D()/IP3Derr())> 7.5)  return 0;
-      if(! (RelIso()<0.2) ) return false;
-      //double mva_cut_EC = -0.6 ;      //if(this->Pt() > 15 && this->Pt()  < 60.) mva_cut_EC -= ( this->Pt() - 15.) * 1.3/ 45.;
-      //if(this->Pt()  > 60.) mva_cut_EC =  0.7;      //if(! (MVANoIso()> mva_cut_EC) ) return 0;
-    }
-    return 1;
-  }
 
   if(ID=="TightTriggerTight")                 {
     if(! passTightID_NoCC()) return 0;
@@ -1078,6 +1054,38 @@ bool Electron::passHEEP2018Prompt() const {
   if(! ( dr03EcalRecHitSumEt() + dr03HcalDepth1TowerSumEt() < cutValue_emhaddep1 ) ) return false;
 
   return true;
+
+}
+
+int Electron::PassHNOpt() const{
+
+  if(! (Pass_TriggerEmulationLoose()) ) return 0;
+
+  if( fabs(scEta())<= 1.479 ){
+
+    double dxy_cut = 0.02 ;
+    if(this->Pt() > 15 && this->Pt()  < 60.) dxy_cut -= (this->Pt() - 15.) * 0.01/ 45.;
+    if(this->Pt()  > 60.) dxy_cut = 0.01;
+
+    if(fabs(dXY()) >  dxy_cut)   return 0;
+    if(fabs(dZ()) >  0.07)   return 0;
+    if(fabs(IP3D()/IP3Derr())> 7.)  return 0;
+
+    //if(! (RelIso()<0.2) ) return false;                                                                                                                                                                                                                                   
+    return 1;
+  }
+  else{
+    double dxy_cut = 0.04 ;
+    if(this->Pt() > 15 && this->Pt()< 60.) dxy_cut -= (this->Pt()- 15.) * 0.02/ 45.;
+    if(this->Pt()  > 60.) dxy_cut = 0.02;
+
+    if(fabs(dXY()) >  dxy_cut)   return 0;
+    if(fabs(dZ()) >  0.07)   return 0;
+    if(fabs(IP3D()/IP3Derr())> 10)  return 0;
+    //if(! (RelIso()<0.2) ) return false;                                                                                                                                                                                                                                   
+
+  }
+  return 1;
 
 }
 
@@ -1718,7 +1726,7 @@ bool Electron::PassMVA_UL_BB(double c, double tau, double A) const {
   double cutCategory3 =  c - exp(- this->Pt() / tau) * A;
 
   if( fabs(scEta()) <= 0.8 ){
-    if(! (MVANoIsoResponse()> cutCategory3 )) {
+    if(! (MVAIsoResponse()> cutCategory3 )) {
       //cout << "FaIL BB cutCategory3 =" << cutCategory3 << "  MVANoIsoResponse()=" << MVANoIsoResponse()   << endl;
       return false;
     }
@@ -1738,7 +1746,7 @@ bool Electron::PassMVA_UL_EB(double c, double tau, double A) const {
   double cutCategory4 = c -exp(- this->Pt() / tau) * A;
 
   if( fabs(scEta()) > 0.8 && fabs(scEta()) <= 1.479 ){
-    if(! (MVANoIsoResponse()> cutCategory4 )) {
+    if(! (MVAIsoResponse()> cutCategory4 )) {
       //cout << "FaIL EB cutCategory4 =" << cutCategory4 << " MVANoIsoResponse() = " << MVANoIsoResponse() << endl;
       return false;
     }
@@ -1780,6 +1788,63 @@ bool Electron::PassMVA(double mva1, double mva2, double mva3) const {
   }
 
   return true;
+}
+
+
+bool Electron::Pass_HNTightUL() const{
+
+  if(! (Pass_TriggerEmulationLoose()) ) return false;
+
+  if( fabs(scEta())<= 0.8 ){
+
+    double dxy_cut = 0.02 ;
+    if(this->Pt() > 15 && this->Pt()  < 60.) dxy_cut -= (this->Pt() - 15.) * 0.01/ 45.;
+    if(this->Pt()  > 60.) dxy_cut = 0.01;
+
+    if(fabs(dXY()) >  dxy_cut)   return false;
+    if(fabs(dZ()) >  0.07)   return false;
+    if(fabs(IP3D()/IP3Derr())> 7.)  return false;
+    if(! (RelIso()<0.07) ) return false;
+
+    if(!PassMVA_UL_BB(4.4,13., 1.)) return false;
+    
+    return 1;
+  }
+  else if( fabs(scEta())<= 0.8 ){
+
+    double dxy_cut = 0.02 ;
+    if(this->Pt() > 15 && this->Pt()  < 60.) dxy_cut -= (this->Pt() - 15.) * 0.01/ 45.;
+    if(this->Pt()  > 60.) dxy_cut = 0.01;
+
+    if(fabs(dXY()) >  dxy_cut)   return false;
+    if(fabs(dZ()) >  0.07)   return false;
+    if(fabs(IP3D()/IP3Derr())> 7.)  return false;
+
+    if(! (RelIso()<0.1) ) return false;
+
+    if(!PassMVA_UL_EB(3.3,13., 0.)) return false;
+
+
+  }
+
+  else{
+    double dxy_cut = 0.04 ;
+    if(this->Pt() > 15 && this->Pt()< 60.) dxy_cut -= (this->Pt()- 15.) * 0.02/ 45.;
+    if(this->Pt()  > 60.) dxy_cut = 0.02;
+
+    if(fabs(dXY()) >  dxy_cut)   return false;
+    if(fabs(dZ()) >  0.07)   return false;
+    if(fabs(IP3D()/IP3Derr())> 10)  return false;
+    if(! (RelIso()<0.2) ) return false;
+
+    if(!PassMVA_UL_EE(5.7,13., 0.)) return false;
+
+  }
+
+  return true;
+
+
+
 }
 bool Electron::Pass_HNTight2016() const{
 
@@ -2097,8 +2162,10 @@ void Electron::SetRho(double r){
   j_Rho = r;
 }
 
-void Electron::SetIsGsfCtfScPixChargeConsistent(bool b){
+void Electron::SetIsGsfCtfScPixChargeConsistent(bool b, bool c, bool d){
   j_isGsfCtfScPixChargeConsistent = b;
+  j_isGsfScPixChargeConsistent = c;
+  j_isGsfCtfChargeConsistent = d;
 }
 
 bool Electron::PassFilter(TString filter) const{
