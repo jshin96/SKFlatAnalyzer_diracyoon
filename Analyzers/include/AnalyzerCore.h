@@ -196,6 +196,7 @@ public:
   std::vector<Muon> ScaleMuons(const std::vector<Muon>& muons, int sys);
 
   std::vector<Jet> ScaleJets(const std::vector<Jet>& jets, int sys);
+  std::vector<Jet> ScaleJetsIndividualSource(const std::vector<Jet>& jets, int sys, TString source);
   std::vector<Jet> SmearJets(const std::vector<Jet>& jets, int sys);
 
   std::vector<FatJet> ScaleFatJets(const std::vector<FatJet>& jets, int sys);
@@ -317,7 +318,7 @@ public:
   bool FindHEMElectron(Electron electron);
 
   //============ JEC Uncertainty
-  float GetJECUncertainty(TString type, float eta, float pt, bool up);
+  float GetJECUncertainty(TString type, float eta, float pt, int sys);
   void  SetupJECUncertainty(TString type);
 
   //==== Plotting

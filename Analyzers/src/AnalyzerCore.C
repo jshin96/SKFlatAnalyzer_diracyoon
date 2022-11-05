@@ -17,6 +17,16 @@ AnalyzerCore::AnalyzerCore(){
 
   
   JECSources = {"AbsoluteStat","AbsoluteScale","AbsoluteFlavMap","AbsoluteMPFBias","Fragmentation","SinglePionECAL","SinglePionHCAL","FlavorQCD","TimePtEta","RelativeJEREC1","RelativeJEREC2","RelativeJERHF","RelativePtBB","RelativePtEC1","RelativePtEC2","RelativePtHF","RelativeBal","RelativeSample","RelativeFSR","RelativeStatFSR","RelativeStatEC","RelativeStatHF","PileUpDataMC","PileUpPtRef","PileUpPtBB","PileUpPtEC1","PileUpPtEC2","PileUpPtHF","FlavorZJet","FlavorPhotonJet","FlavorPureGluon","FlavorPureQuark","FlavorPureCharm","FlavorPureBottom","Total"};
+
+  /*
+    
+    // In your analyser code add this line to constructor to fill map with JEC source values.
+    for(auto jec_source : JECSources)   SetupJECUncertainty(jec_source);
+  }
+    // Then you can get vector of jets with shift calling 
+    std::vector<Jet> AnalyzerCore::ScaleJetsIndividualSource(const std::vector<Jet>& jets, int sys, TString source);
+    vector<Jet> jets_AbsoluteStatUp = ScaleJetsIndividualSource(jets, 1, "AbsoluteStat");
+  */
   
 
 }
@@ -129,7 +139,7 @@ Event AnalyzerCore::GetEvent(){
 
 }
 
-float AnalyzerCore::GetJECUncertainty(TString type, float eta, float pt, bool up){
+float AnalyzerCore::GetJECUncertainty(TString type, float eta, float pt, int sys){
 
   std::map<TString, std::vector<std::map<float, std::vector<float> > > >::iterator mapit;
   mapit = JECUncMap.find(type);
@@ -169,10 +179,11 @@ float AnalyzerCore::GetJECUncertainty(TString type, float eta, float pt, bool up
   std::map<float, std::vector<float> > downmap = mapit->second.at(2); 
   
   std::map<float, std::vector<float> >::iterator mapit_unc;
-  if(up) mapit_unc =  mapit->second.at(1).find(bin_boundary);
+  if(sys> 0) mapit_unc =  mapit->second.at(1).find(bin_boundary);
   else mapit_unc =  mapit->second.at(2).find(bin_boundary);
   
-  float unc = (up) ?   1+ mapit_unc->second.at(ptbin) : 1 - mapit_unc->second.at(ptbin);
+  float unc = (sys> 0) ?   1+ mapit_unc->second.at(ptbin) : 1 - mapit_unc->second.at(ptbin);
+
 
   return unc;
 }
@@ -2053,6 +2064,32 @@ std::vector<Jet> AnalyzerCore::ScaleJets(const std::vector<Jet>& jets, int sys){
   return out;
 
 }
+
+
+std::vector<Jet> AnalyzerCore::ScaleJetsIndividualSource(const std::vector<Jet>& jets, int sys, TString source){
+
+  if(!std::count(JECSources.begin(),JECSources.end(), source)) {
+    cout << "[AnalyzerCore::ScaleJetsIndividualSource] source " << source << " was not found" << endl;
+    exit(EXIT_FAILURE);
+  }
+
+  std::vector<Jet> out;
+  for(unsigned int i=0; i<jets.size(); i++){
+
+    Jet this_jet = jets.at(i);
+
+    double get_shift = GetJECUncertainty(source , this_jet.Eta(),this_jet.Pt(), sys);
+    this_jet *= get_shift;
+
+    out.push_back( this_jet );
+  }
+
+  return out;
+
+}
+
+
+
 std::vector<Jet> AnalyzerCore::SmearJets(const std::vector<Jet>& jets, int sys){
 
   std::vector<Jet> out;
