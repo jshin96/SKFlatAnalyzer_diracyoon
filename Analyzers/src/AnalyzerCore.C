@@ -15,7 +15,6 @@ AnalyzerCore::AnalyzerCore(){
   muonGE = new GeneralizedEndpoint();
   muonGEScaleSyst = new GEScaleSyst();
 
-  
   JECSources = {"AbsoluteStat","AbsoluteScale","AbsoluteFlavMap","AbsoluteMPFBias","Fragmentation","SinglePionECAL","SinglePionHCAL","FlavorQCD","TimePtEta","RelativeJEREC1","RelativeJEREC2","RelativeJERHF","RelativePtBB","RelativePtEC1","RelativePtEC2","RelativePtHF","RelativeBal","RelativeSample","RelativeFSR","RelativeStatFSR","RelativeStatEC","RelativeStatHF","PileUpDataMC","PileUpPtRef","PileUpPtBB","PileUpPtEC1","PileUpPtEC2","PileUpPtHF","FlavorZJet","FlavorPhotonJet","FlavorPureGluon","FlavorPureQuark","FlavorPureCharm","FlavorPureBottom","Total"};
 
   /*
@@ -184,7 +183,6 @@ float AnalyzerCore::GetJECUncertainty(TString type, float eta, float pt, int sys
   
   float unc = (sys> 0) ?   1+ mapit_unc->second.at(ptbin) : 1 - mapit_unc->second.at(ptbin);
 
-
   return unc;
 }
 
@@ -196,6 +194,7 @@ void AnalyzerCore::SetupJECUncertainty(TString type){
   if(GetEra() == "2016postVFP") file = analysisdir + "/"+ string(GetEra())+ "/JEC/Summer19UL16_V7_MC_UncertaintySources_AK4PFchs.txt";
   if(GetEra() == "2017") file = analysisdir + "/"+ string(GetEra())+ "/JEC/Summer19UL17_V5_MC_UncertaintySources_AK4PFchs.txt";
   if(GetEra() == "2018") file = analysisdir + "/"+ string(GetEra())+ "/JEC/Summer19UL18_V5_MC_UncertaintySources_AK4PFchs.txt";
+
   
   ifstream jec_file(file.c_str());
   
@@ -206,6 +205,7 @@ void AnalyzerCore::SetupJECUncertainty(TString type){
   string sline;
   
   cout << "Setting up JEC uncertainty vector for source ["<<type<< "]." << file << endl;
+
   while(getline(jec_file,sline) ){
     
     std::istringstream is( sline );
@@ -1619,6 +1619,7 @@ pair<int,double> AnalyzerCore::GetNBJets(vector<Jet> jets, TString WP, TString m
 
   return make_pair(NBJets_NoSF,-9999.);
 }
+
 
 int AnalyzerCore::GetNBJets2a(TString ID, TString WP){
 
