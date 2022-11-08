@@ -80,8 +80,8 @@ public:
   void SetMiniIso(double ch, double nh, double ph, double pu, double rho, double EA);
   inline double MiniRelIso() const {return j_MiniRelIso;}
 
-  inline double MiniRelIsoCharged() const {return MiniIsoChHad/it->Pt();}
-  inline double MiniRelIsoNeutral() const {return j_MiniRelIso - MiniIsoChHad/it->Pt();}
+  inline double MiniRelIsoCharged() const {return j_MiniIso_ChHad/this->Pt();}
+  inline double MiniRelIsoNeutral() const {return (j_MiniRelIso*this->Pt() - j_MiniIso_ChHad)/this->Pt();}
   
   void SetLepIso(double ch, double nh, double ph);
 
