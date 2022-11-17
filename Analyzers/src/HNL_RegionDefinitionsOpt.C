@@ -943,7 +943,7 @@ bool  HNL_RegionDefinitionsOpt::PassPreselection(HNL_LeptonCore::Channel channel
   if(ll.M() < 10) return false; // TO_CHECK: IS 20 BEST OPTION
 
   // REMOVE 0 Jet EVENTS
-  int njets     = JetColl.size() + AK8_JetColl.size() + VBF_JetColl.size();
+  //int njets     = JetColl.size() + AK8_JetColl.size() + VBF_JetColl.size();
  
 
   Fill_RegionPlots(channel, 0, param.Name,"Preselection" , TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w,param.WriteOutVerbose);
@@ -1098,7 +1098,7 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK8String(HNL_LeptonCore::Chann
 	    
 	    FillEventCutflow(HNL_LeptonCore::ChannelDepSR1, w, GetChannelString(channel) +"_SR1", "ChannelCutFlow/"+param.Name,param.WriteOutVerbose);//Def
 	    
-	    for(unsigned int ibin=1; ibin < nSRbins; ibin++){
+	    for(int ibin=1; ibin < nSRbins; ibin++){
 	      if(MN1 < ml1jbins[ibin]) return "SR1_bin"+to_string(ibin);
 	    }
 	    
@@ -2192,7 +2192,7 @@ bool HNL_RegionDefinitionsOpt::FillWWCRNPPlots(HNL_LeptonCore::Channel channel, 
   
 
 
-  std::vector<Jet> JetColl                  = GetAK4Jets(jets_eta5, 20., 2.5, true,  0.4,0.8,"",    leps_veto,AK8_JetColl);
+  std::vector<Jet> JetColl                  = SelectAK4Jets(jets_eta5, 20., 2.5, true,  0.4,0.8,"",    leps_veto,AK8_JetColl);
   int NB_JetColl = B_JetColl.size();
   //file:///Users/john/Downloads/AN2019_089_v7.pdf SSWW +WZ  + AN2020_045
   //https://arxiv.org/pdf/2005.01173.pdf 
@@ -2243,7 +2243,7 @@ bool HNL_RegionDefinitionsOpt::FillWWCRNP2Plots(HNL_LeptonCore::Channel channel,
 
 
 
-  std::vector<Jet> JetColl                  = GetAK4Jets(jets_eta5, 20., 2.5, true,  0.4,0.8,"",    leps_veto,AK8_JetColl);
+  std::vector<Jet> JetColl                  = SelectAK4Jets(jets_eta5, 20., 2.5, true,  0.4,0.8,"",    leps_veto,AK8_JetColl);
   int NB_JetColl = B_JetColl.size();
   //file:///Users/john/Downloads/AN2019_089_v7.pdf SSWW +WZ  + AN2020_045                                                                                                                                          
   //https://arxiv.org/pdf/2005.01173.pdf                                                                                                                                                                           
@@ -2320,7 +2320,7 @@ bool HNL_RegionDefinitionsOpt::FillSSPreselectionPlots(HNL_LeptonCore::Channel c
   //double ST = GetST(leps, JetColl, AK8_JetColl, ev);
   //double met2_st = pow(METv.Pt(),2.)/ ST;
 
-  int njets = JetColl.size() + AK8_JetColl.size();
+  //int njets = JetColl.size() + AK8_JetColl.size();
 
   if(SameCharge(leps))Fill_RegionPlots(channel,1,"HNL_SSPresel_TwoLepton"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
   return true;
@@ -2370,8 +2370,8 @@ bool HNL_RegionDefinitionsOpt::FillHighMassSR1CRPlots(HNL_LeptonCore::Channel ch
   bool PassHMMet    = (met2_st < 20);
 
 
-  double LowerMassSR1WmassCut = 30.;
-  double UpperMassSR1WmassCut = 150.;
+  //double LowerMassSR1WmassCut = 30.;
+  //double UpperMassSR1WmassCut = 150.;
 
 
   if(PassHMMet && NB_JetColl==0) return false;
@@ -2656,7 +2656,7 @@ bool HNL_RegionDefinitionsOpt::FillWZ2CRPlots(HNL_LeptonCore::Channel channel, s
   double trilep_masscut=105.;
 
 
-  std::vector<Jet> JetColl                  = GetAK4Jets(jets_eta5, 20., 2.5, true,  0.4,0.8,"",    leps_veto,AK8_JetColl);
+  std::vector<Jet> JetColl                  = SelectAK4Jets(jets_eta5, 20., 2.5, true,  0.4,0.8,"",    leps_veto,AK8_JetColl);
   int NB_JetColl = B_JetColl.size();
 
   ////file:///Users/john/Downloads/AN2019_089_v7.pdf SSWW +WZ  + AN2020_045                                                                                                                                        
@@ -2710,7 +2710,7 @@ bool HNL_RegionDefinitionsOpt::FillWZBCRPlots(HNL_LeptonCore::Channel channel, s
   double trilep_masscut=105.;
 
 
-  std::vector<Jet> JetColl                  = GetAK4Jets(jets_eta5, 20., 2.5, true,  0.4,0.8,"",    leps_veto,AK8_JetColl);
+  std::vector<Jet> JetColl                  = SelectAK4Jets(jets_eta5, 20., 2.5, true,  0.4,0.8,"",    leps_veto,AK8_JetColl);
   int NB_JetColl = B_JetColl.size();
   //file:///Users/john/Downloads/AN2019_089_v7.pdf SSWW +WZ  + AN2020_045                                                                                                                                          
 

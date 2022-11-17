@@ -52,6 +52,58 @@ Electron::Electron(){
   this->SetLeptonFlavour(ELECTRON);
 }
 
+void Electron::PrintObject(TString label){
+  
+
+  cout << "Electron  ------ " << endl;
+  cout << "PrintObject " << label << endl;
+  Lepton::PrintObject(label);
+
+
+  cout << "j_En_up" << j_En_up << endl;
+  cout << "j_En_down" << j_En_down<< endl;
+  cout << "j_Res_up" << j_Res_up << endl;
+  cout << "j_Res_down" << j_Res_down << endl;
+
+  cout << "j_scEta" << j_scEta << endl;
+  cout << "j_scPhi" << j_scPhi << endl;
+  cout << "j_scE" << j_scE << endl;
+  cout << "j_mvaiso" << j_mvaiso << endl;
+  cout << "j_mvanoiso" << j_mvanoiso << endl;
+  cout << "j_EnergyUnCorr" << j_EnergyUnCorr << endl;
+  cout << "j_passConversionVeto" << j_passConversionVeto << endl;
+  cout << "j_NMissingHits" << j_NMissingHits << endl;
+  cout << "j_Full5x5_sigmaIetaIeta" << j_Full5x5_sigmaIetaIeta << endl;
+  cout << "j_sigmaIetaIeta" << j_sigmaIetaIeta << endl;
+  cout << "j_dEtaSeed" << j_dEtaSeed << endl;
+  cout << "j_dPhiIn" << j_dPhiIn << endl;
+  cout << "j_dEtaIn" << j_dEtaIn << endl;
+  cout << "j_HoverE" << j_HoverE  << endl;
+  cout << "j_PhiWidth" << j_PhiWidth << endl;
+  cout << "j_EtaWidth" << j_EtaWidth << endl;
+  cout << "j_InvEminusInvP" << j_InvEminusInvP << endl;
+  cout << "j_e2x5OverE5x5" << j_e2x5OverE5x5 << endl;
+  cout << "j_e1x5OverE5x5" << j_e1x5OverE5x5 << endl;
+  cout << "j_e15" << j_e15 << endl;
+  cout << "j_e25" << j_e25 << endl;
+  cout << "j_e55" << j_e55 << endl;
+  cout << "j_trkiso" << j_trkiso << endl;
+  cout << "j_dr03EcalRecHitSumEt" << j_dr03EcalRecHitSumEt << endl;
+  cout << "j_dr03HcalDepth1TowerSumEt" << j_dr03HcalDepth1TowerSumEt << endl;
+  cout << "j_dr03HcalTowerSumEt" << j_dr03HcalTowerSumEt << endl;
+  cout << "j_dr03TkSumPt" << j_dr03TkSumPt << endl;
+  cout << "j_ecalPFClusterIso" << j_ecalPFClusterIso << endl;
+  cout << "j_hcalPFClusterIso" << j_hcalPFClusterIso << endl;
+  cout << "j_isEcalDriven" << j_isEcalDriven << endl;
+  cout << "j_IDBit" << j_IDBit << endl;
+  cout << "j_Rho" << j_Rho << endl;
+  cout << "j_isGsfCtfScPixChargeConsistent" << j_isGsfCtfScPixChargeConsistent << endl;
+  cout << "j_isGsfScPixChargeConsistent" << j_isGsfScPixChargeConsistent << endl;
+  cout << "j_isGsfCtfChargeConsistent" << j_isGsfCtfChargeConsistent << endl;
+
+
+}
+
 Electron::~Electron(){
 
 }
@@ -187,6 +239,7 @@ double Electron::EA(){
 bool Electron::PassIDOpt(TString ID, bool cc, double dx_b ,double dx_e,double dz_b,double dz_e, double iso_b, double iso_e) const{
 
  bool pass_id= PassID(ID);
+ if(!pass_id) return false;
 
   if( fabs(scEta()) <= 1.479 ){
     if(!( fabs(dZ()) < dz_b )) return false;
@@ -221,10 +274,8 @@ bool Electron::PassID(TString ID) const{
   if(ID=="passVetoID") return passVetoID(); // --- VETO POG
 
   //==== HN
-  if(ID=="HNVeto2016") return Pass_HNVeto2016(); // --- vet MVA + VVLoose ISO/IP
-  if(ID=="HNVeto_17028") return Pass_HNVeto2016(); // --- vet MVA + VVLoose ISO/IP
+  if(ID=="HNVetoMVA") return Pass_HNVeto2016(); // --- vet MVA + VVLoose ISO/IP
   if(ID=="HNVeto") return Pass_HNVeto(0.6); // -- VETO POG + VVLoose ISO/IP        
-
   if(ID=="HNLoosest") return Pass_HNLoosest(); // OR of VETO IDs
 
   //=== No ISO
@@ -234,69 +285,12 @@ bool Electron::PassID(TString ID) const{
   if(ID=="MVALooseNoIso") return passMVAID_noiso_WPLoose();
   if(ID=="CutBasedVetoNoIso") return Pass_CutBasedVetoNoIso();
   
-  if(ID.Contains("ElOpt")){
-
-    //cout << ID  << "  " << this->Pt() << " eta = " << this->Eta() << endl;
-    TString ID_sub = ID;
-    ID_sub = ID_sub.ReplaceAll("_"," ");
-    string sID_sub = string(ID_sub);
-
-    vector<TString> subStrings;
-    istringstream ID_subs(sID_sub);
-    do {
-      string subs;
-      ID_subs >> subs;
-      subStrings.push_back(TString(subs));
-    } while (ID_subs);
-
+  if(ID=="MVAID") return Pass_LepMVAID();
     
-    TString  trig = "";
-    TString conv_method = "";
-    TString dxy_method = "";
-    TString chg_method= "";
-    TString iso_methodB="";
-    TString iso_methodEC="";
 
-    TString pog_methodBB="";
-    TString pog_methodEB="";
-    TString pog_methodEE="";
-
-    for(unsigned int i=0; i < subStrings.size(); i++){
-      if (subStrings[i].Contains("LooseTrig")) trig ="Loose";
-      if (subStrings[i].Contains("TightTrig")) trig ="Tight";
-      if (subStrings[i].Contains("ConvB")) conv_method +="B";
-      if (subStrings[i].Contains("ConvEC")) conv_method +="EC";
-      if (subStrings[i].Contains("CCB")) chg_method +="B";
-      if (subStrings[i].Contains("CCEC")) chg_method +="EC";
-      if (subStrings[i].Contains("DXY")) dxy_method=subStrings[i];
-
-      if (subStrings[i].Contains("MVABB")) pog_methodBB=subStrings[i];
-      if (subStrings[i].Contains("MVAEB")) pog_methodEB=subStrings[i];
-      if (subStrings[i].Contains("MVAEE")) pog_methodEE=subStrings[i];
-      //if (subStrings[i].Contains("MVABWP")) pog_methodB=subStrings[i];
-      //if (subStrings[i].Contains("MVAECWP")) pog_methodEC=subStrings[i];
-      
-
-      if (subStrings[i].Contains("POG")) pog_methodBB=subStrings[i];
-      if (subStrings[i].Contains("POG")) pog_methodEB=subStrings[i];
-      if (subStrings[i].Contains("POG")) pog_methodEE=subStrings[i];
-
-      if (subStrings[i].Contains("ISOB")) iso_methodB=subStrings[i];
-      if (subStrings[i].Contains("ISOEC")) iso_methodEC=subStrings[i];
-    }
-
-    
-    //if(ID.Contains("ElOptLoose")) return PassLooseIDOpt( trig, dxy_method, pog_methodB,pog_methodEC, conv_method, chg_method, iso_methodB,iso_methodEC);
-      
-    //cout << ID << "   eta = " << this->Eta() << " MVA == " << MVANoIso() << "    MVANoIsoResponse() = " << MVANoIsoResponse()  << endl;
-    
-    //cout <<  "PassIDOptMulti " <<   
-
-    return PassIDOptMulti( trig, dxy_method, pog_methodBB,pog_methodEB, pog_methodEE,conv_method, chg_method, iso_methodB,iso_methodEC);
-    
-  }
+  if(ID.Contains("ElOpt")) Pass_CB_Opt(ID);
   
-
+  
   if(PassIDLoose(ID)   >=0) return (PassIDLoose(ID)==1) ? true : false;
   if(PassIDOptLoose(ID)>=0) return (PassIDOptLoose(ID)==1) ? true : false;
   if(PassIDTight(ID)   >=0) return (PassIDTight(ID)==1)  ?  true : false;
@@ -307,6 +301,90 @@ bool Electron::PassID(TString ID) const{
   
   return false;
 }
+
+
+bool Electron::Pass_LepMVAID() const {
+
+  if(!passMVAID_noiso_WPLoose()) return false;
+  if(!Pass_TriggerEmulationLoose())  return false;
+  if(this->Pt() < 10) return false;
+  if(this->fEta() > 2.5) return false;
+  if(MiniRelIso() > 0.4) return false;
+  if(NMissingHits() > 1) return false;
+  if(SIP3D() > 8) return false;
+  if(this->fdXY() > 0.05) return false;
+  if(this->fdZ() > 0.1) return false;
+  return true;
+
+}
+
+bool Electron::Pass_CB_Opt(TString ID) const {
+  
+  
+  /// OPTIMISATION CODES
+  
+  
+  //cout << ID  << "  " << this->Pt() << " eta = " << this->Eta() << endl;                                                                                                                                                                                                  
+  TString ID_sub = ID;
+  ID_sub = ID_sub.ReplaceAll("_"," ");
+  string sID_sub = string(ID_sub);
+  
+  vector<TString> subStrings;
+  istringstream ID_subs(sID_sub);
+  do {
+    string subs;
+    ID_subs >> subs;
+    subStrings.push_back(TString(subs));
+  } while (ID_subs);
+  
+  
+  TString  trig = "";
+  TString conv_method = "";
+  TString dxy_method = "";
+  TString chg_method= "";
+  TString iso_methodB="";
+  TString iso_methodEC="";
+  
+  TString pog_methodBB="";
+  TString pog_methodEB="";
+  TString pog_methodEE="";
+  
+  for(unsigned int i=0; i < subStrings.size(); i++){
+    if (subStrings[i].Contains("LooseTrig")) trig ="Loose";
+    if (subStrings[i].Contains("TightTrig")) trig ="Tight";
+    if (subStrings[i].Contains("ConvB")) conv_method +="B";
+    if (subStrings[i].Contains("ConvEC")) conv_method +="EC";
+    if (subStrings[i].Contains("CCB")) chg_method +="B";
+    if (subStrings[i].Contains("CCEC")) chg_method +="EC";
+    if (subStrings[i].Contains("DXY")) dxy_method=subStrings[i];
+    
+    if (subStrings[i].Contains("MVABB")) pog_methodBB=subStrings[i];
+    if (subStrings[i].Contains("MVAEB")) pog_methodEB=subStrings[i];
+    if (subStrings[i].Contains("MVAEE")) pog_methodEE=subStrings[i];
+    //if (subStrings[i].Contains("MVABWP")) pog_methodB=subStrings[i];                                                                                                                                                                                                      
+    //if (subStrings[i].Contains("MVAECWP")) pog_methodEC=subStrings[i];                                                                                                                                                                                                    
+    
+    
+    if (subStrings[i].Contains("POG")) pog_methodBB=subStrings[i];
+    if (subStrings[i].Contains("POG")) pog_methodEB=subStrings[i];
+    if (subStrings[i].Contains("POG")) pog_methodEE=subStrings[i];
+    
+    if (subStrings[i].Contains("ISOB")) iso_methodB=subStrings[i];
+    if (subStrings[i].Contains("ISOEC")) iso_methodEC=subStrings[i];
+  }
+  
+  
+  //if(ID.Contains("ElOptLoose")) return PassLooseIDOpt( trig, dxy_method, pog_methodB,pog_methodEC, conv_method, chg_method, iso_methodB,iso_methodEC);                                                                                                                    
+  
+  //cout << ID << "   eta = " << this->Eta() << " MVA == " << MVANoIso() << "    MVANoIsoResponse() = " << MVANoIsoResponse()  << endl;                                                                                                                                     
+  
+  //cout <<  "PassIDOptMulti " <<                                                                                                                                                                                                                                           
+  
+  return PassIDOptMulti( trig, dxy_method, pog_methodBB,pog_methodEB, pog_methodEE,conv_method, chg_method, iso_methodB,iso_methodEC);
+  
+}
+
+
 
 
 int  Electron::PassLooseIDOpt(TString  trigger, TString dxy_method, TString sel_methodB,TString sel_methodEC, TString conv_method, TString chg_method, TString iso_methodB,TString iso_methodEC ) const{
@@ -402,7 +480,7 @@ int  Electron::PassLooseIDOpt(TString  trigger, TString dxy_method, TString sel_
 
 int  Electron::PassIDOptMulti(TString  trigger, TString dxy_method, TString sel_methodBB,TString sel_methodEB, TString sel_methodEE,TString conv_method, TString chg_method, TString iso_methodB,TString iso_methodEC ) const{
 
-  bool DEBUG=false;
+  //bool DEBUG=false;
   /*
 
   if(trigger == "Loose"){
@@ -1283,16 +1361,6 @@ bool Electron::Pass_TriggerEmulationN(int cut) const{
 bool Electron::Pass_HNVeto2016() const{
 
   if(!passMVAID_noiso_WPLoose()) return false;
-
-  /*if( fabs(scEta()) <= 0.8 ){
-    if(! (MVANoIso()>-0.99) ) return false;
-  }
-  else if( fabs(scEta()) > 0.8 && fabs(scEta()) <= 1.479 ){
-    if(! (MVANoIso()>-0.99) ) return false;
-  }
-  else{
-    if(! (MVANoIso()>-0.99) ) return false;
-    }*/
 
   if(! (fabs(dXY())<0.2 && fabs(dZ())<0.5) ) return false;
 

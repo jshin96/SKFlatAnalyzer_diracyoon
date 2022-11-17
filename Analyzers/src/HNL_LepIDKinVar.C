@@ -2,6 +2,12 @@
 
 void HNL_LepIDKinVar::initializeAnalyzer(){
 
+  SeperateFakes = HasFlag("SeperateFake");
+
+  SeperateConv = HasFlag("SeperateConv");
+  SeperateCF = HasFlag("SeperateCF");
+
+
   HNL_LeptonCore::initializeAnalyzer();
 
   InitializeTreeVars();
@@ -18,6 +24,12 @@ void HNL_LepIDKinVar::initializeAnalyzer(){
   tree_mm->Branch("MiniIsoPhHad", &MiniIsoPhHad, "MiniIsoPhHad/F");  
   tree_ee->Branch("MiniIsoPhHad", &MiniIsoPhHad, "MiniIsoPhHad/F");
 
+  tree_ee->Branch("RelMiniIsoCh", &RelMiniIsoCh, "RelMiniIsoCh/F");
+  tree_ee->Branch("RelMiniIsoN", &RelMiniIsoN, "RelMiniIsoN/F");
+  tree_mm->Branch("RelMiniIsoCh", &RelMiniIsoCh, "RelMiniIsoCh/F");
+  tree_mm->Branch("RelMiniIsoN", &RelMiniIsoN, "RelMiniIsoN/F");
+
+
   tree_mm->Branch("IsoChHad", &IsoChHad, "IsoChHad/F"); 
   tree_ee->Branch("IsoChHad", &IsoChHad, "IsoChHad/F");
   tree_mm->Branch("IsoNHad", &IsoNHad, "IsoNHad/F"); 
@@ -28,19 +40,30 @@ void HNL_LepIDKinVar::initializeAnalyzer(){
 
   tree_mm->Branch("Dxy", &Dxy, "Dxy/F"); 
   tree_ee->Branch("Dxy", &Dxy, "Dxy/F");
+  tree_mm->Branch("RelDxy", &RelDxy, "RelDxy/F");
+  tree_ee->Branch("RelDxy", &RelDxy, "RelDxy/F");
   tree_mm->Branch("DxySig", &DxySig, "DxySig/F"); 
   tree_ee->Branch("DxySig", &DxySig, "DxySig/F");
   tree_mm->Branch("Dz", &Dz, "Dz/F"); 
   tree_ee->Branch("Dz", &Dz, "Dz/F");
+  tree_mm->Branch("RelDz", &RelDz, "RelDz/F");
+  tree_ee->Branch("RelDz", &RelDz, "RelDz/F");
   tree_mm->Branch("DzSig", &DzSig, "DzSig/F"); 
   tree_ee->Branch("DzSig", &DzSig, "DzSig/F");
   tree_mm->Branch("RelIso", &RelIso, "RelIso/F"); 
   tree_ee->Branch("RelIso", &RelIso, "RelIso/F");
   tree_mm->Branch("IP3D", &IP3D, "IP3D/F"); 
   tree_ee->Branch("IP3D", &IP3D, "IP3D/F");
+  tree_mm->Branch("RelIP3D", &RelIP3D, "RelIP3D/F");
+  tree_ee->Branch("RelIP3D", &RelIP3D, "RelIP3D/F");
+
   tree_mm->Branch("MVA", &MVA, "MVA/F"); 
   tree_ee->Branch("MVA", &MVA, "MVA/F");
+  tree_mm->Branch("RelMVA", &RelMVA, "RelMVA/F");
+  tree_ee->Branch("RelMVA", &RelMVA, "RelMVA/F");
+
   tree_ee->Branch("MVAIso", &MVAIso, "MVAIso/F");
+  tree_ee->Branch("RelMVAIso", &RelMVAIso, "RelMVAIso/F");
 
   tree_mm->Branch("Chi2", &Chi2, "Chi2/F");  
   tree_mm->Branch("Validhits", &Validhits, "Validhits/I");  
@@ -58,14 +81,20 @@ void HNL_LepIDKinVar::initializeAnalyzer(){
   tree_mm->Branch("POGTight", &POGTight, "POGTight/I");
   tree_mm->Branch("POGMedium", &POGMedium, "POGMedium/I");
 
+  tree_mm->Branch("HNTightID", &HNTightID, "HNTightID/I");
+ 
+
+  tree_mm->Branch("MuonSetSegmentCompatibility", &MuonSetSegmentCompatibility, "MuonSetSegmentCompatibility/F");
   tree_ee->Branch("POGTight", &POGTight, "POGTight/I");
   tree_ee->Branch("POGMedium", &POGMedium, "POGMedium/I");
-
-
+  tree_ee->Branch("HNTightID", &HNTightID, "HNTightID/I");
   tree_mm->Branch("PtRatio", &PtRatio, "PtRatio/F");         tree_ee->Branch("PtRatio", &PtRatio, "PtRatio/F");         
+  tree_mm->Branch("PtRatioCorr", &PtRatioCorr, "PtRatioCorr/F");         tree_ee->Branch("PtRatioCorr", &PtRatioCorr, "PtRatioCorr/F");         
+  tree_mm->Branch("PtRatioNoLep", &PtRatioNoLep, "PtRatioNoLep/F");         tree_ee->Branch("PtRatioNoLep", &PtRatioNoLep, "PtRatioNoLep/F");         
   tree_mm->Branch("PtRatioAJ", &PtRatioAJ, "PtRatioAJ/F");   tree_ee->Branch("PtRatioAJ", &PtRatioAJ, "PtRatioAJ/F");   
-  tree_mm->Branch("PtRelv0", &PtRelv0, "PtRelv0/F");         tree_ee->Branch("PtRelv0", &PtRelv0, "PtRelv0/F");         
-  tree_mm->Branch("PtRelv1", &PtRelv1, "PtRelv1/F");         tree_ee->Branch("PtRelv1", &PtRelv1, "PtRelv1/F");         
+  tree_mm->Branch("PtRel", &PtRel, "PtRel/F");         tree_ee->Branch("PtRel", &PtRel, "PtRel/F");         
+  tree_mm->Branch("PtRelCorr", &PtRelCorr, "PtRelCorr/F");         tree_ee->Branch("PtRelCorr", &PtRelCorr, "PtRelCorr/F");         
+  tree_mm->Branch("PtRelWithLep", &PtRelWithLep, "PtRelWithLep/F");         tree_ee->Branch("PtRelWithLep", &PtRelWithLep, "PtRelWithLep/F");         
   tree_mm->Branch("CEMFracAJ", &CEMFracAJ, "CEMFracAJ/F");   tree_ee->Branch("CEMFracAJ", &CEMFracAJ, "CEMFracAJ/F");   
   tree_mm->Branch("NEMFracAJ", &NEMFracAJ, "NEMFracAJ/F");   tree_ee->Branch("NEMFracAJ", &NEMFracAJ, "NEMFracAJ/F");   
   tree_mm->Branch("CHFracAJ", &CHFracAJ, "CHFracAJ/F");      tree_ee->Branch("CHFracAJ", &CHFracAJ, "CHFracAJ/F");      
@@ -80,6 +109,7 @@ void HNL_LepIDKinVar::initializeAnalyzer(){
   tree_mm->Branch("JetDiscCJ", &JetDiscCJ, "JetDiscCJ/F");   tree_ee->Branch("JetDiscCJ", &JetDiscCJ, "JetDiscCJ/F");   
 
   tree_mm->Branch("JetNTrk", &JetNTrk, "JetNTrk/F");   tree_ee->Branch("JetNTrk", &JetNTrk, "JetNTrk/F");
+  tree_mm->Branch("JetNMVATrk", &JetNMVATrk, "JetNMVATrk/F");   tree_ee->Branch("JetNMVATrk", &JetNMVATrk, "JetNMVATrk/F");
   tree_mm->Branch("PileupJetId", &PileupJetId, "PileupJetId/F");   tree_ee->Branch("PileupJetId", &PileupJetId, "PileupJetId/F");
 
 
@@ -119,16 +149,37 @@ void HNL_LepIDKinVar::initializeAnalyzer(){
 
 void HNL_LepIDKinVar::executeEvent(){
   
+
   AnalyzerParameter param_bdt = HNL_LeptonCore::InitialiseHNLParameter("BDT", "");
   
   Event ev = GetEvent();
   double weight =SetupWeight(ev,param_bdt);
   
-  if (MCSample.Contains("Type1")) {
-    weight*=1/xsec;
+
+  if(IsSignal()){
+    weight = MCweight(true, false);
+    if (MCSample.Contains("M500_")){
+      double xsec_dy_w =   0.08118343142/ (0.08118343142+0.02333868933+0.03577);
+      double xsec_vbf_w =   0.02333868933/ (0.08118343142+0.02333868933+0.03577);
+      double xsec_ssww_w =   0.03577/ (0.08118343142+0.02333868933+0.03577);
+
+      if (MCSample.Contains("DY")) weight*= xsec_dy_w;
+      if (MCSample.Contains("VBF")) weight*= xsec_vbf_w;
+      if (MCSample.Contains("SSWW")) weight*= xsec_ssww_w;
+    }
+    if (MCSample.Contains("M1000_")){
+      double xsec_dy_w = 0.004034252106 / (0.004034252106+0.005215500475+0.026);
+      double xsec_vbf_w = 0.005215500475 / (0.004034252106+0.005215500475+0.026);
+      double xsec_ssww_w = 0.026 / (0.004034252106+0.005215500475+0.026);
+      if (MCSample.Contains("DY")) weight*= xsec_dy_w;
+      if (MCSample.Contains("VBF")) weight*= xsec_vbf_w;
+      if (MCSample.Contains("SSWW")) weight*= xsec_ssww_w;
+    }
+    //if (MCSample.Contains("M250")) weight*= 2;
   }
 
-  FillHist("CutFlow", 0., weight, 20, 0., 20.);
+  FillHist("CutFlow", 0, weight,  20, 0., 20.);
+
   
   if(!PassMETFilter()) return;
 
@@ -136,29 +187,76 @@ void HNL_LepIDKinVar::executeEvent(){
   
   for(auto dilep_channel : channels){
 
-    std::vector<Muon>       MuonCollT     =  GetMuons    ( param_bdt,param_bdt.Muon_Veto_ID, 10., 2.4, RunFake);
-    std::vector<Electron>   ElectronCollT =  GetElectrons( param_bdt,param_bdt.Electron_Veto_ID, 10., 2.5, RunFake);
-
+    std::vector<Muon>       MuonCollTAll     =  GetMuons    ( param_bdt,"MVAID", 10., 2.4, RunFake);
+    std::vector<Electron>   ElectronCollTAll =  GetElectrons( param_bdt,"MVAID", 10., 2.5, RunFake);
  
-    if(dilep_channel == EE) MuonCollT.clear();
-    if(dilep_channel == MuMu) ElectronCollT.clear();
 
-    TString OptionEl="CFHFakeNHConv";
-    TString OptionMu="HFakeNHConv";
+    if(dilep_channel == EE) MuonCollTAll.clear();
+    if(dilep_channel == MuMu) ElectronCollTAll.clear();
+
+    std::vector<Electron>   ElectronCollT;
+    std::vector<Muon>       MuonCollT;
+
     gens = GetGens();
 
-    std::vector<Electron>   ElectronCollTSkim  = (MCSample.Contains("TypeI")) ? ElectronCollT :  SkimLepColl(ElectronCollT, gens, param_bdt, OptionEl);
-    std::vector<Muon>       MuonCollTSkim      = (MCSample.Contains("TypeI")) ? MuonCollT :  SkimLepColl(MuonCollT, gens, param_bdt, OptionMu);
-   
+    vector<Gen> gen_lep= GetGenLepronsSignal();
+    if(IsSignal()){
 
+      for(auto iel: ElectronCollTAll){
+        bool matched_lep=false;
+        for(auto igen : gen_lep){
+          if(iel.DeltaR(igen) < 0.2) matched_lep=true;
+        }
+        if(matched_lep) ElectronCollT.push_back(iel);
+      }
 
+      for(auto iel: MuonCollTAll){
+        bool matched_lep=false;
+        for(auto igen :gen_lep){
+          if(iel.DeltaR(igen) <0.2) matched_lep=true;
+        }
+        if(matched_lep)MuonCollT.push_back(iel);
+      }
 
-    std::vector<Lepton *> LepsT  = MakeLeptonPointerVector(MuonCollTSkim,ElectronCollTSkim);
+    }
+    else{
+      ElectronCollT = ElectronCollTAll;
+      MuonCollT=MuonCollTAll;
+    }
+
     
 
-    if (!PassTriggerSelection(dilep_channel, ev, LepsT, "Dilep")) continue;
 
-    std::vector<Jet>    AK4_JetAllColl = GetJets("NoID", 10., 3.0);
+    //    TString OptionEl="CFHFakeNHConv";
+    TString OptionEl="CFNHConv";
+    TString OptionMu="NHConv";
+    if(SeperateFakes) {
+      OptionEl="HFake";
+      OptionMu="HFake";
+    }
+    if(SeperateConv) {
+      OptionEl = "NHConv";
+    }
+    if(SeperateCF) {
+      OptionEl = "CF";
+      if(dilep_channel==MuMu) continue;
+    }
+    
+    /// Select SS dilepotn events, [assing trigger and MVALoose ID
+    std::vector<Lepton *> LepsAll  = (dilep_channel==EE) ? MakeLeptonPointerVector(ElectronCollT) : MakeLeptonPointerVector(MuonCollT);
+    
+    //if (!PassTriggerSelection(dilep_channel, ev, LepsAll, "Dilep")) continue;
+
+    //if(!SameCharge(LepsAll)) continue;
+    //if(!CheckLeptonFlavourForChannel(dilep_channel,LepsAll)) return;
+
+    std::vector<Electron>   ElectronCollTSkim  = (IsSignal()) ? ElectronCollT :  SkimLepColl(ElectronCollT, gens, param_bdt, OptionEl);
+    std::vector<Muon>       MuonCollTSkim      = (IsSignal()) ? MuonCollT :  SkimLepColl(MuonCollT, gens, param_bdt, OptionMu);
+   
+
+    std::vector<Lepton *> LepsT  = MakeLeptonPointerVector(MuonCollTSkim,ElectronCollTSkim);
+
+    std::vector<Jet>    AK4_JetAllColl = GetJets("NoID", 10., 5.0);
 
 
     JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
@@ -168,17 +266,17 @@ void HNL_LepIDKinVar::executeEvent(){
     std::vector<Muon>       MuonCollV     = GetMuons    (param_bdt.Muon_Veto_ID, 5., 2.4);
     std::vector<FatJet> fatjets_tmp    = GetFatJets("tight", 200., 5);
 
-    std::vector<FatJet> AK8_JetColl    = GetAK8Jets(fatjets_tmp, 200., 2.7, true, 1., false, -999, false, 40., 130., ElectronCollV, MuonCollV);
+    std::vector<FatJet> AK8_JetColl    = SelectAK8Jets(fatjets_tmp, 200., 2.7, true, 1., false, -999, false, 40., 130., ElectronCollV, MuonCollV);
 
     std::vector<Jet>    jets_tmp       = GetJets("tight", 15., 5);
-    std::vector<Jet> bjets_tmp                  = GetAK4Jets(jets_tmp,     20., 2.4, true, 0.4, 0.8, "", ElectronCollV, MuonCollV, AK8_JetColl);
+    std::vector<Jet> bjets_tmp        = SelectAK4Jets(jets_tmp,     20., 2.4, true, 0.4, 0.8, "", ElectronCollV, MuonCollV, AK8_JetColl);
 
-    std::vector<Jet> BJetColl         = GetBJets(param_bdt, bjets_tmp, param_jets);
+    std::vector<Jet> BJetColl         = SelectBJets(param_bdt, bjets_tmp, param_jets);
     double sf_btag                    = GetBJetSF(param_bdt, bjets_tmp, param_jets);
     if(!IsData )weight*= sf_btag;
     if(BJetColl.size() > 0) return;
-    Particle METv = GetvMET("PuppiT1xyULCorr",param_bdt);
-    if(METv.Pt() > 70.) return;
+    //Particle METv = GetvMET("PuppiT1xyULCorr",param_bdt);
+    //    if(METv.Pt() > 70.) return;
 
     MakeTreeSS2L(dilep_channel, LepsT,MuonCollTSkim,ElectronCollTSkim, AK4_JetAllColl,  weight, "");
 
@@ -192,17 +290,6 @@ void HNL_LepIDKinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Le
 				   vector<Jet>& JetAllColl,
 				   float weight, TString Label)
 {
-  
-
-  
-  // CorrectChannelStream checks EE channel has only EE events
-  if(!CheckLeptonFlavourForChannel(lep_channel, LepTColl)) return;
-
-  // Pt cut is set in CheckLeptonFlavourForChannel
-  //if(!(LepTColl[0]->Pt()>20 && LepTColl[1]->Pt()>10)) return;
-
-  float Mll = GetLLMass(LepTColl);
-  if (lep_channel==EE && (fabs(Mll-90.) < 10.)) return;
   
   InitializeTreeVars();
   
@@ -222,27 +309,38 @@ void HNL_LepIDKinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Le
 
 
     Dxy   = lep->LogdXY();
+    RelDxy   = lep->LogdXY()/lep->Pt();
+
     DxySig   = lep->LogdXYSig();
     Dz   = lep->LogdZ();
+    RelDz   = lep->LogdZ()/lep->Pt();
     DzSig   = lep->LogdZSig();
 
-    IP3D    = lep->IP3D()/lep->IP3Derr();
+    IP3D    = lep->SIP3D();
+    RelIP3D    = lep->SIP3D()/lep->Pt();
 
     RelIso    =  lep->RelIso();
     
     Minireliso   = lep->MiniRelIso();
-
+    RelMiniIsoCh = lep->MiniRelIsoCharged();
+    RelMiniIsoN = lep->MiniRelIsoNeutral();
     
+    JetNTrk = lep->JetNTracks();
+    JetNMVATrk = lep->JetNTracksMVA();
     if(lep->LeptonFlavour() == Lepton::ELECTRON) {
       
       MVA    = Electrons[iel].MVANoIsoResponse();
 
       MVAIso    = Electrons[iel].MVAIsoResponse();
 
+      RelMVA    = Electrons[iel].MVANoIsoResponse()/lep->Pt();
+
+      RelMVAIso    = Electrons[iel].MVAIsoResponse()/lep->Pt();
+														   
       POGTight = Electrons[iel].Pass_CutBasedTightNoIso() ?  1: 0;
     
       POGMedium = Electrons[iel].Pass_CutBasedMediumNoIso()?  1: 0;
-      
+      HNTightID = Electrons[iel].PassID("HNTightV2") ?  1: 0;
       
       MissingHits = Electrons[iel].NMissingHits();
     
@@ -283,18 +381,22 @@ void HNL_LepIDKinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Le
       IsGsfCtfScPixChargeConsistent  = (Electrons[iel].IsGsfCtfScPixChargeConsistent()) ? 1 : 0;
       IsGsfScPixChargeConsistent  = (Electrons[iel].IsGsfScPixChargeConsistent()) ? 1 : 0;
       IsGsfCtfChargeConsistent  = (Electrons[iel].IsGsfCtfChargeConsistent()) ? 1 : 0;
-      iel++;
       
     }
     else{
       
       MVA    = Muons[imu].MVA();
       
-      
+      RelMVA    = Muons[imu].MVA()/Muons[imu].Pt();
+
       POGTight = Muons[imu].isPOGTight() ?  1: 0;
       
       POGMedium = Muons[imu].isPOGMedium() ?  1: 0;
-      
+
+      HNTightID = Muons[imu].PassID("HNTightV2") ?  1: 0;
+
+      MuonSetSegmentCompatibility   = Muons[imu].MuonSetSegmentCompatibility();
+
       Chi2 = Muons[imu].Chi2();
       
       Validhits = Muons[imu].ValidMuonHits();
@@ -305,7 +407,6 @@ void HNL_LepIDKinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Le
       
       Tracker_layers = Muons[imu].TrackerLayers();
       
-      imu++;
     }
 
     //==== Vars for non-prompt lepton bkg
@@ -314,6 +415,7 @@ void HNL_LepIDKinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Le
     
     for(unsigned int ij=0; ij<JetAllColl.size(); ij++){
       
+
       float dPhi1 = fabs(TVector2::Phi_mpi_pi(lep->Phi() - JetAllColl.at(ij).Phi()));
       if(dPhi1>maxdPhi1){ maxdPhi1=dPhi1; IdxMatchAwayJet=ij; }
       float dR1=lep->DeltaR(JetAllColl.at(ij));
@@ -323,24 +425,35 @@ void HNL_LepIDKinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Le
     }
   
     if(IdxMatchJet!=-1){
-
-      PtRatio   = lep->Pt()/JetAllColl.at(IdxMatchJet).Pt();
-      TLorentzVector JetNoLep1(JetAllColl.at(IdxMatchJet));
-      JetNoLep1  -= *lep;
-      PtRelv0   = lep->lep_jet_ptrel();
-      PtRelv1   = lep->Perp(JetNoLep1.Vect());
+      
+      if(lep->LeptonFlavour() == Lepton::ELECTRON){
+	PtRatio=JetLeptonPtRatioLepAware(Electrons[iel],false);
+        PtRatioNoLep=JetLeptonPtRatioLepAware(Electrons[iel],true);
+	PtRelWithLep=JetLeptonPtRelLepAware( Electrons[iel],false);
+        PtRel=JetLeptonPtRelLepAware(Electrons[iel],true);
+	
+	PtRatioCorr=JetLeptonPtRatioLepAware(Electrons[iel],false,true);
+        PtRelCorr=JetLeptonPtRelLepAware(Electrons[iel],true,true);
+      }
+      else{
+	PtRatio=JetLeptonPtRatioLepAware(Muons[imu],false);
+	PtRatioNoLep=JetLeptonPtRatioLepAware(Muons[imu],true);
+	PtRelWithLep=JetLeptonPtRelLepAware( Muons[imu],false);
+	PtRel=JetLeptonPtRelLepAware(Muons[imu],true);
+	PtRatioCorr=JetLeptonPtRatioLepAware(Muons[imu],false,true);
+        PtRelCorr=JetLeptonPtRelLepAware(Muons[imu],true,true);
+      }
       CEMFracCJ = JetAllColl.at(IdxMatchJet).ChargedEmEnergyFraction();
       NEMFracCJ = JetAllColl.at(IdxMatchJet).NeutralEmEnergyFraction();
       CHFracCJ  = JetAllColl.at(IdxMatchJet).ChargedHadEnergyFraction();
       NHFracCJ  = JetAllColl.at(IdxMatchJet).NeutralHadEnergyFraction();
       MuFracCJ  = JetAllColl.at(IdxMatchJet).MuonEnergyFraction();
       JetDiscCJ = JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet);
-      JetNTrk   = JetAllColl.at(IdxMatchJet).NVtxTracks();
       PileupJetId   = JetAllColl.at(IdxMatchJet).PileupJetId();
     }
     else{
       
-      PtRatio=-1., PtRelv0=-1., PtRelv1=-1., CEMFracCJ=-1., NEMFracCJ=-1., CHFracCJ=-1., NHFracCJ=-1., MuFracCJ=-1., JetDiscCJ=-1.,JetNTrk=-1,PileupJetId=-1;
+      PtRatioNoLep=-1.,PtRatio=-1., PtRel=-1., PtRelWithLep=-1., CEMFracCJ=-1., NEMFracCJ=-1., CHFracCJ=-1., NHFracCJ=-1., MuFracCJ=-1., JetDiscCJ=-1.,PileupJetId=-1, PtRatioCorr=-1.,PtRelCorr=-1.;
       
     }
     
@@ -363,9 +476,14 @@ void HNL_LepIDKinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Le
     }
     
     if(lep->LeptonFlavour() == Lepton::ELECTRON) cout <<  "Fill electron " << endl;
-    w_tot     = !IsDATA? weight:-1.;
+    w_tot     = !IsDATA? weight: 1.;
+
     if(lep->LeptonFlavour() == Lepton::MUON) tree_mm->Fill();
     if(lep->LeptonFlavour() == Lepton::ELECTRON)   tree_ee->Fill();
+
+    if(lep->LeptonFlavour() == Lepton::ELECTRON) iel++;
+    else imu++;
+
   }
   
 }
@@ -381,9 +499,9 @@ void HNL_LepIDKinVar::executeEventFromParameter(AnalyzerParameter param){
 void HNL_LepIDKinVar::InitializeTreeVars(){
 
   Pt=-1, Eta=-1;
-  PtRatio=-1, PtRatioAJ=-1, PtRelv0=-1, PtRelv1=-1;
+  PtRatioNoLep=-1.; PtRatio=-1, PtRatioAJ=-1, PtRel=-1, PtRelWithLep=-1, PtRatioCorr=-1, PtRelCorr=-1;
   CEMFracAJ=-1,NEMFracAJ=-1, CHFracAJ=-1, NHFracAJ=-1,  MuFracAJ=-1, JetDiscAJ=-1;
-  CEMFracCJ=-1, NEMFracCJ=-1, CHFracCJ=-1, NHFracCJ=-1, MuFracCJ=-1, JetDiscCJ=-1,JetNTrk =-1,PileupJetId=-1;
+  CEMFracCJ=-1, NEMFracCJ=-1, CHFracCJ=-1, NHFracCJ=-1, MuFracCJ=-1, JetDiscCJ=-1,JetNTrk =-1,PileupJetId=-1,JetNMVATrk=-1;
 
   MiniIsoChHad=-1;
   MiniIsoNHad=-1;
@@ -405,6 +523,8 @@ void HNL_LepIDKinVar::InitializeTreeVars(){
   Matched_stations=-1.;
   Pixel_hits=-1.;
   Minireliso=-1.;
+  RelMiniIsoCh=-1.;
+  RelMiniIsoN=-1.;
   Pixel_hits=-1.;
   Tracker_layers=-1.;
   MissingHits=-1.;
@@ -432,6 +552,7 @@ void HNL_LepIDKinVar::InitializeTreeVars(){
   hcalPFClusterIso=-1.;
   POGTight=-1;
   POGMedium = -1;
+  HNTightID = -1;
   isEcalDriven= -1;
   PassConversionVeto=-1 ;
   IsGsfCtfScPixChargeConsistent =-1;
@@ -440,6 +561,8 @@ void HNL_LepIDKinVar::InitializeTreeVars(){
   
   R9=-1;
   
+  MuonSetSegmentCompatibility = -1;
+
   w_tot=-1;
 
 }

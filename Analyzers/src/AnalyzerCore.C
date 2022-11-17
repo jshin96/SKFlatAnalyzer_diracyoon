@@ -7,7 +7,7 @@ AnalyzerCore::AnalyzerCore(){
   
   mcCorr = new MCCorrection();
   puppiCorr = new PuppiSoftdropMassCorr();
-  if(Analyzer == "HNL_SignalRegionPlotter"){
+  if(AnalyserRunsFullBkg()){
     fakeEst = new FakeBackgroundEstimator();
     cfEst = new CFBackgroundEstimator();
     pdfReweight = new PDFReweight();
@@ -63,7 +63,7 @@ AnalyzerCore::~AnalyzerCore(){
 
   if(mcCorr) delete mcCorr;
   if(puppiCorr) delete puppiCorr;
-  if(Analyzer == "HNL_SignalRegionPlotter"){
+  if(AnalyserRunsFullBkg()){
     if(fakeEst) delete fakeEst;
     if(cfEst) delete cfEst;
     if(pdfReweight) delete pdfReweight;
@@ -79,6 +79,18 @@ AnalyzerCore::~AnalyzerCore(){
   
 
 }
+
+bool AnalyzerCore::AnalyserRunsFullBkg(){
+
+  // Flag to setup fakeEst/cfEst/pdfReweight
+  vector<TString> AnalyserList = {"HNL_SignalRegionPlotter","HNL_ControlRegionPlotter","HNL_SignalRegionPlotter17028","HNL_SignalRegionPlotter21003","HNL_SignalLeptonOpt"};
+
+  if(std::find(AnalyserList.begin(), AnalyserList.end(), Analyzer) != AnalyserList.end()) {
+    return true;
+  }
+  return false;
+}
+
 
 void AnalyzerCore::FillEventComparisonFile(AnalyzerParameter param,TString label,string date, double w){
 
@@ -144,7 +156,6 @@ Event AnalyzerCore::GetEvent(){
 }
 
 float AnalyzerCore::GetJECUncertainty(TString source, TString JetType, float eta, float pt, int sys){
-
 
   std::map<TString, std::vector<std::map<float, std::vector<float> > > >::iterator mapit;
   bool NotFound=false;
@@ -310,6 +321,8 @@ void AnalyzerCore::SetupJECUncertainty(TString source , TString JetType){
   
 }
 
+
+
 std::vector<Muon> AnalyzerCore::GetAllMuons(){
 
   std::vector<Muon> out;
@@ -324,6 +337,11 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
 
     mu.SetJetPtRel(muon_jetPtRel->at(i));
     mu.SetJetPtRatio(muon_jetPtRatio->at(i));
+    if(muon_jetPtRelDef)mu.SetJetPtRelDef(muon_jetPtRelDef->at(i));
+    if(muon_jetPtRatioDef)mu.SetJetPtRatioDef(muon_jetPtRatioDef->at(i));
+
+    if(muon_jetNTracks)mu.SetJetNTracks(muon_jetNTracks->at(i));
+    if(muon_jetNTracksMVA)mu.SetJetNTracksMVA(muon_jetNTracksMVA->at(i));
 
 
     double rc = muon_roch_sf->at(i);
@@ -339,8 +357,8 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
     mu.SetSoftMVA(muon_softMVA->at(i));
     mu.SetMVA(muon_MVA->at(i));
     mu.SetLepMVA( muon_MVA->at(i));
-
-
+    
+    if(muon_segmentCompatibility) mu.SetMuonSegmentCompatibility(muon_segmentCompatibility->at(i));
     mu.SetdXY(muon_dxyVTX->at(i), muon_dxyerrVTX->at(i));
     mu.SetdZ(muon_dzVTX->at(i), muon_dzerrVTX->at(i));
     mu.SetIP3D(muon_3DIPVTX->at(i), muon_3DIPerrVTX->at(i));
@@ -351,7 +369,7 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
     mu.SetChi2(muon_normchi->at(i));
     mu.SetIso(muon_PfChargedHadronIsoR04->at(i),muon_PfNeutralHadronIsoR04->at(i),muon_PfGammaIsoR04->at(i),muon_PFSumPUIsoR04->at(i),muon_trkiso->at(i));
     mu.SetLepIso(muon_PfChargedHadronIsoR04->at(i),muon_PfNeutralHadronIsoR04->at(i),muon_PfGammaIsoR04->at(i));
-    
+   
     mu.SetTrackerLayers(muon_trackerLayers->at(i));
 
     mu.SetMatchedStations(muon_matchedstations->at(i));
@@ -359,6 +377,7 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
     mu.SetValidMuonHits(muon_validmuonhits->at(i));
 
     //==== Should be set after Eta is set
+
     mu.SetMiniIso(
       muon_PfChargedHadronMiniIso->at(i), 
       muon_PfNeutralHadronMiniIso->at(i), 
@@ -367,7 +386,6 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
       Rho,
       mu.EA()
     );
-    
 
     mu.SetFilterBits(muon_filterbits->at(i));
     mu.SetPathBits(muon_pathbits->at(i));
@@ -477,6 +495,12 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
     el.SetRho(Rho);
     el.SetIsGsfCtfScPixChargeConsistent(electron_isGsfCtfScPixChargeConsistent->at(i),   electron_isGsfScPixChargeConsistent->at(i),electron_isGsfCtfChargeConsistent->at(i));
 
+    if(electron_jetPtRel)el.SetJetPtRel(electron_jetPtRel->at(i));
+    if(electron_jetPtRatio)el.SetJetPtRatio(electron_jetPtRatio->at(i));
+    if(electron_jetNTracks)el.SetJetNTracks(electron_jetNTracks->at(i));
+    if(electron_jetNTracksMVA)el.SetJetNTracksMVA(electron_jetNTracksMVA->at(i));
+
+
     el.SetR9(electron_r9->at(i));
     el.SetL1Et(electron_l1et->at(i));
 
@@ -570,18 +594,14 @@ std::vector<Electron> AnalyzerCore::GetElectrons(AnalyzerParameter param, TStrin
       }
     }
 
-
     if(run_fake){
-      
+     
       double isocut_el = GetIsoFromID("Electron",param.Electron_Tight_ID,electrons.at(i).Eta(), electrons.at(i).Pt());   
       Electron this_electron = electrons.at(i);
       this_electron.SetPtEtaPhiM( electrons.at(i).CalcPtCone(electrons.at(i).RelIso(), isocut_el), electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() );
-
       out.push_back( this_electron);
-      
     }
     else   out.push_back( electrons.at(i) );
-    
   }
   
   return out;
@@ -647,7 +667,6 @@ std::vector<Tau> AnalyzerCore::GetTaus(std::vector<Lepton* > leps,TString id, do
     for(auto lep : leps){
       if(lep->DeltaR(tau) > 0.4)  out.push_back(tau);
     }
-
   }
   std::sort(out.begin(),       out.end(),        PtComparing);
 
@@ -674,6 +693,7 @@ std::vector<Tau> AnalyzerCore::GetTaus(TString id, double ptmin, double fetamax)
   return out;
 
 }
+
 
 double AnalyzerCore::GetIsoFromID(TString  lep_type, TString id, double eta, double pt){
 
@@ -881,18 +901,6 @@ double AnalyzerCore::GetIsoFromID(TString  lep_type, TString id, double eta, dou
 
 }
 
-bool AnalyzerCore::PassID(std::vector<Electron> electrons, TString ID){
-
-  int nel(0);
-  for(auto el : electrons){
-
-    if( el.PassID(ID) ) nel++;
-
-  }
-  if (nel ==2) return true;
-  return false;
-}
-
 
 std::vector<Lepton *> AnalyzerCore::MakeLeptonPointerVector(const std::vector<Muon>& muons, double TightIso, bool UseMini){
 
@@ -1093,7 +1101,7 @@ std::vector<Photon> AnalyzerCore::GetPhotons(TString id, double ptmin, double fe
 
 
 
-std::vector<Jet> AnalyzerCore::GetAllJets(){
+std::vector<Jet> AnalyzerCore::GetAllJets(bool applyCorr){
 
   std::vector<Jet> out;
   for(unsigned int i=0; i<jet_pt->size(); i++){
@@ -1103,11 +1111,14 @@ std::vector<Jet> AnalyzerCore::GetAllJets(){
     jet.SetPxUnSmeared(jet.Px());
     jet.SetPyUnSmeared(jet.Py());
 
+    jet.SetJEC(jet_JECL1FastJet->at(i), jet_JECFull->at(i));
     //jet.SetNTracks(jet_vtxNtracks->at(i));
     //==== Jet energy up and down are 1.xx or 0.99, not energy
     jet.SetEnShift( jet_shiftedEnUp->at(i), jet_shiftedEnDown->at(i) );
     if(!IsDATA){
-      jet *= jet_smearedRes->at(i);
+      if(applyCorr){
+	jet *= jet_smearedRes->at(i);
+      }
       jet.SetResShift( jet_smearedResUp->at(i)/jet_smearedRes->at(i), jet_smearedResDown->at(i)/jet_smearedRes->at(i) );
       jet.SetRes(jet_smearedRes->at(i));
       jet.SetGenFlavours(jet_partonFlavour->at(i), jet_hadronFlavour->at(i));
@@ -1451,6 +1462,7 @@ std::vector<Muon> AnalyzerCore::UseTunePMuon(const std::vector<Muon>& muons){
     this_muon.SetCharge( this_tunep4.Charge() );
     this_muon.SetMiniAODPt( this_muon.MiniAODTunePPt() );
 
+
 /*
     cout << "@@@@ TuneP @@@@" << endl;
     cout << "this_muon.Pt() = " << this_muon.Pt() << endl;
@@ -1596,171 +1608,6 @@ std::vector<FatJet> AnalyzerCore::SelectFatJets(const std::vector<FatJet>& jets,
 }
 
 
-
-pair<int,double> AnalyzerCore::GetNBJets(vector<Jet> jets, AnalyzerParameter param,TString WP){
-
-  int NBJets_NoSF(0);
-  JetTagging::WP             jwp = JetTagging::Medium;
-  if  (WP == "Loose")        jwp = JetTagging::Loose;
-  else if  (WP == "Medium")  jwp = JetTagging::Medium;
-  else  if  (WP == "Tight")  jwp = JetTagging::Tight;
-  else return make_pair(-1,1.);
-
-  JetTagging::Tagger    tagger = JetTagging::DeepCSV;
-  if  (WP.Contains("DeepJet")) tagger = JetTagging::DeepJet;
-
-  JetTagging::MeasurmentType type = JetTagging::comb;
-  if  (WP.Contains("DeepJet")) type =  JetTagging::mujets;
-
-
-
-  JetTagging::Parameters jtp = JetTagging::Parameters(tagger,
-							      jwp,
-							      JetTagging::incl, type);
-
-
-  double btagWeight_1a = mcCorr->GetBTaggingReweight_1a(jets, jtp);
-  double btagWeight_1d = 1.;//mcCorr->GetBTaggingReweight_1d(jets, jtp_DeepCSV_Reshape);                                                         
-
-
-  for(auto ij : jets)  {
-    double this_discr = ij.GetTaggerResult(tagger);
-    if( this_discr > mcCorr->GetJetTaggingCutValue(tagger, jwp) ) NBJets_NoSF++;
-  }
-
-  if(param.BJet_Method=="1a") return make_pair(NBJets_NoSF,btagWeight_1a);
-  if(param.BJet_Method=="1d") return make_pair(NBJets_NoSF,btagWeight_1d);
-  if(param.BJet_Method=="2a") return make_pair(GetNBJets2a(jets,param, WP),1.);
-
-  cout << "[AnalyzerCore::GettNBjet] wtf" << endl;
-  exit(EXIT_FAILURE);
-
-  return make_pair(NBJets_NoSF,-9999.);
-
-}
-
-pair<int,double> AnalyzerCore::GetNBJets(vector<Jet> jets, TString WP, TString method){
-
-  int NBJets_NoSF(0);
-  JetTagging::WP jwp = JetTagging::Medium;
-  if  (WP == "Loose")  jwp = JetTagging::Loose;
-  else if  (WP == "Medium")  jwp = JetTagging::Medium;
-  else  if  (WP == "Tight")  jwp = JetTagging::Tight;
-  else return make_pair(-1,1.);
-
-  JetTagging::Tagger    tagger = JetTagging::DeepCSV;
-  if  (WP.Contains("DeepJet")) tagger = JetTagging::DeepJet;
-
-  JetTagging::MeasurmentType type = JetTagging::comb;
-  if  (WP.Contains("DeepJet")) type =  JetTagging::mujets;
-
-
-  JetTagging::Parameters jtp= JetTagging::Parameters(tagger,
-							      jwp,
-							      JetTagging::incl, type);
-
-  double btagWeight_1a = mcCorr->GetBTaggingReweight_1a(jets, jtp);
-  double btagWeight_1d = 1.;//mcCorr->GetBTaggingReweight_1d(jets, jtp_DeepCSV_Reshape);                                                         
-
-
-  for(auto ij : jets)  {
-    double this_discr = ij.GetTaggerResult(tagger);
-    if( this_discr > mcCorr->GetJetTaggingCutValue(tagger, jwp) ) NBJets_NoSF++;
-  }
-
-  if(method=="1a") return make_pair(NBJets_NoSF,btagWeight_1a);
-  if(method=="1d") return make_pair(NBJets_NoSF,btagWeight_1d);
-  if(method=="2a") return make_pair(GetNBJets2a(jets, WP),1.);
-
-
-  cout << "[AnalyzerCore::GetNBJet] wtf" << endl;
-  exit(EXIT_FAILURE);
-
-  return make_pair(NBJets_NoSF,-9999.);
-}
-
-
-int AnalyzerCore::GetNBJets2a(TString ID, TString WP){
-
-  vector<Jet> this_AllJets = GetAllJets();
-  vector<Jet>       jets   = SelectJets(this_AllJets,ID, 20., 2.4);
-
-  int NBJets_WithSF_2a(0);
-  //  JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
-
-  JetTagging::WP             jwp = JetTagging::Medium;
-  if  (WP.Contains("Loose"))        jwp = JetTagging::Loose;
-  else if  (WP.Contains("Medium"))  jwp = JetTagging::Medium;
-  else  if  (WP.Contains("Tight"))  jwp = JetTagging::Tight;
-  else return -1;
-
-  JetTagging::Tagger    tagger = JetTagging::DeepCSV;
-  if  (WP.Contains("DeepJet")) tagger = JetTagging::DeepJet;
-
-  JetTagging::MeasurmentType type = JetTagging::comb;
-  if  (WP.Contains("DeepJet")) type =  JetTagging::mujets;
-  for( auto i  :  jets)
-    if( mcCorr->IsBTagged_2a(JetTagging::Parameters(tagger,       jwp, JetTagging::incl,type), i) ) NBJets_WithSF_2a++;
-
-
-  return NBJets_WithSF_2a;
-}
-
-
-
-int AnalyzerCore::GetNBJets2a( vector<Jet> jets, AnalyzerParameter param, TString WP){
-
-  int NBJets_WithSF_2a(0);
-
-  JetTagging::WP             jwp = JetTagging::Medium;
-  if  (WP == "Loose")        jwp = JetTagging::Loose;
-  else if  (WP == "Medium")  jwp = JetTagging::Medium;
-  else  if  (WP == "Tight")  jwp = JetTagging::Tight;
-  else return -1;
-
-
-  JetTagging::Tagger    tagger = JetTagging::DeepCSV;
-  if  (WP.Contains("DeepJet")) tagger = JetTagging::DeepJet;
-
-  JetTagging::MeasurmentType type = JetTagging::comb;
-  if  (WP.Contains("DeepJet")) type =  JetTagging::mujets;
-
-  for( auto i  :  jets){
-    if(fabs(i.Eta()) >2.4) continue;
-    if( mcCorr->IsBTagged_2a(JetTagging::Parameters(tagger,       jwp, JetTagging::incl, type), i,param.SystDir_BTag)	) NBJets_WithSF_2a++;
-  }
-  
-  return NBJets_WithSF_2a;
-}
-
-
-int AnalyzerCore::GetNBJets2a( vector<Jet> jets, TString WP){
-
-  int NBJets_WithSF_2a(0);
-
-  JetTagging::WP             jwp = JetTagging::Medium;
-  if  (WP == "Loose")        jwp = JetTagging::Loose;
-  else if  (WP == "Medium")  jwp = JetTagging::Medium;
-  else  if  (WP == "Tight")  jwp = JetTagging::Tight;
-  else return -1;
-
-
-  JetTagging::Tagger    tagger = JetTagging::DeepCSV;
-  if  (WP.Contains("DeepJet")) tagger = JetTagging::DeepJet;
-
-  JetTagging::MeasurmentType type = JetTagging::comb;
-  if  (WP.Contains("DeepJet")) type =  JetTagging::mujets;
-
-
-  for(unsigned int i=0; i<jets.size(); i++)
-    if( mcCorr->IsBTagged_2a(JetTagging::Parameters(tagger,       jwp, JetTagging::incl, type), jets.at(i)) ) NBJets_WithSF_2a++;
-
-
-  return NBJets_WithSF_2a;
-}
-
-
-
 double AnalyzerCore::GetEventFatJetSF(vector<FatJet> fatjets, TString label, int dir){
 
   double FatJetTau21_SF(1);
@@ -1818,7 +1665,7 @@ double  AnalyzerCore::GetBJetSF(AnalyzerParameter param,vector<Jet> jets, JetTag
   return mcCorr->GetBTaggingReweight_1a(jets, jtp, syst);
 }
 
-vector<Jet>   AnalyzerCore::GetBJets(AnalyzerParameter param,vector<Jet> jetColl, JetTagging::Parameters jtp){
+vector<Jet>   AnalyzerCore::SelectBJets(AnalyzerParameter param,vector<Jet> jetColl, JetTagging::Parameters jtp){
 
   vector<Jet> output_jets;
 
@@ -1831,7 +1678,7 @@ vector<Jet>   AnalyzerCore::GetBJets(AnalyzerParameter param,vector<Jet> jetColl
 
 }
 
-vector<Jet>   AnalyzerCore::GetLJets(AnalyzerParameter param,vector<Jet> jetColl, JetTagging::Parameters jtp){
+vector<Jet>   AnalyzerCore::SelectLJets(AnalyzerParameter param,vector<Jet> jetColl, JetTagging::Parameters jtp){
 
   vector<Jet> output_jets;
 
@@ -1846,7 +1693,7 @@ vector<Jet>   AnalyzerCore::GetLJets(AnalyzerParameter param,vector<Jet> jetColl
 
 
 
-vector<Jet>   AnalyzerCore::GetAK4Jets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag,std::vector<Lepton *> leps_veto,  vector<FatJet> fatjets){
+vector<Jet>   AnalyzerCore::SelectAK4Jets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag,std::vector<Lepton *> leps_veto,  vector<FatJet> fatjets){
 
   vector<Jet> output_jets;
   for(unsigned int ijet =0; ijet < jets.size(); ijet++){
@@ -1878,7 +1725,7 @@ vector<Jet>   AnalyzerCore::GetAK4Jets(vector<Jet> jets, double pt_cut ,  double
 
 
 
-vector<Jet>   AnalyzerCore::GetAK4Jets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag, vector<Electron>  veto_electrons, vector<Muon>  veto_muons, vector<FatJet> fatjets){
+vector<Jet>   AnalyzerCore::SelectAK4Jets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag, vector<Electron>  veto_electrons, vector<Muon>  veto_muons, vector<FatJet> fatjets){
 
   vector<Jet> output_jets;
   for(unsigned int ijet =0; ijet < jets.size(); ijet++){
@@ -1925,13 +1772,13 @@ double AnalyzerCore::GetJetPileupIDSF(vector<Jet> jets , TString WP, AnalyzerPar
 
 
 
-vector<FatJet>  AnalyzerCore::GetAK8Jets(vector<FatJet> fatjets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean , bool apply_tau21, double tau21_cut , bool apply_masscut, double sdmass_lower_cut,  double sdmass_upper_cut, vector<Electron>  veto_electrons, vector<Muon>  veto_muons){
+vector<FatJet>  AnalyzerCore::SelectAK8Jets(vector<FatJet> fatjets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean , bool apply_tau21, double tau21_cut , bool apply_masscut, double sdmass_lower_cut,  double sdmass_upper_cut, vector<Electron>  veto_electrons, vector<Muon>  veto_muons){
 
 
-  return GetAK8Jetsv2(fatjets,pt_cut,eta_cut, lepton_cleaning, dr_lep_clean,apply_tau21, tau21_cut,apply_masscut,sdmass_lower_cut,sdmass_upper_cut, -999., veto_electrons,veto_muons);
+  return SelectAK8Jetsv2(fatjets,pt_cut,eta_cut, lepton_cleaning, dr_lep_clean,apply_tau21, tau21_cut,apply_masscut,sdmass_lower_cut,sdmass_upper_cut, -999., veto_electrons,veto_muons);
 }
 
-vector<FatJet>  AnalyzerCore::GetAK8Jetsv2(vector<FatJet> fatjets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean , bool apply_tau21, double tau21_cut , bool apply_masscut, double sdmass_lower_cut,  double sdmass_upper_cut, double WQCDTagger, vector<Electron>  veto_electrons, vector<Muon>  veto_muons){
+vector<FatJet>  AnalyzerCore::SelectAK8Jetsv2(vector<FatJet> fatjets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean , bool apply_tau21, double tau21_cut , bool apply_masscut, double sdmass_lower_cut,  double sdmass_upper_cut, double WQCDTagger, vector<Electron>  veto_electrons, vector<Muon>  veto_muons){
 
 
   vector<FatJet> output_fatjets;
@@ -2808,12 +2655,11 @@ void AnalyzerCore::initializeAnalyzerTools(){
   puppiCorr->ReadHistograms();
 
   //==== FakeBackgroundEstimator
-  if(Analyzer == "HNL_SignalRegionPlotter"){
+  if(AnalyserRunsFullBkg()){
     fakeEst->SetEra(GetEra());
     fakeEst->ReadHistograms();
-  }
   //==== CFBackgroundEstimator
-  if(Analyzer == "HNL_SignalRegionPlotter"){
+    
     cfEst->SetEra(GetEra());
     cfEst->ReadHistograms();
   }
@@ -3042,6 +2888,7 @@ vector<Muon> AnalyzerCore::SkimLepColl(const vector<Muon>& MuColl, vector<Gen>& 
 vector<Electron> AnalyzerCore::SkimLepColl(const vector<Electron>& ElColl, vector<Gen>& TruthColl, AnalyzerParameter param,TString Option){
 
   bool GetPrompt=false, GetHadFake=false, GetEWtau=false, GetNHIntConv=false, GetNHExtConv=false, GetCF=false;
+  //CFHFakeNHConv
   if(Option.Contains("Prompt"))          GetPrompt    =true;
   if(Option.Contains("CF"))              GetCF        =true;
   if(Option.Contains("HFake"))           GetHadFake   =true;
@@ -3078,11 +2925,10 @@ vector<Electron> AnalyzerCore::SkimLepColl(const vector<Electron>& ElColl, TStri
   
   vector<Electron> ReturnColl;
 
-  bool Barrel1=false, Barrel2=false, Endcap=false, PtCut=false;
+  bool Barrel1=false, Barrel2=false, Endcap=false;
   if(Option.Contains("B1")) Barrel1=true;
   if(Option.Contains("B2")) Barrel2=true;
   if(Option.Contains("E"))  Endcap =true;
-  if(Option.Contains("Pt")) PtCut  =true;
 
   for(unsigned int i=0; i<ElColl.size(); i++){
     bool PassSel=false; float fEta=fabs(ElColl.at(i).Eta());
@@ -3099,11 +2945,10 @@ vector<Electron> AnalyzerCore::SkimLepColl(const vector<Electron>& ElColl, TStri
 vector<Muon> AnalyzerCore::SkimLepColl(const vector<Muon>& MuColl,  TString Option){
   
   vector<Muon> ReturnColl;
-  bool Barrel=false, Overlap=false, Endcap=false, PtCut=false;
+  bool Barrel=false, Overlap=false, Endcap=false;
   if(Option.Contains("MB")) Barrel =true;
   if(Option.Contains("MO")) Overlap=true;
   if(Option.Contains("ME")) Endcap =true;
-  if(Option.Contains("Pt")) PtCut  =true;
 
   for(unsigned int i=0; i<MuColl.size(); i++){
     bool PassSel=false; float fEta=fabs(MuColl.at(i).Eta());
@@ -3395,6 +3240,178 @@ std::vector<Jet> AnalyzerCore::JetsAwayFromFatJet(const std::vector<Jet>& jets, 
   return out;
 
 }
+
+
+Jet AnalyzerCore::GetCorrectedJetCloseToLepton(Muon lep, Jet jet){
+
+  //jet_LepAwareJECv2 = (raw_jet * L1 - lepton) * L2L3Res + lepton                                                        
+
+  Particle  rawJet = jet * (1./ jet.JEC_Full());
+
+  Particle  lepp4 = lep;
+  double l1corrFactor = jet.JEC_L1();
+  Particle jetp4 = (rawJet - lepp4 * (1.0 / l1corrFactor)) * (jet.Pt() / rawJet.Pt()) + lepp4;
+
+
+  //cout << "Corr Eta : " << jetp4.Eta() << " " << jet.Eta() << endl;
+  // cout << "Corr Phi : " << jetp4.Phi() << " " << jet.Phi() << endl;
+
+  Jet jet_corr = jet;
+
+  jet_corr.SetPtEtaPhiE(jetp4.Pt(), jetp4.Eta(), jetp4.Phi(),jetp4.E());
+
+  return jet_corr;
+}
+
+Jet AnalyzerCore::GetCorrectedJetCloseToLepton(Electron lep, Jet jet){
+
+  //jet_LepAwareJECv2 = (raw_jet * L1 - lepton) * L2L3Res + lepton
+  
+  Particle  rawJet = jet * (1./ jet.JEC_Full());
+  Particle  lepp4 = lep;
+  double l1corrFactor = jet.JEC_L1();
+  Particle jetp4 = (rawJet - lepp4 * (1.0 / l1corrFactor)) * (jet.Pt() / rawJet.Pt()) + lepp4;
+  
+  Jet jet_corr = jet;
+  jet_corr.SetPtEtaPhiE(jetp4.Pt(), jetp4.Eta(), jetp4.Phi(),jetp4.E());
+
+  return jet_corr;
+}
+
+Jet AnalyzerCore::GetCorrectedJetCloseToLepton(Lepton* lep, Jet jet){
+
+  //jet_LepAwareJECv2 = (raw_jet * L1 - lepton) * L2L3Res + lepton                                                                                                                                                                                                      
+
+  Particle  rawJet = jet * (1./ jet.JEC_Full());
+  Particle  lepp4 = *lep;
+  double l1corrFactor = jet.JEC_L1();
+  Particle jetp4 = (rawJet - lepp4 * (1.0 / l1corrFactor)) * (jet.Pt() / rawJet.Pt()) + lepp4;
+
+  Jet jet_corr = jet;
+  jet_corr.SetPtEtaPhiE(jetp4.Pt(), jetp4.Eta(), jetp4.Phi(),jetp4.E());
+
+  return jet_corr;
+}
+
+
+
+double  AnalyzerCore::JetLeptonPtRelLepAware( Muon lep, bool removeLep, bool ApplyCorr){
+
+
+  // ApplyCorr def is false, this is same as Mini/NanoAOD value stored
+  // if ApplyCorr is true then Jet smearing and lepton smearing is applied and values are corrected
+
+  std::vector<Jet> jets = GetAllJets(ApplyCorr);
+
+  float mindR=0.4;
+  if(!ApplyCorr)lep.SetPtEtaPhiE(lep.MiniAODPt(), lep.Eta(), lep.Phi(), lep.E());
+
+  Jet closejet;
+  for(auto jet : jets){
+    if (lep.DeltaR(jet) < mindR) closejet = GetCorrectedJetCloseToLepton(lep,jet);
+  }
+  
+  TLorentzVector lepp4 = lep;
+  TLorentzVector jetp4 = closejet;
+  
+  double PtRel = lepp4.Perp((closejet-lepp4).Vect()); // Default
+  //double PtRel2 = lepp4.Vect().Cross((jetp4 - lepp4).Vect().Unit()).Mag();
+  if(!removeLep) PtRel = lepp4.Perp((closejet).Vect());
+
+
+  return PtRel;
+
+}
+
+double  AnalyzerCore::JetLeptonPtRelLepAware( Electron lep, bool removeLep, bool ApplyCorr){
+
+  // ApplyCorr def is false, this is same as Mini/NanoAOD value stored                                                                                     
+  // if ApplyCorr is true then Jet smearing and lepton smearing is applied and values are corrected                                                       
+
+  std::vector<Jet> jets = GetAllJets(ApplyCorr);
+
+  float mindR=0.4;
+  //if(!ApplyCorr)lep.SetPtEtaPhiE(lep.MiniAODPt(), lep.Eta(), lep.Phi(), lep.E());
+
+  Jet closejet;
+  for(auto jet : jets){
+    if (lep.DeltaR(jet) < mindR) closejet = GetCorrectedJetCloseToLepton(lep,jet);
+  }
+
+  TLorentzVector lepp4 = lep;
+  TLorentzVector jetp4 = closejet;
+
+  double PtRel = lepp4.Perp((closejet-lepp4).Vect());
+  if(!removeLep) PtRel = lepp4.Perp((closejet).Vect());
+
+  //  double PtRel2 = lepp4.Vect().Cross((jetp4 - lepp4).Vect().Unit()).Mag();
+
+  //cout << "JetLeptonPtRelLepAware " <<  PtRel << " vs  " << PtRel2 << " vs  "  << lep.lep_jet_ptrel() << " vs " << lep.lep_jet_ptrelDef() << endl;                                                                                          
+
+  return PtRel;
+
+}
+
+
+double  AnalyzerCore::JetLeptonPtRatioLepAware(Muon lep, bool removeLep, bool ApplyCorr){
+
+  std::vector<Jet> jets = GetAllJets(ApplyCorr);
+
+  float mindR=0.4;
+  
+  if(!ApplyCorr)lep.SetPtEtaPhiE(lep.MiniAODPt(), lep.Eta(), lep.Phi(), lep.E());
+
+  Jet closejet;
+  for(auto jet : jets){
+    if (lep.DeltaR(jet) < mindR) {
+      closejet = GetCorrectedJetCloseToLepton(lep,jet);
+      mindR = lep.DeltaR(jet);
+    }
+  }
+
+  Particle lepp4 = lep;
+  
+  if (mindR == 0.4) {
+    
+    cout << "Muon pt " << lep.Pt() << "  NO close jet" << endl;
+    return -999.;
+  }
+
+  //cout << "JetLeptonPtRatioLepAware " <<  (lepp4.Pt() / closejet.Pt()) << " vs  " << lep.lep_jet_ptratio() << " vs " << lep.lep_jet_ptratioDef() << endl;
+  //cout << "Jet pt must be " << lepp4.Pt()/lep.lep_jet_ptratio() << endl;
+  //for(auto ijet : jets) cout << "Jet pt = " << GetCorrectedJetCloseToLepton(lep,ijet).Pt() <<  " dR lep " << lep.DeltaR(ijet) <<endl;
+  if(removeLep)   return lepp4.Pt() / (closejet-lepp4).Pt();
+
+  return lepp4.Pt() / closejet.Pt(); 
+
+}
+
+
+double  AnalyzerCore::JetLeptonPtRatioLepAware( Electron lep,  bool removeLep, bool ApplyCorr){
+
+  std::vector<Jet> jets = GetAllJets(ApplyCorr);
+
+  float mindR=0.4;
+
+  Jet closejet;
+  for(auto jet : jets){
+    if (lep.DeltaR(jet) < mindR) {
+      closejet = GetCorrectedJetCloseToLepton(lep,jet);
+      mindR = lep.DeltaR(jet);
+    }
+  }
+
+  Particle lepp4 = lep;
+
+  if (mindR == 0.4) return -999.;
+
+  if(removeLep)   return lepp4.Pt() / (closejet-lepp4).Pt();
+
+  return lepp4.Pt() / closejet.Pt();
+
+}
+
+
 
 std::vector<Jet> AnalyzerCore::JetsVetoLeptonInside(const std::vector<Jet>& jets, const std::vector<Electron>& els, const std::vector<Muon>& mus, double dR){
 
@@ -4485,7 +4502,6 @@ void AnalyzerCore::FillJetPlots(std::vector<Jet> jets, std::vector<FatJet> fatje
   }
 
 }
-
 
 
 

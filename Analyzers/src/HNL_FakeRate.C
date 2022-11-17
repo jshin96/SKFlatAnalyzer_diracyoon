@@ -557,7 +557,7 @@ void HNL_FakeRate::MakeDiLepPlots(HNL_LeptonCore::Channel channel, AnalyzerParam
 
   std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
-  std::vector<Jet> BJetColl    = GetBJets(param, jets_tmp , param_jets);
+  std::vector<Jet> BJetColl    = SelectBJets(param, jets_tmp , param_jets);
   double sf_btag               = GetBJetSF(param, jets_tmp, param_jets);
   if(!IsData )event_weight*= sf_btag;
 
@@ -702,7 +702,7 @@ void HNL_FakeRate::MakeNVertexDistPrescaledTrig(HNL_LeptonCore::Channel channel,
 
   std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
-  std::vector<Jet> BJetColl    = GetBJets(param, jets_tmp , param_jets);
+  std::vector<Jet> BJetColl    = SelectBJets(param, jets_tmp , param_jets);
   double sf_btag               = GetBJetSF(param, jets_tmp, param_jets);
   if(!IsData )event_weight*= sf_btag;
 
@@ -716,8 +716,7 @@ void HNL_FakeRate::MakeNVertexDistPrescaledTrig(HNL_LeptonCore::Channel channel,
   int nbin_npv    =35;
   double bins_npv[nbin_npv+1] = { 0.,5., 10.,12., 14., 16., 18., 20., 22., 24., 26., 28., 30., 32., 34., 36., 38., 40., 42., 44., 46., 48., 50., 52., 54., 56., 58., 60., 62., 64., 66., 68., 70., 75., 80., 100.};
 
-  int nbin_pt    =6;
-  double bins_pt[nbin_pt+1] = {0.,5., 10., 20., 30., 50., 200. };
+
 
   if(channel == MuMu){
 
@@ -1207,7 +1206,7 @@ void HNL_FakeRate::GetFakeRates(std::vector<Lepton *> leps,std::vector<bool> ble
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
 							     
 
-  std::vector<Jet> BJetColl    = GetBJets(param, jets_tmp , param_jets);
+  std::vector<Jet> BJetColl    = SelectBJets(param, jets_tmp , param_jets);
   double sf_btag               = GetBJetSF(param, jets_tmp, param_jets);
   if(!IsData )weight_pt*= sf_btag;
 

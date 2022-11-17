@@ -60,15 +60,15 @@ void HNL_SignalRegionPlotter17028::RunEXO17028Analysis(AnalyzerParameter param){
   
   std::vector<FatJet> fatjets_tmp                 = GetFatJets(param, param.FatJet_ID, 200., 5.);
   
-  std::vector<FatJet> AK8_JetColl                  = GetAK8Jets(fatjets_tmp, 200., 5., true,  1., true, -999, true, 60., 130., ElectronCollV, MuonCollV);
+  std::vector<FatJet> AK8_JetColl                  = SelectAK8Jets(fatjets_tmp, 200., 5., true,  1., true, -999, true, 60., 130., ElectronCollV, MuonCollV);
     
   
   // AK4 JET                                                                                                                                                                              
   std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
   
   TString PUIDWP="loose";
-  std::vector<Jet> JetColl                           = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, PUIDWP,   ElectronCollV,MuonCollV, AK8_JetColl);
-  std::vector<Jet> BJetColltmp                       = GetAK4Jets(jets_tmp,     20., 2.4, false,  0.4,0.8, PUIDWP,   ElectronCollV,MuonCollV, AK8_JetColl);
+  std::vector<Jet> JetColl                           = SelectAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, PUIDWP,   ElectronCollV,MuonCollV, AK8_JetColl);
+  std::vector<Jet> BJetColltmp                       = SelectAK4Jets(jets_tmp,     20., 2.4, false,  0.4,0.8, PUIDWP,   ElectronCollV,MuonCollV, AK8_JetColl);
 
     
   double PJet_PUID_weight = GetJetPileupIDSF(JetColl, PUIDWP, param);
@@ -79,7 +79,7 @@ void HNL_SignalRegionPlotter17028::RunEXO17028Analysis(AnalyzerParameter param){
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
   
   // Get BJets  and EV weight to corr BTag Eff                                                                                                                       
-  std::vector<Jet> BJetColl    = GetBJets(param, BJetColltmp, param_jets);
+  std::vector<Jet> BJetColl    = SelectBJets(param, BJetColltmp, param_jets);
   double sf_btag               = GetBJetSF(param, BJetColltmp, param_jets);
   if(!IsData )weight*= sf_btag;
   RunEXO17028SignalRegions(ElectronCollT,ElectronCollV,MuonCollT,MuonCollV,  JetColl,AK8_JetColl, BJetColl, ev,METv, param, weight);

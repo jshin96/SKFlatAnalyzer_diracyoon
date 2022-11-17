@@ -109,15 +109,15 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param){
   // First get inclusive sample of AK8 Jets
   std::vector<FatJet> fatjets_tmp  = GetFatJets(param, param.FatJet_ID, 200., 5.);
   // Make selection on AK8
-  std::vector<FatJet> AK8_JetColl                  = GetAK8Jets(fatjets_tmp, 200., 5., true,  1., false, -999, false, 0., 20000., ElectronCollV, MuonCollV);
+  std::vector<FatJet> AK8_JetColl                  = SelectAK8Jets(fatjets_tmp, 200., 5., true,  1., false, -999, false, 0., 20000., ElectronCollV, MuonCollV);
 
   std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
 
 
   TString PUIDWP="";
-  std::vector<Jet> bjets_tmp                      = GetAK4Jets(jets_tmp,     20., 2.5, true,  0.4,0.8, PUIDWP,   ElectronCollV,MuonCollV, AK8_JetColl);
-  std::vector<Jet> AK4_JetColl                    = GetAK4Jets(jets_tmp,     20., 2.5, true,  0.4,0.8, PUIDWP,   ElectronCollV,MuonCollV, AK8_JetColl);
-  std::vector<Jet> VBF_JetColl                    = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, PUIDWP,  ElectronCollV,MuonCollV, AK8_JetColl);   // High ETa jets                                                                                                                                              
+  std::vector<Jet> bjets_tmp                      = SelectAK4Jets(jets_tmp,     20., 2.5, true,  0.4,0.8, PUIDWP,   ElectronCollV,MuonCollV, AK8_JetColl);
+  std::vector<Jet> AK4_JetColl                    = SelectAK4Jets(jets_tmp,     20., 2.5, true,  0.4,0.8, PUIDWP,   ElectronCollV,MuonCollV, AK8_JetColl);
+  std::vector<Jet> VBF_JetColl                    = SelectAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, PUIDWP,  ElectronCollV,MuonCollV, AK8_JetColl);   // High ETa jets                                                                                                                                              
   if(PUIDWP != ""){
     double PJet_PUID_weight = GetJetPileupIDSF(AK4_JetColl, PUIDWP, param);
     weight*= PJet_PUID_weight;
@@ -127,7 +127,7 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param){
   // Get BJet collection
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
 
-  std::vector<Jet> BJetColl    = GetBJets(param, bjets_tmp, param_jets);
+  std::vector<Jet> BJetColl    = SelectBJets(param, bjets_tmp, param_jets);
   double sf_btag               = GetBJetSF(param, bjets_tmp, param_jets);
   if(!IsData )weight*= sf_btag;
   

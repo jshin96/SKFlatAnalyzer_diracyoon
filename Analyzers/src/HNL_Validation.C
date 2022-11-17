@@ -74,21 +74,21 @@ void HNL_Validation::executeEvent(){
   
   // JET COLLECTION
   std::vector<FatJet>   fatjets_tmp  = GetFatJets(param_signal, param_signal.FatJet_ID, 200., 5.);
-  std::vector<FatJet> AK8_JetColl                  = GetAK8Jets(fatjets_tmp, 200., 5., true,  1., false, -999, false, 40., 130., ElectronCollV, MuonCollV);
+  std::vector<FatJet> AK8_JetColl                  = SelectAK8Jets(fatjets_tmp, 200., 5., true,  1., false, -999, false, 40., 130., ElectronCollV, MuonCollV);
   
   
   // AK4 JET
   std::vector<Jet> jets_tmp     = GetJets   ( param_signal, param_signal.Jet_ID, 30., 2.5);
   std::vector<Jet> bjets_tmp     = GetJets   ( param_signal, param_signal.Jet_ID, 30., 2.4);
 
-  std::vector<Jet> JetColl                        = GetAK4Jets(jets_tmp,     20., 2.5, true,  0.4,0.8,"",   ElectronCollV,MuonCollV, AK8_JetColl);
-  std::vector<Jet> VBF_JetColl                    = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8,"",  ElectronCollV,MuonCollV, AK8_JetColl);    // High ETa jets 
+  std::vector<Jet> JetColl                        = SelectAK4Jets(jets_tmp,     20., 2.5, true,  0.4,0.8,"",   ElectronCollV,MuonCollV, AK8_JetColl);
+  std::vector<Jet> VBF_JetColl                    = SelectAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8,"",  ElectronCollV,MuonCollV, AK8_JetColl);    // High ETa jets 
   
   // select B jets
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
   
   
-  std::vector<Jet> BJetColl    = GetBJets(param_signal, bjets_tmp, param_jets);
+  std::vector<Jet> BJetColl    = SelectBJets(param_signal, bjets_tmp, param_jets);
   double sf_btag               = GetBJetSF(param_signal, bjets_tmp, param_jets); 
   if(!IsData) FillWeightHist(param_signal.Name+"/BJetSF", sf_btag);
 
@@ -187,8 +187,8 @@ void HNL_Validation::executeEvent(){
 	  double _weight = itw->second;
 	  TString region= it->first + "_"+itw->first;
 	  
-	  double pt1bins[12] = { 20., 25., 30., 35., 40., 50., 70., 100.,200.,500., 1000., 2000.};
-	  double pt2bins[6] = {10., 15., 20., 40., 100., 2000.};
+	  //double pt1bins[12] = { 20., 25., 30., 35., 40., 50., 70., 100.,200.,500., 1000., 2000.};
+	  //double pt2bins[6] = {10., 15., 20., 40., 100., 2000.};
 
 	  FillHist( param_channel.Name+"/RegionPlots_"+ region+ "/LLMass",  llCand.M() , _weight, 40, 0., 200.);
 	  FillHist( param_channel.Name+"/RegionPlots_"+ region+ "/NJets",   JetColl.size() , _weight, 10, 0., 10.);

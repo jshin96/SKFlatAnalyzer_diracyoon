@@ -11,6 +11,8 @@ public:
   Electron();
   ~Electron();
 
+  void  PrintObject(TString label);
+
   void SetEnShift(double en_up, double en_down);
   inline double EnShift(int s) const {
     if(s==0) return 1.;
@@ -41,6 +43,7 @@ public:
     if (mva_resp < cut) return true;
     return false;
   }
+
 
   inline bool PassMVAIsoResponse(double A, double B, double C){
     double mva_resp = MVAIsoResponse();
@@ -181,7 +184,6 @@ public:
   };
 
   inline bool PassSelector( unsigned int s ) const { return (j_IDBit & s)==s; }
-
   inline bool passVetoID()   const {return PassSelector(POG_CB_VETO); }
   inline bool passLooseID()  const {return PassSelector(POG_CB_LOOSE); }
   inline bool passMediumID() const {return PassSelector(POG_CB_MEDIUM); }
@@ -193,7 +195,10 @@ public:
   inline bool passMVAID_Iso_WP90() const {return PassSelector(POG_MVA_ISO_WP90); }
   inline bool passMVAID_noiso_WPLoose() const {return PassSelector(POG_MVA_NOISO_WPLOOSE); }
   inline bool passHEEPID() const {return PassSelector(POG_HEEP); }
-  
+
+
+  bool Pass_CB_Opt(TString ID) const;
+  bool Pass_LepMVAID() const ;
   bool passLooseHEEPID() const;
 
   bool passHEEP2018Prompt() const; // HEEP

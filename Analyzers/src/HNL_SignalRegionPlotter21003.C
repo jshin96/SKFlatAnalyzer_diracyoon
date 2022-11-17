@@ -64,12 +64,12 @@ void HNL_SignalRegionPlotter21003::RunULAnalysis(AnalyzerParameter param){
   std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 15., 5.);
 
   
-  std::vector<Jet> JetCollLoose                    = GetAK4Jets(jets_tmp,     15., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetColl);
+  std::vector<Jet> JetCollLoose                    = SelectAK4Jets(jets_tmp,     15., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetColl);
   
   TString PUIDWP="loose";
-  std::vector<Jet> VBF_JetColl                       = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, PUIDWP,  ElectronCollV,MuonCollV, AK8_JetColl);   
+  std::vector<Jet> VBF_JetColl                       = SelectAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, PUIDWP,  ElectronCollV,MuonCollV, AK8_JetColl);   
 
-  std::vector<Jet> BJetColltmp                       = GetAK4Jets(jets_tmp,     20., 2.4, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetColl);
+  std::vector<Jet> BJetColltmp                       = SelectAK4Jets(jets_tmp,     20., 2.4, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetColl);
 
   double PJet_PUID_weight = GetJetPileupIDSF(VBF_JetColl, PUIDWP, param);
   weight*= PJet_PUID_weight;
@@ -80,7 +80,7 @@ void HNL_SignalRegionPlotter21003::RunULAnalysis(AnalyzerParameter param){
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
   
   // Get BJets  and EV weight to corr BTag Eff                                                                                                                       
-  std::vector<Jet> BJetColl    = GetBJets(param, BJetColltmp, param_jets);
+  std::vector<Jet> BJetColl    = SelectBJets(param, BJetColltmp, param_jets);
   double sf_btag               = GetBJetSF(param, BJetColltmp, param_jets);
   if(!IsData )weight*= sf_btag;
 
@@ -155,7 +155,7 @@ void HNL_SignalRegionPlotter21003::RunULAnalysis(AnalyzerParameter param){
     FillEventCutflow(HNL_LeptonCore::SR2,weight_channel, "Presel",param.Name,param.WriteOutVerbose);
     
     
-    bool passSSWW  = RunSignalRegionWW (dilep_channel,Inclusive, leps, leps_veto, TauColl, JetCollLoose, VBF_JetColl, BJetColl, ev, METv ,param_channel,weight_channel);
+    // //bool passSSWW  = RunSignalRegionWW (dilep_channel,Inclusive, leps, leps_veto, TauColl, JetCollLoose, VBF_JetColl, BJetColl, ev, METv ,param_channel,weight_channel);
     
     
   }// channel loop 

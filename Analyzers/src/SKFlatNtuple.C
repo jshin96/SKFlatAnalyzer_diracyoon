@@ -473,6 +473,10 @@ void SKFlatNtuple::Init()
   electron_hcalPFClusterIso = 0;
   electron_pathbits = 0;
   electron_filterbits = 0;
+  electron_jetPtRatio = 0;
+  electron_jetPtRel = 0;
+  electron_jetNTracks = 0;
+  electron_jetNTracksMVA = 0;
   muon_PfChargedHadronIsoR04 = 0;
   muon_PfNeutralHadronIsoR04 = 0;
   muon_PfGammaIsoR04 = 0;
@@ -502,6 +506,7 @@ void SKFlatNtuple::Init()
   muon_matchedstations = 0;
   muon_stationMask = 0;
   muon_nSegments = 0;
+  muon_segmentCompatibility = 0;
   muon_normchi = 0;
   muon_validhits = 0;
   muon_trackerHits = 0;
@@ -560,6 +565,10 @@ void SKFlatNtuple::Init()
   muon_softMVA = 0;
   muon_jetPtRatio = 0;
   muon_jetPtRel = 0;
+  muon_jetPtRatioDef = 0;
+  muon_jetPtRelDef = 0;
+  muon_jetNTracks = 0;
+  muon_jetNTracksMVA = 0;
   muon_simType = 0;
   muon_simExtType = 0;
   muon_simFlavour = 0;
@@ -761,6 +770,13 @@ void SKFlatNtuple::Init()
   fChain->SetBranchAddress("fatjet_LSFlep_Pt", &fatjet_LSFlep_Pt, &b_fatjet_LSFlep_Pt);
   fChain->SetBranchAddress("fatjet_LSFlep_Eta", &fatjet_LSFlep_Eta, &b_fatjet_LSFlep_Eta);
   fChain->SetBranchAddress("fatjet_LSFlep_Phi", &fatjet_LSFlep_Phi, &b_fatjet_LSFlep_Phi);
+
+  if(fChain->GetBranch("electron_jetPtRatio")){
+    fChain->SetBranchAddress("electron_jetPtRatio", &electron_jetPtRatio, &b_electron_jetPtRatio);
+    fChain->SetBranchAddress("electron_jetPtRel", &electron_jetPtRel, &b_electron_jetPtRel);
+    fChain->SetBranchAddress("electron_jetNTracks", &electron_jetNTracks, &b_electron_jetNTracks);
+    fChain->SetBranchAddress("electron_jetNTracksMVA", &electron_jetNTracksMVA, &b_electron_jetNTracksMVA);
+  }
   fChain->SetBranchAddress("electron_MVAIso", &electron_MVAIso, &b_electron_MVAIso);
   fChain->SetBranchAddress("electron_MVANoIso", &electron_MVANoIso, &b_electron_MVANoIso);
   fChain->SetBranchAddress("electron_Energy", &electron_Energy, &b_electron_Energy);
@@ -867,6 +883,7 @@ void SKFlatNtuple::Init()
   fChain->SetBranchAddress("muon_matchedstations", &muon_matchedstations, &b_muon_matchedstations);
   fChain->SetBranchAddress("muon_stationMask", &muon_stationMask, &b_muon_stationMask);
   fChain->SetBranchAddress("muon_nSegments", &muon_nSegments, &b_muon_nSegments);
+  if(fChain->GetBranch("muon_segmentCompatibility")) fChain->SetBranchAddress("muon_segmentCompatibility", &muon_segmentCompatibility, &b_muon_segmentCompatibility);
   fChain->SetBranchAddress("muon_normchi", &muon_normchi, &b_muon_normchi);
   fChain->SetBranchAddress("muon_validhits", &muon_validhits, &b_muon_validhits);
   fChain->SetBranchAddress("muon_trackerHits", &muon_trackerHits, &b_muon_trackerHits);
@@ -925,6 +942,14 @@ void SKFlatNtuple::Init()
   fChain->SetBranchAddress("muon_softMVA", &muon_softMVA, &b_muon_softMVA);
   fChain->SetBranchAddress("muon_jetPtRatio", &muon_jetPtRatio, &b_muon_jetPtRatio);
   fChain->SetBranchAddress("muon_jetPtRel", &muon_jetPtRel, &b_muon_jetPtRel);
+  if(fChain->GetBranch("muon_jetPtRatioDef")){
+    fChain->SetBranchAddress("muon_jetPtRatioDef", &muon_jetPtRatioDef, &b_muon_jetPtRatioDef);
+    fChain->SetBranchAddress("muon_jetPtRelDef", &muon_jetPtRelDef, &b_muon_jetPtRelDef);
+  }
+  if(fChain->GetBranch("muon_jetNTracks")){
+    fChain->SetBranchAddress("muon_jetNTracks", &muon_jetNTracks, &b_muon_jetNTracks);
+    fChain->SetBranchAddress("muon_jetNTracksMVA", &muon_jetNTracksMVA, &b_muon_jetNTracksMVA);
+  }
   fChain->SetBranchAddress("muon_simType", &muon_simType, &b_muon_simType);
   fChain->SetBranchAddress("muon_simExtType", &muon_simExtType, &b_muon_simExtType);
   fChain->SetBranchAddress("muon_simFlavour", &muon_simFlavour, &b_muon_simFlavour);

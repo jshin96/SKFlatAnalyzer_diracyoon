@@ -164,16 +164,16 @@ void HNL_SR3KinVar::executeEvent(){
     std::vector<Jet>    jets_tmp       = GetJets("tight", 15., 5);
 
     std::vector<Jet>    AK4_JetAllColl = GetJets("NoID", 10., 3.0);
-    std::vector<FatJet> AK8_JetColl    = GetAK8Jets(fatjets_tmp, 200., 2.7, true, 1., false, -999, false, 40., 130., ElectronCollV, MuonCollV);
-    std::vector<Jet>    AK4_JetColl    = GetAK4Jets(jets_tmp,     20., 2.7, true, 0.4, 0.8, "", ElectronCollV, MuonCollV, AK8_JetColl);
-    std::vector<Jet>    AK4_JetVBFColl = GetAK4Jets(jets_tmp,     30., 4.7, true, 0.4, 0.8, "", ElectronCollV, MuonCollV, AK8_JetColl);
+    std::vector<FatJet> AK8_JetColl    = SelectAK8Jets(fatjets_tmp, 200., 2.7, true, 1., false, -999, false, 40., 130., ElectronCollV, MuonCollV);
+    std::vector<Jet>    AK4_JetColl    = SelectAK4Jets(jets_tmp,     20., 2.7, true, 0.4, 0.8, "", ElectronCollV, MuonCollV, AK8_JetColl);
+    std::vector<Jet>    AK4_JetVBFColl = SelectAK4Jets(jets_tmp,     30., 4.7, true, 0.4, 0.8, "", ElectronCollV, MuonCollV, AK8_JetColl);
 
     Particle METv = GetvMET("PuppiT1xyULCorr",param_bdt);
  
-    std::vector<Jet> bjets_tmp                  = GetAK4Jets(jets_tmp,     20., 2.4, true, 0.4, 0.8, "", ElectronCollV, MuonCollV, AK8_JetColl);
+    std::vector<Jet> bjets_tmp                  = SelectAK4Jets(jets_tmp,     20., 2.4, true, 0.4, 0.8, "", ElectronCollV, MuonCollV, AK8_JetColl);
 
     JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
-    std::vector<Jet> BJetColl         = GetBJets(param_bdt, bjets_tmp, param_jets);
+    std::vector<Jet> BJetColl         = SelectBJets(param_bdt, bjets_tmp, param_jets);
     double sf_btag                    = GetBJetSF(param_bdt, bjets_tmp, param_jets);
     if(!IsData )weight*= sf_btag;
     

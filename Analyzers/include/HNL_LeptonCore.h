@@ -119,6 +119,9 @@ class HNL_LeptonCore : public AnalyzerCore {
   AnalyzerParameter InitialiseHNLParameters( TString analysis_tag, vector<vector<TString> >  param_vec);
   AnalyzerParameter InitialiseHNLParameter(TString s_setup, TString tag);  
 
+
+  bool IsSignal();
+
   void OutCutFlow(TString lab, double w);
 
   // MET corr

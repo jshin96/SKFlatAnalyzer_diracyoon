@@ -11,6 +11,8 @@ public:
   Muon();
   ~Muon();
 
+  void  PrintObject(TString label);
+
   void SetTypeBit(unsigned int typebit);
   void SetIDBit(unsigned int idbit);
 
@@ -109,7 +111,8 @@ public:
   inline double softMVA() const { return j_softMVA; }
 
 
-
+  inline double MuonSetSegmentCompatibility() const { return j_museg_comp;}
+  void SetMuonSegmentCompatibility(double d);
   //==== ID
   bool PassID(TString ID) const;
   bool Pass_POGTightWithTightIso() const;
@@ -119,8 +122,12 @@ public:
   bool Pass_POGHighPtLoose() const;
   bool Pass_POGHighPtLooseOR() const;
   bool Pass_TESTID() const;
+  bool Pass_LepMVAID() const ;
+
 
   bool passIDHN(int ID, double dxy_b, double dxy_e, double dz_b,double dz_e, double sip_b, double sip_e, double iso_b,double iso_e, double miso_b, double miso_e) const;
+
+  bool Pass_CB_Opt(TString ID) const;
 
   int  PassLooseIDOpt( ) const;
   int PassIDOptMulti(TString dxy_method, TString sel_methodB,TString sel_methodEC,  TString iso_methodB,TString iso_methodEC ) const;
@@ -194,7 +201,7 @@ private:
   double j_TunePPtError;
   double j_MVA, j_lowptMVA, j_softMVA;
   int j_validmuonhits, j_matchedstations, j_pixelHits, j_trackerLayers;
-
+  double j_museg_comp;
 
   ULong64_t j_filterbits;
   ULong64_t j_pathbits;

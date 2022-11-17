@@ -32,53 +32,53 @@ void HNL_SignalRegionOpt::executeEvent(){
     vector<TString> vMVAEB;
     vector<TString> vMVAEE;
     int nMVA=0;
-    for(unsigned int imva=0 ; imva < nMVA ; imva++){
+    for(int imva=0 ; imva < nMVA ; imva++){
       double mva_d=  -4. + double(imva)*3.;
       TString mvaTS= DoubleToString(mva_d);
       vMVABB.push_back("MVABBX"+mvaTS+"_");
     }
-    for(unsigned int imva=0 ; imva < nMVA ; imva++){
+    for(int imva=0 ; imva < nMVA ; imva++){
       double mva_d=  -4 + double(imva)*3;
       TString mvaTS= DoubleToString(mva_d);
       vMVAEB.push_back("MVAEBX"+mvaTS+"_");
     }
 
-    for(unsigned int imva=0 ; imva < nMVA ; imva++){
+    for(int imva=0 ; imva < nMVA ; imva++){
       double mva_d=  -4 + double(imva)*3;
       TString mvaTS= DoubleToString(mva_d);
       vMVAEE.push_back("MVAEEX"+mvaTS+"_");
     }
 
 
-    for(unsigned int imva=0 ; imva < nMVA ; imva++){
+    for(int imva=0 ; imva < nMVA ; imva++){
       double mva_d=  12. + double(imva)*1;
       TString mvaTS= DoubleToString(mva_d);
       vMVABB.push_back("MVABBY"+mvaTS+"_");
     }
-    for(unsigned int imva=0 ; imva < nMVA ; imva++){
+    for(int imva=0 ; imva < nMVA ; imva++){
       double mva_d=  12 + double(imva)*1;
       TString mvaTS= DoubleToString(mva_d);
       vMVAEB.push_back("MVAEBY"+mvaTS+"_");
     }
 
-    for(unsigned int imva=0 ; imva < nMVA ; imva++){
+    for(int imva=0 ; imva < nMVA ; imva++){
       double mva_d=  12 + double(imva)*1;
       TString mvaTS= DoubleToString(mva_d);
       vMVAEE.push_back("MVAEEY"+mvaTS+"_");
     }
 
-    for(unsigned int imva=0 ; imva < nMVA ; imva++){
+    for(int imva=0 ; imva < nMVA ; imva++){
       double mva_d=  5. + double(imva)*2.5;
       TString mvaTS= DoubleToString(mva_d);
       vMVABB.push_back("MVABBZ"+mvaTS+"_");
     }
-    for(unsigned int imva=0 ; imva < nMVA ; imva++){
+    for(int imva=0 ; imva < nMVA ; imva++){
       double mva_d=  5 + double(imva)*2.5;
       TString mvaTS= DoubleToString(mva_d);
       vMVAEB.push_back("MVAEBZ"+mvaTS+"_");
     }
 
-    for(unsigned int imva=0 ; imva < nMVA ; imva++){
+    for(int imva=0 ; imva < nMVA ; imva++){
       double mva_d=  5 + double(imva)*2.5;
       TString mvaTS= DoubleToString(mva_d);
       vMVAEE.push_back("MVAEEZ"+mvaTS+"_");
@@ -326,7 +326,7 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
     std::vector<FatJet> fatjets_tmp  = GetFatJets(param, param.FatJet_ID, 200., 5.);
     
     // 
-    std::vector<FatJet> FatjetColl_1                  = GetAK8Jetsv2(fatjets_tmp, 200., 2.7, true,  1., true, -999, true, 40., 130.,-999, ElectronCollV, MuonCollV);
+    std::vector<FatJet> FatjetColl_1                  = SelectAK8Jetsv2(fatjets_tmp, 200., 2.7, true,  1., true, -999, true, 40., 130.,-999, ElectronCollV, MuonCollV);
 
     vector<double> etabins = {};//{2.7,4.7};
     vector<bool> LepVeto = {true, false};
@@ -350,69 +350,69 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
 	      
 	      TString idtag = "ak8_"+ s_etabins[ietabin] +  s_LepVeto[iLepVeto] + s_Tau21Cut[iTau21Cut] + s_SDMassCut[iSDMassCut] + s_WQCDTagger[iWQCDTagger] ;
 	      
-	      bool apply_tau_21 = (Tau21Cut[iTau21Cut] == 0.) ?  false : true;
-	      //fatjet_map[idtag]   = GetAK8Jetsv2(fatjets_tmp, 200., etabins[ietabin], s_LepVeto[iLepVeto],  1., apply_tau_21, Tau21Cut[iTau21Cut], SDMassCut[iSDMassCut], 40., 130., WQCDTagger[iWQCDTagger], ElectronCollV, MuonCollV);
+	      //bool apply_tau_21 = (Tau21Cut[iTau21Cut] == 0.) ?  false : true;
+	      //fatjet_map[idtag]   = SelectAK8Jetsv2(fatjets_tmp, 200., etabins[ietabin], s_LepVeto[iLepVeto],  1., apply_tau_21, Tau21Cut[iTau21Cut], SDMassCut[iSDMassCut], 40., 130., WQCDTagger[iWQCDTagger], ElectronCollV, MuonCollV);
 	    }
 	  }
 	}
       }
     }
-    fatjet_map["ak8_type1"]   = GetAK8Jetsv2(fatjets_tmp, 200., 2.7, false,  1., true, 1., true, 40., 130., -999, ElectronCollV, MuonCollV);                                                                                                                               
-    fatjet_map["ak8_type2"]   = GetAK8Jetsv2(fatjets_tmp, 200., 2.7, false,  1., false, 0., true, 40., 130., 0.6, ElectronCollV, MuonCollV);                                                                                                                               
+    fatjet_map["ak8_type1"]   = SelectAK8Jetsv2(fatjets_tmp, 200., 2.7, false,  1., true, 1., true, 40., 130., -999, ElectronCollV, MuonCollV);                                                                                                                               
+    fatjet_map["ak8_type2"]   = SelectAK8Jetsv2(fatjets_tmp, 200., 2.7, false,  1., false, 0., true, 40., 130., 0.6, ElectronCollV, MuonCollV);                                                                                                                               
 
     //HNL_ULak8_etabin2_NoLV_SDMassCut_PNTagger06_ak4_type1PuL_ak4_vbf_type1_ak4_b_type2_M                                                          
     //HNL_ULak8_etabin2_NoLV_tau21_LP_SDMassCut__ak4_type1PuL_ak4_vbf_type1_ak4_b_type2_M
     // AK4 JET
     std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 15., 5.);
     
-    std::vector<Jet> JetCollLoose                    = GetAK4Jets(jets_tmp,     15., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl_1);
+    std::vector<Jet> JetCollLoose                    = SelectAK4Jets(jets_tmp,     15., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl_1);
 
-    std::vector<Jet> BJetColltmp                    = GetAK4Jets(jets_tmp,     20., 2.4, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl_1);
-    std::vector<Jet> BJetCollNLV                    = GetAK4Jets(jets_tmp,     20., 2.4, false,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl_1);
+    std::vector<Jet> BJetColltmp                    = SelectAK4Jets(jets_tmp,     20., 2.4, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl_1);
+    std::vector<Jet> BJetCollNLV                    = SelectAK4Jets(jets_tmp,     20., 2.4, false,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl_1);
 
     map<TString,   std::vector<Jet> > jet_map;
 
     
-    std::vector<Jet> JetColl                        = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl_1);
+    std::vector<Jet> JetColl                        = SelectAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl_1);
     
     jet_map["ak4_type1"]   = JetColl;
-    jet_map["ak4_type1PuL"]                          = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, "loose",   ElectronCollV,MuonCollV, FatjetColl_1);
-    jet_map["ak4_type1PuM"]                          = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, "medium",   ElectronCollV,MuonCollV, FatjetColl_1);
-    jet_map["ak4_type1PuT"]                          = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, "tight",   ElectronCollV,MuonCollV, FatjetColl_1);
+    jet_map["ak4_type1PuL"]                          = SelectAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, "loose",   ElectronCollV,MuonCollV, FatjetColl_1);
+    jet_map["ak4_type1PuM"]                          = SelectAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, "medium",   ElectronCollV,MuonCollV, FatjetColl_1);
+    jet_map["ak4_type1PuT"]                          = SelectAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, "tight",   ElectronCollV,MuonCollV, FatjetColl_1);
     
-    jet_map["ak4_type2"]                          = GetAK4Jets(jets_tmp,     15., 2.5, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl_1);
-    jet_map["ak4_type2PuL"]                          = GetAK4Jets(jets_tmp,     15., 2.5, true,  0.4,0.8, "loose",   ElectronCollV,MuonCollV, FatjetColl_1);
-    jet_map["ak4_type2PuM"]                          = GetAK4Jets(jets_tmp,     15., 2.5, true,  0.4,0.8, "medium",   ElectronCollV,MuonCollV, FatjetColl_1);
-    jet_map["ak4_type2PuT"]                          = GetAK4Jets(jets_tmp,     15., 2.5, true,  0.4,0.8, "tight",   ElectronCollV,MuonCollV, FatjetColl_1);
-    jet_map["ak4_type5"]                          = GetAK4Jets(jets_tmp,     15., 2.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl_1);
-    jet_map["ak4_type5PuL"]                          = GetAK4Jets(jets_tmp,     15., 2.7, true,  0.4,0.8, "loose",   ElectronCollV,MuonCollV, FatjetColl_1);
-    jet_map["ak4_type5PuM"]                          = GetAK4Jets(jets_tmp,     15., 2.7, true,  0.4,0.8, "medium",   ElectronCollV,MuonCollV, FatjetColl_1);
-    jet_map["ak4_type5PuT"]                          = GetAK4Jets(jets_tmp,     15., 2.7, true,  0.4,0.8, "tight",   ElectronCollV,MuonCollV, FatjetColl_1);
+    jet_map["ak4_type2"]                          = SelectAK4Jets(jets_tmp,     15., 2.5, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl_1);
+    jet_map["ak4_type2PuL"]                          = SelectAK4Jets(jets_tmp,     15., 2.5, true,  0.4,0.8, "loose",   ElectronCollV,MuonCollV, FatjetColl_1);
+    jet_map["ak4_type2PuM"]                          = SelectAK4Jets(jets_tmp,     15., 2.5, true,  0.4,0.8, "medium",   ElectronCollV,MuonCollV, FatjetColl_1);
+    jet_map["ak4_type2PuT"]                          = SelectAK4Jets(jets_tmp,     15., 2.5, true,  0.4,0.8, "tight",   ElectronCollV,MuonCollV, FatjetColl_1);
+    jet_map["ak4_type5"]                          = SelectAK4Jets(jets_tmp,     15., 2.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl_1);
+    jet_map["ak4_type5PuL"]                          = SelectAK4Jets(jets_tmp,     15., 2.7, true,  0.4,0.8, "loose",   ElectronCollV,MuonCollV, FatjetColl_1);
+    jet_map["ak4_type5PuM"]                          = SelectAK4Jets(jets_tmp,     15., 2.7, true,  0.4,0.8, "medium",   ElectronCollV,MuonCollV, FatjetColl_1);
+    jet_map["ak4_type5PuT"]                          = SelectAK4Jets(jets_tmp,     15., 2.7, true,  0.4,0.8, "tight",   ElectronCollV,MuonCollV, FatjetColl_1);
 
 
-    jet_map["ak4_type3"]                          = GetAK4Jets(jets_tmp,     20., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl_1);
-    jet_map["ak4_type3PuL"]                          = GetAK4Jets(jets_tmp,     20., 4.7, true,  0.4,0.8, "loose",   ElectronCollV,MuonCollV, FatjetColl_1);
-    jet_map["ak4_type3PuM"]                          = GetAK4Jets(jets_tmp,     20., 4.7, true,  0.4,0.8, "medium",   ElectronCollV,MuonCollV, FatjetColl_1);
-    jet_map["ak4_type3PuT"]                          = GetAK4Jets(jets_tmp,     20., 4.7, true,  0.4,0.8, "tight",   ElectronCollV,MuonCollV, FatjetColl_1);
+    jet_map["ak4_type3"]                          = SelectAK4Jets(jets_tmp,     20., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl_1);
+    jet_map["ak4_type3PuL"]                          = SelectAK4Jets(jets_tmp,     20., 4.7, true,  0.4,0.8, "loose",   ElectronCollV,MuonCollV, FatjetColl_1);
+    jet_map["ak4_type3PuM"]                          = SelectAK4Jets(jets_tmp,     20., 4.7, true,  0.4,0.8, "medium",   ElectronCollV,MuonCollV, FatjetColl_1);
+    jet_map["ak4_type3PuT"]                          = SelectAK4Jets(jets_tmp,     20., 4.7, true,  0.4,0.8, "tight",   ElectronCollV,MuonCollV, FatjetColl_1);
 
-    jet_map["ak4_type4"]                          = GetAK4Jets(jets_tmp,     30., 2.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl_1);
-    jet_map["ak4_type4PuL"]                          = GetAK4Jets(jets_tmp,     30., 2.7, true,  0.4,0.8, "loose",   ElectronCollV,MuonCollV, FatjetColl_1);
-    jet_map["ak4_type4PuM"]                          = GetAK4Jets(jets_tmp,     30., 2.7, true,  0.4,0.8, "medium",   ElectronCollV,MuonCollV, FatjetColl_1);
-    jet_map["ak4_type4PuT"]                          = GetAK4Jets(jets_tmp,     30., 2.7, true,  0.4,0.8, "tight",   ElectronCollV,MuonCollV, FatjetColl_1);
+    jet_map["ak4_type4"]                          = SelectAK4Jets(jets_tmp,     30., 2.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl_1);
+    jet_map["ak4_type4PuL"]                          = SelectAK4Jets(jets_tmp,     30., 2.7, true,  0.4,0.8, "loose",   ElectronCollV,MuonCollV, FatjetColl_1);
+    jet_map["ak4_type4PuM"]                          = SelectAK4Jets(jets_tmp,     30., 2.7, true,  0.4,0.8, "medium",   ElectronCollV,MuonCollV, FatjetColl_1);
+    jet_map["ak4_type4PuT"]                          = SelectAK4Jets(jets_tmp,     30., 2.7, true,  0.4,0.8, "tight",   ElectronCollV,MuonCollV, FatjetColl_1);
 
 
     map<TString,   std::vector<Jet> > vbfjet_map;
     
-    std::vector<Jet> VBF_JetColl1                    = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, "",  ElectronCollV,MuonCollV, FatjetColl_1);    // High ETa jets 
+    std::vector<Jet> VBF_JetColl1                    = SelectAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, "",  ElectronCollV,MuonCollV, FatjetColl_1);    // High ETa jets 
 
     vbfjet_map["ak4_vbf_type1"]   =  VBF_JetColl1;
-    vbfjet_map["ak4_vbf_type1PuL"]                    = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, "loose",  ElectronCollV,MuonCollV, FatjetColl_1);    // High ETa jets 
-    vbfjet_map["ak4_vbf_type1PuM"]                    = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, "medium",  ElectronCollV,MuonCollV, FatjetColl_1);    // High ETa jets 
-    vbfjet_map["ak4_vbf_type1PuT"]                    = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, "tight",  ElectronCollV,MuonCollV, FatjetColl_1);    // High ETa jets 
-    vbfjet_map["ak4_vbf_type2PuL"]                    = GetAK4Jets(jets_tmp,     25., 4.7, true,  0.4,0.8, "loose",  ElectronCollV,MuonCollV, FatjetColl_1);    // High ETa jets                   
-    vbfjet_map["ak4_vbf_type3PuL"]                    = GetAK4Jets(jets_tmp,     20., 4.7, true,  0.4,0.8, "loose",  ElectronCollV,MuonCollV, FatjetColl_1);    // High ETa jets              
-    //vbfjet_map["ak4_vbf_type2PuM"]                    = GetAK4Jets(jets_tmp,     25., 4.7, true,  0.4,0.8, "medium",  ElectronCollV,MuonCollV, FatjetColl_1);    // High ETa jets              
-    ////vbfjet_map["ak4_vbf_type2PuT"]                    = GetAK4Jets(jets_tmp,     25., 4.7, true,  0.4,0.8, "tight",  ElectronCollV,MuonCollV, FatjetColl_1);    // High ETa jets              
+    vbfjet_map["ak4_vbf_type1PuL"]                    = SelectAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, "loose",  ElectronCollV,MuonCollV, FatjetColl_1);    // High ETa jets 
+    vbfjet_map["ak4_vbf_type1PuM"]                    = SelectAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, "medium",  ElectronCollV,MuonCollV, FatjetColl_1);    // High ETa jets 
+    vbfjet_map["ak4_vbf_type1PuT"]                    = SelectAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, "tight",  ElectronCollV,MuonCollV, FatjetColl_1);    // High ETa jets 
+    vbfjet_map["ak4_vbf_type2PuL"]                    = SelectAK4Jets(jets_tmp,     25., 4.7, true,  0.4,0.8, "loose",  ElectronCollV,MuonCollV, FatjetColl_1);    // High ETa jets                   
+    vbfjet_map["ak4_vbf_type3PuL"]                    = SelectAK4Jets(jets_tmp,     20., 4.7, true,  0.4,0.8, "loose",  ElectronCollV,MuonCollV, FatjetColl_1);    // High ETa jets              
+    //vbfjet_map["ak4_vbf_type2PuM"]                    = SelectAK4Jets(jets_tmp,     25., 4.7, true,  0.4,0.8, "medium",  ElectronCollV,MuonCollV, FatjetColl_1);    // High ETa jets              
+    ////vbfjet_map["ak4_vbf_type2PuT"]                    = SelectAK4Jets(jets_tmp,     25., 4.7, true,  0.4,0.8, "tight",  ElectronCollV,MuonCollV, FatjetColl_1);    // High ETa jets              
 
     //    double PJet_PUID_weightL = GetJetPileupIDSF(JetColl_PuL,"loose" , param);
 
@@ -423,17 +423,17 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
     JetTagging::Parameters param_jetsT = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Tight, JetTagging::incl, JetTagging::mujets);
     
     // Get BJets  and EV weight to corr BTag Eff                                                                                                                       
-    std::vector<Jet> BJetCollL    = GetBJets(param,  BJetColltmp, param_jetsL);
-    std::vector<Jet> BJetCollM    = GetBJets(param,  BJetColltmp, param_jetsM);
-    std::vector<Jet> BJetCollT    = GetBJets(param,  BJetColltmp, param_jetsT);
+    std::vector<Jet> BJetCollL    = SelectBJets(param,  BJetColltmp, param_jetsL);
+    std::vector<Jet> BJetCollM    = SelectBJets(param,  BJetColltmp, param_jetsM);
+    std::vector<Jet> BJetCollT    = SelectBJets(param,  BJetColltmp, param_jetsT);
 
     double sf_btagL               = GetBJetSF(param, BJetColltmp, param_jetsL);
     double sf_btagM               = GetBJetSF(param, BJetColltmp, param_jetsM);
     double sf_btagT               = GetBJetSF(param, BJetColltmp, param_jetsT);
 
-    std::vector<Jet> BJetCollNLVL    = GetBJets(param,  BJetCollNLV, param_jetsL);
-    std::vector<Jet> BJetCollNLVM    = GetBJets(param,  BJetCollNLV, param_jetsM);
-    std::vector<Jet> BJetCollNLVT    = GetBJets(param,  BJetCollNLV, param_jetsT);
+    std::vector<Jet> BJetCollNLVL    = SelectBJets(param,  BJetCollNLV, param_jetsL);
+    std::vector<Jet> BJetCollNLVM    = SelectBJets(param,  BJetCollNLV, param_jetsM);
+    std::vector<Jet> BJetCollNLVT    = SelectBJets(param,  BJetCollNLV, param_jetsT);
 
     double sf_btagL_NLV               = GetBJetSF(param, BJetCollNLV, param_jetsL);
     double sf_btagM_NLV               = GetBJetSF(param, BJetCollNLV, param_jetsM);
@@ -491,17 +491,17 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
 
 
   std::vector<FatJet> fatjets_tmp  = GetFatJets(param, param.FatJet_ID, 200., 5.);
-  std::vector<FatJet> FatjetColl                  = GetAK8Jetsv2(fatjets_tmp, 200., 2.7, true,  1., true, -999, true, 40., 130.,-999, ElectronCollV, MuonCollV);
+  std::vector<FatJet> FatjetColl                  = SelectAK8Jetsv2(fatjets_tmp, 200., 2.7, true,  1., true, -999, true, 40., 130.,-999, ElectronCollV, MuonCollV);
   std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
 
-  std::vector<Jet> JetCollLoose                    = GetAK4Jets(jets_tmp,     15., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl);
-  std::vector<Jet> BJetCollNLV                    = GetAK4Jets(jets_tmp,     20., 2.4, false,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl);
-  std::vector<Jet> JetColl                        = GetAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl);
-  std::vector<Jet> VBF_JetColl                    = GetAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, "",  ElectronCollV,MuonCollV, FatjetColl);  
+  std::vector<Jet> JetCollLoose                    = SelectAK4Jets(jets_tmp,     15., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl);
+  std::vector<Jet> BJetCollNLV                    = SelectAK4Jets(jets_tmp,     20., 2.4, false,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl);
+  std::vector<Jet> JetColl                        = SelectAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl);
+  std::vector<Jet> VBF_JetColl                    = SelectAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, "",  ElectronCollV,MuonCollV, FatjetColl);  
   
 
   JetTagging::Parameters param_jetsM = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
-  std::vector<Jet> BJetColl    = GetBJets(param,  BJetCollNLV, param_jetsM);
+  std::vector<Jet> BJetColl    = SelectBJets(param,  BJetCollNLV, param_jetsM);
   double sf_btagM_NLV               = GetBJetSF(param, BJetCollNLV, param_jetsM);
   param.WriteOutVerbose=1; // Does not Fill Cutflow OR Region Plotter  
   

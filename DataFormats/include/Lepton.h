@@ -9,6 +9,10 @@ public:
   Lepton();
   ~Lepton();
 
+  void  PrintObject(TString label);
+
+
+  //  Lepton(const Lepton& lep) ;
 
   enum EtaRegion{
     IB, OB, GAP, EC
@@ -31,6 +35,7 @@ public:
 
 
   void SetdXY(double dXY, double dXYerr);
+  inline double fdXY() const {return fabs(j_dXY);}
   inline double dXY() const {return j_dXY;}
   inline double dXYerr() const {return j_dXYerr;}
 
@@ -49,15 +54,23 @@ public:
   void SetJetPtRatio(double ptr);
   inline double lep_jet_ptratio() const {return j_lep_jetptratio;}
 
+  void SetJetPtRelDef(double ptrel);
+  inline double lep_jet_ptrelDef() const {return j_lep_jetptrelDef;}
+  void SetJetPtRatioDef(double ptr);
+  inline double lep_jet_ptratioDef() const {return j_lep_jetptratioDef;}
+
+
   
 
   void SetdZ(double dZ, double dZerr);
+  inline double fdZ() const {return fabs(j_dZ);}
   inline double dZ() const {return j_dZ;}
   inline double dZerr() const {return j_dZerr;}
 
   void SetIP3D(double IP3D, double IP3Derr);
 
-  inline double SIP() const {return j_IP3Derr>0?fabs(j_IP3D/j_IP3Derr):0.0;}
+
+  inline double SIP3D() const {return j_IP3Derr>0?fabs(j_IP3D/j_IP3Derr):0.0;};
   inline double IP3D() const {return j_IP3D;}
   inline double IP3Derr() const {return j_IP3Derr;}
 
@@ -85,6 +98,13 @@ public:
   
   void SetLepIso(double ch, double nh, double ph);
 
+  inline double fEta() const {return fabs(this->Eta());}
+
+  inline double JetNTracksMVA() const { return j_jetntracks_mva;}
+  inline double JetNTracks() const { return j_jetntracks;}
+
+  void SetJetNTracks(double d);
+  void SetJetNTracksMVA(double d);
 
   enum Flavour{
     NONE, ELECTRON, MUON, TAU
@@ -149,11 +169,13 @@ private:
   double j_dZ, j_dZerr;
   double j_IP3D, j_IP3Derr;
 
+  double j_jetntracks,j_jetntracks_mva;
   double j_RelIso, j_MiniRelIso;
   double j_MiniIso_ChHad,j_MiniIso_NHad,j_MiniIso_PhHad;
   double j_Iso_ChHad,j_Iso_NHad,j_Iso_PhHad;
   double j_ptcone;
   double j_lep_jetptrel,j_lep_jetptratio;
+  double j_lep_jetptrelDef,j_lep_jetptratioDef;
   Flavour j_LeptonFlavour;
 
   int j_LeptonType;

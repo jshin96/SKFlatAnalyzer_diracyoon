@@ -24,10 +24,43 @@ Muon::Muon() : Lepton() {
   j_matchedstations = 0;
   j_pixelHits = 0;
   j_trackerLayers = 0;
+  j_museg_comp=0;
+}
+
+void Muon::PrintObject(TString label){
+  
+  cout << "PrintObject " << label << endl;
+  Lepton::PrintObject(label);
+  
+  cout << "Muon ------ " << endl;
+  cout << "Chi2 " << j_chi2  << endl;
+  cout << "PFCH04 " << j_PFCH04 << endl;
+  cout << "PFNH04 " << j_PFNH04 << endl;
+  cout << "PFPH04 " << j_PFPH04 << endl;
+  cout << "PU04 " << j_PU04  << endl;
+  cout << "TrikIso " << j_trkiso << endl;
+  cout << "MiniAODPt " << j_MiniAODPt << endl;
+  cout << "MomentumScaleUp " << j_MomentumScaleUp << endl;
+  cout << "MomentumScaleDown " << j_MomentumScaleDown << endl;
+  cout << "TunePPtError " << j_TunePPtError << endl;
+  cout << "MVA " << j_MVA << endl;
+  cout << "lowptMVA " << j_lowptMVA << endl;
+  cout << "softMVA " << j_softMVA << endl;
+  cout << "validmuonhits " << j_validmuonhits << endl;
+  cout << "matchedstations " << j_matchedstations << endl;
+  cout << "pixelHits " << j_pixelHits << endl;
+  cout << "trackerLayers " << j_trackerLayers << endl;
+  cout << "museg_comp " << j_museg_comp<< endl;
+
 }
 
 Muon::~Muon(){
 }
+
+void Muon::SetMuonSegmentCompatibility(double segcomp){
+  j_museg_comp = segcomp;
+}
+
 
 void Muon::SetTypeBit(unsigned int typebit){
   j_TypeBit = typebit;
@@ -145,54 +178,15 @@ bool Muon::PassID(TString ID) const {
   if(ID=="HNLooseV1") return Pass_HNLoose(0.4,  0.2, 0.5,10.);
   if(ID=="HNLoosePOG") return Pass_HNLoose(0.4,  0.2, 0.5,99999.);
 
+  if(ID=="MVAID") return Pass_LepMVAID();
 
-  if(ID.Contains("MuOpt")){
-    
-    TString ID_sub = ID;
-    ID_sub = ID_sub.ReplaceAll("_"," ");
-    string sID_sub = string(ID_sub);
-
-    vector<TString> subStrings;
-    istringstream ID_subs(sID_sub);
-    do {
-      string subs;
-      ID_subs >> subs;
-      subStrings.push_back(TString(subs));
-    } while (ID_subs);
-
-
-    TString dxy_method = "";
-    TString iso_methodB="";
-    TString iso_methodEC="";
-    TString pog_methodB="";
-    TString pog_methodEC="";
-
-    for(unsigned int i=0; i < subStrings.size(); i++){
-      if (subStrings[i].Contains("DXY")) dxy_method=subStrings[i];
-      if (subStrings[i].Contains("MVAB")) pog_methodB=subStrings[i];
-      if (subStrings[i].Contains("MVAEC")) pog_methodEC=subStrings[i];
-
-      if (subStrings[i].Contains("POG")) pog_methodB=subStrings[i];
-      if (subStrings[i].Contains("POG")) pog_methodEC=subStrings[i];
-
-      if (subStrings[i].Contains("ISOB")) iso_methodB=subStrings[i];
-      if (subStrings[i].Contains("ISOEC")) iso_methodEC=subStrings[i];
-    }
-
-    if(ID.Contains("MuOptLoose")) return PassLooseIDOpt();
-    
-    //cout << "ID " << ID << " pass = " << PassIDOptMulti(dxy_method, pog_methodB,pog_methodEC, iso_methodB,iso_methodEC)  << endl;
-    return   PassIDOptMulti(dxy_method, pog_methodB,pog_methodEC, iso_methodB,iso_methodEC);
-
-  }
-
-
+  if(ID.Contains("MuOpt")) Pass_CB_Opt(ID);
 
 
   if(ID.Contains("HNMVA_")){
     TString mva_st = ID.ReplaceAll("HNMVA_","");
     std::string mva_s = std::string(mva_st);
-    std::string::size_type sz;     // alias of size_t
+    std::string::size_type sz;   
     
     double mva_d = std::stod (mva_s,&sz);
     return PassMVA(mva_d,mva_d,mva_d);
@@ -344,7 +338,45 @@ bool Muon::PassID(TString ID) const {
 
 }
 
+bool Muon::Pass_CB_Opt(TString ID) const {
+  
+  TString ID_sub = ID;
+  ID_sub = ID_sub.ReplaceAll("_"," ");
+  string sID_sub = string(ID_sub);
 
+  vector<TString> subStrings;
+  istringstream ID_subs(sID_sub);
+  do {
+    string subs;
+    ID_subs >> subs;
+    subStrings.push_back(TString(subs));
+  } while (ID_subs);
+
+
+  TString dxy_method = "";
+  TString iso_methodB="";
+  TString iso_methodEC="";
+  TString pog_methodB="";
+  TString pog_methodEC="";
+
+  for(unsigned int i=0; i < subStrings.size(); i++){
+    if (subStrings[i].Contains("DXY")) dxy_method=subStrings[i];
+    if (subStrings[i].Contains("MVAB")) pog_methodB=subStrings[i];
+    if (subStrings[i].Contains("MVAEC")) pog_methodEC=subStrings[i];
+
+    if (subStrings[i].Contains("POG")) pog_methodB=subStrings[i];
+    if (subStrings[i].Contains("POG")) pog_methodEC=subStrings[i];
+
+    if (subStrings[i].Contains("ISOB")) iso_methodB=subStrings[i];
+    if (subStrings[i].Contains("ISOEC")) iso_methodEC=subStrings[i];
+  }
+
+  if(ID.Contains("MuOptLoose")) return PassLooseIDOpt();
+
+  //cout << "ID " << ID << " pass = " << PassIDOptMulti(dxy_method, pog_methodB,pog_methodEC, iso_methodB,iso_methodEC)  << endl;                                                                                                                                           
+  return   PassIDOptMulti(dxy_method, pog_methodB,pog_methodEC, iso_methodB,iso_methodEC);
+  
+}
 bool Muon::passIDHN(int ID, double dxy_b, double dxy_e, double dz_b,double dz_e, double sip_b, double sip_e, double iso_b,double iso_e, double miso_b, double miso_e) const{
 
   if( fabs(this->Eta())<= 1.479 ){
@@ -465,6 +497,19 @@ bool Muon::PassMVA(double mva1, double mva2, double mva3) const {
 
 
 
+bool Muon::Pass_LepMVAID() const {
+
+  if(this->Pt() < 10) return false;
+  if(this->fEta() > 2.4) return false;
+  if(MiniRelIso() > 0.4) return false;
+  if(SIP3D() > 8) return false;
+  if(this->fdXY() > 0.05) return false;
+  if(this->fdZ() > 0.1) return false;
+  if(!( isPOGLoose() )) return false;
+
+  return true;
+
+}
 
 bool Muon::PassSoftMVA(double mva1, double mva2, double mva3) const {
 
@@ -988,8 +1033,7 @@ double  Muon::StringToDouble(TString st,TString subSt) const{
   st = st.ReplaceAll("neg","-");
 
   std::string _str = std::string(st);
-  std::string::size_type sz;     // alias of size_t                                                                                                                                 \
-                                                                                                                                                                                     
+  std::string::size_type sz;                                                                                                                                                                                         
   double _d = std::stod (_str,&sz);
 
   return _d;
