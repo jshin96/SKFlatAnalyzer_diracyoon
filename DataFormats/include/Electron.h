@@ -119,6 +119,8 @@ public:
   void SetE15(double d);
   void SetE25(double d);
   void SetE55(double d);
+  void SetFBrem(double d);
+  void SetEOverP(double d);
 
   
   void SetCutBasedIDVariables(
@@ -140,6 +142,9 @@ public:
   );
   inline double Full5x5_sigmaIetaIeta() const { return j_Full5x5_sigmaIetaIeta; }
   inline double sigmaIetaIeta() const { return j_sigmaIetaIeta; }
+  
+  inline double FBrem() const { return j_fbrem; }
+  inline double EOverP() const { return j_eoverp; }
 
   inline double dEtaSeed() const { return j_dEtaSeed; }
   inline double dPhiIn() const { return j_dPhiIn; }
@@ -320,7 +325,7 @@ private:
   double j_EnergyUnCorr;
   bool j_passConversionVeto;
   int j_NMissingHits;
-  double j_Full5x5_sigmaIetaIeta, j_sigmaIetaIeta,j_dEtaSeed, j_dPhiIn,j_dEtaIn,j_PhiWidth, j_EtaWidth, j_HoverE, j_InvEminusInvP, j_e2x5OverE5x5, j_e1x5OverE5x5, j_trkiso, j_dr03EcalRecHitSumEt, j_dr03HcalDepth1TowerSumEt, j_e15, j_e25, j_e55;
+  double j_Full5x5_sigmaIetaIeta, j_sigmaIetaIeta,j_dEtaSeed, j_dPhiIn,j_dEtaIn,j_PhiWidth, j_EtaWidth, j_HoverE, j_InvEminusInvP, j_e2x5OverE5x5, j_e1x5OverE5x5, j_trkiso, j_dr03EcalRecHitSumEt, j_dr03HcalDepth1TowerSumEt, j_e15, j_e25, j_e55,j_fbrem,j_eoverp;
   double j_dr03HcalTowerSumEt, j_dr03TkSumPt, j_ecalPFClusterIso, j_hcalPFClusterIso;
   bool j_isEcalDriven;
   double j_L1Et; 

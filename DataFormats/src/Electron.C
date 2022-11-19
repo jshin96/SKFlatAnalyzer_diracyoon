@@ -28,7 +28,9 @@ Electron::Electron(){
   j_HoverE  = -999.;
   j_PhiWidth = -999.;
   j_EtaWidth = -999.;
-
+  
+  j_fbrem = -999;
+  j_eoverp = -999;
   j_InvEminusInvP = -999.;
   j_e2x5OverE5x5 = -999.;
   j_e1x5OverE5x5 = -999.;
@@ -185,6 +187,18 @@ void Electron::SetIDCutBit(vector<int> idcutbit){
   j_IDCutBit = idcutbit;
 }
 
+
+void Electron::SetFBrem(double d){
+  j_fbrem= d;
+}
+
+
+void Electron::SetEOverP(double d){
+  j_eoverp= d;
+}
+
+
+
 void Electron::SetEtaWidth(double d){
   j_EtaWidth= d;
 }
@@ -287,10 +301,9 @@ bool Electron::PassID(TString ID) const{
   
   if(ID=="MVAID") return Pass_LepMVAID();
     
-
   if(ID.Contains("ElOpt")) Pass_CB_Opt(ID);
   
-  
+ 
   if(PassIDLoose(ID)   >=0) return (PassIDLoose(ID)==1) ? true : false;
   if(PassIDOptLoose(ID)>=0) return (PassIDOptLoose(ID)==1) ? true : false;
   if(PassIDTight(ID)   >=0) return (PassIDTight(ID)==1)  ?  true : false;
@@ -673,7 +686,8 @@ int  Electron::PassIDTight(TString ID) const{
   if(ID=="HNTightV3")  return (PassHNOpt()==1) && passTightID_NoCC() &&PassHNID()  &&(fabs(IP3D()/IP3Derr())<4.)? 1 : 0 ;
 
   if(ID=="HNTight_17028") return Pass_HNTight2016()? 1 : 0 ;  // EXO-17-028                                                                                  
-  if(ID=="HNTight_UL") return Pass_HNTightUL()? 1 : 0 ;  
+  if(ID=="HNTight_ULInProgress") return Pass_HNTightUL()? 1 : 0 ;  
+
 
   //=== POG
   if(ID=="passPOGTight")             return passTightID_NoCC()? 1 : 0 ;
@@ -688,8 +702,6 @@ int  Electron::PassIDTight(TString ID) const{
   //=== MVA
   if(ID=="passMVAID_noIso_WP90Opt") return passMVAID_noIso_WP90()? 1 : 0 ;
   if(ID=="passMVAID_noIso_WP80Opt") return passMVAID_noIso_WP80()? 1 : 0 ;
-
-
   if(ID=="passMVAID_noIso_WP80") return passMVAID_noIso_WP80HN()? 1 : 0 ;
   if(ID=="passMVAID_noIso_WP90") return passMVAID_noIso_WP90HN()? 1 : 0 ;
   if(ID=="passMVAID_Iso_WP80") return passMVAID_Iso_WP80()? 1 : 0 ;
@@ -703,11 +715,9 @@ int  Electron::PassIDTight(TString ID) const{
   if(ID=="SUSYLoose") return Pass_SUSYLoose()? 1 : 0 ;
 
   // ===== Type-1    
-
+  
   if(ID=="HNNoMVA") return ((passIDHN(3,0.05, 0.05, 0.1,0.1, 5.,5., 0.1, 0.1, -999., -999.))  ? 1 : 0);
-                                               
-
-
+  
   if(ID.Contains("HNMVA_")) {
     TString mva_st = ID.ReplaceAll("HNMVA_","");
     std::string mva_s = std::string(mva_st);

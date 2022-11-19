@@ -183,7 +183,7 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   //================== KINEMATIC HELPER
   double M_T(Particle a, Particle b);
-  float GetLT(std::vector<Lepton *> leps);
+  double GetLT(std::vector<Lepton *> leps);
   double GetHT( std::vector<Jet> jets, std::vector<FatJet> fatjets);
   double GetST( std::vector<Electron> electrons, std::vector<Muon> muons, std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev);
   double GetST( std::vector<Electron> electrons, std::vector<Muon> muons, std::vector<Jet> jets, std::vector<FatJet> fatjets, Particle met);
@@ -195,17 +195,17 @@ class HNL_LeptonCore : public AnalyzerCore {
   bool  ZmassOSSFWindowCheck(std::vector<Lepton *> leps, double mass_diff);
 
 
-  float GetMassMinOSSF(std::vector<Lepton *> leps);
-  float GetMassMinSSSF(std::vector<Lepton *> leps);
+  double GetMassMinOSSF(std::vector<Lepton *> leps);
+  double GetMassMinSSSF(std::vector<Lepton *> leps);
   int GetIndexNonMinOSSF(std::vector<Lepton *> leps);
   int GetIndexNonMinSSSF(std::vector<Lepton *> leps);
   int GetIndexNonBestZ(std::vector<Lepton *> leps,double mass_diff);
 
-  float GetLLMass(std::vector<Lepton *> leps);
-  float GetLLMass(std::vector<Muon> leps);
-  float GetLLMass(std::vector<Electron> leps);
+  double GetLLMass(std::vector<Lepton *> leps);
+  double GetLLMass(std::vector<Muon> leps);
+  double GetLLMass(std::vector<Electron> leps);
 
-  float GetMassBestZ(std::vector<Lepton *> leps,  bool bestZ);
+  double GetMassBestZ(std::vector<Lepton *> leps,  bool bestZ);
   double  GetMass(TString type , std::vector<Jet> jets, std::vector<FatJet> fatjets, vector<Lepton*> leps);
 
   //================                                                                                                                                                                                        
@@ -289,10 +289,10 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   // PLEP LOTS
 
-  void FillAllMuonPlots(TString label , TString cut,  Muon mu, float w);
-  void FillAllMuonPlots(TString label , TString cut,  std::vector<Muon> muons, float w);
-  void FillAllElectronPlots(TString label , TString cut,  std::vector<Electron> els, float w);
-  void FillAllElectronPlots(TString label , TString cut,  Electron el, float w);
+  void FillAllMuonPlots(TString label , TString cut,  Muon mu, double w);
+  void FillAllMuonPlots(TString label , TString cut,  std::vector<Muon> muons, double w);
+  void FillAllElectronPlots(TString label , TString cut,  std::vector<Electron> els, double w);
+  void FillAllElectronPlots(TString label , TString cut,  Electron el, double w);
 
 
   // === Cut flow                                                                                                                                                                                      
@@ -305,9 +305,9 @@ class HNL_LeptonCore : public AnalyzerCore {
 
 
   void FillCutFlow(bool IsCentral, TString suffix, TString histname, double weight);
-  void FillEventCutflow(HNL_LeptonCore::SearchRegion sr,float wt,TString cut,    TString label, int verbose_level=0);
-  void FillEventCutflowSR(TString analysis_dir_name,HNL_LeptonCore::SearchRegion sr, float event_weight, TString label);
-  void FillEventCutflowPerMass(TString dirname,HNL_LeptonCore::SearchRegion sr, float event_weight, TString region_name,   TString label);
+  void FillEventCutflow(HNL_LeptonCore::SearchRegion sr,double wt,TString cut,    TString label, int verbose_level=0);
+  void FillEventCutflowSR(TString analysis_dir_name,HNL_LeptonCore::SearchRegion sr, double event_weight, TString label);
+  void FillEventCutflowPerMass(TString dirname,HNL_LeptonCore::SearchRegion sr, double event_weight, TString region_name,   TString label);
 
 
 

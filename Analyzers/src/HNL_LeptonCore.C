@@ -1864,8 +1864,8 @@ void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, TString p
   
   if(jets.size() > 1){
     
-    float dijetmass_tmp=999.;
-    float dijetmass=9990000.;
+    double dijetmass_tmp=999.;
+    double dijetmass=9990000.;
     int m=-999;
     int n=-999;
 
@@ -2081,8 +2081,8 @@ void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, TString p
   
   //  return;
 
-  float mindRlepj1(99999.);
-  float mindRlepj2(99999.);
+  double mindRlepj1(99999.);
+  double mindRlepj2(99999.);
 
   for(unsigned int i=0; i < jets.size(); i++){
 
@@ -2246,7 +2246,7 @@ void HNL_LeptonCore::FillEventCutflowDef(TString analysis_dir_name,TString histn
 
 
 
-void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::SearchRegion sr, float event_weight, TString label,   TString analysis_dir_name, int verbose_level){
+void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::SearchRegion sr, double event_weight, TString label,   TString analysis_dir_name, int verbose_level){
   
 
  
@@ -2505,7 +2505,7 @@ void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::SearchRegion sr, float eve
   return;
 }      
  
-void HNL_LeptonCore::FillEventCutflowPerMass(TString analysis_dir_name,SearchRegion sr, float event_weight, TString label,   TString massname){
+void HNL_LeptonCore::FillEventCutflowPerMass(TString analysis_dir_name,SearchRegion sr, double event_weight, TString label,   TString massname){
 
   if(sr==SR3 ){
 
@@ -2551,7 +2551,7 @@ void HNL_LeptonCore::FillEventCutflowPerMass(TString analysis_dir_name,SearchReg
 }
 
  
-void HNL_LeptonCore::FillEventCutflowSR(TString analysis_dir_name,HNL_LeptonCore::SearchRegion sr, float event_weight, TString label){                                                            
+void HNL_LeptonCore::FillEventCutflowSR(TString analysis_dir_name,HNL_LeptonCore::SearchRegion sr, double event_weight, TString label){                                                            
 
   vector<TString> masses = {"100","125","200","250","300","400","500","600","700","800","900","1000","1100","1200","1300","1400","1500","1700","2000","2500","5000","20000"};
   
@@ -3071,7 +3071,7 @@ int HNL_LeptonCore::GetIndexNonMinOSSF(std::vector<Lepton *> leps){
     Particle ll2 = (*leps[0]) + (*leps[2]);
     Particle ll3 = (*leps[1]) + (*leps[2]);
 
-    float minOS=99999999999.;
+    double minOS=99999999999.;
     if(ll1.Charge() == 0) {
       if(ll1.M()  < minOS) { minOS=ll1.M(); index=2;}
     }
@@ -3095,8 +3095,8 @@ double  HNL_LeptonCore::GetMass(TString type , std::vector<Jet> jets, std::vecto
   if (type=="HNL_SR3"){
 
     if(jets.size() < 2) return 0.;
-    float dijetmass_tmp=9999.;
-    float dijetmass=99990000.;
+    double dijetmass_tmp=9999.;
+    double dijetmass=99990000.;
     int m=-999;
     int n=-999;
     double ST(0.);
@@ -3121,8 +3121,8 @@ double  HNL_LeptonCore::GetMass(TString type , std::vector<Jet> jets, std::vecto
   if (type=="HNL_SR1"){
     if(fatjets.size() ==0 )  return 0.;
     if(leps.size() != 2) return 0.;
-    float dijetmass_tmp=999.;
-    float dijetmass=9990000;
+    double dijetmass_tmp=999.;
+    double dijetmass=9990000;
     int m=-999;
     for(UInt_t emme=0; emme<fatjets.size(); emme++){
       dijetmass_tmp= fatjets[emme].SDMass();
@@ -3138,8 +3138,8 @@ double  HNL_LeptonCore::GetMass(TString type , std::vector<Jet> jets, std::vecto
   if (type=="HNL_SR2_17028"){
     if(fatjets.size() ==0 )  return 0.;
     if(leps.size() != 2) return 0.;
-    float dijetmass_tmp=999.;
-    float dijetmass=9990000;
+    double dijetmass_tmp=999.;
+    double dijetmass=9990000;
     int m=-999;
     for(UInt_t emme=0; emme<fatjets.size(); emme++){
       dijetmass_tmp= fatjets[emme].SDMass();
@@ -3320,26 +3320,26 @@ vector<Electron> HNL_LeptonCore::GetLepCollByRunType(const vector<Electron>& ElC
 
 
 
-float HNL_LeptonCore::GetLT(std::vector<Lepton *> leps){
+double HNL_LeptonCore::GetLT(std::vector<Lepton *> leps){
   
-  float lt(0.);
+  double lt(0.);
   for(auto ilep : leps) lt +=  ilep->Pt();
 
   return lt;
 
 }
 
-float HNL_LeptonCore::GetLLMass(std::vector<Muon> leps){
+double HNL_LeptonCore::GetLLMass(std::vector<Muon> leps){
   
   return GetLLMass(MakeLeptonPointerVector(leps));
 }
 
-float HNL_LeptonCore::GetLLMass(std::vector<Electron> leps){
+double HNL_LeptonCore::GetLLMass(std::vector<Electron> leps){
 
   return GetLLMass(MakeLeptonPointerVector(leps));
 }
 
-float HNL_LeptonCore::GetLLMass(std::vector<Lepton *> leps){
+double HNL_LeptonCore::GetLLMass(std::vector<Lepton *> leps){
 
   if(leps.size() != 2) return -1.;
   
@@ -3347,10 +3347,10 @@ float HNL_LeptonCore::GetLLMass(std::vector<Lepton *> leps){
   return ll.M();
 }
 
-float HNL_LeptonCore::GetMassMinOSSF(std::vector<Lepton *> leps){
+double HNL_LeptonCore::GetMassMinOSSF(std::vector<Lepton *> leps){
 
 
-  float minOS=99999999999.;
+  double minOS=99999999999.;
 
   for(unsigned int i = 0; i < leps.size(); i++){
     for(unsigned int j = i+1;  j <leps.size(); j++){
@@ -3367,9 +3367,9 @@ float HNL_LeptonCore::GetMassMinOSSF(std::vector<Lepton *> leps){
 
 }
 
-float  HNL_LeptonCore::GetMassMinSSSF(std::vector<Lepton *> leps){
+double  HNL_LeptonCore::GetMassMinSSSF(std::vector<Lepton *> leps){
 
-  float minSS=99999999999.;
+  double minSS=99999999999.;
 
   for(unsigned int i = 0; i < leps.size(); i++){
     for(unsigned int j = i+1;  j <leps.size(); j++){
@@ -3411,7 +3411,7 @@ int HNL_LeptonCore::GetIndexNonMinSSSF(std::vector<Lepton *> leps){
     Particle ll2 = (*leps[0]) + (*leps[2]);
     Particle ll3 = (*leps[1]) + (*leps[2]);
 
-    float minOS=99999999999.;
+    double minOS=99999999999.;
     if(fabs(ll1.Charge()) == 2) {
       if(ll1.M()  < minOS) { minOS=ll1.M(); index=2;}
     }
@@ -3438,7 +3438,7 @@ int HNL_LeptonCore::GetIndexNonBestZ(std::vector<Lepton *> leps,double mass_diff
     Particle ll2 = (*leps[0]) + (*leps[2]);
     Particle ll3 = (*leps[1]) + (*leps[2]);
 
-    float minOSZ=99999999999.;
+    double minOSZ=99999999999.;
     if(fabs(ll1.Charge()) == 0) {
       if(fabs(ll1.M() - 90.1) < minOSZ) {minOSZ = fabs(ll1.M() - 90.1); index=2;}
     }
@@ -3473,10 +3473,10 @@ bool  HNL_LeptonCore::ZmassOSSFWindowCheck(std::vector<Lepton *> leps, double ma
   return false;
 }
 
-float HNL_LeptonCore::GetMassBestZ(std::vector<Lepton *> leps,  bool bestZ){
+double HNL_LeptonCore::GetMassBestZ(std::vector<Lepton *> leps,  bool bestZ){
 
-  float minMZ = 99999999.;
-  float massNonBestZ(-9999.), massBestZ(-9999);
+  double minMZ = 99999999.;
+  double massNonBestZ(-9999.), massBestZ(-9999);
   if(leps.size()==4){
 
     Particle Z1Cand;
@@ -3802,7 +3802,7 @@ bool HNL_LeptonCore::SameCharge(std::vector<Lepton *> leps, int ch){
 }
 
 
-void HNL_LeptonCore::FillAllMuonPlots(TString label , TString cut,  std::vector<Muon> muons, float w){
+void HNL_LeptonCore::FillAllMuonPlots(TString label , TString cut,  std::vector<Muon> muons, double w){
 
   for(unsigned int i=0; i <  muons.size(); i++){
 
@@ -3831,7 +3831,7 @@ void HNL_LeptonCore::FillAllMuonPlots(TString label , TString cut,  std::vector<
 }
 
 
-void HNL_LeptonCore::FillAllMuonPlots(TString label , TString cut,  Muon mu, float w){
+void HNL_LeptonCore::FillAllMuonPlots(TString label , TString cut,  Muon mu, double w){
 
   vector<Jet> JetAllColl = GetJets("NoID", 10., 5.0);
 
@@ -3847,10 +3847,10 @@ void HNL_LeptonCore::FillAllMuonPlots(TString label , TString cut,  Muon mu, flo
   double jet_disc(-1);
   
   for(unsigned int ij=0; ij<JetAllColl.size(); ij++){
-    float dR=mu.DeltaR(JetAllColl.at(ij));
+    double dR=mu.DeltaR(JetAllColl.at(ij));
     if(dR>0.4) continue;
     if(dR<mindR){ mindR=dR; IdxMatchJet=ij; }
-    float dphi =fabs(TVector2::Phi_mpi_pi(mu.Phi()- JetAllColl.at(ij).Phi()));
+    double dphi =fabs(TVector2::Phi_mpi_pi(mu.Phi()- JetAllColl.at(ij).Phi()));
     if(dphi > maxDphi) {maxDphi= dphi; IdxMatchAwayJet=ij;}
   }
   if(IdxMatchJet!=-1){
@@ -3920,7 +3920,7 @@ void HNL_LeptonCore::FillAllMuonPlots(TString label , TString cut,  Muon mu, flo
 }
 
 
-void HNL_LeptonCore::FillAllElectronPlots(TString label , TString cut,  std::vector<Electron> els, float w){
+void HNL_LeptonCore::FillAllElectronPlots(TString label , TString cut,  std::vector<Electron> els, double w){
 
   FillHist( cut+ "/nelectrons"+label , size(els) , w, 5, 0., 5., "n_{el}");
 
@@ -3960,7 +3960,7 @@ TString HNL_LeptonCore::Category(Electron el){
 
 }
 
-void HNL_LeptonCore::FillAllElectronPlots(TString label , TString cut,  Electron el, float w){
+void HNL_LeptonCore::FillAllElectronPlots(TString label , TString cut,  Electron el, double w){
 
   vector<Jet> JetAllColl = GetJets("NoID", 10., 5.0);
 
@@ -3976,10 +3976,10 @@ void HNL_LeptonCore::FillAllElectronPlots(TString label , TString cut,  Electron
   double jet_disc(-1);
 
   for(unsigned int ij=0; ij<JetAllColl.size(); ij++){
-    float dR=el.DeltaR(JetAllColl.at(ij));
+    double dR=el.DeltaR(JetAllColl.at(ij));
     if(dR>0.4) continue;
     if(dR<mindR){ mindR=dR; IdxMatchJet=ij; }
-    float dphi =fabs(TVector2::Phi_mpi_pi(el.Phi()- JetAllColl.at(ij).Phi()));
+    double dphi =fabs(TVector2::Phi_mpi_pi(el.Phi()- JetAllColl.at(ij).Phi()));
     if(dphi > maxDphi) {maxDphi= dphi; IdxMatchAwayJet=ij;}
 
   }

@@ -235,7 +235,7 @@ public:
   double MCweight(bool usesign=true, bool norm_1invpb=true) const;
 
   //==== Kfactors
-  float GetKFactor();
+  double GetKFactor();
 
 
   //==== Prefire
@@ -328,7 +328,7 @@ public:
   bool FindHEMElectron(Electron electron);
 
   //============ JEC Uncertainty
-  float GetJECUncertainty(TString source, TString JetType,  float eta, float pt, int sys);
+  double GetJECUncertainty(TString source, TString JetType,  double eta, double pt, int sys);
   void  SetupJECUncertainty(TString source , TString JetType="AK4PFchs");
 
   //==== Plotting
@@ -338,10 +338,10 @@ public:
   std::map< TString, TH3D* > maphist_TH3D;
 
   // Maps for JEC
-  std::map<TString, std::vector<std::map<float, std::vector<float> > > > AK4CHSJECUncMap;
-  std::map<TString, std::vector<std::map<float, std::vector<float> > > > AK4PUPPIJECUncMap;
-  std::map<TString, std::vector<std::map<float, std::vector<float> > > > AK8CHSJECUncMap;
-  std::map<TString, std::vector<std::map<float, std::vector<float> > > > AK8PUPPIJECUncMap;
+  std::map<TString, std::vector<std::map<double, std::vector<double> > > > AK4CHSJECUncMap;
+  std::map<TString, std::vector<std::map<double, std::vector<double> > > > AK4PUPPIJECUncMap;
+  std::map<TString, std::vector<std::map<double, std::vector<double> > > > AK8CHSJECUncMap;
+  std::map<TString, std::vector<std::map<double, std::vector<double> > > > AK8PUPPIJECUncMap;
 
   vector<TString> JECSources;
 

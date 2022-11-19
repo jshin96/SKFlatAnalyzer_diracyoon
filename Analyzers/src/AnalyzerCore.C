@@ -155,9 +155,9 @@ Event AnalyzerCore::GetEvent(){
 
 }
 
-float AnalyzerCore::GetJECUncertainty(TString source, TString JetType, float eta, float pt, int sys){
+double AnalyzerCore::GetJECUncertainty(TString source, TString JetType, double eta, double pt, int sys){
 
-  std::map<TString, std::vector<std::map<float, std::vector<float> > > >::iterator mapit;
+  std::map<TString, std::vector<std::map<double, std::vector<double> > > >::iterator mapit;
   bool NotFound=false;
   if(JetType=="AK4PFchs") {
     mapit = AK4CHSJECUncMap.find(source); 
@@ -178,27 +178,27 @@ float AnalyzerCore::GetJECUncertainty(TString source, TString JetType, float eta
   if(NotFound) {cout<< "ERROR, " << source  << " not found in JEC Uncertainty MAP for " << JetType << endl; return -999.;}
 
   
-  float bin_boundary(-999.);
+  double bin_boundary(-999.);
 
-  std::map<float, std::vector<float> > ptmap = mapit->second.at(0);
+  std::map<double, std::vector<double> > ptmap = mapit->second.at(0);
 
-  std::vector<float> etabins;  
-  for(std::map<float, std::vector<float> >::iterator it = ptmap.begin(); it!= ptmap.end(); it++){
+  std::vector<double> etabins;  
+  for(std::map<double, std::vector<double> >::iterator it = ptmap.begin(); it!= ptmap.end(); it++){
     etabins.push_back(it->first);
   }
 
   
   for(unsigned int i=0; i < etabins.size()-1 ; i++){
-    if(eta >= etabins.at(i) && eta < etabins.at(i+1)){  bin_boundary = float(etabins.at(i)) ; break;}
+    if(eta >= etabins.at(i) && eta < etabins.at(i+1)){  bin_boundary = double(etabins.at(i)) ; break;}
   }
 
   if(bin_boundary == -999) return 1.;
   
-  std::vector<float> ptbins;
+  std::vector<double> ptbins;
   
 
-  for(std::map<float, std::vector<float> >::iterator pit = ptmap.begin();  pit != ptmap.end(); pit++){
-    if(float(pit->first) == float(bin_boundary)) {ptbins = pit->second; }
+  for(std::map<double, std::vector<double> >::iterator pit = ptmap.begin();  pit != ptmap.end(); pit++){
+    if(double(pit->first) == double(bin_boundary)) {ptbins = pit->second; }
   }
   
   int ptbin(-999);
@@ -210,14 +210,14 @@ float AnalyzerCore::GetJECUncertainty(TString source, TString JetType, float eta
   if(ptbin == -999) return 1.;
 
 
-  std::map<float, std::vector<float> > upmap = mapit->second.at(1); 
-  std::map<float, std::vector<float> > downmap = mapit->second.at(2); 
+  std::map<double, std::vector<double> > upmap = mapit->second.at(1); 
+  std::map<double, std::vector<double> > downmap = mapit->second.at(2); 
   
-  std::map<float, std::vector<float> >::iterator mapit_unc;
+  std::map<double, std::vector<double> >::iterator mapit_unc;
   if(sys> 0) mapit_unc =  mapit->second.at(1).find(bin_boundary);
   else mapit_unc =  mapit->second.at(2).find(bin_boundary);
   
-  float unc = (sys> 0) ?   1+ mapit_unc->second.at(ptbin) : 1 - mapit_unc->second.at(ptbin);
+  double unc = (sys> 0) ?   1+ mapit_unc->second.at(ptbin) : 1 - mapit_unc->second.at(ptbin);
 
   return unc;
 }
@@ -251,7 +251,7 @@ void AnalyzerCore::SetupJECUncertainty(TString source , TString JetType){
 
   cout << "Setting up JEC uncertainty vector for source ["<<source<< "]." << file << endl;
 
-  std::map<float, std::vector<float> > etaptmap, eta_uncupmap, eta_uncdownmap;
+  std::map<double, std::vector<double> > etaptmap, eta_uncupmap, eta_uncdownmap;
   for(unsigned int ilines =0; ilines <  SourceLines.size(); ilines++){
 
     string line = SourceLines[ilines];
@@ -275,7 +275,7 @@ void AnalyzerCore::SetupJECUncertainty(TString source , TString JetType){
       cout << "[AnalyzerCore::SetupJECUncertainty] Eta bin set incorrectly ..." << endl;
       exit(EXIT_FAILURE);      
     }
-    std::vector<float> ptbin, unc_up, unc_down;
+    std::vector<double> ptbin, unc_up, unc_down;
     bool finalbin(false);
 
     for(int i=0; i < nBins; i++){
@@ -300,14 +300,14 @@ void AnalyzerCore::SetupJECUncertainty(TString source , TString JetType){
     eta_uncupmap[eta_min] =  unc_up;
     eta_uncdownmap[eta_min] = unc_down;
 
-    std::vector<float> NULLBin;
+    std::vector<double> NULLBin;
     if(ilines ==  SourceLines.size() -1) etaptmap[eta_max] = NULLBin;
         
   }
   
   jec_file.close();
 
-  std::vector<std::map<float, std::vector<float> > > vec_unc;
+  std::vector<std::map<double, std::vector<double> > > vec_unc;
   vec_unc.push_back(etaptmap);
   vec_unc.push_back(eta_uncupmap);
   vec_unc.push_back(eta_uncdownmap);
@@ -541,6 +541,8 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
     );
     el.SetEtaWidth(electron_etaWidth->at(i));
     el.SetPhiWidth(electron_phiWidth->at(i));
+    el.SetFBrem(electron_fbrem->at(i));
+    el.SetEOverP(electron_eOverP->at(i));
     el.SetDetaIn(electron_dEtaIn->at(i));
     el.SetSigmaIEtaIE(electron_sigmaIEtaIEta->at(i));
     el.SetLepIso(electron_chIso03->at(i),electron_nhIso03->at(i),electron_phIso03->at(i));
@@ -1621,7 +1623,7 @@ double AnalyzerCore::GetEventFatJetSF(vector<FatJet> fatjets, TString label, int
 double AnalyzerCore::GetFatJetSF(FatJet fatjet, TString tag,  int dir){
 
   if(IsDATA) return 1.;
-  float fsys = -1;
+  double fsys = -1;
   if(dir > 0) fsys =1;
   if(dir==0) fsys=0.;
 
@@ -1897,7 +1899,7 @@ bool AnalyzerCore::IsHEMIssueRun(){
 bool AnalyzerCore::IsHEMIssueReg(Particle& Particle){
 
   bool IstheRegion=false;
-  float eta=Particle.Eta(), phi=Particle.Phi();
+  double eta=Particle.Eta(), phi=Particle.Phi();
 
   if(eta>-3. && eta<-1.3 && phi>-1.57 && phi<-0.87) IstheRegion=true;
 
@@ -1909,7 +1911,7 @@ bool AnalyzerCore::IsHEMIssueReg(Particle& Particle){
 bool AnalyzerCore::IsHEMCRReg(Particle& Particle, TString Option){
 
   bool IstheRegion=false;
-  float eta=Particle.Eta(), phi=Particle.Phi();
+  double eta=Particle.Eta(), phi=Particle.Phi();
   bool SameEta = Option.Contains("SameEta");
   bool SamePhi = Option.Contains("SamePhi");
 
@@ -2666,11 +2668,11 @@ void AnalyzerCore::initializeAnalyzerTools(){
 }
 
 
-float AnalyzerCore::GetKFactor(){
+double AnalyzerCore::GetKFactor(){
 
   if(IsDATA) return 1.;
 
-  float weight = 1.;
+  double weight = 1.;
 
   if(MCSample.Contains("WZTo3LNu_powheg") or MCSample.Contains("WZTo2L2Q")){
     //Physics Letters B 761 (2016) 197 
@@ -2931,7 +2933,7 @@ vector<Electron> AnalyzerCore::SkimLepColl(const vector<Electron>& ElColl, TStri
   if(Option.Contains("E"))  Endcap =true;
 
   for(unsigned int i=0; i<ElColl.size(); i++){
-    bool PassSel=false; float fEta=fabs(ElColl.at(i).Eta());
+    bool PassSel=false; double fEta=fabs(ElColl.at(i).Eta());
     if( Barrel1 && fEta <0.8               ) PassSel=true;
     if( Barrel2 && fEta>=0.8 && fEta<1.479 ) PassSel=true;
     if( Endcap  && fEta>=1.479 && fEta<2.5 ) PassSel=true;
@@ -2951,7 +2953,7 @@ vector<Muon> AnalyzerCore::SkimLepColl(const vector<Muon>& MuColl,  TString Opti
   if(Option.Contains("ME")) Endcap =true;
 
   for(unsigned int i=0; i<MuColl.size(); i++){
-    bool PassSel=false; float fEta=fabs(MuColl.at(i).Eta());
+    bool PassSel=false; double fEta=fabs(MuColl.at(i).Eta());
     if( Barrel  && fEta <0.9               ) PassSel=true;
     if( Overlap && fEta>=0.9 && fEta<1.6   ) PassSel=true;
     if( Endcap  && fEta>=1.6 && fEta<2.4   ) PassSel=true;
@@ -3074,8 +3076,8 @@ Muon AnalyzerCore::MuonUsePtCone(const Muon& muon){
 
 Particle AnalyzerCore::UpdateMET(const Particle& METv, const std::vector<Muon>& muons){
 
-  float met_x = METv.Px();
-  float met_y = METv.Py();
+  double met_x = METv.Px();
+  double met_y = METv.Py();
 
   double px_orig(0.), py_orig(0.),px_corrected(0.), py_corrected(0.);
   for(unsigned int i=0; i<muons.size(); i++){
@@ -3099,8 +3101,8 @@ Particle AnalyzerCore::UpdateMET(const Particle& METv, const std::vector<Muon>& 
 
 Particle AnalyzerCore::UpdateMETSmearedJet(const Particle& METv, const std::vector<Jet>& jets){
 
-  float met_x = METv.Px();
-  float met_y = METv.Py();
+  double met_x = METv.Px();
+  double met_y = METv.Py();
 
   double px_orig(0.), py_orig(0.),px_corrected(0.), py_corrected(0.);
   for(auto jet : jets){
@@ -3303,7 +3305,7 @@ double  AnalyzerCore::JetLeptonPtRelLepAware( Muon lep, bool removeLep, bool App
 
   std::vector<Jet> jets = GetAllJets(ApplyCorr);
 
-  float mindR=0.4;
+  double mindR=0.4;
   if(!ApplyCorr)lep.SetPtEtaPhiE(lep.MiniAODPt(), lep.Eta(), lep.Phi(), lep.E());
 
   Jet closejet;
@@ -3330,7 +3332,7 @@ double  AnalyzerCore::JetLeptonPtRelLepAware( Electron lep, bool removeLep, bool
 
   std::vector<Jet> jets = GetAllJets(ApplyCorr);
 
-  float mindR=0.4;
+  double mindR=0.4;
   //if(!ApplyCorr)lep.SetPtEtaPhiE(lep.MiniAODPt(), lep.Eta(), lep.Phi(), lep.E());
 
   Jet closejet;
@@ -3357,7 +3359,7 @@ double  AnalyzerCore::JetLeptonPtRatioLepAware(Muon lep, bool removeLep, bool Ap
 
   std::vector<Jet> jets = GetAllJets(ApplyCorr);
 
-  float mindR=0.4;
+  double  mindR=0.4;
   
   if(!ApplyCorr)lep.SetPtEtaPhiE(lep.MiniAODPt(), lep.Eta(), lep.Phi(), lep.E());
 
@@ -3377,6 +3379,21 @@ double  AnalyzerCore::JetLeptonPtRatioLepAware(Muon lep, bool removeLep, bool Ap
     return -999.;
   }
 
+  
+  if(closejet.Pt() == 0.) {
+    cout << "mindR = " << mindR << endl;
+    cout << "[JetLeptonPtRatioLepAware( Muon lep,  bool removeLep, bool ApplyCorr] 0 Jet pt" <<  endl;
+    cout << "Number of jets = " << jets.size() << endl;
+    for(auto jet : jets){
+      cout << "Jet pt = " << jet.Pt() << " dR = " << lep.DeltaR(jet) << endl;
+      Jet closejet2 = GetCorrectedJetCloseToLepton(lep,jet);
+      cout << "GetCorrectedJetCloseToLepton(lep,jet) pt = " << closejet2.Pt() << endl;
+    }
+
+    exit(EXIT_FAILURE);
+  }
+
+
   //cout << "JetLeptonPtRatioLepAware " <<  (lepp4.Pt() / closejet.Pt()) << " vs  " << lep.lep_jet_ptratio() << " vs " << lep.lep_jet_ptratioDef() << endl;
   //cout << "Jet pt must be " << lepp4.Pt()/lep.lep_jet_ptratio() << endl;
   //for(auto ijet : jets) cout << "Jet pt = " << GetCorrectedJetCloseToLepton(lep,ijet).Pt() <<  " dR lep " << lep.DeltaR(ijet) <<endl;
@@ -3391,7 +3408,7 @@ double  AnalyzerCore::JetLeptonPtRatioLepAware( Electron lep,  bool removeLep, b
 
   std::vector<Jet> jets = GetAllJets(ApplyCorr);
 
-  float mindR=0.4;
+  double  mindR=0.4;
 
   Jet closejet;
   for(auto jet : jets){
@@ -3406,6 +3423,21 @@ double  AnalyzerCore::JetLeptonPtRatioLepAware( Electron lep,  bool removeLep, b
   if (mindR == 0.4) return -999.;
 
   if(removeLep)   return lepp4.Pt() / (closejet-lepp4).Pt();
+
+  if(closejet.Pt() == 0.) {
+    cout << "mindR = " << mindR<< endl;
+
+    cout << "[JetLeptonPtRatioLepAware( Electron lep,  bool removeLep, bool ApplyCorr] 0 Jet pt" <<  endl;
+    cout << "Number of jets = " << jets.size() << endl;
+    for(auto jet : jets){
+      cout << "Jet pt = " << jet.Pt() << " dR = " << lep.DeltaR(jet) << endl;
+      Jet closejet2 = GetCorrectedJetCloseToLepton(lep,jet);
+      cout << "GetCorrectedJetCloseToLepton(lep,jet) pt = " << closejet2.Pt() << endl;
+    }
+
+
+    exit(EXIT_FAILURE);
+  }
 
   return lepp4.Pt() / closejet.Pt();
 
@@ -3830,7 +3862,7 @@ int AnalyzerCore::GetPrElType_InSameSCRange_Public(int TruthIdx, const std::vect
   if(abs(TruthColl.at(TruthIdx).PID())!=11) return false;
   if(TruthColl.at(TruthIdx).Status()!=1) return false;
 
-  float dPhiMax=0.3, dEtaMax=0.1;
+  double dPhiMax=0.3, dEtaMax=0.1;
   int NearbyElType=-1;
 
   for(unsigned int it_gen=2; it_gen<TruthColl.size(); it_gen++){
@@ -4571,7 +4603,7 @@ int AnalyzerCore::GetPrElType_InSameSCRange(int TruthIdx, std::vector<Gen>& Trut
   if(abs(TruthColl.at(TruthIdx).PID())!=11) return 0;
   if(TruthColl.at(TruthIdx).Status()!=1) return 0;
 
-  float dPhiMax=0.3, dEtaMax=0.1;
+  double dPhiMax=0.3, dEtaMax=0.1;
   int NearbyElType=-1, NearbyPrElIdx=-1;
 
   for(unsigned int it_gen=2; it_gen<TruthColl.size(); it_gen++){
@@ -4785,7 +4817,7 @@ int AnalyzerCore::GenMatchedIdx(const Lepton& Lep, std::vector<Gen>& truthColl){
   //Seed from RecoLepton
 
   int MatchedIdx=-1, PIDLep=0;
-  float dR=999., dRmax=0.1;
+  double dR=999., dRmax=0.1;
 
   if(Lep.LeptonFlavour()==Lepton::ELECTRON) PIDLep = 11;
   else if(Lep.LeptonFlavour()==Lepton::MUON) PIDLep = 13;
@@ -4811,9 +4843,9 @@ int AnalyzerCore::GetNearPhotonIdx(const Lepton& Lep, std::vector<Gen>& TruthCol
   // Return gen-photon index, which are candidate for source of external conversion. 1)
 
   int NearPhotonIdx=-1;
-  float PTthreshold=10., dPtRelmax=0.5;//2)
-  float dRmax=0.2;//3)
-  float dRmin=999.;
+  double PTthreshold=10., dPtRelmax=0.5;//2)
+  double dRmax=0.2;//3)
+  double dRmin=999.;
   for(unsigned int i=2; i<TruthColl.size(); i++){
     if( TruthColl.at(i).MotherIndex()<0   ) continue;
     if( !(TruthColl.at(i).PID()==22 && (TruthColl.at(i).Status()==1 || TruthColl.at(i).Status()==23)) ) continue;
