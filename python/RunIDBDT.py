@@ -17,17 +17,18 @@ parser.add_argument('-c', dest='Channel', default="EE")
 parser.add_argument('-ns', dest='SignalMode', default=2, type=int)
 parser.add_argument('-nt', dest='NTree', default=850, type=int)
 parser.add_argument('-Nrom', dest='NormMode', default="NumEvents")
-parser.add_argument('-MinNodeSize', dest='MinNodeSize', default="1.5")
+parser.add_argument('-MinNodeSize', dest='MinNodeSize', default="2.5")
 parser.add_argument('-MaxDepth', dest='MaxDepth', default="3")
 parser.add_argument('-ncut', dest='NCut', default="200")
+parser.add_argument('-AdaBoostBeta', dest='AdaBoostBeta', default="0.5")
 parser.add_argument('--IgnoreNE', action='store_true')
 parser.add_argument('-t', dest='Tag', default="Default")
 parser.add_argument('-o', dest='Outputdir', default="")
 parser.add_argument('-q', dest='Queue', default="fastq")
 parser.add_argument('-e', dest='Era', default="Run2",help="2016preVFP(2016a), 2016postVFP(2016b), 2017, 2018, Run2")
-parser.add_argument('--nmax', dest='NMax', default=100, type=int, help="maximum running jobs")
+parser.add_argument('--nmax', dest='NMax', default=2, type=int, help="maximum running jobs")
 parser.add_argument('--reduction', dest='Reduction', default=1, type=float)
-parser.add_argument('--memory', dest='Memory', default=0, type=float)
+parser.add_argument('--memory', dest='Memory', default=24000, type=float)
 parser.add_argument('--batchname',dest='BatchName', default="")
 args = parser.parse_args()
 
@@ -125,7 +126,7 @@ webdirname = timestamp+"_"+str_RandomNumber
 
 ## Define MasterJobDir
 
-MasterJobDir = BDTRunlogDir+'/'+timestamp+'__'+str_RandomNumber+"__"+args.Analyzer+'__'+'Era'+args.Era+"__"+args.Channel + '__'+str(args.SignalMode) +'__'+ str(args.NTree)+'__'+ str(args.NormMode)+'__'+ str(args.MinNodeSize) +'__'+ str(args.MaxDepth)  +'__'+ str(args.NCut) 
+MasterJobDir = BDTRunlogDir+'/'+timestamp+'__'+str_RandomNumber+"__"+args.Analyzer+'__'+'Era'+args.Era+"__"+args.Channel + '__'+str(args.SignalMode) +'__'+ str(args.NTree)+'__'+ str(args.NormMode)+'__'+ str(args.MinNodeSize) +'__'+ str(args.MaxDepth)  +'__'+ str(args.NCut+ '__' + str(args.AdaBoostBeta)) 
 if args.IgnoreNE:
   MasterJobDir += '__IgnoreNegEvents'
 MasterJobDir += '__'+HOSTNAME+'/'
@@ -159,10 +160,11 @@ for TMVADir in TMVADirs:
   base_rundir = MasterJobDir+"/"+args.Tag
   os.mkdir(base_rundir)
   macroname = args.Analyzer+".C"
-  submitMacro = args.Analyzer+".C(\""+str(args.Channel)+"\", "+str(args.SignalMode)+", \""+str(args.NTree)+"\" , \""+str(args.NormMode)+"\",  \""+str(args.MinNodeSize)+"\",  \""+str(args.MaxDepth)+"\", \""+str(args.NCut)+"\",false)"
+  submitMacro = args.Analyzer+".C(\""+str(args.Era)+"\",\""+str(args.Channel)+"\", "+str(args.SignalMode)+", \""+str(args.NTree)+"\" , \""+str(args.NormMode)+"\",  \""+str(args.MinNodeSize)+"\",  \""+str(args.MaxDepth)+"\", \""+str(args.NCut)+"\",  \""+str(args.AdaBoostBeta)+"\",false)"
   if args.IgnoreNE:
-    submitMacro = args.Analyzer+".C(\""+str(args.Channel)+"\", "+str(args.SignalMode)+", \""+str(args.NTree)+"\" , \""+str(args.NormMode)+"\",  \""+str(args.MinNodeSize)+"\",  \""+str(args.MaxDepth)+"\", \""+str(args.NCut)+"\",true)"
-  
+    submitMacro = args.Analyzer+".C(\""+str(args.Era)+"\",\""+str(args.Channel)+"\", "+str(args.SignalMode)+", \""+str(args.NTree)+"\" , \""+str(args.NormMode)+"\",  \""+str(args.MinNodeSize)+"\",  \""+str(args.MaxDepth)+"\", \""+str(args.NCut)+"\",  \""+str(args.AdaBoostBeta)+"\",true)"
+
+
   os.system('cp ' + TMVADir + '/'+ macroname+' ' + base_rundir)
 
   commandsfilename = args.Analyzer+'-'+args.Tag
@@ -170,9 +172,9 @@ for TMVADir in TMVADirs:
 
   signalName = "SignalMode_"+str(args.SignalMode)
 
-  outName = 'output_'+signalName+'_'+args.Channel+'__NTrees_'+ str(args.NTree)+'__NormMode_'+ str(args.NormMode)+'__MinNodeSize_'+ str(args.MinNodeSize) +'__MaxDepth_'+ str(args.MaxDepth) +'__NCut_'+ str(args.NCut) +'__BDT'
+  outName = 'output_'+signalName+'_'+args.Channel+'__NTrees_'+ str(args.NTree)+'__NormMode_'+ str(args.NormMode)+'__MinNodeSize_'+ str(args.MinNodeSize) +'__MaxDepth_'+ str(args.MaxDepth) +'__NCut_'+ str(args.NCut)  +'__AdaBoostBeta_'+ str(args.AdaBoostBeta) +'__BDT'
   if args.IgnoreNE:
-    outName = 'output_'+signalName+'_'+args.Channel+'__NTrees_'+ str(args.NTree)+'__NormMode_'+ str(args.NormMode)+'__MinNodeSize_'+ str(args.MinNodeSize) +'__MaxDepth_'+ str(args.MaxDepth) +'__NCut_'+ str(args.NCut) +'__IgnoreNegWeights__BDT'
+    outName = 'output_'+signalName+'_'+args.Channel+'__NTrees_'+ str(args.NTree)+'__NormMode_'+ str(args.NormMode)+'__MinNodeSize_'+ str(args.MinNodeSize) +'__MaxDepth_'+ str(args.MaxDepth) +'__NCut_'+ str(args.NCut) +'__AdaBoostBeta_'+ str(args.AdaBoostBeta) +'__IgnoreNegWeights__BDT'
 
   print>>run_commands,'''#!/bin/bash
 SECTION=`printf $1`

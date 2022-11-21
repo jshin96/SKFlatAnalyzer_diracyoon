@@ -1,10 +1,10 @@
-void runIDBDT_HNtypeIConv(TString channel="EE",  int signal_mode=2, TString NTrees="800", TString NormMode="NumEvents", TString   MinNodeSize ="1.5", TString MaxDepth = "3", TString nCuts="200", bool IgnoreNegweights=true){
+void runIDBDT_HNtypeIConv(TString era="2017",TString channel="EE",  int signal_mode=1, TString NTrees="800", TString NormMode="NumEvents", TString   MinNodeSize ="1.5", TString MaxDepth = "3", TString nCuts="300", TString AdaBoosetBeta="0.5", bool IgnoreNegweights=true){
 
 
   TString NegWeights = (IgnoreNegweights)   ? ":IgnoreNegWeightsInTraining=True" : "";  
   TString NegWeightsString = (IgnoreNegweights)   ? "IgnoreNegWeightsInTraining" : "";
 
-  bool TESTMODE=true;
+  bool TESTMODE=false;
   int eta_mode=0;
 
   TString signal="";
@@ -14,7 +14,7 @@ void runIDBDT_HNtypeIConv(TString channel="EE",  int signal_mode=2, TString NTre
   if(signal_mode == 3 )signal = "DYTypeI_DF_M250_private";
   if(signal_mode == 4 )signal = "DYTypeI_DF_M1000_private";
 
-  TString era = "Run2", treeName = "";
+  TString treeName = "";
 
   TString Eta_mode_txt = TString::Itoa(eta_mode, 10);
 
@@ -30,12 +30,12 @@ void runIDBDT_HNtypeIConv(TString channel="EE",  int signal_mode=2, TString NTre
 
   TTree* tree_signal = (TTree*)fsin->Get(treeName);
   TTree* tree_bkg    = (TTree*)fbin->Get(treeName);
-  TString fout_name = ("Convoutput_"+signal+"TypeI_"+channel+"_"+signal+"_"+era+"_"+Eta_mode_txt+"_NTrees"+NTrees+"_NormMode_"+NormMode+"_MinNodeSize_"+MinNodeSize+"_MaxDepth_"+MaxDepth+"_nCuts_"+nCuts+"_"+NegWeightsString+"_BDT.root");
+  TString fout_name = ("Convoutput_"+signal+"TypeI_"+channel+"_"+signal+"_"+era+"_"+Eta_mode_txt+"_NTrees"+NTrees+"_NormMode_"+NormMode+"_MinNodeSize_"+MinNodeSize+"_MaxDepth_"+MaxDepth+"_nCuts_"+nCuts+"_AdaBoosetBeta_"+AdaBoosetBeta+"_"+NegWeightsString+"_BDT.root");
 
   TFile* fout = TFile::Open(fout_name, "RECREATE");
   
 
-  TMVA::Factory* factory = new TMVA::Factory("Conv_"+signal+"TypeI_"+channel+"_"+signal+"_"+era+"_"+Eta_mode_txt+"_NTrees"+NTrees+"_NormMode_"+NormMode+ "_MinNodeSize_"+MinNodeSize+"_MaxDepth_"+MaxDepth+"_nCuts_"+nCuts+"_"+NegWeightsString+"_TMVAClassification", fout,   "!V:!Silent:Color:DrawProgressBar:Transformations=I:AnalysisType=Classification");
+  TMVA::Factory* factory = new TMVA::Factory("Conv_"+signal+"TypeI_"+channel+"_"+signal+"_"+era+"_"+Eta_mode_txt+"_NTrees"+NTrees+"_NormMode_"+NormMode+ "_MinNodeSize_"+MinNodeSize+"_MaxDepth_"+MaxDepth+"_nCuts_"+nCuts+"_AdaBoosetBeta_"+AdaBoosetBeta+"_"+NegWeightsString+"_TMVAClassification", fout,   "!V:!Silent:Color:DrawProgressBar:Transformations=I:AnalysisType=Classification");
 
 
   TMVA::DataLoader* data_loader = new TMVA::DataLoader("dataset");
@@ -44,7 +44,7 @@ void runIDBDT_HNtypeIConv(TString channel="EE",  int signal_mode=2, TString NTre
   data_loader->AddVariable("Eta", "Eta", "units", 'F');
 
   data_loader->AddVariable("MiniIsoChHad", "MiniIsoChHad", "units", 'F'); 
-      data_loader->AddVariable("MiniIsoNHad", "MiniIsoNHad", "units", 'F'); 
+  data_loader->AddVariable("MiniIsoNHad", "MiniIsoNHad", "units", 'F'); 
   data_loader->AddVariable("MiniIsoPhHad", "MiniIsoPhHad", "units", 'F');
 
   data_loader->AddVariable("RelMiniIsoCh", "RelMiniIsoCh", "units", 'F');
@@ -71,12 +71,7 @@ void runIDBDT_HNtypeIConv(TString channel="EE",  int signal_mode=2, TString NTre
   if(channel == "EE")  data_loader->AddVariable("RelMVA",  "RelMVA", "units", 'F');       
 
   data_loader->AddVariable("PtRatio",  "PtRatio", "units", 'F');
-  data_loader->AddVariable("PtRatioCorr",  "PtRatioCorr", "units", 'F');
   data_loader->AddVariable("PtRel",  "PtRel", "units", 'F');
-  data_loader->AddVariable("PtRelCorr",  "PtRelCorr", "units", 'F');
-  //data_loader->AddVariable("JetNTrk",  "JetNTrk", "units", 'F');
-  //data_loader->AddVariable("JetNMVATrk",  "JetNMVATrk", "units", 'F');
-  data_loader->AddVariable("PileupJetId",  "PileupJetId", "units", 'F');
  
   data_loader->AddVariable("CEMFracCJ","CEMFracCJ", "units", 'F');
   data_loader->AddVariable("NEMFracCJ","NEMFracCJ", "units", 'F');
@@ -142,10 +137,10 @@ void runIDBDT_HNtypeIConv(TString channel="EE",  int signal_mode=2, TString NTre
     data_loader->AddVariable("EtaWidth",  "EtaWidth", "units", 'F');
     data_loader->AddVariable("PhiWidth",  "PhiWidth", "units", 'F');
 
-}
+  }
   
   
-
+  
   data_loader->AddSpectator("w_tot", "w_tot", "units", 'F');          
 
   data_loader->AddSignalTree(tree_signal, 1.);
@@ -156,37 +151,24 @@ void runIDBDT_HNtypeIConv(TString channel="EE",  int signal_mode=2, TString NTre
   TCut cut_s = "";
   TCut cut_b = "";
 
-  if(eta_mode==1){
-    cut_s = "(Eta<0.8)";
-    cut_b = "(Eta<0.8)";
-  }
-  if(eta_mode==2){
-    cut_s = "(Eta<1.5&&Eta>0.8)";
-    cut_b = "(Eta<1.5&&Eta>0.8)";
-  }
-  if(eta_mode==3){
-    cut_s = "(Eta>1.5)";
-    cut_b = "(Eta>1.5)";
-  }
-
 
   int n_train_signal = tree_signal->GetEntries(cut_s)/2;
   int n_train_back = tree_bkg->GetEntries(cut_b)/2;
-  if(TESTMODE) {
-    n_train_signal = 10000;
-    n_train_back = 10000;
-  }
 
+  //if(TESTMODE){                                                                                                                                                                                                                                                       
+  //n_train_signal = 1500000;
+  //n_train_back = 1500000;
 
+  int n_test_signal = 0;
+  int n_test_back= 0;
 
-
-  data_loader->PrepareTrainingAndTestTree(cut_s, cut_b,   Form("nTrain_Signal=%d:nTrain_Background=%d:nTest_Signal=%d:nTest_Background=%d:SplitMode=Random:NormMode="+NormMode+":V", n_train_signal, n_train_back, n_train_signal, n_train_back));
+  data_loader->PrepareTrainingAndTestTree(cut_s, cut_b,   Form("nTrain_Signal=%d:nTrain_Background=%d:nTest_Signal=%d:nTest_Background=%d:SplitMode=Random:NormMode="+NormMode+":V", n_train_signal, n_train_back, n_test_signal, n_test_back));
 
   
   //==== Adaptive Boost
   
   factory->BookMethod( data_loader,TMVA::Types::kBDT, "BDT",
-                       "!H:!V:NTrees="+NTrees+":MinNodeSize="+MinNodeSize+"%:MaxDepth="+MaxDepth+":BoostType=AdaBoost:SeparationType=GiniIndex:nCuts="+nCuts+":PruneMethod=NoPruning"+NegWeights ); 
+                       "!H:!V:NTrees="+NTrees+":MinNodeSize="+MinNodeSize+"%:MaxDepth="+MaxDepth+":BoostType=AdaBoost:SeparationType=GiniIndex:nCuts="+nCuts+":BoostType=AdaBoost:AdaBoostBeta="+AdaBoosetBeta+":PruneMethod=NoPruning"+NegWeights ); 
 
 
   //==== Gradient Boost

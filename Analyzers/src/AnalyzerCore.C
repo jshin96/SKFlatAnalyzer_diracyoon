@@ -3375,8 +3375,7 @@ double  AnalyzerCore::JetLeptonPtRatioLepAware(Muon lep, bool removeLep, bool Ap
   
   if (mindR == 0.4) {
     
-    cout << "Muon pt " << lep.Pt() << "  NO close jet" << endl;
-    return -999.;
+    return std::min(1./ (1. + lep.RelIso()), 1.5);
   }
 
   
@@ -3397,9 +3396,9 @@ double  AnalyzerCore::JetLeptonPtRatioLepAware(Muon lep, bool removeLep, bool Ap
   //cout << "JetLeptonPtRatioLepAware " <<  (lepp4.Pt() / closejet.Pt()) << " vs  " << lep.lep_jet_ptratio() << " vs " << lep.lep_jet_ptratioDef() << endl;
   //cout << "Jet pt must be " << lepp4.Pt()/lep.lep_jet_ptratio() << endl;
   //for(auto ijet : jets) cout << "Jet pt = " << GetCorrectedJetCloseToLepton(lep,ijet).Pt() <<  " dR lep " << lep.DeltaR(ijet) <<endl;
-  if(removeLep)   return lepp4.Pt() / (closejet-lepp4).Pt();
+  if(removeLep)   return std::min(lepp4.Pt() / (closejet-lepp4).Pt(),1.5);
 
-  return lepp4.Pt() / closejet.Pt(); 
+  return std::min(lepp4.Pt() / closejet.Pt(),1.5); 
 
 }
 
@@ -3420,9 +3419,11 @@ double  AnalyzerCore::JetLeptonPtRatioLepAware( Electron lep,  bool removeLep, b
 
   Particle lepp4 = lep;
 
-  if (mindR == 0.4) return -999.;
+  if (mindR == 0.4)    return std::min(1./ (1. + lep.RelIso()), 1.5);
 
-  if(removeLep)   return lepp4.Pt() / (closejet-lepp4).Pt();
+
+
+  if(removeLep)   return std::min(lepp4.Pt() / (closejet-lepp4).Pt(),  1.5);
 
   if(closejet.Pt() == 0.) {
     cout << "mindR = " << mindR<< endl;
@@ -3439,7 +3440,7 @@ double  AnalyzerCore::JetLeptonPtRatioLepAware( Electron lep,  bool removeLep, b
     exit(EXIT_FAILURE);
   }
 
-  return lepp4.Pt() / closejet.Pt();
+  return std::min(lepp4.Pt() / closejet.Pt(), 1.5);
 
 }
 

@@ -16,6 +16,8 @@ void HNL_LepIDKinVar::initializeAnalyzer(){
   tree_ee->Branch("Pt", &Pt, "Pt/F");
   tree_mm->Branch("Eta", &Eta, "Eta/F");
   tree_ee->Branch("Eta", &Eta, "Eta/F");
+  tree_ee->Branch("PileUp", &PileUp, "PileUp/F");
+  tree_mm->Branch("PileUp", &PileUp, "PileUp/F");
 
   tree_mm->Branch("MiniIsoChHad", &MiniIsoChHad, "MiniIsoChHad/F"); 
   tree_ee->Branch("MiniIsoChHad", &MiniIsoChHad, "MiniIsoChHad/F");
@@ -301,7 +303,7 @@ void HNL_LepIDKinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Le
 
     Pt    = lep->Pt();
     Eta   = fabs(lep->Eta());
-
+    PileUp = nPileUp;
     MiniIsoChHad = lep->MiniIsoChHad();
     MiniIsoNHad = lep->MiniIsoNHad();
     MiniIsoPhHad = lep->MiniIsoPhHad();
@@ -451,14 +453,15 @@ void HNL_LepIDKinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Le
       PileupJetId   = JetAllColl.at(IdxMatchJet).PileupJetId();
     }
     else{
-      PtRatio = 1/(1.+lep->RelIso());
-      PtRatioNoLep  = 1/(1.+lep->RelIso());
-      PtRatioCorr  = 1/(1.+lep->RelIso());
+      PtRatio = min(1/(1.+lep->RelIso()), 1.5);
+      PtRatioNoLep  = min(1/(1.+lep->RelIso()),1.5);
+      PtRatioCorr  = min(1/(1.+lep->RelIso()),1.5);
       PtRel=0, PtRelWithLep=0, PtRelCorr=0;
       
-      CEMFracCJ=-1., NEMFracCJ=-1., CHFracCJ=-1., NHFracCJ=-1., MuFracCJ=-1., JetDiscCJ=-1.,PileupJetId=-1;
+      CEMFracCJ=0, NEMFracCJ=0., CHFracCJ=0., NHFracCJ=0., MuFracCJ=0., JetDiscCJ=0.,PileupJetId=-1;
       
     }
+    
 
     if(lep->LeptonFlavour() == Lepton::ELECTRON) cout <<  "Fill electron " << endl;
     w_tot     = !IsDATA? weight: 1.;
@@ -487,6 +490,7 @@ void HNL_LepIDKinVar::InitializeTreeVars(){
   PtRatioNoLep=-1.; PtRatio=-1,  PtRel=-1, PtRelWithLep=-1, PtRatioCorr=-1, PtRelCorr=-1;
   CEMFracCJ=-1, NEMFracCJ=-1, CHFracCJ=-1, NHFracCJ=-1, MuFracCJ=-1, JetDiscCJ=-1,JetNTrk =-1,PileupJetId=-1,JetNMVATrk=-1;
 
+  PileUp = -1;
   MiniIsoChHad=-1;
   MiniIsoNHad=-1;
   MiniIsoPhHad=-1;

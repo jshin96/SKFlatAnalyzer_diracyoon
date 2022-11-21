@@ -26,7 +26,7 @@ parser.add_argument('-q', dest='Queue', default="fastq")
 parser.add_argument('-e', dest='Era', default="2017",help="2016preVFP(2016a), 2016postVFP(2016b), 2017, 2018")
 parser.add_argument('--nmax', dest='NMax', default=50, type=int, help="maximum running jobs")
 parser.add_argument('--reduction', dest='Reduction', default=1, type=float)
-parser.add_argument('--memory', dest='Memory', default=0, type=float)
+parser.add_argument('--memory', dest='Memory', default=24000, type=float)
 parser.add_argument('--batchname',dest='BatchName', default="")
 args = parser.parse_args()
 
