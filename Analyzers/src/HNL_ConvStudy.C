@@ -21,16 +21,17 @@ void HNL_ConvStudy::executeEvent(){
   if(runDebug){
     cout << "------------------------------" << endl;
     cout << "New Event " << endl;
-  }
-
-  for(unsigned int i=2; i<gens.size(); i++){
-    Gen gen = gens.at(i);
-
-    if(gen.PID() == 22){
-      if(runDebug)cout << gen.isPromptFinalState() << " " << gen.Status() << "  pt = " << gen.Pt() << " " << gen.Eta() << " " << gen.Phi() << endl;
-    }
-    if(fabs(gen.PID()) == 11 || fabs(gen.PID()) ==13){
-      if(runDebug)cout << " Lep " << gen.PID() << " pt = " << gen.Pt() << " " << gen.Eta() << " " << gen.Phi() << endl; 
+    
+    
+    for(unsigned int i=2; i<gens.size(); i++){
+      Gen gen = gens.at(i);
+      
+      if(gen.PID() == 22){
+	if(runDebug)cout << gen.isPromptFinalState() << " " << gen.Status() << "  pt = " << gen.Pt() << " " << gen.Eta() << " " << gen.Phi() << endl;
+      }
+      if(fabs(gen.PID()) == 11 || fabs(gen.PID()) ==13){
+	if(runDebug)cout << " Lep " << gen.PID() << " pt = " << gen.Pt() << " " << gen.Eta() << " " << gen.Phi() << endl; 
+      }
     }
   }
   // HL ID                                                                                                                                                   
@@ -38,15 +39,16 @@ void HNL_ConvStudy::executeEvent(){
   std::vector<Muon>       MuonCollV     = GetMuons    ("NoCut", 10., 2.4);
   
   
-
-  for(auto iel : ElectronCollV) {
-    if(runDebug)cout << "Electron " << " " << iel.Pt() << " eta = " << iel.Eta() << " Type = " << GetLeptonType_JH(iel, gens) << endl;
+  if(runDebug){
+    
+    for(auto iel : ElectronCollV) {
+      if(runDebug)cout << "Electron " << " " << iel.Pt() << " eta = " << iel.Eta() << " Type = " << GetLeptonType_JH(iel, gens) << endl;
+    }
+    
+    for(auto iel : MuonCollV) {
+      if(runDebug)cout << "Muon " << " " << iel.Pt() << " eta = " << iel.Eta() << " Type = " << GetLeptonType_JH(iel, gens) << endl;
+    }
   }
-  
-  for(auto iel : MuonCollV) {
-    if(runDebug)cout << "Muon " << " " << iel.Pt() << " eta = " << iel.Eta() << " Type = " << GetLeptonType_JH(iel, gens) << endl;
-  }
-  
   
   TString PlotDir="Inclusive";
   
@@ -64,28 +66,37 @@ void HNL_ConvStudy::executeEvent(){
     float dRmax=0.2;//3)                                                                                                               
     float dRmin=999.;
     int NearPhotonIdx=-1;
+    int NearPhoton23Idx=-1;
     
     for(unsigned int i=2; i<gens.size(); i++){
+      Gen gen = gens[i];
       if( gens.at(i).MotherIndex()<0   ) continue;
+      //if( LepsV[ilep]->DeltaR(gens.at(i)) < 0.2) {
+      if(gens.at(i).PID()==22){
+	cout << event  << "\t" << gen.PID() << "\t" << gen.Status() << "\t" << gen.MotherIndex() << "\t" << gens.at(gen.MotherIndex()).PID()<< "  " <<  LepsV[ilep]->DeltaR(gens.at(i)) <<  "\t";
+	printf("%.2f\t%.2f\t%.2f\t%.2f\n",gen.Pt(), gen.Eta(), gen.Phi(), gen.M());
+	
+      }
       if( !(gens.at(i).PID()==22 && (gens.at(i).Status()==1 || gens.at(i).Status()==23)) ) continue;
       if( gens.at(i).Pt()<PTthreshold  ) continue;
       if( !(LepsV[ilep]->Pt()/gens.at(i).Pt()>(1.-dPtRelmax) && LepsV[ilep]->Pt()/gens.at(i).Pt()<(1.+dPtRelmax)) ) continue;
       if( LepsV[ilep]->DeltaR(gens.at(i))>dRmax ) continue;
+      if( gens.at(i).Status()==23) NearPhoton23Idx=i;
       if( gens.at(i).Status()==23 && !IsFinalPhotonSt23(gens) ) continue;//4)                                                          
-      if( LepsV[ilep]->DeltaR(gens.at(i))<dRmin ){ dRmin=LepsV[ilep]->DeltaR(gens.at(i)); NearPhotonIdx=i; }
+      if( LepsV[ilep]->DeltaR(gens.at(i))<dRmin ){ dRmin=LepsV[ilep]->DeltaR(gens.at(i)); NearPhotonIdx=i;}
     }
-    
-    cout << "----------------" <<endl;
-    cout << " Near " <<  SFlav << endl;
+   
     
     if(NearPhotonIdx>0) {
       double phPt= gens[NearPhotonIdx].Pt();
- 
-      FillHist( (PlotDir + SFlav+"/" + LepsV[ilep]->GetFlavour()+"_matched_photon_pt").Data(),phPt, weight, 1000, 0, 1000);
+      double phPtGen= gens[NearPhoton23Idx].Pt();
       
-      cout << " Near " <<  SFlav << " " << phPt << " lep pt =" <<  LepsV[ilep]->Pt() << endl;
+      FillHist( (PlotDir + SFlav+"/" + LepsV[ilep]->GetFlavour()+"_matched_FSphoton_pt").Data(),phPt, weight, 1000, 0, 1000);
+      FillHist( (PlotDir + SFlav+"/" + LepsV[ilep]->GetFlavour()+"_matched_photon_pt").Data(),phPtGen, weight, 1000, 0, 1000);
+      
+      if(phPt <  130) cout << " Near " << event << " " <<  SFlav << " " << phPt << " lep pt =" <<  LepsV[ilep]->Pt() << endl;
     }
-
+    return;
     
     for(unsigned int i=2; i<gens.size(); i++){
       Gen gen = gens.at(i);
@@ -99,8 +110,6 @@ void HNL_ConvStudy::executeEvent(){
     }
   }
 	  
-
-  return;
 
   TString el_ID = param.Electron_Tight_ID ;
   TString mu_ID = param.Muon_Tight_ID ;

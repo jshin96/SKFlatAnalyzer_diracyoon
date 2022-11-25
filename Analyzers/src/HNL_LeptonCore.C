@@ -193,6 +193,7 @@ void HNL_LeptonCore::initializeAnalyzer(){
   } 
 
   
+  //SetupIDMVAReader(false,BkgType::Fake,"");
   
   //if (Analyzer == "HNL_SignalRegionPlotter")SetupMVAReader();
   //if (Analyzer == "HNL_SignalLeptonOpt")SetupMVAReader();
@@ -217,6 +218,215 @@ bool HNL_LeptonCore::IsSignal(){
 
   if (MCSample.Contains("TypeI")) return true;
   return false;
+
+}
+double HNL_LeptonCore::ScaleLepToSS(){
+
+}
+
+double HNL_LeptonCore::MergeMultiMC(vector<TString> vec, TString Method){
+
+  // This function can be used to merge MC bkg with multiple samples
+  
+  if (std::count(vec.begin(), vec.end(), "DY")) {
+    if (MCSample.Contains("DYJet")){
+      return 0.5;
+    }
+  }
+  if (std::count(vec.begin(), vec.end(), "WG")) {
+    
+    if (MCSample.Contains("WGToLNuG")){
+      
+      int NearPhotonIdx=-1;
+      
+      for(unsigned int i=2; i<gens.size(); i++){
+	Gen gen = gens[i];
+	if( gens.at(i).MotherIndex()<0   ) continue;
+	if( !(gens.at(i).PID()==22 && (gens.at(i).Status()==23)) ) continue;
+	NearPhotonIdx=i;
+      }
+      if(NearPhotonIdx < 0) return 0;
+      
+      double phPt= gens[NearPhotonIdx].Pt();
+    
+      if(Method == "Split"){
+	if (MCSample == "WGToLNuG_01J_PtG_130"){
+	  if (phPt < 300) return 1.;
+	}
+	else if (MCSample == "WGToLNuG_01J_PtG_300"){
+	  if (phPt < 500) return 1.;
+	}
+	else if (MCSample == "WGToLNuG_01J_PtG_500"){
+	  return 1.;
+      }
+	else {
+	  if (phPt <= 130)  return 1.;
+	}
+      }
+      
+      if(Method.Contains("Combine")){
+	int nWG = (Method == "CombineAll") ? 2 : 1;
+	if (phPt < 130 ) return 1/nWG;
+	if (phPt < 300 ) return 1/(nWG+1);
+	if (phPt < 500 ) return 1/(nWG+2);
+	return 1/(nWG+3);
+      
+      }
+    }
+  }
+  
+  return 1.;
+}
+
+
+void HNL_LeptonCore::SetupIDMVAReader(bool isMuon){
+
+
+  if(isMuon)    InitializeMuonIDTreeVars();
+  else          InitializeElectronIDTreeVars();
+
+  if(isMuon){
+    
+    // Fake
+    MuonIDMVAReader->AddVariable("Pt", &Pt);
+    MuonIDMVAReader->AddVariable("Eta", &Eta);
+    MuonIDMVAReader->AddVariable("MiniIsoChHad", &MiniIsoChHad);
+    MuonIDMVAReader->AddVariable("MiniIsoNHad", &MiniIsoNHad);
+    MuonIDMVAReader->AddVariable("MiniIsoPhHad", &MiniIsoPhHad);
+    MuonIDMVAReader->AddVariable("RelMiniIsoCh", &RelMiniIsoCh);
+    MuonIDMVAReader->AddVariable("RelMiniIsoN", &RelMiniIsoN);
+    MuonIDMVAReader->AddVariable("IsoChHad", &IsoChHad); 
+    MuonIDMVAReader->AddVariable("IsoNHad", &IsoNHad); 
+    MuonIDMVAReader->AddVariable("IsoPhHad", &IsoPhHad);
+    MuonIDMVAReader->AddVariable("Dxy",  &Dxy);
+    MuonIDMVAReader->AddVariable("RelDxy",  &RelDxy);
+    MuonIDMVAReader->AddVariable("DxySig",  &DxySig);
+    MuonIDMVAReader->AddVariable("Dz",  &Dz);   
+    MuonIDMVAReader->AddVariable("RelDz",  &RelDz);   
+    MuonIDMVAReader->AddVariable("DzSig",  &DzSig);   
+    MuonIDMVAReader->AddVariable("RelIso", &RelIso); 
+    MuonIDMVAReader->AddVariable("IP3D", &IP3D);       
+    MuonIDMVAReader->AddVariable("RelIP3D", &RelIP3D);       
+    MuonIDMVAReader->AddVariable("PtRatio",  &PtRatio);
+    MuonIDMVAReader->AddVariable("PtRel",  &PtRel);
+    MuonIDMVAReader->AddVariable("CEMFracCJ",&CEMFracCJ);
+    MuonIDMVAReader->AddVariable("NEMFracCJ",&NEMFracCJ);
+    MuonIDMVAReader->AddVariable("CHFracCJ",&CHFracCJ);
+    MuonIDMVAReader->AddVariable("JetDiscCJ",&JetDiscCJ);
+    MuonIDMVAReader->AddVariable("NHFracCJ",&NHFracCJ);
+    MuonIDMVAReader->AddVariable("MuFracCJ",&MuFracCJ);
+    MuonIDMVAReader->AddVariable("Chi2", &Chi2);
+    MuonIDMVAReader->AddVariable("Validhits", &Validhits);
+    MuonIDMVAReader->AddVariable("Matched_stations", &Matched_stations);
+    MuonIDMVAReader->AddVariable("Pixel_hits",  &Pixel_hits);
+    MuonIDMVAReader->AddVariable("Minireliso",  &Minireliso);
+    MuonIDMVAReader->AddVariable("Tracker_layers",  &Tracker_layers);
+    MuonIDMVAReader->AddSpectator("w_tot", &w_tot);
+
+
+  }
+  else{
+    
+    ElectronIDMVAReader->AddVariable("Pt", &Pt);
+    ElectronIDMVAReader->AddVariable("Eta", &Eta);
+    ElectronIDMVAReader->AddVariable("MiniIsoChHad", &MiniIsoChHad);
+    ElectronIDMVAReader->AddVariable("MiniIsoNHad", &MiniIsoNHad);
+    ElectronIDMVAReader->AddVariable("MiniIsoPhHad", &MiniIsoPhHad);
+    ElectronIDMVAReader->AddVariable("RelMiniIsoCh", &RelMiniIsoCh);
+    ElectronIDMVAReader->AddVariable("RelMiniIsoN", &RelMiniIsoN);
+    ElectronIDMVAReader->AddVariable("IsoChHad", &IsoChHad);
+    ElectronIDMVAReader->AddVariable("IsoNHad", &IsoNHad);
+    ElectronIDMVAReader->AddVariable("IsoPhHad", &IsoPhHad);
+    ElectronIDMVAReader->AddVariable("Dxy",  &Dxy);
+    ElectronIDMVAReader->AddVariable("RelDxy",  &RelDxy);
+    ElectronIDMVAReader->AddVariable("DxySig",  &DxySig);
+    ElectronIDMVAReader->AddVariable("Dz",  &Dz);
+    ElectronIDMVAReader->AddVariable("RelDz",  &RelDz);
+    ElectronIDMVAReader->AddVariable("DzSig",  &DzSig);
+    ElectronIDMVAReader->AddVariable("RelIso", &RelIso);
+    ElectronIDMVAReader->AddVariable("IP3D", &IP3D);
+    ElectronIDMVAReader->AddVariable("RelIP3D", &RelIP3D);
+    ElectronIDMVAReader->AddVariable("PtRatio",  &PtRatio);
+    ElectronIDMVAReader->AddVariable("PtRel",  &PtRel);
+    ElectronIDMVAReader->AddVariable("CEMFracCJ",&CEMFracCJ);
+    ElectronIDMVAReader->AddVariable("NEMFracCJ",&NEMFracCJ);
+    ElectronIDMVAReader->AddVariable("CHFracCJ",&CHFracCJ);
+    ElectronIDMVAReader->AddVariable("JetDiscCJ",&JetDiscCJ);
+    ElectronIDMVAReader->AddVariable("NHFracCJ",&NHFracCJ);
+    ElectronIDMVAReader->AddVariable("MVA",  &MVA);
+    ElectronIDMVAReader->AddVariable("RelMVA",  &RelMVA);
+    ElectronIDMVAReader->AddVariable("MVAIso",  &MVAIso);
+    ElectronIDMVAReader->AddVariable("RelMVAIso",  &RelMVAIso);
+    ElectronIDMVAReader->AddVariable("Full5x5_sigmaIetaIeta",  &Full5x5_sigmaIetaIeta);
+    ElectronIDMVAReader->AddVariable("dEtaSeed",  &dEtaSeed);
+    ElectronIDMVAReader->AddVariable("dPhiIn",  &dPhiIn);
+    ElectronIDMVAReader->AddVariable("HoverE",  &HoverE);
+    ElectronIDMVAReader->AddVariable("EoverP",  &EoverP);
+    ElectronIDMVAReader->AddVariable("FBrem",  &FBrem);
+    ElectronIDMVAReader->AddVariable("R9",  &R9);
+    ElectronIDMVAReader->AddVariable("TrkIso",  &TrkIso);
+    ElectronIDMVAReader->AddVariable("dr03TkSumPt",  &dr03TkSumPt);
+    ElectronIDMVAReader->AddVariable("dr03HcalTowerSumEt",  &dr03HcalTowerSumEt);
+    ElectronIDMVAReader->AddVariable("dr03HcalDepth1TowerSumEt",  &dr03HcalDepth1TowerSumEt);
+    ElectronIDMVAReader->AddVariable("dr03EcalRecHitSumEt",  &dr03EcalRecHitSumEt);
+    ElectronIDMVAReader->AddVariable("e15",  &e15);
+    ElectronIDMVAReader->AddVariable("e25",  &e25);
+    ElectronIDMVAReader->AddVariable("e55",  &e55);
+    ElectronIDMVAReader->AddVariable("e2x5OverE5x5",  &e2x5OverE5x5);
+    ElectronIDMVAReader->AddVariable("e1x5OverE5x5",  &e1x5OverE5x5);
+    ElectronIDMVAReader->AddVariable("EtaWidth",  &EtaWidth);
+    ElectronIDMVAReader->AddVariable("PhiWidth",  &PhiWidth);
+    ElectronIDMVAReader->AddVariable("InvEminusInvP", &InvEminusInvP);
+    ElectronIDMVAReader->AddVariable("ecalPFClusterIso",  &ecalPFClusterIso);
+    ElectronIDMVAReader->AddVariable("hcalPFClusterIso", &hcalPFClusterIso);
+    ElectronIDMVAReader->AddVariable("MissingHits",  &MissingHits);
+    ElectronIDMVAReader->AddVariable("isEcalDriven", &isEcalDriven);
+    ElectronIDMVAReader->AddVariable("PassConversionVeto",  &PassConversionVeto);
+    ElectronIDMVAReader->AddVariable("IsGsfCtfScPixChargeConsistent",  &IsGsfCtfScPixChargeConsistent);
+    ElectronIDMVAReader->AddVariable("IsGsfScPixChargeConsistent",  &IsGsfScPixChargeConsistent);
+    ElectronIDMVAReader->AddVariable("IsGsfCtfChargeConsistent",  &IsGsfCtfChargeConsistent);
+
+    ElectronIDMVAReader->AddSpectator("w_tot", &w_tot);
+
+
+  }
+  
+  TString AnalyzerPath=std::getenv("SKFlat_WD");
+  TString MVAPath="/data/Run2UltraLegacy_v3/2017/BDTClassifier/ID/results_xml/";
+
+  if(isMuon){
+    TString FileName ="BDTA_FakeSignalAllTypeI_MuMu_SignalAll_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_AdaBoostBeta_0.5_BDT_TMVAClassification_BDT.weights.xml";
+    TString MVATagStr = "BDTA_MuonFake";
+    
+    MuonIDMVAReader->BookMVA(MVATagStr, AnalyzerPath+MVAPath+FileName);
+    
+    TString FileName2 = "BDTA_ConvSignalAllTypeI_MuMu_SignalAll_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_AdaBoostBeta_0.5_BDT_TMVAClassification_BDT.weights.xml";
+    TString MVATagStr2 = "BDTA_MuonConv";
+    
+    MuonIDMVAReader->BookMVA(MVATagStr2, AnalyzerPath+MVAPath+FileName2);
+    
+  }
+  else{
+    
+    TString EEFileName = "BDTA_FakeSignalAllTypeI_EE_SignalAll_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_AdaBoostBeta_0.5_BDT_TMVAClassification_BDT.weights.xml";
+    TString EEMVATagStr = "BDTA_ElFake";
+    
+    ElectronIDMVAReader->BookMVA(EEMVATagStr, AnalyzerPath+MVAPath+EEFileName);
+    
+    TString EEFileName2 = "BDTA_ConvSignalAllTypeI_EE_SignalAll_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_AdaBoostBeta_0.5_BDT_TMVAClassification_BDT.weights.xml";
+    TString EEMVATagStr2 = "BDTA_ElConv";
+
+    ElectronIDMVAReader->BookMVA(EEMVATagStr2, AnalyzerPath+MVAPath+EEFileName2);
+    
+    TString EEFileName3 = "BDTA_CFSignalAllTypeI_EE_SignalAll_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_AdaBoostBeta_0.5_BDT_TMVAClassification_BDT.weights.xml";
+    TString EEMVATagStr3 = "BDTA_ElCF";
+    
+    ElectronIDMVAReader->BookMVA(EEMVATagStr3, AnalyzerPath+MVAPath+EEFileName3);
+  }
+
+
+  return;
+  
 
 }
 
@@ -270,8 +480,222 @@ void HNL_LeptonCore::SetupMVAReader(){
     }
   }
 
+  return;
+}
+
+
+
+void HNL_LeptonCore::SetBDTIDVar(Lepton*  lep){
 
   
+  Pt    = lep->Pt();
+  Eta   = fabs(lep->Eta());
+  MiniIsoChHad = lep->MiniIsoChHad();
+  MiniIsoNHad = lep->MiniIsoNHad();
+  MiniIsoPhHad = lep->MiniIsoPhHad();
+  IsoChHad = lep->IsoChHad();
+  IsoNHad = lep->IsoNHad();
+  IsoPhHad = lep->IsoPhHad();
+
+
+  Dxy   = lep->LogdXY();
+  RelDxy   = lep->LogdXY()/lep->Pt();
+
+  DxySig   = lep->LogdXYSig();
+  Dz   = lep->LogdZ();
+  RelDz   = lep->LogdZ()/lep->Pt();
+  DzSig   = lep->LogdZSig();
+
+  IP3D    = lep->SIP3D();
+  RelIP3D    = lep->SIP3D()/lep->Pt();
+  RelIso    =  lep->RelIso();
+
+  Minireliso   = lep->MiniRelIso();
+  RelMiniIsoCh = lep->MiniRelIsoCharged();
+  RelMiniIsoN = lep->MiniRelIsoNeutral();
+
+
+  //==== Vars for non-prompt lepton bkg                                                                                                                                                                                                                                                                     
+  int IdxMatchJet=-1;
+  float mindR1=999.;
+  std::vector<Jet>   JetAllColl = GetJets("NoID", 10., 5.0);
+
+  for(unsigned int ij=0; ij<JetAllColl.size(); ij++){
+    float dR1=lep->DeltaR(JetAllColl.at(ij));
+    if(dR1>0.4) continue;
+    if(dR1<mindR1){ mindR1=dR1; IdxMatchJet=ij; }
+  }
+
+  if(IdxMatchJet!=-1){
+
+    CEMFracCJ = JetAllColl.at(IdxMatchJet).ChargedEmEnergyFraction();
+    NEMFracCJ = JetAllColl.at(IdxMatchJet).NeutralEmEnergyFraction();
+    CHFracCJ  = JetAllColl.at(IdxMatchJet).ChargedHadEnergyFraction();
+    NHFracCJ  = JetAllColl.at(IdxMatchJet).NeutralHadEnergyFraction();
+    MuFracCJ  = JetAllColl.at(IdxMatchJet).MuonEnergyFraction();
+    JetDiscCJ = JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet);
+  }
+
+  else{
+    CEMFracCJ=0, NEMFracCJ=0., CHFracCJ=0., NHFracCJ=0., MuFracCJ=0., JetDiscCJ=0.;
+  }
+  
+  return;
+}
+
+
+double HNL_LeptonCore::GetBDTScoreMuon(Muon mu ,BkgType bkg){
+
+  InitializeMuonIDTreeVars();
+
+  std::vector<Jet>   JetAllColl = GetJets("NoID", 10., 5.0);
+
+  Lepton *lep = (Lepton *)(&mu);
+  SetBDTIDVar(lep);
+
+  //==== Vars for non-prompt lepton bkg                                                                                                                                                                                                                                                                                       
+  int IdxMatchJet=-1;
+  float mindR1=999.;
+
+  for(unsigned int ij=0; ij<JetAllColl.size(); ij++){
+    float dR1=lep->DeltaR(JetAllColl.at(ij));
+    if(dR1>0.4) continue;
+    if(dR1<mindR1){ mindR1=dR1; IdxMatchJet=ij; }
+  }
+
+  if(IdxMatchJet!=-1){
+    PtRatio=JetLeptonPtRatioLepAware(mu,false);
+    PtRel=JetLeptonPtRelLepAware(mu,true);
+  }
+
+  else{
+    PtRatio = min(1/(1.+lep->RelIso()), 1.5);
+    PtRel=0, PtRelWithLep=0, PtRelCorr=0;
+  }
+
+  TString MVATagStr = "BDTA_MuFake";
+  if (bkg == BkgType::Fake)   return  MuonIDMVAReader->EvaluateMVA(MVATagStr);
+
+  MVATagStr = "BDTA_MuConv";
+  if (bkg == BkgType::Conv)  return  MuonIDMVAReader->EvaluateMVA(MVATagStr);
+
+  return -999;
+}
+
+
+double HNL_LeptonCore::GetBDTScoreEl(Electron el ,BkgType bkg){
+
+  InitializeElectronIDTreeVars();
+
+  std::vector<Jet>   JetAllColl = GetJets("NoID", 10., 5.0);
+
+  Lepton *lep = (Lepton *)(&el);
+  SetBDTIDVar(lep);
+
+  MVA    = el.MVANoIsoResponse();
+  MVAIso    = el.MVAIsoResponse();
+  RelMVA    = el.MVANoIsoResponse()/lep->Pt();
+  RelMVAIso    = el.MVAIsoResponse()/lep->Pt();
+  MissingHits = el.NMissingHits();
+  Full5x5_sigmaIetaIeta  = el.Full5x5_sigmaIetaIeta();
+  sigmaIetaIeta  = el.sigmaIetaIeta();
+  dEtaSeed  = el.dEtaSeed();
+  dPhiIn  = el.dPhiIn();
+  dEtaIn  = el.dEtaIn();
+  EtaWidth = el.EtaWidth();
+  PhiWidth = el.PhiWidth();
+  e2x5OverE5x5 = el.e2x5OverE5x5();
+  e1x5OverE5x5= el.e1x5OverE5x5();
+  e15= el.e15();
+  e25= el.e25();
+  e55= el.e55();
+  dr03EcalRecHitSumEt= el.dr03EcalRecHitSumEt()/el.UncorrPt();
+  dr03HcalDepth1TowerSumEt= el.dr03HcalDepth1TowerSumEt()/el.UncorrPt();
+  dr03HcalTowerSumEt= el.dr03HcalTowerSumEt()/el.UncorrPt();
+  dr03TkSumPt= el.dr03TkSumPt()/el.UncorrPt();
+  R9= el.R9();
+  HoverE  = el.HoverE();
+  Rho     = el.Rho();
+  TrkIso  = el.TrkIso()/el.UncorrPt();
+  InvEminusInvP = fabs(el.InvEminusInvP());
+  ecalPFClusterIso = el.ecalPFClusterIso()/el.UncorrPt();
+  hcalPFClusterIso = el.hcalPFClusterIso()/el.UncorrPt();
+  isEcalDriven = el.isEcalDriven();
+  EoverP = log(el.EOverP());
+  FBrem = el.FBrem();
+  PassConversionVeto  = (el.PassConversionVeto()) ? 1 : 0;
+  IsGsfCtfScPixChargeConsistent  = (el.IsGsfCtfScPixChargeConsistent()) ? 1 : 0;
+  IsGsfScPixChargeConsistent  = (el.IsGsfScPixChargeConsistent()) ? 1 : 0;
+  IsGsfCtfChargeConsistent  = (el.IsGsfCtfChargeConsistent()) ? 1 : 0;
+
+
+  //==== Vars for non-prompt lepton bkg                                                                                                                                                                          
+  int IdxMatchJet=-1;
+  float mindR1=999.;
+
+  for(unsigned int ij=0; ij<JetAllColl.size(); ij++){
+    float dR1=lep->DeltaR(JetAllColl.at(ij));
+    if(dR1>0.4) continue;
+    if(dR1<mindR1){ mindR1=dR1; IdxMatchJet=ij; }
+  }
+
+
+
+  if(IdxMatchJet!=-1){
+    PtRatio=JetLeptonPtRatioLepAware(el,false);
+    PtRel=JetLeptonPtRelLepAware(el,true);
+    }
+  
+  else{
+    PtRatio = min(1/(1.+lep->RelIso()), 1.5);
+    PtRel=0, PtRelWithLep=0, PtRelCorr=0;
+  }
+
+  TString MVATagStr = "BDTA_ElFake";
+  if (bkg == BkgType::Fake)   return  ElectronIDMVAReader->EvaluateMVA(MVATagStr);
+  
+  MVATagStr = "BDTA_ElConv";
+  if (bkg == BkgType::Conv)  return  ElectronIDMVAReader->EvaluateMVA(MVATagStr);
+  
+  MVATagStr = "BDTA_ElCF";
+  if (bkg == BkgType::CF)  return  ElectronIDMVAReader->EvaluateMVA(MVATagStr);
+
+  return -999;
+
+}
+
+
+void HNL_LeptonCore::InitializeMuonIDTreeVars(){
+
+   Pt=-1,  Eta=-1;
+   PtRatio=-1,PtRatioNoLep=-1, PtRatioAJ=-1, PtRel=-1, PtRelWithLep=-1,PtRatioCorr=-1,PtRelCorr=-1;
+   CEMFracAJ=-1, NEMFracAJ=-1, CHFracAJ=-1, NHFracAJ=-1,MuFracAJ=-1, JetDiscAJ=-1;
+   CEMFracCJ=-1, NEMFracCJ=-1, CHFracCJ=-1, NHFracCJ=-1, MuFracCJ=-1, JetDiscCJ=-1;
+   Dxy=-1,Dz=-1,DxySig=-1, DzSig=-1, RelIso=-1,IP3D=-1,MVA=-1,MVAIso=-1,Chi2=-1, Minireliso=-1;
+   Full5x5_sigmaIetaIeta=-1,dEtaSeed=-1,dPhiIn=-1,HoverE=-1,Rho=-1,TrkIso=-1,InvEminusInvP=-1,ecalPFClusterIso=-1,hcalPFClusterIso=-1;
+   RelDxy=-1,RelDz=-1,RelIP3D=-1,RelMVA=-1,RelMVAIso=-1,PileUp=-1;
+   R9=-1,dr03TkSumPt=-1,dr03HcalTowerSumEt=-1,dr03HcalDepth1TowerSumEt=-1,dr03EcalRecHitSumEt=-1, e2x5OverE5x5=-1,e1x5OverE5x5=-1;
+   e15=-1,e25=-1,e55=-1,EtaWidth=-1,PhiWidth=-1,dEtaIn=-1,sigmaIetaIeta=-1, MiniIsoChHad=-1,MiniIsoNHad=-1,MiniIsoPhHad=-1,IsoChHad=-1,IsoNHad=-1,IsoPhHad=-1;
+   RelMiniIsoCh=-1,RelMiniIsoN=-1,EoverP=-1,FBrem=-1;
+   isEcalDriven=-1,Pixel_hits=-1,  Validhits=-1,Matched_stations=-1,Tracker_layers=-1,MissingHits=-1;
+   PassConversionVeto=-1,IsGsfCtfScPixChargeConsistent=-1, IsGsfScPixChargeConsistent=-1, IsGsfCtfChargeConsistent=-1;
+
+}
+
+void HNL_LeptonCore::InitializeElectronIDTreeVars(){
+
+   Pt=-1,  Eta=-1;
+   PtRatio=-1,PtRatioNoLep=-1, PtRatioAJ=-1, PtRel=-1, PtRelWithLep=-1,PtRatioCorr=-1,PtRelCorr=-1;
+   CEMFracAJ=-1, NEMFracAJ=-1, CHFracAJ=-1, NHFracAJ=-1,MuFracAJ=-1, JetDiscAJ=-1;
+   CEMFracCJ=-1, NEMFracCJ=-1, CHFracCJ=-1, NHFracCJ=-1, MuFracCJ=-1, JetDiscCJ=-1;
+   Dxy=-1,Dz=-1,DxySig=-1, DzSig=-1, RelIso=-1,IP3D=-1,MVA=-1,MVAIso=-1,Chi2=-1, Minireliso=-1;
+   Full5x5_sigmaIetaIeta=-1,dEtaSeed=-1,dPhiIn=-1,HoverE=-1,Rho=-1,TrkIso=-1,InvEminusInvP=-1,ecalPFClusterIso=-1,hcalPFClusterIso=-1;
+   RelDxy=-1,RelDz=-1,RelIP3D=-1,RelMVA=-1,RelMVAIso=-1,PileUp=-1;
+   R9=-1,dr03TkSumPt=-1,dr03HcalTowerSumEt=-1,dr03HcalDepth1TowerSumEt=-1,dr03EcalRecHitSumEt=-1, e2x5OverE5x5=-1,e1x5OverE5x5=-1;
+   e15=-1,e25=-1,e55=-1,EtaWidth=-1,PhiWidth=-1,dEtaIn=-1,sigmaIetaIeta=-1, MiniIsoChHad=-1,MiniIsoNHad=-1,MiniIsoPhHad=-1,IsoChHad=-1,IsoNHad=-1,IsoPhHad=-1;
+   RelMiniIsoCh=-1,RelMiniIsoN=-1,EoverP=-1,FBrem=-1;
+   isEcalDriven=-1,Pixel_hits=-1,  Validhits=-1,Matched_stations=-1,Tracker_layers=-1,MissingHits=-1;
+   PassConversionVeto=-1,IsGsfCtfScPixChargeConsistent=-1, IsGsfScPixChargeConsistent=-1, IsGsfCtfChargeConsistent=-1;
 
 }
 

@@ -1,0 +1,7 @@
+-rw-r--r-- 1 jalmond jalmond 174M Nov 23 06:49 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/SSWWTypeIHeavyN-DFmix_Dilepton_NLO_MN1000_TuneCP5_13TeV-madgraph-pythia8/221122_163053/0000/SKFlatNtuple_2017_MC_4.root
+-rw-r--r-- 1 jalmond jalmond 190M Nov 23 03:03 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/SSWWTypeIHeavyN-DFmix_Dilepton_NLO_MN1000_TuneCP5_13TeV-madgraph-pythia8/221122_163053/0000/SKFlatNtuple_2017_MC_1.root
+-rw-r--r-- 1 jalmond jalmond 127M Nov 23 02:58 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/SSWWTypeIHeavyN-DFmix_Dilepton_NLO_MN1000_TuneCP5_13TeV-madgraph-pythia8/221122_163053/0000/SKFlatNtuple_2017_MC_3.root
+-rw-r--r-- 1 jalmond jalmond 206M Nov 23 02:38 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/SSWWTypeIHeavyN-DFmix_Dilepton_NLO_MN1000_TuneCP5_13TeV-madgraph-pythia8/221122_163053/0000/SKFlatNtuple_2017_MC_6.root
+-rw-r--r-- 1 jalmond jalmond  33M Nov 23 02:33 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/SSWWTypeIHeavyN-DFmix_Dilepton_NLO_MN1000_TuneCP5_13TeV-madgraph-pythia8/221122_163053/0000/SKFlatNtuple_2017_MC_7.root
+-rw-r--r-- 1 jalmond jalmond  17M Nov 23 01:48 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/SSWWTypeIHeavyN-DFmix_Dilepton_NLO_MN1000_TuneCP5_13TeV-madgraph-pythia8/221122_163053/0000/SKFlatNtuple_2017_MC_2.root
+-rw-r--r-- 1 jalmond jalmond  17M Nov 23 01:43 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/SSWWTypeIHeavyN-DFmix_Dilepton_NLO_MN1000_TuneCP5_13TeV-madgraph-pythia8/221122_163053/0000/SKFlatNtuple_2017_MC_5.root

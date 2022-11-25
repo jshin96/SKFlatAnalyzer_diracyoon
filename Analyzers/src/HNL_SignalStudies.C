@@ -11,6 +11,7 @@ void HNL_SignalStudies::initializeAnalyzer(){
     SetupJECUncertainty(jec_source);
   }
   
+  SetupIDMVAReader(false);
 
 }
 
@@ -142,6 +143,130 @@ void HNL_SignalStudies::executeEvent(){
       if(dilep_channel==MuMu)FillAllMuonPlots("Signal", "Muons"  , MuonColl , weight);
       else FillAllElectronPlots("Signal", "Electrons"  , ElectronColl , weight);
     }      
+
+    if(SameCharge(MuonColl)){
+
+      std::vector<Muon> MuonCollTight;
+      std::vector<Muon> MuonCollMVA;
+
+      for(auto iel : MuonCollFake){
+        if(iel.PassID("HNTightV2"))    FillHist( "MuFakeTightID", 1,  1.,3, 0., 3,"HNTight");
+        else  FillHist( "MuFakeTightID", 0,  1.,3, 0., 3,"HNTight");
+        FillHist( "BDT/Muon_Fake_Fakescore", GetBDTScoreMuon(iel,HNL_LeptonCore::Fake),  1.,100, -1., 1,"BDT EE Fake");
+      }
+      for(auto iel : MuonCollConv){
+        if(iel.PassID("HNTightV2"))      FillHist( "MuConvTightID", 1,  1.,3, 0., 3,"HNTight");
+        else  FillHist( "MuConvTightID", 0,  1.,3, 0., 3,"HNTight");
+        FillHist( "BDT/Muon_Conv_Convscore", GetBDTScoreMuon(iel,HNL_LeptonCore::Conv),  1.,100, -1., 1,"BDT MM Conv");
+      }
+      
+      for(auto iel : MuonColl){
+        if(iel.PassID("HNTightV2"))  FillHist( "MuTightID", 1,  1.,3, 0., 3,"HNTight");
+        else  FillHist( "MuTightID", 0,  1.,3, 0., 3,"HNTight");
+        if(iel.PassID("HNTightV2")) MuonCollTight.push_back(iel);
+
+        if(fabs(iel.Eta()) < 1.5){
+          FillHist( "MuBDT/Barrel_Muon_Fake", GetBDTScoreMuon(iel,HNL_LeptonCore::Fake),  1.,100, -1., 1,"MuBDT EE Fake");
+          FillHist( "MuBDT/Barrel_Muon_Conv", GetBDTScoreMuon(iel,HNL_LeptonCore::Conv),  1.,100, -1., 1,"MuBDT EE Conv");
+
+          FillHist( "MuBDT/Barrel_Muon_Fake_pt", iel.Pt(), GetBDTScoreMuon(iel,HNL_LeptonCore::Fake), 1., 1000, 0., 1000 ,100, -1., 1);
+          FillHist( "MuBDT/Barrel_Muon_Conv_pt", iel.Pt(), GetBDTScoreMuon(iel,HNL_LeptonCore::Conv),  1.,  1000, 0., 1000 ,100, -1., 1);
+        }
+        else{
+          FillHist( "MuBDT/Endcap_Muon_Fake", GetBDTScoreMuon(iel,HNL_LeptonCore::Fake),  1.,100, -1., 1,"MuBDT EE Fake");
+          FillHist( "MuBDT/Endcap_Muon_Conv", GetBDTScoreMuon(iel,HNL_LeptonCore::Conv),  1.,100, -1., 1,"MuBDT EE Conv");
+
+          FillHist( "MuBDT/Endcap_Muon_Fake_pt", iel.Pt(), GetBDTScoreMuon(iel,HNL_LeptonCore::Fake), 1., 1000, 0., 1000 ,100, -1., 1 );
+          FillHist( "MuBDT/Endcap_Muon_Conv_pt", iel.Pt(), GetBDTScoreMuon(iel,HNL_LeptonCore::Conv),  1.,  1000, 0., 1000 ,100, -1., 1);
+
+        }
+
+        if(GetBDTScoreMuon(iel,HNL_LeptonCore::Fake) > -0.1 && GetBDTScoreMuon(iel,HNL_LeptonCore::Conv) > -0.1) MuonCollMVA.push_back(iel);
+
+	if(SameCharge(MuonCollTight)) FillHist( "MuTightID_SS",  1,  1.,3, 0., 3,"HNTight");
+	else FillHist( "MuTightID_SS", 0,  1.,3, 0., 3,"HNTight");
+
+	if(SameCharge(MuonCollMVA)) FillHist( "MuBDTTightID_SS", 1,  1.,3, 0., 3,"HNTight");
+	else FillHist( "MuBDTTightID_SS", 0,  1.,3, 0., 3,"HNTight");
+
+	if(SameCharge(MuonCollMVA))       FillAllMuonPlots("BDTPass", "Muons"  , MuonCollMVA , weight);
+	
+      }
+    }
+
+    if(SameCharge(ElectronColl)){
+      
+      std::vector<Electron> ElectronCollTight;
+      std::vector<Electron> ElectronCollMVA;
+
+      for(auto iel : ElectronCollFake){
+	if(iel.PassID("HNTightV2"))    FillHist( "FakeTightID", 1,  1.,3, 0., 3,"HNTight");
+	else  FillHist( "FakeTightID", 0,  1.,3, 0., 3,"HNTight");
+	FillHist( "BDT/Electron_Fake_Fakescore", GetBDTScoreEl(iel,HNL_LeptonCore::Fake),  1.,100, -1., 1,"BDT EE Fake");
+      }
+      for(auto iel : ElectronCollIntConv){
+	if(iel.PassID("HNTightV2"))      FillHist( "IntConvTightID", 1,  1.,3, 0., 3,"HNTight");
+        else  FillHist( "IntConvTightID", 0,  1.,3, 0., 3,"HNTight");
+	FillHist( "BDT/Electron_IntConv_Convscore", GetBDTScoreEl(iel,HNL_LeptonCore::Conv),  1.,100, -1., 1,"BDT EE Conv");
+      }
+      for(auto iel : ElectronCollExtConv){
+	if(iel.PassID("HNTightV2"))  FillHist( "ExtConvTightID", 1,  1.,3, 0., 3,"HNTight");
+        else  FillHist( "ExtConvTightID", 0,  1.,3, 0., 3,"HNTight");
+	FillHist( "BDT/Electron_ExtConv_Convscore", GetBDTScoreEl(iel,HNL_LeptonCore::Conv),  1.,100, -1., 1,"BDT EE Conv");
+      }
+
+      for(auto iel : ElectronCollCF){
+	if(iel.PassID("HNTightV2"))  FillHist( "CFTightID", 1,  1.,3, 0., 3,"HNTight");
+        else  FillHist( "CFTightID", 0,  1.,3, 0., 3,"HNTight");
+        FillHist( "BDT/Electron_CF_CFscore", GetBDTScoreEl(iel,HNL_LeptonCore::CF),  1.,100, -1., 1,"BDT EE CF");
+      }
+
+      for(auto iel : ElectronColl){
+	if(iel.PassID("HNTightV2"))  FillHist( "TightID", 1,  1.,3, 0., 3,"HNTight");
+        else  FillHist( "TightID", 0,  1.,3, 0., 3,"HNTight");
+        if(iel.PassID("HNTightV2")) ElectronCollTight.push_back(iel);
+
+	if(fabs(iel.Eta()) < 1.5){
+	  FillHist( "BDT/Barrel_Electron_Fake", GetBDTScoreEl(iel,HNL_LeptonCore::Fake),  1.,100, -1., 1,"BDT EE Fake");
+	  FillHist( "BDT/Barrel_Electron_Conv", GetBDTScoreEl(iel,HNL_LeptonCore::Conv),  1.,100, -1., 1,"BDT EE Conv");
+	  FillHist( "BDT/Barrel_Electron_CF", GetBDTScoreEl(iel,HNL_LeptonCore::CF),  1.,100, -1., 1,"BDT EE CF");
+	  
+	  FillHist( "BDT/Barrel_Electron_Fake_pt", iel.Pt(), GetBDTScoreEl(iel,HNL_LeptonCore::Fake), 1., 1000, 0., 1000 ,100, -1., 1);
+	  FillHist( "BDT/Barrel_Electron_Conv_pt", iel.Pt(), GetBDTScoreEl(iel,HNL_LeptonCore::Conv),  1.,  1000, 0., 1000 ,100, -1., 1);
+	  FillHist( "BDT/Barrel_Electron_CF_pt", iel.Pt(),GetBDTScoreEl(iel,HNL_LeptonCore::CF),  1., 1000, 0., 1000 ,100, -1., 1);
+	}
+	else{
+	  FillHist( "BDT/Endcap_Electron_Fake", GetBDTScoreEl(iel,HNL_LeptonCore::Fake),  1.,100, -1., 1,"BDT EE Fake");
+          FillHist( "BDT/Endcap_Electron_Conv", GetBDTScoreEl(iel,HNL_LeptonCore::Conv),  1.,100, -1., 1,"BDT EE Conv");
+          FillHist( "BDT/Endcap_Electron_CF", GetBDTScoreEl(iel,HNL_LeptonCore::CF),  1.,100, -1., 1,"BDT EE CF");
+	  
+	  FillHist( "BDT/Endcap_Electron_Fake_pt", iel.Pt(), GetBDTScoreEl(iel,HNL_LeptonCore::Fake), 1., 1000, 0., 1000 ,100, -1., 1 );
+	  FillHist( "BDT/Endcap_Electron_Conv_pt", iel.Pt(), GetBDTScoreEl(iel,HNL_LeptonCore::Conv),  1.,  1000, 0., 1000 ,100, -1., 1);
+          FillHist( "BDT/Endcap_Electron_CF_pt", iel.Pt(),GetBDTScoreEl(iel,HNL_LeptonCore::CF),  1., 1000, 0., 1000 ,100, -1., 1 );
+
+	}
+
+        if(GetBDTScoreEl(iel,HNL_LeptonCore::Fake) > -0.1 && GetBDTScoreEl(iel,HNL_LeptonCore::Conv) > -0.1 && GetBDTScoreEl(iel,HNL_LeptonCore::CF) > -0.1) ElectronCollMVA.push_back(iel);
+      }
+
+      if(SameCharge(ElectronCollTight)) FillHist( "TightID_SS",  1,  1.,3, 0., 3,"HNTight");
+      else FillHist( "TightID_SS", 0,  1.,3, 0., 3,"HNTight");
+
+      if(SameCharge(ElectronCollMVA)) FillHist( "BDTTightID_SS", 1,  1.,3, 0., 3,"HNTight");
+      else FillHist( "BDTTightID_SS", 0,  1.,3, 0., 3,"HNTight");
+      
+      if(SameCharge(ElectronCollMVA))       FillAllElectronPlots("BDTPass", "Electrons"  , ElectronCollMVA , weight);
+      
+    }
+
+    return;
+
+
+
+
+
+
+
 
     if(dilep_channel==MuMu){
       
@@ -734,11 +859,18 @@ void HNL_SignalStudies::RunLeptonChannel(HNL_LeptonCore::Channel channel_ID, std
 
 HNL_SignalStudies::HNL_SignalStudies(){
 
+  TMVA::Tools::Instance();
+  ElectronIDMVAReader = new TMVA::Reader();
+  MuonIDMVAReader = new TMVA::Reader();
+
 
 }
  
 HNL_SignalStudies::~HNL_SignalStudies(){
-
+  
+  delete ElectronIDMVAReader;
+  delete MuonIDMVAReader;
+  
 }
 
 

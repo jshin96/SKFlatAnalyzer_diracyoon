@@ -23,6 +23,7 @@ class HNL_LepIDKinVar : public HNL_RegionDefinitions {
 		    float weight, TString Label);
 
 
+  bool GetRatio;
   bool SeperateFakes;
   bool SeperateConv;
   bool SeperateCF;
@@ -34,7 +35,7 @@ class HNL_LepIDKinVar : public HNL_RegionDefinitions {
   void InitializeTreeVars();
 
   Float_t Pt,  Eta;
-  Float_t PtRatio,PtRatioNoLep, PtRatioAJ, PtRel, PtRelWithLep,PtRatioCorr,PtRelCorr;
+  Float_t PtRatio,PtRatioNoLep, PtRatioAJ, PtRel, PtRelWithLep,PtRatioCorr,PtRelCorr,MassDrop,MassDropNoLep;
   Float_t CEMFracAJ, NEMFracAJ, CHFracAJ, NHFracAJ,MuFracAJ, JetDiscAJ;
   Float_t CEMFracCJ, NEMFracCJ, CHFracCJ, NHFracCJ, MuFracCJ, JetDiscCJ;
   Float_t Dxy,Dz,DxySig, DzSig, RelIso,IP3D,MVA,MVAIso,Chi2, Minireliso,Full5x5_sigmaIetaIeta,dEtaSeed,dPhiIn,HoverE,Rho,TrkIso,InvEminusInvP,ecalPFClusterIso,hcalPFClusterIso,RelDxy,RelDz,RelIP3D,RelMVA,RelMVAIso,PileUp;

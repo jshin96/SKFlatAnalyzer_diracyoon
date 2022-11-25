@@ -29,6 +29,12 @@ class HNL_LeptonCore : public AnalyzerCore {
   yUL2018MC
   };
 
+  enum BkgType 
+  {
+    Fake=0,
+    Conv=1,
+    CF=2,
+  };
 
   enum ChargeType
   {
@@ -116,9 +122,14 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   void initializeAnalyzer();
   void SetupMVAReader();
+  void SetupIDMVAReader(bool isMuon);
+  void SetBDTIDVar(Lepton*  lep);
+
   AnalyzerParameter InitialiseHNLParameters( TString analysis_tag, vector<vector<TString> >  param_vec);
   AnalyzerParameter InitialiseHNLParameter(TString s_setup, TString tag);  
 
+  double MergeMultiMC(vector<TString> vec, TString Method);
+  double ScaleLepToSS();
 
   bool IsSignal();
 
@@ -128,6 +139,10 @@ class HNL_LeptonCore : public AnalyzerCore {
   std::pair<double,double> METXYCorr_Met_MetPhi(double uncormet, double uncormet_phi, int runnb, TString year, bool isMC, int npv, bool isUL =false,bool ispuppi=false);
 
   std::map<TString, double> cfmap;
+
+  double GetBDTScoreEl(Electron el ,BkgType bkg);
+  double GetBDTScoreMuon(Muon mu ,BkgType bkg);
+  
 
   //===== TRIGGER
 
@@ -361,9 +376,13 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   vector<TString> MNStrList;
   TMVA::Reader *MVAReader;
+  TMVA::Reader *MuonIDMVAReader;
+
+
+  TMVA::Reader *ElectronIDMVAReader;
 
   void InitializeTreeVars();
-
+  
   Float_t Nj, Nvbfj;
   Float_t Ptl1, Ptl2, Ptj1, Ptj2, Ptj3, MET,MET2ST, HT,HTLT,HTLT1,HTLT2, LT,  MET2HT;
   Float_t dEtall, dRll, dRjj12, dRjj23, dRjj13;
@@ -381,6 +400,25 @@ class HNL_LeptonCore : public AnalyzerCore {
   Float_t M_W2_jj, M_N1_l1jj, M_N2_l2jj,M_W1_lljj;
   Float_t w_tot;
 
+
+  // ID MVA
+  void InitializeMuonIDTreeVars();
+  void InitializeElectronIDTreeVars();
+
+  Float_t Pt,  Eta;
+  Float_t PtRatio,PtRatioNoLep, PtRatioAJ, PtRel, PtRelWithLep,PtRatioCorr,PtRelCorr;
+  Float_t CEMFracAJ, NEMFracAJ, CHFracAJ, NHFracAJ,MuFracAJ, JetDiscAJ;
+  Float_t CEMFracCJ, NEMFracCJ, CHFracCJ, NHFracCJ, MuFracCJ, JetDiscCJ;
+  Float_t Dxy,Dz,DxySig, DzSig, RelIso,IP3D,MVA,MVAIso,Chi2, Minireliso;
+  Float_t Full5x5_sigmaIetaIeta,dEtaSeed,dPhiIn,HoverE,Rho,TrkIso,InvEminusInvP,ecalPFClusterIso,hcalPFClusterIso;
+  Float_t RelDxy,RelDz,RelIP3D,RelMVA,RelMVAIso,PileUp;
+  Float_t R9,dr03TkSumPt,dr03HcalTowerSumEt,dr03HcalDepth1TowerSumEt,dr03EcalRecHitSumEt, e2x5OverE5x5,e1x5OverE5x5;
+  Float_t e15,e25,e55,EtaWidth,PhiWidth,dEtaIn,sigmaIetaIeta, MiniIsoChHad,MiniIsoNHad,MiniIsoPhHad,IsoChHad,IsoNHad,IsoPhHad;
+  Float_t RelMiniIsoCh,RelMiniIsoN,EoverP,FBrem;;
+  Float_t isEcalDriven,Pixel_hits,  Validhits,Matched_stations,Tracker_layers,MissingHits;
+  Float_t PassConversionVeto,IsGsfCtfScPixChargeConsistent, IsGsfScPixChargeConsistent, IsGsfCtfChargeConsistent;
+
+  Float_t w_id_tot;
 
 
 };

@@ -3296,6 +3296,61 @@ Jet AnalyzerCore::GetCorrectedJetCloseToLepton(Lepton* lep, Jet jet){
 }
 
 
+double  AnalyzerCore::JetLeptonMassDropLepAware( Muon lep, bool removeLep, bool ApplyCorr){
+
+
+  // ApplyCorr def is false, this is same as Mini/NanoAOD value stored                                                                                                                                              
+  // if ApplyCorr is true then Jet smearing and lepton smearing is applied and values are corrected                                                                                                                 
+
+  std::vector<Jet> jets = GetAllJets(ApplyCorr);
+
+  double mindR=0.4;
+  if(!ApplyCorr)lep.SetPtEtaPhiE(lep.MiniAODPt(), lep.Eta(), lep.Phi(), lep.E());
+
+  Jet closejet;
+  for(auto jet : jets){
+    if (lep.DeltaR(jet) < mindR) closejet = GetCorrectedJetCloseToLepton(lep,jet);
+  }
+
+  TLorentzVector lepp4 = lep;
+  TLorentzVector jetp4 = closejet;
+
+
+  if(removeLep)   jetp4 = jetp4 - lep;
+
+  TLorentzVector LJ =  jetp4 + lep;
+  
+  return (LJ.M() - jetp4.M());
+
+}
+
+
+double  AnalyzerCore::JetLeptonMassDropLepAware( Electron lep, bool removeLep, bool ApplyCorr){
+
+
+  std::vector<Jet> jets = GetAllJets(ApplyCorr);
+
+  double mindR=0.4;
+
+  Jet closejet;
+  for(auto jet : jets){
+    if (lep.DeltaR(jet) < mindR) closejet = GetCorrectedJetCloseToLepton(lep,jet);
+  }
+
+  TLorentzVector lepp4 = lep;
+  TLorentzVector jetp4 = closejet;
+
+
+  if(removeLep)   jetp4 = jetp4 - lep;
+
+  TLorentzVector LJ =  jetp4 + lep;
+
+  return (LJ.M() - jetp4.M());
+
+
+}
+
+
 
 double  AnalyzerCore::JetLeptonPtRelLepAware( Muon lep, bool removeLep, bool ApplyCorr){
 

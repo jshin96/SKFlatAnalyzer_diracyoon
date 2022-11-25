@@ -3,10 +3,10 @@
 void HNL_LepIDKinVar::initializeAnalyzer(){
 
   SeperateFakes = HasFlag("SeperateFake");
-
   SeperateConv = HasFlag("SeperateConv");
   SeperateCF = HasFlag("SeperateCF");
 
+  GetRatio = HasFlag("GetRatio");  
 
   HNL_LeptonCore::initializeAnalyzer();
 
@@ -94,6 +94,8 @@ void HNL_LepIDKinVar::initializeAnalyzer(){
   tree_mm->Branch("PtRatioCorr", &PtRatioCorr, "PtRatioCorr/F");         tree_ee->Branch("PtRatioCorr", &PtRatioCorr, "PtRatioCorr/F");         
   tree_mm->Branch("PtRatioNoLep", &PtRatioNoLep, "PtRatioNoLep/F");         tree_ee->Branch("PtRatioNoLep", &PtRatioNoLep, "PtRatioNoLep/F");         
   tree_mm->Branch("PtRel", &PtRel, "PtRel/F");         tree_ee->Branch("PtRel", &PtRel, "PtRel/F");         
+  tree_mm->Branch("MassDrop", &MassDrop, "MassDrop/F");         tree_ee->Branch("MassDrop", &MassDrop, "MassDrop/F");         
+  tree_mm->Branch("MassDropNoLep", &MassDropNoLep, "MassDropNoLep/F");         tree_ee->Branch("MassDropNoLep", &MassDropNoLep, "MassDropNoLep/F");         
   tree_mm->Branch("PtRelCorr", &PtRelCorr, "PtRelCorr/F");         tree_ee->Branch("PtRelCorr", &PtRelCorr, "PtRelCorr/F");         
   tree_mm->Branch("PtRelWithLep", &PtRelWithLep, "PtRelWithLep/F");         tree_ee->Branch("PtRelWithLep", &PtRelWithLep, "PtRelWithLep/F");         
   tree_mm->Branch("CEMFracCJ", &CEMFracCJ, "CEMFracCJ/F");   tree_ee->Branch("CEMFracCJ", &CEMFracCJ, "CEMFracCJ/F");   
@@ -158,8 +160,9 @@ void HNL_LepIDKinVar::executeEvent(){
   
   Event ev = GetEvent();
   double weight =SetupWeight(ev,param_bdt);
-  
-
+  vector<TString> MCMergeList = {"DY","WG"};
+  //  weight *= MergeMultiMC(MCMergeList,"CombineAll");
+  //  weight *= ScaleLepToSS();
   if(IsSignal()){
     weight = MCweight(true, false);
     if (MCSample.Contains("M500_")){
@@ -182,6 +185,8 @@ void HNL_LepIDKinVar::executeEvent(){
     //if (MCSample.Contains("M250")) weight*= 2;
   }
 
+  //weight = fabs(weight);
+
   FillHist("CutFlow", 0, weight,  20, 0., 20.);
 
   
@@ -192,10 +197,10 @@ void HNL_LepIDKinVar::executeEvent(){
   for(auto dilep_channel : channels){
 
     std::vector<Muon>       MuonCollTAll     =  GetMuons    ( param_bdt,"MVAID", 10., 2.4, RunFake);
-    std::vector<Electron>   ElectronCollTAll =  GetElectrons( param_bdt,"MVAID", 10., 2.5, RunFake);
+    std::vector<Electron>   ElectronCollTAll =  GetElectrons( param_bdt,"MVAID", 10., 2.5, RunFake,true);
  
 
-    if(dilep_channel == EE) MuonCollTAll.clear();
+    if(dilep_channel == EE)  MuonCollTAll.clear();
     if(dilep_channel == MuMu) ElectronCollTAll.clear();
 
     std::vector<Electron>   ElectronCollT;
@@ -232,14 +237,15 @@ void HNL_LepIDKinVar::executeEvent(){
 
 
     //    TString OptionEl="CFHFakeNHConv";
-    TString OptionEl="CFNHConv";
-    TString OptionMu="NHConv";
+    TString OptionEl="";
+    TString OptionMu="";
     if(SeperateFakes) {
       OptionEl="HFake";
       OptionMu="HFake";
     }
     if(SeperateConv) {
       OptionEl = "NHConv";
+      OptionMu="NHConv";
     }
     if(SeperateCF) {
       OptionEl = "CF";
@@ -251,14 +257,36 @@ void HNL_LepIDKinVar::executeEvent(){
     
     //if (!PassTriggerSelection(dilep_channel, ev, LepsAll, "Dilep")) continue;
 
-    //if(!SameCharge(LepsAll)) continue;
-    //if(!CheckLeptonFlavourForChannel(dilep_channel,LepsAll)) return;
 
     std::vector<Electron>   ElectronCollTSkim  = (IsSignal()) ? ElectronCollT :  SkimLepColl(ElectronCollT, gens, param_bdt, OptionEl);
     std::vector<Muon>       MuonCollTSkim      = (IsSignal()) ? MuonCollT :  SkimLepColl(MuonCollT, gens, param_bdt, OptionMu);
-   
+
 
     std::vector<Lepton *> LepsT  = MakeLeptonPointerVector(MuonCollTSkim,ElectronCollTSkim);
+
+    if(SameCharge(LepsAll)) {
+      
+      for(auto ilep : LepsT){
+	int  lepType = GetLeptonType_JH(*ilep, gens);
+
+	if(ilep->LeptonFlavour() == Lepton::ELECTRON)       FillHist( "LepType/SSElectron", lepType ,weight, 14., -7., 7);
+	else  FillHist( "LepType/SSMuon", lepType, weight, 14., -7., 7);
+      }
+    }
+
+    for(auto ilep : LepsT) {
+      int  lepType = GetLeptonType_JH(*ilep, gens);
+      double neg_w = (weight > 0) ? weight : 0.;
+      if(ilep->LeptonFlavour() == Lepton::ELECTRON)       FillHist( "LepType/Electron", lepType ,neg_w, 14., -7., 7);
+      else  FillHist( "LepType/Muon", lepType, neg_w, 14., -7., 7);
+      
+    }
+
+    if(GetRatio) continue;
+
+    //if(!CheckLeptonFlavourForChannel(dilep_channel,LepsAll)) return;
+
+
 
     std::vector<Jet>    AK4_JetAllColl = GetJets("NoID", 10., 5.0);
 
@@ -278,7 +306,8 @@ void HNL_LepIDKinVar::executeEvent(){
     std::vector<Jet> BJetColl         = SelectBJets(param_bdt, bjets_tmp, param_jets);
     double sf_btag                    = GetBJetSF(param_bdt, bjets_tmp, param_jets);
     if(!IsData )weight*= sf_btag;
-    if(BJetColl.size() > 0) return;
+
+    //   if(BJetColl.size() > 0) return;
     //Particle METv = GetvMET("PuppiT1xyULCorr",param_bdt);
     //    if(METv.Pt() > 70.) return;
 
@@ -303,6 +332,10 @@ void HNL_LepIDKinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Le
 
     Pt    = lep->Pt();
     Eta   = fabs(lep->Eta());
+    TString  lepType = GetLepTypeTString(*lep, gens);
+    if(lep->LeptonFlavour() == Lepton::ELECTRON) FillHist( "Eta/Electron_"+lepType , Eta , weight, 200, -5., 5., "");
+    else FillHist( "Eta/Muon_"+lepType , Eta , weight, 200, -5., 5., "");
+
     PileUp = nPileUp;
     MiniIsoChHad = lep->MiniIsoChHad();
     MiniIsoNHad = lep->MiniIsoNHad();
@@ -380,7 +413,7 @@ void HNL_LepIDKinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Le
 
       isEcalDriven = Electrons[iel].isEcalDriven();
       
-      EoverP = Electrons[iel].EOverP();
+      EoverP = log(Electrons[iel].EOverP());
       FBrem = Electrons[iel].FBrem();
       PassConversionVeto  = (Electrons[iel].PassConversionVeto()) ? 1 : 0;
       
@@ -432,6 +465,8 @@ void HNL_LepIDKinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Le
         PtRatioNoLep=JetLeptonPtRatioLepAware(Electrons[iel],true);
 	PtRelWithLep=JetLeptonPtRelLepAware( Electrons[iel],false);
         PtRel=JetLeptonPtRelLepAware(Electrons[iel],true);
+        MassDropNoLep=JetLeptonMassDropLepAware(Electrons[iel],true);
+        MassDrop=JetLeptonMassDropLepAware(Electrons[iel],false);
 	
 	PtRatioCorr=JetLeptonPtRatioLepAware(Electrons[iel],false,true);
         PtRelCorr=JetLeptonPtRelLepAware(Electrons[iel],true,true);
@@ -441,6 +476,8 @@ void HNL_LepIDKinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Le
 	PtRatioNoLep=JetLeptonPtRatioLepAware(Muons[imu],true);
 	PtRelWithLep=JetLeptonPtRelLepAware( Muons[imu],false);
 	PtRel=JetLeptonPtRelLepAware(Muons[imu],true);
+	MassDropNoLep=JetLeptonMassDropLepAware(Muons[imu],true);
+	MassDrop=JetLeptonMassDropLepAware(Muons[imu],false);
 	PtRatioCorr=JetLeptonPtRatioLepAware(Muons[imu],false,true);
         PtRelCorr=JetLeptonPtRelLepAware(Muons[imu],true,true);
       }
@@ -456,7 +493,7 @@ void HNL_LepIDKinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Le
       PtRatio = min(1/(1.+lep->RelIso()), 1.5);
       PtRatioNoLep  = min(1/(1.+lep->RelIso()),1.5);
       PtRatioCorr  = min(1/(1.+lep->RelIso()),1.5);
-      PtRel=0, PtRelWithLep=0, PtRelCorr=0;
+      MassDropNoLep=0, MassDrop=0,PtRel=0, PtRelWithLep=0, PtRelCorr=0;
       
       CEMFracCJ=0, NEMFracCJ=0., CHFracCJ=0., NHFracCJ=0., MuFracCJ=0., JetDiscCJ=0.,PileupJetId=-1;
       
@@ -487,7 +524,7 @@ void HNL_LepIDKinVar::executeEventFromParameter(AnalyzerParameter param){
 void HNL_LepIDKinVar::InitializeTreeVars(){
 
   Pt=-1, Eta=-1;
-  PtRatioNoLep=-1.; PtRatio=-1,  PtRel=-1, PtRelWithLep=-1, PtRatioCorr=-1, PtRelCorr=-1;
+  PtRatioNoLep=-1.; PtRatio=-1,  PtRel=-1, PtRelWithLep=-1, PtRatioCorr=-1, PtRelCorr=-1, MassDrop=-1,MassDropNoLep=-1;
   CEMFracCJ=-1, NEMFracCJ=-1, CHFracCJ=-1, NHFracCJ=-1, MuFracCJ=-1, JetDiscCJ=-1,JetNTrk =-1,PileupJetId=-1,JetNMVATrk=-1;
 
   PileUp = -1;

@@ -14,12 +14,12 @@ declare  -a era_list=("2017")
 
 if [[ $1 == "Sig" ]]; then
 
-    declare  -a era_list=( "2017" "2018")
+    declare  -a era_list=( "2017" )
 
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -i DYTypeI_DF_M100_private  -n 1  --nmax 1000   -e ${i} &
-        SKFlat.py -a $analyzer  -i DYTypeI_DF_M1000_private  -n 1  --nmax 1000   -e ${i} &
+        SKFlat.py -a $analyzer  -i DYTypeI_DF_M100_private  -n 10  --nmax 1000   -e ${i} &
+        SKFlat.py -a $analyzer  -i DYTypeI_DF_M1000_private  -n 10  --nmax 1000   -e ${i} &
 
     done
 

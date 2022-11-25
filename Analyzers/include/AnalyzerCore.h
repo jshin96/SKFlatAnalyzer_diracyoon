@@ -135,6 +135,10 @@ public:
   Jet GetCorrectedJetCloseToLepton(Muon lep, Jet jet);
   Jet GetCorrectedJetCloseToLepton(Electron lep, Jet jet);
 
+  double  JetLeptonMassDropLepAware(  Muon lep, bool removeLep,bool ApplyCorr=false);
+  double  JetLeptonMassDropLepAware(  Electron lep, bool removeLep,bool ApplyCorr=false);
+
+
   double  JetLeptonPtRelLepAware(  Muon lep, bool removeLep,bool ApplyCorr=false);
   double  JetLeptonPtRelLepAware(  Electron lep, bool removeLep,bool ApplyCorr=false);
 
