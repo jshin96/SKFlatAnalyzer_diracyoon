@@ -396,6 +396,17 @@ void SKFlatNtuple::Init()
   fatjet_LSFlep_Pt = 0;
   fatjet_LSFlep_Eta = 0;
   fatjet_LSFlep_Phi = 0;
+  electron_conv_ntracks= 0;
+  electron_conv_fitprob= 0;
+  electron_conv_lxy= 0;
+  electron_conv_nHitsBeforeVtxMax= 0;
+  electron_conv_log_e_over_p= 0;
+  electron_conv_log_abs_cot_theta= 0;
+  electron_conv_pairMass= 0;
+  electron_conv_log_abs_delta_phi= 0;
+  electron_conv_log_chi2_max_pt= 0;
+  electron_conv_log_chi2_min_pt= 0;
+
   electron_MVAIso = 0;
   electron_MVANoIso = 0;
   electron_Energy = 0;
@@ -776,6 +787,19 @@ void SKFlatNtuple::Init()
     fChain->SetBranchAddress("electron_jetPtRel", &electron_jetPtRel, &b_electron_jetPtRel);
     fChain->SetBranchAddress("electron_jetNTracks", &electron_jetNTracks, &b_electron_jetNTracks);
     fChain->SetBranchAddress("electron_jetNTracksMVA", &electron_jetNTracksMVA, &b_electron_jetNTracksMVA);
+  }
+  
+  if(fChain->GetBranch("electron_conv_ntracks")){
+    fChain->SetBranchAddress("electron_conv_ntracks",&electron_conv_ntracks, &b_electron_conv_ntracks);
+    fChain->SetBranchAddress("electron_conv_fitprob",&electron_conv_fitprob, &b_electron_conv_fitprob);
+    fChain->SetBranchAddress("electron_conv_lxy",&electron_conv_lxy, &b_electron_conv_lxy);
+    fChain->SetBranchAddress("electron_conv_nHitsBeforeVtxMax",&electron_conv_nHitsBeforeVtxMax, &b_electron_conv_nHitsBeforeVtxMax);
+    fChain->SetBranchAddress("electron_conv_log_e_over_p",&electron_conv_log_e_over_p, &b_electron_conv_log_e_over_p);
+    fChain->SetBranchAddress("electron_conv_log_abs_cot_theta",&electron_conv_log_abs_cot_theta, &b_electron_conv_log_abs_cot_theta);
+    fChain->SetBranchAddress("electron_conv_pairMass",&electron_conv_pairMass, &b_electron_conv_pairMass);
+    fChain->SetBranchAddress("electron_conv_log_abs_delta_phi",&electron_conv_log_abs_delta_phi, &b_electron_conv_log_abs_delta_phi);
+    fChain->SetBranchAddress("electron_conv_log_chi2_max_pt",&electron_conv_log_chi2_max_pt, &b_electron_conv_log_chi2_max_pt);
+    fChain->SetBranchAddress("electron_conv_log_chi2_min_pt",&electron_conv_log_chi2_min_pt, &b_electron_conv_log_chi2_min_pt);
   }
   fChain->SetBranchAddress("electron_MVAIso", &electron_MVAIso, &b_electron_MVAIso);
   fChain->SetBranchAddress("electron_MVANoIso", &electron_MVANoIso, &b_electron_MVANoIso);

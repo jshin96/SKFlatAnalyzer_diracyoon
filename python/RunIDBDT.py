@@ -19,13 +19,13 @@ parser.add_argument('-b', dest='BkgType', default="Fake")
 parser.add_argument('-c', dest='Channel', default="EE")
 parser.add_argument('-ns', dest='SignalMode', default=2, type=int)
 parser.add_argument('-nt', dest='NTree', default=850, type=int)
-parser.add_argument('-Nrom', dest='NormMode', default="NumEvents")
+parser.add_argument('-Nrom', dest='NormMode', default="EqualNumEvents")
 parser.add_argument('-MinNodeSize', dest='MinNodeSize', default="2.5")
 parser.add_argument('-MaxDepth', dest='MaxDepth', default="3")
 parser.add_argument('-ncut', dest='NCut', default="200")
 parser.add_argument('-BoostLearningRate', dest='BoostLearningRate', default="0.5")
 parser.add_argument('-BaggedFrac', dest='BaggedFrac', default="0.5")
-parser.add_argument('--IgnoreNE', action='store_true')
+parser.add_argument('-eta', dest='EtaBin', default="0")
 parser.add_argument('-t', dest='Tag', default="Default")
 parser.add_argument('-o', dest='Outputdir', default="")
 parser.add_argument('-q', dest='Queue', default="fastq")
@@ -130,10 +130,8 @@ webdirname = timestamp+"_"+str_RandomNumber
 
 ## Define MasterJobDir
 
-MasterJobDir = BDTRunlogDir+'/TS_'+timestamp+'__'+str_RandomNumber+"__Classifier_"+args.Classifier+ '_' + args.BkgType +  '__Macro_'+ args.Analyzer+'__Era_'+'Era'+args.Era+"__Channel_"+args.Channel + '__Signal'+str(args.SignalMode) +'__NTrees'+ str(args.NTree)+'__Norm_'+ str(args.NormMode)+'__MinNodeSize_'+ str(args.MinNodeSize) +'__MaxDepth_'+ str(args.MaxDepth)  +'__NCut'+ str(args.NCut)+ '__BoostLearningRate_' + str(args.BoostLearningRate)+ '__BaggedFrac_'+str(args.BaggedFrac) + "_Seed_"+str(args.Seed) 
+MasterJobDir = BDTRunlogDir+'/TS_'+timestamp+'__'+str_RandomNumber+"__Classifier_"+args.Classifier+ '_' + args.BkgType +  '__Macro_'+ args.Analyzer+'__Era_'+'Era'+args.Era+"__Channel_"+args.Channel + '__Signal'+str(args.SignalMode) +'__NTrees'+ str(args.NTree)+'__Norm_'+ str(args.NormMode)+'__MinNodeSize_'+ str(args.MinNodeSize) +'__MaxDepth_'+ str(args.MaxDepth)  +'__NCut'+ str(args.NCut)+ '__BoostLearningRate_' + str(args.BoostLearningRate)+ '__BaggedFrac_'+str(args.BaggedFrac) + "_Seed_"+str(args.Seed) + "_Etabin_"+str(args.EtaBin)
 
-if args.IgnoreNE: 
-  MasterJobDir += '__INEvents'
 
 MasterJobDir += '__'+HOSTNAME+'/'
 os.mkdir(MasterJobDir)
@@ -166,10 +164,7 @@ for TMVADir in TMVADirs:
   base_rundir = MasterJobDir+"/"+args.Tag
   os.mkdir(base_rundir)
   macroname = args.Analyzer+".C"
-  submitMacro = args.Analyzer+".C(\""+str(args.Classifier)+"\",\""+str(args.BkgType)+"\",\""+str(args.Era)+"\",\""+str(args.Channel)+"\", "+str(args.SignalMode)+", \""+str(args.NTree)+"\" , \""+str(args.NormMode)+"\",  \""+str(args.MinNodeSize)+"\",  \""+str(args.MaxDepth)+"\", \""+str(args.NCut)+"\",  \""+str(args.BoostLearningRate)+ "\",   \""+str(args.BaggedFrac)+ "\",  \""+str(args.Seed)+ "\", false)"
-  if args.IgnoreNE:
-    submitMacro = args.Analyzer+".C(\""+str(args.Classifier)+"\",\""+str(args.BkgType)+"\",\""+str(args.Era)+"\",\""+str(args.Channel)+"\", "+str(args.SignalMode)+", \""+str(args.NTree)+"\" , \""+str(args.NormMode)+"\",  \""+str(args.MinNodeSize)+"\",  \""+str(args.MaxDepth)+"\", \""+str(args.NCut)+"\",  \""+str(args.BoostLearningRate)+ "\",   \""+str(args.BaggedFrac)+ "\",  \""+str(args.Seed)+ "\",true)"
-
+  submitMacro = args.Analyzer+".C(\""+str(args.Classifier)+"\",\""+str(args.BkgType)+"\",\""+str(args.Era)+"\",\""+str(args.Channel)+"\", "+str(args.SignalMode)+", \""+str(args.NTree)+"\" , \""+str(args.NormMode)+"\",  \""+str(args.MinNodeSize)+"\",  \""+str(args.MaxDepth)+"\", \""+str(args.NCut)+"\",  \""+str(args.BoostLearningRate)+ "\",   \""+str(args.BaggedFrac)+ "\",  \""+str(args.Seed)+ "\","+str(args.EtaBin)+")"
 
   os.system('cp ' + TMVADir + '/'+ macroname+' ' + base_rundir)
 
@@ -178,9 +173,7 @@ for TMVADir in TMVADirs:
 
   signalName = "SignalMode_"+str(args.SignalMode)
 
-  outName = 'output_'+args.Classifier + '_'+args.BkgType + '_'+ signalName+'_'+args.Channel+'__NTrees_'+ str(args.NTree)+'__NormMode_'+ str(args.NormMode)+'__MinNodeSize_'+ str(args.MinNodeSize) +'__MaxDepth_'+ str(args.MaxDepth) +'__NCut_'+ str(args.NCut)  +'__BoostLearningRate_'+ str(args.BoostLearningRate) + '__BaggedFrac_'+args.BaggedFrac  + "_Seed_"+str(args.Seed)
-  if args.IgnoreNE:
-    outName = 'output_'+args.Classifier + '_'+args.BkgType + '_'+ signalName+'_'+args.Channel+'__NTrees_'+ str(args.NTree)+'__NormMode_'+ str(args.NormMode)+'__MinNodeSize_'+ str(args.MinNodeSize) +'__MaxDepth_'+ str(args.MaxDepth) +'__NCut_'+ str(args.NCut) +'__BoostLearningRate_'+ str(args.BoostLearningRate) + '__BaggedFrac_'+args.BaggedFrac  + "_Seed_"+str(args.Seed) +'__IgnoreNegWeights'
+  outName = 'output_'+args.Classifier + '_'+args.BkgType + '_'+ signalName+'_'+args.Channel+'__NTrees_'+ str(args.NTree)+'__NormMode_'+ str(args.NormMode)+'__MinNodeSize_'+ str(args.MinNodeSize) +'__MaxDepth_'+ str(args.MaxDepth) +'__NCut_'+ str(args.NCut)  +'__BoostLearningRate_'+ str(args.BoostLearningRate) + '__BaggedFrac_'+args.BaggedFrac  + "_Seed_"+str(args.Seed) + "_EtaBin_"+str(args.EtaBin)
 
   print>>run_commands,'''#!/bin/bash
 SECTION=`printf $1`
@@ -283,6 +276,7 @@ print '- BkgType = '+str(args.BkgType)
 print '- Random seed = '+str(args.Seed)
 
 print '- Era = '+str(args.Era)
+print '- EtaBin = '+str(args.EtaBin)
 print '-'*40
 print '- NJobs = '+str(NJobs)
 print '-'*40
@@ -293,11 +287,6 @@ print '- MaxDepth = '+str(args.MaxDepth)
 print '- NCut = '+str(args.NCut)
 print '- BoostLearningRate = '+str(args.BoostLearningRate)
 print '- BaggedFrac = '+str(args.BaggedFrac)
-if args.IgnoreNE:
-  print '-IgnoreNegWeights  = True'
-else:
-  print '-IgnoreNegWeights  = False'
-
 
 print '- output will be send to : '+FinalOutputPath
 

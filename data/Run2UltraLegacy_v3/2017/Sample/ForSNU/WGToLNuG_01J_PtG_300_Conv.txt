@@ -1,70 +1,70 @@
--rw-r--r-- 1 jalmond jalmond 456M Nov 23 08:06 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_28.root
--rw-r--r-- 1 jalmond jalmond 454M Nov 23 07:55 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_64.root
--rw-r--r-- 1 jalmond jalmond 457M Nov 23 07:30 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_48.root
--rw-r--r-- 1 jalmond jalmond 453M Nov 23 06:55 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_60.root
--rw-r--r-- 1 jalmond jalmond 453M Nov 23 06:26 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_69.root
--rw-r--r-- 1 jalmond jalmond 454M Nov 23 06:26 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_40.root
--rw-r--r-- 1 jalmond jalmond 453M Nov 23 06:26 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_30.root
--rw-r--r-- 1 jalmond jalmond 452M Nov 23 06:20 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_31.root
--rw-r--r-- 1 jalmond jalmond 453M Nov 23 06:05 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_51.root
--rw-r--r-- 1 jalmond jalmond 416M Nov 23 06:00 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_54.root
--rw-r--r-- 1 jalmond jalmond 456M Nov 23 06:00 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_12.root
--rw-r--r-- 1 jalmond jalmond 388M Nov 23 06:00 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_46.root
--rw-r--r-- 1 jalmond jalmond 453M Nov 23 05:50 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_11.root
--rw-r--r-- 1 jalmond jalmond 418M Nov 23 05:50 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_52.root
--rw-r--r-- 1 jalmond jalmond 452M Nov 23 05:36 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_38.root
--rw-r--r-- 1 jalmond jalmond 457M Nov 23 05:32 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_50.root
--rw-r--r-- 1 jalmond jalmond 454M Nov 23 05:30 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_43.root
--rw-r--r-- 1 jalmond jalmond 455M Nov 23 05:30 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_47.root
--rw-r--r-- 1 jalmond jalmond 452M Nov 23 05:25 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_35.root
--rw-r--r-- 1 jalmond jalmond 454M Nov 23 05:21 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_53.root
--rw-r--r-- 1 jalmond jalmond 421M Nov 23 05:21 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_68.root
--rw-r--r-- 1 jalmond jalmond 454M Nov 23 05:15 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_59.root
--rw-r--r-- 1 jalmond jalmond 284M Nov 23 05:15 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_9.root
--rw-r--r-- 1 jalmond jalmond 307M Nov 23 05:10 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_21.root
--rw-r--r-- 1 jalmond jalmond 458M Nov 23 05:10 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_70.root
--rw-r--r-- 1 jalmond jalmond 453M Nov 23 05:10 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_15.root
--rw-r--r-- 1 jalmond jalmond 381M Nov 23 05:10 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_42.root
--rw-r--r-- 1 jalmond jalmond 382M Nov 23 05:06 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_49.root
--rw-r--r-- 1 jalmond jalmond 455M Nov 23 05:06 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_63.root
--rw-r--r-- 1 jalmond jalmond 453M Nov 23 05:00 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_36.root
--rw-r--r-- 1 jalmond jalmond 246M Nov 23 05:00 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_24.root
--rw-r--r-- 1 jalmond jalmond 452M Nov 23 04:55 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_5.root
--rw-r--r-- 1 jalmond jalmond 413M Nov 23 04:50 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_6.root
--rw-r--r-- 1 jalmond jalmond 453M Nov 23 04:40 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_37.root
--rw-r--r-- 1 jalmond jalmond 373M Nov 23 04:35 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_45.root
--rw-r--r-- 1 jalmond jalmond 456M Nov 23 04:30 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_27.root
--rw-r--r-- 1 jalmond jalmond 420M Nov 23 04:23 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_41.root
--rw-r--r-- 1 jalmond jalmond 454M Nov 23 04:20 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_16.root
--rw-r--r-- 1 jalmond jalmond 457M Nov 23 04:20 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_4.root
--rw-r--r-- 1 jalmond jalmond 241M Nov 23 04:15 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_25.root
--rw-r--r-- 1 jalmond jalmond 452M Nov 23 04:05 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_34.root
--rw-r--r-- 1 jalmond jalmond 453M Nov 23 04:00 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_58.root
--rw-r--r-- 1 jalmond jalmond 298M Nov 23 03:49 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_19.root
--rw-r--r-- 1 jalmond jalmond 241M Nov 23 03:49 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_14.root
--rw-r--r-- 1 jalmond jalmond 133M Nov 23 03:39 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_61.root
--rw-r--r-- 1 jalmond jalmond 377M Nov 23 03:35 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_44.root
--rw-r--r-- 1 jalmond jalmond 213M Nov 23 03:34 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_3.root
--rw-r--r-- 1 jalmond jalmond 261M Nov 23 03:30 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_18.root
--rw-r--r-- 1 jalmond jalmond 279M Nov 23 03:29 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_10.root
--rw-r--r-- 1 jalmond jalmond 209M Nov 23 03:24 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_67.root
--rw-r--r-- 1 jalmond jalmond 265M Nov 23 03:19 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_32.root
--rw-r--r-- 1 jalmond jalmond 240M Nov 23 03:14 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_13.root
--rw-r--r-- 1 jalmond jalmond 222M Nov 23 03:14 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_57.root
--rw-r--r-- 1 jalmond jalmond 245M Nov 23 03:14 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_22.root
--rw-r--r-- 1 jalmond jalmond 162M Nov 23 03:09 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_7.root
--rw-r--r-- 1 jalmond jalmond 177M Nov 23 02:59 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_8.root
--rw-r--r-- 1 jalmond jalmond 180M Nov 23 02:59 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_29.root
--rw-r--r-- 1 jalmond jalmond 115M Nov 23 02:54 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_23.root
--rw-r--r-- 1 jalmond jalmond 232M Nov 23 02:49 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_20.root
--rw-r--r-- 1 jalmond jalmond 185M Nov 23 02:49 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_56.root
--rw-r--r-- 1 jalmond jalmond 157M Nov 23 02:49 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_2.root
--rw-r--r-- 1 jalmond jalmond 139M Nov 23 02:39 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_26.root
--rw-r--r-- 1 jalmond jalmond 152M Nov 23 02:39 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_66.root
--rw-r--r-- 1 jalmond jalmond 113M Nov 23 02:34 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_33.root
--rw-r--r-- 1 jalmond jalmond 115M Nov 23 02:24 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_55.root
--rw-r--r-- 1 jalmond jalmond 106M Nov 23 02:19 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_17.root
--rw-r--r-- 1 jalmond jalmond 165M Nov 23 02:14 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_39.root
--rw-r--r-- 1 jalmond jalmond  63M Nov 23 01:54 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_65.root
--rw-r--r-- 1 jalmond jalmond  40M Nov 23 01:49 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_1.root
--rw-r--r-- 1 jalmond jalmond  20M Nov 23 01:44 /gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_62.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_10.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_11.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_12.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_13.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_14.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_15.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_16.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_17.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_18.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_19.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_1.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_20.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_21.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_22.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_23.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_24.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_25.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_26.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_27.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_28.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_29.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_2.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_30.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_31.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_32.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_33.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_34.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_35.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_36.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_37.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_38.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_39.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_3.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_40.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_41.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_42.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_43.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_44.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_45.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_46.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_47.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_48.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_49.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_4.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_50.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_51.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_52.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_53.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_54.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_55.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_56.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_57.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_58.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_59.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_5.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_60.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_61.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_62.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_63.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_64.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_65.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_66.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_67.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_68.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_69.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_6.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_70.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_7.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_8.root
+/gv0/Users/jalmond/Run2UltraLegacy_v3/2017/MC/WGToLNuG_01J_5f_PtG_300_TuneCP5_13TeV-amcatnloFXFX-pythia8/221122_162650/0000/SKFlatNtuple_2017_MC_9.root

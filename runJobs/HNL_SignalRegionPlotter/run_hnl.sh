@@ -18,13 +18,13 @@ fi
 
 if [[ $1 == "VBF1000" ]]; then
 
-    SKFlat.py -a $analyzer  -i VBFTypeI_DF_M1000_private  -n 300  --nmax ${nmax}   -e 2018  &
+    SKFlat.py -a $analyzer  -i VBFTypeI_DF_M1000_private  -n 10  --nmax ${nmax}   -e 2018  &
 
 fi
 
 if [[ $1 == "DY300" ]]; then
 
-    SKFlat.py -a $analyzer  -i DYTypeI_DF_M300_private  -n 30  --nmax ${nmax}   -e 2018 &
+    SKFlat.py -a $analyzer  -i DYTypeI_DF_M300_private  -n 10  --nmax ${nmax}   -e 2018 &
 
 fi
 

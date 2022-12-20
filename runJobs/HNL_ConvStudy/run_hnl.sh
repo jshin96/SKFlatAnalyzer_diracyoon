@@ -17,7 +17,7 @@ if [[ $1 == "MC" ]]; then
 
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -l  $mcpath/MC.txt  -n 20  --nmax 10   -e ${i}  --skim SkimTree_HNMultiLep &
+        SKFlat.py -a $analyzer  -i WGToLNuG  -n 1  --nmax 10   -e ${i}  --skim SkimTree_HNMultiLep &
 
     done
 

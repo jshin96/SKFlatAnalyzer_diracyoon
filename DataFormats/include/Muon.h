@@ -137,6 +137,20 @@ public:
   bool PassMVA(double mva1, double mva2, double mva3) const;
   bool PassMVA(double mva1, double mva2) const;
 
+  inline bool PassFakeMVA(double mva1, double mva2, double mva3, double mva4) {
+    if(fabs(this->Eta()) < 1.5){
+      if(this->Pt() < 20 && j_MVA > mva1) return true;
+      if(this->Pt() >= 20 && j_MVA > mva2) return true;
+    }
+    else{
+      if(this->Pt() < 20 && j_MVA > mva3) return true;
+      if(this->Pt() >= 20 && j_MVA > mva4) return true;
+
+    }
+    return false;
+    
+  }
+
   bool PassSoftMVA(double mva1, double mva2, double mva3) const;
 
 

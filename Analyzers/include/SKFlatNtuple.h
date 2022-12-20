@@ -207,6 +207,17 @@ public :
    vector<float>   *fatjet_LSFlep_Pt;
    vector<float>   *fatjet_LSFlep_Eta;
    vector<float>   *fatjet_LSFlep_Phi;
+   vector<float>   *electron_conv_ntracks;
+   vector<float>   *electron_conv_fitprob;
+   vector<float>   *electron_conv_lxy;
+   vector<float>   *electron_conv_nHitsBeforeVtxMax;
+   vector<float>   *electron_conv_log_e_over_p;
+   vector<float>   *electron_conv_log_abs_cot_theta;
+   vector<float>   *electron_conv_pairMass;
+   vector<float>   *electron_conv_log_abs_delta_phi;
+   vector<float>   *electron_conv_log_chi2_max_pt;
+   vector<float>   *electron_conv_log_chi2_min_pt;
+   
    vector<float>   *electron_MVAIso;
    vector<float>   *electron_MVANoIso;
    vector<float>   *electron_Energy;
@@ -614,6 +625,18 @@ public :
    TBranch        *b_fatjet_LSFlep_Pt;   //!
    TBranch        *b_fatjet_LSFlep_Eta;   //!
    TBranch        *b_fatjet_LSFlep_Phi;   //!
+
+   TBranch        *b_electron_conv_ntracks;
+   TBranch        *b_electron_conv_fitprob;
+   TBranch        *b_electron_conv_lxy;
+   TBranch        *b_electron_conv_nHitsBeforeVtxMax;
+   TBranch        *b_electron_conv_log_e_over_p;
+   TBranch        *b_electron_conv_log_abs_cot_theta;
+   TBranch        *b_electron_conv_pairMass;
+   TBranch        *b_electron_conv_log_abs_delta_phi;
+   TBranch        *b_electron_conv_log_chi2_max_pt;
+   TBranch        *b_electron_conv_log_chi2_min_pt;
+
    TBranch        *b_electron_MVAIso;   //!
    TBranch        *b_electron_MVANoIso;   //!
    TBranch        *b_electron_Energy;   //!

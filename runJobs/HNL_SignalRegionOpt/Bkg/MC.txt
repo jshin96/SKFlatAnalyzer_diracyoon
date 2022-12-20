@@ -1,11 +1,7 @@
 DYJets
-TTJJ_powheg
-TTLJ_powheg
-TTLL_powheg
 ttWToLNu
 ttWToQQ
 ttZToLLNuNu
-WWTo2L2Nu_powheg
 WWW
 WWZ
 WZZ
@@ -20,11 +16,6 @@ GluGluHToTauTau_M125
 GluGluToZZto2e2mu
 GluGluToZZto4e
 GluGluToZZto4mu
-SingleTop_sch_Lep
-SingleTop_tch_antitop_Incl
-SingleTop_tch_top_Incl
-SingleTop_tW_antitop_NoFullyHad
-SingleTop_tW_top_NoFullyHad
 TG
 TTG
 TTTT

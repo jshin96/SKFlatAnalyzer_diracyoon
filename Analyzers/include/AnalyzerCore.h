@@ -54,6 +54,17 @@ public:
 
   };
 
+  enum BkgType
+  {
+    Fake=0,
+    Conv=1,
+    CF=2,
+  };
+
+
+
+
+
   //==================
   //==== Get objects
   //==================
@@ -104,6 +115,50 @@ public:
 
   std::vector<Photon> GetAllPhotons();
   std::vector<Photon> GetPhotons(TString id, double ptmin, double fetamax);
+
+
+
+  TMVA::Reader *MuonIDConvMVAReader;
+  TMVA::Reader *MuonIDNoPtEtaConvMVAReader;
+  TMVA::Reader *MuonIDNoPtConvMVAReader;
+
+  TMVA::Reader *ElectronIDFakeMVAReader;
+  TMVA::Reader *ElectronIDCFMVAReader;
+  TMVA::Reader *ElectronIDConvMVAReader;
+  TMVA::Reader *ElectronIDNoPtEtaConvMVAReader;
+  TMVA::Reader *ElectronIDNoPtConvMVAReader;
+
+  // ID MVA                                                                                            
+  void InitializeMuonIDTreeVars();
+  void InitializeElectronIDTreeVars();
+
+
+  void SetBDTIDVar(Lepton*  lep);
+  void SetupIDMVAReader(bool isMuon);
+
+
+  Float_t Pt,  Eta;
+  Float_t PtRatio,PtRatioNoLep, PtRatioAJ, PtRel, PtRelWithLep,PtRatioCorr,PtRelCorr;
+  Float_t CEMFracAJ, NEMFracAJ, CHFracAJ, NHFracAJ,MuFracAJ, JetDiscAJ;
+  Float_t CEMFracCJ, NEMFracCJ, CHFracCJ, NHFracCJ, MuFracCJ, JetDiscCJ;
+  Float_t Dxy,Dz,DxySig, DzSig, RelIso,IP3D,MVA,MVAIso,Chi2, Minireliso;
+  Float_t Full5x5_sigmaIetaIeta,dEtaSeed,dPhiIn,HoverE,Rho,TrkIso,InvEminusInvP,ecalPFClusterIso,hcalPFClusterIso;
+  Float_t RelDxy,RelDz,RelIP3D,RelMVA,RelMVAIso,PileUp;
+  Float_t R9,dr03TkSumPt,dr03HcalTowerSumEt,dr03HcalDepth1TowerSumEt,dr03EcalRecHitSumEt, e2x5OverE5x5,e1x5OverE5x5;
+  Float_t e15,e25,e55,EtaWidth,PhiWidth,dEtaIn,sigmaIetaIeta, MiniIsoChHad,MiniIsoNHad,MiniIsoPhHad,IsoChHad,IsoNHad,IsoPhHad;
+  Float_t RelMiniIsoCh,RelMiniIsoN,EoverP,FBrem;;
+  Float_t isEcalDriven,Pixel_hits,  Validhits,Matched_stations,Tracker_layers,MissingHits;
+  Float_t PassConversionVeto,IsGsfCtfScPixChargeConsistent, IsGsfScPixChargeConsistent, IsGsfCtfChargeConsistent;
+
+  Float_t w_id_tot;
+  Float_t w_tot;
+
+
+
+
+  double GetBDTScoreEl(Electron el ,BkgType bkg,TString bdttag="BDTA");
+  double GetBDTScoreMuon(Muon mu ,BkgType bkg, TString bdttag="BDTA");
+
 
 
   double GetIsoFromID(TString type_lep, TString id, double eta, double pt);

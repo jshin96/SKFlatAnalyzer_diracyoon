@@ -7,16 +7,35 @@ AnalyzerCore::AnalyzerCore(){
   
   mcCorr = new MCCorrection();
   puppiCorr = new PuppiSoftdropMassCorr();
-  if(AnalyserRunsFullBkg()){
-    fakeEst = new FakeBackgroundEstimator();
-    cfEst = new CFBackgroundEstimator();
-    pdfReweight = new PDFReweight();
-  }
+
+
+  fakeEst = new FakeBackgroundEstimator();
+  cfEst = new CFBackgroundEstimator();
+  pdfReweight = new PDFReweight();
+
   muonGE = new GeneralizedEndpoint();
   muonGEScaleSyst = new GEScaleSyst();
 
   JECSources = {"AbsoluteStat","AbsoluteScale","AbsoluteFlavMap","AbsoluteMPFBias","Fragmentation","SinglePionECAL","SinglePionHCAL","FlavorQCD","TimePtEta","RelativeJEREC1","RelativeJEREC2","RelativeJERHF","RelativePtBB","RelativePtEC1","RelativePtEC2","RelativePtHF","RelativeBal","RelativeSample","RelativeFSR","RelativeStatFSR","RelativeStatEC","RelativeStatHF","PileUpDataMC","PileUpPtRef","PileUpPtBB","PileUpPtEC1","PileUpPtEC2","PileUpPtHF","FlavorZJet","FlavorPhotonJet","FlavorPureGluon","FlavorPureQuark","FlavorPureCharm","FlavorPureBottom","Total"};
 
+
+  TMVA::Tools::Instance();
+  ElectronIDFakeMVAReader = new TMVA::Reader();
+  ElectronIDCFMVAReader = new TMVA::Reader();
+
+  ElectronIDConvMVAReader = new TMVA::Reader();
+  ElectronIDNoPtEtaConvMVAReader = new TMVA::Reader();
+  ElectronIDNoPtConvMVAReader = new TMVA::Reader();
+  MuonIDConvMVAReader = new TMVA::Reader();
+  MuonIDNoPtEtaConvMVAReader = new TMVA::Reader();
+  MuonIDNoPtConvMVAReader = new TMVA::Reader();
+
+
+
+  SetupIDMVAReader(false);
+  SetupIDMVAReader(true);
+
+  
   /*
     
     // In your analyser code add this line to constructor to fill map with JEC source values.
@@ -63,11 +82,10 @@ AnalyzerCore::~AnalyzerCore(){
 
   if(mcCorr) delete mcCorr;
   if(puppiCorr) delete puppiCorr;
-  if(AnalyserRunsFullBkg()){
-    if(fakeEst) delete fakeEst;
-    if(cfEst) delete cfEst;
-    if(pdfReweight) delete pdfReweight;
-  }
+  if(fakeEst) delete fakeEst;
+  if(cfEst) delete cfEst;
+  if(pdfReweight) delete pdfReweight;
+  
   if(muonGE) delete muonGE;
   if(muonGEScaleSyst) delete muonGEScaleSyst;
 
@@ -76,6 +94,16 @@ AnalyzerCore::~AnalyzerCore(){
   AK8CHSJECUncMap.clear();
   AK8PUPPIJECUncMap.clear();
 
+  delete ElectronIDFakeMVAReader;
+  delete ElectronIDCFMVAReader;
+
+  delete ElectronIDConvMVAReader;
+  delete ElectronIDNoPtConvMVAReader;
+  delete ElectronIDNoPtEtaConvMVAReader;
+  delete MuonIDConvMVAReader;
+  delete MuonIDNoPtConvMVAReader;
+  delete MuonIDNoPtEtaConvMVAReader;
+
   
 
 }
@@ -83,7 +111,7 @@ AnalyzerCore::~AnalyzerCore(){
 bool AnalyzerCore::AnalyserRunsFullBkg(){
 
   // Flag to setup fakeEst/cfEst/pdfReweight
-  vector<TString> AnalyserList = {"HNL_SignalRegionPlotter","HNL_ControlRegionPlotter","HNL_SignalRegionPlotter17028","HNL_SignalRegionPlotter21003","HNL_SignalLeptonOpt"};
+  vector<TString> AnalyserList = {"HNL_SignalRegionPlotter","HNL_ControlRegionPlotter","HNL_SignalRegionPlotter17028","HNL_SignalRegionPlotter21003","HNL_SignalLeptonOpt", "HNL_SignalRegionOpt", "HNL_SignalStudies"};
 
   if(std::find(AnalyserList.begin(), AnalyserList.end(), Analyzer) != AnalyserList.end()) {
     return true;
@@ -127,7 +155,7 @@ void AnalyzerCore::SwitchToTempDir(){
   while (!tempDir) {
     //==== First, let's find a directory name that doesn't exist yet
     std::stringstream dirname;
-    dirname << "AnalyzerCore" << counter;
+    dirname << "Analyzer4Core" << counter;
     if (gROOT->GetDirectory((dirname.str()).c_str())) {
       ++counter;
       continue;
@@ -390,10 +418,685 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
     mu.SetFilterBits(muon_filterbits->at(i));
     mu.SetPathBits(muon_pathbits->at(i));
 
+
+    if(AnalyserRunsFullBkg()) mu.SetHNL_LepMVA(-999.,GetBDTScoreMuon(mu,AnalyzerCore::Conv,  "BDTG"),-999);
+    
     out.push_back(mu);
 
   }
   return out;
+
+}
+
+void AnalyzerCore::InitializeMuonIDTreeVars(){
+
+  Pt=-1,       Eta=-1;
+  PtRatio=-1,  PtRel=-1 ;
+  CEMFracCJ=-1, NEMFracCJ=-1, CHFracCJ=-1, NHFracCJ=-1, MuFracCJ=-1, JetDiscCJ=-1;
+
+  Dxy=-1,Dz=-1,DxySig=-1, DzSig=-1, RelIso=-1,IP3D=-1,MVA=-1,Chi2=-1, Minireliso=-1;
+
+  RelDxy=-1,RelDz=-1,RelIP3D=-1,RelMVA=-1,RelMVAIso=-1,PileUp=-1;
+
+  MiniIsoChHad=-1,MiniIsoNHad=-1,MiniIsoPhHad=-1,IsoChHad=-1,IsoNHad=-1,IsoPhHad=-1;
+  RelMiniIsoCh=-1,RelMiniIsoN=-1;
+  Pixel_hits=-1,  Validhits=-1,Matched_stations=-1,Tracker_layers=-1;
+
+}
+void AnalyzerCore::InitializeElectronIDTreeVars(){
+
+
+  Pt=-1;
+  Eta=-1;
+  MiniIsoChHad=-1;
+  MiniIsoNHad=-1;
+  MiniIsoPhHad=-1;
+  IsoChHad=-1;
+  IsoNHad=-1 ;
+  IsoPhHad=-1;
+  RelMiniIsoCh=-1;
+  RelMiniIsoN=-1;
+  Dxy=-1;
+  Dz=-1;
+  DxySig=-1;
+  DzSig=-1;
+  RelDxy=-1;
+  RelDz=-1;
+  RelIso=-1;
+  IP3D=-1;
+  RelIP3D=-1;
+  PtRatio=-1;
+  PtRel=-1;
+  CEMFracCJ=-1;
+  NEMFracCJ=-1;
+  CHFracCJ=-1;
+  NHFracCJ=-1;
+  MuFracCJ=-1;
+  JetDiscCJ=-1;
+  MVA=-1;
+  RelMVA=-1;
+  RelMVAIso=-1;
+  MVAIso=-1;
+  Full5x5_sigmaIetaIeta=-1;
+  dEtaSeed=-1;
+  dPhiIn=-1;
+  HoverE=-1;
+  EoverP=-1;
+  FBrem=-1;
+  R9=-1;
+  TrkIso=-1;   //InvEminusInvP=-1;                                                                    
+  dr03TkSumPt=-1;
+  dr03HcalTowerSumEt=-1;
+  dr03HcalDepth1TowerSumEt=-1;
+  dr03EcalRecHitSumEt=-1;
+  e15=-1;
+  e25=-1;
+  e55=-1;
+  e2x5OverE5x5=-1;
+  e1x5OverE5x5=-1;
+  EtaWidth=-1;
+  PhiWidth=-1;
+  ecalPFClusterIso=-1;
+  hcalPFClusterIso=-1;
+  MissingHits=-1;
+  isEcalDriven=-1;
+  PassConversionVeto=-1;
+  IsGsfCtfScPixChargeConsistent=-1;
+  IsGsfScPixChargeConsistent=-1 ;
+  IsGsfCtfChargeConsistent=-1;
+
+}
+
+
+
+double AnalyzerCore::GetBDTScoreMuon(Muon mu ,BkgType bkg, TString BDTTag){
+
+  if(bkg != BkgType::Conv) return -999;
+
+  InitializeMuonIDTreeVars();
+
+  std::vector<Jet>   JetAllColl = GetJets("NoID", 10., 5.0);
+
+  Lepton *lep = (Lepton *)(&mu);
+  SetBDTIDVar(lep);
+  MVA = mu.MVA();
+
+  int IdxMatchJet=-1;
+  float mindR1=999.;
+
+  for(unsigned int ij=0; ij<JetAllColl.size(); ij++){
+    float dR1=lep->DeltaR(JetAllColl.at(ij));
+    if(dR1>0.4) continue;
+    if(dR1<mindR1){ mindR1=dR1; IdxMatchJet=ij; }
+  }
+
+  if(IdxMatchJet!=-1){
+    PtRatio=JetLeptonPtRatioLepAware(mu,false);
+    PtRel=JetLeptonPtRelLepAware(mu,true);
+  }
+
+  else{
+    PtRatio = min(1/(1.+lep->RelIso()), 1.5);
+    PtRel=0, PtRelWithLep=0, PtRelCorr=0;
+  }
+
+  Chi2 = mu.Chi2();
+  Validhits = mu.ValidMuonHits();
+  Matched_stations = mu.MatchedStations();
+  Pixel_hits  = mu.PixelHits();
+  Tracker_layers = mu.TrackerLayers();
+
+  TString EtaRegion = "_EC";
+  if(fabs(mu.Eta()) < 0.8) EtaRegion = "_IB";
+  else   if(fabs(mu.Eta()) < 1.5) EtaRegion = "_OB";
+
+
+  TString MVATagStr = BDTTag;
+  if (bkg == BkgType::Fake) MVATagStr += "_Fake";
+  if (bkg == BkgType::Conv) MVATagStr += "_Conv";
+
+
+
+  if(BDTTag.Contains("_NoPtEta"))  return  MuonIDNoPtEtaConvMVAReader->EvaluateMVA(MVATagStr);
+  else    if(BDTTag.Contains("_NoPt") || BDTTag.Contains("_LowPt"))  return  MuonIDNoPtConvMVAReader->EvaluateMVA(MVATagStr);
+  else  return  MuonIDConvMVAReader->EvaluateMVA(MVATagStr);
+
+
+}
+
+void AnalyzerCore::SetBDTIDVar(Lepton*  lep){
+
+
+  Pt    = (lep->Pt() > 500)  ? 499 : lep->Pt();
+  Eta   = fabs(lep->Eta());
+  MiniIsoChHad = lep->MiniIsoChHad();
+  MiniIsoNHad = lep->MiniIsoNHad();
+  MiniIsoPhHad = lep->MiniIsoPhHad();
+  IsoChHad = lep->IsoChHad();
+  IsoNHad = lep->IsoNHad();
+  IsoPhHad = lep->IsoPhHad();
+  Dxy   = lep->LogdXY();
+  RelDxy   = lep->LogdXY()/lep->Pt();
+  DxySig   = lep->LogdXYSig();
+  Dz   = lep->LogdZ();
+  RelDz   = lep->LogdZ()/lep->Pt();
+  DzSig   = lep->LogdZSig();
+  IP3D    = lep->SIP3D();
+  RelIP3D    = lep->SIP3D()/lep->Pt();
+  RelIso    =  lep->RelIso();
+  Minireliso   = lep->MiniRelIso();
+  RelMiniIsoCh = lep->MiniRelIsoCharged();
+  RelMiniIsoN = lep->MiniRelIsoNeutral();
+
+  //==== Vars for non-prompt lepton bkg                                                               
+
+                                                                                                  
+  int IdxMatchJet=-1;
+  float mindR1=999.;
+  std::vector<Jet>   JetAllColl = GetJets("NoID", 10., 5.0);
+
+  for(unsigned int ij=0; ij<JetAllColl.size(); ij++){
+    float dR1=lep->DeltaR(JetAllColl.at(ij));
+    if(dR1>0.4) continue;
+    if(dR1<mindR1){ mindR1=dR1; IdxMatchJet=ij; }
+  }
+
+  if(IdxMatchJet!=-1){
+
+    CEMFracCJ = JetAllColl.at(IdxMatchJet).ChargedEmEnergyFraction();
+    NEMFracCJ = JetAllColl.at(IdxMatchJet).NeutralEmEnergyFraction();
+    CHFracCJ  = JetAllColl.at(IdxMatchJet).ChargedHadEnergyFraction();
+    NHFracCJ  = JetAllColl.at(IdxMatchJet).NeutralHadEnergyFraction();
+    MuFracCJ  = JetAllColl.at(IdxMatchJet).MuonEnergyFraction();
+    JetDiscCJ = JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet);
+  }
+
+  else{
+    CEMFracCJ=0, NEMFracCJ=0., CHFracCJ=0., NHFracCJ=0., MuFracCJ=0., JetDiscCJ=0.;
+  }
+
+  return;
+}
+						\
+
+
+
+void AnalyzerCore::SetupIDMVAReader(bool isMuon){
+
+  if(isMuon) {
+
+    cout << "################ SETUP MUON ID MVA " << endl;
+    InitializeMuonIDTreeVars();
+
+    // Fake                                                                                            
+    // Fake                                                                                            
+    MuonIDConvMVAReader->AddVariable("Pt", &Pt);
+    MuonIDConvMVAReader->AddVariable("Eta", &Eta);
+    MuonIDConvMVAReader->AddVariable("MiniIsoChHad", &MiniIsoChHad);
+    MuonIDConvMVAReader->AddVariable("RelMiniIsoCh", &RelMiniIsoCh);
+    MuonIDConvMVAReader->AddVariable("IsoChHad", &IsoChHad);
+    MuonIDConvMVAReader->AddVariable("IsoNHad", &IsoNHad);
+    MuonIDConvMVAReader->AddVariable("IsoPhHad", &IsoPhHad);
+    MuonIDConvMVAReader->AddVariable("Dxy",  &Dxy);
+    MuonIDConvMVAReader->AddVariable("DxySig",  &DxySig);
+    MuonIDConvMVAReader->AddVariable("Dz",  &Dz);
+    MuonIDConvMVAReader->AddVariable("DzSig",  &DzSig);
+    MuonIDConvMVAReader->AddVariable("RelIso", &RelIso);
+    MuonIDConvMVAReader->AddVariable("IP3D", &IP3D);
+    MuonIDConvMVAReader->AddVariable("PtRatio",  &PtRatio);
+    MuonIDConvMVAReader->AddVariable("PtRel",  &PtRel);
+    MuonIDConvMVAReader->AddVariable("CEMFracCJ",&CEMFracCJ);
+    MuonIDConvMVAReader->AddVariable("NEMFracCJ",&NEMFracCJ);
+    MuonIDConvMVAReader->AddVariable("CHFracCJ",&CHFracCJ);
+    MuonIDConvMVAReader->AddVariable("JetDiscCJ",&JetDiscCJ);
+    MuonIDConvMVAReader->AddVariable("NHFracCJ",&NHFracCJ);
+    MuonIDConvMVAReader->AddVariable("MVA",  &MVA);
+    MuonIDConvMVAReader->AddVariable("MuFracCJ",&MuFracCJ);
+    MuonIDConvMVAReader->AddVariable("Chi2", &Chi2);
+    MuonIDConvMVAReader->AddVariable("Validhits", &Validhits);
+    MuonIDConvMVAReader->AddVariable("Matched_stations", &Matched_stations);
+    MuonIDConvMVAReader->AddVariable("Pixel_hits",  &Pixel_hits);
+    MuonIDConvMVAReader->AddVariable("Minireliso",  &Minireliso);
+    MuonIDConvMVAReader->AddVariable("Tracker_layers",  &Tracker_layers);
+    MuonIDConvMVAReader->AddSpectator("w_tot", &w_tot);
+
+
+
+    MuonIDNoPtEtaConvMVAReader->AddVariable("MiniIsoChHad", &MiniIsoChHad);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("RelMiniIsoCh", &RelMiniIsoCh);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("IsoChHad", &IsoChHad);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("IsoNHad", &IsoNHad);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("IsoPhHad", &IsoPhHad);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("Dxy",  &Dxy);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("DxySig",  &DxySig);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("Dz",  &Dz);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("DzSig",  &DzSig);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("RelIso", &RelIso);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("IP3D", &IP3D);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("PtRatio",  &PtRatio);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("PtRel",  &PtRel);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("CEMFracCJ",&CEMFracCJ);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("NEMFracCJ",&NEMFracCJ);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("CHFracCJ",&CHFracCJ);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("JetDiscCJ",&JetDiscCJ);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("NHFracCJ",&NHFracCJ);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("MVA",  &MVA);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("MuFracCJ",&MuFracCJ);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("Chi2", &Chi2);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("Validhits", &Validhits);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("Matched_stations", &Matched_stations);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("Pixel_hits",  &Pixel_hits);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("Minireliso",  &Minireliso);
+    MuonIDNoPtEtaConvMVAReader->AddVariable("Tracker_layers",  &Tracker_layers);
+    MuonIDNoPtEtaConvMVAReader->AddSpectator("w_tot", &w_tot);
+
+
+
+    MuonIDNoPtConvMVAReader->AddVariable("Eta", &Eta);
+    MuonIDNoPtConvMVAReader->AddVariable("MiniIsoChHad", &MiniIsoChHad);
+    MuonIDNoPtConvMVAReader->AddVariable("RelMiniIsoCh", &RelMiniIsoCh);
+    MuonIDNoPtConvMVAReader->AddVariable("IsoChHad", &IsoChHad);
+    MuonIDNoPtConvMVAReader->AddVariable("IsoNHad", &IsoNHad);
+    MuonIDNoPtConvMVAReader->AddVariable("IsoPhHad", &IsoPhHad);
+    MuonIDNoPtConvMVAReader->AddVariable("Dxy",  &Dxy);
+    MuonIDNoPtConvMVAReader->AddVariable("DxySig",  &DxySig);
+    MuonIDNoPtConvMVAReader->AddVariable("Dz",  &Dz);
+    MuonIDNoPtConvMVAReader->AddVariable("DzSig",  &DzSig);
+    MuonIDNoPtConvMVAReader->AddVariable("RelIso", &RelIso);
+    MuonIDNoPtConvMVAReader->AddVariable("IP3D", &IP3D);
+    MuonIDNoPtConvMVAReader->AddVariable("PtRatio",  &PtRatio);
+    MuonIDNoPtConvMVAReader->AddVariable("PtRel",  &PtRel);
+    MuonIDNoPtConvMVAReader->AddVariable("CEMFracCJ",&CEMFracCJ);
+    MuonIDNoPtConvMVAReader->AddVariable("NEMFracCJ",&NEMFracCJ);
+    MuonIDNoPtConvMVAReader->AddVariable("CHFracCJ",&CHFracCJ);
+    MuonIDNoPtConvMVAReader->AddVariable("JetDiscCJ",&JetDiscCJ);
+    MuonIDNoPtConvMVAReader->AddVariable("NHFracCJ",&NHFracCJ);
+    MuonIDNoPtConvMVAReader->AddVariable("MVA",  &MVA);
+    MuonIDNoPtConvMVAReader->AddVariable("MuFracCJ",&MuFracCJ);
+    MuonIDNoPtConvMVAReader->AddVariable("Chi2", &Chi2);
+    MuonIDNoPtConvMVAReader->AddVariable("Validhits", &Validhits);
+    MuonIDNoPtConvMVAReader->AddVariable("Matched_stations", &Matched_stations);
+    MuonIDNoPtConvMVAReader->AddVariable("Pixel_hits",  &Pixel_hits);
+    MuonIDNoPtConvMVAReader->AddVariable("Minireliso",  &Minireliso);
+    MuonIDNoPtConvMVAReader->AddVariable("Tracker_layers",  &Tracker_layers);
+    MuonIDNoPtConvMVAReader->AddSpectator("w_tot", &w_tot);
+
+
+
+  }
+
+  else{
+
+    InitializeElectronIDTreeVars();
+
+    ElectronIDConvMVAReader->AddVariable("Pt", &Pt);
+    ElectronIDConvMVAReader->AddVariable("Eta", &Eta);
+    ElectronIDConvMVAReader->AddVariable("MiniIsoChHad", &MiniIsoChHad);
+    ElectronIDConvMVAReader->AddVariable("RelMiniIsoCh", &RelMiniIsoCh);
+    ElectronIDConvMVAReader->AddVariable("IsoChHad", &IsoChHad);
+    ElectronIDConvMVAReader->AddVariable("IsoNHad", &IsoNHad);
+    ElectronIDConvMVAReader->AddVariable("IsoPhHad", &IsoPhHad);
+    ElectronIDConvMVAReader->AddVariable("Dxy",  &Dxy);
+    ElectronIDConvMVAReader->AddVariable("DxySig",  &DxySig);
+    ElectronIDConvMVAReader->AddVariable("Dz",  &Dz);
+    ElectronIDConvMVAReader->AddVariable("DzSig",  &DzSig);
+    ElectronIDConvMVAReader->AddVariable("RelIso", &RelIso);
+    ElectronIDConvMVAReader->AddVariable("IP3D", &IP3D);
+    ElectronIDConvMVAReader->AddVariable("PtRatio",  &PtRatio);
+    ElectronIDConvMVAReader->AddVariable("PtRel",  &PtRel);
+    ElectronIDConvMVAReader->AddVariable("CEMFracCJ",&CEMFracCJ);
+    ElectronIDConvMVAReader->AddVariable("NEMFracCJ",&NEMFracCJ);
+    ElectronIDConvMVAReader->AddVariable("CHFracCJ",&CHFracCJ);
+    ElectronIDConvMVAReader->AddVariable("JetDiscCJ",&JetDiscCJ);
+    ElectronIDConvMVAReader->AddVariable("NHFracCJ",&NHFracCJ);
+    ElectronIDConvMVAReader->AddVariable("MVA",  &MVA);
+    ElectronIDConvMVAReader->AddVariable("MVAIso",  &MVAIso);
+    ElectronIDConvMVAReader->AddVariable("Full5x5_sigmaIetaIeta",  &Full5x5_sigmaIetaIeta);
+    ElectronIDConvMVAReader->AddVariable("dEtaSeed",  &dEtaSeed);
+    ElectronIDConvMVAReader->AddVariable("dPhiIn",  &dPhiIn);
+    ElectronIDConvMVAReader->AddVariable("EoverP",  &EoverP);
+    ElectronIDConvMVAReader->AddVariable("FBrem",  &FBrem);
+    ElectronIDConvMVAReader->AddVariable("R9",  &R9);
+    ElectronIDConvMVAReader->AddVariable("TrkIso",  &TrkIso);
+    ElectronIDConvMVAReader->AddVariable("dr03TkSumPt",  &dr03TkSumPt);
+    ElectronIDConvMVAReader->AddVariable("dr03HcalTowerSumEt",  &dr03HcalTowerSumEt);
+    ElectronIDConvMVAReader->AddVariable("EtaWidth",  &EtaWidth);
+    ElectronIDConvMVAReader->AddVariable("PhiWidth",  &PhiWidth);
+    ElectronIDConvMVAReader->AddVariable("InvEminusInvP", &InvEminusInvP);
+    ElectronIDConvMVAReader->AddVariable("ecalPFClusterIso",  &ecalPFClusterIso);
+    ElectronIDConvMVAReader->AddVariable("MissingHits",  &MissingHits);
+    ElectronIDConvMVAReader->AddVariable("isEcalDriven", &isEcalDriven);
+    ElectronIDConvMVAReader->AddVariable("PassConversionVeto",  &PassConversionVeto);
+
+    ElectronIDConvMVAReader->AddVariable("IsGsfCtfScPixChargeConsistent",  &IsGsfCtfScPixChargeConsistent);
+    ElectronIDConvMVAReader->AddVariable("IsGsfScPixChargeConsistent",  &IsGsfScPixChargeConsistent);
+    ElectronIDConvMVAReader->AddVariable("IsGsfCtfChargeConsistent",  &IsGsfCtfChargeConsistent);
+    ElectronIDConvMVAReader->AddSpectator("w_tot", &w_tot);
+
+    
+    
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("MiniIsoChHad", &MiniIsoChHad);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("RelMiniIsoCh", &RelMiniIsoCh);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("IsoChHad", &IsoChHad);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("IsoNHad", &IsoNHad);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("IsoPhHad", &IsoPhHad);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("Dxy",  &Dxy);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("DxySig",  &DxySig);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("Dz",  &Dz);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("DzSig",  &DzSig);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("RelIso", &RelIso);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("IP3D", &IP3D);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("PtRatio",  &PtRatio);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("PtRel",  &PtRel);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("CEMFracCJ",&CEMFracCJ);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("NEMFracCJ",&NEMFracCJ);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("CHFracCJ",&CHFracCJ);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("JetDiscCJ",&JetDiscCJ);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("NHFracCJ",&NHFracCJ);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("MVA",  &MVA);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("MVAIso",  &MVAIso);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("Full5x5_sigmaIetaIeta",  &Full5x5_sigmaIetaIeta);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("dEtaSeed",  &dEtaSeed);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("dPhiIn",  &dPhiIn);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("EoverP",  &EoverP);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("FBrem",  &FBrem);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("R9",  &R9);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("TrkIso",  &TrkIso);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("dr03TkSumPt",  &dr03TkSumPt);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("dr03HcalTowerSumEt",  &dr03HcalTowerSumEt);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("EtaWidth",  &EtaWidth);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("PhiWidth",  &PhiWidth);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("InvEminusInvP", &InvEminusInvP);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("ecalPFClusterIso",  &ecalPFClusterIso);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("MissingHits",  &MissingHits);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("isEcalDriven", &isEcalDriven);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("PassConversionVeto",  &PassConversionVeto);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("IsGsfCtfScPixChargeConsistent",  &IsGsfCtfScPixChargeConsistent);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("IsGsfScPixChargeConsistent",  &IsGsfScPixChargeConsistent);
+    ElectronIDNoPtEtaConvMVAReader->AddVariable("IsGsfCtfChargeConsistent",  &IsGsfCtfChargeConsistent);
+    ElectronIDNoPtEtaConvMVAReader->AddSpectator("w_tot", &w_tot);
+
+    
+    
+    ElectronIDNoPtConvMVAReader->AddVariable("Eta", &Eta);
+    ElectronIDNoPtConvMVAReader->AddVariable("MiniIsoChHad", &MiniIsoChHad);
+    ElectronIDNoPtConvMVAReader->AddVariable("RelMiniIsoCh", &RelMiniIsoCh);
+    ElectronIDNoPtConvMVAReader->AddVariable("IsoChHad", &IsoChHad);
+    ElectronIDNoPtConvMVAReader->AddVariable("IsoNHad", &IsoNHad);
+    ElectronIDNoPtConvMVAReader->AddVariable("IsoPhHad", &IsoPhHad);
+    ElectronIDNoPtConvMVAReader->AddVariable("Dxy",  &Dxy);
+    ElectronIDNoPtConvMVAReader->AddVariable("DxySig",  &DxySig);
+    ElectronIDNoPtConvMVAReader->AddVariable("Dz",  &Dz);
+    ElectronIDNoPtConvMVAReader->AddVariable("DzSig",  &DzSig);
+    ElectronIDNoPtConvMVAReader->AddVariable("RelIso", &RelIso);
+    ElectronIDNoPtConvMVAReader->AddVariable("IP3D", &IP3D);
+    ElectronIDNoPtConvMVAReader->AddVariable("PtRatio",  &PtRatio);
+    ElectronIDNoPtConvMVAReader->AddVariable("PtRel",  &PtRel);
+    ElectronIDNoPtConvMVAReader->AddVariable("CEMFracCJ",&CEMFracCJ);
+    ElectronIDNoPtConvMVAReader->AddVariable("NEMFracCJ",&NEMFracCJ);
+    ElectronIDNoPtConvMVAReader->AddVariable("CHFracCJ",&CHFracCJ);
+    ElectronIDNoPtConvMVAReader->AddVariable("JetDiscCJ",&JetDiscCJ);
+    ElectronIDNoPtConvMVAReader->AddVariable("NHFracCJ",&NHFracCJ);
+    ElectronIDNoPtConvMVAReader->AddVariable("MVA",  &MVA);
+    ElectronIDNoPtConvMVAReader->AddVariable("MVAIso",  &MVAIso);
+    ElectronIDNoPtConvMVAReader->AddVariable("Full5x5_sigmaIetaIeta",  &Full5x5_sigmaIetaIeta);
+    ElectronIDNoPtConvMVAReader->AddVariable("dEtaSeed",  &dEtaSeed);
+    ElectronIDNoPtConvMVAReader->AddVariable("dPhiIn",  &dPhiIn);
+    ElectronIDNoPtConvMVAReader->AddVariable("EoverP",  &EoverP);
+    ElectronIDNoPtConvMVAReader->AddVariable("FBrem",  &FBrem);
+    ElectronIDNoPtConvMVAReader->AddVariable("R9",  &R9);
+    ElectronIDNoPtConvMVAReader->AddVariable("TrkIso",  &TrkIso);
+    ElectronIDNoPtConvMVAReader->AddVariable("dr03TkSumPt",  &dr03TkSumPt);
+    ElectronIDNoPtConvMVAReader->AddVariable("dr03HcalTowerSumEt",  &dr03HcalTowerSumEt);
+    ElectronIDNoPtConvMVAReader->AddVariable("EtaWidth",  &EtaWidth);
+    ElectronIDNoPtConvMVAReader->AddVariable("PhiWidth",  &PhiWidth);
+    ElectronIDNoPtConvMVAReader->AddVariable("InvEminusInvP", &InvEminusInvP);
+    ElectronIDNoPtConvMVAReader->AddVariable("ecalPFClusterIso",  &ecalPFClusterIso);
+    ElectronIDNoPtConvMVAReader->AddVariable("MissingHits",  &MissingHits);
+    ElectronIDNoPtConvMVAReader->AddVariable("isEcalDriven", &isEcalDriven);
+    ElectronIDNoPtConvMVAReader->AddVariable("PassConversionVeto",  &PassConversionVeto);
+    ElectronIDNoPtConvMVAReader->AddVariable("IsGsfCtfScPixChargeConsistent",  &IsGsfCtfScPixChargeConsistent);
+    ElectronIDNoPtConvMVAReader->AddVariable("IsGsfScPixChargeConsistent",  &IsGsfScPixChargeConsistent);
+    ElectronIDNoPtConvMVAReader->AddVariable("IsGsfCtfChargeConsistent",  &IsGsfCtfChargeConsistent);
+    ElectronIDNoPtConvMVAReader->AddSpectator("w_tot", &w_tot);
+
+
+    ElectronIDCFMVAReader->AddVariable("Pt", &Pt);
+    ElectronIDCFMVAReader->AddVariable("Eta", &Eta);
+    ElectronIDCFMVAReader->AddVariable("Dxy",  &Dxy);
+    ElectronIDCFMVAReader->AddVariable("DxySig",  &DxySig);
+    ElectronIDCFMVAReader->AddVariable("Dz",  &Dz);
+    ElectronIDCFMVAReader->AddVariable("DzSig",  &DzSig);
+    ElectronIDCFMVAReader->AddVariable("IP3D", &IP3D);
+    ElectronIDCFMVAReader->AddVariable("JetDiscCJ",&JetDiscCJ);
+    ElectronIDCFMVAReader->AddVariable("MVA",  &MVA);
+    ElectronIDCFMVAReader->AddVariable("Full5x5_sigmaIetaIeta",  &Full5x5_sigmaIetaIeta);
+    ElectronIDCFMVAReader->AddVariable("dPhiIn",  &dPhiIn);
+    ElectronIDCFMVAReader->AddVariable("EoverP",  &EoverP);
+    ElectronIDCFMVAReader->AddVariable("FBrem",  &FBrem);
+    ElectronIDCFMVAReader->AddVariable("R9",  &R9);
+    ElectronIDCFMVAReader->AddVariable("dr03TkSumPt",  &dr03TkSumPt);
+    ElectronIDCFMVAReader->AddVariable("e55",  &e55);
+    ElectronIDCFMVAReader->AddVariable("e2x5OverE5x5",  &e2x5OverE5x5);
+    ElectronIDCFMVAReader->AddVariable("EtaWidth",  &EtaWidth);
+    ElectronIDCFMVAReader->AddVariable("PhiWidth",  &PhiWidth);
+    ElectronIDCFMVAReader->AddVariable("ecalPFClusterIso",  &ecalPFClusterIso);
+    ElectronIDCFMVAReader->AddVariable("PassConversionVeto",  &PassConversionVeto);
+    ElectronIDCFMVAReader->AddVariable("IsGsfCtfScPixChargeConsistent",  &IsGsfCtfScPixChargeConsistent);
+    ElectronIDCFMVAReader->AddVariable("IsGsfScPixChargeConsistent",  &IsGsfScPixChargeConsistent);
+    ElectronIDCFMVAReader->AddVariable("IsGsfCtfChargeConsistent",  &IsGsfCtfChargeConsistent);
+
+    ElectronIDCFMVAReader->AddSpectator("w_tot", &w_tot);
+
+
+    ElectronIDFakeMVAReader->AddVariable("Pt", &Pt);
+    ElectronIDFakeMVAReader->AddVariable("Eta", &Eta);
+    ElectronIDFakeMVAReader->AddVariable("MiniIsoChHad", &MiniIsoChHad);
+    ElectronIDFakeMVAReader->AddVariable("MiniIsoPhHad", &MiniIsoPhHad);
+    ElectronIDFakeMVAReader->AddVariable("MiniIsoNHad", &MiniIsoNHad);
+    ElectronIDFakeMVAReader->AddVariable("RelMiniIsoCh", &RelMiniIsoCh);
+    ElectronIDFakeMVAReader->AddVariable("RelMiniIsoN", &RelMiniIsoN);
+    ElectronIDFakeMVAReader->AddVariable("Dxy",  &Dxy);
+    ElectronIDFakeMVAReader->AddVariable("Dz",  &Dz);
+    ElectronIDFakeMVAReader->AddVariable("RelIso", &RelIso);
+    ElectronIDFakeMVAReader->AddVariable("IP3D", &IP3D);
+    ElectronIDFakeMVAReader->AddVariable("PtRatio",  &PtRatio);
+    ElectronIDFakeMVAReader->AddVariable("PtRel",  &PtRel);
+    ElectronIDFakeMVAReader->AddVariable("NEMFracCJ",&NEMFracCJ);
+    ElectronIDFakeMVAReader->AddVariable("CHFracCJ",&CHFracCJ);
+    ElectronIDFakeMVAReader->AddVariable("JetDiscCJ",&JetDiscCJ);
+    ElectronIDFakeMVAReader->AddVariable("NHFracCJ",&NHFracCJ);
+    ElectronIDFakeMVAReader->AddVariable("CEMFracCJ",&CEMFracCJ);
+    ElectronIDFakeMVAReader->AddVariable("MVA",  &MVA);
+    ElectronIDFakeMVAReader->AddVariable("MVAIso",  &MVAIso);
+    ElectronIDFakeMVAReader->AddSpectator("w_tot", &w_tot);
+
+  }
+
+  TString AnalyzerPath=std::getenv("SKFlat_WD");
+  TString MVAPathFake="/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIV2/Default/2017/dataset/weights/";
+  TString MVAPathConv="/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIConv/Default/2017/dataset/weights/";
+  TString MVAPathCF="/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeICF/Default/2017/dataset/weights/";
+
+  if(isMuon){
+
+    vector<pair<TString,TString> > BDTInput =     {
+      make_pair("BDTG_Conv","BDTG_ConvSignalConvTypeI_MuMu_SignalConv_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
+
+      /*make_pair("BDTG_BB_Conv","BDTG_ConvSignalConv_BBTypeI_MuMu_SignalConv_BB_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
+      make_pair("BDTG_EC_Conv","BDTG_ConvSignalConv_ECTypeI_MuMu_SignalConv_EC_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"),
+      make_pair("BDTG_NoPtEta_Conv","BDTG_ConvSignalConvNoPtEtaTypeI_MuMu_SignalConvNoPtEta_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"),
+      make_pair("BDTG_NoPt_Conv","BDTG_ConvSignalConvNoPtTypeI_MuMu_SignalConvNoPt_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT") ,   
+      make_pair("BDTG_NoPt_EC_Conv","BDTG_ConvSignalConvNoPt_ECTypeI_MuMu_SignalConvNoPt_EC_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"),
+      make_pair("BDTG_NoPt_BB_Conv","BDTG_ConvSignalConvNoPt_BBTypeI_MuMu_SignalConvNoPt_BB_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
+      make_pair("BDTG_LowPt_Conv","BDTG_ConvSignalConvLowPtTypeI_MuMu_SignalConvLowPt_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
+      make_pair("BDTG_LowPt_BB_Conv","BDTG_ConvSignalConvLowPt_BBTypeI_MuMu_SignalConvLowPt_BB_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"),
+      make_pair("BDTG_LowPt_EC_Conv","BDTG_ConvSignalConvLowPt_ECTypeI_MuMu_SignalConvLowPt_EC_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT")*/
+    };
+
+
+
+    for (auto ibdt : BDTInput) {
+
+      ///if(ibdt.first.Contains("_NoPtEta"))       MuonIDNoPtEtaConvMVAReader->BookMVA(ibdt.first,MVAPathConv+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
+      //else    if(ibdt.first.Contains("_NoPt") || ibdt.first.Contains("_LowPt") )       MuonIDNoPtConvMVAReader->BookMVA(ibdt.first,MVAPathConv+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
+      
+      MuonIDConvMVAReader->BookMVA(ibdt.first,MVAPathConv+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
+
+    }
+
+
+  }
+  else{
+
+    
+    vector<pair<TString,TString> > BDTInput =     {
+
+      make_pair("BDTG_Fake", "BDTG_FakeSignalTypeI_EE_Signal_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"),
+      make_pair("BDTG_LowPt_Fake", "BDTG_FakeSignalBin1TypeI_EE_SignalBin1_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"),
+
+      make_pair("BDTG_Conv","BDTG_ConvSignalConvTypeI_EE_SignalConv_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"),
+      make_pair("BDTG_BB_Conv","BDTG_ConvSignalConv_BBTypeI_EE_SignalConv_BB_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
+      make_pair("BDTG_EC_Conv","BDTG_ConvSignalConv_ECTypeI_EE_SignalConv_EC_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
+      make_pair("BDTG_NoPtEta_Conv","BDTG_ConvSignalConvNoPtEtaTypeI_EE_SignalConvNoPtEta_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
+      make_pair("BDTG_NoPt_Conv","BDTG_ConvSignalConvNoPtTypeI_EE_SignalConvNoPt_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
+      make_pair("BDTG_NoPt_EC_Conv","BDTG_ConvSignalConvNoPt_ECTypeI_EE_SignalConvNoPt_EC_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
+      make_pair("BDTG_NoPt_BB_Conv","BDTG_ConvSignalConvNoPt_BBTypeI_EE_SignalConvNoPt_BB_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
+      make_pair("BDTG_LowPt_Conv","BDTG_ConvSignalConvLowPtTypeI_EE_SignalConvLowPt_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"		),
+      make_pair("BDTG_LowPt_BB_Conv","BDTG_ConvSignalConvLowPt_BBTypeI_EE_SignalConvLowPt_BB_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
+      make_pair("BDTG_LowPt_EC_Conv","BDTG_ConvSignalConvLowPt_ECTypeI_EE_SignalConvLowPt_EC_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
+
+
+      make_pair("BDTG_BB_CF","BDTG_CFSignalCFTypeI_EE_SignalCF_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"),
+      make_pair("BDTG_EC_CF","BDTG_CFSignalCFECTypeI_EE_SignalCFEC_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT")
+
+    };
+
+    for (auto ibdt : BDTInput)  {
+      cout <<  ibdt.first << " " << ibdt.second << endl;
+      if(ibdt.first.Contains("_CF"))    ElectronIDCFMVAReader->BookMVA(ibdt.first,MVAPathCF+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
+      
+      else if(ibdt.first.Contains("_Conv")) {
+        if(ibdt.first.Contains("_NoPtEta"))       ElectronIDNoPtEtaConvMVAReader->BookMVA(ibdt.first,MVAPathConv+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
+        else    if(ibdt.first.Contains("_NoPt")|| ibdt.first.Contains("_LowPt") )       ElectronIDNoPtConvMVAReader->BookMVA(ibdt.first,MVAPathConv+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
+        else    ElectronIDConvMVAReader->BookMVA(ibdt.first,MVAPathConv+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
+      }
+      else{
+        ElectronIDFakeMVAReader->BookMVA(ibdt.first,MVAPathFake+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
+      }
+    }
+
+  }
+
+
+  return;
+
+
+}
+
+
+
+
+
+
+
+
+
+double AnalyzerCore::GetBDTScoreEl(Electron el ,BkgType bkg, TString BDTTag){
+
+  InitializeElectronIDTreeVars();
+
+  std::vector<Jet>   JetAllColl = GetJets("NoID", 10., 5.0);
+
+  Lepton *lep = (Lepton *)(&el);
+  SetBDTIDVar(lep);
+
+  MVA    = el.MVANoIsoResponse();
+  MVAIso    = el.MVAIsoResponse();
+  RelMVA    = el.MVANoIsoResponse()/lep->Pt();
+  RelMVAIso    = el.MVAIsoResponse()/lep->Pt();
+  MissingHits = el.NMissingHits();
+  Full5x5_sigmaIetaIeta  = el.Full5x5_sigmaIetaIeta();  //sigmaIetaIeta  = el.sigmaIetaIeta();                                                                                                                                                
+  dEtaSeed  = el.dEtaSeed();
+  dPhiIn  = el.dPhiIn();//  dEtaIn  = el.dEtaIn();                                                                                                                                                                                            
+  EtaWidth = el.EtaWidth();
+  PhiWidth = el.PhiWidth();
+  e2x5OverE5x5 = el.e2x5OverE5x5();
+  e1x5OverE5x5= el.e1x5OverE5x5();
+  e15= el.e15();
+  e25= el.e25();
+  e55= el.e55();
+  dr03EcalRecHitSumEt= el.dr03EcalRecHitSumEt()/el.UncorrPt();
+  dr03HcalDepth1TowerSumEt= el.dr03HcalDepth1TowerSumEt()/el.UncorrPt();
+  dr03HcalTowerSumEt= el.dr03HcalTowerSumEt()/el.UncorrPt();
+  dr03TkSumPt= el.dr03TkSumPt()/el.UncorrPt();
+  R9= el.R9();
+  HoverE  = el.HoverE();
+  TrkIso  = el.TrkIso()/el.UncorrPt();  //InvEminusInvP = fabs(el.InvEminusInvP());                                                                                                                                                           
+  ecalPFClusterIso = el.ecalPFClusterIso()/el.UncorrPt();
+  hcalPFClusterIso = el.hcalPFClusterIso()/el.UncorrPt();
+  isEcalDriven = el.isEcalDriven();
+  EoverP = log(el.EOverP());
+  FBrem = el.FBrem();
+  PassConversionVeto  = (el.PassConversionVeto()) ? 1 : 0;
+  IsGsfCtfScPixChargeConsistent  = (el.IsGsfCtfScPixChargeConsistent()) ? 1 : 0;
+  IsGsfScPixChargeConsistent  = (el.IsGsfScPixChargeConsistent()) ? 1 : 0;
+  IsGsfCtfChargeConsistent  = (el.IsGsfCtfChargeConsistent()) ? 1 : 0;
+
+
+  //==== Vars for non-prompt lepton bkg                                                                                                                                                                                                       
+  int IdxMatchJet=-1;
+  float mindR1=999.;
+
+  for(unsigned int ij=0; ij<JetAllColl.size(); ij++){
+    float dR1=lep->DeltaR(JetAllColl.at(ij));
+    if(dR1>0.4) continue;
+    if(dR1<mindR1){ mindR1=dR1; IdxMatchJet=ij; }
+  }
+
+
+
+  if(IdxMatchJet!=-1){
+    PtRatio=JetLeptonPtRatioLepAware(el,false);
+    PtRel=JetLeptonPtRelLepAware(el,true);
+  }
+
+  else{
+    PtRatio = min(1/(1.+lep->RelIso()), 1.5);
+    PtRel=0, PtRelWithLep=0, PtRelCorr=0;
+  }
+
+
+  TString MVATagStr = BDTTag;
+  if (bkg == BkgType::Fake) MVATagStr += "_Fake";
+  if (bkg == BkgType::Conv) MVATagStr += "_Conv";
+
+  if (bkg == BkgType::CF){
+    if(fabs(el.Eta()) < 1.5)    MVATagStr += "_BB";
+    else     MVATagStr += "_EC";
+    MVATagStr += "_CF";
+  }
+
+  //TString EtaRegion = "_EC";                                                                                                                                                                                                                
+  //if(fabs(el.Eta()) < 0.8) EtaRegion = "_IB";                                                                                                                                                                                               
+  //else   if(fabs(el.Eta()) < 1.5) EtaRegion = "_OB";                                                                                                                                                                                        
+
+
+  if(MVATagStr.Contains("CF"))  {
+    return  ElectronIDCFMVAReader->EvaluateMVA(MVATagStr);
+  }
+
+  if(MVATagStr.Contains("Conv")) {
+    if(MVATagStr.Contains("NoPtEta")) return  ElectronIDNoPtEtaConvMVAReader->EvaluateMVA(MVATagStr);
+    if(MVATagStr.Contains("NoPt") || MVATagStr.Contains("LowPt")) return  ElectronIDNoPtConvMVAReader->EvaluateMVA(MVATagStr);
+   
+
+    return  ElectronIDConvMVAReader->EvaluateMVA(MVATagStr);
+
+  }
+
+
+  return  ElectronIDFakeMVAReader->EvaluateMVA(MVATagStr);
 
 }
 
@@ -500,6 +1203,18 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
     if(electron_jetNTracks)el.SetJetNTracks(electron_jetNTracks->at(i));
     if(electron_jetNTracksMVA)el.SetJetNTracksMVA(electron_jetNTracksMVA->at(i));
 
+    if(electron_conv_ntracks) el.SetConvNTracks(electron_conv_ntracks->at(i));
+    if(electron_conv_fitprob)	el.SetConvFitProb(electron_conv_fitprob->at(i));
+    if(electron_conv_lxy)	el.SetConvLxy(electron_conv_lxy->at(i));
+    if(electron_conv_nHitsBeforeVtxMax)	el.SetConvNHits(electron_conv_nHitsBeforeVtxMax->at(i));
+    if(electron_conv_log_e_over_p)	el.SetLogEoverP(electron_conv_log_e_over_p->at(i));
+    if(electron_conv_log_abs_cot_theta)	el.SetLogCotTheta(electron_conv_log_abs_cot_theta->at(i));
+    if(electron_conv_pairMass)	el.SetPairMass(electron_conv_pairMass->at(i));
+    if(electron_conv_log_abs_delta_phi)	el.SetLogDphi(electron_conv_log_abs_delta_phi->at(i));
+    if(electron_conv_log_chi2_max_pt)	el.SetLogChi2Max(electron_conv_log_chi2_max_pt->at(i));
+    if(electron_conv_log_chi2_min_pt)	el.SetLogChi2Min(electron_conv_log_chi2_min_pt->at(i));
+
+
 
     el.SetR9(electron_r9->at(i));
     el.SetL1Et(electron_l1et->at(i));
@@ -554,6 +1269,8 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
 
     el.SetFilterBits(electron_filterbits->at(i));
     el.SetPathBits(electron_pathbits->at(i));
+
+    if(AnalyserRunsFullBkg()) el.SetHNL_LepMVA(GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTG"),GetBDTScoreEl(el,AnalyzerCore::Conv,  "BDTG"),GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTG"));
 
     out.push_back(el);
 
@@ -896,7 +1613,7 @@ double AnalyzerCore::GetIsoFromID(TString  lep_type, TString id, double eta, dou
 
 
   }
-  cout << "[HNL_LeptonCore::GetIsoFromID ] ID not found.." << id<< endl;
+  cout << "[AnalyzerCore::GetIsoFromID ] ID not found.." << id<< endl;
   exit(EXIT_FAILURE);
 
   return -999999999.;
@@ -2657,6 +3374,7 @@ void AnalyzerCore::initializeAnalyzerTools(){
   puppiCorr->ReadHistograms();
 
   //==== FakeBackgroundEstimator
+
   if(AnalyserRunsFullBkg()){
     fakeEst->SetEra(GetEra());
     fakeEst->ReadHistograms();
@@ -2664,7 +3382,10 @@ void AnalyzerCore::initializeAnalyzerTools(){
     
     cfEst->SetEra(GetEra());
     cfEst->ReadHistograms();
+
   }
+
+
 }
 
 
@@ -2913,7 +3634,7 @@ vector<Electron> AnalyzerCore::SkimLepColl(const vector<Electron>& ElColl, vecto
       if( GetNHIntConv &&         LepType>=4         ) PassSel=true;
       if( GetNHExtConv &&         LepType<-4         ) PassSel=true;
       if( GetCF        &&         IsCF(ElColl.at(i), TruthColl) ) PassSel=true;
-      
+      if( Option.Contains("NoCF") && IsCF(ElColl.at(i), TruthColl) ) PassSel=false;
       if( PassSel ) ReturnVec.push_back(ElColl.at(i));
     }
   }

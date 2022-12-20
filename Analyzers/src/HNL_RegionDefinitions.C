@@ -130,6 +130,7 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq, s
     
     if(AK8_JetColl.size() > 0) {
       TString SRbin= RunSignalRegionAK8String (dilep_channel,qq, leps, leps_veto, TauColl, JetColl, AK8_JetColl, B_JetColl,ev, METv ,param_channel,"", weight_channel) ;
+
       if(SRbin != "false") FillEventCutflow(LimitRegions, weight_channel, SRbin,"LimitInput/"+param.Name);
       if(SRbin != "false") FillEventCutflow(LimitRegionsQ, weight_channel, lep_charge+SRbin,"LimitInput/"+param.Name);
 
@@ -141,6 +142,7 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq, s
       
       TString SRbin = RunSignalRegionWWString( dilep_channel,qq, leps, leps_veto,  TauColl, JetCollLoose, VBF_JetColl,  AK8_JetColl, B_JetColl,ev, METv, param_channel,  "", weight_channel);
             
+
       if(SRbin != "false"){
 	FillEventCutflow(LimitRegions, weight_channel, SRbin,"LimitInput/"+param.Name);
 	FillEventCutflow(LimitRegionsQ, weight_channel, lep_charge+SRbin,"LimitInput/"+param.Name);
@@ -159,6 +161,8 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq, s
 
 	SRbin  = RunSignalRegionAK4String (dilep_channel,qq, leps, leps_veto, TauColl, JetColl, AK8_JetColl, B_JetColl, ev, METv ,param_channel,"", weight_channel);
 	
+
+
 	if(SRbin != "false"){
 	  FillEventCutflow(LimitRegions, weight_channel, SRbin,"LimitInput/"+param.Name);
 	  FillEventCutflow(LimitRegionsQ, weight_channel, lep_charge+SRbin,"LimitInput/"+param.Name);
@@ -394,7 +398,7 @@ bool  HNL_RegionDefinitions::RunSignalRegionWW(HNL_LeptonCore::Channel channel, 
 TString HNL_RegionDefinitions::RunSignalRegionWWString(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType qq ,std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto , std::vector<Tau> TauColl, std::vector<Jet> JetCollLoose, std::vector<Jet> JetColl, std::vector<FatJet>  AK8_JetColl, std::vector<Jet> B_JetColl, Event ev, Particle METv, AnalyzerParameter param, TString PostLabel ,  float w){
 
 
-  if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
+  if(!CheckLeptonFlavourForChannel(channel, leps)) return "false";
 
   if (leps_veto.size() != 2) return "false";
 
@@ -410,11 +414,11 @@ TString HNL_RegionDefinitions::RunSignalRegionWWString(HNL_LeptonCore::Channel c
 
   bool use_leadjets=true;
   double ll_dphi = fabs(TVector2::Phi_mpi_pi( ( (*leps[0]).Phi() - (*leps[1]).Phi() )) );
-  if(ll_dphi < 2.) return false;
+  if(ll_dphi < 2.) return "false";
   FillEventCutflow(HNL_LeptonCore::SR2, w, "SR2_DPhi",param.Name,param.WriteOutVerbose);
   
-  if( ( (*leps[0]) + (*leps[1]) ).M() < 20.) return false;
-  if(JetColl.size() < 2) return false;
+  if( ( (*leps[0]) + (*leps[1]) ).M() < 20.) return "false";
+  if(JetColl.size() < 2) return "false";
   FillEventCutflow(HNL_LeptonCore::SR2, w, "SR2_DiJet",param.Name,param.WriteOutVerbose);
 
   double maxDiJetDeta=0.;
@@ -432,17 +436,17 @@ TString HNL_RegionDefinitions::RunSignalRegionWWString(HNL_LeptonCore::Channel c
   }
   if(use_leadjets){ijet1=0;ijet2=1;}
 
-  if(maxDiJetDeta < 2.5) return false;
+  if(maxDiJetDeta < 2.5) return "false";
   FillEventCutflow(HNL_LeptonCore::SR2, w, "SR2_DiJetEta",param.Name,param.WriteOutVerbose);
 
   Particle JJ = JetColl[ijet1] + JetColl[ijet2];
   FillEventCutflow(HNL_LeptonCore::SR2, w, "SR2_DiJetMass",param.Name,param.WriteOutVerbose);
-  if(JJ.M() < 750) return false;
+  if(JJ.M() < 750) return "false";
 
   double Av_JetEta= 0.5*(JetColl[ijet1].Eta()+ JetColl[ijet2].Eta());
   double zeppenfeld = TMath::Max((*leps[0]).Eta()  - Av_JetEta , (*leps[1]).Eta()  - Av_JetEta ) /maxDiJetDeta;
 
-  if(zeppenfeld > 0.75) return false;
+  if(zeppenfeld > 0.75) return "false";
 
 
   if(!PassVBF(JetColl,leps,750., true)) return "false";

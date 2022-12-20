@@ -52,24 +52,28 @@ def PerformKolmogorovSmirnov(filepath):
     print(filepath+":")
     print("--- Goodness of signal (background) consistency: " + str(kolS)+ " (" + str(kolB) + ")" )
 
+    return [str(kolS),str(kolB)]
     RootFile.Close()
 
 
-BDTFile_Dir = "/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeI/Default/2017/"
+BDTFile_Dir = "/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIConv/Default/2017/"
 BDTFileList  = [f for f in listdir(BDTFile_Dir) if isfile(join(BDTFile_Dir,f))]
 
 
 
 import argparse
 parser = argparse.ArgumentParser(description='option')
-parser.add_argument('-b', dest='Bkg', default="NULL")
+parser.add_argument('-b', dest='Bkg', default="Conv")
 parser.add_argument('-f', dest='Channel', default="NULL")
-parser.add_argument('-c', dest='Classifier', default="BDT")
+parser.add_argument('-c', dest='Classifier', default="BDTG")
 
 args = parser.parse_args()
 
 MaxAUC=0.
 MaxJob=""
+n=0
+Results = dict()
+
 for File in BDTFileList:
 
     if not args.Bkg in File:
@@ -83,14 +87,27 @@ for File in BDTFileList:
         continue
 
     print ("="*50)
-    PerformKolmogorovSmirnov(BDTFile_Dir+"/"+File)
+    res = PerformKolmogorovSmirnov(BDTFile_Dir+"/"+File)
     print ("-"*50)
+    
     AUC= AUCCalc(BDTFile_Dir+"/"+File)
+    res.append(File)
     if AUC  > MaxAUC:
         MaxAUC = AUC
         MaxJob=File
     print ("="*50)
+    Results[AUC] = res
+    n=n+1
 
+print "AUC              KS_signal   KS_bkg      File "
+for key in sorted(Results,reverse=True):
+    if float(Results[key][0]) < 0.05 or float(Results[key][1])< 0.05:
+        continue
+    print 
+    print "%s: %s" % (key, Results[key])
+
+#for x in Results:
+#    print x[3] + " " + x[2] + " " + x[0] + " " + x[1]
 
 print ("%"*50)
 print ("%"*50)

@@ -48,6 +48,12 @@ public:
   void SetLepMVA(double mva);
   inline double lep_mva() const {return j_lep_mva;}
 
+  void SetHNL_LepMVA(double mvaf, double mvacf, double mvaconv);
+  inline double hnl_mva_fake() const {return j_lep_mva_hnl_fake;}
+  inline double hnl_mva_conv() const {return j_lep_mva_hnl_conv;}
+  inline double hnl_mva_cf() const {return j_lep_mva_hnl_cf;}
+
+
 
   void SetJetPtRel(double ptrel);
   inline double lep_jet_ptrel() const {return j_lep_jetptrel;}
@@ -163,6 +169,8 @@ public:
 
   virtual void Print();
 
+  double j_lep_mva_hnl_fake,j_lep_mva_hnl_conv,j_lep_mva_hnl_cf;
+
 private:
   double j_dXY, j_dXYerr;
   double j_lep_mva;
@@ -183,6 +191,8 @@ private:
   bool j_passID;
   
   bool j_IDSet;
+
+
 
   ClassDef(Lepton,1)
 

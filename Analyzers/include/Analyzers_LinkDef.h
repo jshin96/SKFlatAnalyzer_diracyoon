@@ -20,6 +20,7 @@
 #pragma link C++ class HNL_SignalStudies+;
 #pragma link C++ class HNL_SR3KinVar+;
 #pragma link C++ class HNL_LepIDKinVar+;
+#pragma link C++ class HNL_LepIDKinVarEtaBinned+;
 #pragma link C++ class HNL_ControlRegionPlotter+;
 #pragma link C++ class HNL_SignalRegionOpt+;
 #pragma link C++ class HNL_SignalLeptonOpt+;

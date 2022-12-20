@@ -3,8 +3,8 @@ rundir=HNL_SignalLeptonOpt
 sigpath=${SKFlat_WD}/runJobs/${analyzer}/Signals/
 mcpath=${SKFlat_WD}/runJobs/${analyzer}/Bkg/
 datapath=${SKFlat_WD}/runJobs/${analyzer}/DATA/
-njobs=20
-njobs_sig=2
+njobs=5
+njobs_sig=4
 njobs_data=2
 nmax=300
 skim=' '
@@ -14,12 +14,18 @@ declare  -a era_list=("2016preVFP" "2016postVFP" "2017" "2018")
 
 if [[ $1 == "DATA" ]]; then
 
+    declare  -a era_list=("2017")
     for i in "${era_list[@]}"
     do
         SKFlat.py -a $analyzer  -l $datapath/DATA_${i}.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep &
+        SKFlat.py -a $analyzer  -l $sigpath/SSWW.txt  -n $njobs_sig  --nmax ${nmax}  -e ${i} &
+        SKFlat.py -a $analyzer  -l $sigpath/DY.txt  -n $njobs_sig  --nmax ${nmax}   -e ${i} &
+        SKFlat.py -a $analyzer  -l $sigpath/VBF.txt  -n $njobs_sig  --nmax ${nmax}   -e ${i} &
+
     done
-    
+
 fi
+
 
 if [[ $1 == "DY100" ]]; then
 

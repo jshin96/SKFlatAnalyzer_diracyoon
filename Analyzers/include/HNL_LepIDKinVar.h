@@ -14,6 +14,8 @@ class HNL_LepIDKinVar : public HNL_RegionDefinitions {
   bool SS2l, TriLep, TetraLep; 
   bool DblMu, DblEG, MuEG;
   bool SystRun;
+  bool RunIB,RunOB,RunEC;
+
   vector<TString> TrigList_DblMu, TrigList_DblEG, TrigList_MuEG;
 
   void MakeTreeSS2L(HNL_LeptonCore::Channel, vector<Lepton *>  LepTColl,
@@ -48,6 +50,9 @@ class HNL_LepIDKinVar : public HNL_RegionDefinitions {
   Int_t POGTight, POGMedium,HNTightID;
   
   Int_t PassConversionVeto,IsGsfCtfScPixChargeConsistent, IsGsfScPixChargeConsistent, IsGsfCtfChargeConsistent;
+
+  Float_t ConvFitProb ,  ConvLxy  ,   ConvLogEoverP,  ConvLogCotTheta,  ConvPairMass,  ConvLogDphi,  ConvLogChi2Max,  ConvLogChi2Min;
+  Int_t  ConvNTracks,  ConvNHits;
 
   Float_t w_tot;
 

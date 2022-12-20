@@ -165,7 +165,6 @@ bool Muon::PassID(TString ID) const {
   if(ID=="POGHighPtMixTight") return  Pass_POGHighPtTightOR();
   if(ID=="POGHighPtMixLoose") return  Pass_POGHighPtLooseOR();
 
-
   if(ID=="HNVeto2016") return Pass_HNVeto2016();
   if(ID=="HNLoosest") return Pass_HNVeto2016();
 
@@ -178,73 +177,59 @@ bool Muon::PassID(TString ID) const {
   if(ID=="HNLooseV1") return Pass_HNLoose(0.4,  0.2, 0.5,10.);
   if(ID=="HNLoosePOG") return Pass_HNLoose(0.4,  0.2, 0.5,99999.);
 
+
+  /// Loose ID used for MVA
   if(ID=="MVAID") return Pass_LepMVAID();
 
-  if(ID.Contains("MuOpt")) Pass_CB_Opt(ID);
+  if(ID.Contains("MuOpt")) return Pass_CB_Opt(ID);
 
-
-  if(ID.Contains("HNMVA_")){
-    TString mva_st = ID.ReplaceAll("HNMVA_","");
-    std::string mva_s = std::string(mva_st);
-    std::string::size_type sz;   
-    
-    double mva_d = std::stod (mva_s,&sz);
-    return PassMVA(mva_d,mva_d,mva_d);
-
+  if(ID.Contains("HNL_ULID_v1")){
+    //if(!PassID("HNLIPv1")) return false;
+    return Pass_CB_Opt("HNLOpt_UL_MuOpt_HNLUL_MVAB0p75_MVAEC0p65_ISOB0p4_ISOEC0p4");
   }
 
-  if(ID=="HNTightMVAVL")  return PassMVA(0.,0.,0.);
-  if(ID=="HNTightMVAL")  return PassMVA(0.15,0.15,0.15);
-  if(ID=="HNTightMVAM")  return PassMVA(0.45,0.45,0.45);
-  if(ID=="HNTightMVAT")  return PassMVA(0.65,0.65,0.65);
-  if(ID=="HNTightMVAVT")  return PassMVA(0.8,0.8,0.8);
-  if(ID=="HNTightMVAVVT")  return PassMVA(0.9,0.9,0.9);
+
 
   if(ID=="HNTightV1") return Pass_HNTight(0.07, 0.02, 0.05, 3.);
   if(ID=="HNTightV2") return Pass_HNTight(0.07, 0.05, 0.1, 3.);
 
-
-  if(ID=="HNOpt")                 {
-
-    if( fabs(this->Eta())<= 1.479 ){
-
-      double dxy_cut = 0.01 ;
-      if(this->Pt() > 10 && this->Pt()  < 60.) dxy_cut -= (this->Pt() - 10.) * 0.005/ 50.;
-      if(this->Pt() > 60.) dxy_cut = 0.005;
-      if(fabs(dXY()) >  dxy_cut)   return false;
-      if(fabs(dZ()) >  0.05)   return false;
-      if(RelIso() > 0.2) return false;
-      //if(fabs(IP3D()/IP3Derr())> 5.)  return false;
-
-      //double mva_cut_B = -0.4 ;
-      //if(this->Pt() > 10 && this->Pt()  < 60.) mva_cut_B -= (this->Pt() -10.) * 1.2/ 50.;
-      //if(this->Pt() > 60.) mva_cut_B = 0.8;
-      //if(! (MVA()> mva_cut_B) ) return false;
-
-    }
-    else{
-
-      double dxy_cut = 0.01 ;
-      if(this->Pt() > 10 && this->Pt()< 60.) dxy_cut -= (this->Pt() - 10.) * 0.005/ 50.;
-      if(this->Pt() > 60.) dxy_cut = 0.005;
-
-      if(fabs(dXY()) >  dxy_cut)   return false;
-      if(fabs(dZ()) >  0.05)   return false;
-      if(RelIso() > 0.2) return false;
-
-      // if(fabs(IP3D()/IP3Derr())> 7.5)  return false;
-      //double mva_cut_EC = -0.5 ;
-      //if(this->Pt() > 10 && this->Pt()  < 60.) mva_cut_EC -= ( this->Pt()-10.) * 1.1/ 50.;
-      //if(this->Pt() > 60.) mva_cut_EC = 0.6;
-
-      //if(! (MVA()> mva_cut_EC) ) return false;
-      
-
-    }
+  if(ID=="HNLIPv1") {
+    double dxy_cut = 0.01 ;
+    if(this->Pt() > 10 && this->Pt()  < 60.) dxy_cut -= (this->Pt() - 10.) * 0.005/ 50.;
+    if(this->Pt() > 60.) dxy_cut = 0.005;
+    if(fabs(dXY()) >  dxy_cut)   return false;
+    if(fabs(dZ()) >  0.05)   return false;
     return true;
   }
 
-
+  if(ID=="HNLIPv2") {
+    double dxy_cut = 0.01 ;
+    if(fabs(dXY()) >  dxy_cut)   return false;
+    if(fabs(dZ()) >  0.05)   return false;
+    return true;
+  }
+  if(ID=="HNLIPv3") {
+    double dxy_cut = 0.02 ;
+    if(fabs(dXY()) >  dxy_cut)   return false;
+    if(fabs(dZ()) >  0.05)   return false;
+    return true;
+  }
+  if(ID=="HNLIPv4") {
+    double dxy_cut = 0.01 ;
+    if(fabs(dXY()) >  dxy_cut)   return false;
+    if(fabs(dZ()) >  0.05)   return false;
+    if(fabs(IP3D()/IP3Derr()) > 3.) return false;
+    return true;
+  }
+  if(ID=="HNLIPv5") {
+    double dxy_cut = 0.02 ;
+    if(fabs(dXY()) >  dxy_cut)   return false;
+    if(fabs(dZ()) >  0.05)   return false;
+    if(fabs(IP3D()/IP3Derr()) >3.) return false;
+    return true;
+  }
+  
+  ///. Simple ISO/IP sels
 
   if(ID=="HNTight_Iso05_dxy_01_ip_3") return Pass_HNTight(0.05,0.01,0.05,3.);
   if(ID=="HNTight_Iso05_dxy_01_ip_4") return Pass_HNTight(0.05,0.01,0.05,4.);
@@ -359,8 +344,17 @@ bool Muon::Pass_CB_Opt(TString ID) const {
   TString pog_methodB="";
   TString pog_methodEC="";
 
+
+  // If MVA ID then need Loose MVA and pog medium
+  if(ID.Contains("MVA")) {
+    if(!Pass_LepMVAID()) return false;
+  }
+  
+  /// Apply pog medium as loose sel
+  if(!isPOGMedium()) return false;
+
+
   for(unsigned int i=0; i < subStrings.size(); i++){
-    if (subStrings[i].Contains("DXY")) dxy_method=subStrings[i];
     if (subStrings[i].Contains("MVAB")) pog_methodB=subStrings[i];
     if (subStrings[i].Contains("MVAEC")) pog_methodEC=subStrings[i];
 
@@ -369,11 +363,30 @@ bool Muon::Pass_CB_Opt(TString ID) const {
 
     if (subStrings[i].Contains("ISOB")) iso_methodB=subStrings[i];
     if (subStrings[i].Contains("ISOEC")) iso_methodEC=subStrings[i];
+    
+    if (subStrings[i].Contains("DXY")) dxy_method=subStrings[i];
+
+  }
+
+  if(dxy_method == "DXYv1") {
+    if(!PassID("HNLIPv1")) return false;
+  }
+  if(dxy_method == "DXYv2") {
+    if(!PassID("HNLIPv2")) return false;
+  }
+  if(dxy_method == "DXYv3") {
+    if(!PassID("HNLIPv3")) return false;
+  }
+  if(dxy_method == "DXYv4") {
+    if(!PassID("HNLIPv4")) return false;
+  }
+  if(dxy_method == "DXYv5") {
+    if(!PassID("HNLIPv5")) return false;
   }
 
   if(ID.Contains("MuOptLoose")) return PassLooseIDOpt();
 
-  //cout << "ID " << ID << " pass = " << PassIDOptMulti(dxy_method, pog_methodB,pog_methodEC, iso_methodB,iso_methodEC)  << endl;                                                                                                                                           
+
   return   PassIDOptMulti(dxy_method, pog_methodB,pog_methodEC, iso_methodB,iso_methodEC);
   
 }
@@ -442,59 +455,6 @@ bool Muon::passIDHN(int ID, double dxy_b, double dxy_e, double dz_b,double dz_e,
 }
 
 
-bool Muon::PassMVA(double mva1, double mva2) const {
-
-  //https://github.com/cms-sw/cmssw/blob/master/PhysicsTools/PatAlgos/plugins/PATMuonProducer.cc 
-  // apply loose selection 
-
-  //      if (muon.pt() > 5 and muon.isLooseMuon() and muon.passed(reco::Muon::MiniIsoLoose) and sip3D < 8.0 and
-  //dB2D < 0.05 and dz < 0.1) {
-
-  if (this->Pt() < 5) return false;
-  if(!( isPOGLoose() )) return false;
-  if(RelIso() > 0.1)  return false;
-  if(!( fabs(dXY())< 0.05 && fabs(dZ())< 0.1 && fabs(IP3D()/IP3Derr())< 5.) ) return false;
-  
-  if( fabs(this->Eta()) <= 0.8 ){
-    if(! (MVA()>mva1) ) return false;
-  }
-  else if( fabs(this->Eta()) > 0.8 && fabs(this->Eta()) <= 1.479 ){
-    if(! (MVA()>mva1) ) return false;
-  }
-  else{
-    if(! (MVA()>mva2) ) return false;
-  }
-
-  return true;
-}
-
-bool Muon::PassMVA(double mva1, double mva2, double mva3) const {
-
-  //https://github.com/cms-sw/cmssw/blob/master/PhysicsTools/PatAlgos/plugins/PATMuonProducer.cc                                                                                                   
-  // apply loose selection                                                                                                                                                                         
-
-  //      if (muon.pt() > 5 and muon.isLooseMuon() and muon.passed(reco::Muon::MiniIsoLoose) and sip3D < 8.0 and                                                                                   
-  //dB2D < 0.05 and dz < 0.1) {                                                                                                                                                                    
-
-  //if (this->Pt() < 5) return false;
-  //if(!( isPOGLoose() )) return false;
-  //if(RelIso() > 0.1)  return false;
-  //if(!( fabs(dXY())< 0.02 && fabs(dZ())< 0.1 && fabs(IP3D()/IP3Derr())< 5.) ) return false;
-
-  if( fabs(this->Eta()) <= 0.8 ){
-    if(! (MVA()>mva1) ) return false;
-  }
-  else if( fabs(this->Eta()) > 0.8 && fabs(this->Eta()) <= 1.479 ){
-    if(! (MVA()>mva2) ) return false;
-  }
-  else{
-    if(! (MVA()>mva3) ) return false;
-  }
-
-  return true;
-}
-
-
 
 
 bool Muon::Pass_LepMVAID() const {
@@ -542,53 +502,17 @@ int  Muon::PassIDOptMulti(TString dxy_method, TString sel_methodB,TString sel_me
   bool DEBUG=false;
 
   if( fabs(this->Eta())<= 1.479 ){
-
-    double dxy_cut = 0.01 ;
-    if(dxy_method.Contains("B1")) {
-      if(this->Pt() > 10 && this->Pt()  < 60.) dxy_cut -= (this->Pt() - 10.) * 0.005/ 50.;
-      if(this->Pt() > 60.) dxy_cut = 0.005;
-      if(fabs(dXY()) >  dxy_cut)   {
-        if(DEBUG) cout << " DXY  FAIL" << endl;
-        return 0;
-      }
-    }
-    
-    if(fabs(dZ()) >  0.05)   return 0;
-
-    if(fabs(IP3D()/IP3Derr())> 5.)  return 0;
-
-    if(DEBUG) cout << " sel_methodB = " << sel_methodB << endl;
-    
+   
     if(sel_methodB.Contains("MVA")){
       
-      double high_pt_cut = 0.9;
+      double high_pt_cut = 0.85;
       TString mva_st = "MVAB";
-      if(sel_methodB.Contains("MVAB2")){
-	mva_st = "MVAB2";
-	high_pt_cut = 0.925;
-      }
-      if(sel_methodB.Contains("MVAB3")){
-        mva_st = "MVAB3";
-	high_pt_cut = 0.95;
-      }
-      if(sel_methodB.Contains("MVAB4")){
-	mva_st = "MVAB4";
-        high_pt_cut = 0.96;
-      }
-      if(sel_methodB.Contains("MVAB5")){
-	mva_st = "MVAB5";
-        high_pt_cut = 0.97;
-      }
-      if(sel_methodB.Contains("MVAB6")){
-	mva_st = "MVAB6";
-        high_pt_cut = 0.98;
-      }
-
       
       double  mva_cut_B = StringToDouble(sel_methodB,mva_st);
       
-      if(this->Pt() > 10 && this->Pt()  < 60.) mva_cut_B += (this->Pt() - 10.) * (high_pt_cut - mva_cut_B)/ 50.;
-      if(this->Pt()  > 60.)  mva_cut_B =high_pt_cut;
+      if(this->Pt() > 20) mva_cut_B = high_pt_cut;
+      
+      else if(this->Pt() > 10) mva_cut_B += (this->Pt() -10.) * (high_pt_cut - mva_cut_B)/ 10.;
 
       if(DEBUG) cout << "pt = " <<  this->Pt()  << " mva = " << MVA() << " cut =" << mva_cut_B << endl;
 
@@ -605,7 +529,6 @@ int  Muon::PassIDOptMulti(TString dxy_method, TString sel_methodB,TString sel_me
     }
     if(iso_methodB != ""){
 
-
       double  iso_cut_B = StringToDouble(iso_methodB,"ISOB");
 
       if(DEBUG) cout << "RelIso " << iso_cut_B << " val= " <<  RelIso() << endl;
@@ -615,21 +538,6 @@ int  Muon::PassIDOptMulti(TString dxy_method, TString sel_methodB,TString sel_me
   else{
     if(DEBUG) cout << "PassIDOpt ENDCAP " << endl;
 
-
-    if(dxy_method.Contains("EC1")) {
-
-      double dxy_cut = 0.01 ;
-      if(this->Pt() > 10 && this->Pt()< 60.) dxy_cut -= (this->Pt()- 10.) * 0.005/ 50.;
-      if(this->Pt()  > 60.) dxy_cut = 0.005;
-
-      if(DEBUG) cout << "pt = " << this->Pt() << " DXY cut = " << dxy_cut << " value = " << fabs(dXY()) <<  endl;
-      if(fabs(dXY()) >  dxy_cut)   {
-        if(DEBUG) cout << " DXY  FAIL" << endl;
-        return 0;
-      }
-    }
-    if(fabs(dZ()) >  0.07)   return 0;
-    if(fabs(IP3D()/IP3Derr())> 7.5)  return 0;
 
     if(iso_methodEC != ""){
 
@@ -642,35 +550,15 @@ int  Muon::PassIDOptMulti(TString dxy_method, TString sel_methodB,TString sel_me
 
     if(sel_methodEC.Contains("MVA")){
 
-
-      double high_pt_cut = 0.9;
+      double high_pt_cut = 0.8;
       TString mva_st = "MVAEC";
-      if(sel_methodEC.Contains("MVAEC2")){
-        mva_st = "MVAEC2";
-	high_pt_cut = 0.925;
-      }
-      if(sel_methodEC.Contains("MVAEC3")){
-	mva_st = "MVAEC3";
-	high_pt_cut = 0.95;
-      }
-      if(sel_methodB.Contains("MVAEC4")){
-	mva_st = "MVAEC4";
-        high_pt_cut = 0.96;
-      }
-      if(sel_methodB.Contains("MVAEC5")){
-	mva_st = "MVAEC5";
-        high_pt_cut = 0.97;
-      }
-      if(sel_methodB.Contains("MVAEC6")){
-	mva_st = "MVAEC6";
-        high_pt_cut = 0.98;
-      }
-
 
       double  mva_cut_EC = StringToDouble(sel_methodEC, mva_st);
 
-      if(this->Pt() > 10 && this->Pt()  < 60.) mva_cut_EC += (this->Pt() - 10.) * (high_pt_cut - mva_cut_EC)/ 50.;
-      if(this->Pt()  > 60.)  mva_cut_EC = high_pt_cut;
+      if(this->Pt() > 20) mva_cut_EC = high_pt_cut;
+      
+      else if(this->Pt() > 10) mva_cut_EC += (this->Pt() -10.) * (high_pt_cut - mva_cut_EC)/ 10.;
+
 
       if(DEBUG) cout << "pt = " <<  this->Pt() << " mva = " <<MVA() << " cut =" << mva_cut_EC << endl;
 

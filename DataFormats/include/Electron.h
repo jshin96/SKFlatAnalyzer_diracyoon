@@ -37,6 +37,31 @@ public:
   inline double MVAIso() const { return j_mvaiso; }
   inline double MVANoIso() const { return j_mvanoiso; }
 
+
+  inline bool PassCFMVA(double val, double mva1, double mva2) {
+    if(fabs(j_scEta) <= 1.5 && val > mva1) return true;
+    if(fabs(j_scEta) > 1.5 && val > mva2) return true;
+
+    return false;
+
+  }
+
+  inline bool PassConvMVA(double val, double mva1, double mva2) {
+    if(fabs(j_scEta) <= 1.5 && val > mva1) return true;
+    if(fabs(j_scEta) > 1.5 && val > mva2) return true;
+
+    return false;
+
+  }
+
+  inline bool PassFakeMVA(double val, double mva1, double mva2) {
+    if(fabs(j_scEta) <= 1.5 && val > mva1) return true;
+    if(fabs(j_scEta) > 1.5 && val > mva2) return true;
+
+    return false;
+
+  }
+
   inline bool PassMVANoIsoResponse(double A, double B, double C){
     double mva_resp = MVANoIsoResponse();
     double cut = A - std::exp(-Pt() / B) * C;
@@ -86,6 +111,14 @@ public:
 
   }
 
+
+  bool PassMVA_UL_NP(TString bb1, TString bb2, TString eb1, TString eb2, TString ee1, TString ee2) const;
+  bool PassMVA_UL_CF(TString bb, TString ee)const ;
+  bool PassMVA_UL_Conv(TString bb1, TString bb2, TString eb1, TString eb2, TString ee1, TString ee2)const ;
+  double PassStepCut(double val, double val2, double pt1, double pt2) const;
+
+
+
   inline bool PassIP(double A , double B) const{
     double cut = A   +  ((B-A) * ( Pt()-10)) / 50;
     if  (Pt() > 59) cut = B;
@@ -109,7 +142,30 @@ public:
   void SetPassConversionVeto(bool b);
   inline int PassConversionVeto() const { return j_passConversionVeto; }
   void SetNMissingHits(int n);
-  inline int NMissingHits() const { return j_NMissingHits; };
+  inline int NMissingHits() const { return j_NMissingHits; }
+
+  void SetConvNTracks(int i);
+  void SetConvFitProb(double d);
+  void SetConvLxy(double d);
+  void SetConvNHits(int i);
+  void SetLogEoverP(double d);
+  void SetLogCotTheta(double d);
+  void SetPairMass(double d);
+  void SetLogDphi(double d);
+  void SetLogChi2Max(double d);
+  void SetLogChi2Min(double d);
+  
+  inline int ConvNTracks() const { return j_ConvNTracks;}
+  inline double ConvFitProb()  const { return j_ConvFitProb;}
+  inline double ConvLxy() const { return j_ConvLxy;}
+  inline int ConvNHits() const { return j_ConvNHits;}
+  inline double ConvLogEoverP() const { return j_LogEoverP;}
+  inline double ConvLogCotTheta() const { return j_LogCotTheta;}
+  inline double ConvPairMass() const { return j_PairMass;}
+  inline double ConvLogDphi() const { return j_LogDphi;}
+  inline double ConvLogChi2Max() const { return j_LogChi2Max;}
+  inline double ConvLogChi2Min() const { return j_LogChi2Min;}
+
 
 
   void SetEtaWidth(double d);
@@ -274,7 +330,7 @@ public:
 
   int  PassLooseIDOpt(TString  trigger, TString dxy_method, TString sel_methodB,TString sel_methodEC, TString conv_method, TString chg_method, TString iso_methodB,TString iso_methodEC ) const;
 
-  int  PassIDOptMulti(TString  trigger, TString dxy_method, TString sel_methodBB,TString sel_methodEB, TString sel_methodEE,TString conv_method, TString chg_method, TString iso_methodB,TString iso_methodEC ) const ;
+  int  PassIDOptMulti(TString np_mva_BB1, TString np_mva_BB2, TString np_mva_EB1, TString np_mva_EB2,  TString np_mva_EE1, TString np_mva_EE2 ,  TString conv_mva_BB1, TString conv_mva_BB2, TString conv_mva_EE1,TString conv_mva_EE2, TString cf_mva_BB,TString cf_mva_EE,  TString pog_method,  TString conv_method, TString chg_method, TString iso_methodB,TString iso_methodEC ) const;
 
 
   bool passIDHN(int ID, double dxy_b, double dxy_e, double dz_b,double dz_e, double sip_b, double sip_e, double iso_b,double iso_e, double miso_b, double miso_e) const;
@@ -336,6 +392,10 @@ private:
   double j_Rho;
   int j_isGsfCtfScPixChargeConsistent,j_isGsfScPixChargeConsistent,j_isGsfCtfChargeConsistent;
   double j_r9;
+  
+  double j_ConvFitProb, j_ConvLxy, j_LogEoverP,j_LogCotTheta,j_PairMass,j_LogDphi,j_LogChi2Max,j_LogChi2Min;
+  int j_ConvNTracks , j_ConvNHits;
+
 
   ULong64_t j_filterbits;
   ULong64_t j_pathbits;

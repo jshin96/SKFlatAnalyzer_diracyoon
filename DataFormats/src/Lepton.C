@@ -29,6 +29,9 @@ Lepton::Lepton() : Particle() {
   j_LeptonType = -999;
   j_passID = false;
   j_IDSet= false;
+  j_lep_mva_hnl_fake=-999;
+  j_lep_mva_hnl_conv=-999;
+  j_lep_mva_hnl_cf=-999;
 }
 
 void Lepton::PrintObject(TString label){
@@ -97,6 +100,14 @@ Lepton::Lepton(const Lepton& lep) : Particle() {
 
 Lepton::~Lepton(){
 
+}
+
+
+void Lepton::SetHNL_LepMVA(double mvafake, double mvaconv,double mvacf){
+
+  j_lep_mva_hnl_fake=mvafake;
+  j_lep_mva_hnl_conv=mvaconv;
+  j_lep_mva_hnl_cf=mvacf;
 }
 
 void Lepton::SetJetNTracks(double d){

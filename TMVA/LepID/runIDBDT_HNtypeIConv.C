@@ -1,12 +1,13 @@
-void runIDBDT_HNtypeI(TString Classifier ="BDTA" ,TString BkgType = "Fake", TString era="2017",TString channel="EE",  int signal_mode=1, TString NTrees="800", TString NormMode="NumEvents", TString   MinNodeSize ="1.5", TString MaxDepth = "3", TString nCuts="300", TString BoostLearningRate="0.5", TString BaggedFrac="0.5", TString seed = "100",  bool IgnoreNegweights=true){
+void runIDBDT_HNtypeIConv(TString Classifier ="BDTG" ,TString BkgType = "Conv", TString era="2017",TString channel="EE",  int signal_mode=0, TString NTrees="800", TString NormMode="NumEvents", TString   MinNodeSize ="1.5", TString MaxDepth = "4", TString nCuts="300", TString BoostLearningRate="0.05", TString BaggedFrac="0.6", TString seed = "100",  int eta_mode= 0){
   
   int nTermWidth=50;
-
+  
   for(int i=0; i < nTermWidth; i++)  cout << "=" ;   cout << endl;
   cout << "Running runIDBDT_HNtypeI{"+BkgType+"}: [Setup Options]" << endl;
   if(Classifier == "BDTA")cout << "** BDT ADABOOST *** " <<endl;
   else   if(Classifier == "BDTG")cout << "** BDT GRADBOOST *** " <<endl;
   else return;
+  
 
   cout << "-- Era = " << era << endl;
   cout << "-- Channel = " << channel << endl;
@@ -28,29 +29,38 @@ void runIDBDT_HNtypeI(TString Classifier ="BDTA" ,TString BkgType = "Fake", TStr
   TString ClassTag = "_Shrinkage_"+BoostLearningRate+"_BaggedFrac_"+BaggedFrac;
   if(Classifier == "BDTA") ClassTag = "_AdaBoostBeta_"+BoostLearningRate;
  
-
-  TString NegWeights = (IgnoreNegweights)   ? ":IgnoreNegWeightsInTraining=True" : "";  
-  TString NegWeightsString = (IgnoreNegweights)   ? "IgnoreNegWeightsInTraining" : "";
-
   TString  treeName = (channel == "MuMu")  ?  "Tree_mm" :  "Tree_ee";
 
-  TString signal="";
-  if(signal_mode == 0 )signal = "SignalLowMass";
-  if(signal_mode == 1 )signal = "SignalAll";
-  if(signal_mode == 2 )signal = "DYTypeI_DF_M100_private";
-  if(signal_mode == 3 )signal = "DYTypeI_DF_M250_private";
-  if(signal_mode == 4 )signal = "DYTypeI_DF_M1000_private";
+  TString signal="SignalConv";
+
   cout << "signal File Name= " << signal << endl;
   for(int i=0; i < nTermWidth; i++)  cout << "-" ;   cout << endl;
-
-  TString JobTag = Classifier + "_"+ BkgType + signal+"TypeI_"+channel+"_"+signal+"_"+era+"_NTrees"+NTrees+"_NormMode_"+NormMode+"_MinNodeSize_"+MinNodeSize+"_MaxDepth_"+MaxDepth+"_nCuts_"+nCuts+ClassTag +NegWeightsString+"_Seed_"+seed+"_BDT";
-
-  TMVA::gConfig().GetVariablePlotting().fNbins1D = 500; 
-
-  const TString path = "/data6/Users/jalmond/2020/HL_SKFlatAnalyzer_ULv3/SKFlatAnalyzer/HNDiLeptonWorskspace/InputFiles/MergedFiles/Run2UltraLegacy_v3/HNL_LepIDKinVar/"+era+"/";
   
-  TFile* fsin = TFile::Open(path+"HNL_LepIDKinVar_"+signal+".root");
-  TFile* fbin = TFile::Open(path+"HNL_LepIDKinVar_"+BkgType+"Bkg.root");
+  if(signal_mode==1) signal="SignalConv_BB";
+  if(signal_mode==2) signal="SignalConv_EC";
+
+  if(signal_mode==3) signal="SignalConvNoPtEta";
+
+  if(signal_mode==4) signal="SignalConvNoPt"; 
+  if(signal_mode==5) signal="SignalConvNoPt_BB";
+  if(signal_mode==6) signal="SignalConvNoPt_EC";
+  
+  if(signal_mode==7) signal="SignalConvLowPt";
+  if(signal_mode==8) signal="SignalConvLowPt_BB";
+  if(signal_mode==9) signal="SignalConvLowPt_EC";
+  
+
+  TString JobTag = Classifier + "_"+ BkgType + signal+"TypeI_"+channel+"_"+signal+"_"+era+"_NTrees"+NTrees+"_NormMode_"+NormMode+"_MinNodeSize_"+MinNodeSize+"_MaxDepth_"+MaxDepth+"_nCuts_"+nCuts+ClassTag +"_Seed_"+seed+"_BDT";
+
+  TMVA::gConfig().GetVariablePlotting().fNbins1D = 200; 
+  TMVA::gConfig().GetVariablePlotting().fNbinsMVAoutput = 100;
+
+  const TString path = "/data6/Users/jalmond/2020/HL_SKFlatAnalyzer_ULv3/SKFlatAnalyzer/HNDiLeptonWorskspace/InputFiles/MergedFiles/Run2UltraLegacy_v3/HNL_LepIDKinVarEtaBinned/"+era+"/";
+  
+  TString signame = path+"HNL_LepIDKinVarEtaBinned_PromptTop.root";
+
+  TFile* fsin = TFile::Open(signame);
+  TFile* fbin = TFile::Open(path+"HNL_LepIDKinVarEtaBinned_"+BkgType+"Bkg.root");
 
   TTree* tree_signal = (TTree*)fsin->Get(treeName);
   TTree* tree_bkg    = (TTree*)fbin->Get(treeName);
@@ -61,26 +71,27 @@ void runIDBDT_HNtypeI(TString Classifier ="BDTA" ,TString BkgType = "Fake", TStr
   TMVA::Factory* factory = new TMVA::Factory(JobTag +"_TMVAClassification", fout,   "!V:!Silent:Color:DrawProgressBar:Transformations=I:AnalysisType=Classification");
 
   TMVA::DataLoader* data_loader = new TMVA::DataLoader("dataset");
-  data_loader->AddVariable("Pt", "Pt", "units", 'F');
-  data_loader->AddVariable("Eta", "Eta", "units", 'F');
-
+  
+  if(signal_mode< 3) data_loader->AddVariable("Pt", "Pt", "units", 'F');
+  
+  if(signal_mode != 3) data_loader->AddVariable("Eta", "Eta", "units", 'F');
   data_loader->AddVariable("MiniIsoChHad", "MiniIsoChHad", "units", 'F'); 
-  data_loader->AddVariable("MiniIsoNHad", "MiniIsoNHad", "units", 'F'); 
-  data_loader->AddVariable("MiniIsoPhHad", "MiniIsoPhHad", "units", 'F');
+  //  data_loader->AddVariable("MiniIsoNHad", "MiniIsoNHad", "units", 'F'); 
+  //data_loader->AddVariable("MiniIsoPhHad", "MiniIsoPhHad", "units", 'F');
   data_loader->AddVariable("RelMiniIsoCh", "RelMiniIsoCh", "units", 'F');
-  data_loader->AddVariable("RelMiniIsoN", "RelMiniIsoN", "units", 'F');
+  //data_loader->AddVariable("RelMiniIsoN", "RelMiniIsoN", "units", 'F');
   data_loader->AddVariable("IsoChHad", "IsoChHad", "units", 'F'); 
   data_loader->AddVariable("IsoNHad", "IsoNHad", "units", 'F'); 
   data_loader->AddVariable("IsoPhHad", "IsoPhHad", "units", 'F');
   data_loader->AddVariable("Dxy",  "Dxy", "units", 'F');
-  data_loader->AddVariable("RelDxy",  "RelDxy", "units", 'F');
+  //data_loader->AddVariable("RelDxy",  "RelDxy", "units", 'F');
   data_loader->AddVariable("DxySig",  "DxySig", "units", 'F');
   data_loader->AddVariable("Dz",  "Dz", "units", 'F');   
-  data_loader->AddVariable("RelDz",  "RelDz", "units", 'F');   
+  //data_loader->AddVariable("RelDz",  "RelDz", "units", 'F');   
   data_loader->AddVariable("DzSig",  "DzSig", "units", 'F');   
   data_loader->AddVariable("RelIso", "RelIso", "units", 'F'); 
   data_loader->AddVariable("IP3D", "IP3D", "units", 'F');       
-  data_loader->AddVariable("RelIP3D", "RelIP3D", "units", 'F');       
+  //data_loader->AddVariable("RelIP3D", "RelIP3D", "units", 'F');       
   data_loader->AddVariable("PtRatio",  "PtRatio", "units", 'F');
   data_loader->AddVariable("PtRel",  "PtRel", "units", 'F');
   data_loader->AddVariable("CEMFracCJ","CEMFracCJ", "units", 'F');
@@ -90,6 +101,7 @@ void runIDBDT_HNtypeI(TString Classifier ="BDTA" ,TString BkgType = "Fake", TStr
   data_loader->AddVariable("NHFracCJ","NHFracCJ","units", 'F');
   
   if(channel == "MuMu") {
+    data_loader->AddVariable("MVA",  "MVA", "units", 'F');
     data_loader->AddVariable("MuFracCJ","MuFracCJ","units", 'F');
     data_loader->AddVariable("Chi2", "Chi2", "units", 'F');
     data_loader->AddVariable("Validhits", "Validhits", "units", 'I');
@@ -101,31 +113,31 @@ void runIDBDT_HNtypeI(TString Classifier ="BDTA" ,TString BkgType = "Fake", TStr
   
   if(channel == "EE")   {
     data_loader->AddVariable("MVA",  "MVA", "units", 'F');
-    data_loader->AddVariable("RelMVA",  "RelMVA", "units", 'F');
+    // data_loader->AddVariable("RelMVA",  "RelMVA", "units", 'F');
     data_loader->AddVariable("MVAIso",  "MVAIso", "units", 'F');          
-    data_loader->AddVariable("RelMVAIso",  "RelMVAIso", "units", 'F');          
+    // data_loader->AddVariable("RelMVAIso",  "RelMVAIso", "units", 'F');          
     data_loader->AddVariable("Full5x5_sigmaIetaIeta",  "Full5x5_sigmaIetaIeta", "units", 'F');
     data_loader->AddVariable("dEtaSeed",  "dEtaSeed", "units", 'F');
     data_loader->AddVariable("dPhiIn",  "dPhiIn", "units", 'F');
-    data_loader->AddVariable("HoverE",  "HoverE", "units", 'F');
+    // data_loader->AddVariable("HoverE",  "HoverE", "units", 'F');
     data_loader->AddVariable("EoverP",  "EoverP", "units", 'F');
     data_loader->AddVariable("FBrem",  "FBrem", "units", 'F');
     data_loader->AddVariable("R9",  "R9", "units", 'F');
     data_loader->AddVariable("TrkIso",  "TrkIso", "units", 'F');
     data_loader->AddVariable("dr03TkSumPt",  "dr03TkSumPt", "units", 'F');
     data_loader->AddVariable("dr03HcalTowerSumEt",  "dr03HcalTowerSumEt", "units", 'F');
-    data_loader->AddVariable("dr03HcalDepth1TowerSumEt",  "dr03HcalDepth1TowerSumEt", "units", 'F');
-    data_loader->AddVariable("dr03EcalRecHitSumEt",  "dr03EcalRecHitSumEt", "units", 'F');
-    data_loader->AddVariable("e15",  "e15", "units", 'F');
-    data_loader->AddVariable("e25",  "e25", "units", 'F');
-    data_loader->AddVariable("e55",  "e55", "units", 'F');
-    data_loader->AddVariable("e2x5OverE5x5",  "e2x5OverE5x5", "units", 'F');
-    data_loader->AddVariable("e1x5OverE5x5",  "e1x5OverE5x5", "units", 'F');
+    // data_loader->AddVariable("dr03HcalDepth1TowerSumEt",  "dr03HcalDepth1TowerSumEt", "units", 'F');
+    //data_loader->AddVariable("dr03EcalRecHitSumEt",  "dr03EcalRecHitSumEt", "units", 'F');
+    //data_loader->AddVariable("e15",  "e15", "units", 'F');
+    //data_loader->AddVariable("e25",  "e25", "units", 'F');
+    //data_loader->AddVariable("e55",  "e55", "units", 'F');
+    //data_loader->AddVariable("e2x5OverE5x5",  "e2x5OverE5x5", "units", 'F');
+    //data_loader->AddVariable("e1x5OverE5x5",  "e1x5OverE5x5", "units", 'F');
     data_loader->AddVariable("EtaWidth",  "EtaWidth", "units", 'F');
     data_loader->AddVariable("PhiWidth",  "PhiWidth", "units", 'F');
-    //data_loader->AddVariable("InvEminusInvP", "InvEminusInvP", "units", 'F');
+    data_loader->AddVariable("InvEminusInvP", "InvEminusInvP", "units", 'F');
     data_loader->AddVariable("ecalPFClusterIso",  "ecalPFClusterIso", "units", 'F');
-    data_loader->AddVariable("hcalPFClusterIso", "hcalPFClusterIso", "units", 'F');
+    // data_loader->AddVariable("hcalPFClusterIso", "hcalPFClusterIso", "units", 'F');
 
     //if(BkgType == "Conv" || BkgType == "CF" ){
     data_loader->AddVariable("MissingHits",  "MissingHits", "units", 'I');
@@ -149,23 +161,57 @@ void runIDBDT_HNtypeI(TString Classifier ="BDTA" ,TString BkgType = "Fake", TStr
   TCut cut_s = "";
   TCut cut_b = "";
 
+  if(signal_mode==5){
+    cut_s = "Eta<1.5";
+    cut_b = "Eta<1.5";
+  }
+  if(signal_mode==6){
+    cut_s = "Eta>1.5";
+    cut_b = "Eta>1.5";
+  }
+  if(signal_mode==8){
+    cut_s = "Pt<40&&Eta<1.5";
+    cut_b = "Pt<40&&Eta<1.5";
+  }
+  if(signal_mode==9){
+    cut_s = "Eta>1.5&&Pt<40";
+    cut_b = "Eta>1.5&&Pt<40";
+  }
 
   int n_train_signal = tree_signal->GetEntries(cut_s)/2;
   int n_train_back = tree_bkg->GetEntries(cut_b)/2;
 
+  
 
-  data_loader->PrepareTrainingAndTestTree(cut_s, cut_b,   Form("nTrain_Signal=%d:nTrain_Background=%d:nTest_Signal=%d:nTest_Background=%d:SplitMode=Random:SplitSeed="+seed+":NormMode="+NormMode+":V", n_train_signal, n_train_back, n_train_signal, n_train_back));
-
+  TString trainString = Form("nTrain_Signal=%d:nTrain_Background=%d:nTest_Signal=%d:nTest_Background=%d:SplitMode=Random:SplitSeed="+seed+":NormMode="+NormMode+":V", n_train_signal, n_train_back, n_train_signal, n_train_back);
+  data_loader->PrepareTrainingAndTestTree(cut_s, cut_b,  trainString);
   
   //==== Adaptive Boost
 
-  if(Classifier == "BDTA") 
-    factory->BookMethod( data_loader,TMVA::Types::kBDT, "BDT",
-			 "!H:V:NTrees="+NTrees+":MinNodeSize="+MinNodeSize+"%:MaxDepth="+MaxDepth+":SeparationType=GiniIndex:nCuts="+nCuts+":BoostType=AdaBoost:AdaBoostBeta="+BoostLearningRate+NegWeights );
+  TString classTag= (Classifier == "BDTA") ? "BDT" : "BDTG";
+  TString s_BoostType=  (Classifier == "BDTA") ?":BoostType=AdaBoost" : ":BoostType=Grad";
+  TString s_NTrees = ":NTrees="+NTrees;
+  TString s_MinNodeSize = ":MinNodeSize="+MinNodeSize+"%";
+  TString s_MaxDepth = ":MaxDepth="+MaxDepth;
+  TString s_NCut=":nCuts="+nCuts;
   
-  if(Classifier == "BDTG")
-    factory->BookMethod(data_loader, TMVA::Types::kBDT, "BDTG",  "!H:V:NTrees="+NTrees+":MinNodeSize="+MinNodeSize+"%:BoostType=Grad:Shrinkage="+BoostLearningRate+":UseBaggedBoost:BaggedSampleFraction="+BaggedFrac+":nCuts="+nCuts+":MaxDepth="+MaxDepth +NegWeights);
+  TString learnrate="";
+  TString s_BaggedFrac = "";
+     
+  if(Classifier == "BDTA"){
+    
+    learnrate= ( BoostLearningRate != "-1") ? ":AdaBoostBeta="+BoostLearningRate : "";
+    s_BaggedFrac="";
+  }
+  else{
+    learnrate= ( BoostLearningRate != "-1") ? ":Shrinkage="+BoostLearningRate : "";
+    s_BaggedFrac= (BaggedFrac != "-1") ?":UseBaggedBoost:BaggedSampleFraction="+BaggedFrac : "";
 
+  }
+  TString S_bookmethod = "!H:V:NTrees="+s_NTrees+s_MinNodeSize + s_MaxDepth + ":SeparationType=GiniIndex" + s_NCut + s_BoostType + learnrate+s_BaggedFrac;
+
+  
+  factory->BookMethod( data_loader,TMVA::Types::kBDT, classTag, S_bookmethod);
 
   factory->TrainAllMethods();
   factory->TestAllMethods();

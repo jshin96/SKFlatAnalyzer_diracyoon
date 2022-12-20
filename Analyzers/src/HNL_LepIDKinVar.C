@@ -5,7 +5,7 @@ void HNL_LepIDKinVar::initializeAnalyzer(){
   SeperateFakes = HasFlag("SeperateFake");
   SeperateConv = HasFlag("SeperateConv");
   SeperateCF = HasFlag("SeperateCF");
-
+  
   GetRatio = HasFlag("GetRatio");  
 
   HNL_LeptonCore::initializeAnalyzer();
@@ -142,8 +142,17 @@ void HNL_LepIDKinVar::initializeAnalyzer(){
   tree_ee->Branch("dr03HcalTowerSumEt",&dr03HcalTowerSumEt,"dr03HcalTowerSumEt/F");
   tree_ee->Branch("dr03TkSumPt",&dr03TkSumPt,"dr03TkSumPt/F");
   tree_ee->Branch("R9",&R9,"R9/F");
-
-
+  
+  tree_ee->Branch("ConvFitProb", &ConvFitProb, "ConvFitProb/F");
+  tree_ee->Branch("ConvLxy", &ConvLxy, "ConvLxy/F");
+  tree_ee->Branch("ConvLogEoverP", &ConvLogEoverP, "ConvLogEoverP/F");
+  tree_ee->Branch("ConvLogCotTheta", &ConvLogCotTheta, "ConvLogCotTheta/F");
+  tree_ee->Branch("ConvPairMass", &ConvPairMass, "ConvPairMass/F");
+  tree_ee->Branch("ConvLogDphi", &ConvLogDphi, "ConvLogDphi/F");
+  tree_ee->Branch("ConvLogChi2Max", &ConvLogChi2Max, "ConvLogChi2Max/F");
+  tree_ee->Branch("ConvLogChi2Min", &ConvLogChi2Min, "ConvLogChi2Min/F");
+  tree_ee->Branch("ConvNTracks", &ConvNTracks, "ConvNTracks/I");
+  tree_ee->Branch("ConvNHits", &ConvNHits, "ConvNHits/I");
   
   // Event weight
   tree_mm->Branch("w_tot", &w_tot, "w_tot/F");                     tree_ee->Branch("w_tot", &w_tot, "w_tot/F");                     
@@ -161,32 +170,24 @@ void HNL_LepIDKinVar::executeEvent(){
   Event ev = GetEvent();
   double weight =SetupWeight(ev,param_bdt);
   vector<TString> MCMergeList = {"DY","WG"};
-  //  weight *= MergeMultiMC(MCMergeList,"CombineAll");
-  //  weight *= ScaleLepToSS();
+
+  if(!SeperateCF) weight *= MergeMultiMC(MCMergeList,"CombineAll");
+
+  if(weight == 0) return;
+
   if(IsSignal()){
     weight = MCweight(true, false);
     if (MCSample.Contains("M500_")){
-      double xsec_dy_w =   0.08118343142/ (0.08118343142+0.02333868933+0.03577);
-      double xsec_vbf_w =   0.02333868933/ (0.08118343142+0.02333868933+0.03577);
-      double xsec_ssww_w =   0.03577/ (0.08118343142+0.02333868933+0.03577);
+      double xsec_dy_w =   0.08118343142/ (0.08118343142+0.02333868933);
+      double xsec_vbf_w =   0.02333868933/ (0.08118343142+0.02333868933);
 
       if (MCSample.Contains("DY")) weight*= xsec_dy_w;
       if (MCSample.Contains("VBF")) weight*= xsec_vbf_w;
-      if (MCSample.Contains("SSWW")) weight*= xsec_ssww_w;
-    }
-    if (MCSample.Contains("M1000_")){
-      double xsec_dy_w = 0.004034252106 / (0.004034252106+0.005215500475+0.026);
-      double xsec_vbf_w = 0.005215500475 / (0.004034252106+0.005215500475+0.026);
-      double xsec_ssww_w = 0.026 / (0.004034252106+0.005215500475+0.026);
-      if (MCSample.Contains("DY")) weight*= xsec_dy_w;
-      if (MCSample.Contains("VBF")) weight*= xsec_vbf_w;
-      if (MCSample.Contains("SSWW")) weight*= xsec_ssww_w;
     }
     //if (MCSample.Contains("M250")) weight*= 2;
   }
 
-  //weight = fabs(weight);
-
+  
   FillHist("CutFlow", 0, weight,  20, 0., 20.);
 
   
@@ -197,9 +198,14 @@ void HNL_LepIDKinVar::executeEvent(){
   for(auto dilep_channel : channels){
 
     std::vector<Muon>       MuonCollTAll     =  GetMuons    ( param_bdt,"MVAID", 10., 2.4, RunFake);
-    std::vector<Electron>   ElectronCollTAll =  GetElectrons( param_bdt,"MVAID", 10., 2.5, RunFake,true);
+    std::vector<Electron>   ElectronCollTAll =  GetElectrons( param_bdt,"MVAID", 10., 2.5, RunFake);
  
-
+    bool HasHEM(false);
+    for(auto i: ElectronCollTAll) {
+      if(FindHEMElectron(i)) HasHEM=true;
+    }
+    if(HasHEM) continue;
+    
     if(dilep_channel == EE)  MuonCollTAll.clear();
     if(dilep_channel == MuMu) ElectronCollTAll.clear();
 
@@ -307,9 +313,11 @@ void HNL_LepIDKinVar::executeEvent(){
     double sf_btag                    = GetBJetSF(param_bdt, bjets_tmp, param_jets);
     if(!IsData )weight*= sf_btag;
 
-    //   if(BJetColl.size() > 0) return;
+    //if(BJetColl.size() > 0) return;
     //Particle METv = GetvMET("PuppiT1xyULCorr",param_bdt);
     //    if(METv.Pt() > 70.) return;
+
+    if(weight < 0) continue;
 
     MakeTreeSS2L(dilep_channel, LepsT,MuonCollTSkim,ElectronCollTSkim, AK4_JetAllColl,  weight, "");
 
@@ -329,13 +337,26 @@ void HNL_LepIDKinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Le
   int imu(0), iel(0);
 
   for(auto lep : LepTColl){
+    
+    bool ismuon = (lep->LeptonFlavour() == Lepton::MUON);
 
+    if(ismuon){
+      if(RunIB && fabs(lep->Eta()) > 0.8) { imu++; continue;}
+      if(RunOB && fabs(lep->Eta()) <= 0.8 && fabs(lep->Eta()) >1.5 ) { imu++; continue;}
+      if(RunEC && fabs(lep->Eta()) < 1.5) { imu++; continue;}
+    }
+    else{
+      if(RunIB && fabs(lep->Eta()) > 0.8) { iel++; continue;}
+      if(RunOB && fabs(lep->Eta()) <= 0.8 && fabs(lep->Eta()) >1.4442 ) { iel++; continue;}
+      if(RunEC && fabs(lep->Eta()) < 1.566) { iel++; continue;}
+    }
+    float weight_lep = weight;
+    if(SeperateFakes)weight_lep *= ScaleLepToSS("Fake",ismuon, GetLeptonType_JH(*lep, gens));
+    if(SeperateConv)weight_lep *= ScaleLepToSS("Conv", ismuon, GetLeptonType_JH(*lep, gens));
+    
+    
     Pt    = lep->Pt();
     Eta   = fabs(lep->Eta());
-    TString  lepType = GetLepTypeTString(*lep, gens);
-    if(lep->LeptonFlavour() == Lepton::ELECTRON) FillHist( "Eta/Electron_"+lepType , Eta , weight, 200, -5., 5., "");
-    else FillHist( "Eta/Muon_"+lepType , Eta , weight, 200, -5., 5., "");
-
     PileUp = nPileUp;
     MiniIsoChHad = lep->MiniIsoChHad();
     MiniIsoNHad = lep->MiniIsoNHad();
@@ -402,6 +423,18 @@ void HNL_LepIDKinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Le
       R9= Electrons[iel].R9();
       HoverE  = Electrons[iel].HoverE();
       Rho     = Electrons[iel].Rho();
+
+      ConvFitProb  = Electrons[iel].ConvFitProb();
+      ConvLxy  = Electrons[iel].ConvLxy();
+      ConvLogEoverP = Electrons[iel].ConvLogEoverP();
+      ConvLogCotTheta = Electrons[iel].ConvLogCotTheta();
+      ConvPairMass = Electrons[iel].ConvPairMass();
+      ConvLogDphi = Electrons[iel].ConvLogDphi();
+      ConvLogChi2Max = Electrons[iel].ConvLogChi2Max();
+      ConvLogChi2Min = Electrons[iel].ConvLogChi2Min();    
+      ConvNTracks = Electrons[iel].ConvNTracks();
+      ConvNHits = Electrons[iel].ConvNHits();
+
 
       TrkIso  = Electrons[iel].TrkIso()/Electrons[iel].UncorrPt();
       
@@ -501,7 +534,7 @@ void HNL_LepIDKinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector<Le
     
 
     if(lep->LeptonFlavour() == Lepton::ELECTRON) cout <<  "Fill electron " << endl;
-    w_tot     = !IsDATA? weight: 1.;
+    w_tot     = !IsDATA? weight_lep: 1.;
 
     if(lep->LeptonFlavour() == Lepton::MUON) tree_mm->Fill();
     if(lep->LeptonFlavour() == Lepton::ELECTRON)   tree_ee->Fill();
@@ -589,6 +622,18 @@ void HNL_LepIDKinVar::InitializeTreeVars(){
   
   R9=-1;
   
+  ConvFitProb  = -1;
+  ConvLxy  =-1;
+  ConvLogEoverP =-1;
+  ConvLogCotTheta =-1;
+  ConvPairMass =-1;
+  ConvLogDphi =-1;
+  ConvLogChi2Max =-1;
+  ConvLogChi2Min =-1;
+  ConvNTracks =-1;
+  ConvNHits =-1;
+
+
   MuonSetSegmentCompatibility = -1;
 
   w_tot=-1;
