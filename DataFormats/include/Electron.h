@@ -114,7 +114,7 @@ public:
 
   bool PassMVA_UL_NP(TString bb1, TString bb2, TString eb1, TString eb2, TString ee1, TString ee2) const;
   bool PassMVA_UL_CF(TString bb, TString ee)const ;
-  bool PassMVA_UL_Conv(TString bb1, TString bb2, TString eb1, TString eb2, TString ee1, TString ee2)const ;
+  bool PassMVA_UL_Conv(TString bb1, TString bb2, TString ee1, TString ee2)const ;
   double PassStepCut(double val, double val2, double pt1, double pt2) const;
 
 
@@ -327,6 +327,9 @@ public:
 
   void SetRelPFIso_Rho(double r);
   double EA();
+
+
+  bool PassStandardIDs(TString ID) const;
 
   int  PassLooseIDOpt(TString  trigger, TString dxy_method, TString sel_methodB,TString sel_methodEC, TString conv_method, TString chg_method, TString iso_methodB,TString iso_methodEC ) const;
 

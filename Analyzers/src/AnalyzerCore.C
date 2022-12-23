@@ -3019,9 +3019,11 @@ double AnalyzerCore::GetElectronSFEventWeight(std::vector<Electron> electrons, A
       double this_idsf    = mcCorr->ElectronID_SF(param.Electron_ID_SF_Key, el.scEta(), el.Pt(), SystDir_ElectronIDSF);
 
       this_weight *= this_recosf*this_idsf;
-      FillWeightHist(param.Name+"/el_reco_sf_"+param.Name, this_recosf);
-      FillWeightHist(param.Name+"/el_id_sf_"+param.Name, this_idsf);
-
+      
+      if(param.WriteOutVerbose == 0){
+	FillWeightHist(param.Name+"/el_reco_sf_"+param.Name, this_recosf);
+	FillWeightHist(param.Name+"/el_id_sf_"+param.Name, this_idsf);
+      }
     }
     double this_trigsf = mcCorr->ElectronTrigger_SF(param.Electron_Trigger_SF_Key, param.Electron_Trigger_NameForSF, electrons,SystDir_ElectronTriggerSF);
 
