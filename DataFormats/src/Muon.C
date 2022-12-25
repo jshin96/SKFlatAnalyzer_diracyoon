@@ -325,6 +325,8 @@ bool Muon::PassID(TString ID) const {
 
 bool Muon::Pass_CB_Opt(TString ID) const {
   
+  
+  //cout << "ID = " << ID << endl;
   TString ID_sub = ID;
   ID_sub = ID_sub.ReplaceAll("_"," ");
   string sID_sub = string(ID_sub);
@@ -344,6 +346,17 @@ bool Muon::Pass_CB_Opt(TString ID) const {
   TString pog_methodB="";
   TString pog_methodEC="";
 
+  TString mva_methodBB1="";
+  TString mva_methodBB2="";
+  TString mva_methodBB3="";
+  TString mva_methodBB4="";
+
+  TString mva_methodEC1="";
+  TString mva_methodEC2="";
+  TString mva_methodEC3="";
+  TString mva_methodEC4="";
+
+
 
   // If MVA ID then need Loose MVA and pog medium
   if(ID.Contains("MVA")) {
@@ -355,11 +368,20 @@ bool Muon::Pass_CB_Opt(TString ID) const {
 
 
   for(unsigned int i=0; i < subStrings.size(); i++){
-    if (subStrings[i].Contains("MVAB")) pog_methodB=subStrings[i];
-    if (subStrings[i].Contains("MVAEC")) pog_methodEC=subStrings[i];
+    //≈MuOpt_HNLUL_vMVANPBB1neg1_vMVANPBB2neg1_vMVANPBB3neg1_NPMVABB40p72_vMVANPEC1neg1_vMVANPEC2neg1_vMVANPEC3neg1_NPMVAEC40p64_
+    
+    if (subStrings[i].Contains("NPMVABB1")) mva_methodBB1=subStrings[i];
+    if (subStrings[i].Contains("NPMVABB2")) mva_methodBB2=subStrings[i];
+    if (subStrings[i].Contains("NPMVABB3")) mva_methodBB3=subStrings[i];
+    if (subStrings[i].Contains("NPMVABB4")) mva_methodBB4=subStrings[i];
+    
+    if (subStrings[i].Contains("NPMVAEC1")) mva_methodEC1=subStrings[i];
+    if (subStrings[i].Contains("NPMVAEC2")) mva_methodEC2=subStrings[i];
+    if (subStrings[i].Contains("NPMVAEC3")) mva_methodEC3=subStrings[i];
+    if (subStrings[i].Contains("NPMVAEC4")) mva_methodEC4=subStrings[i];
 
-    if (subStrings[i].Contains("POG")) pog_methodB=subStrings[i];
-    if (subStrings[i].Contains("POG")) pog_methodEC=subStrings[i];
+    if (subStrings[i].Contains("POGB")) pog_methodB=subStrings[i];
+    if (subStrings[i].Contains("POGEC")) pog_methodEC=subStrings[i];
 
     if (subStrings[i].Contains("ISOB")) iso_methodB=subStrings[i];
     if (subStrings[i].Contains("ISOEC")) iso_methodEC=subStrings[i];
@@ -367,6 +389,18 @@ bool Muon::Pass_CB_Opt(TString ID) const {
     if (subStrings[i].Contains("DXY")) dxy_method=subStrings[i];
 
   }
+
+
+  /*cout << "mva_methodBB1 = " << mva_methodBB1 << endl;
+  cout << "mva_methodBB2 = " << mva_methodBB2 << endl;
+  cout << "mva_methodBB3 = " << mva_methodBB3 << endl;
+  cout << "mva_methodBB4 = " << mva_methodBB4 << endl;
+						
+  cout << "mva_methodEC1 = " << mva_methodEC1 << endl;
+  cout << "mva_methodEC2 = " << mva_methodEC2 << endl;
+  cout << "mva_methodEC3 = " << mva_methodEC3 << endl;
+  cout << "mva_methodEC4 = " << mva_methodEC4 << endl;*/
+
 
   if(dxy_method == "DXYv1") {
     if(!PassID("HNLIPv1")) return false;
@@ -387,7 +421,7 @@ bool Muon::Pass_CB_Opt(TString ID) const {
   if(ID.Contains("MuOptLoose")) return PassLooseIDOpt();
 
 
-  return   PassIDOptMulti(dxy_method, pog_methodB,pog_methodEC, iso_methodB,iso_methodEC);
+  return   PassIDOptMulti(dxy_method, pog_methodB,pog_methodEC,mva_methodBB1,mva_methodBB2,mva_methodBB3,mva_methodBB4,mva_methodEC1,mva_methodEC2,mva_methodEC3,mva_methodEC4, iso_methodB,iso_methodEC);
   
 }
 bool Muon::passIDHN(int ID, double dxy_b, double dxy_e, double dz_b,double dz_e, double sip_b, double sip_e, double iso_b,double iso_e, double miso_b, double miso_e) const{
@@ -497,38 +531,25 @@ int  Muon::PassLooseIDOpt( ) const{
 
 }
 
-int  Muon::PassIDOptMulti(TString dxy_method, TString sel_methodB,TString sel_methodEC,  TString iso_methodB,TString iso_methodEC ) const{
+int  Muon::PassIDOptMulti(TString dxy_method, TString sel_methodB,TString sel_methodEC,  TString mva_methodBB1, TString mva_methodBB2, TString mva_methodBB3, TString mva_methodBB4,TString mva_methodEC1, TString mva_methodEC2,TString mva_methodEC3, TString mva_methodEC4, TString iso_methodB,TString iso_methodEC ) const{
 
   bool DEBUG=false;
 
+  if(mva_methodBB1.Contains("MVA") && !PassMVA_UL_NP(mva_methodBB1,mva_methodBB2, mva_methodBB3,mva_methodBB4,mva_methodEC1,mva_methodEC2,mva_methodEC3,mva_methodEC4) ) return 0;
+
+
   if( fabs(this->Eta())<= 1.479 ){
    
-    if(sel_methodB.Contains("MVA")){
-      
-      double high_pt_cut = 0.85;
-      TString mva_st = "MVAB";
-      
-      double  mva_cut_B = StringToDouble(sel_methodB,mva_st);
-      
-      if(this->Pt() > 20) mva_cut_B = high_pt_cut;
-      
-      else if(this->Pt() > 10) mva_cut_B += (this->Pt() -10.) * (high_pt_cut - mva_cut_B)/ 10.;
-
-      if(DEBUG) cout << "pt = " <<  this->Pt()  << " mva = " << MVA() << " cut =" << mva_cut_B << endl;
-
-
-      if(! (MVA()> mva_cut_B) ) return 0;
+    
+    if(sel_methodB == "POGBT"){
+      if(! (isPOGTight()) ) return 0;
     }
-    else{
-      if(sel_methodB == "POGT"){
-        if(! (isPOGTight()) ) return 0;
-      }
-      if(sel_methodB == "POGM"){
-        if(! (isPOGMedium()) ) return 0;
-      }
+    if(sel_methodB == "POGBM"){
+      if(! (isPOGMedium()) ) return 0;
     }
+    
     if(iso_methodB != ""){
-
+      
       double  iso_cut_B = StringToDouble(iso_methodB,"ISOB");
 
       if(DEBUG) cout << "RelIso " << iso_cut_B << " val= " <<  RelIso() << endl;
@@ -548,31 +569,11 @@ int  Muon::PassIDOptMulti(TString dxy_method, TString sel_methodB,TString sel_me
       if(! (RelIso()<iso_cut_EC) ) return 0;
     }
 
-    if(sel_methodEC.Contains("MVA")){
-
-      double high_pt_cut = 0.8;
-      TString mva_st = "MVAEC";
-
-      double  mva_cut_EC = StringToDouble(sel_methodEC, mva_st);
-
-      if(this->Pt() > 20) mva_cut_EC = high_pt_cut;
-      
-      else if(this->Pt() > 10) mva_cut_EC += (this->Pt() -10.) * (high_pt_cut - mva_cut_EC)/ 10.;
-
-
-      if(DEBUG) cout << "pt = " <<  this->Pt() << " mva = " <<MVA() << " cut =" << mva_cut_EC << endl;
-
-
-      if(! (MVA()> mva_cut_EC) ) return 0;
+    if(sel_methodEC == "POGECT"){
+      if(! (isPOGTight()) ) return 0;
     }
-    else{
-      if(sel_methodEC == "POGT"){
-        if(! (isPOGTight()) ) return 0;
-      }
-      if(sel_methodEC == "POGM"){
-        if(! (isPOGMedium()) ) return 0;
-      }
-
+    if(sel_methodEC == "POGECM"){
+      if(! (isPOGMedium()) ) return 0;
     }
   }
 
@@ -814,6 +815,60 @@ void Muon::SetPixelHits(int n){
 void Muon::SetTrackerLayers(int n){
   j_trackerLayers = n;
 }
+
+double Muon::PassMultiStepCut(double Val1, double Val2, double Val3,double Val4 ) const{
+  
+  //// Apply slope cuts for 5-20-40-60 - inf
+
+  double pt1 = 5.;
+  double pt2 = 20.;
+  double pt3 = 40.;
+  double pt4 = 60.;
+
+  double mva_cut = -999;
+
+  if(this->Pt() > pt4) mva_cut = Val4;
+  else   if(this->Pt() > pt3) mva_cut = Val3 +  (this->Pt() -pt3) * (Val4 - Val3)/ (pt4-pt3);
+  else   if(this->Pt() > pt2) mva_cut = Val2 +  (this->Pt() -pt2) * (Val3 - Val2)/ (pt3-pt2);
+  else   if(this->Pt() > pt1) mva_cut = Val1 +  (this->Pt() -pt1) * (Val2 - Val1)/ (pt2-pt1);
+  else mva_cut = Val1;
+
+
+  return mva_cut;
+
+}
+
+double Muon::PassStepCut(double val1, double val2, double pt1, double pt2) const{
+
+  double mva_cut = -999;
+
+  if(this->Pt() > pt2) mva_cut = val2;
+  else if(this->Pt() > 10) mva_cut = val1 +  (this->Pt() -pt1) * (val2 - val1)/ (pt2-pt1);
+  else mva_cut = val1;
+
+  return mva_cut;
+
+}
+
+bool Muon::PassMVA_UL_NP(TString bb1, TString bb2, TString bb3, TString bb4, TString ee1, TString ee2, TString ee3, TString ee4) const {
+
+  double mva_cut = -999;
+
+  //if( fabs(this->Eta()) <= 1.5 ) mva_cut = PassStepCut(StringToDouble(bb1,"NPMVABB1"),StringToDouble(bb2,"NPMVABB2"), 5., 20.);
+  //else mva_cut = PassStepCut(StringToDouble(ee1,"NPMVAEE1"),StringToDouble(ee2,"NPMVAEE2"), 5., 20.);
+  
+  if( fabs(this->Eta()) <= 1.5 ) mva_cut = PassMultiStepCut(StringToDouble(bb1,"NPMVABB1"),StringToDouble(bb2,"NPMVABB2"), StringToDouble(bb3,"NPMVABB3"),StringToDouble(bb4,"NPMVABB4")); 
+  else mva_cut = PassMultiStepCut(StringToDouble(ee1,"NPMVAEC1"),StringToDouble(ee2,"NPMVAEC2"),StringToDouble(ee3,"NPMVAEC3"),StringToDouble(ee4,"NPMVAEC4")); 
+
+  
+  //cout << "MVA() = " << MVA() << " mva_cut = " << mva_cut << endl;
+
+  if( MVA() < mva_cut) return false;
+  else return true;
+
+}
+
+
 
 bool Muon::PassFilter(TString filter) const{
   if( filter=="hltDiMu9Ele9CaloIdLTrackIdLMuonlegL3Filtered9" ) return j_filterbits&(ULong64_t(1)<<0);

@@ -28,14 +28,18 @@ def PrintHist(HistName,InDir,PrintBins):
     f = ROOT.TFile(InDir)
     hist=f.Get(HistName)
     if hist:
+        file_stats = os.stat(InDir)
+        print '-'*200
+        print(('%s File Size in MegaBytes is %f') %  (InDir, (file_stats.st_size / (1024 * 1024))))
         print ( ("%s : Intergal %f") %(InDir, hist.Integral()))
         if PrintBins:
             for x in range(1, hist.GetXaxis().GetNbins()+1):
                 if hist.GetBinContent(x) != 0:
                     print ( ("Bin [%f - %f], integral=%f") %(hist.GetXaxis().GetBinLowEdge(x),hist.GetXaxis().GetBinUpEdge(x),hist.GetBinContent(x)))
+        print '-'*140
     else:
         print ( ("%s : Intergal %s") %(InDir, "-999"))
-
+        print '-'*140
     f.Close()
 
 

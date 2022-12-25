@@ -1085,6 +1085,12 @@ double HNL_LeptonCore::MergeMultiMC(vector<TString> vec, TString Method){
   if(IsData) return 1;
   if(IsSignal()) return 1;
 
+  if (std::count(vec.begin(), vec.end(), "WJet")) {
+    if (MCSample.Contains("WJet")){
+      return 0.25;
+    }
+  }
+
   if (std::count(vec.begin(), vec.end(), "DY")) {
     if (MCSample.Contains("DYJet")){
       return 0.5;

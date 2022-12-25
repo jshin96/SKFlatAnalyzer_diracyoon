@@ -1,5 +1,5 @@
+DYJets10to50_MG
 DYJets
-TTJJ_powheg
 TTLJ_powheg
 TTLL_powheg
 ttWToLNu
@@ -25,10 +25,16 @@ SingleTop_tch_antitop_Incl
 SingleTop_tch_top_Incl
 SingleTop_tW_antitop_NoFullyHad
 SingleTop_tW_top_NoFullyHad
+tHq
 TG
 TTG
 TTTT
 TTZZ
+tZq
+ttZToQQ_ll
+WJets_amcatnlo
+WJets_MG
+WJets_Sherpa
 WJetsToLNu_HT-70To100
 WJetsToLNu_HT-100To200
 WJetsToLNu_HT-200To400
@@ -37,3 +43,5 @@ WJetsToLNu_HT-600To800
 WJetsToLNu_HT-800To1200
 WJetsToLNu_HT-1200To2500
 WJetsToLNu_HT-2500ToInf
+WGJJToLNu
+WZJJToLNu_private

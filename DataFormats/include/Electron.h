@@ -118,7 +118,6 @@ public:
   double PassStepCut(double val, double val2, double pt1, double pt2) const;
 
 
-
   inline bool PassIP(double A , double B) const{
     double cut = A   +  ((B-A) * ( Pt()-10)) / 50;
     if  (Pt() > 59) cut = B;
