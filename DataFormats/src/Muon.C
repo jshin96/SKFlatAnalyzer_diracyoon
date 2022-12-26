@@ -368,13 +368,14 @@ bool Muon::Pass_CB_Opt(TString ID) const {
 
 
   for(unsigned int i=0; i < subStrings.size(); i++){
-    //≈MuOpt_HNLUL_vMVANPBB1neg1_vMVANPBB2neg1_vMVANPBB3neg1_NPMVABB40p72_vMVANPEC1neg1_vMVANPEC2neg1_vMVANPEC3neg1_NPMVAEC40p64_
+    //MuOpt_HNLUL_vMVANPBB1neg1_vMVANPBB2neg1_vMVANPBB3neg1_NPMVABB40p72_vMVANPEC1neg1_vMVANPEC2neg1_vMVANPEC3neg1_NPMVAEC40p64_
     
     if (subStrings[i].Contains("NPMVABB1")) mva_methodBB1=subStrings[i];
     if (subStrings[i].Contains("NPMVABB2")) mva_methodBB2=subStrings[i];
     if (subStrings[i].Contains("NPMVABB3")) mva_methodBB3=subStrings[i];
     if (subStrings[i].Contains("NPMVABB4")) mva_methodBB4=subStrings[i];
     
+
     if (subStrings[i].Contains("NPMVAEC1")) mva_methodEC1=subStrings[i];
     if (subStrings[i].Contains("NPMVAEC2")) mva_methodEC2=subStrings[i];
     if (subStrings[i].Contains("NPMVAEC3")) mva_methodEC3=subStrings[i];
@@ -535,7 +536,10 @@ int  Muon::PassIDOptMulti(TString dxy_method, TString sel_methodB,TString sel_me
 
   bool DEBUG=false;
 
-  if(mva_methodBB1.Contains("MVA") && !PassMVA_UL_NP(mva_methodBB1,mva_methodBB2, mva_methodBB3,mva_methodBB4,mva_methodEC1,mva_methodEC2,mva_methodEC3,mva_methodEC4) ) return 0;
+  
+  if(mva_methodBB1.Contains("MVA") && !PassMVA_UL_NPBB(mva_methodBB1,mva_methodBB2, mva_methodBB3,mva_methodBB4)  ) return 0;
+  if(mva_methodEC1.Contains("MVA") && !PassMVA_UL_NPEC(mva_methodEC1,mva_methodEC2, mva_methodEC3,mva_methodEC4)  ) return 0;
+
 
 
   if( fabs(this->Eta())<= 1.479 ){
@@ -850,16 +854,14 @@ double Muon::PassStepCut(double val1, double val2, double pt1, double pt2) const
 
 }
 
-bool Muon::PassMVA_UL_NP(TString bb1, TString bb2, TString bb3, TString bb4, TString ee1, TString ee2, TString ee3, TString ee4) const {
+bool Muon::PassMVA_UL_NPBB(TString bb1, TString bb2, TString bb3, TString bb4) const {
 
   double mva_cut = -999;
 
-  //if( fabs(this->Eta()) <= 1.5 ) mva_cut = PassStepCut(StringToDouble(bb1,"NPMVABB1"),StringToDouble(bb2,"NPMVABB2"), 5., 20.);
-  //else mva_cut = PassStepCut(StringToDouble(ee1,"NPMVAEE1"),StringToDouble(ee2,"NPMVAEE2"), 5., 20.);
   
   if( fabs(this->Eta()) <= 1.5 ) mva_cut = PassMultiStepCut(StringToDouble(bb1,"NPMVABB1"),StringToDouble(bb2,"NPMVABB2"), StringToDouble(bb3,"NPMVABB3"),StringToDouble(bb4,"NPMVABB4")); 
-  else mva_cut = PassMultiStepCut(StringToDouble(ee1,"NPMVAEC1"),StringToDouble(ee2,"NPMVAEC2"),StringToDouble(ee3,"NPMVAEC3"),StringToDouble(ee4,"NPMVAEC4")); 
-
+  
+  return true;
   
   //cout << "MVA() = " << MVA() << " mva_cut = " << mva_cut << endl;
 
@@ -867,6 +869,25 @@ bool Muon::PassMVA_UL_NP(TString bb1, TString bb2, TString bb3, TString bb4, TSt
   else return true;
 
 }
+
+
+
+bool Muon::PassMVA_UL_NPEC(TString ee1, TString ee2, TString ee3, TString ee4) const {
+
+  double mva_cut = -999;
+
+  if( fabs(this->Eta()) <= 1.5 ) return true;
+  else mva_cut = PassMultiStepCut(StringToDouble(ee1,"NPMVAEC1"),StringToDouble(ee2,"NPMVAEC2"),StringToDouble(ee3,"NPMVAEC3"),StringToDouble(ee4,"NPMVAEC4"));
+
+  //cout << "MVA() = " << MVA() << " mva_cut = " << mva_cut << endl;                                                                                       
+  
+  if( MVA() < mva_cut) return false;
+  else return true;
+
+}
+
+
+
 
 
 
@@ -971,6 +992,7 @@ bool Muon::PassPath(TString path) const{
 
 double  Muon::StringToDouble(TString st,TString subSt) const{
 
+  //  cout << st << " " << subSt << endl;
   st = st.ReplaceAll(subSt,"");
   st = st.ReplaceAll("p",".");
   st = st.ReplaceAll("neg","-");

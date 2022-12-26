@@ -82,7 +82,8 @@ public:
   double PassStepCut(double val1, double val2, double pt1, double pt2) const ;
   double PassMultiStepCut(double Val1, double Val2, double Val3,double Val4 ) const;
 
-  bool PassMVA_UL_NP(TString bb1, TString bb2, TString bb3,TString bb4,  TString ee1, TString ee2,  TString ee3, TString ee4) const;
+  bool PassMVA_UL_NPBB(TString bb1, TString bb2, TString bb3,TString bb4) const;
+  bool PassMVA_UL_NPEC(TString ee1, TString ee2,  TString ee3, TString ee4) const;
 
 
 

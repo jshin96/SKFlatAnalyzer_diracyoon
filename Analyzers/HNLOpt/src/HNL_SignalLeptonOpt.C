@@ -594,9 +594,9 @@ void HNL_SignalLeptonOpt::executeEvent(){
     if(ElectronCollV.size() > 0) return;
 
     /// TEMP                                                                                                                               
-    if(HasFlag("PtBin1") && MuonCollV[1].Pt() <20) return;
-    if(HasFlag("PtBin2") && MuonCollV[1].Pt() <40) return;
-    if(HasFlag("PtBin3") && MuonCollV[1].Pt() <60) return;
+    //if(HasFlag("PtBin1") && MuonCollV[1].Pt() <20) return;
+    //if(HasFlag("PtBin2") && MuonCollV[1].Pt() <40) return;
+    if(HasFlag("HighPt") && MuonCollV[1].Pt() <60) return;
   
 
     vector<TString> IDBB;
@@ -604,13 +604,13 @@ void HNL_SignalLeptonOpt::executeEvent(){
 
     if(HasFlag("MuID_NP")){
 
-      if(HasFlag("PtBin3")){
+      if(HasFlag("HighPt")){
 	
 	if(HasFlag("BB")){
 	  
 	  IDEC = {"POGECT_ISOEC0p15_"};
-	  TString BBID="NPMVABB1neg1_NPMVABB2neg1_NPMVABB3neg1_";
-	  for(unsigned int imva=0 ; imva < 51 ; imva++){
+	  TString BBID="NPMVABB1neg1_NPMVABB2neg1_NPMVABB3neg1_NPMVABB4";
+	  for(unsigned int imva=0 ; imva < 56 ; imva++){
 	    double mva_d= 0.4 + double(imva)*0.01;
 	    TString mvaTS= DoubleToString(mva_d);
 	    IDBB.push_back(BBID+mvaTS);
@@ -619,8 +619,8 @@ void HNL_SignalLeptonOpt::executeEvent(){
 	if(HasFlag("EC")){
 
           IDBB = {"POGBT_ISOB0p15_"};
-          TString ECID="NPMVAEC1neg1_NPMVAEC2neg1_NPMVAEC3neg1_";
-          for(unsigned int imva=0 ; imva < 51 ; imva++){
+          TString ECID="NPMVAEC1neg1_NPMVAEC2neg1_NPMVAEC3neg1_NPMVAEC4";
+          for(unsigned int imva=0 ; imva < 56 ; imva++){
             double mva_d= 0.4 + double(imva)*0.01;
             TString mvaTS= DoubleToString(mva_d);
             IDEC.push_back(ECID+mvaTS);
@@ -633,7 +633,6 @@ void HNL_SignalLeptonOpt::executeEvent(){
       for(auto i2 : IDEC){
 	MuonsIDs.push_back("HNLUL_"+i1+i2+"DXYv1");
 	MuonsIDs.push_back("HNLUL_"+i1+i2+"DXYv1_ISOB0p1_ISOEC0p1");
-	
       }
     }
     
