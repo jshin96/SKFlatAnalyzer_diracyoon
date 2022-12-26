@@ -68,6 +68,11 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
   Event ev = GetEvent();
   double weight =SetupWeight(ev,param);
 
+  if (IsSignal()){
+    /// For optimisation best to remove xsec so that weights are based on N events
+    weight*=1/xsec;
+  }
+
   
   //// VETO LEPTON IDS set up in param
   std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5); 
