@@ -83,17 +83,18 @@ os.system("git br -vv | grep '*' > tempGIT.txt")
 git_branch_infoline = open("tempGIT.txt").readlines()[0]
 os.system('rm tempGIT.txt')
 print git_branch_infoline.split()[1] 
-if args.Signal:
-    if not  git_branch_infoline.split()[1] == GIT_BRANCH_SIGNAL:
-        print ("ERROR: Running SIGNAL option in wrong branch... exit ")
-        print ("git co " + GIT_BRANCH_SIGNAL)
-        exit()
-else:
-    if not  git_branch_infoline.split()[1] == GIT_BRANCH:
-        print ("ERROR: Running in wrong branch... exit ")
-        print ("git co " + GIT_BRANCH)
 
-        exit()
+#if args.Signal:
+#    if not  git_branch_infoline.split()[1] == GIT_BRANCH_SIGNAL:
+#        print ("ERROR: Running SIGNAL option in wrong branch... exit ")
+#        print ("git co " + GIT_BRANCH_SIGNAL)
+#        exit()
+#else:
+#    if not  git_branch_infoline.split()[1] == GIT_BRANCH:
+#        print ("ERROR: Running in wrong branch... exit ")
+#        print ("git co " + GIT_BRANCH)###
+#
+#        exit()
 
 
 #############################################################################################################################

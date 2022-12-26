@@ -19,16 +19,21 @@ void HNL_SignalRegionOpt::executeEvent(){
   
   if(!IsData)  gens = GetGens();
 
-  AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("HNLOpt","_UL");
+
+  AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("HNLSROpt","_UL");
   
+  ///HNLSROpt sets Fake to use data and CF to use MC ..... 
+  /// HNLOpt sets all bkg to use MC
+    //cout << "########################################################" << endl;
+
   
-  //cout << "########################################################" << endl;
-  vector<TString> MuonsIDs;
-  MuonsIDs.push_back("HNTightV2");
- 
+  /// Name for param used in hist naming
   param_signal.Name = param_signal.DefName  + "HNTightV2";
+
+  /// SRCOnfig used to set Region Code what to vary in SR
   param_signal.SRConfig  = "";
   
+  /// ID used for leptons
   param_signal.Muon_Tight_ID="HNTightV2";
   param_signal.Muon_FR_ID = "HNLooseV1";
   param_signal.Electron_Tight_ID = "HNTightV2";
@@ -37,20 +42,20 @@ void HNL_SignalRegionOpt::executeEvent(){
   RunULAnalysis(param_signal);
   
   
-
+  //// SYST IF USED CURRENTLY DOES NOT RUN
   if(!IsData) RunSyst=false;
   if(RunSyst){
     TString param_signal_name = param_signal.Name;
     vector<AnalyzerParameter::Syst> SystList;// = GetSystList("Initial");
-
+    
     for(auto isyst : SystList){
       param_signal.syst_ = AnalyzerParameter::Syst(isyst);
       
       param_signal.Name = "Syst_"+param_signal.GetSystType()+param_signal_name;
       param_signal.DefName = "Syst_"+param_signal.GetSystType()+param_signal_name;
       RunULAnalysis(param_signal);
-    }
-  }    
+    }    
+  }
 
 
   return ;
@@ -64,20 +69,25 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
   double weight =SetupWeight(ev,param);
 
   
-  // HL ID
+  //// VETO LEPTON IDS set up in param
   std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5); 
   std::vector<Muon>       MuonCollV     = GetMuons    (param.Muon_Veto_ID, 5., 2.4);
 
+  //// ID set based on if running Fake or normal setup
   TString el_ID = (RunFake) ?  param.Electron_FR_ID : param.Electron_Tight_ID ;
   TString mu_ID = (RunFake) ?  param.Muon_FR_ID :  param.Muon_Tight_ID ;
 
-  double Min_Muon_Pt     = (RunFake) ? 10. : 10.;
-  double Min_Electron_Pt = (RunFake) ? 10. : 10.;
-
-
+  
+  ///  Set pt lower if using fakes due to ptcone 
+  double Min_Muon_Pt     = (RunFake) ? 7. : 10.;
+  double Min_Electron_Pt = (RunFake) ? 7. : 10.;
+  
+  
+  //// Set initial lepton vectors : Passes RunFake to set pt == ptcone
   std::vector<Muon>       MuonCollTInit = GetMuons    ( param,mu_ID, Min_Muon_Pt, 2.4, RunFake);
   std::vector<Electron>   ElectronCollTInit = GetElectrons( param,el_ID, Min_Electron_Pt, 2.5, RunFake)  ;
-
+  
+  //// Select leptons that pass gen cuts based on fakes/cf....
   std::vector<Muon>       MuonCollT     = GetLepCollByRunType    ( MuonCollTInit,gens,param);
   std::vector<Electron>   ElectronCollT  =  GetLepCollByRunType   ( ElectronCollTInit,gens,param);
   
@@ -86,19 +96,22 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
   //cout << "MuonCollT " << MuonCollT.size() << " ID = " << mu_ID << endl;
   
   
+  /// Create a single vector of Lepton Veto objects
   std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(MuonCollV,ElectronCollV);
 
-  std::vector<Tau>        TauColl        = GetTaus     (leps_veto,param.Tau_Veto_ID,20., 2.3);
+  /// Get Taus 
+  std::vector<Tau>        TauColl        = GetTaus     (leps_veto,param.Tau_Veto_ID,25., 2.3);
 
-  // Creat Lepton vector to have lepton blind codes 
 
+  
+  /// Get MET for PUPPPI TYPE 1
   Particle METv = GetvMET("PuppiT1xyCorr",param); // returns MET with systematic correction
 
   
+  
   // JET COLLECTION
-  bool CheckJetOpt=false;
 
-  if(CheckJetOpt){
+  if(HasFlag("CheckJetOpt")){
     std::vector<FatJet> fatjets_tmp  = GetFatJets(param, param.FatJet_ID, 200., 5.);
     
     // 
@@ -266,16 +279,19 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
   }
 
 
-  std::vector<FatJet> fatjets_tmp  = GetFatJets(param, param.FatJet_ID, 200., 5.);
-  std::vector<FatJet> FatjetColl                  = SelectAK8Jetsv2(fatjets_tmp, 200., 2.7, true,  1., true, -999, true, 40., 130.,-999, ElectronCollV, MuonCollV);
-  std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
+  //// NOW make some jet selection to use in other studies
 
-  std::vector<Jet> JetCollLoose                    = SelectAK4Jets(jets_tmp,     15., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl);
-  std::vector<Jet> BJetCollNLV                    = SelectAK4Jets(jets_tmp,     20., 2.4, false,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl);
-  std::vector<Jet> JetColl                        = SelectAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl);
-  std::vector<Jet> VBF_JetColl                    = SelectAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, "",  ElectronCollV,MuonCollV, FatjetColl);  
+  std::vector<FatJet> AK8Jet_TMP  = GetFatJets(param, param.FatJet_ID, 200., 5.);
+  std::vector<FatJet> AK8Jet                  = SelectAK8Jetsv2(AK8Jet_TMP, 200., 2.7, true,  1., true, -999, true, 40., 130.,-999, ElectronCollV, MuonCollV);
+  std::vector<Jet> AK4Jet_TMP     = GetJets   ( param, param.Jet_ID, 20., 5.);
+
+  std::vector<Jet> JetCollLoose                    = SelectAK4Jets(AK4Jet_TMP,    15., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8Jet);
+  std::vector<Jet> BJetCollNLV                    = SelectAK4Jets(AK4Jet_TMP,     20., 2.4, false,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8Jet);
+  std::vector<Jet> JetColl                        = SelectAK4Jets(AK4Jet_TMP,     20., 2.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8Jet);
+  std::vector<Jet> VBF_JetColl                    = SelectAK4Jets(AK4Jet_TMP,     30., 4.7, true,  0.4,0.8, "",  ElectronCollV,MuonCollV, AK8Jet);  
   
 
+  /// B JET 
   JetTagging::Parameters param_jetsM = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
   JetTagging::Parameters param_jetsL = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Loose, JetTagging::incl, JetTagging::mujets);
   JetTagging::Parameters param_jetsT = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Tight, JetTagging::incl, JetTagging::mujets);
@@ -285,50 +301,35 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
 
   std::vector<Jet> BJetCollSR1    = SelectBJets(param,  BJetCollNLV, param_jetsT);
   double sf_btagSR1_NLV               = GetBJetSF(param, BJetCollNLV, param_jetsT);
+  
 
-
+  /// param.WriteOutVerbose used to set code how many historgams to draw
+  /// param.WriteOutVerbose = 0 draws ALL hists
   
   if(param.Muon_Tight_ID == "HNTightV2") param.WriteOutVerbose=0;
   else   param.WriteOutVerbose=1; // Does not Fill Cutflow OR Region Plotter  
   
-  bool opt_ID=true;
-
-  if(opt_ID){
-    
-    if(!IsData && FatjetColl.size()==0)weight = weight*sf_btagM_NLV;
-    if(!IsData && FatjetColl.size()>0)weight = weight*sf_btagSR1_NLV;
-
-    
-    if (MCSample.Contains("Type1")) {
-      weight*=1/xsec;
-    }
-    
-    RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,FatjetColl , BJetColl,BJetCollSR1, ev,METv, param,weight);
-    return;
-  }
-
   
-  
-  bool opt_trig=false;
-  if(opt_trig){
+
+  if(HasFlag("opt_trig")){
 
     if(!IsData )weight = weight*sf_btagM_NLV;
 
     param.Name = param.DefName + "Nom";
     param.SRConfig  =  "";
-    RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,FatjetColl , BJetColl,BJetColl, ev,METv, param,weight);
+    RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,AK8Jet , BJetColl,BJetColl, ev,METv, param,weight);
 
     param.Name = param.DefName + "Trig1OR";
     param.SRConfig = "Trig1OR";
-    RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,FatjetColl , BJetColl,BJetColl, ev,METv, param,weight);
+    RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,AK8Jet , BJetColl,BJetColl, ev,METv, param,weight);
     
     param.Name = param.DefName + "Trig2OR";
     param.SRConfig = "Trig2OR";
-    RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,FatjetColl , BJetColl,BJetColl, ev,METv, param,weight);
+    RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,AK8Jet , BJetColl,BJetColl, ev,METv, param,weight);
 
     param.Name = param.DefName + "Trig3OR";
     param.SRConfig = "Trig3OR";
-    RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,FatjetColl , BJetColl,BJetColl, ev,METv, param,weight);
+    RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,AK8Jet , BJetColl,BJetColl, ev,METv, param,weight);
     
     param.Name = param.DefName;
     param.SRConfig  =  "";
@@ -336,8 +337,7 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
   }
 
 
-  bool opt_sr1=false;
-  if(opt_sr1){
+  if(HasFlag("opt_sr1")){
 
     vector<TString> SR1Opt = {};
     vector<TString> METcut = {"SR1MET_10_","SR1MET_12_","SR1MET_15_","SR1MET_17_","SR1MET_20_"};
@@ -361,7 +361,7 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
 
       param.Name = param.DefName + is1;
       param.SRConfig  = is1;
-      RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,FatjetColl , BJetColl,BJetColl, ev,METv, param,weight);
+      RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,AK8Jet , BJetColl,BJetColl, ev,METv, param,weight);
       // reset param                                                                                                                                                                                                                        
       param.Name = param.DefName;
       param.SRConfig  = "";
@@ -370,8 +370,7 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
 
 
 
-  bool opt_sr3=false;
-  if(opt_sr3){
+  if(HasFlag("opt_sr3")){
 
     vector<TString> SR3Opt = {};
     vector<TString> PT1cut = {"SR3_bin1pt_60_","SR3_bin1pt_70_","SR3_bin1pt_80_","SR3_bin1pt_90_","SR3_bin1pt_100_","SR3_bin1pt_120_"};
@@ -391,7 +390,7 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
 
       param.Name = param.DefName + is1;
       param.SRConfig  = is1;
-      RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,FatjetColl , BJetColl,BJetColl, ev,METv, param,weight);
+      RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,AK8Jet , BJetColl,BJetColl, ev,METv, param,weight);
       param.Name = param.DefName;
       param.SRConfig  = "";
     }

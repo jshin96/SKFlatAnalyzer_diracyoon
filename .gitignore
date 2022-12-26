@@ -10,4 +10,5 @@ lib/*.rootmap
 */obj
 HNDiLeptonWorskspace
 python/UserInfo_*.py
-!python/UserInfo_template.py
+python/UserInfo_template.py
+TMVA

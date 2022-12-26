@@ -1628,6 +1628,29 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
     return param;
 
   }
+  
+  else if (s_setup=="HNLSROpt"){
+
+    param.CFMethod   = "MC";
+    param.ConvMethod = "MC";
+
+    param.Muon_Tight_ID = "HNTightV2";
+    param.Electron_Tight_ID = "HNTightV2";
+
+
+    param.Electron_ID_SF_Key = "TmpHNTightV2";
+    param.Muon_ID_SF_Key = "TmpHNTightV2";
+
+    param.Muon_FR_ID = "HNLooseV1";
+    param.Electron_FR_ID = "HNLooseV4";
+
+
+    param.Muon_RECO_SF_Key = "MuonRecoSF";
+
+    return param;
+
+  }
+
 
   else if (s_setup=="BDT"){
 
