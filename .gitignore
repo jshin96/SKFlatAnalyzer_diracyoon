@@ -8,6 +8,7 @@ TMVA/*/*.root
 lib/*.tar.gz
 lib/*.rootmap
 */obj
+*/obj
 HNDiLeptonWorskspace
 python/UserInfo_*.py
 python/UserInfo_template.py
