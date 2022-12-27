@@ -13,6 +13,7 @@ skim=' '
 
 # JOB CONFIG                                                                                                                                               
 njobs=10
+nLargejobs=40
 njobs_sig=5
 njobs_data=5
 
@@ -33,6 +34,17 @@ if [[ $1 == "NP1_MUON_HighPt" ]]; then
 
 fi
 
+if [[ $1 == "NP1_MUON_FullPt" ]]; then
+
+    Flag='MuID_NP,FullPt,BB'
+    source ${runPATH}/run_hnl.sh Muon ${Flag}
+
+    Flag2='MuID_NP,FullPt,EC'
+    source ${runPATH}/run_hnl.sh Muon ${Flag2}
+
+fi
+
+
 
 #############################################################################
 #############################################################################
@@ -46,15 +58,15 @@ if [[ $1 == "Muon" ]]; then
     # If no inut then this is ran                                                                                                                        
     for i in "${era_list_Partial[@]}"
     do
-
+	
 
 	source ${runPATH}/run_hnl.sh MC  ${i} ${2} 
-
-        #source ${runPATH}/run_hnl.sh Signals ${i} ${2}
+	
+        source ${runPATH}/run_hnl.sh Signals ${i} ${2}
 	
 	ConvFlag=${2}',RunConv'
 
-	#source ${runPATH}/run_hnl.sh Conv ${i} ${ConvFlag}
+	source ${runPATH}/run_hnl.sh Conv ${i} ${ConvFlag}
 
     done
 
@@ -81,8 +93,8 @@ fi
 
 if [[ $1 == "MC" ]]; then
 
-    SKFlat.py -a $analyzer  -l $mcpath/MCOpt.txt  -n $njobs  --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLep &
-    #SKFlat.py -a $analyzer  -l $mcpath/MCOptLarge.txt  -n $njobs  --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLep &
+    SKFlat.py -a $analyzer  -l $mcpath/MCOpt.txt  -n $njobs  --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLep 
+    SKFlat.py -a $analyzer  -l $mcpath/MCOptLarge.txt  -n $nLargejobs  --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLep &
 
 fi
 
@@ -110,3 +122,10 @@ fi
 
 
 
+if [[ $1 == "TMP" ]]; then
+
+    Flag='MuID_NP,AllPt,BB'
+
+    SKFlat.py -a $analyzer  -i DYTypeI_DF_M2000_private  -n 2  --nmax ${nmax}  -e 2017  --userflags $Flag  &
+
+fi

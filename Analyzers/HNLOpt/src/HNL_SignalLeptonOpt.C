@@ -613,7 +613,7 @@ void HNL_SignalLeptonOpt::executeEvent(){
 	  for(unsigned int imva=0 ; imva < 56 ; imva++){
 	    double mva_d= 0.4 + double(imva)*0.01;
 	    TString mvaTS= DoubleToString(mva_d);
-	    IDBB.push_back(BBID+mvaTS);
+	    IDBB.push_back(BBID+mvaTS+"_");
 	  }
 	}
 	if(HasFlag("EC")){
@@ -623,10 +623,59 @@ void HNL_SignalLeptonOpt::executeEvent(){
           for(unsigned int imva=0 ; imva < 56 ; imva++){
             double mva_d= 0.4 + double(imva)*0.01;
             TString mvaTS= DoubleToString(mva_d);
-            IDEC.push_back(ECID+mvaTS);
+            IDEC.push_back(ECID+mvaTS+"_");
           }
 	}
       }
+      
+      if(HasFlag("FullPt")){
+	
+	if(HasFlag("BB")){
+	  IDEC = {"POGECT_ISOEC0p15_"};
+	  
+	  vector<TString> mvaBBTau;
+	  for(unsigned int imva=0 ; imva < 26 ; imva++){
+	    double mva_d= 2.5 + double(imva)*0.5;
+	    TString mvaTS= DoubleToString(mva_d);
+	    mvaBBTau.push_back("MVABBTau"+mvaTS+"_");
+	  }
+	  vector<TString> mvaBBA;
+	  for(unsigned int imva=0 ; imva < 21 ; imva++){
+	    double mva_d= 0. + double(imva)*0.5;
+	    TString mvaTS= DoubleToString(mva_d);
+	    mvaBBA.push_back("MVABBA"+mvaTS+"_");
+	  }
+	  
+	  for(auto it : mvaBBTau){
+	    for(auto it2 : mvaBBA){
+	      IDBB.push_back(it+it2);
+	    }
+	  }
+	}
+	if(HasFlag("EC")){
+          IDBB = {"POGBT_ISOB0p15_"};
+          vector<TString> mvaECTau;
+          for(unsigned int imva=0 ; imva < 26 ; imva++){
+            double mva_d= 2.5 + double(imva)*0.5;
+            TString mvaTS= DoubleToString(mva_d);
+            mvaECTau.push_back("MVAECTau"+mvaTS+"_");
+          }
+          vector<TString> mvaECA;
+          for(unsigned int imva=0 ; imva < 21 ; imva++){
+            double mva_d= 0. + double(imva)*0.5;
+            TString mvaTS= DoubleToString(mva_d);
+            mvaECA.push_back("MVAECA"+mvaTS+"_");
+          }
+
+          for(auto it : mvaECTau){
+            for(auto it2 : mvaECA){
+              IDEC.push_back(it+it2);
+	    }   
+          }
+        }
+	
+      }
+      
     }
     
     for(auto i1 : IDBB){

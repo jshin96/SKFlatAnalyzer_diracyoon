@@ -31,7 +31,7 @@ if [[ $1 == "MC" ]]; then
     for i in "${era_list[@]}"
     do
 	#SKFlat.py -a $analyzer  -i  WJets_Sherpa  -n 50  --nmax ${nmax}   -e ${i} &
-	SKFlat.py -a $analyzer  -i  WJets_MG  -n 50  --nmax ${nmax}   -e ${i} &
+	SKFlat.py -a $analyzer  -i  WGJJToLNu  -n 20  --nmax ${nmax}   -e ${i} &
 	#SKFlat.py -a $analyzer  -i   -n 1000  --nmax ${nmax}   -e ${i} &
 
 		

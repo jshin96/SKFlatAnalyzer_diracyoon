@@ -85,6 +85,8 @@ public:
   bool PassMVA_UL_NPBB(TString bb1, TString bb2, TString bb3,TString bb4) const;
   bool PassMVA_UL_NPEC(TString ee1, TString ee2,  TString ee3, TString ee4) const;
 
+  bool PassMVA_ULBB(double c, TString tau, TString A) const;
+  bool PassMVA_ULEC(double c, TString tau, TString A) const;
 
 
   void SetIso(double ch04, double nh04, double ph04, double pu04, double trkiso);
@@ -138,7 +140,7 @@ public:
   bool Pass_CB_Opt(TString ID) const;
 
   int  PassLooseIDOpt( ) const;
-  int PassIDOptMulti(TString dxy_method, TString sel_methodB,TString sel_methodEC,TString mva_methodBB1, TString mva_methodBB2,TString mva_methodBB3,TString mva_methodBB4, TString mva_methodEC1, TString mva_methodEC2, TString mva_methodEC3,TString mva_methodEC4, TString iso_methodB,TString iso_methodEC ) const;
+  int PassIDOptMulti(TString dxy_method, TString sel_methodB,TString sel_methodEC,TString mva_methodBB1, TString mva_methodBB2,TString mva_methodBB3,TString mva_methodBB4, TString mva_methodEC1, TString mva_methodEC2, TString mva_methodEC3,TString mva_methodEC4, TString mva_methodBBTau, TString mva_methodBBA, TString mva_methodECTau,  TString mva_methodECA, TString iso_methodB,TString iso_methodEC ) const;
 			    
     
 
