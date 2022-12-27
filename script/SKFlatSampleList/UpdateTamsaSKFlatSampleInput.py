@@ -54,7 +54,8 @@ parser.add_argument('--VERBOSE', action='store_true')
 args = parser.parse_args()
 input_era=args.era
 input_skim=args.skim
-update_script='script/UpdateSampleForSNULatest.sh'
+#update_script='script/UpdateSampleForSNULatest.sh'
+update_script='script/UpdateSampleForSNU.sh'
 
 #############################################################################################################################
 #############################################################################################################################

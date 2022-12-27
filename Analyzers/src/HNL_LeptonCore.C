@@ -1086,8 +1086,9 @@ double HNL_LeptonCore::MergeMultiMC(vector<TString> vec, TString Method){
   if(IsSignal()) return 1;
 
   if (std::count(vec.begin(), vec.end(), "WJet")) {
+    /// Merge sherpa and HT binned
     if (MCSample.Contains("WJet")){
-      return 0.25;
+      return 0.5;
     }
   }
 

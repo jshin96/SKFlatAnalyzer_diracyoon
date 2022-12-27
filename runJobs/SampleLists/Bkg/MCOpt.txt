@@ -26,8 +26,6 @@ tHq
 TTTT
 TTZZ
 tZq
-WJets_amcatnlo
-WJets_MG
 WJets_Sherpa
 WJetsToLNu_HT-70To100
 WJetsToLNu_HT-100To200

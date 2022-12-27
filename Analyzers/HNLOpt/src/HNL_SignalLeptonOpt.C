@@ -841,6 +841,8 @@ void HNL_SignalLeptonOpt::RunULAnalysis(AnalyzerParameter param, vector<Electron
   Event ev = GetEvent();
   double weight =SetupWeight(ev,param);
   
+  //cout << "weight = " << weight << endl;
+
   if(MCSample.Contains("WJet")){
     vector<TString> vec = {"WJet"};
     double merge_weight = MergeMultiMC( vec, "" );
@@ -915,9 +917,6 @@ void HNL_SignalLeptonOpt::RunULAnalysis(AnalyzerParameter param, vector<Electron
   if(!IsData && FatjetColl.size()>0)weight = weight*sf_btagSR1_NLV;
 
 
-  if (IsSignal()){
-    weight*=1/xsec;
-  }
     
   /// Runs adapted SR functionality
   //FillSignalRegionForOpt(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,FatjetColl , BJetColl, ev,METv, param,weight);

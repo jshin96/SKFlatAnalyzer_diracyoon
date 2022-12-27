@@ -3436,7 +3436,7 @@ double AnalyzerCore::MCweight(bool usesign, bool norm_1invpb) const {
 
   if(IsDATA) return 1.;
   double weight=gen_weight;
-
+  
   //MiNNLO sample has some events with unphysically large weight
   if(MCSample.Contains("DYJets")&&MCSample.Contains("MiNNLO")){
     double maxweight=2358.0700*5.;

@@ -62,11 +62,11 @@ if [[ $1 == "Muon" ]]; then
 
 	source ${runPATH}/run_hnl.sh MC  ${i} ${2} 
 	
-        source ${runPATH}/run_hnl.sh Signals ${i} ${2}
+        #source ${runPATH}/run_hnl.sh Signals ${i} ${2}
 	
 	ConvFlag=${2}',RunConv'
 
-	source ${runPATH}/run_hnl.sh Conv ${i} ${ConvFlag}
+	#source ${runPATH}/run_hnl.sh Conv ${i} ${ConvFlag}
 
     done
 
@@ -93,8 +93,10 @@ fi
 
 if [[ $1 == "MC" ]]; then
 
-    SKFlat.py -a $analyzer  -l $mcpath/MCOpt.txt  -n $njobs  --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLep 
-    SKFlat.py -a $analyzer  -l $mcpath/MCOptLarge.txt  -n $nLargejobs  --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLep &
+    SKFlat.py -a $analyzer  -l $mcpath/W.txt  -n $njobs  --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLep
+
+    #SKFlat.py -a $analyzer  -l $mcpath/MCOpt.txt  -n $njobs  --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLep 
+    #SKFlat.py -a $analyzer  -l $mcpath/MCOptLarge.txt  -n $nLargejobs  --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLep &
 
 fi
 
