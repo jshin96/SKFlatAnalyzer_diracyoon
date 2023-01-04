@@ -6,6 +6,9 @@ void SkimTree_HNMultiLep::initializeAnalyzer(){
   cout << "[SkimTree_HNMultiLep::initializeAnalyzer()] gDirectory = " << gDirectory->GetName() << endl;
   newtree = fChain->CloneTree(0);
 
+  //  newtree->Branch("pt", pt, 'pt/F')
+
+
   triggers_dimu.clear();
 
   triggers.clear();

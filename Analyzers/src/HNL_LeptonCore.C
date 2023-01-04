@@ -1092,8 +1092,8 @@ double HNL_LeptonCore::MergeMultiMC(vector<TString> vec, TString Method){
     }
   }
 
-  if (std::count(vec.begin(), vec.end(), "DY")) {
-    if (MCSample.Contains("DYJet")){
+  if (std::count(vec.begin(), vec.end(), "DYMG")) {
+    if (MCSample.Contains("DYJets_MG")){
       return 0.5;
     }
   }
@@ -1868,7 +1868,7 @@ double HNL_LeptonCore::SetupWeight(Event ev, AnalyzerParameter param){
   else pileup_weight= GetPileUpWeight(nPileUp,0);
   
   double this_mc_weight = ev.GetTriggerLumi("Full") * MCweight(true, true) * pileup_weight * GetKFactor()*prefire_weight;
-  if(MCSample.Contains("Type") && Analyzer == "HNL_SignalLeptonOpt") this_mc_weight = MCweight(true, false) * pileup_weight * prefire_weight;
+  //if(MCSample.Contains("Type") && Analyzer == "HNL_SignalLeptonOpt") this_mc_weight = MCweight(true, false) * pileup_weight * prefire_weight;
 
 
   FillWeightHist("PrefireWeight_" ,GetPrefireWeight(0));

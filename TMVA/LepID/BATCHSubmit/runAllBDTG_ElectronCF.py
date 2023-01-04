@@ -32,10 +32,10 @@ for Classifier in Classifiers:
                                             for Seed in Seeds:
                                                 for MinNodeSize in MinNodeSizes:
 
-                                                    nMAX = " --nmax 75"
+                                                    nMAX = " --nmax 25"
                                                     if SignalMode == 1:
-                                                        nMAX = " --nmax 40"
+                                                        nMAX = " --nmax 25"
                                                     if SignalMode == 0:
-                                                        nMAX = " --nmax 40"
+                                                        nMAX = " --nmax 25"
 
                                                     os.system("RunIDBDT.py -a runIDBDT_HNtypeICF -m " + str(Classifier) + " -b CF -ns "+str(SignalMode)+ "  -nt "+ str(NTREES) + " -c " + Channel + " -MaxDepth  " + str(MaxDepth) + " -ncut " + str(NCut) + " -eta "+ str(Eta) +  " -Nrom " +NormMode+ " -BoostLearningRate  " + BoostLearningValue + " -BaggedFrac " + BaggedFrac +  " -s " + Seed + "  -e "+Era+" " + nMAX + " -MinNodeSize "+MinNodeSize)    

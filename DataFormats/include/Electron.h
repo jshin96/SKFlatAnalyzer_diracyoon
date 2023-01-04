@@ -112,9 +112,11 @@ public:
   }
 
 
-  bool PassMVA_UL_NP(TString bb1, TString bb2, TString eb1, TString eb2, TString ee1, TString ee2) const;
-  bool PassMVA_UL_CF(TString bb, TString ee)const ;
-  bool PassMVA_UL_Conv(TString bb1, TString bb2, TString ee1, TString ee2)const ;
+  double PassMultiStepCut(double Val1, double Val2, double PtBoundary ) const;
+
+  bool PassMVA_UL_NP(TString pt,TString bb1, TString bb2, TString eb1, TString eb2, TString ee1, TString ee2) const;
+  bool PassMVA_UL_CF(TString val1, TString val2, TString ptboundary)const ;
+  bool PassMVA_UL_Conv(TString pt,TString bb1, TString bb2, TString ee1, TString ee2)const ;
   double PassStepCut(double val, double val2, double pt1, double pt2) const;
 
 
@@ -332,7 +334,7 @@ public:
 
   int  PassLooseIDOpt(TString  trigger, TString dxy_method, TString sel_methodB,TString sel_methodEC, TString conv_method, TString chg_method, TString iso_methodB,TString iso_methodEC ) const;
 
-  int  PassIDOptMulti(TString np_mva_BB1, TString np_mva_BB2, TString np_mva_EB1, TString np_mva_EB2,  TString np_mva_EE1, TString np_mva_EE2 ,  TString conv_mva_BB1, TString conv_mva_BB2, TString conv_mva_EE1,TString conv_mva_EE2, TString cf_mva_BB,TString cf_mva_EE,  TString pog_method,  TString conv_method, TString chg_method, TString iso_methodB,TString iso_methodEC ) const;
+  int  PassIDOptMulti(TString np_mva_Pt,TString np_mva_BB1, TString np_mva_BB2, TString np_mva_EB1, TString np_mva_EB2,  TString np_mva_EE1, TString np_mva_EE2 ,  TString conv_mva_Pt,TString conv_mva_BB1, TString conv_mva_BB2, TString conv_mva_EE1,TString conv_mva_EE2, TString cf_mva_BB1,TString cf_mva_EE1, TString cf_mva_BB2,TString cf_mva_EE2,TString cf_mva_BBPt,TString cf_mva_EEPt,  TString pog_method,  TString conv_method, TString chg_method, TString iso_methodB,TString iso_methodEC ) const;
 
 
   bool passIDHN(int ID, double dxy_b, double dxy_e, double dz_b,double dz_e, double sip_b, double sip_e, double iso_b,double iso_e, double miso_b, double miso_e) const;

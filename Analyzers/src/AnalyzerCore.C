@@ -914,61 +914,57 @@ void AnalyzerCore::SetupIDMVAReader(bool isMuon){
   }
 
   TString AnalyzerPath=std::getenv("SKFlat_WD");
-  TString MVAPathFake="/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIV2/Default/2017/dataset/weights/";
-  TString MVAPathConv="/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIConv/Default/2017/dataset/weights/";
-  TString MVAPathCF="/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeICF/Default/2017/dataset/weights/";
+  TString MVAPathFake="/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIV2/Default/"+GetYearString()+"/dataset/weights/";
+  TString MVAPathConv="/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIConv/Default/"+GetYearString()+"/dataset/weights/";
+  TString MVAPathCF="/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeICF/Default/"+GetYearString()+"/dataset/weights/";
 
   if(isMuon){
-
+    
+    /// XML file picked with BEST AUC && GOF > 0.1
+    TString BDTG_Conv = "";
+    if(GetYear() == 2016) BDTG_Conv = "BDTG_ConvSignalConvTypeI_MuMu_SignalConv_2016_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT";
+    if(GetYear() == 2017) BDTG_Conv = "BDTG_ConvSignalConvTypeI_MuMu_SignalConv_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
+    if(GetYear() == 2018) BDTG_Conv = "BDTG_ConvSignalConvTypeI_MuMu_SignalConv_2018_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT";
+    
+    
     vector<pair<TString,TString> > BDTInput =     {
-      make_pair("BDTG_Conv","BDTG_ConvSignalConvTypeI_MuMu_SignalConv_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
-
-      /*make_pair("BDTG_BB_Conv","BDTG_ConvSignalConv_BBTypeI_MuMu_SignalConv_BB_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
-      make_pair("BDTG_EC_Conv","BDTG_ConvSignalConv_ECTypeI_MuMu_SignalConv_EC_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"),
-      make_pair("BDTG_NoPtEta_Conv","BDTG_ConvSignalConvNoPtEtaTypeI_MuMu_SignalConvNoPtEta_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"),
-      make_pair("BDTG_NoPt_Conv","BDTG_ConvSignalConvNoPtTypeI_MuMu_SignalConvNoPt_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT") ,   
-      make_pair("BDTG_NoPt_EC_Conv","BDTG_ConvSignalConvNoPt_ECTypeI_MuMu_SignalConvNoPt_EC_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"),
-      make_pair("BDTG_NoPt_BB_Conv","BDTG_ConvSignalConvNoPt_BBTypeI_MuMu_SignalConvNoPt_BB_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
-      make_pair("BDTG_LowPt_Conv","BDTG_ConvSignalConvLowPtTypeI_MuMu_SignalConvLowPt_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
-      make_pair("BDTG_LowPt_BB_Conv","BDTG_ConvSignalConvLowPt_BBTypeI_MuMu_SignalConvLowPt_BB_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"),
-      make_pair("BDTG_LowPt_EC_Conv","BDTG_ConvSignalConvLowPt_ECTypeI_MuMu_SignalConvLowPt_EC_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT")*/
+      make_pair("BDTG_Conv", BDTG_Conv)      
     };
-
-
-
-    for (auto ibdt : BDTInput) {
-
-      ///if(ibdt.first.Contains("_NoPtEta"))       MuonIDNoPtEtaConvMVAReader->BookMVA(ibdt.first,MVAPathConv+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
-      //else    if(ibdt.first.Contains("_NoPt") || ibdt.first.Contains("_LowPt") )       MuonIDNoPtConvMVAReader->BookMVA(ibdt.first,MVAPathConv+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
-      
-      MuonIDConvMVAReader->BookMVA(ibdt.first,MVAPathConv+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
-
-    }
-
+    
+    for (auto ibdt : BDTInput)   MuonIDConvMVAReader->BookMVA(ibdt.first,MVAPathConv+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
 
   }
   else{
-
     
+
+    TString BDTG_Fake = "";
+    if(GetYear() == 2016) BDTG_Fake = "BDTG_FakeSignalTypeI_EE_Signal_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
+    if(GetYear() == 2017) BDTG_Fake = "BDTG_FakeSignalTypeI_EE_Signal_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
+    if(GetYear() == 2018) BDTG_Fake = "BDTG_FakeSignalTypeI_EE_Signal_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
+
+    TString BDTG_Conv = "";
+    if(GetYear() == 2016) BDTG_Conv = "BDTG_ConvSignalConvTypeI_EE_SignalConv_2016_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
+    if(GetYear() == 2017) BDTG_Conv = "BDTG_ConvSignalConvTypeI_EE_SignalConv_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT";
+    if(GetYear() == 2018) BDTG_Conv = "BDTG_ConvSignalConvTypeI_EE_SignalConv_2018_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
+
+
+    TString BDTG_BB_CF= "";
+    if(GetYear() == 2016) BDTG_BB_CF= "BDTG_CFSignalCFTypeI_EE_SignalCF_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
+    if(GetYear() == 2017) BDTG_BB_CF= "BDTG_CFSignalCFTypeI_EE_SignalCF_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
+    if(GetYear() == 2018) BDTG_BB_CF= "BDTG_CFSignalCFTypeI_EE_SignalCF_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
+    
+    TString BDTG_EC_CF= "";
+    if(GetYear() == 2016) BDTG_EC_CF= "BDTG_CFSignalCFECTypeI_EE_SignalCFEC_2016_NTrees300_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
+    if(GetYear() == 2017) BDTG_EC_CF= "BDTG_CFSignalCFECTypeI_EE_SignalCFEC_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
+    if(GetYear() == 2018) BDTG_EC_CF= "BDTG_CFSignalCFECTypeI_EE_SignalCFEC_2018_NTrees300_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
+
+
     vector<pair<TString,TString> > BDTInput =     {
 
-      make_pair("BDTG_Fake", "BDTG_FakeSignalTypeI_EE_Signal_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"),
-      make_pair("BDTG_LowPt_Fake", "BDTG_FakeSignalBin1TypeI_EE_SignalBin1_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"),
-
-      make_pair("BDTG_Conv","BDTG_ConvSignalConvTypeI_EE_SignalConv_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"),
-      make_pair("BDTG_BB_Conv","BDTG_ConvSignalConv_BBTypeI_EE_SignalConv_BB_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
-      make_pair("BDTG_EC_Conv","BDTG_ConvSignalConv_ECTypeI_EE_SignalConv_EC_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
-      make_pair("BDTG_NoPtEta_Conv","BDTG_ConvSignalConvNoPtEtaTypeI_EE_SignalConvNoPtEta_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
-      make_pair("BDTG_NoPt_Conv","BDTG_ConvSignalConvNoPtTypeI_EE_SignalConvNoPt_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
-      make_pair("BDTG_NoPt_EC_Conv","BDTG_ConvSignalConvNoPt_ECTypeI_EE_SignalConvNoPt_EC_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
-      make_pair("BDTG_NoPt_BB_Conv","BDTG_ConvSignalConvNoPt_BBTypeI_EE_SignalConvNoPt_BB_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
-      make_pair("BDTG_LowPt_Conv","BDTG_ConvSignalConvLowPtTypeI_EE_SignalConvLowPt_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"		),
-      make_pair("BDTG_LowPt_BB_Conv","BDTG_ConvSignalConvLowPt_BBTypeI_EE_SignalConvLowPt_BB_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
-      make_pair("BDTG_LowPt_EC_Conv","BDTG_ConvSignalConvLowPt_ECTypeI_EE_SignalConvLowPt_EC_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"),
-
-
-      make_pair("BDTG_BB_CF","BDTG_CFSignalCFTypeI_EE_SignalCF_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"),
-      make_pair("BDTG_EC_CF","BDTG_CFSignalCFECTypeI_EE_SignalCFEC_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT")
+      make_pair("BDTG_Fake", BDTG_Fake),
+      make_pair("BDTG_BB_CF",BDTG_BB_CF),
+      make_pair("BDTG_EC_CF",BDTG_EC_CF),
+      make_pair("BDTG_Conv",BDTG_Conv),
 
     };
 

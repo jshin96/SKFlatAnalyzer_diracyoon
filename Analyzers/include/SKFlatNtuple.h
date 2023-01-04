@@ -59,7 +59,9 @@ public :
    }
    virtual TString GetEra() const { return DataEra; }
    virtual TString GetEraShort() const;
+
    virtual int GetYear() const { return DataYear; }
+   virtual TString GetYearString() const {  return TString(std::to_string(DataYear));  }
 
    std::string AddZeroToTime(int twodigit){
      if(twodigit<10){

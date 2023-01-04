@@ -56,24 +56,28 @@ def PerformKolmogorovSmirnov(filepath):
     RootFile.Close()
 
 
-BDTFile_Dir = "/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIV2/Default/2017/"
-BDTFileList  = [f for f in listdir(BDTFile_Dir) if isfile(join(BDTFile_Dir,f))]
-
 
 
 import argparse
 parser = argparse.ArgumentParser(description='option')
 parser.add_argument('-b', dest='Bkg', default="Fake")
+parser.add_argument('-e', dest='Era', default="2017")
 parser.add_argument('-f', dest='Channel', default="EE")
 parser.add_argument('-c', dest='Classifier', default="BDTG")
 
 args = parser.parse_args()
+
+
+
+BDTFile_Dir = "/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIV2/Default/"+args.Era+"/"
+BDTFileList  = [f for f in listdir(BDTFile_Dir) if isfile(join(BDTFile_Dir,f))]
 
 MaxAUC=0.
 MaxJob=""
 n=0
 Results = dict()
 
+addVal=0.00001
 for File in BDTFileList:
 
     if not args.Bkg in File:
@@ -99,7 +103,13 @@ for File in BDTFileList:
         MaxAUC = AUC
         MaxJob=File
     print ("="*50)
-    Results[AUC] = res
+
+    if not AUC  in Results:
+        Results[AUC] = res
+    else:
+        Results[AUC-addVar] = res
+        addVar=addVar+0.00001
+
     n=n+1
 
 print "AUC              KS_signal   KS_bkg      File "

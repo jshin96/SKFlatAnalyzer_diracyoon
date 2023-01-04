@@ -12,37 +12,187 @@ datapath=${SKFlat_WD}/runJobs/SampleLists/DATA/
 skim=' '
 
 # JOB CONFIG                                                                                                                                               
-njobs=10
-nLargejobs=40
+njobs=5
+nLargejobs=15
 njobs_sig=5
 njobs_data=5
 
 nmax=300
 
+if [[ $1 == "NP_ELECTRON_CF_HighPt" ]]; then
 
-declare  -a era_list_Full=("2016postVFP" "2016preVFP" "2018")
-declare  -a era_list_Partial=("2017")
+    declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
+
+    for i in "${era_list[@]}"
+    do
+
+        Flag='RunEE,ELID_CF,HighPt,BB'
+	source ${runPATH}/run_hnl.sh Electron ${Flag} ${i}
+
+        Flag2='RunEE,ELID_CF,HighPt,EC'
+	source ${runPATH}/run_hnl.sh Electron ${Flag2} ${i}
+
+	Flag3='RunEE,ELID_CF,HighPt,FullEta'
+        source ${runPATH}/run_hnl.sh Electron ${Flag3} ${i}
+
+    done
+fi
+
+if [[ $1 == "NP_ELECTRON_CF_FullPt" ]]; then
+
+    declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
+
+    for i in "${era_list[@]}"
+    do
+
+        Flag='RunEE,ELID_CF,FullPt'
+        source ${runPATH}/run_hnl.sh Electron ${Flag} ${i}
+
+    done
+fi
+
+if [[ $1 == "NP_ELECTRON" ]]; then
+
+    declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
+
+    for i in "${era_list[@]}"
+    do
+
+        Flag='RunEE,ELID_NP'
+        source ${runPATH}/run_hnl.sh Electron ${Flag} ${i}
+
+    done
+fi
 
 
-if [[ $1 == "NP1_MUON_HighPt" ]]; then
+#############################################################################                                                                                                                                                               
+#############################################################################                                                                                                                                                               
+#############################################################################     
 
-    Flag='MuID_NP,HighPt,BB'
-    source ${runPATH}/run_hnl.sh Muon ${Flag}
-    
-    Flag2='MuID_NP,HighPt,EC'
-    source ${runPATH}/run_hnl.sh Muon ${Flag2}
+if [[ $1 == "NP_MUON_HighPt" ]]; then
+
+    declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
+
+    for i in "${era_list[@]}"
+    do    
+	
+	Flag='MuID_NP,HighPt,BB'
+	source ${runPATH}/run_hnl.sh Muon ${Flag} ${i}
+	
+	Flag2='MuID_NP,HighPt,EC'
+	source ${runPATH}/run_hnl.sh Muon ${Flag2} ${i}
+	
+    done
+fi
+
+
+if [[ $1 == "NP_MUON_CONV" ]]; then
+
+    declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
+
+    for i in "${era_list[@]}"
+    do
+
+        Flag='Mu_Conv'
+        source ${runPATH}/run_hnl.sh Muon ${Flag} ${i}
+
+    done
+fi
+
+
+
+if [[ $1 == "NP_MUON_FullEta_HighPt" ]]; then
+
+    declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
+
+    for i in "${era_list[@]}"
+    do
+
+        Flag='MuID_NP,HighPt,FullEta'
+        source ${runPATH}/run_hnl.sh Muon ${Flag} ${i}
+
+    done
+fi
+
+if [[ $1 == "NP_MUON_Full_HighPt" ]]; then
+
+    declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
+
+    for i in "${era_list[@]}"
+    do
+
+        Flag='MuID_NP,HighPt,Full'
+        source ${runPATH}/run_hnl.sh Muon ${Flag} ${i}
+
+    done
+fi
+
+
+if [[ $1 == "NP_MUON_FullPt" ]]; then
+
+    declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
+
+    for i in "${era_list[@]}"
+    do
+
+	Flag='MuID_NP,FullPt,BB'
+	source ${runPATH}/run_hnl.sh Muon ${Flag} ${i}
+
+	
+	Flag2='MuID_NP,FullPt,EC'
+	source ${runPATH}/run_hnl.sh Muon ${Flag2} ${i}
+
+    done
 
 fi
 
-if [[ $1 == "NP1_MUON_FullPt" ]]; then
 
-    Flag='MuID_NP,FullPt,BB'
-    source ${runPATH}/run_hnl.sh Muon ${Flag}
+if [[ $1 == "NP_MUON_FullEtaSlope" ]]; then
 
-    Flag2='MuID_NP,FullPt,EC'
-    source ${runPATH}/run_hnl.sh Muon ${Flag2}
+    declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
+
+    for i in "${era_list[@]}"
+    do
+
+        Flag='MuID_NP,FullPt,FullEtaSlope'
+        source ${runPATH}/run_hnl.sh Muon ${Flag} ${i}
+
+
+    done
 
 fi
+
+if [[ $1 == "NP_MUON_FullEtaExp" ]]; then
+
+    declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
+
+    for i in "${era_list[@]}"
+    do
+
+        Flag='MuID_NP,FullPt,FullEtaExp'
+        source ${runPATH}/run_hnl.sh Muon ${Flag} ${i}
+
+
+    done
+
+fi
+
+if [[ $1 == "Mu_Final" ]]; then
+
+    declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
+
+    for i in "${era_list[@]}"
+    do
+
+        Flag='Mu_Final'
+        source ${runPATH}/run_hnl.sh Muon ${Flag} ${i}
+
+
+    done
+
+fi
+
+
 
 
 
@@ -54,38 +204,30 @@ fi
 
 
 if [[ $1 == "Muon" ]]; then
+    
+    
+    source ${runPATH}/run_hnl.sh MC  ${3} ${2}  
+    
+    source ${runPATH}/run_hnl.sh Signals ${3} ${2} 
+    
+    ConvFlag=${2}',RunConv'
 
-    # If no inut then this is ran                                                                                                                        
-    for i in "${era_list_Partial[@]}"
-    do
-	
-
-	source ${runPATH}/run_hnl.sh MC  ${i} ${2} 
-	
-        #source ${runPATH}/run_hnl.sh Signals ${i} ${2}
-	
-	ConvFlag=${2}',RunConv'
-
-	#source ${runPATH}/run_hnl.sh Conv ${i} ${ConvFlag}
-
-    done
+    source ${runPATH}/run_hnl.sh Conv ${3} ${ConvFlag} 
+    
 
 fi
 
 if [[ $1 == "Electron" ]]; then
 
     # If no inut then this is ran                                                                                                                        
-    for i in "${era_list_Partial[@]}"
-    do
-        source ${runPATH}/run_hnl.sh Signals ${i} ${2}
-        source ${runPATH}/run_hnl.sh MC  ${i} ${2}
-
-        CFFlag=${2}',RunCF'
-        source ${runPATH}/run_hnl.sh CF ${i} ${CFFlag}
-        ConvFlag=${2}',RunConv'
-        source ${runPATH}/run_hnl.sh Conv ${i} ${ConvFlag}
-
-    done
+    source ${runPATH}/run_hnl.sh Signals ${3} ${2} 
+    source ${runPATH}/run_hnl.sh MC  ${3} ${2}
+    
+    CFFlag=${2}',RunCF'
+    source ${runPATH}/run_hnl.sh CF ${3} ${CFFlag}
+    ConvFlag=${2}',RunConv'
+    source ${runPATH}/run_hnl.sh Conv ${3} ${ConvFlag}
+    
 
 fi
 
@@ -93,10 +235,8 @@ fi
 
 if [[ $1 == "MC" ]]; then
 
-    SKFlat.py -a $analyzer  -l $mcpath/W.txt  -n $njobs  --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLep
-
-    #SKFlat.py -a $analyzer  -l $mcpath/MCOpt.txt  -n $njobs  --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLep 
-    #SKFlat.py -a $analyzer  -l $mcpath/MCOptLarge.txt  -n $nLargejobs  --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLep &
+    SKFlat.py -a $analyzer  -l $mcpath/MCOpt.txt  -n $njobs  --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLep &
+    SKFlat.py -a $analyzer  -l $mcpath/MCOptLarge.txt  -n $nLargejobs  --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLep &
 
 fi
 
@@ -125,9 +265,9 @@ fi
 
 
 if [[ $1 == "TMP" ]]; then
-
-    Flag='MuID_NP,AllPt,BB'
-
+    
+    Flag='MuID_NP,FullPt,FullEtaExp'
+    
     SKFlat.py -a $analyzer  -i DYTypeI_DF_M2000_private  -n 2  --nmax ${nmax}  -e 2017  --userflags $Flag  &
 
 fi

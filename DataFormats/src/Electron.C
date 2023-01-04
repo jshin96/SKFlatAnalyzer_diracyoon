@@ -414,16 +414,23 @@ bool Electron::Pass_CB_Opt(TString ID) const {
   TString mva_methodBB2="";
   TString mva_methodEB2="";
   TString mva_methodEC2="";
+  TString mva_methodPt="";
 
+  TString conv_mva_methodPt="";
   TString conv_mva_methodBB1="";
   TString conv_mva_methodEC1="";
   TString conv_mva_methodBB2="";
   TString conv_mva_methodEC2="";
 
-  TString cf_mva_methodBB="";
-  TString cf_mva_methodEC="";
+  TString cf_mva_methodBB1="";
+  TString cf_mva_methodEC1="";
+  TString cf_mva_methodBB2="";
+  TString cf_mva_methodEC2="";
+  TString cf_mva_methodPt="";
 
+  //CFMVAEC20p85 CFMVABB2
   
+
 
   for(unsigned int i=0; i < subStrings.size(); i++){
     if (subStrings[i].Contains("LooseTrig")) trig ="Loose";
@@ -442,15 +449,22 @@ bool Electron::Pass_CB_Opt(TString ID) const {
     if (subStrings[i].Contains("NPMVAEB2")) mva_methodEB2=subStrings[i];
     if (subStrings[i].Contains("NPMVAEC2")) mva_methodEC2=subStrings[i];
 
+    if (subStrings[i].Contains("NPMVAPt")) mva_methodPt=subStrings[i];
+
+    if (subStrings[i].Contains("CVMVAPt")) conv_mva_methodPt=subStrings[i];
     if (subStrings[i].Contains("CVMVABB1")) conv_mva_methodBB1=subStrings[i];
     if (subStrings[i].Contains("CVMVAEC1")) conv_mva_methodEC1=subStrings[i];
     if (subStrings[i].Contains("CVMVABB2")) conv_mva_methodBB2=subStrings[i];
     if (subStrings[i].Contains("CVMVAEC2")) conv_mva_methodEC2=subStrings[i];
 
 
-    if (subStrings[i].Contains("CFMVABB")) cf_mva_methodBB=subStrings[i];
-    if (subStrings[i].Contains("CFMVAEC")) cf_mva_methodEC=subStrings[i];
+    if (subStrings[i].Contains("CFMVABB1")) cf_mva_methodBB1=subStrings[i];
+    if (subStrings[i].Contains("CFMVAEC1")) cf_mva_methodEC1=subStrings[i];
+    if (subStrings[i].Contains("CFMVABB2")) cf_mva_methodBB2=subStrings[i];
+    if (subStrings[i].Contains("CFMVAEC2")) cf_mva_methodEC2=subStrings[i];
+    if (subStrings[i].Contains("CFMVAPt")) cf_mva_methodPt=subStrings[i];
 
+    
     if (subStrings[i].Contains("POG")) pog_method=subStrings[i];
     if (subStrings[i].Contains("WP")) pog_method=subStrings[i];
 
@@ -506,21 +520,21 @@ bool Electron::Pass_CB_Opt(TString ID) const {
   if(!Pass_LepMVAID()) return false;
   
   
-  return PassIDOptMulti( mva_methodBB1,mva_methodBB2, mva_methodEB1, mva_methodEB2,mva_methodEC1, mva_methodEC2,  conv_mva_methodBB1, conv_mva_methodBB2,  conv_mva_methodEC1,conv_mva_methodEC2, cf_mva_methodBB,cf_mva_methodEC, pog_method, conv_method, chg_method, iso_methodB,iso_methodEC);
+  return PassIDOptMulti( mva_methodPt, mva_methodBB1,mva_methodBB2, mva_methodEB1, mva_methodEB2,mva_methodEC1, mva_methodEC2,  conv_mva_methodPt, conv_mva_methodBB1, conv_mva_methodBB2,  conv_mva_methodEC1,conv_mva_methodEC2, cf_mva_methodBB1,cf_mva_methodEC1,cf_mva_methodBB2,cf_mva_methodEC2,cf_mva_methodPt,cf_mva_methodPt, pog_method, conv_method, chg_method, iso_methodB,iso_methodEC);
   
 }
 
 
-int  Electron::PassIDOptMulti(TString np_mva_BB1, TString np_mva_BB2, TString np_mva_EB1, TString np_mva_EB2,  TString np_mva_EC1, TString np_mva_EC2 ,  TString conv_mva_BB1, TString conv_mva_BB2, TString conv_mva_EC1,TString conv_mva_EC2, TString cf_mva_BB,TString cf_mva_EC,  TString pog_method,  TString conv_method, TString chg_method, TString iso_methodB,TString iso_methodEC ) const{
+int  Electron::PassIDOptMulti(TString np_mva_Pt, TString np_mva_BB1, TString np_mva_BB2, TString np_mva_EB1, TString np_mva_EB2,  TString np_mva_EC1, TString np_mva_EC2 ,  TString conv_mva_Pt,TString conv_mva_BB1, TString conv_mva_BB2, TString conv_mva_EC1,TString conv_mva_EC2, TString cf_mva_BB1,TString cf_mva_EC1, TString cf_mva_BB2, TString cf_mva_EC2,TString cf_mva_BBPt,TString cf_mva_ECPt,  TString pog_method,  TString conv_method, TString chg_method, TString iso_methodB,TString iso_methodEC ) const{
 
   
   bool DEBUG=false;  
   
   //cout << "PassIDOptMulti " << np_mva_BB1 << " " << conv_mva_BB1 << endl;
 
-  if(np_mva_BB1.Contains("MVA") && !PassMVA_UL_NP(np_mva_BB1,np_mva_BB2, np_mva_EB1,np_mva_EB2, np_mva_EC1,np_mva_EC2) ) return 0;
-  if(conv_mva_BB1.Contains("MVA") && !PassMVA_UL_Conv(conv_mva_BB1,conv_mva_BB2, conv_mva_EC1,conv_mva_EC2) ) return 0;
-  if(cf_mva_BB.Contains("MVA") && !PassMVA_UL_CF(cf_mva_BB, cf_mva_EC) ) return 0;
+  if(np_mva_BB1.Contains("MVA") && !PassMVA_UL_NP(np_mva_Pt,np_mva_BB1,np_mva_BB2, np_mva_EB1,np_mva_EB2, np_mva_EC1,np_mva_EC2) ) return 0;
+  if(conv_mva_BB1.Contains("MVA") && !PassMVA_UL_Conv(conv_mva_Pt,conv_mva_BB1,conv_mva_BB2, conv_mva_EC1,conv_mva_EC2) ) return 0;
+  //if(cf_mva_BB.Contains("MVA") && !PassMVA_UL_CF(cf_mva_BB, cf_mva_EC) ) return 0;
 
   if(pog_method == "POGT" && ! (passTightID()) ) return 0;
   if(pog_method == "POGM" && ! (passMediumID()) ) return 0;
@@ -529,8 +543,10 @@ int  Electron::PassIDOptMulti(TString np_mva_BB1, TString np_mva_BB2, TString np
   if(pog_method == "MVAWP90" && !passMVAID_noIso_WP90())  return 0;
   if(pog_method == "MVAWP80" &&!passMVAID_noIso_WP80())  return 0;
   
-  if( fabs(scEta())<= 1.47 ){
+  if( fabs(scEta())<= 1.479 ){
     
+    if(cf_mva_BB1.Contains("MVA") && !PassMVA_UL_CF(cf_mva_BB1, cf_mva_BB2,cf_mva_BBPt) ) return 0;
+
     if(pog_method.Contains("MVABWP90") && !passMVAID_noIso_WP90())  return 0;
     if(pog_method.Contains("MVABWP80") && !passMVAID_noIso_WP80())  return 0;
     
@@ -564,6 +580,7 @@ int  Electron::PassIDOptMulti(TString np_mva_BB1, TString np_mva_BB2, TString np
     if(pog_method.Contains("MVAECWP90") && !passMVAID_noIso_WP90())  return 0;
     if(pog_method.Contains("MVAECWP80") && !passMVAID_noIso_WP80())  return 0;
 
+    if(cf_mva_EC1.Contains("MVA") && !PassMVA_UL_CF(cf_mva_EC1, cf_mva_EC2,cf_mva_ECPt) ) return 0;
 
 
     if(conv_method.Contains("EC")) {
@@ -1709,12 +1726,12 @@ double  Electron::PassStepCut(double val1, double val2, double pt1, double pt2) 
 
 }
 
-bool Electron::PassMVA_UL_NP(TString bb1, TString bb2, TString eb1, TString eb2, TString ee1, TString ee2) const {
+bool Electron::PassMVA_UL_NP(TString elpt, TString bb1, TString bb2, TString eb1, TString eb2, TString ee1, TString ee2) const {
   
   double mva_cut = -999;
   
-  if( fabs(scEta()) <= 0.8 )  mva_cut = PassStepCut(StringToDouble(bb1,"NPMVABB1"),StringToDouble(bb2,"NPMVABB2"), 10., 20.);
-  else  if( fabs(scEta()) <= 1.5 ) mva_cut = PassStepCut(StringToDouble(eb1,"NPMVAEB1"),StringToDouble(eb2,"NPMVAEB2"), 10., 20.);
+  if( fabs(scEta()) <= 0.8 )  mva_cut = PassStepCut(StringToDouble(bb1,"NPMVABB1"),StringToDouble(bb2,"NPMVABB2"), 10., StringToDouble(elpt,"NPMVAPt"));
+  else  if( fabs(scEta()) <= 1.479 ) mva_cut = PassStepCut(StringToDouble(eb1,"NPMVAEB1"),StringToDouble(eb2,"NPMVAEB2"), 10., StringToDouble(elpt,"NPMVAPt"));
   else mva_cut = PassStepCut(StringToDouble(ee1,"NPMVAEC1"),StringToDouble(ee2,"NPMVAEC2"), 10., 20.);
 
   //cout << "NP mva_cut = " << mva_cut << " j_lep_mva_hnl_fake = " << j_lep_mva_hnl_fake << endl;
@@ -1725,12 +1742,12 @@ bool Electron::PassMVA_UL_NP(TString bb1, TString bb2, TString eb1, TString eb2,
 }
 
 
-bool Electron::PassMVA_UL_Conv(TString bb1, TString bb2, TString ee1, TString ee2) const {
+bool Electron::PassMVA_UL_Conv(TString elpt, TString bb1, TString bb2, TString ee1, TString ee2) const {
 
   double mva_cut = -999;
 
-  if( fabs(scEta()) <= 1.5 ) mva_cut = PassStepCut(StringToDouble(bb1,"CVMVABB1"),StringToDouble(bb2,"CVMVABB2"), 10., 20.);
-  else mva_cut = PassStepCut(StringToDouble(ee1,"CVMVAEC1"),StringToDouble(ee2,"CVMVAEC2"), 10., 20.);
+  if( fabs(scEta()) <= 1.479) mva_cut = PassStepCut(StringToDouble(bb1,"CVMVABB1"),StringToDouble(bb2,"CVMVABB2"), 10., StringToDouble(elpt,"CVMVAPt"));
+  else mva_cut = PassStepCut(StringToDouble(ee1,"CVMVAEC1"),StringToDouble(ee2,"CVMVAEC2"), 10., StringToDouble(elpt,"CVMVAPt"));
 
   //cout << "mva_cut = " << mva_cut << " j_lep_mva_hnl_conv = " << j_lep_mva_hnl_conv << endl;
 
@@ -1740,22 +1757,48 @@ bool Electron::PassMVA_UL_Conv(TString bb1, TString bb2, TString ee1, TString ee
 }
 
 
-
-bool Electron::PassMVA_UL_CF(TString bb, TString ee) const{
+bool Electron::PassMVA_UL_CF(TString val1, TString val2, TString ptboundary) const {
 
   double mva_cut = -999;
 
-  if( fabs(scEta()) <= 1.5 ) mva_cut = StringToDouble(bb,"CFMVABB");
-  else mva_cut = StringToDouble(ee,"CFMVAEC");
- 
+  if( fabs(this->Eta()) <= 1.479 ) {
+    double pt_b = (ptboundary == "") ?  60. : StringToDouble(ptboundary,"CFMVAPt");
 
-  //cout << "PassMVA_UL_CF  j_lep_mva_hnl_cf =" <<  j_lep_mva_hnl_cf << " mva_cut = " << mva_cut << endl;
-  if(j_lep_mva_hnl_cf < mva_cut) return false;
+    mva_cut = PassMultiStepCut(StringToDouble(val1,"CFMVABB1"),StringToDouble(val2,"CFMVABB2"), pt_b);
+
+  }
+
+  else {
+    double pt_ec = (ptboundary == "") ?  60. : StringToDouble(ptboundary,"CFMVAPt");
+    mva_cut = PassMultiStepCut(StringToDouble(val1,"CFMVAEC1"),StringToDouble(val2,"CFMVAEC2"), pt_ec);
+  }
+
+  //cout << val1 << " " << val2 << " ptboundary=" << ptboundary << endl;                                                                                                                                                                    
+  //cout << "MVA() = " << j_lep_mva_hnl_cf << " mva_cut = " << mva_cut << endl;                                                                                                                                                                       
+
+  if( j_lep_mva_hnl_cf < mva_cut) return false;
   else return true;
 
 }
 
 
+
+
+
+double Electron::PassMultiStepCut(double Val1, double Val2, double PtBoundary ) const{
+
+  //cout << "PassMultiStepCut = " << Val1 << " " << Val2 << " " << PtBoundary << endl;                                                                                                                                                                                        
+  double pt1 = 5.;
+  double mva_cut = -999;
+
+  if(this->Pt() > PtBoundary) mva_cut = Val2;
+  else   if(this->Pt() > pt1) mva_cut = Val1 +  (this->Pt() -pt1) * (Val2 - Val1)/ (PtBoundary-pt1);
+  else mva_cut = Val1;
+
+
+  return mva_cut;
+
+}
 
 bool Electron::PassMVA_UL_BB(double c, double tau, double A) const {
   
