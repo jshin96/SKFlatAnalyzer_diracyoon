@@ -751,7 +751,7 @@ int  Electron::PassIDTight(TString ID) const{
 
     if(! PassConversionVeto() ) return false;
 
-    if (!PassID("HNLIPv1")) return false;
+    //if (!PassID("HNLIPv1")) return false;
     if(!(Pass_TriggerEmulationLoose()))   return false;
     if(!Pass_LepMVAID()) return false;
 
@@ -779,7 +779,7 @@ int  Electron::PassIDTight(TString ID) const{
                                                                                             
 
   if(ID=="HNL_ULID_2017") {
-    if (!PassID("HNLIPv1")) return false;
+    //if (!PassID("HNLIPv1")) return false;
     if(! (Pass_TriggerEmulationLoose()))   return false;
     if(!Pass_LepMVAID()) return false;
 
@@ -808,7 +808,7 @@ int  Electron::PassIDTight(TString ID) const{
 
     if(! PassConversionVeto() ) return false;
 
-    if(!PassID("HNLIPv1")) return false;
+    //if(!PassID("HNLIPv1")) return false;
     if(! (Pass_TriggerEmulationLoose()))   return false;
     if(!Pass_LepMVAID()) return false;
 
@@ -833,6 +833,8 @@ int  Electron::PassIDTight(TString ID) const{
     return true;
 
   }
+
+
 
              
   if(ID=="HNL_Peking_2016") {

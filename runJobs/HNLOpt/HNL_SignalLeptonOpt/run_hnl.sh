@@ -78,6 +78,18 @@ if [[ $1 == "ELID_CONV" ]]; then
 
     done
 fi
+if [[ $1 == "ELID_ISO" ]]; then
+
+    declare  -a era_list=("2016postVFP" "2016preVFP"  "2018")
+
+    for i in "${era_list[@]}"
+    do
+
+        Flag='RunEE,ELID_Iso'
+        source ${runPATH}/run_hnl.sh Electron ${Flag} ${i}
+
+    done
+fi
 
 
 #############################################################################                                                                                                                                                               
@@ -315,7 +327,7 @@ fi
 
 if [[ $1 == "TMP" ]]; then
     
-    Flag='RunEE,ELID_NP_CF,HighPt,BB'
+    Flag='RunEE,ELID_Iso'
     
     SKFlat.py -a $analyzer  -i WZZ  -n 20  --nmax 1000   -e 2017  --userflags $Flag  &
 

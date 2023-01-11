@@ -335,34 +335,34 @@ void HNL_SignalLeptonOpt::executeEvent(){
     vector<TString> vIsoB  = {"ISOB0p05","ISOB0p06","ISOB0p07","ISOB0p08","ISOB0p09","ISOB0p1","ISOB0p11","ISOB0p12","ISOB0p15"};
     vector<TString> vIsoEC = {"ISOEC0p05","ISOEC0p06","ISOEC0p07","ISOEC0p08","ISOEC0p09","ISOEC0p1","ISOEC0p11","ISOEC0p12","ISOEC0p15"};
 
-
-
     if(HasFlag("ELID_Iso")){
       
-      for(auto i5 : vIsoB){ 
-	for(auto i6 : vIsoEC){ 
-	  ElectronsIDs.push_back("HNLUL_"+i5+"_"+i6+"_ConvBConvEC_LooseTrig_NPMVABB1neg1_NPMVAEB1neg1_NPMVAEC1neg1_CFMVABB0p7_CFMVAEC0p8_NPMVABB20p15_NPMVAEB20_NPMVAEC20_DXYv1");
-	  ElectronsIDs.push_back("HNLUL_"+i5+"_"+i6+"_ConvBConvEC_LooseTrig_NPMVABB1neg1_NPMVAEB1neg1_NPMVAEC1neg1_CFMVABB0p7_CFMVAEC0p8_NPMVABB20p15_NPMVAEB20_NPMVAEC20_DXYv2");
-	  ElectronsIDs.push_back("HNLUL_"+i5+"_"+i6+"_ConvBConvEC_LooseTrig_NPMVABB1neg1_NPMVAEB1neg1_NPMVAEC1neg1_CFMVABB0p7_CFMVAEC0p8_NPMVABB20p15_NPMVAEB20_NPMVAEC20_DXYv3");
-	  ElectronsIDs.push_back("HNLUL_"+i5+"_"+i6+"_ConvBConvEC_LooseTrig_NPMVABB1neg1_NPMVAEB1neg1_NPMVAEC1neg1_CFMVABB0p7_CFMVAEC0p8_NPMVABB20p15_NPMVAEB20_NPMVAEC20_DXYv4");
-	  ElectronsIDs.push_back("HNLUL_"+i5+"_"+i6+"_ConvBConvEC_LooseTrig_NPMVABB1neg1_NPMVAEB1neg1_NPMVAEC1neg1_CFMVABB0p7_CFMVAEC0p8_NPMVABB20p15_NPMVAEB20_NPMVAEC20");
-	  
-	  ElectronsIDs.push_back("HNLUL_MVABWP80MVAECWP90_"+i5+"_"+i6+"_ConvBConvEC_LooseTrig_NPMVABB1neg1_NPMVAEB1neg1_NPMVAEC1neg1_CFMVABB0p7_CFMVAEC0p8_NPMVABB20p15_NPMVAEB20_NPMVAEC20_DXYv1");
-	  ElectronsIDs.push_back("HNLUL_MVABWP90MVAECWP80_"+i5+"_"+i6+"_ConvBConvEC_LooseTrig_NPMVABB1neg1_NPMVAEB1neg1_NPMVAEC1neg1_CFMVABB0p7_CFMVAEC0p8_NPMVABB20p15_NPMVAEB20_NPMVAEC20_DXYv1");
-	  ElectronsIDs.push_back("HNLUL_MVAWP80_"+i5+"_"+i6+"_ConvBConvEC_LooseTrig_NPMVABB1neg1_NPMVAEB1neg1_NPMVAEC1neg1_CFMVABB0p7_CFMVAEC0p8_NPMVABB20p15_NPMVAEB20_NPMVAEC20_DXYv1");
-	  ElectronsIDs.push_back("HNLUL_MVAWP90_"+i5+"_"+i6+"_ConvBConvEC_LooseTrig_NPMVABB1neg1_NPMVAEB1neg1_NPMVAEC1neg1_CFMVABB0p7_CFMVAEC0p8_NPMVABB20p15_NPMVAEB20_NPMVAEC20_DXYv1");
-
-          ElectronsIDs.push_back("HNLUL_MVABWP80MVAECWP90_"+i5+"_"+i6+"_ConvBConvEC_LooseTrig_CFMVABB0p7_CFMVAEC0p8_DXYv1");
-          ElectronsIDs.push_back("HNLUL_MVABWP90MVAECWP80_"+i5+"_"+i6+"_ConvBConvEC_LooseTrig_CFMVABB0p7_CFMVAEC0p8_DXYv1");
-          ElectronsIDs.push_back("HNLUL_MVAWP80_"+i5+"_"+i6+"_ConvBConvEC_LooseTrig_CFMVABB0p7_CFMVAEC0p8_DXYv1");
-          ElectronsIDs.push_back("HNLUL_MVAWP90_"+i5+"_"+i6+"_ConvBConvEC_LooseTrig_CFMVABB0p7_CFMVAEC0p8_NPMVAEC20_DXYv1");
-	  
-
-	}
+      for(unsigned int i = 0; i < vIsoB.size(); i++){
+	//for(auto i6 : vIsoEC){ 
+	ElectronsIDs.push_back("HNLUL_"+vIsoB[i] + "_"+vIsoEC[i]+"_HNL2016");
+	ElectronsIDs.push_back("HNLUL_"+vIsoB[i] + "_"+vIsoEC[i]+"_HNL2018");
+	
+	ElectronsIDs.push_back("HNLUL_"+vIsoB[i] + "_"+vIsoEC[i]+"_HNL2016_DXYv1");
+	ElectronsIDs.push_back("HNLUL_"+vIsoB[i] + "_"+vIsoEC[i]+"_HNL2018_DXYv1");
+	ElectronsIDs.push_back("HNLUL_"+vIsoB[i] + "_"+vIsoEC[i]+"_HNL2016_DXYv2");
+	ElectronsIDs.push_back("HNLUL_"+vIsoB[i] + "_"+vIsoEC[i]+"_HNL2018_DXYv2");
+	ElectronsIDs.push_back("HNLUL_"+vIsoB[i] + "_"+vIsoEC[i]+"_HNL2016_DXYv3");
+	ElectronsIDs.push_back("HNLUL_"+vIsoB[i] + "_"+vIsoEC[i]+"_HNL2018_DXYv3");
+	ElectronsIDs.push_back("HNLUL_"+vIsoB[i] + "_"+vIsoEC[i]+"_HNL2016_DXYv4");
+	ElectronsIDs.push_back("HNLUL_"+vIsoB[i] + "_"+vIsoEC[i]+"_HNL2018_DXYv4");
+	
+	ElectronsIDs.push_back("HNLUL_MVABWP80MVAECWP90_"+vIsoB[i] + "_"+vIsoEC[i]+"_HNL2016");
+	ElectronsIDs.push_back("HNLUL_MVABWP80MVAECWP90_"+vIsoB[i] + "_"+vIsoEC[i]);
+	ElectronsIDs.push_back("HNLUL_MVABWP90MVAECWP80_"+vIsoB[i] + "_"+vIsoEC[i]+"_HNL2016");
+	ElectronsIDs.push_back("HNLUL_MVAWP80_"+vIsoB[i] + "_"+vIsoEC[i]+"_HNL2016");
+	ElectronsIDs.push_back("HNLUL_MVAWP80_"+vIsoB[i] + "_"+vIsoEC[i]);
+	ElectronsIDs.push_back("HNLUL_MVAWP90_"+vIsoB[i] + "_"+vIsoEC[i]+"_HNL2016");
+	ElectronsIDs.push_back("HNLUL_MVAWP90_"+vIsoB[i] + "_"+vIsoEC[i]);
+	
       }
     }
 
-    /*
+    
     for(auto iTrig : vTrig){
       for(auto iConv : vConv){
 	for(auto iCC : vCC){
@@ -376,7 +376,7 @@ void HNL_SignalLeptonOpt::executeEvent(){
       }
     }
 
-    */
+    
     ElectronsIDs.push_back("HNTight_17028");
     ElectronsIDs.push_back("HNTightV2");
     ElectronsIDs.push_back("HNL_ULID_2016");
