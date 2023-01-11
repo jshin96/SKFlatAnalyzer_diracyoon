@@ -1007,8 +1007,6 @@ void SKFlatNtuple::Init()
   fChain->SetBranchAddress("muon_pathbits", &muon_pathbits, &b_muon_pathbits);
   fChain->SetBranchAddress("muon_filterbits", &muon_filterbits, &b_muon_filterbits);
 
-  if(fChain->GetBranch("SKWeight")) fChain->SetBranchAddress("SKWeight", &SKWeight, &b_SKWeight);
-  
 
   if(!IsDATA){
   fChain->SetBranchAddress("L1PrefireReweight_Central", &L1PrefireReweight_Central, &b_L1PrefireReweight_Central);

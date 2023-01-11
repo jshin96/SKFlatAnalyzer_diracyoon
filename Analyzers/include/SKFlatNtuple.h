@@ -42,7 +42,8 @@ public :
    bool IsFastSim;
    int DataYear;
    TString DataEra;
-   double xsec, sumW, sumSign,SKWeight;
+   double xsec, sumW, sumSign;
+   float SKWeight;
    vector<TString> Userflags;
    vector<TString> EventList;
 
