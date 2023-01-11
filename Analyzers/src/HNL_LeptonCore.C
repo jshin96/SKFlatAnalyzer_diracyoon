@@ -1674,6 +1674,28 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
     return param;
 
   }
+  else if (s_setup=="BDTTop"){
+
+    param.MuFakeMethod = "MC";
+    param.ElFakeMethod = "MC";
+    param.CFMethod   = "MC";
+    param.ConvMethod = "MC";
+
+    param.Muon_Tight_ID = "MVAID";
+    param.Electron_Tight_ID = "TopMVAID";
+
+    param.Electron_ID_SF_Key = "TmpHNTightV2";
+    param.Muon_ID_SF_Key = "TmpHNTightV2";
+
+    param.Muon_FR_ID = "HNLooseV1";
+    param.Electron_FR_ID = "HNLooseV4";
+
+    param.Muon_RECO_SF_Key = "MuonRecoSF";
+
+    return param;
+
+  }
+
   else if (s_setup=="EXO17028"){
     
     param.CFMethod   = "MC";
@@ -5045,9 +5067,13 @@ void HNL_LeptonCore::FillAllElectronPlots(TString label , TString cut,  Electron
 
 
   FillHist( cut+ "/Fake_Mva_"+label  , el.hnl_mva_fake(), w, 100, -1., 2., "MVA");
+  FillHist( cut+ "/Fake_Mva_v2_"+label  , GetBDTScoreEl(el,AnalyzerCore::Fake, "BDTGv2"), w, 100, -1., 2., "MVA");
+  //GetBDTScoreEl(el, bkg, "BDTG");
+
   FillHist( cut+ "/CF_Mva_"+label  , el.hnl_mva_cf(), w, 100, -1., 2., "MVA");
 
   FillHist( cut+ "/Conv_Mva_"+label  , el.hnl_mva_conv(), w, 100, -1., 2., "MVA");
+  FillHist( cut+ "/Conv_Mva_v2_"+label  , GetBDTScoreEl(el,AnalyzerCore::Conv, "BDTGv2"), w, 100, -1., 2., "MVA");
 
 
   /*

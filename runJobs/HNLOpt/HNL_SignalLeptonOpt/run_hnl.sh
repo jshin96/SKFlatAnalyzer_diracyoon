@@ -38,27 +38,42 @@ if [[ $1 == "NP_ELECTRON_CF_HighPt" ]]; then
     done
 fi
 
-if [[ $1 == "NP_ELECTRON_CF_FullPt" ]]; then
+if [[ $1 == "ELID_NP_CF_HighPt" ]]; then
 
     declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
 
     for i in "${era_list[@]}"
     do
-
-        Flag='RunEE,ELID_CF,FullPt'
-        source ${runPATH}/run_hnl.sh Electron ${Flag} ${i}
+	
+        #Flag='RunEE,ELID_NP_CF,HighPt,BB'
+        #source ${runPATH}/run_hnl.sh Electron ${Flag} ${i}
+	Flag2='RunEE,ELID_NP_CF,HighPt,EC'
+	source ${runPATH}/run_hnl.sh Electron ${Flag2} ${i}
 
     done
 fi
 
-if [[ $1 == "NP_ELECTRON" ]]; then
+if [[ $1 == "ELID_NP_CF" ]]; then
 
     declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
 
     for i in "${era_list[@]}"
     do
 
-        Flag='RunEE,ELID_NP'
+        Flag='RunEE,ELID_NP_CF'                                                                                                                                  
+        source ${runPATH}/run_hnl.sh Electron ${Flag} ${i}                                                                                                                 
+
+    done
+fi
+
+if [[ $1 == "ELID_CONV" ]]; then
+
+    declare  -a era_list=("2016postVFP" "2016preVFP"  "2018")
+
+    for i in "${era_list[@]}"
+    do
+
+        Flag='RunEE,ELID_Conv'
         source ${runPATH}/run_hnl.sh Electron ${Flag} ${i}
 
     done
@@ -192,6 +207,40 @@ if [[ $1 == "Mu_Final" ]]; then
 
 fi
 
+if [[ $1 == "Mu_comp" ]]; then
+
+    declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
+
+    for i in "${era_list[@]}"
+    do
+
+        Flag='Mu_Comp'
+        source ${runPATH}/run_hnl.sh Muon ${Flag} ${i}
+
+
+    done
+
+fi
+
+
+if [[ $1 == "MUON_COMP" ]]; then
+
+    declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
+
+    for i in "${era_list[@]}"
+    do
+
+    SKFlat.py -a $analyzer  -l $mcpath/MCOpt.txt  -n 20  --nmax ${nmax}   -e ${i}   --skim SkimTree_HNMultiLep &
+    SKFlat.py -a $analyzer  -l $mcpath/MCOptLarge.txt  -n 50  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep &
+    SKFlat.py -a $analyzer  -l $sigpath/SSWWOpt.txt  -n $njobs_sig  --nmax ${nmax}  -e ${i}    &
+    SKFlat.py -a $analyzer  -l $sigpath/DYOpt.txt    -n $njobs_sig  --nmax ${nmax}   -e ${i}  &
+    SKFlat.py -a $analyzer  -l $sigpath/VBFOpt.txt   -n $njobs_sig  --nmax ${nmax}   -e ${i}  &
+    SKFlat.py -a $analyzer  -l $mcpath/Conv.txt  -n 10  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLep  --userflags RunConv &
+
+    done
+
+fi
+
 
 
 
@@ -266,8 +315,8 @@ fi
 
 if [[ $1 == "TMP" ]]; then
     
-    Flag='MuID_NP,FullPt,FullEtaExp'
+    Flag='RunEE,ELID_NP_CF,HighPt,BB'
     
-    SKFlat.py -a $analyzer  -i DYTypeI_DF_M2000_private  -n 2  --nmax ${nmax}  -e 2017  --userflags $Flag  &
+    SKFlat.py -a $analyzer  -i WZZ  -n 20  --nmax 1000   -e 2017  --userflags $Flag  &
 
 fi

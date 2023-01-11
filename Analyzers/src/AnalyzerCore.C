@@ -111,7 +111,7 @@ AnalyzerCore::~AnalyzerCore(){
 bool AnalyzerCore::AnalyserRunsFullBkg(){
 
   // Flag to setup fakeEst/cfEst/pdfReweight
-  vector<TString> AnalyserList = {"HNL_SignalRegionPlotter","HNL_ControlRegionPlotter","HNL_SignalRegionPlotter17028","HNL_SignalRegionPlotter21003","HNL_SignalLeptonOpt", "HNL_SignalRegionOpt", "HNL_SignalStudies"};
+  vector<TString> AnalyserList = {"HNL_SignalRegionPlotter","HNL_ControlRegionPlotter","HNL_SignalRegionPlotter17028","HNL_SignalRegionPlotter21003","HNL_SignalLeptonOpt", "HNL_SignalRegionOpt", "HNL_SignalStudies","HNL_ObjectStudies"};
 
   if(std::find(AnalyserList.begin(), AnalyserList.end(), Analyzer) != AnalyserList.end()) {
     return true;
@@ -418,8 +418,8 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
     mu.SetFilterBits(muon_filterbits->at(i));
     mu.SetPathBits(muon_pathbits->at(i));
 
-
-    if(AnalyserRunsFullBkg()) mu.SetHNL_LepMVA(-999.,GetBDTScoreMuon(mu,AnalyzerCore::Conv,  "BDTG"),-999);
+    if(muon_mva_conv)mu.SetHNL_LepMVA(-999.,muon_mva_conv->at(i),-999); 
+    else mu.SetHNL_LepMVA(-999.,GetBDTScoreMuon(mu,AnalyzerCore::Conv,  "BDTG"),-999);
     
     out.push_back(mu);
 
@@ -942,10 +942,34 @@ void AnalyzerCore::SetupIDMVAReader(bool isMuon){
     if(GetYear() == 2017) BDTG_Fake = "BDTG_FakeSignalTypeI_EE_Signal_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
     if(GetYear() == 2018) BDTG_Fake = "BDTG_FakeSignalTypeI_EE_Signal_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
 
+    TString BDTG_BB_Fake = "";
+    if(GetYear() == 2016) BDTG_BB_Fake = "BDTG_FakeSignalHNLTopTypeI_EE_SignalHNLTop_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT";
+    if(GetYear() == 2017) BDTG_BB_Fake = "BDTG_FakeSignalHNLTopTypeI_EE_SignalHNLTop_2017_NTrees2100_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_301_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
+    if(GetYear() == 2018) BDTG_BB_Fake = "BDTG_FakeSignalHNLTopTypeI_EE_SignalHNLTop_2018_NTrees1100_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_5_nCuts_500_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
+    
+
+    TString BDTG_EC_Fake = "";
+    if(GetYear() == 2016) BDTG_EC_Fake = "BDTG_FakeSignalHNLTopECTypeI_EE_SignalHNLTopEC_2016_NTrees2100_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
+    if(GetYear() == 2017) BDTG_EC_Fake = "BDTG_FakeSignalHNLTopECTypeI_EE_SignalHNLTopEC_2017_NTrees2100_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
+    if(GetYear() == 2018) BDTG_EC_Fake = "BDTG_FakeSignalHNLTopECTypeI_EE_SignalHNLTopEC_2018_NTrees2100_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
+
+    
+
     TString BDTG_Conv = "";
     if(GetYear() == 2016) BDTG_Conv = "BDTG_ConvSignalConvTypeI_EE_SignalConv_2016_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
     if(GetYear() == 2017) BDTG_Conv = "BDTG_ConvSignalConvTypeI_EE_SignalConv_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT";
     if(GetYear() == 2018) BDTG_Conv = "BDTG_ConvSignalConvTypeI_EE_SignalConv_2018_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
+
+    TString BDTG_BB_Conv = "";
+    if(GetYear() == 2016) BDTG_BB_Conv = "BDTG_ConvSignalHNLTopConv_BBTypeI_EE_SignalHNLTopConv_BB_2016_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
+    if(GetYear() == 2017) BDTG_BB_Conv = "BDTG_ConvSignalHNLTopConv_BBTypeI_EE_SignalHNLTopConv_BB_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
+    if(GetYear() == 2018) BDTG_BB_Conv = "BDTG_ConvSignalHNLTopConv_BBTypeI_EE_SignalHNLTopConv_BB_2018_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
+
+
+    TString BDTG_EC_Conv = "";
+    if(GetYear() == 2016) BDTG_EC_Conv = "BDTG_ConvSignalHNLTopConv_ECTypeI_EE_SignalHNLTopConv_EC_2016_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
+    if(GetYear() == 2017) BDTG_EC_Conv = "BDTG_ConvSignalHNLTopConv_ECTypeI_EE_SignalHNLTopConv_EC_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
+    if(GetYear() == 2018) BDTG_EC_Conv = "BDTG_ConvSignalHNLTopConv_ECTypeI_EE_SignalHNLTopConv_EC_2018_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
 
 
     TString BDTG_BB_CF= "";
@@ -962,9 +986,13 @@ void AnalyzerCore::SetupIDMVAReader(bool isMuon){
     vector<pair<TString,TString> > BDTInput =     {
 
       make_pair("BDTG_Fake", BDTG_Fake),
+      make_pair("BDTG_BB_Fake", BDTG_BB_Fake),
+      make_pair("BDTG_EC_Fake", BDTG_EC_Fake),
       make_pair("BDTG_BB_CF",BDTG_BB_CF),
       make_pair("BDTG_EC_CF",BDTG_EC_CF),
       make_pair("BDTG_Conv",BDTG_Conv),
+      make_pair("BDTG_BB_Conv",BDTG_BB_Conv),
+      make_pair("BDTG_EC_Conv",BDTG_EC_Conv),
 
     };
 
@@ -972,14 +1000,8 @@ void AnalyzerCore::SetupIDMVAReader(bool isMuon){
       cout <<  ibdt.first << " " << ibdt.second << endl;
       if(ibdt.first.Contains("_CF"))    ElectronIDCFMVAReader->BookMVA(ibdt.first,MVAPathCF+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
       
-      else if(ibdt.first.Contains("_Conv")) {
-        if(ibdt.first.Contains("_NoPtEta"))       ElectronIDNoPtEtaConvMVAReader->BookMVA(ibdt.first,MVAPathConv+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
-        else    if(ibdt.first.Contains("_NoPt")|| ibdt.first.Contains("_LowPt") )       ElectronIDNoPtConvMVAReader->BookMVA(ibdt.first,MVAPathConv+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
-        else    ElectronIDConvMVAReader->BookMVA(ibdt.first,MVAPathConv+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
-      }
-      else{
-        ElectronIDFakeMVAReader->BookMVA(ibdt.first,MVAPathFake+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
-      }
+      else if(ibdt.first.Contains("_Conv")) ElectronIDConvMVAReader->BookMVA(ibdt.first,MVAPathConv+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
+      else  ElectronIDFakeMVAReader->BookMVA(ibdt.first,MVAPathFake+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
     }
 
   }
@@ -1062,35 +1084,34 @@ double AnalyzerCore::GetBDTScoreEl(Electron el ,BkgType bkg, TString BDTTag){
     PtRel=0, PtRelWithLep=0, PtRelCorr=0;
   }
 
+  TString MVATagStr="";
+  if(BDTTag.Contains("v2")){
 
-  TString MVATagStr = BDTTag;
-  if (bkg == BkgType::Fake) MVATagStr += "_Fake";
-  if (bkg == BkgType::Conv) MVATagStr += "_Conv";
-
-  if (bkg == BkgType::CF){
+    MVATagStr = BDTTag;
+    MVATagStr=MVATagStr.ReplaceAll("v2","");
+    
     if(fabs(el.Eta()) < 1.5)    MVATagStr += "_BB";
-    else     MVATagStr += "_EC";
-    MVATagStr += "_CF";
-  }
+    else  MVATagStr += "_EC";
 
-  //TString EtaRegion = "_EC";                                                                                                                                                                                                                
-  //if(fabs(el.Eta()) < 0.8) EtaRegion = "_IB";                                                                                                                                                                                               
-  //else   if(fabs(el.Eta()) < 1.5) EtaRegion = "_OB";                                                                                                                                                                                        
-
-
-  if(MVATagStr.Contains("CF"))  {
-    return  ElectronIDCFMVAReader->EvaluateMVA(MVATagStr);
-  }
-
-  if(MVATagStr.Contains("Conv")) {
-    if(MVATagStr.Contains("NoPtEta")) return  ElectronIDNoPtEtaConvMVAReader->EvaluateMVA(MVATagStr);
-    if(MVATagStr.Contains("NoPt") || MVATagStr.Contains("LowPt")) return  ElectronIDNoPtConvMVAReader->EvaluateMVA(MVATagStr);
-   
-
-    return  ElectronIDConvMVAReader->EvaluateMVA(MVATagStr);
+    if (bkg == BkgType::Fake) MVATagStr += "_Fake";
+    if (bkg == BkgType::Conv) MVATagStr += "_Conv";
 
   }
+  else{
+    MVATagStr = BDTTag;
+    if (bkg == BkgType::Fake) MVATagStr += "_Fake";
+    if (bkg == BkgType::Conv) MVATagStr += "_Conv";
+    if (bkg == BkgType::CF){
+      if(fabs(el.Eta()) < 1.5)    MVATagStr += "_BB";
+      else     MVATagStr += "_EC";
+      MVATagStr += "_CF";
+    }
+  }
 
+
+  if(MVATagStr.Contains("CF"))     return  ElectronIDCFMVAReader->EvaluateMVA(MVATagStr);
+  
+  if(MVATagStr.Contains("Conv"))   return  ElectronIDConvMVAReader->EvaluateMVA(MVATagStr);
 
   return  ElectronIDFakeMVAReader->EvaluateMVA(MVATagStr);
 
@@ -1266,7 +1287,15 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
     el.SetFilterBits(electron_filterbits->at(i));
     el.SetPathBits(electron_pathbits->at(i));
 
-    if(AnalyserRunsFullBkg()) el.SetHNL_LepMVA(GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTG"),GetBDTScoreEl(el,AnalyzerCore::Conv,  "BDTG"),GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTG"));
+
+    //if(electron_mva_conv) el.SetHNL_LepMVA(electron_mva_fake->at(i),electron_mva_conv->at(i),electron_mva_cf->at(i));
+    //cout << "GetBDTScoreEl(el,AnalyzerCore::Fake,  BDTG) " <<  GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTG") << " " << electron_mva_fake->at(i)<< endl;
+    //cout << "GetBDTScoreEl(el,AnalyzerCore::Conv,  BDTG) " <<  GetBDTScoreEl(el,AnalyzerCore::Conv,  "BDTG") << " " << electron_mva_conv->at(i)<< endl;
+    //cout << "GetBDTScoreEl(el,AnalyzerCore::CF,  BDTG) " <<  GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTG") << electron_mva_cf->at(i) << endl;
+
+    //if(AnalyserRunsFullBkg()) el.SetHNL_LepMVA(GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTG"),GetBDTScoreEl(el,AnalyzerCore::Conv,  "BDTG"),GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTG"));
+    if(electron_mva_fake)el.SetHNL_LepMVA(electron_mva_fake->at(i), electron_mva_conv->at(i), electron_mva_cf->at(i));
+    else el.SetHNL_LepMVA(GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTG"),GetBDTScoreEl(el,AnalyzerCore::Conv,  "BDTG"),GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTG"));    
 
     out.push_back(el);
 
@@ -1300,6 +1329,7 @@ std::vector<Electron> AnalyzerCore::GetElectrons(AnalyzerParameter param, TStrin
       continue;
     }
     if(!( electrons.at(i).PassID(id) )){
+      //cout << "Fail " << id << endl;
       continue;
     }
     if(vetoHEM){

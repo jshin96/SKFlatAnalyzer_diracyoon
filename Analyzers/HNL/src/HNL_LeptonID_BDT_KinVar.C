@@ -163,7 +163,7 @@ void HNL_LeptonID_BDT_KinVar::executeEvent(){
     if(r > 0.12) return;
   }
 
-  AnalyzerParameter param_bdt = HNL_LeptonCore::InitialiseHNLParameter("BDT", "");
+  AnalyzerParameter param_bdt = HNL_LeptonCore::InitialiseHNLParameter("BDTTop", "");
   
   Event ev = GetEvent();
 
@@ -188,7 +188,7 @@ void HNL_LeptonID_BDT_KinVar::executeEvent(){
   for(auto dilep_channel : channels){
 
     std::vector<Muon>       MuonCollTAll     =  GetMuons    ( param_bdt,"MVAID", 10., 2.4, RunFake);
-    std::vector<Electron>   ElectronCollTAll =  GetElectrons( param_bdt,"MVAID", 10., 2.5, RunFake);
+    std::vector<Electron>   ElectronCollTAll =  GetElectrons( param_bdt,"TopMVAID", 10., 2.5, RunFake);
  
     bool HasHEM(false);
     for(auto i: ElectronCollTAll) {

@@ -1,13 +1,13 @@
-analyzer=HNL_LepIDKinVarEtaBinned
-rundir=HNL_LepIDKinVarEtaBinned
-sigpath=${SKFlat_WD}/runJobs/${analyzer}/Signals/
-mcpath=${SKFlat_WD}/runJobs/${analyzer}/Bkg/
+analyzer=HNL_LeptonID_BDT_KinVar
+rundir=HNL_LeptonID_BDT_KinVar
+sigpath=${SKFlat_WD}/runJobs/HNL/${analyzer}/Signals/
+mcpath=${SKFlat_WD}/runJobs/HNL/${analyzer}/Bkg/
 njobs=300
 nmax=300
 skim=' --skim SkimTree_HNMultiLep'
 declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
 
-declare  -a era_list=("2016postVFP" "2016preVFP" "2018")
+declare  -a era_list=("2017")
 
 
 if [[ $1 == "" ]]; then

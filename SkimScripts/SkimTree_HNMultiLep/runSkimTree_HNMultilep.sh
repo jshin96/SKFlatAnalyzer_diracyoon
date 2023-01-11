@@ -1,5 +1,5 @@
 analyzer=SkimTree_HNMultiLep
-rundir=runSkims
+qrundir=runSkims
 mcpath=${SKFlat_WD}/SkimScripts/${analyzer}/Bkg/
 datapath=${SKFlat_WD}/SkimScripts/${analyzer}/data_lists_multilep/
 sigpath=${SKFlat_WD}/SkimScripts/${analyzer}/Signals/
@@ -30,7 +30,7 @@ fi
 if [[ $1 == "MC" ]]; then
     for i in "${era_list[@]}"
     do
-	SKFlat.py -a $analyzer  -l $mcpath/DYMG.txt  -n 500  --nmax ${nmax}   -e ${i} &
+	SKFlat.py -a $analyzer  -l $mcpath/MC.txt  -n 500  --nmax ${nmax}   -e ${i} &
 		
     done
 

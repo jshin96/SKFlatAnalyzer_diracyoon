@@ -88,6 +88,9 @@ for File in BDTFileList:
     if not args.Classifier in File:
         continue
 
+    if not "Top" in File:
+        continue
+
     print ("="*50)
     res = PerformKolmogorovSmirnov(BDTFile_Dir+"/"+File)
     print ("-"*50)

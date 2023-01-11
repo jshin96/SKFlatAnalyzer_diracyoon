@@ -261,6 +261,7 @@ public:
 
   bool Pass_CB_Opt(TString ID) const;
   bool Pass_LepMVAID() const ;
+  bool Pass_LepMVATopID() const ;
   bool passLooseHEEPID() const;
 
   bool passHEEP2018Prompt() const; // HEEP

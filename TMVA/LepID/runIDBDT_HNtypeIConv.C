@@ -31,23 +31,14 @@ void runIDBDT_HNtypeIConv(TString Classifier ="BDTG" ,TString BkgType = "Conv", 
  
   TString  treeName = (channel == "MuMu")  ?  "Tree_mm" :  "Tree_ee";
 
-  TString signal="SignalConv";
+  TString signal="SignalHNLTopConv";
 
   cout << "signal File Name= " << signal << endl;
   for(int i=0; i < nTermWidth; i++)  cout << "-" ;   cout << endl;
   
-  if(signal_mode==1) signal="SignalConv_BB";
-  if(signal_mode==2) signal="SignalConv_EC";
+  if(signal_mode==1) signal="SignalHNLTopConv_BB";
+  if(signal_mode==2) signal="SignalHNLTopConv_EC";
 
-  if(signal_mode==3) signal="SignalConvNoPtEta";
-
-  if(signal_mode==4) signal="SignalConvNoPt"; 
-  if(signal_mode==5) signal="SignalConvNoPt_BB";
-  if(signal_mode==6) signal="SignalConvNoPt_EC";
-  
-  if(signal_mode==7) signal="SignalConvLowPt";
-  if(signal_mode==8) signal="SignalConvLowPt_BB";
-  if(signal_mode==9) signal="SignalConvLowPt_EC";
   
 
   TString JobTag = Classifier + "_"+ BkgType + signal+"TypeI_"+channel+"_"+signal+"_"+era+"_NTrees"+NTrees+"_NormMode_"+NormMode+"_MinNodeSize_"+MinNodeSize+"_MaxDepth_"+MaxDepth+"_nCuts_"+nCuts+ClassTag +"_Seed_"+seed+"_BDT";
@@ -57,7 +48,7 @@ void runIDBDT_HNtypeIConv(TString Classifier ="BDTG" ,TString BkgType = "Conv", 
 
   const TString path = "/data6/Users/jalmond/2020/HL_SKFlatAnalyzer_ULv3/SKFlatAnalyzer/HNDiLeptonWorskspace/InputFiles/MergedFiles/Run2UltraLegacy_v3/HNL_LepIDKinVarEtaBinned/"+era+"/";
   
-  TString signame = path+"HNL_LepIDKinVarEtaBinned_PromptTop.root";
+  TString signame = path+"HNL_LepIDKinVarEtaBinned_PromptHNLTop.root";
 
   TFile* fsin = TFile::Open(signame);
   TFile* fbin = TFile::Open(path+"HNL_LepIDKinVarEtaBinned_"+BkgType+"Bkg.root");
@@ -72,9 +63,9 @@ void runIDBDT_HNtypeIConv(TString Classifier ="BDTG" ,TString BkgType = "Conv", 
 
   TMVA::DataLoader* data_loader = new TMVA::DataLoader("dataset");
   
-  if(signal_mode< 3) data_loader->AddVariable("Pt", "Pt", "units", 'F');
+  data_loader->AddVariable("Pt", "Pt", "units", 'F');
   
-  if(signal_mode != 3) data_loader->AddVariable("Eta", "Eta", "units", 'F');
+  data_loader->AddVariable("Eta", "Eta", "units", 'F');
   data_loader->AddVariable("MiniIsoChHad", "MiniIsoChHad", "units", 'F'); 
   //  data_loader->AddVariable("MiniIsoNHad", "MiniIsoNHad", "units", 'F'); 
   //data_loader->AddVariable("MiniIsoPhHad", "MiniIsoPhHad", "units", 'F');
@@ -161,21 +152,10 @@ void runIDBDT_HNtypeIConv(TString Classifier ="BDTG" ,TString BkgType = "Conv", 
   TCut cut_s = "";
   TCut cut_b = "";
 
-  if(signal_mode==5){
-    cut_s = "Eta<1.5";
-    cut_b = "Eta<1.5";
-  }
-  if(signal_mode==6){
+
+  if(signal_mode==2){
     cut_s = "Eta>1.5";
     cut_b = "Eta>1.5";
-  }
-  if(signal_mode==8){
-    cut_s = "Pt<40&&Eta<1.5";
-    cut_b = "Pt<40&&Eta<1.5";
-  }
-  if(signal_mode==9){
-    cut_s = "Eta>1.5&&Pt<40";
-    cut_b = "Eta>1.5&&Pt<40";
   }
 
   int n_train_signal = tree_signal->GetEntries(cut_s)/2;

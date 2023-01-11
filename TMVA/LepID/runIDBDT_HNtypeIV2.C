@@ -29,13 +29,13 @@ void runIDBDT_HNtypeIV2(TString Classifier ="BDTG" ,TString BkgType = "Fake", TS
 
   TString ClassTag = "_Shrinkage_"+BoostLearningRate+"_BaggedFrac_"+BaggedFrac;
   if(Classifier == "BDTA") ClassTag = "_AdaBoostBeta_"+BoostLearningRate;
- 
+  //BDTG_FakeSignalTypeI_EE_Signal_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT 
 
   TString  treeName = (channel == "MuMu")  ?  "Tree_mm" :  "Tree_ee";
 
   TString signal="";
-  if(signal_mode == 1 )signal = "Signal";
-  else if(signal_mode == 2 )signal = "SignalBin1";//  pt bin1
+  if(signal_mode == 1 )signal = "SignalHNLTop";
+  else if(signal_mode == 2 )signal = "SignalHNLTopEC";//  pt bin1
   else return;
 
   cout << "signal File Name= " << signal << endl;
@@ -49,7 +49,9 @@ void runIDBDT_HNtypeIV2(TString Classifier ="BDTG" ,TString BkgType = "Fake", TS
 
   const TString path = "/data6/Users/jalmond/2020/HL_SKFlatAnalyzer_ULv3/SKFlatAnalyzer/HNDiLeptonWorskspace/InputFiles/MergedFiles/Run2UltraLegacy_v3/HNL_LepIDKinVarEtaBinned/"+era+"/";
  
-  TString signame  =  path+"HNL_LepIDKinVarEtaBinned_PromptTop.root";
+  //TString signame  =  path+"HNL_LepIDKinVarEtaBinned_PromptTop.root";
+  TString signame  =  path+"HNL_LepIDKinVarEtaBinned_PromptHNLTop.root";
+  
   TFile* fsin = TFile::Open(signame);
   TFile* fbin = TFile::Open(path+"HNL_LepIDKinVarEtaBinned_"+BkgType+"Bkg.root");
 
@@ -154,8 +156,8 @@ void runIDBDT_HNtypeIV2(TString Classifier ="BDTG" ,TString BkgType = "Fake", TS
   TCut cut_b = "";
 
   if(signal_mode == 2){
-    cut_s="Pt<20";
-    cut_b="Pt<20";    
+    cut_s = "Eta>1.5";
+    cut_b = "Eta>1.5";
   }
 
   int n_train_signal = tree_signal->GetEntries(cut_s)/2 ;

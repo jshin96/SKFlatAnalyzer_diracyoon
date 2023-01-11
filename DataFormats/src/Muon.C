@@ -179,7 +179,7 @@ bool Muon::PassID(TString ID) const {
   if(ID=="HNLoosePOG") return Pass_HNLoose(0.4,  0.2, 0.5,99999.);
 
 
-  if(ID=="HNL_Top") {
+  if(ID=="HNL_HN3L") {
     
     if(!Pass_LepMVAID()) return false;
     if(!isPOGMedium()) return false;
@@ -188,6 +188,44 @@ bool Muon::PassID(TString ID) const {
 
     return true;
   }
+  if(ID=="HNL_Top1") {
+
+    if(!Pass_LepMVAID()) return false;
+    if(!isPOGMedium()) return false;
+
+    if(MVA() < 0.81)  return false;
+
+    return true;
+  }
+
+  if(ID=="HNL_Top2") {
+
+    if(!Pass_LepMVAID()) return false;
+    if(!isPOGMedium()) return false;
+    
+    if( fabs(this->Eta()) <= 1.479 ){
+      if(MVA() < 0.64)  return false;
+    }
+    else if(MVA() < 0.81)  return false;
+
+    return true;
+  }
+
+  if(ID=="HNL_Top3") {
+
+    if(!Pass_LepMVAID()) return false;
+    if(!isPOGMedium()) return false;
+
+    if( fabs(this->Eta()) <= 1.479 ){
+      if(MVA() < 0.81)  return false;
+    }
+    else if(MVA() < 0.64)  return false;
+
+    return true;
+  }
+
+
+  
 
   if(ID=="HNL_Peking") {
 
@@ -207,12 +245,47 @@ bool Muon::PassID(TString ID) const {
 
   if(ID.Contains("MuOpt")) return Pass_CB_Opt(ID);
 
+  
+  if(ID.Contains("HNL_ULID_v1_2016"))  {
+    if(!Pass_LepMVAID()) return false;
+    if(!isPOGMedium()) return false;
+
+    if( fabs(this->Eta()) <= 1.479 ){
+      if(MVA() < 0.77)  return false;
+    }
+    else{
+      if(MVA() < 0.6)  return false;
+    }
+
+    double dxy_cut = 0.02 ;
+    if(fabs(dXY()) >  dxy_cut)   return false;
+    if(fabs(dZ()) >  0.05)   return false;
+    if(fabs(IP3D()/IP3Derr()) >5.) return false;
+    return true;
+  }
+  if(ID.Contains("HNL_ULID_v2_2016"))  {
+    if(!Pass_LepMVAID()) return false;
+    if(!isPOGMedium()) return false;
+
+    if( fabs(this->Eta()) <= 1.479 ){
+      if(MVA() < 0.77)  return false;
+    }
+    else{
+      if(MVA() < 0.6)  return false;
+    }
+
+    return true;
+  }
+
+
+
+
   if(ID.Contains("HNL_ULID_2016"))  {
     if(!Pass_LepMVAID()) return false;
     if(!isPOGMedium()) return false;
 
     if( fabs(this->Eta()) <= 1.479 ){
-      if(!PassMVA_UL_Slope("NPMVABB10p6", "NPMVABB20p77", "NPMVAPt20"))  return false;
+      if(!PassMVA_UL_Slope("NPMVABB10p05", "NPMVABB20p77", "NPMVAPt20"))  return false;
     }
     else{
       if(MVA() < 0.6)  return false;
@@ -257,7 +330,7 @@ bool Muon::PassID(TString ID) const {
     if(!isPOGMedium()) return false;
 
     if( fabs(this->Eta()) <= 1.479 ){
-      if(!PassMVA_UL_Slope("NPMVABB10p6", "NPMVABB20p77", "NPMVAPt20"))  return false;
+      if(!PassMVA_UL_Slope("NPMVABB10p27", "NPMVABB20p77", "NPMVAPt20"))  return false;
     }
     else{
       if(MVA() < 0.6)  return false;
@@ -270,6 +343,45 @@ bool Muon::PassID(TString ID) const {
     return true;
 
   }
+
+  if(ID.Contains("HNL_ULID_v1_2017"))  {
+
+    if(!Pass_LepMVAID()) return false;
+    if(!isPOGMedium()) return false;
+
+    if( fabs(this->Eta()) <= 1.479 ){
+      if(MVA() < 0.77)  return false;
+    }
+    else{
+      if(MVA() < 0.6)  return false;
+    }
+
+    double dxy_cut = 0.02 ;
+    if(fabs(dXY()) >  dxy_cut)   return false;
+    if(fabs(dZ()) >  0.05)   return false;
+    if(fabs(IP3D()/IP3Derr()) >6.) return false;
+    return true;
+
+  }
+
+  if(ID.Contains("HNL_ULID_v2_2017"))  {
+
+    if(!Pass_LepMVAID()) return false;
+    if(!isPOGMedium()) return false;
+
+    if( fabs(this->Eta()) <= 1.479 ){
+      if(MVA() < 0.77)  return false;
+    }
+    else{
+      if(MVA() < 0.6)  return false;
+    }
+
+    return true;
+
+  }
+
+
+
   if(ID.Contains("HNL_ULID_2018"))  {
 
     if(!Pass_LepMVAID()) return false;
@@ -291,6 +403,20 @@ bool Muon::PassID(TString ID) const {
     
   }
   
+  if(ID.Contains("HNL_ULID_v1_2018"))  {
+
+    if(!Pass_LepMVAID()) return false;
+    if(!isPOGMedium()) return false;
+
+    if( fabs(this->Eta()) <= 1.479 ){
+      if(MVA() < 0.71)  return false;
+    }
+    else{
+      if(MVA() < 0.65)  return false;
+    }
+
+    return true;
+  }
 
 
 

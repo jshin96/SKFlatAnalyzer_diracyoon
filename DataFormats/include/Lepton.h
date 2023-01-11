@@ -33,6 +33,20 @@ public:
   }
 
 
+  // Use Eta binning from EXO17028
+  inline int Region() const {
+    double eta = fabs(this->Eta());
+    if( eta < 0.8 ) return 1;
+    else if( eta < 1.479 ) return 2;
+    else return 3;
+  }
+
+  inline bool IsIB() const { return (Region() == 1); }
+  inline bool IsOB() const { return (Region() == 2); }
+  inline bool IsEC() const { return (Region() == 3); }
+  inline bool IsBB() const { return (Region() < 3); }
+
+
 
   void SetdXY(double dXY, double dXYerr);
   inline double fdXY() const {return fabs(j_dXY);}

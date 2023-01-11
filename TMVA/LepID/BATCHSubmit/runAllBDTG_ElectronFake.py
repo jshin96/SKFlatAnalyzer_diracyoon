@@ -1,16 +1,16 @@
 import os
 
 Classifiers = ["BDTG"]
-NTreeOptions = [300,1000,2000]
-NCuts = [300,500]
+NTreeOptions = [500,1000,1500,2000,2500]
+NCuts = [300]
 Channels = ["EE"]
 SignalModes =  [1]
 MaxDepths = [2,3,4,5]
 EtaBin = [-1]
 NormModes = ["EqualNumEvents"]
-Eras = ["2016", "2018"]
+Eras = ["2016"]
 Seeds = ["100"]
-MinNodeSizes = ["5.0"]
+MinNodeSizes = ["2.5","5.0"]
 
 BoostLearningValues = ["0.05","0.5"]
 BaggedFracs =  ["0.5","0.8"]

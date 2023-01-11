@@ -83,12 +83,12 @@ for File in BDTFileList:
     if not args.Bkg in File:
         continue
 
-
     
     if not args.Channel in File:
         continue
         
-
+    if not "Top" in File:
+        continue
 
     if not args.Classifier in File:
         continue
