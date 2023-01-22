@@ -823,6 +823,36 @@ int  Electron::PassIDTight(TString ID) const{
     return true;
   }
 
+
+
+  if(ID=="HNL_ULID_FO_2016" || ID=="HNL_ULID_FO_2017") {
+
+    if(! PassConversionVeto() ) return false;
+    if(!(Pass_TriggerEmulationLoose()))   return false;
+    if(!Pass_LepMVAID()) return false;
+
+    if( IsIB() || IsOB()){
+      if(j_lep_mva_hnl_cf < 0.7)  return false;
+	//if(CloseJet_Ptratio() < 0.5) return false;
+      //}
+      if(j_lep_mva_hnl_fake < 0.15) {
+	if(CloseJet_Ptratio() < 0.5) return false;
+	//if(CloseJet_BScore() > 0.1) return false;
+      }
+    }
+    else{
+      if(j_lep_mva_hnl_cf < 0.84)  return false;
+      //if(CloseJet_Ptratio() < 0.5) return false;
+      //}
+      if(j_lep_mva_hnl_fake < 0.2){
+	if(CloseJet_Ptratio() < 0.5) return false;
+        //if(CloseJet_BScore() > 0.1) return false;
+      }
+    }
+    if(j_lep_mva_hnl_conv < -0.7) return false;
+    return true;
+  }
+
   if(ID=="HNL_ULID_N1_2016" || ID=="HNL_ULID_N1_2017") {
 
     if(! PassConversionVeto() ) return false;
@@ -914,32 +944,6 @@ int  Electron::PassIDTight(TString ID) const{
   }
 
                                                                                             
-  if(ID=="HNL_FO_ULID_2016" || ID=="HNL_FO_ULID_2017") {
-
-    if(! PassConversionVeto() ) return false;
-    if(!(Pass_TriggerEmulationLoose()))   return false;
-    if(!Pass_LepMVAID()) return false;
-
-    if( IsIB() || IsOB()){
-      if(j_lep_mva_hnl_cf < 0.7) return false;
-      if(j_lep_mva_hnl_fake < 0.15) {
-        if(CloseJet_Ptratio() < 0.4) return false;
-        if(CloseJet_BScore() > 0.1) return false;
-      }
-    }
-    else{
-      if(j_lep_mva_hnl_cf < 0.84) return false;
-      if(j_lep_mva_hnl_fake < 0.2){
-        if(CloseJet_Ptratio() < 0.4) return false;
-        if(CloseJet_BScore() > 0.1) return false;
-      }
-    }
-    if(j_lep_mva_hnl_conv < -0.7) return false;
-    return true;
-
-  }
-
-
 
   if(ID=="HNL_ULID_2018") {
 
@@ -961,24 +965,28 @@ int  Electron::PassIDTight(TString ID) const{
 
   }
 
-  if(ID=="HNL_FO_ULID_2018") {
+  if(ID=="HNL_ULID_FO_2018") {
 
     if(! PassConversionVeto() ) return false;
     if(! (Pass_TriggerEmulationLoose()))   return false;
     if(!Pass_LepMVAID()) return false;
 
     if( IsIB() || IsOB()){
-      if(j_lep_mva_hnl_cf < 0.7) return false;
+      if(j_lep_mva_hnl_cf < 0.7)  return false;
+      //if(CloseJet_Ptratio() < 0.5) return false;
+      //}
       if(j_lep_mva_hnl_fake < 0.4) {
 	if(CloseJet_Ptratio() < 0.5) return false;
-	if(CloseJet_BScore() > 0.1) return false;
+	//if(CloseJet_BScore() > 0.1) return false;
       }
     }
     else{
-      if(j_lep_mva_hnl_cf < 0.84) return false;
+      if(j_lep_mva_hnl_cf < 0.84)  return false;
+      //if(CloseJet_Ptratio() < 0.5) return false;
+      //}
       if(j_lep_mva_hnl_fake < 0.2) {
 	if(CloseJet_Ptratio() < 0.5) return false;
-        if(CloseJet_BScore() > 0.1) return false;
+        //if(CloseJet_BScore() > 0.1) return false;
       }
     }
 
@@ -2280,9 +2288,10 @@ bool Electron::Pass_HNVetoCutBased(double relisoCut) const{
 }
 
 bool Electron::Pass_HNLoosest() const{
+
   if(! (RelIso()< 0.6) ) return false;
-  if(!( Pass_CutBasedVetoNoIso() )) return false;
   if(!( Pass_CutBasedVetoNoIso() || passMVAID_noiso_WPLoose()))  return false;
+
   return true;
 }
 bool Electron::Pass_HNLoose(double relisoCut, double dxyCut, double dzCut) const{

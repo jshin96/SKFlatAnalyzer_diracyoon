@@ -155,7 +155,7 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq, s
       else{
 
 	for(unsigned int im=0; im<MNStrList.size(); im++){
-	  TString SRBDT = RunSignalRegionAK4StringBDT(MNStrList[im], dilep_channel,qq, leps, leps_veto, TauColl, JetColl, VBF_JetColl, B_JetColl, ev, METv ,param_channel,"", weight_channel);
+	  TString SRBDT = RunSignalRegionAK4StringBDT(true,MNStrList[im], dilep_channel,qq, leps, leps_veto, TauColl, JetColl, VBF_JetColl, B_JetColl, ev, METv ,param_channel,"", weight_channel);
           if(SRBDT != "false") FillEventCutflow(LimitRegionsBDT, weight_channel, SRBDT,"LimitInputBDT/"+param.Name+"/"+MNStrList[im]);
         }
 
@@ -545,24 +545,24 @@ bool  HNL_RegionDefinitions::RunSignalRegionAK4(HNL_LeptonCore::Channel channel,
 
 
 
-TString HNL_RegionDefinitions::RunSignalRegionAK4StringBDT(TString mN, HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType qq ,std::vector<Lepton *> LepTColl,   std::vector<Lepton *> leps_veto, std::vector<Tau> TauColl,std::vector<Jet> JetColl, std::vector<Jet> JetVBFColl, std::vector<Jet> B_JetColl, Event ev, Particle METv, AnalyzerParameter param, TString PostLabel ,  float w){
+TString HNL_RegionDefinitions::RunSignalRegionAK4StringBDT(bool isSR, TString mN, HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType qq ,std::vector<Lepton *> LepTColl,   std::vector<Lepton *> leps_veto, std::vector<Tau> TauColl,std::vector<Jet> JetColl, std::vector<Jet> JetVBFColl, std::vector<Jet> B_JetColl, Event ev, Particle METv, AnalyzerParameter param, TString PostLabel ,  float w){
  
 
 
   if(!CheckLeptonFlavourForChannel(channel, LepTColl)) return "false";
-  FillEventCutflow(HNL_LeptonCore::SR3BDT, w, "SR3_lep_pt",param.Name,param.WriteOutVerbose);
+  if(isSR)FillEventCutflow(HNL_LeptonCore::SR3BDT, w, "SR3_lep_pt",param.Name,param.WriteOutVerbose);
 
   if (leps_veto.size() != 2) return "false";
 
   if(qq==Plus && LepTColl[0]->Charge() < 0) return "false";
   if(qq==Minus && LepTColl[0]->Charge() > 0) return "false";
 
-  FillEventCutflow(HNL_LeptonCore::SR3BDT, w, "SR3_lep_charge",param.Name,param.WriteOutVerbose);
+  if(isSR)FillEventCutflow(HNL_LeptonCore::SR3BDT, w, "SR3_lep_charge",param.Name,param.WriteOutVerbose);
 
   Particle ll =  (*LepTColl[0]) + (*LepTColl[1]);
   if (channel==EE  && (fabs(ll.M()-90.) < 15)) return "false";
 
-  FillEventCutflow(HNL_LeptonCore::SR3BDT, w, "SR3_dilep_mass",param.Name,param.WriteOutVerbose);
+  if(isSR)  FillEventCutflow(HNL_LeptonCore::SR3BDT, w, "SR3_dilep_mass",param.Name,param.WriteOutVerbose);
   float Mll = GetLLMass(LepTColl);
 
   Nj      = JetColl.size();
@@ -679,36 +679,38 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4StringBDT(TString mN, HNL_Lepto
   
   float MVAvalue = MVAReader->EvaluateMVA(MVATagStr);
   
-  FillHist("LimitSR3BDT/"+param.Name+"/SignalBins_M"+mN, MVAvalue, w, 40, -1., 1.);
+  if(isSR)FillHist("LimitSR3BDT/"+param.Name+"/SignalBins_M"+mN, MVAvalue, w, 40, -1., 1.);
 
   int  NB_JetColl      =  B_JetColl.size();
 
 
   double met2_st = pow(METv.Pt(),2.)/ ST;
   bool PassHMMet    = (met2_st < 15);
-
-  if(!PassHMMet) return "SR3_bin1";
-  if(NB_JetColl>  0)  return "SR3_bin1";
   
-  if(MVAvalue < -0.5) return "SR3_bin2";
-  else if(MVAvalue< -0.45) return "SR3_bin2";
-  else if(MVAvalue< -0.4) return "SR3_bin3";
-  else if(MVAvalue< -0.35) return "SR3_bin4";
-  else if(MVAvalue< -0.3) return "SR3_bin5";
-  else if(MVAvalue< -0.25) return "SR3_bin6";
-  else if(MVAvalue< -0.2) return "SR3_bin7";
-  else if(MVAvalue< -0.15) return "SR3_bin8";
-  else if(MVAvalue< -0.1) return "SR3_bin9";
-  else if(MVAvalue< -0.05) return "SR3_bin10";
-  else if(MVAvalue< 0.) return "SR3_bin11";
-  else if(MVAvalue< 0.05) return "SR3_bin12";
-  else if(MVAvalue< 0.10) return "SR3_bin13";
-  else if(MVAvalue< 0.15) return "SR3_bin14";
-  else if(MVAvalue< 0.2) return "SR3_bin15";
-  else if(MVAvalue< 0.25) return "SR3_bin16";
-  else if(MVAvalue< 0.3) return "SR3_bin17";
-  else if(MVAvalue< 0.35) return "SR3_bin18";
-  else  return "SR3_bin19";
+  TString LabelPrefix = (isSR) ? "SR3" : "CR3";
+  
+  if(!PassHMMet) return LabelPrefix+"_bin1";
+  if(NB_JetColl>  0)  return LabelPrefix+"_bin1";
+  
+  if(MVAvalue < -0.5) return LabelPrefix+"_bin2";
+  else if(MVAvalue< -0.45) return LabelPrefix+"_bin2";
+  else if(MVAvalue< -0.4) return LabelPrefix+"_bin3";
+  else if(MVAvalue< -0.35) return LabelPrefix+"_bin4";
+  else if(MVAvalue< -0.3) return LabelPrefix+"_bin5";
+  else if(MVAvalue< -0.25) return LabelPrefix+"_bin6";
+  else if(MVAvalue< -0.2) return LabelPrefix+"_bin7";
+  else if(MVAvalue< -0.15) return LabelPrefix+"_bin8";
+  else if(MVAvalue< -0.1) return LabelPrefix+"_bin9";
+  else if(MVAvalue< -0.05) return LabelPrefix+"_bin10";
+  else if(MVAvalue< 0.) return LabelPrefix+"_bin11";
+  else if(MVAvalue< 0.05) return LabelPrefix+"_bin12";
+  else if(MVAvalue< 0.10) return LabelPrefix+"_bin13";
+  else if(MVAvalue< 0.15) return LabelPrefix+"_bin14";
+  else if(MVAvalue< 0.2) return LabelPrefix+"_bin15";
+  else if(MVAvalue< 0.25) return LabelPrefix+"_bin16";
+  else if(MVAvalue< 0.3) return LabelPrefix+"_bin17";
+  else if(MVAvalue< 0.35) return LabelPrefix+"_bin18";
+  else  return LabelPrefix+"_bin19";
   
   
 
@@ -822,7 +824,7 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4String(HNL_LeptonCore::Channel 
   Particle N2cand = JetColl[m] + JetColl[n]+ *leps[1];
   Particle Wcand = JetColl[m] + JetColl[n]+ *leps[0]+ *leps[1];
   double LT = leps[0]->Pt() + leps[1]->Pt();
-  double dRl2JJ = leps[1]->DeltaR(JetColl[m] + JetColl[n]);
+  //double dRl2JJ = leps[1]->DeltaR(JetColl[m] + JetColl[n]);
 
   TString sbin="";
 
@@ -1689,6 +1691,41 @@ bool HNL_RegionDefinitions::FillHighMassNPCRPlots(HNL_LeptonCore::Channel channe
 
 }
 
+
+
+bool HNL_RegionDefinitions::FillHighMassSR3BDTCRPlots(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto   , std::vector<Jet> JetColl, std::vector<FatJet> AK8_JetColl, std::vector<Jet> B_JetColl,  Event ev, Particle METv, AnalyzerParameter param, float w){
+  
+  if (!CheckLeptonFlavourForChannel(channel, leps)) return false;
+  if (leps_veto.size() != 2) return false;
+  if (leps.size() != 2) return false;
+
+  
+  int NB_JetColl = B_JetColl.size();
+  
+  Particle ll ;//=  leps.at(0) + leps.at(1);
+  
+  if (channel==EE  && (fabs(ll.M()-90.) < 15)) return false;
+
+
+  if(ll.M() < 20) return false;
+
+  double ST = GetST(leps, JetColl, AK8_JetColl, ev);
+  double met2_st = pow(METv.Pt(),2.)/ ST;
+  bool PassHMMet    = (met2_st < 20);
+
+  if(PassHMMet && NB_JetColl==0) return false;
+
+  if(AK8_JetColl.size() > 0) return false;
+
+  std::vector<Tau>        TauColl        = GetTaus     (leps_veto,param.Tau_Veto_ID,20., 2.3);
+
+  for(unsigned int im=0; im<MNStrList.size(); im++){
+    TString SRBDT = RunSignalRegionAK4StringBDT(false,MNStrList[im], channel,Inclusive, leps, leps_veto, TauColl, JetColl, JetColl, B_JetColl, ev, METv ,param,"", w);
+  }
+
+
+  return true;
+}
 
 
 bool HNL_RegionDefinitions::FillHighMassSR3CRPlots(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto   , std::vector<Jet> JetColl, std::vector<FatJet> AK8_JetColl, std::vector<Jet> B_JetColl,  Event ev, Particle METv, AnalyzerParameter param, float w){

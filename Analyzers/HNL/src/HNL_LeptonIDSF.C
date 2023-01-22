@@ -18,7 +18,8 @@ void HNL_LeptonIDSF::executeEvent(){
   
   if(!IsData)  gens = GetGens();
 
-  vector<TString> IDs = {"MVAUL"};
+  vector<TString> IDs = {"MVAUL"};//,"MVAULN1","MVAULN2","MVAULN3","MVAULN4","MVAULN5","MVAULN6"};
+
   for(auto id : IDs){
     MeasureElectronIDSF(HNL_LeptonCore::InitialiseHNLParameter(id,""));
     MeasureMuonIDSF(HNL_LeptonCore::InitialiseHNLParameter(id ,""));
@@ -136,18 +137,50 @@ void HNL_LeptonIDSF::MeasureIDSF(HNL_LeptonCore::Channel dilep_channel, vector<M
   double ptbins    [nbin_pt    +1] = { 10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,2000.};
   double etabins   [nbin_eta+1   ] = { 0.,0.8,  1.479, 2.,  2.5};
 
-  FillHist(channel_string+"/llmass_"+channel_string, GetLLMass(LeptonColl), weight_ll, 70, 50., 120);
-  FillHist(channel_string+"/NVTX_"+channel_string, nPileUp, weight_ll, 100, 0., 100);
-  FillHist(channel_string+"/MET_"+channel_string, GetvMET("PuppiT1xyCorr").Pt(), weight_ll, 100, 0., 100);
+  FillHist(channel_string+"/"+ID+"/llmass_"+channel_string, GetLLMass(LeptonColl), weight_ll, 70, 50., 120);
+  FillHist(channel_string+"/"+ID+"/NVTX_"+channel_string, nPileUp, weight_ll, 100, 0., 100);
+  FillHist(channel_string+"/"+ID+"/MET_"+channel_string, GetvMET("PuppiT1xyCorr").Pt(), weight_ll, 100, 0., 100);
 
-  if(MuonColl[0].PassID(ID)) {
-    FillHist(channel_string+"/"+ID+"_denom",MuonColl[1].Pt(), fabs(MuonColl[1].Eta()),  weight_ll, nbin_pt, ptbins, nbin_eta , etabins);
-    if(MuonColl[1].PassID(ID))     FillHist(channel_string+"/"+ID+"_num",MuonColl[1].Pt(), fabs(MuonColl[1].Eta()),  weight_ll, nbin_pt, ptbins, nbin_eta , etabins);
+
+  if(MuonColl[0].PassID("POGTightWithTightIso")) {
+
+    double SF=1;
+    if(!IsData){
+      double lep1_pt  = MuonColl[0].MiniAODPt();
+      double lep1_eta = MuonColl[0].Eta();
+      double lep2_pt  = MuonColl[1].MiniAODPt();
+      double lep2_eta = MuonColl[1].Eta();
+      
+      double lep1_idsf   = mcCorr->MuonID_SF ("NUM_TightID_DEN_TrackerMuons",  lep1_eta, lep1_pt,0);
+      double lep1_isosf  = mcCorr->MuonISO_SF("NUM_TightRelIso_DEN_TightIDandIPCut", lep1_eta, lep1_pt,0);
+      double lep1_recosf = mcCorr->MuonReco_SF("MuonRecoSF", lep1_eta, lep1_pt,0);
+      double lep2_recosf = mcCorr->MuonReco_SF("MuonRecoSF", lep2_eta, lep2_pt,0);
+
+      SF = lep1_idsf*lep1_isosf*lep1_recosf*lep2_recosf;
+    }
+    FillHist(channel_string+"/"+ID+"_denom",MuonColl[1].Pt(), fabs(MuonColl[1].Eta()),  SF*weight_ll, nbin_pt, ptbins, nbin_eta , etabins);
+    if(MuonColl[1].PassID(ID))     FillHist(channel_string+"/"+ID+"_num",MuonColl[1].Pt(), fabs(MuonColl[1].Eta()),  SF*weight_ll, nbin_pt, ptbins, nbin_eta , etabins);
 
   }
-  if(MuonColl[1].PassID(ID)) {
-    FillHist(channel_string+"/"+ID+"_denom",MuonColl[0].Pt(), fabs(MuonColl[0].Eta()),  weight_ll, nbin_pt, ptbins, nbin_eta , etabins);
-    if(MuonColl[0].PassID(ID))     FillHist(channel_string+"/"+ID+"_num",MuonColl[0].Pt(), fabs(MuonColl[0].Eta()),  weight_ll, nbin_pt, ptbins, nbin_eta , etabins);
+  if(MuonColl[1].PassID("POGTightWithTightIso")) {
+
+    double SF=1;
+    if(!IsData){
+      double lep1_pt  = MuonColl[1].MiniAODPt();
+      double lep1_eta = MuonColl[1].Eta();
+      double lep2_pt  = MuonColl[0].MiniAODPt();
+      double lep2_eta = MuonColl[0].Eta();
+      
+      double lep1_idsf   = mcCorr->MuonID_SF ("NUM_TightID_DEN_TrackerMuons",  lep1_eta, lep1_pt,0);
+      double lep1_isosf  = mcCorr->MuonISO_SF("NUM_TightRelIso_DEN_TightIDandIPCut", lep1_eta, lep1_pt,0);
+      double lep1_recosf = mcCorr->MuonReco_SF("MuonRecoSF", lep1_eta, lep1_pt,0);
+      double lep2_recosf = mcCorr->MuonReco_SF("MuonRecoSF", lep2_eta, lep2_pt,0);
+
+      SF = lep1_idsf*lep1_isosf*lep1_recosf*lep2_recosf;
+    }
+
+    FillHist(channel_string+"/"+ID+"_denom",MuonColl[0].Pt(), fabs(MuonColl[0].Eta()),  SF*weight_ll, nbin_pt, ptbins, nbin_eta , etabins);
+    if(MuonColl[0].PassID(ID))     FillHist(channel_string+"/"+ID+"_num",MuonColl[0].Pt(), fabs(MuonColl[0].Eta()),  SF*weight_ll, nbin_pt, ptbins, nbin_eta , etabins);
     
   }
   
@@ -177,17 +210,34 @@ void HNL_LeptonIDSF::MeasureIDSF(HNL_LeptonCore::Channel dilep_channel, vector<E
   FillHist(channel_string+"/MET_"+channel_string, GetvMET("PuppiT1xyCorr").Pt(), weight_ll, 100, 0., 100);
 
 
-  if(ElectronColl[0].PassID(ID)) {
-    FillHist(channel_string+"/"+ID+"_denom",ElectronColl[1].Pt(), fabs(ElectronColl[1].Eta()),  weight_ll, nbin_pt, ptbins, nbin_eta , etabins)    ;
-    if(ElectronColl[1].PassID(ID))     FillHist(channel_string+"/"+ID+"_num",ElectronColl[1].Pt(), fabs(ElectronColl[1].Eta()),  weight_ll, nbin_pt, ptbins, nbin_eta , etabins);
+  if(ElectronColl[0].PassID("passPOGTight")) {
+
+    double SF=1;
+    if(!IsData){
+      double this_recosf  = mcCorr->ElectronReco_SF(ElectronColl[0].scEta(),ElectronColl[0].Pt(), 0);
+      double this_idsf    = mcCorr->ElectronID_SF("passTightID", ElectronColl[0].scEta(), ElectronColl[0].Pt(), 0);
+      
+      double lep2_recosf  = mcCorr->ElectronReco_SF(ElectronColl[1].scEta(),ElectronColl[1].Pt(), 0);
+      SF = this_recosf*this_idsf*lep2_recosf;
+    }
+    FillHist(channel_string+"/"+ID+"_denom",ElectronColl[1].Pt(), fabs(ElectronColl[1].Eta()),  SF*weight_ll, nbin_pt, ptbins, nbin_eta , etabins)    ;
+    if(ElectronColl[1].PassID(ID))     FillHist(channel_string+"/"+ID+"_num",ElectronColl[1].Pt(), fabs(ElectronColl[1].Eta()),  SF*weight_ll, nbin_pt, ptbins, nbin_eta , etabins);
 
   }
-  if(ElectronColl[1].PassID(ID)) {
-    FillHist(channel_string+"/"+ID+"_denom",ElectronColl[0].Pt(), fabs(ElectronColl[0].Eta()),  weight_ll, nbin_pt, ptbins, nbin_eta , etabins)    ;
-    if(ElectronColl[0].PassID(ID))     FillHist(channel_string+"/"+ID+"_num",ElectronColl[0].Pt(), fabs(ElectronColl[0].Eta()),  weight_ll, nbin_pt, ptbins, nbin_eta , etabins);
+  if(ElectronColl[1].PassID("passPOGTight")) {
+
+    double SF=1;
+    if(!IsData){
+      double this_recosf  = mcCorr->ElectronReco_SF(ElectronColl[1].scEta(),ElectronColl[1].Pt(), 0);
+      double this_idsf    = mcCorr->ElectronID_SF("passTightID", ElectronColl[1].scEta(), ElectronColl[1].Pt(), 0);
+      
+      double lep2_recosf  = mcCorr->ElectronReco_SF(ElectronColl[0].scEta(),ElectronColl[0].Pt(), 0);
+      SF = this_recosf*this_idsf*lep2_recosf;
+    }
+    FillHist(channel_string+"/"+ID+"_denom",ElectronColl[0].Pt(), fabs(ElectronColl[0].Eta()),  SF*weight_ll, nbin_pt, ptbins, nbin_eta , etabins)    ;
+    if(ElectronColl[0].PassID(ID))     FillHist(channel_string+"/"+ID+"_num",ElectronColl[0].Pt(), fabs(ElectronColl[0].Eta()),  SF*weight_ll, nbin_pt, ptbins, nbin_eta , etabins);
 
   }
-
 
   return;
 
