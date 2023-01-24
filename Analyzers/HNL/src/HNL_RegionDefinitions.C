@@ -9,18 +9,121 @@
   b) PassVBFInitial : Use this IF using shape for SR2 
   c) PassVBF
 
+  Presel
+  ----------------------------
+  - PassPreselection
+
   SR Functions
   -----------------------------------
-  1- RunSignalRegionAK8 (SR1)
-  2- RunSignalRegionWW  (SR2)
-  3- RunSignalRegionAK4 (SR3)
-  4- RunSignalRegionTrilepton  (REMNANT)
-
+  * RunAllSignalRegions Runs All SR files
+  1- RunSignalRegionAK8 (SR1) OR RunSignalRegionAK8String To run RunSignalRegionAK8 and return Limit input string
+  2- RunSignalRegionWW  (SR2) OR RunSignalRegionWWString To run RunSignalRegionWW and return Limit input string  
+  3- RunSignalRegionAK4 (SR3) OR RunSignalRegionAK4String To run RunSignalRegionAK4  and return Limit input string  
+  4- RunSignalRegionAK4StringBDT Run SR3 BDT
+  5- RunSignalRegionTrilepton  (REMNANT)
+  
 
   CR Functions
   -----------------------------------
-  1- RunElectronChannelCR
-  2- RunMuonChannelCR
+  * RunAllControlRegions Run ALL following CRs
+  ** RunElectronChannelCR
+  ** RunMuonChannelCR
+  ===============================================================
+  1- FillTopCRPlots
+  %% 2 leptons (OS/SS) + MET > 50 + Nb > 0 + 
+  %% -validate B tagging eff + SF
+  ===============================================================  
+  2- FillZNPCRPlots
+  %% 3Lep +  MET < 30 + MZ  + MTnonZlep < 30
+  %% Validate Fakes
+  ===============================================================y
+  3- FillZCRPlots
+  %% 2 Lep + MET < 30 + Nb(0) + NAK8(>0) + MZ 
+  %% Check in SR1 like region with low met and 0 b jet
+  ===============================================================
+  4- FillWWCR1Plots
+  %% SSlep +  VBFJ(2) + MJJ(>500) + JPt(30) + Nb(0) JJEta(>2.5) + Zepp(<0.75) + MZ + llDphi(<2.) 
+  %% - region frmo Peking, SR w/Reverse dphi cut
+  ===============================================================
+  5- FillWWCR2Plots
+  %% SSlep +  VBFJ(2) + MJJ(>500) + JPt(30) + Nb(0) JJEta(>2.5) + Zepp(<0.75) + MZ + MET2ST(>15)
+  %% - SR2 BUT with HIgh met
+  ===============================================================
+  6- FillWWCRNPPlots
+  %% SSlep +  VBFJ(2) + MET > 30 + Nb(>0) + JJEta(>2.5) + MZ +  MJJ(>500) same as AN2020_045 Table 15 Nonprompt 
+  %%  SR2 BUT with HIgh met and bjet
+  ===============================================================
+  7- FillWWCRNP2Plots
+  %%  SSlep +  VBFJ(2) + Nb(>0) + JJEta(>2.5) + MZ +  MJJ(>500) 
+  %%  SR2 BUT with  bjet  
+  ===============================================================
+  8- FillWWCRNP3Plots
+  %% SSlep +  VBFJ(2) + Nb(0) + JJEta(>2.5) + MZ +  MJJ(150-500)
+  %% Loook in SR2 MJJ sideband
+  ===============================================================
+  9- FillOSPreselectionPlots
+  %% OS2l 
+  %% Validate lepton ID
+  ===============================================================
+  10- FillSSPreselectionPlots
+  %% - SS2l + mll(>20) + Nj(>1) +MZ
+  ===============================================================
+  11- FillSSVBFPreselectionPlots
+  %% - SS2l + mll(>20) + Nvbfj(>1) +MZ 
+  ===============================================================
+  12- FillHighMassSR1CRPlots
+  %% FillSSPreselectionPlots + MET2ST > 15||Nb(>0)
+  ===============================================================
+  13- FillHighMass1JetCRPlots
+  %% SS2l + Nj(1) + MZpeak 
+  ===============================================================
+  14- FillHighMassBJetCRPlots
+  %% SS2l + NBj(1)+ Mll(>10)
+  ===============================================================
+  15- FillHighMassNPCRPlots
+  %% SS2l + Nj(0)+ Mll(>10) + llDphi(> 2.5)                                                                                                                                                                                                                                    ===============================================================
+  16- FillHighMassSR3BDTCRPlots
+  %% 
+  ==============================================================
+  17- FillHighMassSR3CRPlots
+  %% CR3
+  ===============================================================
+  18- FillHighMassSR2CRPlots
+  %% CR2
+  ===============================================================
+  19- FillWZ2CRPlots
+  %% 
+  %% 
+  ===============================================================
+  20- FillWZBCRPlots
+ %% 
+ %% 
+  ===============================================================
+  21- FillZZCRPlots
+ %% 
+ %% 
+  ===============================================================
+  22- FillZZ2CRPlots
+ %% 
+ %% 
+  ===============================================================
+  23- FillZGCRPlots
+ %% 
+ %% 
+  ===============================================================
+  24- FillWGCRPlots
+ %% 
+ %% 
+  ===============================================================
+  25- FillWZCRPlots
+ %% 
+ %% 
+  ===============================================================
+
+  BDT Functions
+  -----------------------------------
+  1- RunSR3BDT  (used to make plots of mass dep BDT scores for all weight files input)
+
 
  */
 
@@ -31,15 +134,20 @@ void HNL_RegionDefinitions::RunSR3BDT(HNL_LeptonCore::ChargeType qq, std::vector
   /// Function plots BDT for all Setup in MNStrList[im], NCutList[ic], NTreeList[] 
   // The string returned can be ignored, since this is for use in Limit plot, but function make plot in LimitInputSR3BDT/param.Name
   
-  for(unsigned int im=0; im<MNStrList.size(); im++){
-    for(unsigned int ic=0; ic<NCutList.size(); ic++){
-      for(unsigned int it=0; it<NTreeList.size(); it++){
-	RunSignalRegionAK4StringBDT(true,MNStrList[im], NCutList[ic], NTreeList[it], dilep_channel,qq, leps, leps_veto, TauColl, JetAllColl, JetColl, VBF_JetColl, B_JetColl, ev, METv ,param_channel,"", weight_channel);
-	
+  vector<HNL_LeptonCore::Channel> channels = {EE,MuMu, EMu};
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(muons_veto,electrons_veto,param);
+  std::vector<Lepton *> leps       = MakeLeptonPointerVector(muons,electrons,param);
+  for(auto dilep_channel : channels){
+    
+    for(unsigned int im=0; im<MNStrList.size(); im++){
+      for(unsigned int ic=0; ic<NCutList.size(); ic++){
+	for(unsigned int it=0; it<NTreeList.size(); it++){
+	  RunSignalRegionAK4StringBDT(true,MNStrList[im], NCutList[ic], NTreeList[it], dilep_channel,qq, leps, leps_veto, TauColl, JetAllColl, JetColl, VBF_JetColl, B_JetColl, ev, METv ,param,"", weight_ll);
+	  
+	}
       }
     }
   }
-
   
 
   return;
@@ -175,8 +283,8 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq, s
       else{
 
 	for(auto imapHP :FinalBDTHyperParamMap){
-	  TString SRBDT = RunSignalRegionAK4StringBDT(true,imapHP.first , imapHP.second.at(0), imapHP.second.at(1), dilep_channel,qq, leps, leps_veto, TauColl, JetAllColl, JetColl, VBF_JetColl, B_JetColl, ev, METv ,param_channel,"", weight_channel);
-	  if(SRBDT != "false") FillEventCutflow(LimitRegionsBDT, weight_channel, SRBDT,"LimitInputBDT/"+param.Name+"/M"+MNStrList.at(im));
+	  TString SRBDT = RunSignalRegionAK4StringBDT(true,imapHP.first , imapHP.second.first, imapHP.second.second, dilep_channel,qq, leps, leps_veto, TauColl, JetAllColl, JetColl, VBF_JetColl, B_JetColl, ev, METv ,param_channel,"", weight_channel);
+	  if(SRBDT != "false") FillEventCutflow(LimitRegionsBDT, weight_channel, SRBDT,"LimitInputBDT/"+param.Name+"/M"+imapHP.first);
 	}
 
 	SRbin  = RunSignalRegionAK4String (dilep_channel,qq, leps, leps_veto, TauColl, JetColl, AK8_JetColl, B_JetColl, ev, METv ,param_channel,"", weight_channel);
@@ -1224,7 +1332,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     // SR3 : MET Inv. || BVeto Inv.
     if(FillHighMassSR3CRPlots(dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR3_CR");
   
-    bool runSRBDT= FillHighMassSR3BDTCRPlots(dilep_channel, LepsT, LepsV, JetAllColl, JetColl,VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel);
+    FillHighMassSR3BDTCRPlots(dilep_channel, LepsT, LepsV, JetAllColl, JetColl,VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel);
 
 
     if(FillHighMass1JetCRPlots(dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMass1Jet_CR");
@@ -1410,7 +1518,11 @@ bool HNL_RegionDefinitions::FillWWCR2Plots(HNL_LeptonCore::Channel channel, std:
   Jet j2 = jets_eta5[1];
   if(!(j1.Pt() > 30.) && (j2.Pt() > 30.)) return false;
   if ( ll.M() < 20.) return false;
-  if ( METv.Pt() < 30.) return false;                                                                                                                                                                          
+
+  double ST = GetST(leps, jets_eta5, AK8_JetColl, METv);
+  double met2_st = pow(METv.Pt(),2.)/ ST;
+  if(met2_st > 15) return false;
+
 
   if (NB_JetColl>0) return false;
 
@@ -1801,7 +1913,7 @@ bool HNL_RegionDefinitions::FillHighMassSR3BDTCRPlots(HNL_LeptonCore::Channel ch
 
   
   for(auto imapHP :FinalBDTHyperParamMap){
-    TString SRBDT = RunSignalRegionAK4StringBDT(true,imapHP.first , imapHP.second.at(0), imapHP.second.at(1),  channel,Inclusive, leps, leps_veto, TauColl, JetAllColl, JetColl, JetVBFColl, B_JetColl, ev, METv ,param,"", w);
+    TString SRBDT = RunSignalRegionAK4StringBDT(true,imapHP.first , imapHP.second.first, imapHP.second.second,  channel,Inclusive, leps, leps_veto, TauColl, JetAllColl, JetColl, JetVBFColl, B_JetColl, ev, METv ,param,"", w);
   }
 
 

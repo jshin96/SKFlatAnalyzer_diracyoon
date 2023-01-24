@@ -385,7 +385,7 @@ class HNL_LeptonCore : public AnalyzerCore {
 
 
   vector<TString> MNStrList, NCutList, NTreeList;
-  map<TString, std::pair<double,double> > FinalBDTHyperParamMap;
+  map<TString, std::pair<TString,TString> > FinalBDTHyperParamMap;
   TMVA::Reader *MVAReader;
   TMVA::Reader *MVAReaderMM, *MVAReaderEE, *MVAReaderEM;
 
