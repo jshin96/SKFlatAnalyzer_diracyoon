@@ -5,8 +5,8 @@ mcpath=${SKFlat_WD}/runJobs/HNL/${analyzer}/Bkg/
 njobs=250
 nmax=800
 skim=' '
-declare  -a era_list=("2018" "2016postVFP" "2016preVFP")
-declare  -a era_list=("2017")
+declare  -a era_list=("2018" "2016postVFP" "2016preVFP" "2017")
+
 
 if [[ $1 == "" ]]; then
 
