@@ -527,7 +527,10 @@ double AnalyzerCore::GetBDTScoreMuon(Muon mu ,BkgType bkg, TString BDTTag){
   //  MVATagStr = "BDTG";
   //  if(mu.Pt() < 30.) MVATagStr += "_FakeLowPt";
   //  else MVATagStr += "_FakeHighPt";
-  return MuonIDFakeMVAReader->EvaluateMVA(MVATagStr);
+
+
+  return 1;
+  //return MuonIDFakeMVAReader->EvaluateMVA(MVATagStr);
     
   //  return  MuonIDFakeNoPtMVAReader->EvaluateMVA(MVATagStr);
 
@@ -782,7 +785,7 @@ void AnalyzerCore::SetupIDMVAReader(bool isMuon){
       make_pair("BDTG_FakeHighPt", BDTG_FakeHighPt),
     };
     
-    for (auto ibdt : BDTInput)   MuonIDFakeMVAReader->BookMVA(ibdt.first,MVAPathMuonFake+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
+    //for (auto ibdt : BDTInput)   MuonIDFakeMVAReader->BookMVA(ibdt.first,MVAPathMuonFake+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
     
     
   }

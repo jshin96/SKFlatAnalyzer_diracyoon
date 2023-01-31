@@ -5,6 +5,7 @@ mcpath=${SKFlat_WD}/runJobs/HNL/${analyzer}/Bkg/
 njobs=300
 nmax=300
 declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
+declare  -a era_list=("2017" "2018")
 
 
 if [[ $1 == "" ]]; then
