@@ -117,7 +117,7 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   // ----- SETUP ANALYZER
   AnalyzerParameter InitialiseHNLParameters( TString analysis_tag, vector<vector<TString> >  param_vec);
-  AnalyzerParameter InitialiseHNLParameter(TString s_setup, TString tag);  
+  AnalyzerParameter InitialiseHNLParameter(TString s_setup="", TString tag="");  
 
   
   // ------ Analysis Obj

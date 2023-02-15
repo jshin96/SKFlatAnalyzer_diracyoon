@@ -5,7 +5,20 @@ mcpath=${SKFlat_WD}/runJobs/HNL/${analyzer}/Bkg/
 njobs=300
 nmax=300
 declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
-declare  -a era_list=("2017" "2018")
+declare  -a era_list=("2018")
+
+
+if [[ $1 == "TT" ]]; then
+
+    nmax=400
+
+    for i in "${era_list[@]}"
+    do
+	SKFlat.py -a $analyzer  -i TTLJ_powheg  -n 300  --nmax ${nmax}   -e ${i}  --userflags SeperateFake &
+    
+    done
+fi
+
 
 
 if [[ $1 == "" ]]; then

@@ -57,39 +57,35 @@ def PerformKolmogorovSmirnov(filepath):
 
 
 
-
 import argparse
 parser = argparse.ArgumentParser(description='option')
-parser.add_argument('-b', dest='Bkg', default="Fake")
+parser.add_argument('-b', dest='Bkg', default="CF")
 parser.add_argument('-e', dest='Era', default="2017")
-parser.add_argument('-f', dest='Channel', default="EE")
+parser.add_argument('-f', dest='Flag', default="")
 parser.add_argument('-c', dest='Classifier', default="BDTG")
 
 args = parser.parse_args()
 
-
-
-BDTFile_Dir = "/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIV2/Default/"+args.Era+"/"
+BDTFile_Dir = "/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/AnalysisFiles/"
 BDTFileList  = [f for f in listdir(BDTFile_Dir) if isfile(join(BDTFile_Dir,f))]
+
 
 MaxAUC=0.
 MaxJob=""
 n=0
 Results = dict()
 
-addVal=0.00001
+addVar=0.00001
+
 for File in BDTFileList:
 
     if not args.Bkg in File:
         continue
-
     
-    if not args.Channel in File:
+    
+    if not args.Flag in File:
         continue
         
-    if not "Top" in File:
-        continue
-
     if not args.Classifier in File:
         continue
 

@@ -99,7 +99,7 @@ public:
   double GetCFWeightElectron(std::vector<Lepton* > leps ,  AnalyzerParameter param);
   double GetCFrates(TString id, double pt, double eta);
   double GetCFWeightElectron(vector<Lepton *> lepptrs, AnalyzerParameter param, bool applySF, int syst);
-  std::vector<Electron> GetAllElectrons();
+  std::vector<Electron> GetAllElectrons(bool setBDT=true);
   std::vector<Electron> GetElectrons(TString id, double ptmin, double fetamax, bool vetoHEM = false);
   std::vector<Electron> GetElectrons(AnalyzerParameter param, TString id, double ptmin, double fetamax ,bool Run_Fake=false, bool vetoHEM=false);
 
@@ -119,19 +119,25 @@ public:
 
 
   TMVA::Reader *MuonIDFakeMVAReader;
-  TMVA::Reader *MuonIDFakeNoPtMVAReader;
 
   TMVA::Reader *ElectronIDFakeMVAReader;
   TMVA::Reader *ElectronIDCFMVAReader;
   TMVA::Reader *ElectronIDConvMVAReader;
-  TMVA::Reader *ElectronIDNoPtEtaConvMVAReader;
-  TMVA::Reader *ElectronIDNoPtConvMVAReader;
+
+  TMVA::Reader *ElectronIDv2FakeMVAReader;
+  TMVA::Reader *ElectronIDv2ConvMVAReader;
+  TMVA::Reader *ElectronIDv2CFMVAReader;
+
+  TMVA::Reader *ElectronIDv2CFMVAReaderPt;
+
+  TMVA::Reader *ElectronIDv3CFMVAReader;
 
   // ID MVA                                                                                            
   void InitializeIDTreeVars();
-
+  void InitializeElectronIDTreeVars();
 
   void SetBDTIDVar(Lepton*  lep);
+  void SetBDTIDVarV1(Lepton*  lep);
   void SetBDTIDVariablesElectron(Electron el);
   void SetBDTIDVariablesMuon(Muon mu);
   void SetupIDMVAReader(bool isMuon);
@@ -161,9 +167,12 @@ public:
 
 
 
-  double GetBDTScoreEl(Electron el ,BkgType bkg,TString bdttag="BDTA");
+
+  double GetBDTScoreEl(Electron el ,BkgType bkg,TString bdttag,TString tag="");
+  double GetBDTScoreElV1(Electron el ,BkgType bkg,TString bdttag);
   double GetBDTScoreMuon(Muon mu ,BkgType bkg, TString bdttag="BDTA");
 
+  double GetBDTScoreEl_EtaDependant(Electron el ,BkgType bkg, TString BDTTag, TString tag="");
 
 
   double GetIsoFromID(TString type_lep, TString id, double eta, double pt);
@@ -199,13 +208,13 @@ public:
   double  JetLeptonMassDropLepAware(  Electron lep, bool removeLep,bool ApplyCorr=false);
 
 
-  double  JetLeptonPtRelLepAware(  Lepton lep, bool removeLep,bool ApplyCorr=false);
-  double  JetLeptonPtRelLepAware(  Muon lep, bool removeLep,bool ApplyCorr=false);
-  double  JetLeptonPtRelLepAware(  Electron lep, bool removeLep,bool ApplyCorr=false);
+  double  JetLeptonPtRelLepAware(  Lepton lep, bool CorrLep=false, bool CorrJet=false,bool CheckID=false);
+  double  JetLeptonPtRelLepAware(  Muon lep, bool CorrLep=false, bool CorrJet=false,bool CheckID=false);
+  double  JetLeptonPtRelLepAware(  Electron lep, bool CorrLep=false, bool CorrJet=false,bool CheckID=false);
 
-  double  JetLeptonPtRatioLepAware( Lepton lep, bool removeLep,bool ApplyCorr=false);
-  double  JetLeptonPtRatioLepAware( Muon lep, bool removeLep,bool ApplyCorr=false);
-  double  JetLeptonPtRatioLepAware( Electron lep, bool removeLep,bool ApplyCorr=false);
+  double  JetLeptonPtRatioLepAware( Lepton lep, bool CorrLep=false, bool CorrJet=false,bool CheckID=false);
+  double  JetLeptonPtRatioLepAware( Muon lep, bool CorrLep=false, bool CorrJet=false,bool CheckID=false);
+  double  JetLeptonPtRatioLepAware( Electron lep, bool CorrLep=false, bool CorrJet=false,bool CheckID=false);
 
 
   bool ConversionSplitting(std::vector<Lepton *> leps,const std::vector<Gen>& gens);

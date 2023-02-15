@@ -157,19 +157,26 @@ void HNL_LeptonID_BDT_KinVar::executeEvent(){
   gens = GetGens();
 
   double weight =SetupWeight(ev,param_bdt);
+
   vector<TString> MCMergeList = {"DY","WG"};
   
   
   if(SeperateConv || SeperateCF)weight *= MergeMultiMC(MCMergeList,"CombineAll");
 
+  if(weight <= 0) {
+    std::vector<Electron>   ElectronCollTMP =  GetElectrons( param_bdt,"MVAID", 10., 2.5, RunFake);
+    for(auto ilep : ElectronCollTMP)   FillHist( "fEtaElZeroW", fabs(ilep.Eta()) ,weight, 300., 0., 3);
+  }
+
+
   if(SeperateFakes){
-    weight  = 1.; 
+    weight  = GetPrefireWeight(0) * GetPileUpWeight(nPileUp,0); 
     if(MCSample.Contains("TTL")) weight*= 0.25;
   }
   if(MCSample.Contains("Type")) weight = 1.;
 
-  if(weight == 0) return;
-
+  if(weight == 0)    return;
+  
   FillHist("CutFlow", 0, weight,  20, 0., 20.);
   FillHist( "nPV", nPV ,weight, 100., 0., 100.);
  

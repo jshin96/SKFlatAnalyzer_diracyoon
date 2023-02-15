@@ -4,8 +4,8 @@ Classifiers = ["BDTG"]
 #NTreeOptions = [500,1000,1500,2000,2500]
 NTreeOptions = [1000]
 NCuts = [300]
-Channels = ["EE"]
-SignalModes =  [10]
+Channels = ["MuMu"]
+SignalModes =  [0]
 #MaxDepths = [2,3,4,5]
 MaxDepths = [3]
 EtaBin = [-1]
@@ -43,11 +43,8 @@ for Classifier in Classifiers:
                                                     if SignalMode == 0:
                                                         nMAX = " --nmax 40"
 
-                                                    os.system("RunIDBDT.py -a runIDBDT_HNtypeIElectronFake -m " + str(Classifier) + " -b FakeBkg -ns "+str(SignalMode)+ "  -nt "+ str(NTREES) + " -c " + Channel + " -MaxDepth  " + str(MaxDepth) + " -ncut " + str(NCut) + " -eta "+ str(Eta) +  " -Nrom " +NormMode+ " -BoostLearningRate  " + BoostLearningValue + " -BaggedFrac " + BaggedFrac +  " -s " + Seed + "  -e "+Era+" " + nMAX + " -MinNodeSize "+MinNodeSize)    
-                                                    os.system("RunIDBDT.py -a runIDBDT_HNtypeIElectronFake -m " + str(Classifier) + " -b FakeBkg_LF -ns "+str(SignalMode)+ "  -nt "+ str(NTREES) + " -c " + Channel + " -MaxDepth  " + str(MaxDepth) + " -ncut " + str(NCut) + " -eta "+ str(Eta) +  " -Nrom " +NormMode+ " -BoostLearningRate  " + BoostLearningValue + " -BaggedFrac " + BaggedFrac +  " -s " + Seed + "  -e "+Era+" " + nMAX + " -MinNodeSize "+MinNodeSize)   
+                                                    os.system("RunIDBDT.py -a runIDBDT_HNtypeIMuonFake -m " + str(Classifier) + " -b FakeBkg_LF -ns "+str(SignalMode)+ "  -nt "+ str(NTREES) + " -c " + Channel + " -MaxDepth  " + str(MaxDepth) + " -ncut " + str(NCut) + " -eta "+ str(Eta) +  " -Nrom " +NormMode+ " -BoostLearningRate  " + BoostLearningValue + " -BaggedFrac " + BaggedFrac +  " -s " + Seed + "  -e "+Era+" " + nMAX + " -MinNodeSize "+MinNodeSize)   
  
-                                                    os.system("RunIDBDT.py -a runIDBDT_HNtypeIElectronFake -m " + str(Classifier) + " -b FakeBkg_HF -ns "+str(SignalMode)+ "  -nt "+ str(NTREES) + " -c " + Channel + " -MaxDepth  " + str(MaxDepth) + " -ncut " + str(NCut) + " -eta "+ str(Eta) +  " -Nrom " +NormMode+ " -BoostLearningRate  " + BoostLearningValue + " -BaggedFrac " + BaggedFrac +  " -s " + Seed + "  -e "+Era+" " + nMAX + " -MinNodeSize "+MinNodeSize)    
-
 
 
                                 

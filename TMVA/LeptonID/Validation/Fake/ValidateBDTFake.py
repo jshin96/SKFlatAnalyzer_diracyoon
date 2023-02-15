@@ -57,26 +57,27 @@ def PerformKolmogorovSmirnov(filepath):
 
 
 
+
 import argparse
 parser = argparse.ArgumentParser(description='option')
-parser.add_argument('-b', dest='Bkg', default="CF")
+parser.add_argument('-b', dest='Bkg', default="Fake")
 parser.add_argument('-e', dest='Era', default="2017")
 parser.add_argument('-f', dest='Channel', default="EE")
 parser.add_argument('-c', dest='Classifier', default="BDTG")
 
 args = parser.parse_args()
 
-BDTFile_Dir = "/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeICF/Default/"+args.Era+"/"
-BDTFileList  = [f for f in listdir(BDTFile_Dir) if isfile(join(BDTFile_Dir,f))]
 
+
+BDTFile_Dir = "/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIElectronFake/Version2/"+args.Era+"/"
+BDTFileList  = [f for f in listdir(BDTFile_Dir) if isfile(join(BDTFile_Dir,f))]
 
 MaxAUC=0.
 MaxJob=""
 n=0
 Results = dict()
 
-addVar=0.00001
-
+addVal=0.00001
 for File in BDTFileList:
 
     if not args.Bkg in File:
@@ -112,6 +113,9 @@ print "AUC              KS_signal   KS_bkg      File "
 for key in sorted(Results,reverse=True):
     if float(Results[key][0]) < 0.05 or float(Results[key][1])< 0.05:
         continue
+    if float(Results[key][0]) > 0.95 or float(Results[key][1])> 0.95:
+        continue
+
     print 
     print "%s: %s" % (key, Results[key])
 
