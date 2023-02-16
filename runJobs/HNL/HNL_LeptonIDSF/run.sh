@@ -20,7 +20,7 @@ fi
 
 if [[ $1 == "" ]]; then
 
-    declare  -a era_list=("2018")
+    declare  -a era_list=("2016postVFP" "2016preVFP")
 
     for i in "${era_list[@]}"
     do
