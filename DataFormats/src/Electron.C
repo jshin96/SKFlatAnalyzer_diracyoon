@@ -332,9 +332,6 @@ bool Electron::Pass_LepMVAID() const {
 bool Electron::Pass_LepMVATopID() const {
 
   /// ID USED IN BDT                                                                                                                                                                                                                                                          
-
-  //  if(!passMVAID_noiso_WPLoose()) return false;
-  //if(!Pass_TriggerEmulationLoose())  return false;
   if(this->Pt() < 10) return false;
   if(this->fEta() > 2.5) return false;
   if(MiniRelIso() > 0.4) return false;
@@ -1002,16 +999,12 @@ int  Electron::PassIDOptLoose(TString ID) const{
 }
 int Electron::PassIDOpt(TString ID) const{
 
-  if(ID=="HNOpt")  return PassHNOpt(); 
-  if(ID=="MVAID") return  (Pass_LepMVAID()) ? 1 : 0;
+  if(ID=="HNOpt")    return   PassHNOpt(); 
+  if(ID=="MVAID")    return  (Pass_LepMVAID()) ? 1 : 0;
   if(ID=="TopMVAID") return  (Pass_LepMVATopID()) ? 1 : 0;
-
   if(ID.Contains("ElOpt")) return Pass_CB_Opt(ID) ? 1 : 0;
-
-  if(ID.Contains("HNL_ULID_v1")){
-    return Pass_CB_Opt("") ? 1 :0;
-  }
-
+  if(ID.Contains("HNL_ULID_v1"))  return Pass_CB_Opt("") ? 1 :0;
+  
   if(ID=="HNLIPv1") {
     double dxy_cut =  (IsBB()) ? 0.02 : 0.04;
     double dxy_cut2 =  (IsBB()) ? 0.01 : 0.02;

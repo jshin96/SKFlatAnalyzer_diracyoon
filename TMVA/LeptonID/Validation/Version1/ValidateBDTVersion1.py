@@ -66,7 +66,7 @@ parser.add_argument('-c', dest='Classifier', default="BDTG")
 
 args = parser.parse_args()
 
-BDTFile_Dir = "/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/AnalysisFiles/"
+BDTFile_Dir = "/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/AnalysisFiles/Version2/"
 BDTFileList  = [f for f in listdir(BDTFile_Dir) if isfile(join(BDTFile_Dir,f))]
 
 
@@ -79,12 +79,12 @@ addVar=0.00001
 
 for File in BDTFileList:
 
-    if not args.Bkg in File:
+    if not ".root" in File:
         continue
     
     
-    if not args.Flag in File:
-        continue
+    # if not args.Flag in File:
+    #    continue
         
     if not args.Classifier in File:
         continue

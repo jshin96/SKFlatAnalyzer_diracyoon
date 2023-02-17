@@ -1834,17 +1834,17 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(bool setBDT){
     if(fChain->GetBranch("electron_ptratio")) el.SetJetPtRatio(electron_ptratio->at(i));
     if(fChain->GetBranch("electron_cj_bjetdisc")) el.SetCloseJetBScore(electron_cj_bjetdisc->at(i));
     
+    if(Analyzer=="HNL_LeptonID_BDT_KinVar") setBDT=false;
+
     if(setBDT){
+
       if(fChain->GetBranch("electron_mva_fake")) {
 	el.SetHNL_LepMVA(electron_mva_fake->at(i), electron_mva_conv->at(i), electron_mva_cf->at(i));
       }
       else {
 	/// If electron_mva_fake is NULL then non BDT skim is bein used and so variables need to be set by hand
-	el.SetHNL_LepMVA(GetBDTScoreElV1(el,AnalyzerCore::Fake,  "BDTGv1"),GetBDTScoreElV1(el,AnalyzerCore::Conv,  "BDTGv1"),GetBDTScoreElV1(el,AnalyzerCore::CF,  "BDTGv1"));                                                 
-      } 
-      
-      
-      //vector<TString> MDList = {"_MD2","_MD3","_MD4","_MD5"};
+	el.SetHNL_LepMVA(GetBDTScoreElV1(el,AnalyzerCore::Fake,  "BDTGv1"),GetBDTScoreElV1(el,AnalyzerCore::Conv,  "BDTGv1"),GetBDTScoreElV1(el,AnalyzerCore::CF,  "BDTGv1"));                            } 
+       //vector<TString> MDList = {"_MD2","_MD3","_MD4","_MD5"};
       vector<TString> MDList = {"_MD3"};
       for(auto i : MDList){
 	el.SetHNL_LepMVAMap("CF_ED_BDTGv2"+i,GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv2",i));
@@ -4009,8 +4009,10 @@ void AnalyzerCore::initializeAnalyzerTools(){
   //  MuonIDFakeNoPtMVAReader = new TMVA::Reader();                                                                                                                                                                                                                           
 
   // Call SetupIDMVAReader to Initialise BDTReader's                                                                                                                                                                                                                          
-  SetupIDMVAReader(false);                                                                                                                                                                                                                                                
-  //SetupIDMVAReader(true);                    
+  if(AnalyserRunsFullBkg()){
+    SetupIDMVAReader(false);                                                                                                                                                                                                                                                
+    //SetupIDMVAReader(true);                    
+  }
 
   //==== MCCorrection
   mcCorr->SetMCSample(MCSample);

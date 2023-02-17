@@ -249,7 +249,7 @@ void HNL_LeptonID_BDT_KinVar::executeEvent(){
     if(SeperatePrompt) {
       OptionEl="PromptNoCF";
       OptionMu="Prompt";
-      weight=1.;
+      weight  = GetPrefireWeight(0) * GetPileUpWeight(nPileUp,0);
     }
 
 
