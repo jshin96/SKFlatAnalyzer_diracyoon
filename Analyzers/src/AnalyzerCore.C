@@ -17,7 +17,8 @@ AnalyzerCore::AnalyzerCore(){
   muonGEScaleSyst = new GEScaleSyst();
 
   JECSources = {"AbsoluteStat","AbsoluteScale","AbsoluteFlavMap","AbsoluteMPFBias","Fragmentation","SinglePionECAL","SinglePionHCAL","FlavorQCD","TimePtEta","RelativeJEREC1","RelativeJEREC2","RelativeJERHF","RelativePtBB","RelativePtEC1","RelativePtEC2","RelativePtHF","RelativeBal","RelativeSample","RelativeFSR","RelativeStatFSR","RelativeStatEC","RelativeStatHF","PileUpDataMC","PileUpPtRef","PileUpPtBB","PileUpPtEC1","PileUpPtEC2","PileUpPtHF","FlavorZJet","FlavorPhotonJet","FlavorPureGluon","FlavorPureQuark","FlavorPureCharm","FlavorPureBottom","Total"};
-  
+
+  SetupLeptonBDT=true;
     
 }
 
@@ -386,7 +387,9 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
 
 
     ///// Load branch if running BDT skim  
-    if(fChain->GetBranch("muon_mva_fake"))   mu.SetHNL_LepMVA(muon_mva_fake->at(i),-999,-999); 
+    if(SetupLeptonBDT){
+      if(fChain->GetBranch("muon_mva_fake"))   mu.SetHNL_LepMVA(muon_mva_fake->at(i),-999,-999); 
+    }
     if(fChain->GetBranch("muon_ptrel"))      mu.SetJetPtRel(muon_ptrel->at(i));
     if(fChain->GetBranch("muon_ptratio"))    mu.SetJetPtRatio(muon_ptratio->at(i));
     if(fChain->GetBranch("muon_cj_bjetdisc"))mu.SetCloseJetBScore(muon_cj_bjetdisc->at(i));
@@ -578,9 +581,6 @@ double AnalyzerCore::GetBDTScoreMuon(Muon mu ,BkgType bkg, TString BDTTag){
 
 
   return 1;
-  //return MuonIDFakeMVAReader->EvaluateMVA(MVATagStr);
-    
-  //  return  MuonIDFakeNoPtMVAReader->EvaluateMVA(MVATagStr);
 
 
 }
@@ -643,14 +643,16 @@ void AnalyzerCore::SetBDTIDVarV1(Lepton*  lep){
 void AnalyzerCore::SetBDTIDVar(Lepton*  lep){
 
   PileUp = nPV;
-
-  if (Pt < 50.) PtBinned= 0;
-  else     if (Pt < 100.) PtBinned= 1;
-  else     if (Pt < 200.) PtBinned= 2;
+  
+  Pt    = (lep->Pt() > 500)  ? 499 : lep->Pt();
+  
+  if (lep->Pt() < 50.) PtBinned= 0;
+  else     if (lep->Pt() < 100.) PtBinned= 1;
+  else     if (lep->Pt() < 200.) PtBinned= 2;
   else PtBinned =3;
 
-  Pt    = (lep->Pt() > 500)  ? 499 : lep->Pt();
   Eta   = fabs(lep->Eta());
+
   if (lep->MiniIsoChHad() > 150) MiniIsoChHad = 150;
   else   MiniIsoChHad = lep->MiniIsoChHad();
 
@@ -666,6 +668,7 @@ void AnalyzerCore::SetBDTIDVar(Lepton*  lep){
   else   IsoNHad = lep->IsoNHad();
   if(lep->IsoPhHad() > 150) IsoPhHad  = 150; 
   else IsoPhHad = lep->IsoPhHad();
+
   Dxy      = lep->LogdXY();
   RelDxy   = lep->LogdXY()/lep->Pt();
   DxySig   = lep->LogdXYSig();
@@ -1451,8 +1454,17 @@ void AnalyzerCore::SetBDTIDVariablesElectron(Electron el){
   MissingHits = el.NMissingHits();
   Full5x5_sigmaIetaIeta  = el.Full5x5_sigmaIetaIeta(); 
   dEtaSeed  = el.dEtaSeed();
+  if(dEtaSeed > 0.2) dEtaSeed = 0.2;
+  if(dEtaSeed < -0.2) dEtaSeed= -0.2;
+
   dPhiIn  = el.dPhiIn();
+  if(dPhiIn > 0.6) dPhiIn = 0.6;
+  if(dPhiIn < -0.6) dPhiIn = -0.6;
+  
   dEtaIn  = el.dEtaIn();   
+  if(dEtaIn > 0.1) dEtaIn=  0.1;
+  if(dEtaIn < -0.1) dEtaIn=  -0.1;
+
   EtaWidth = el.EtaWidth();
   PhiWidth = el.PhiWidth();
   e2x5OverE5x5 = el.e2x5OverE5x5();
@@ -1465,6 +1477,8 @@ void AnalyzerCore::SetBDTIDVariablesElectron(Electron el){
   dr03HcalTowerSumEt= el.dr03HcalTowerSumEt()/el.UncorrPt();
   dr03TkSumPt= el.dr03TkSumPt()/el.UncorrPt();
   R9= el.R9();
+  if(R9 > 5) R9 = 5;
+
   HoverE  = el.HoverE();
   if (el.TrkIso()/el.UncorrPt() > 10) TrkIso = 10;
   else TrkIso  = el.TrkIso()/el.UncorrPt();  
@@ -1475,6 +1489,9 @@ void AnalyzerCore::SetBDTIDVariablesElectron(Electron el){
   hcalPFClusterIso = el.hcalPFClusterIso()/el.UncorrPt();
   isEcalDriven = (el.isEcalDriven()) ? 1. : 0.;
   EoverP = log(el.EOverP());
+  if(EoverP > 20) EoverP = 20;
+  if(EoverP < -20) EoverP = -20;
+
   if (el.FBrem() < -1) FBrem = -1;
   else   FBrem = el.FBrem();
   PassConversionVeto  = (el.PassConversionVeto()) ? 1. : 0.;
@@ -1587,8 +1604,6 @@ double AnalyzerCore::GetBDTScoreElV1(Electron el ,BkgType bkg, TString BDTTag){
     if(dR1<mindR1){ mindR1=dR1; IdxMatchJet=ij; }
   }
 
-
-
   if(IdxMatchJet!=-1){
     PtRatio=JetLeptonPtRatioLepAware(el);
     PtRel=JetLeptonPtRelLepAware(el);
@@ -1645,7 +1660,8 @@ double AnalyzerCore::GetBDTScoreEl(Electron el ,BkgType bkg, TString BDTTag, TSt
 
   SetBDTIDVar(lep);
   SetBDTIDVariablesElectron(el);
-  
+  //cout << "El pt = " << el.Pt() << "  PtBinned = " << PtBinned << endl;
+
   if(MVATagStr.Contains("BDTGv2")){
     
     if (bkg == BkgType::Fake) MVATagStr += "_Fake";
@@ -1662,8 +1678,6 @@ double AnalyzerCore::GetBDTScoreEl(Electron el ,BkgType bkg, TString BDTTag, TSt
     //if (bkg == BkgType::Conv)  return  ElectronIDv2ConvMVAReader->EvaluateMVA(MVATagStr);
 
   }
-
-  
 
 
   if(MVATagStr.Contains("BDTGv3")){
@@ -1744,7 +1758,7 @@ std::vector<Muon> AnalyzerCore::GetMuons(AnalyzerParameter param, TString id, do
 
 
 
-std::vector<Electron> AnalyzerCore::GetAllElectrons(bool setBDT){
+std::vector<Electron> AnalyzerCore::GetAllElectrons(bool SetupBDT){
 
   std::vector<Electron> out;
   if(!electron_Energy) return out;
@@ -1834,17 +1848,18 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(bool setBDT){
     if(fChain->GetBranch("electron_ptratio")) el.SetJetPtRatio(electron_ptratio->at(i));
     if(fChain->GetBranch("electron_cj_bjetdisc")) el.SetCloseJetBScore(electron_cj_bjetdisc->at(i));
     
-    if(Analyzer=="HNL_LeptonID_BDT_KinVar") setBDT=false;
-
-    if(setBDT){
+    if(Analyzer=="HNL_LeptonID_BDT_KinVar") SetupLeptonBDT=false;
+    if(!SetupBDT) SetupLeptonBDT=false;
+    if(SetupLeptonBDT){
 
       if(fChain->GetBranch("electron_mva_fake")) {
 	el.SetHNL_LepMVA(electron_mva_fake->at(i), electron_mva_conv->at(i), electron_mva_cf->at(i));
       }
       else {
 	/// If electron_mva_fake is NULL then non BDT skim is bein used and so variables need to be set by hand
-	el.SetHNL_LepMVA(GetBDTScoreElV1(el,AnalyzerCore::Fake,  "BDTGv1"),GetBDTScoreElV1(el,AnalyzerCore::Conv,  "BDTGv1"),GetBDTScoreElV1(el,AnalyzerCore::CF,  "BDTGv1"));                            } 
-       //vector<TString> MDList = {"_MD2","_MD3","_MD4","_MD5"};
+	el.SetHNL_LepMVA(GetBDTScoreElV1(el,AnalyzerCore::Fake,  "BDTGv1"),GetBDTScoreElV1(el,AnalyzerCore::Conv,  "BDTGv1"),GetBDTScoreElV1(el,AnalyzerCore::CF,  "BDTGv1"));                            
+      } 
+      //vector<TString> MDList = {"_MD2","_MD3","_MD4","_MD5"};
       vector<TString> MDList = {"_MD3"};
       for(auto i : MDList){
 	el.SetHNL_LepMVAMap("CF_ED_BDTGv2"+i,GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv2",i));
@@ -3991,27 +4006,29 @@ double AnalyzerCore::GetCFWeightElectron(vector<Lepton *> lepptrs, AnalyzerParam
 void AnalyzerCore::initializeAnalyzerTools(){
 
   /// HNL BDT ID CODES                                                                                                                                                                                                                                                        
-  TMVA::Tools::Instance();
-  // Version 1 (BUGGY, still in use for cross check)                                                                                                                                                                                                                          
-  ElectronIDFakeMVAReader = new TMVA::Reader();
-  ElectronIDCFMVAReader = new TMVA::Reader();
-  ElectronIDConvMVAReader = new TMVA::Reader();
-
-  /// Version 2                                                                                                                                                                                                                                                               
-  ElectronIDv2FakeMVAReader = new TMVA::Reader();
-  ElectronIDv2CFMVAReader   = new TMVA::Reader();
-  ElectronIDv2CFMVAReaderPt = new TMVA::Reader();
-  ElectronIDv2ConvMVAReader = new TMVA::Reader();
-
-  /// Version 3 (Full list of var)                                                                                                                                                                                                                                            
-  ElectronIDv3CFMVAReader = new TMVA::Reader();
-  MuonIDFakeMVAReader = new TMVA::Reader();
-  //  MuonIDFakeNoPtMVAReader = new TMVA::Reader();                                                                                                                                                                                                                           
-
-  // Call SetupIDMVAReader to Initialise BDTReader's                                                                                                                                                                                                                          
-  if(AnalyserRunsFullBkg()){
-    SetupIDMVAReader(false);                                                                                                                                                                                                                                                
-    //SetupIDMVAReader(true);                    
+  if(SetupLeptonBDT){
+    TMVA::Tools::Instance();
+    // Version 1 (BUGGY, still in use for cross check)                                                                                                                                                                                                                          
+    ElectronIDFakeMVAReader = new TMVA::Reader();
+    ElectronIDCFMVAReader = new TMVA::Reader();
+    ElectronIDConvMVAReader = new TMVA::Reader();
+    
+    /// Version 2                                                                                                                                                                                                                                                               
+    ElectronIDv2FakeMVAReader = new TMVA::Reader();
+    ElectronIDv2CFMVAReader   = new TMVA::Reader();
+    ElectronIDv2CFMVAReaderPt = new TMVA::Reader();
+    ElectronIDv2ConvMVAReader = new TMVA::Reader();
+    
+    /// Version 3 (Full list of var)                                                                                                                                                                                                                                            
+    ElectronIDv3CFMVAReader = new TMVA::Reader();
+    MuonIDFakeMVAReader = new TMVA::Reader();
+    //  MuonIDFakeNoPtMVAReader = new TMVA::Reader();                                                                                                                                                                                                                           
+    
+    // Call SetupIDMVAReader to Initialise BDTReader's                                                                                                                                                                                                                          
+    if(AnalyserRunsFullBkg()){
+      SetupIDMVAReader(false);                                                                                                                                                                                                                                                
+      //SetupIDMVAReader(true);                    
+    }
   }
 
   //==== MCCorrection
@@ -4751,6 +4768,18 @@ double  AnalyzerCore::JetLeptonPtRelLepAware( Electron lep, bool CorrLep, bool C
   return JetLeptonPtRelLepAware(Lepton(lep), CorrLep,CorrJet,checkID);
 }
 
+double  AnalyzerCore::JetLeptonPtRelLepAware( Lepton lep, Jet jet){
+
+  Jet closejet = GetCorrectedJetCloseToLepton(lep,jet);
+
+  TLorentzVector lepp4 = lep;
+  TLorentzVector jetp4 = closejet;
+
+  double PtRel = lepp4.Perp((closejet-lepp4).Vect()); // Default       
+  return PtRel;
+}
+
+
 double  AnalyzerCore::JetLeptonPtRelLepAware( Lepton lep, bool CorrLep, bool CorrJet,bool checkID){
   
   // ApplyCorr def is false, this is same as Mini/NanoAOD value stored
@@ -4769,6 +4798,8 @@ double  AnalyzerCore::JetLeptonPtRelLepAware( Lepton lep, bool CorrLep, bool Cor
     }
   }
   
+  if(mindR==0.4) return 0.;
+
   TLorentzVector lepp4 = lep;
   TLorentzVector jetp4 = closejet;
   
@@ -4786,6 +4817,16 @@ double  AnalyzerCore::JetLeptonPtRatioLepAware( Electron lep, bool CorrLep, bool
   return JetLeptonPtRatioLepAware(Lepton(lep), CorrLep,CorrJet,checkID);
 }
 
+
+double  AnalyzerCore::JetLeptonPtRatioLepAware(Lepton lep, Jet jet){
+  
+  Jet closejet = GetCorrectedJetCloseToLepton(lep,jet);
+
+  Particle lepp4 = lep;
+
+  return std::min(lepp4.Pt() / closejet.Pt(),1.5);
+
+}
 double  AnalyzerCore::JetLeptonPtRatioLepAware(Lepton lep, bool CorrLep, bool CorrJet,bool checkID){
 
   std::vector<Jet> jets = GetAllJets(CorrJet);

@@ -33,13 +33,11 @@ void runIDBDT_HNtypeICF(TString Classifier ="BDTG" ,TString BkgType = "CF", TStr
 
   TString signal="SignalCF";
   if(signal_mode == 1) signal="SignalCF";
-  if(signal_mode == 2) signal="SignalCF_IB";
-  if(signal_mode == 3) signal="SignalCF_OB";
-  if(signal_mode == 4) signal="SignalCF_EC";
+  if(signal_mode == 2) signal="SignalCF_BB";
+  if(signal_mode == 3) signal="SignalCF_EC";
   if(signal_mode == -1) signal="SignalCFPtBinned";
-  if(signal_mode == -2) signal="SignalCFPtBinned_IB";
-  if(signal_mode == -3) signal="SignalCFPtBinned_OB";
-  if(signal_mode == -4) signal="SignalCFPtBinneed_EC";
+  if(signal_mode == -2) signal="SignalCFPtBinned_BB";
+  if(signal_mode == -3) signal="SignalCFPtBinneed_EC";
 
 
   cout << "signal File Name= " << signal << endl;
@@ -108,14 +106,10 @@ void runIDBDT_HNtypeICF(TString Classifier ="BDTG" ,TString BkgType = "CF", TStr
   TCut cut_b = "";
 
   if(fabs(signal_mode)==2){
-    cut_s = "Eta<0.8";
-    cut_b = "Eta<0.8";
+    cut_s = "Eta<1.5";
+    cut_b = "Eta<1.5";
   }
   if(fabs(signal_mode)==3){
-    cut_s = "Eta>0.8&&Eta<1.5";
-    cut_b = "Eta>0.8&&Eta<1.5";
-  }
-  if(fabs(signal_mode)==4){
     cut_s = "Eta>1.5&&Eta<2.5";
     cut_b = "Eta>1.5&&Eta<2.5";
   }

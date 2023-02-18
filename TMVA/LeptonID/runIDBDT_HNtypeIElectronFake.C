@@ -34,8 +34,6 @@ void runIDBDT_HNtypeIElectronFake(TString Classifier ="BDTG" ,TString BkgType = 
 
   TString signal="SignalElectronFake";
   if(signal_mode == 1) signal="SignalElectronFake";
-  if(signal_mode == 2) signal="SignalElectronFake_BB";
-  if(signal_mode == 3) signal="SignalElectronFake_EC";
 
 
   cout << "signal File Name= " << signal << endl;
@@ -74,9 +72,9 @@ void runIDBDT_HNtypeIElectronFake(TString Classifier ="BDTG" ,TString BkgType = 
   data_loader->AddVariable("MiniIsoNHad", "MiniIsoNHad", "units", 'F');  
   data_loader->AddVariable("RelMiniIsoCh", "RelMiniIsoCh", "units", 'F');
   data_loader->AddVariable("RelMiniIsoN", "RelMiniIsoN", "units", 'F');
-  data_loader->AddVariable("RelIso", "RelIso", "units", 'F'); 
   data_loader->AddVariable("Dxy",  "Dxy", "units", 'F');
   data_loader->AddVariable("Dz",  "Dz", "units", 'F');   
+  data_loader->AddVariable("RelIso", "RelIso", "units", 'F'); 
   data_loader->AddVariable("IP3D", "IP3D", "units", 'F');       
   data_loader->AddVariable("PtRatio",  "PtRatio", "units", 'F');
   data_loader->AddVariable("PtRel",  "PtRel", "units", 'F');

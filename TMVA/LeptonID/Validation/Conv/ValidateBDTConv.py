@@ -66,7 +66,7 @@ parser.add_argument('-c', dest='Classifier', default="BDTG")
 args = parser.parse_args()
 
 
-BDTFile_Dir = "/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIConv/Default/"+args.Era+"/"
+BDTFile_Dir = "/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIConv/Version2/"+args.Era+"/"
 BDTFileList  = [f for f in listdir(BDTFile_Dir) if isfile(join(BDTFile_Dir,f))]
 
 
@@ -80,15 +80,7 @@ for File in BDTFileList:
 
     if not args.Bkg in File:
         continue
-
-    
-    if not args.Channel in File:
-        continue
-        
     if not args.Classifier in File:
-        continue
-
-    if not "Top" in File:
         continue
 
     print ("="*50)

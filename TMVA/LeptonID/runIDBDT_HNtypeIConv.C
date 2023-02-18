@@ -37,8 +37,6 @@ void runIDBDT_HNtypeIConv(TString Classifier ="BDTG" ,TString BkgType = "Conv", 
   for(int i=0; i < nTermWidth; i++)  cout << "-" ;   cout << endl;
   
   if(signal_mode==1) signal="SignalConv";
-  if(signal_mode==2) signal="SignalConv_BB";
-  if(signal_mode==3) signal="SignalConv_EC";
   
 
   TString JobTag = Classifier + "_"+ BkgType + signal+"TypeI_"+channel+"_"+signal+"_"+era+"_NTrees"+NTrees+"_NormMode_"+NormMode+"_MinNodeSize_"+MinNodeSize+"_MaxDepth_"+MaxDepth+"_nCuts_"+nCuts+ClassTag +"_Seed_"+seed+"_BDT";
@@ -109,16 +107,6 @@ void runIDBDT_HNtypeIConv(TString Classifier ="BDTG" ,TString BkgType = "Conv", 
   //==== Nj, Nb cut
   TCut cut_s = "";
   TCut cut_b = "";
-
-  if(signal_mode==2){
-    cut_s = "Eta<1.5";
-    cut_b = "Eta<1.5";
-  }
-
-  if(signal_mode==3){
-    cut_s = "Eta>1.5";
-    cut_b = "Eta>1.5";
-  }
 
   int n_train_signal = tree_signal->GetEntries(cut_s)/2;
   int n_train_back = tree_bkg->GetEntries(cut_b)/2;

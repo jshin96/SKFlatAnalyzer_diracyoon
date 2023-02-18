@@ -144,7 +144,6 @@ class HNL_LeptonCore : public AnalyzerCore {
   void SetupMVAReader();
 
   double MergeMultiMC(vector<TString> vec, TString Method);
-  double ScaleLepToSS(TString bkg, bool isMuon, int lepttype);
 
   double GetHNLMVAMuon(Muon mu ,BkgType bkg);
   double GetHNLMVAElectron(Electron mu ,BkgType bkg);

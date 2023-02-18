@@ -99,7 +99,7 @@ public:
   double GetCFWeightElectron(std::vector<Lepton* > leps ,  AnalyzerParameter param);
   double GetCFrates(TString id, double pt, double eta);
   double GetCFWeightElectron(vector<Lepton *> lepptrs, AnalyzerParameter param, bool applySF, int syst);
-  std::vector<Electron> GetAllElectrons(bool setBDT=true);
+  std::vector<Electron> GetAllElectrons(bool setupbdt=true);
   std::vector<Electron> GetElectrons(TString id, double ptmin, double fetamax, bool vetoHEM = false);
   std::vector<Electron> GetElectrons(AnalyzerParameter param, TString id, double ptmin, double fetamax ,bool Run_Fake=false, bool vetoHEM=false);
 
@@ -208,10 +208,12 @@ public:
   double  JetLeptonMassDropLepAware(  Electron lep, bool removeLep,bool ApplyCorr=false);
 
 
+  double  JetLeptonPtRelLepAware(  Lepton lep, Jet jet);
   double  JetLeptonPtRelLepAware(  Lepton lep, bool CorrLep=false, bool CorrJet=false,bool CheckID=false);
   double  JetLeptonPtRelLepAware(  Muon lep, bool CorrLep=false, bool CorrJet=false,bool CheckID=false);
   double  JetLeptonPtRelLepAware(  Electron lep, bool CorrLep=false, bool CorrJet=false,bool CheckID=false);
 
+  double  JetLeptonPtRatioLepAware(  Lepton lep, Jet jet);
   double  JetLeptonPtRatioLepAware( Lepton lep, bool CorrLep=false, bool CorrJet=false,bool CheckID=false);
   double  JetLeptonPtRatioLepAware( Muon lep, bool CorrLep=false, bool CorrJet=false,bool CheckID=false);
   double  JetLeptonPtRatioLepAware( Electron lep, bool CorrLep=false, bool CorrJet=false,bool CheckID=false);
@@ -510,7 +512,7 @@ public:
   int  GetPhotonType_JH(int PhotonIdx, std::vector<Gen>& TruthColl);
   int  GetFakeLepSrcType(const Lepton& Lep, vector<Jet>& JetColl);
 
-
+  bool SetupLeptonBDT;
 
   string run_timestamp;
 
