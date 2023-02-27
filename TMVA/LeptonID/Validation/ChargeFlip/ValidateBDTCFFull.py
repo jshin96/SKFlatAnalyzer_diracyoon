@@ -72,7 +72,7 @@ parser.add_argument('-c', dest='Classifier', default="BDTG")
 
 args = parser.parse_args()
 
-BDTFile_Dir = "/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeICFFullList/Version2/"+args.Era+"/"
+BDTFile_Dir = "/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeICFVersion1/Version3/"+args.Era+"/"
 BDTFileList  = [f for f in listdir(BDTFile_Dir) if isfile(join(BDTFile_Dir,f))]
 
 

@@ -4365,12 +4365,12 @@ void HNL_LeptonCore::FillLeptonKinematicPlots(TString label , TString cut,  Lept
     FillHist( cut+ "/Lepton_CF_Mva_"+label  , lep.HNL_MVA_CF(), w, 100, -1., 1., "MVA");
 
     FillHist( cut+ "/Lepton_CFv2_Mva_"+label  , lep.HNL_MVAv2_CF(), w, 100, -1., 1., "MVA");
-    FillHist( cut+ "/Lepton_CFv3_Mva_"+label  , lep.HNL_MVAv3_CF(), w, 100, -1., 1., "MVA");
-    FillHist( cut+ "/Lepton_CFv4_Mva_"+label  , lep.HNL_MVAv4_CF(), w, 100, -1., 1., "MVA");
+    FillHist( cut+ "/Lepton_CFv3_Mva_"+label  , lep.HNL_MVAv2p1_CF(), w, 100, -1., 1., "MVA");
+    FillHist( cut+ "/Lepton_CFv4_Mva_"+label  , lep.HNL_MVAv2p2_CF(), w, 100, -1., 1., "MVA");
 
     FillHist( cut+ "/Lepton_EDCFv2_Mva_"+label  , lep.HNL_MVAv2_ED_CF(), w, 100, -1., 1., "MVA");
-    FillHist( cut+ "/Lepton_EDCFv3_Mva_"+label  , lep.HNL_MVAv3_ED_CF(), w, 100, -1., 1., "MVA");
-    FillHist( cut+ "/Lepton_EDCFv4_Mva_"+label  , lep.HNL_MVAv4_ED_CF(), w, 100, -1., 1., "MVA");
+    FillHist( cut+ "/Lepton_EDCFv3_Mva_"+label  , lep.HNL_MVAv2p1_ED_CF(), w, 100, -1., 1., "MVA");
+    FillHist( cut+ "/Lepton_EDCFv4_Mva_"+label  , lep.HNL_MVAv2p2_ED_CF(), w, 100, -1., 1., "MVA");
 
     vector<TString> MVAList = lep.GetMVAList();
     for(auto mvaname : MVAList)     FillHist( cut+ "/Lepton_Map_"+mvaname+"_"+label  , lep.GetHNL_LepMVA(mvaname), w, 100, -1., 1., "MVA");

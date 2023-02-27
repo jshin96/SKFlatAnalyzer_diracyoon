@@ -5,3 +5,5 @@ WJets_MG
 WW_pythia
 WZ_pythia
 ZZ_pythia
+SingleTop_tW_antitop_NoFullyHad
+SingleTop_tW_top_NoFullyHad

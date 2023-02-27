@@ -6,31 +6,54 @@ void SkimTree_HNFake::initializeAnalyzer(){
   cout << "[SkimTree_HNFake::initializeAnalyzer()] gDirectory = " << gDirectory->GetName() << endl;
   newtree = fChain->CloneTree(0);
 
+  SetupIDMVAReaderDefault();
+
+
   //// ADD NEW VARIABLES NOT IN SKFLAT
   vSKWeight=0;
   velectron_ptratio = 0;
   velectron_ptrel  = 0;
   velectron_cj_bjetdisc = 0;
   velectron_cj_flavour = 0;
-  velectron_mva_cf = 0;
-  velectron_mva_conv = 0;
-  velectron_mva_fake = 0 ;
+  velectron_mva_cf_v1 = 0;
+  velectron_mva_cf_v2 = 0;
+  velectron_mva_cf_v2p1 = 0;
+  velectron_mva_cf_v2p2 = 0;
+  velectron_mva_cf_ed_v2 = 0;
+  velectron_mva_cf_ed_v2p1 = 0;
+  velectron_mva_cf_ed_v2p2 = 0;
+  velectron_mva_conv_v1 = 0;
+  velectron_mva_conv_v2 = 0;
+  velectron_mva_fake_v1 = 0 ;
+  velectron_mva_fake_v2 = 0 ;
+  velectron_mva_fakeHF_v2 = 0 ;
+  velectron_mva_fakeLF_v2 = 0 ;
+  velectron_mva_fakeTop_v2 = 0 ;
 
   vmuon_mva_fake = 0;
   vmuon_ptratio = 0;
   vmuon_ptrel  = 0;
   vmuon_cj_bjetdisc = 0;
   vmuon_cj_flavour = 0;
-
-
-
   newtree->Branch("electron_ptrel",&velectron_ptrel);
   newtree->Branch("electron_ptratio",&velectron_ptratio);
   newtree->Branch("electron_cj_bjetdisc",&velectron_cj_bjetdisc);
-  newtree->Branch("electron_mva_cf",&velectron_mva_cf);
-  newtree->Branch("electron_mva_conv",&velectron_mva_conv);
-  newtree->Branch("electron_mva_fake",&velectron_mva_fake);
+  newtree->Branch("electron_mva_cf_v1",&velectron_mva_cf_v1);
+  newtree->Branch("electron_mva_cf_v2",&velectron_mva_cf_v2);
+  newtree->Branch("electron_mva_cf_v2p1",&velectron_mva_cf_v2p1);
+  newtree->Branch("electron_mva_cf_v2p2",&velectron_mva_cf_v2p2);
+  newtree->Branch("electron_mva_cf_ed_v2",&velectron_mva_cf_ed_v2);
+  newtree->Branch("electron_mva_cf_ed_v2p1",&velectron_mva_cf_ed_v2p1);
+  newtree->Branch("electron_mva_cf_ed_v2p2",&velectron_mva_cf_ed_v2p2);
+  newtree->Branch("electron_mva_conv_v1",&velectron_mva_conv_v1);
+  newtree->Branch("electron_mva_conv_v2",&velectron_mva_conv_v2);
+  newtree->Branch("electron_mva_fake_v1",&velectron_mva_fake_v1);
+  newtree->Branch("electron_mva_fake_v2",&velectron_mva_fake_v2);
+  newtree->Branch("electron_mva_fakeHF_v2",&velectron_mva_fakeHF_v2);
+  newtree->Branch("electron_mva_fakeLF_v2",&velectron_mva_fakeLF_v2);
+  newtree->Branch("electron_mva_fakeTop_v2",&velectron_mva_fakeTop_v2);
   newtree->Branch("electron_cj_flavour",&velectron_cj_flavour);
+
   newtree->Branch("muon_ptrel",&vmuon_ptrel);
   newtree->Branch("muon_ptratio",&vmuon_ptratio);
   newtree->Branch("muon_cj_bjetdisc",&vmuon_cj_bjetdisc);
@@ -38,8 +61,6 @@ void SkimTree_HNFake::initializeAnalyzer(){
   newtree->Branch("muon_cj_flavour",&vmuon_cj_flavour);
 
   newtree->Branch("SKWeight", &vSKWeight);
-
-
 
 
   triggers.clear();
@@ -199,13 +220,23 @@ void SkimTree_HNFake::executeEvent(){
 
   if(!(ev.PassTrigger(triggers))) return;
 
-
   velectron_ptrel->clear();
   velectron_ptratio->clear();
   velectron_cj_bjetdisc->clear();
-  velectron_mva_cf->clear();
-  velectron_mva_conv->clear();
-  velectron_mva_fake->clear();
+  velectron_mva_cf_v1->clear();
+  velectron_mva_cf_v2->clear();
+  velectron_mva_cf_v2p1->clear();
+  velectron_mva_cf_v2p2->clear();
+  velectron_mva_cf_ed_v2->clear();
+  velectron_mva_cf_ed_v2p1->clear();
+  velectron_mva_cf_ed_v2p2->clear();
+  velectron_mva_conv_v1->clear();
+  velectron_mva_conv_v2->clear();
+  velectron_mva_fake_v1->clear();
+  velectron_mva_fake_v2->clear();
+  velectron_mva_fakeHF_v2->clear();
+  velectron_mva_fakeLF_v2->clear();
+  velectron_mva_fakeTop_v2->clear();
   velectron_cj_flavour->clear();
 
   vmuon_mva_fake->clear();
@@ -213,6 +244,7 @@ void SkimTree_HNFake::executeEvent(){
   vmuon_ptratio->clear();
   vmuon_cj_bjetdisc->clear();
   vmuon_cj_flavour->clear();
+
 
 
   vSKWeight=MCweight(true,true);
@@ -224,7 +256,7 @@ void SkimTree_HNFake::executeEvent(){
   
   for(auto i: AllmuonColl){
 
-    vmuon_mva_fake->push_back(GetBDTScoreMuon(i,AnalyzerCore::Fake,  "BDTG"));
+    vmuon_mva_fake->push_back(GetBDTScoreMuon(i,AnalyzerCore::Fake,  "BDTGv2"));
     vmuon_ptratio->push_back(JetLeptonPtRatioLepAware(i,false));
     vmuon_ptrel->push_back(JetLeptonPtRelLepAware(i,true));
 
@@ -253,12 +285,24 @@ void SkimTree_HNFake::executeEvent(){
   }
 
   for(auto i: AllelectronColl){
-    velectron_mva_fake->push_back(GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv1"));
-    velectron_mva_cf->push_back(GetBDTScoreEl(i,AnalyzerCore::CF,  "BDTGv1"));
-    velectron_mva_conv->push_back(GetBDTScoreEl(i,AnalyzerCore::Conv,  "BDTGv1"));
+    velectron_mva_fake_v1->push_back(GetBDTScoreElV1(i,AnalyzerCore::Fake,  "BDTGv1"));
+    velectron_mva_cf_v1->push_back(GetBDTScoreElV1(i,AnalyzerCore::CF,  "BDTGv1"));
+    velectron_mva_conv_v1->push_back(GetBDTScoreElV1(i,AnalyzerCore::Conv,  "BDTGv1"));
+
+    velectron_mva_fake_v2->push_back(GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv2"));
+    velectron_mva_fakeHF_v2->push_back(GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv2_HF"));
+    velectron_mva_fakeLF_v2->push_back(GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv2_LF"));
+    velectron_mva_fakeTop_v2->push_back(GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv2_Top"));
+    velectron_mva_cf_v2->push_back(GetBDTScoreEl(i,AnalyzerCore::CF,  "BDTGv2"));
+    velectron_mva_cf_v2p1->push_back(GetBDTScoreEl(i,AnalyzerCore::CF,  "BDTGv2p1"));
+    velectron_mva_cf_v2p2->push_back(GetBDTScoreEl(i,AnalyzerCore::CF,  "BDTGv2p2"));
+    velectron_mva_cf_ed_v2->push_back(GetBDTScoreEl_EtaDependant(i,AnalyzerCore::CF,  "BDTGv2"));
+    velectron_mva_cf_ed_v2p1->push_back(GetBDTScoreEl_EtaDependant(i,AnalyzerCore::CF,  "BDTGv2p1"));
+    velectron_mva_cf_ed_v2p2->push_back(GetBDTScoreEl_EtaDependant(i,AnalyzerCore::CF,  "BDTGv2p2"));
+    velectron_mva_conv_v2->push_back(GetBDTScoreEl(i,AnalyzerCore::Conv,  "BDTGv2"));
     velectron_ptratio->push_back(JetLeptonPtRatioLepAware(i,false));
     velectron_ptrel->push_back(JetLeptonPtRelLepAware(i,true));
-    
+
     float  JetDiscCJ = -999;
     int  JetFlavourCJ = -999;
 
@@ -278,14 +322,12 @@ void SkimTree_HNFake::executeEvent(){
     else {
       JetDiscCJ=1.5;
       JetDiscCJ=0;
-      
+
     }
     velectron_cj_bjetdisc->push_back(JetDiscCJ);
     velectron_cj_flavour->push_back(JetFlavourCJ);
-    
-  }
 
-  
+  }
 
   //// NOW Apply skim
   

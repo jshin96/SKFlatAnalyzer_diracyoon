@@ -69,7 +69,7 @@ args = parser.parse_args()
 
 
 
-BDTFile_Dir = "/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIElectronFake/Version2/"+args.Era+"/"
+BDTFile_Dir = "/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIElectronFake/Version3/"+args.Era+"/"
 BDTFileList  = [f for f in listdir(BDTFile_Dir) if isfile(join(BDTFile_Dir,f))]
 
 MaxAUC=0.

@@ -135,12 +135,17 @@ public:
   // ID MVA                                                                                            
   void InitializeIDTreeVars();
   void InitializeElectronIDTreeVars();
+  
 
+  
+  void SetupLeptonBDT();
   void SetBDTIDVar(Lepton*  lep);
   void SetBDTIDVarV1(Lepton*  lep);
   void SetBDTIDVariablesElectron(Electron el);
   void SetBDTIDVariablesMuon(Muon mu);
-  void SetupIDMVAReader(bool isMuon);
+  void SetupIDMVAReader(bool isMuon, bool setupV1, bool setupFake, bool setupCF,bool setupConv);
+  void SetupIDMVAReaderDefault();
+
 
   /// Var for ID BDTs
   Float_t Pt,  Eta, PtBinned; //3
@@ -162,17 +167,12 @@ public:
   Float_t isEcalDriven,Pixel_hits,  Validhits,Matched_stations,Tracker_layers,MissingHits;//6                                                                                                                                                                                  
   Float_t PassConversionVeto,IsGsfCtfScPixChargeConsistent, IsGsfScPixChargeConsistent, IsGsfCtfChargeConsistent;//4                                                                                                                                                          
 
-
-
-
-
-
-
-  double GetBDTScoreEl(Electron el ,BkgType bkg,TString bdttag,TString tag="");
+  
+  /// ID functions MVA
+  double GetBDTScoreEl(Electron el ,BkgType bkg,TString bdttag);
   double GetBDTScoreElV1(Electron el ,BkgType bkg,TString bdttag);
   double GetBDTScoreMuon(Muon mu ,BkgType bkg, TString bdttag="BDTA");
-
-  double GetBDTScoreEl_EtaDependant(Electron el ,BkgType bkg, TString BDTTag, TString tag="");
+  double GetBDTScoreEl_EtaDependant(Electron el ,BkgType bkg, TString BDTTag);
 
 
   double GetIsoFromID(TString type_lep, TString id, double eta, double pt);
@@ -512,7 +512,38 @@ public:
   int  GetPhotonType_JH(int PhotonIdx, std::vector<Gen>& TruthColl);
   int  GetFakeLepSrcType(const Lepton& Lep, vector<Jet>& JetColl);
 
-  bool SetupLeptonBDT;
+  bool iSetupLeptonBDT;
+
+
+  /// Variables for filling MVA branches 
+
+  float vSKWeight;
+  vector<float>* velectron_ptratio;
+  vector<float>* velectron_ptrel;
+  vector<float>* velectron_cj_bjetdisc;
+  vector<float>* velectron_cj_flavour;
+  vector<float>* velectron_mva_cf_v1;
+  vector<float>* velectron_mva_conv_v1;
+  vector<float>* velectron_mva_fake_v1;
+  vector<float>* velectron_mva_cf_v2;
+  vector<float>* velectron_mva_cf_v2p1;
+  vector<float>* velectron_mva_cf_v2p2;
+  vector<float>* velectron_mva_cf_ed_v2;
+  vector<float>* velectron_mva_cf_ed_v2p1;
+  vector<float>* velectron_mva_cf_ed_v2p2;
+  vector<float>* velectron_mva_conv_v2;
+  vector<float>* velectron_mva_fake_v2;
+  vector<float>* velectron_mva_fakeHF_v2;
+  vector<float>* velectron_mva_fakeLF_v2;
+  vector<float>* velectron_mva_fakeTop_v2;
+
+  vector<float>* vmuon_mva_fake;
+  vector<float>* vmuon_ptrel;
+  vector<float>* vmuon_ptratio;
+  vector<float>* vmuon_cj_bjetdisc;
+  vector<float>* vmuon_cj_flavour;
+
+
 
   string run_timestamp;
 

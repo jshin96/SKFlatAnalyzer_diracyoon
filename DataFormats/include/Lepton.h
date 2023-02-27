@@ -14,6 +14,15 @@ public:
 
   //// Function to Check Nature of lepton
 
+  
+  inline TString LepGenType(int LepType) const {
+    if((LepType==1 || LepType==2)) return "IsPrompt";
+    if( (LepType<0 && LepType>=-4)) return "IsFake";
+    if(LepType==3) return "IsEWtau";
+    if((LepType>=4 || LepType<-4 )) return "IsConv";
+    else return "NULL";
+  }
+
   inline bool IsPrompt(int LepType) const {
     if((LepType==1 || LepType==2)) return true;
     else return false;
@@ -125,25 +134,33 @@ public:
   //// BDT  Functions
   void SetHNL_LepMVAMap(TString key,double mvacf);
   void SetHNL_LepMVA(double mvaf, double mvacf, double mvaconv);
+  void SetHNL_FakeLepMVA(double mvafake_hf, double mvafake_lf, double mvafake_top);
+  void SetHNL_LepMVAVersion1(double mvaf, double mvacf, double mvaconv);
   void SetHNL_LepMVAVersion2(double mvaf, double mvacf, double mvaconv);
-  void SetHNL_LepMVAVersion3(double mvacf);
-  void SetHNL_LepMVAVersion4(double mvacf);
+  void SetHNL_CFLepMVAVersion2p1(double mvacf);
+  void SetHNL_CFLepMVAVersion2p2(double mvacf);
 
-  void SetHNL_LepMVA_EtaDependantVersion2( double mvacf);
-  void SetHNL_LepMVA_EtaDependantVersion3( double mvacf);
-  void SetHNL_LepMVA_EtaDependantVersion4( double mvacf);
+  void SetHNL_CFLepMVA_EtaDependantVersion2( double mvacf);
+  void SetHNL_CFLepMVA_EtaDependantVersion2p1( double mvacf);
+  void SetHNL_CFLepMVA_EtaDependantVersion2p2( double mvacf);
 
   inline double HNL_MVA_Fake() const {return j_lep_mva_hnl_fake;}
   inline double HNL_MVA_Conv() const {return j_lep_mva_hnl_conv;}
   inline double HNL_MVA_CF()   const {return j_lep_mva_hnl_cf;}
   
-  inline double HNL_MVAv2_CF()   const {return j_lep_mvav2_hnl_cf;}
-  inline double HNL_MVAv3_CF()   const {return j_lep_mvav3_hnl_cf;}
-  inline double HNL_MVAv4_CF()   const {return j_lep_mvav4_hnl_cf;}
+  inline double HNL_MVA_HF_Fake() const {return j_lep_mva_hnl_fake_hf;}
+  inline double HNL_MVA_LF_Fake() const {return j_lep_mva_hnl_fake_lf;}
+  inline double HNL_MVA_Top_Fake() const {return j_lep_mva_hnl_fake_top;}
 
+  inline double HNL_MVAv1_CF()   const {return j_lep_mvav1_hnl_cf;}
+  inline double HNL_MVAv2_CF()   const {return j_lep_mvav2_hnl_cf;}
+  inline double HNL_MVAv2p1_CF()   const {return j_lep_mvav2p1_hnl_cf;}
+  inline double HNL_MVAv2p2_CF()   const {return j_lep_mvav2p2_hnl_cf;}
+
+  inline double HNL_MVAv1_ED_CF()   const {return j_lep_mvav1_hnl_ed_cf;}
   inline double HNL_MVAv2_ED_CF()   const {return j_lep_mvav2_hnl_ed_cf;}
-  inline double HNL_MVAv3_ED_CF()   const {return j_lep_mvav3_hnl_ed_cf;}
-  inline double HNL_MVAv4_ED_CF()   const {return j_lep_mvav4_hnl_ed_cf;}
+  inline double HNL_MVAv2p1_ED_CF()   const {return j_lep_mvav2p1_hnl_ed_cf;}
+  inline double HNL_MVAv2p2_ED_CF()   const {return j_lep_mvav2p2_hnl_ed_cf;}
   
 
 
@@ -254,8 +271,8 @@ public:
 
   std::map<TString, double> j_lep_map_mva_hnl_cf;
 
-  double j_lep_mva_hnl_fake,j_lep_mva_hnl_conv,j_lep_mva_hnl_cf;
-  double j_lep_mvav2_hnl_ed_cf,j_lep_mvav3_hnl_ed_cf,j_lep_mvav4_hnl_ed_cf,j_lep_mvav2_hnl_fake,j_lep_mvav2_hnl_conv,j_lep_mvav2_hnl_cf,j_lep_mvav3_hnl_cf,j_lep_mvav4_hnl_cf;
+  double j_lep_mva_hnl_fake,j_lep_mva_hnl_conv,j_lep_mva_hnl_cf,j_lep_mva_hnl_fake_hf,j_lep_mva_hnl_fake_lf,j_lep_mva_hnl_fake_top;
+  double j_lep_mvav1_hnl_ed_cf,j_lep_mvav2_hnl_ed_cf,j_lep_mvav2p1_hnl_ed_cf,j_lep_mvav2p2_hnl_ed_cf,j_lep_mvav1_hnl_fake,j_lep_mvav1_hnl_conv,j_lep_mvav1_hnl_cf,j_lep_mvav2_hnl_fake,j_lep_mvav2_hnl_conv,j_lep_mvav2_hnl_cf,j_lep_mvav2p1_hnl_cf,j_lep_mvav2p2_hnl_cf;
 
 
 private:

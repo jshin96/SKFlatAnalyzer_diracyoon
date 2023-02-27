@@ -32,13 +32,14 @@ void runIDBDT_HNtypeIMuonFake(TString Classifier ="BDTG" ,TString BkgType = "Fak
 
   TString  treeName = (channel == "MuMu")  ?  "Tree_mm" :  "Tree_ee";
 
-  TString signal="SignalTop";
-  if(signal_mode == 10 )signal = "SignalHNLTest";//  pt bin1
+  TString signal="SignalMuonFake";
 
   cout << "signal File Name= " << signal << endl;
   for(int i=0; i < nTermWidth; i++)  cout << "-" ;   cout << endl;
 
-  TString JobTag = Classifier +  "_"+ BkgType + signal+"TypeI_"+channel+"_"+signal+"_"+era+"_NTrees"+NTrees+"_NormMode_"+NormMode+"_MinNodeSize_"+MinNodeSize+"_MaxDepth_"+MaxDepth+"_nCuts_"+nCuts+ClassTag +"_Seed_"+seed+"_BDT";
+  TString JobTag = Classifier +"_version3_Muon"+ BkgType +"_TypeI_"+channel+"_"+signal+"_"+era+"_NTrees"+NTrees+"_NormMode_"+NormMode+"_MinNodeSize_"+MinNodeSize+"_MaxDepth_"+MaxDepth+"_nCuts_"+nCuts+ClassTag +"_Seed_"+seed+"_BDT";
+
+
 
 
 
@@ -103,11 +104,6 @@ void runIDBDT_HNtypeIMuonFake(TString Classifier ="BDTG" ,TString BkgType = "Fak
   //==== Nj, Nb cut
   TCut cut_s = "";
   TCut cut_b = "";
-
-  if(signal_mode == 2){
-    cut_s = "Eta>1.5";
-    cut_b = "Eta>1.5";
-  }
 
   int n_train_signal = tree_signal->GetEntries(cut_s)/2 ;
   int n_train_back = tree_bkg->GetEntries(cut_b)/2 ;

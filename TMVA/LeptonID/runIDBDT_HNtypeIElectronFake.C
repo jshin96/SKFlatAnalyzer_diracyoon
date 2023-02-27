@@ -33,13 +33,12 @@ void runIDBDT_HNtypeIElectronFake(TString Classifier ="BDTG" ,TString BkgType = 
   TString  treeName = (channel == "MuMu")  ?  "Tree_mm" :  "Tree_ee";
 
   TString signal="SignalElectronFake";
-  if(signal_mode == 1) signal="SignalElectronFake";
 
 
   cout << "signal File Name= " << signal << endl;
   for(int i=0; i < nTermWidth; i++)  cout << "-" ;   cout << endl;
 
-  TString JobTag = Classifier +  "_version2_"+ BkgType +"_" + signal+"TypeI_"+channel+"_"+signal+"_"+era+"_NTrees"+NTrees+"_NormMode_"+NormMode+"_MinNodeSize_"+MinNodeSize+"_MaxDepth_"+MaxDepth+"_nCuts_"+nCuts+ClassTag +"_Seed_"+seed+"_BDT";
+  TString JobTag = Classifier +  "_version3_"+ BkgType +"_TypeI_"+channel+"_"+signal+"_"+era+"_NTrees"+NTrees+"_NormMode_"+NormMode+"_MinNodeSize_"+MinNodeSize+"_MaxDepth_"+MaxDepth+"_nCuts_"+nCuts+ClassTag +"_Seed_"+seed+"_BDT";
 
 
 
@@ -96,15 +95,6 @@ void runIDBDT_HNtypeIElectronFake(TString Classifier ="BDTG" ,TString BkgType = 
   //==== Nj, Nb cut
   TCut cut_s = "";
   TCut cut_b = "";
-
-  if(signal_mode == 2){
-    cut_s = "Eta<1.5";
-    cut_b = "Eta<1.5";
-  }
-  if(signal_mode == 3){
-    cut_s = "Eta>1.5";
-    cut_b = "Eta>1.5";
-  }
 
   int n_train_signal = tree_signal->GetEntries(cut_s)/2 ;
   int n_train_back = tree_bkg->GetEntries(cut_b)/2 ;

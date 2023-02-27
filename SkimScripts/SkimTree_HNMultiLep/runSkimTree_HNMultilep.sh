@@ -34,3 +34,17 @@ if [[ $1 == "MC" ]]; then
     done
 
 fi
+
+
+if [[ $1 == "WZ" ]]; then
+
+    declare  -a era_list=("2018")
+    for i in "${era_list[@]}"
+    do
+        SKFlat.py -a $analyzer  -i WZTo3LNu_mllmin4p0_powheg  -n 50  --nmax ${nmax}   -e ${i}  &
+
+    done
+
+fi
+
+

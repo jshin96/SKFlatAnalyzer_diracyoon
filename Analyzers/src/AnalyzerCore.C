@@ -18,7 +18,7 @@ AnalyzerCore::AnalyzerCore(){
 
   JECSources = {"AbsoluteStat","AbsoluteScale","AbsoluteFlavMap","AbsoluteMPFBias","Fragmentation","SinglePionECAL","SinglePionHCAL","FlavorQCD","TimePtEta","RelativeJEREC1","RelativeJEREC2","RelativeJERHF","RelativePtBB","RelativePtEC1","RelativePtEC2","RelativePtHF","RelativeBal","RelativeSample","RelativeFSR","RelativeStatFSR","RelativeStatEC","RelativeStatHF","PileUpDataMC","PileUpPtRef","PileUpPtBB","PileUpPtEC1","PileUpPtEC2","PileUpPtHF","FlavorZJet","FlavorPhotonJet","FlavorPureGluon","FlavorPureQuark","FlavorPureCharm","FlavorPureBottom","Total"};
 
-  SetupLeptonBDT=true;
+  iSetupLeptonBDT=false;
     
 }
 
@@ -66,28 +66,26 @@ AnalyzerCore::~AnalyzerCore(){
   AK8CHSJECUncMap.clear();
   AK8PUPPIJECUncMap.clear();
 
-  delete ElectronIDFakeMVAReader;
-  delete ElectronIDCFMVAReader;
-  delete ElectronIDConvMVAReader;
-  
-  delete ElectronIDv2FakeMVAReader;
-  delete ElectronIDv2CFMVAReader;
-  delete ElectronIDv2CFMVAReaderPt;
-  delete ElectronIDv2ConvMVAReader;
-
-  delete ElectronIDv3CFMVAReader;
-
-  delete MuonIDFakeMVAReader;
-  //  delete MuonIDFakeNoPtMVAReader;
-
-  
-
+  if(iSetupLeptonBDT){
+    delete ElectronIDFakeMVAReader;
+    delete ElectronIDCFMVAReader;
+    delete ElectronIDConvMVAReader;
+    
+    delete ElectronIDv2FakeMVAReader;
+    delete ElectronIDv2CFMVAReader;
+    delete ElectronIDv2CFMVAReaderPt;
+    delete ElectronIDv2ConvMVAReader;
+    delete ElectronIDv3CFMVAReader;
+    
+    delete MuonIDFakeMVAReader;
+  }
+    
 }
 
 bool AnalyzerCore::AnalyserRunsFullBkg(){
 
   // Flag to setup fakeEst/cfEst/pdfReweight
-  vector<TString> AnalyserList = {"HNL_SignalRegionPlotter","HNL_ControlRegionPlotter","HNL_SignalRegionPlotter17028","HNL_SignalRegionPlotter21003","HNL_SignalLeptonOpt", "HNL_SignalRegionOpt", "HNL_SignalStudies","HNL_ObjectStudies"};
+  vector<TString> AnalyserList = {"HNL_SignalRegionPlotter","HNL_ControlRegionPlotter","HNL_SignalRegionPlotter17028","HNL_SignalRegionPlotter21003","HNL_SignalLeptonOpt", "HNL_SignalRegionOpt", "HNL_SignalStudies","HNL_ObjectStudies", "HNL_LeptonIDSF"};
 
   if(std::find(AnalyserList.begin(), AnalyserList.end(), Analyzer) != AnalyserList.end()) {
     return true;
@@ -387,9 +385,12 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
 
 
     ///// Load branch if running BDT skim  
-    if(SetupLeptonBDT){
-      if(fChain->GetBranch("muon_mva_fake"))   mu.SetHNL_LepMVA(muon_mva_fake->at(i),-999,-999); 
-    }
+    //if(fChain->GetBranch("muon_mva_fake_v1"))   mu.SetHNL_LepMVA(muon_mva_fake->at(i),-999,-999); 
+    //else {
+    //  if(iSetupLeptonBDT) mu.SetHNL_LepMVA( GetBDTScoreMuon(mu,AnalyzerCore::Fake,  "BDTGv2"),-999,-999);
+    // }
+    mu.SetHNL_LepMVA( GetBDTScoreMuon(mu,AnalyzerCore::Fake,  "BDTGv2"),-999,-999);                                                                                                                                                            
+
     if(fChain->GetBranch("muon_ptrel"))      mu.SetJetPtRel(muon_ptrel->at(i));
     if(fChain->GetBranch("muon_ptratio"))    mu.SetJetPtRatio(muon_ptratio->at(i));
     if(fChain->GetBranch("muon_cj_bjetdisc"))mu.SetCloseJetBScore(muon_cj_bjetdisc->at(i));
@@ -574,14 +575,7 @@ double AnalyzerCore::GetBDTScoreMuon(Muon mu ,BkgType bkg, TString BDTTag){
   TString MVATagStr = BDTTag;
   if (bkg == BkgType::Fake) MVATagStr += "_Fake";
 
-  //if(BDTTag.Contains("Split")) {
-  //  MVATagStr = "BDTG";
-  //  if(mu.Pt() < 30.) MVATagStr += "_FakeLowPt";
-  //  else MVATagStr += "_FakeHighPt";
-
-
-  return 1;
-
+  return  MuonIDFakeMVAReader->EvaluateMVA(MVATagStr);
 
 }
 
@@ -713,14 +707,25 @@ void AnalyzerCore::SetBDTIDVar(Lepton*  lep){
   return;
 }
 
+void AnalyzerCore::SetupIDMVAReaderDefault(){
+ 
+  SetupLeptonBDT();
 
-void AnalyzerCore::SetupIDMVAReader(bool isMuon){
+  // setup ALL MVA Readers for Mu and El
+  SetupIDMVAReader(true,true, true, true,true);
+  SetupIDMVAReader(false,true, true, true,true);
+  return ;
+}
+
+void AnalyzerCore::SetupIDMVAReader(bool isMuon, bool setupV1, bool setupFake, bool setupCF,bool setupConv){
+  
   
   InitializeIDTreeVars();
+
+  
   if(isMuon) {
-
+        
     cout << "################ SETUP MUON ID MVA " << endl;
-
 
     // Fake                                                                                            
     MuonIDFakeMVAReader->AddVariable("Pt", &Pt);
@@ -731,7 +736,9 @@ void AnalyzerCore::SetupIDMVAReader(bool isMuon){
     MuonIDFakeMVAReader->AddVariable("RelMiniIsoCh", &RelMiniIsoCh);
     MuonIDFakeMVAReader->AddVariable("RelMiniIsoN",&RelMiniIsoN);
     MuonIDFakeMVAReader->AddVariable("Dxy",  &Dxy);
+    MuonIDFakeMVAReader->AddVariable("DxySig",  &DxySig);
     MuonIDFakeMVAReader->AddVariable("Dz",  &Dz);
+    MuonIDFakeMVAReader->AddVariable("DzSig",  &DzSig);
     MuonIDFakeMVAReader->AddVariable("RelIso", &RelIso);
     MuonIDFakeMVAReader->AddVariable("IP3D", &IP3D);
     MuonIDFakeMVAReader->AddVariable("PtRatio",  &PtRatio);
@@ -740,246 +747,285 @@ void AnalyzerCore::SetupIDMVAReader(bool isMuon){
     MuonIDFakeMVAReader->AddVariable("CHFracCJ",&CHFracCJ);
     MuonIDFakeMVAReader->AddVariable("JetDiscCJ",&JetDiscCJ);
     MuonIDFakeMVAReader->AddVariable("NHFracCJ",&NHFracCJ);
-    MuonIDFakeMVAReader->AddVariable("MVA",  &MVA);
     MuonIDFakeMVAReader->AddVariable("MuFracCJ",&MuFracCJ);
-    MuonIDFakeMVAReader->AddSpectator("w_tot", &w_id_tot);
+    MuonIDFakeMVAReader->AddVariable("MVA",  &MVA);
+    MuonIDFakeMVAReader->AddVariable("Chi2",  &Chi2);
+    MuonIDFakeMVAReader->AddVariable("Validhits",  &Validhits);
+    MuonIDFakeMVAReader->AddVariable("Matched_stations",  &Matched_stations);
 
-
-
+    MuonIDFakeMVAReader->AddSpectator("w_id_tot", &w_id_tot);
 
   }
-
   else{
-
-    
-
-    // Conversion MVA
-    ElectronIDConvMVAReader->AddVariable("Pt", &Pt);
-    ElectronIDConvMVAReader->AddVariable("Eta", &Eta);
-    ElectronIDConvMVAReader->AddVariable("MiniIsoChHad", &MiniIsoChHad);
-    ElectronIDConvMVAReader->AddVariable("RelMiniIsoCh", &RelMiniIsoCh);
-    ElectronIDConvMVAReader->AddVariable("IsoChHad", &IsoChHad);
-    ElectronIDConvMVAReader->AddVariable("IsoNHad", &IsoNHad);
-    ElectronIDConvMVAReader->AddVariable("IsoPhHad", &IsoPhHad);
-    ElectronIDConvMVAReader->AddVariable("Dxy",  &Dxy);
-    ElectronIDConvMVAReader->AddVariable("DxySig",  &DxySig);
-    ElectronIDConvMVAReader->AddVariable("Dz",  &Dz);
-    ElectronIDConvMVAReader->AddVariable("DzSig",  &DzSig);
-    ElectronIDConvMVAReader->AddVariable("RelIso", &RelIso);
-    ElectronIDConvMVAReader->AddVariable("IP3D", &IP3D);
-    ElectronIDConvMVAReader->AddVariable("PtRatio",  &PtRatio);
-    ElectronIDConvMVAReader->AddVariable("PtRel",  &PtRel);
-    ElectronIDConvMVAReader->AddVariable("CEMFracCJ",&CEMFracCJ);
-    ElectronIDConvMVAReader->AddVariable("NEMFracCJ",&NEMFracCJ);
-    ElectronIDConvMVAReader->AddVariable("CHFracCJ",&CHFracCJ);
-    ElectronIDConvMVAReader->AddVariable("JetDiscCJ",&JetDiscCJ);
-    ElectronIDConvMVAReader->AddVariable("NHFracCJ",&NHFracCJ);
-    ElectronIDConvMVAReader->AddVariable("MVA",  &MVA);
-    ElectronIDConvMVAReader->AddVariable("MVAIso",  &MVAIso);
-    ElectronIDConvMVAReader->AddVariable("Full5x5_sigmaIetaIeta",  &Full5x5_sigmaIetaIeta);
-    ElectronIDConvMVAReader->AddVariable("dEtaSeed",  &dEtaSeed);
-    ElectronIDConvMVAReader->AddVariable("dPhiIn",  &dPhiIn);
-    ElectronIDConvMVAReader->AddVariable("EoverP",  &EoverP);
-    ElectronIDConvMVAReader->AddVariable("FBrem",  &FBrem);
-    ElectronIDConvMVAReader->AddVariable("R9",  &R9);
-    ElectronIDConvMVAReader->AddVariable("TrkIso",  &TrkIso);
-    ElectronIDConvMVAReader->AddVariable("dr03TkSumPt",  &dr03TkSumPt);
-    ElectronIDConvMVAReader->AddVariable("dr03HcalTowerSumEt",  &dr03HcalTowerSumEt);
-    ElectronIDConvMVAReader->AddVariable("EtaWidth",  &EtaWidth);
-    ElectronIDConvMVAReader->AddVariable("PhiWidth",  &PhiWidth);
-    ElectronIDConvMVAReader->AddVariable("InvEminusInvP", &InvEminusInvP);
-    ElectronIDConvMVAReader->AddVariable("ecalPFClusterIso",  &ecalPFClusterIso);
-    ElectronIDConvMVAReader->AddVariable("MissingHits",  &MissingHits);
-    ElectronIDConvMVAReader->AddVariable("isEcalDriven", &isEcalDriven);
-    ElectronIDConvMVAReader->AddVariable("PassConversionVeto",  &PassConversionVeto);
-    ElectronIDConvMVAReader->AddVariable("IsGsfCtfScPixChargeConsistent",  &IsGsfCtfScPixChargeConsistent);
-    ElectronIDConvMVAReader->AddVariable("IsGsfScPixChargeConsistent",  &IsGsfScPixChargeConsistent);
-    ElectronIDConvMVAReader->AddVariable("IsGsfCtfChargeConsistent",  &IsGsfCtfChargeConsistent);
-    ElectronIDConvMVAReader->AddSpectator("w_tot", &w_id_tot);
-
-    
-    
-    /// CF MVA 
-    ElectronIDCFMVAReader->AddVariable("Pt", &Pt);
-    ElectronIDCFMVAReader->AddVariable("Eta", &Eta);
-    ElectronIDCFMVAReader->AddVariable("Dxy",  &Dxy);
-    ElectronIDCFMVAReader->AddVariable("DxySig",  &DxySig);
-    ElectronIDCFMVAReader->AddVariable("Dz",  &Dz);
-    ElectronIDCFMVAReader->AddVariable("DzSig",  &DzSig);
-    ElectronIDCFMVAReader->AddVariable("IP3D", &IP3D);
-    ElectronIDCFMVAReader->AddVariable("JetDiscCJ",&JetDiscCJ);
-    ElectronIDCFMVAReader->AddVariable("MVA",  &MVA);
-    ElectronIDCFMVAReader->AddVariable("Full5x5_sigmaIetaIeta",  &Full5x5_sigmaIetaIeta);
-    ElectronIDCFMVAReader->AddVariable("dPhiIn",  &dPhiIn);
-    ElectronIDCFMVAReader->AddVariable("EoverP",  &EoverP);
-    ElectronIDCFMVAReader->AddVariable("FBrem",  &FBrem);
-    ElectronIDCFMVAReader->AddVariable("R9",  &R9);
-    ElectronIDCFMVAReader->AddVariable("dr03TkSumPt",  &dr03TkSumPt);
-    ElectronIDCFMVAReader->AddVariable("e55",  &e55);
-    ElectronIDCFMVAReader->AddVariable("e2x5OverE5x5",  &e2x5OverE5x5);
-    ElectronIDCFMVAReader->AddVariable("EtaWidth",  &EtaWidth);
-    ElectronIDCFMVAReader->AddVariable("PhiWidth",  &PhiWidth);
-    ElectronIDCFMVAReader->AddVariable("ecalPFClusterIso",  &ecalPFClusterIso);
-    ElectronIDCFMVAReader->AddVariable("PassConversionVeto",  &PassConversionVeto);
-    ElectronIDCFMVAReader->AddVariable("IsGsfCtfScPixChargeConsistent",  &IsGsfCtfScPixChargeConsistent);
-    ElectronIDCFMVAReader->AddVariable("IsGsfScPixChargeConsistent",  &IsGsfScPixChargeConsistent);
-    ElectronIDCFMVAReader->AddVariable("IsGsfCtfChargeConsistent",  &IsGsfCtfChargeConsistent);
-    ElectronIDCFMVAReader->AddSpectator("w_tot", &w_id_tot);
-
-    ElectronIDFakeMVAReader->AddVariable("Pt", &Pt);
-    ElectronIDFakeMVAReader->AddVariable("Eta", &Eta);
-    ElectronIDFakeMVAReader->AddVariable("MiniIsoChHad", &MiniIsoChHad);
-    ElectronIDFakeMVAReader->AddVariable("MiniIsoPhHad", &MiniIsoPhHad);
-    ElectronIDFakeMVAReader->AddVariable("MiniIsoNHad", &MiniIsoNHad);
-    ElectronIDFakeMVAReader->AddVariable("RelMiniIsoCh", &RelMiniIsoCh);
-    ElectronIDFakeMVAReader->AddVariable("RelMiniIsoN", &RelMiniIsoN);
-    ElectronIDFakeMVAReader->AddVariable("Dxy",  &Dxy);
-    ElectronIDFakeMVAReader->AddVariable("Dz",  &Dz);
-    ElectronIDFakeMVAReader->AddVariable("RelIso", &RelIso);
-    ElectronIDFakeMVAReader->AddVariable("IP3D", &IP3D);
-    ElectronIDFakeMVAReader->AddVariable("PtRatio",  &PtRatio);
-    ElectronIDFakeMVAReader->AddVariable("PtRel",  &PtRel);
-    ElectronIDFakeMVAReader->AddVariable("NEMFracCJ",&NEMFracCJ);
-    ElectronIDFakeMVAReader->AddVariable("CHFracCJ",&CHFracCJ);
-    ElectronIDFakeMVAReader->AddVariable("JetDiscCJ",&JetDiscCJ);
-    ElectronIDFakeMVAReader->AddVariable("NHFracCJ",&NHFracCJ);
-    ElectronIDFakeMVAReader->AddVariable("CEMFracCJ",&CEMFracCJ);
-    ElectronIDFakeMVAReader->AddVariable("MVA",  &MVA);
-    ElectronIDFakeMVAReader->AddVariable("MVAIso",  &MVAIso);
-    ElectronIDFakeMVAReader->AddSpectator("w_tot", &w_id_tot);
-
    
-    // VERSION 2
-    ElectronIDv2CFMVAReader->AddVariable("PtBinned", &PtBinned);
-    ElectronIDv2CFMVAReader->AddVariable("Eta", &Eta);
-    ElectronIDv2CFMVAReader->AddVariable("Dxy",  &Dxy);
-    ElectronIDv2CFMVAReader->AddVariable("DxySig",  &DxySig);
-    ElectronIDv2CFMVAReader->AddVariable("Dz",  &Dz);
-    ElectronIDv2CFMVAReader->AddVariable("DzSig",  &DzSig);
-    ElectronIDv2CFMVAReader->AddVariable("IP3D", &IP3D);
-    ElectronIDv2CFMVAReader->AddVariable("MVA",  &MVA);
-    ElectronIDv2CFMVAReader->AddVariable("MVAIso",  &MVAIso);
-    ElectronIDv2CFMVAReader->AddVariable("Full5x5_sigmaIetaIeta",  &Full5x5_sigmaIetaIeta);
-    ElectronIDv2CFMVAReader->AddVariable("dPhiIn",  &dPhiIn);
-    ElectronIDv2CFMVAReader->AddVariable("EoverP",  &EoverP);
-    ElectronIDv2CFMVAReader->AddVariable("FBrem",  &FBrem);
-    ElectronIDv2CFMVAReader->AddVariable("R9",  &R9);
-    ElectronIDv2CFMVAReader->AddVariable("e55",  &e55);
-    ElectronIDv2CFMVAReader->AddVariable("EtaWidth",  &EtaWidth);
-    ElectronIDv2CFMVAReader->AddVariable("PhiWidth",  &PhiWidth);
-    ElectronIDv2CFMVAReader->AddVariable("PassConversionVeto",  &PassConversionVeto);
-    ElectronIDv2CFMVAReader->AddVariable("IsGsfCtfScPixChargeConsistent",  &IsGsfCtfScPixChargeConsistent);
-    ElectronIDv2CFMVAReader->AddVariable("IsGsfScPixChargeConsistent",  &IsGsfScPixChargeConsistent);
-    ElectronIDv2CFMVAReader->AddVariable("IsGsfCtfChargeConsistent",  &IsGsfCtfChargeConsistent);
-    ElectronIDv2CFMVAReader->AddVariable("InvEminusInvP", &InvEminusInvP);
-    ElectronIDv2CFMVAReader->AddVariable("hcalPFClusterIso",  &hcalPFClusterIso);
-    ElectronIDv2CFMVAReader->AddVariable("ecalPFClusterIso",  &ecalPFClusterIso);
-    ElectronIDv2CFMVAReader->AddVariable("dr03TkSumPt",  &dr03TkSumPt);
-    ElectronIDv2CFMVAReader->AddVariable("HoverE",  &HoverE);
-    ElectronIDv2CFMVAReader->AddVariable("MissingHits",  &MissingHits);
-    ElectronIDv2CFMVAReader->AddSpectator("w_id_tot", &w_id_tot);
+    if(setupConv){
+
+      // Conversion MVA
+      ElectronIDConvMVAReader->AddVariable("Pt", &Pt);
+      ElectronIDConvMVAReader->AddVariable("Eta", &Eta);
+      ElectronIDConvMVAReader->AddVariable("MiniIsoChHad", &MiniIsoChHad);
+      ElectronIDConvMVAReader->AddVariable("RelMiniIsoCh", &RelMiniIsoCh);
+      ElectronIDConvMVAReader->AddVariable("IsoChHad", &IsoChHad);
+      ElectronIDConvMVAReader->AddVariable("IsoNHad", &IsoNHad);
+      ElectronIDConvMVAReader->AddVariable("IsoPhHad", &IsoPhHad);
+      ElectronIDConvMVAReader->AddVariable("Dxy",  &Dxy);
+      ElectronIDConvMVAReader->AddVariable("DxySig",  &DxySig);
+      ElectronIDConvMVAReader->AddVariable("Dz",  &Dz);
+      ElectronIDConvMVAReader->AddVariable("DzSig",  &DzSig);
+      ElectronIDConvMVAReader->AddVariable("RelIso", &RelIso);
+      ElectronIDConvMVAReader->AddVariable("IP3D", &IP3D);
+      ElectronIDConvMVAReader->AddVariable("PtRatio",  &PtRatio);
+      ElectronIDConvMVAReader->AddVariable("PtRel",  &PtRel);
+      ElectronIDConvMVAReader->AddVariable("CEMFracCJ",&CEMFracCJ);
+      ElectronIDConvMVAReader->AddVariable("NEMFracCJ",&NEMFracCJ);
+      ElectronIDConvMVAReader->AddVariable("CHFracCJ",&CHFracCJ);
+      ElectronIDConvMVAReader->AddVariable("JetDiscCJ",&JetDiscCJ);
+      ElectronIDConvMVAReader->AddVariable("NHFracCJ",&NHFracCJ);
+      ElectronIDConvMVAReader->AddVariable("MVA",  &MVA);
+      ElectronIDConvMVAReader->AddVariable("MVAIso",  &MVAIso);
+      ElectronIDConvMVAReader->AddVariable("Full5x5_sigmaIetaIeta",  &Full5x5_sigmaIetaIeta);
+      ElectronIDConvMVAReader->AddVariable("dEtaSeed",  &dEtaSeed);
+      ElectronIDConvMVAReader->AddVariable("dPhiIn",  &dPhiIn);
+      ElectronIDConvMVAReader->AddVariable("EoverP",  &EoverP);
+      ElectronIDConvMVAReader->AddVariable("FBrem",  &FBrem);
+      ElectronIDConvMVAReader->AddVariable("R9",  &R9);
+      ElectronIDConvMVAReader->AddVariable("TrkIso",  &TrkIso);
+      ElectronIDConvMVAReader->AddVariable("dr03TkSumPt",  &dr03TkSumPt);
+      ElectronIDConvMVAReader->AddVariable("dr03HcalTowerSumEt",  &dr03HcalTowerSumEt);
+      ElectronIDConvMVAReader->AddVariable("EtaWidth",  &EtaWidth);
+      ElectronIDConvMVAReader->AddVariable("PhiWidth",  &PhiWidth);
+      ElectronIDConvMVAReader->AddVariable("InvEminusInvP", &InvEminusInvP);
+      ElectronIDConvMVAReader->AddVariable("ecalPFClusterIso",  &ecalPFClusterIso);
+      ElectronIDConvMVAReader->AddVariable("MissingHits",  &MissingHits);
+      ElectronIDConvMVAReader->AddVariable("isEcalDriven", &isEcalDriven);
+      ElectronIDConvMVAReader->AddVariable("PassConversionVeto",  &PassConversionVeto);
+      ElectronIDConvMVAReader->AddVariable("IsGsfCtfScPixChargeConsistent",  &IsGsfCtfScPixChargeConsistent);
+      ElectronIDConvMVAReader->AddVariable("IsGsfScPixChargeConsistent",  &IsGsfScPixChargeConsistent);
+      ElectronIDConvMVAReader->AddVariable("IsGsfCtfChargeConsistent",  &IsGsfCtfChargeConsistent);
+      ElectronIDConvMVAReader->AddSpectator("w_tot", &w_id_tot);
+    }   
+    
+    if(setupCF){
+      /// CF MVA 
+      ElectronIDCFMVAReader->AddVariable("Pt", &Pt);
+      ElectronIDCFMVAReader->AddVariable("Eta", &Eta);
+      ElectronIDCFMVAReader->AddVariable("Dxy",  &Dxy);
+      ElectronIDCFMVAReader->AddVariable("DxySig",  &DxySig);
+      ElectronIDCFMVAReader->AddVariable("Dz",  &Dz);
+      ElectronIDCFMVAReader->AddVariable("DzSig",  &DzSig);
+      ElectronIDCFMVAReader->AddVariable("IP3D", &IP3D);
+      ElectronIDCFMVAReader->AddVariable("JetDiscCJ",&JetDiscCJ);
+      ElectronIDCFMVAReader->AddVariable("MVA",  &MVA);
+      ElectronIDCFMVAReader->AddVariable("Full5x5_sigmaIetaIeta",  &Full5x5_sigmaIetaIeta);
+      ElectronIDCFMVAReader->AddVariable("dPhiIn",  &dPhiIn);
+      ElectronIDCFMVAReader->AddVariable("EoverP",  &EoverP);
+      ElectronIDCFMVAReader->AddVariable("FBrem",  &FBrem);
+      ElectronIDCFMVAReader->AddVariable("R9",  &R9);
+      ElectronIDCFMVAReader->AddVariable("dr03TkSumPt",  &dr03TkSumPt);
+      ElectronIDCFMVAReader->AddVariable("e55",  &e55);
+      ElectronIDCFMVAReader->AddVariable("e2x5OverE5x5",  &e2x5OverE5x5);
+      ElectronIDCFMVAReader->AddVariable("EtaWidth",  &EtaWidth);
+      ElectronIDCFMVAReader->AddVariable("PhiWidth",  &PhiWidth);
+      ElectronIDCFMVAReader->AddVariable("ecalPFClusterIso",  &ecalPFClusterIso);
+      ElectronIDCFMVAReader->AddVariable("PassConversionVeto",  &PassConversionVeto);
+      ElectronIDCFMVAReader->AddVariable("IsGsfCtfScPixChargeConsistent",  &IsGsfCtfScPixChargeConsistent);
+      ElectronIDCFMVAReader->AddVariable("IsGsfScPixChargeConsistent",  &IsGsfScPixChargeConsistent);
+      ElectronIDCFMVAReader->AddVariable("IsGsfCtfChargeConsistent",  &IsGsfCtfChargeConsistent);
+      ElectronIDCFMVAReader->AddSpectator("w_tot", &w_id_tot);
 
 
-    ElectronIDv2CFMVAReaderPt->AddVariable("Pt", &Pt);
-    ElectronIDv2CFMVAReaderPt->AddVariable("Eta", &Eta);
-    ElectronIDv2CFMVAReaderPt->AddVariable("Dxy",  &Dxy);
-    ElectronIDv2CFMVAReaderPt->AddVariable("DxySig",  &DxySig);
-    ElectronIDv2CFMVAReaderPt->AddVariable("Dz",  &Dz);
-    ElectronIDv2CFMVAReaderPt->AddVariable("DzSig",  &DzSig);
-    ElectronIDv2CFMVAReaderPt->AddVariable("IP3D", &IP3D);
-    ElectronIDv2CFMVAReaderPt->AddVariable("MVA",  &MVA);
-    ElectronIDv2CFMVAReaderPt->AddVariable("MVAIso",  &MVAIso);
-    ElectronIDv2CFMVAReaderPt->AddVariable("Full5x5_sigmaIetaIeta",  &Full5x5_sigmaIetaIeta);
-    ElectronIDv2CFMVAReaderPt->AddVariable("dPhiIn",  &dPhiIn);
-    ElectronIDv2CFMVAReaderPt->AddVariable("EoverP",  &EoverP);
-    ElectronIDv2CFMVAReaderPt->AddVariable("FBrem",  &FBrem);
-    ElectronIDv2CFMVAReaderPt->AddVariable("R9",  &R9);
-    ElectronIDv2CFMVAReaderPt->AddVariable("e55",  &e55);
-    ElectronIDv2CFMVAReaderPt->AddVariable("EtaWidth",  &EtaWidth);
-    ElectronIDv2CFMVAReaderPt->AddVariable("PhiWidth",  &PhiWidth);
-    ElectronIDv2CFMVAReaderPt->AddVariable("PassConversionVeto",  &PassConversionVeto);
-    ElectronIDv2CFMVAReaderPt->AddVariable("IsGsfCtfScPixChargeConsistent",  &IsGsfCtfScPixChargeConsistent);
-    ElectronIDv2CFMVAReaderPt->AddVariable("IsGsfScPixChargeConsistent",  &IsGsfScPixChargeConsistent);
-    ElectronIDv2CFMVAReaderPt->AddVariable("IsGsfCtfChargeConsistent",  &IsGsfCtfChargeConsistent);
-    ElectronIDv2CFMVAReaderPt->AddVariable("InvEminusInvP", &InvEminusInvP);
-    ElectronIDv2CFMVAReaderPt->AddVariable("hcalPFClusterIso",  &hcalPFClusterIso);
-    ElectronIDv2CFMVAReaderPt->AddVariable("ecalPFClusterIso",  &ecalPFClusterIso);
-    ElectronIDv2CFMVAReaderPt->AddVariable("dr03TkSumPt",  &dr03TkSumPt);
-    ElectronIDv2CFMVAReaderPt->AddVariable("HoverE",  &HoverE);
-    ElectronIDv2CFMVAReaderPt->AddVariable("MissingHits",  &MissingHits);
-    ElectronIDv2CFMVAReaderPt->AddSpectator("w_id_tot", &w_id_tot);
+    }
+    
+    if(setupFake){
+      
+      ElectronIDFakeMVAReader->AddVariable("Pt", &Pt);
+      ElectronIDFakeMVAReader->AddVariable("Eta", &Eta);
+      ElectronIDFakeMVAReader->AddVariable("MiniIsoChHad", &MiniIsoChHad);
+      ElectronIDFakeMVAReader->AddVariable("MiniIsoPhHad", &MiniIsoPhHad);
+      ElectronIDFakeMVAReader->AddVariable("MiniIsoNHad", &MiniIsoNHad);
+      ElectronIDFakeMVAReader->AddVariable("RelMiniIsoCh", &RelMiniIsoCh);
+      ElectronIDFakeMVAReader->AddVariable("RelMiniIsoN", &RelMiniIsoN);
+      ElectronIDFakeMVAReader->AddVariable("Dxy",  &Dxy);
+      ElectronIDFakeMVAReader->AddVariable("Dz",  &Dz);
+      ElectronIDFakeMVAReader->AddVariable("RelIso", &RelIso);
+      ElectronIDFakeMVAReader->AddVariable("IP3D", &IP3D);
+      ElectronIDFakeMVAReader->AddVariable("PtRatio",  &PtRatio);
+      ElectronIDFakeMVAReader->AddVariable("PtRel",  &PtRel);
+      ElectronIDFakeMVAReader->AddVariable("NEMFracCJ",&NEMFracCJ);
+      ElectronIDFakeMVAReader->AddVariable("CHFracCJ",&CHFracCJ);
+      ElectronIDFakeMVAReader->AddVariable("JetDiscCJ",&JetDiscCJ);
+      ElectronIDFakeMVAReader->AddVariable("NHFracCJ",&NHFracCJ);
+      ElectronIDFakeMVAReader->AddVariable("CEMFracCJ",&CEMFracCJ);
+      ElectronIDFakeMVAReader->AddVariable("MVA",  &MVA);
+      ElectronIDFakeMVAReader->AddVariable("MVAIso",  &MVAIso);
+      ElectronIDFakeMVAReader->AddSpectator("w_tot", &w_id_tot);
+
+      ElectronIDv2FakeMVAReader->AddVariable("Pt", &Pt);
+      ElectronIDv2FakeMVAReader->AddVariable("Eta", &Eta);
+      ElectronIDv2FakeMVAReader->AddVariable("MiniIsoChHad", &MiniIsoChHad);
+      ElectronIDv2FakeMVAReader->AddVariable("MiniIsoPhHad", &MiniIsoPhHad);
+      ElectronIDv2FakeMVAReader->AddVariable("MiniIsoNHad", &MiniIsoNHad);
+      ElectronIDv2FakeMVAReader->AddVariable("RelMiniIsoCh", &RelMiniIsoCh);
+      ElectronIDv2FakeMVAReader->AddVariable("RelMiniIsoN", &RelMiniIsoN);
+      ElectronIDv2FakeMVAReader->AddVariable("Dxy",  &Dxy);
+      ElectronIDv2FakeMVAReader->AddVariable("Dz",  &Dz);
+      ElectronIDv2FakeMVAReader->AddVariable("RelIso", &RelIso);
+      ElectronIDv2FakeMVAReader->AddVariable("IP3D", &IP3D);
+      ElectronIDv2FakeMVAReader->AddVariable("PtRatio",  &PtRatio);
+      ElectronIDv2FakeMVAReader->AddVariable("PtRel",  &PtRel);
+      ElectronIDv2FakeMVAReader->AddVariable("NEMFracCJ",&NEMFracCJ);
+      ElectronIDv2FakeMVAReader->AddVariable("CHFracCJ",&CHFracCJ);
+      ElectronIDv2FakeMVAReader->AddVariable("JetDiscCJ",&JetDiscCJ);
+      ElectronIDv2FakeMVAReader->AddVariable("NHFracCJ",&NHFracCJ);
+      ElectronIDv2FakeMVAReader->AddVariable("CEMFracCJ",&CEMFracCJ);
+      ElectronIDv2FakeMVAReader->AddVariable("MVA",  &MVA);
+      ElectronIDv2FakeMVAReader->AddVariable("MVAIso",  &MVAIso);
+      ElectronIDv2FakeMVAReader->AddSpectator("w_id_tot", &w_id_tot);
+
+
+    }
+    
+    if(setupCF){
+      // VERSION 2
+      ElectronIDv2CFMVAReader->AddVariable("PtBinned", &PtBinned);
+      ElectronIDv2CFMVAReader->AddVariable("Eta", &Eta);
+      ElectronIDv2CFMVAReader->AddVariable("Dxy",  &Dxy);
+      ElectronIDv2CFMVAReader->AddVariable("DxySig",  &DxySig);
+      ElectronIDv2CFMVAReader->AddVariable("Dz",  &Dz);
+      ElectronIDv2CFMVAReader->AddVariable("DzSig",  &DzSig);
+      ElectronIDv2CFMVAReader->AddVariable("IP3D", &IP3D);
+      ElectronIDv2CFMVAReader->AddVariable("MVA",  &MVA);
+      ElectronIDv2CFMVAReader->AddVariable("MVAIso",  &MVAIso);
+      ElectronIDv2CFMVAReader->AddVariable("Full5x5_sigmaIetaIeta",  &Full5x5_sigmaIetaIeta);
+      ElectronIDv2CFMVAReader->AddVariable("dPhiIn",  &dPhiIn);
+      ElectronIDv2CFMVAReader->AddVariable("EoverP",  &EoverP);
+      ElectronIDv2CFMVAReader->AddVariable("FBrem",  &FBrem);
+      ElectronIDv2CFMVAReader->AddVariable("R9",  &R9);
+      ElectronIDv2CFMVAReader->AddVariable("e55",  &e55);
+      ElectronIDv2CFMVAReader->AddVariable("EtaWidth",  &EtaWidth);
+      ElectronIDv2CFMVAReader->AddVariable("PhiWidth",  &PhiWidth);
+      ElectronIDv2CFMVAReader->AddVariable("PassConversionVeto",  &PassConversionVeto);
+      ElectronIDv2CFMVAReader->AddVariable("IsGsfCtfScPixChargeConsistent",  &IsGsfCtfScPixChargeConsistent);
+      ElectronIDv2CFMVAReader->AddVariable("IsGsfScPixChargeConsistent",  &IsGsfScPixChargeConsistent);
+      ElectronIDv2CFMVAReader->AddVariable("IsGsfCtfChargeConsistent",  &IsGsfCtfChargeConsistent);
+      ElectronIDv2CFMVAReader->AddVariable("InvEminusInvP", &InvEminusInvP);
+      ElectronIDv2CFMVAReader->AddVariable("hcalPFClusterIso",  &hcalPFClusterIso);
+      ElectronIDv2CFMVAReader->AddVariable("ecalPFClusterIso",  &ecalPFClusterIso);
+      ElectronIDv2CFMVAReader->AddVariable("dr03TkSumPt",  &dr03TkSumPt);
+      ElectronIDv2CFMVAReader->AddVariable("HoverE",  &HoverE);
+      ElectronIDv2CFMVAReader->AddVariable("MissingHits",  &MissingHits);
+      ElectronIDv2CFMVAReader->AddSpectator("w_id_tot", &w_id_tot);
+      
+      
+      ElectronIDv2CFMVAReaderPt->AddVariable("Pt", &Pt);
+      ElectronIDv2CFMVAReaderPt->AddVariable("Eta", &Eta);
+      ElectronIDv2CFMVAReaderPt->AddVariable("Dxy",  &Dxy);
+      ElectronIDv2CFMVAReaderPt->AddVariable("DxySig",  &DxySig);
+      ElectronIDv2CFMVAReaderPt->AddVariable("Dz",  &Dz);
+      ElectronIDv2CFMVAReaderPt->AddVariable("DzSig",  &DzSig);
+      ElectronIDv2CFMVAReaderPt->AddVariable("IP3D", &IP3D);
+      ElectronIDv2CFMVAReaderPt->AddVariable("MVA",  &MVA);
+      ElectronIDv2CFMVAReaderPt->AddVariable("MVAIso",  &MVAIso);
+      ElectronIDv2CFMVAReaderPt->AddVariable("Full5x5_sigmaIetaIeta",  &Full5x5_sigmaIetaIeta);
+      ElectronIDv2CFMVAReaderPt->AddVariable("dPhiIn",  &dPhiIn);
+      ElectronIDv2CFMVAReaderPt->AddVariable("EoverP",  &EoverP);
+      ElectronIDv2CFMVAReaderPt->AddVariable("FBrem",  &FBrem);
+      ElectronIDv2CFMVAReaderPt->AddVariable("R9",  &R9);
+      ElectronIDv2CFMVAReaderPt->AddVariable("e55",  &e55);
+      ElectronIDv2CFMVAReaderPt->AddVariable("EtaWidth",  &EtaWidth);
+      ElectronIDv2CFMVAReaderPt->AddVariable("PhiWidth",  &PhiWidth);
+      ElectronIDv2CFMVAReaderPt->AddVariable("PassConversionVeto",  &PassConversionVeto);
+      ElectronIDv2CFMVAReaderPt->AddVariable("IsGsfCtfScPixChargeConsistent",  &IsGsfCtfScPixChargeConsistent);
+      ElectronIDv2CFMVAReaderPt->AddVariable("IsGsfScPixChargeConsistent",  &IsGsfScPixChargeConsistent);
+      ElectronIDv2CFMVAReaderPt->AddVariable("IsGsfCtfChargeConsistent",  &IsGsfCtfChargeConsistent);
+      ElectronIDv2CFMVAReaderPt->AddVariable("InvEminusInvP", &InvEminusInvP);
+      ElectronIDv2CFMVAReaderPt->AddVariable("hcalPFClusterIso",  &hcalPFClusterIso);
+      ElectronIDv2CFMVAReaderPt->AddVariable("ecalPFClusterIso",  &ecalPFClusterIso);
+      ElectronIDv2CFMVAReaderPt->AddVariable("dr03TkSumPt",  &dr03TkSumPt);
+      ElectronIDv2CFMVAReaderPt->AddVariable("HoverE",  &HoverE);
+      ElectronIDv2CFMVAReaderPt->AddVariable("MissingHits",  &MissingHits);
+      ElectronIDv2CFMVAReaderPt->AddSpectator("w_id_tot", &w_id_tot);
+      
+    }
+    
+    // Conversion MVA                                                                                                                                                                                       
+    if(setupConv){
+      ElectronIDv2ConvMVAReader->AddVariable("Pt", &Pt);
+      ElectronIDv2ConvMVAReader->AddVariable("Eta", &Eta);
+      ElectronIDv2ConvMVAReader->AddVariable("MiniIsoChHad", &MiniIsoChHad);
+      ElectronIDv2ConvMVAReader->AddVariable("RelMiniIsoCh", &RelMiniIsoCh);
+      ElectronIDv2ConvMVAReader->AddVariable("IsoChHad", &IsoChHad);
+      ElectronIDv2ConvMVAReader->AddVariable("IsoNHad", &IsoNHad);
+      ElectronIDv2ConvMVAReader->AddVariable("IsoPhHad", &IsoPhHad);
+      ElectronIDv2ConvMVAReader->AddVariable("Dxy",  &Dxy);
+      ElectronIDv2ConvMVAReader->AddVariable("DxySig",  &DxySig);
+      ElectronIDv2ConvMVAReader->AddVariable("Dz",  &Dz);
+      ElectronIDv2ConvMVAReader->AddVariable("DzSig",  &DzSig);
+      ElectronIDv2ConvMVAReader->AddVariable("RelIso", &RelIso);
+      ElectronIDv2ConvMVAReader->AddVariable("IP3D", &IP3D);
+      ElectronIDv2ConvMVAReader->AddVariable("PtRatio",  &PtRatio);
+      ElectronIDv2ConvMVAReader->AddVariable("PtRel",  &PtRel);
+      ElectronIDv2ConvMVAReader->AddVariable("CEMFracCJ",&CEMFracCJ);
+      ElectronIDv2ConvMVAReader->AddVariable("NEMFracCJ",&NEMFracCJ);
+      ElectronIDv2ConvMVAReader->AddVariable("CHFracCJ",&CHFracCJ);
+      ElectronIDv2ConvMVAReader->AddVariable("JetDiscCJ",&JetDiscCJ);
+      ElectronIDv2ConvMVAReader->AddVariable("NHFracCJ",&NHFracCJ);
+      ElectronIDv2ConvMVAReader->AddVariable("MVA",  &MVA);
+      ElectronIDv2ConvMVAReader->AddVariable("MVAIso",  &MVAIso);
+      ElectronIDv2ConvMVAReader->AddVariable("Full5x5_sigmaIetaIeta",  &Full5x5_sigmaIetaIeta);
+      ElectronIDv2ConvMVAReader->AddVariable("dEtaSeed",  &dEtaSeed);
+      ElectronIDv2ConvMVAReader->AddVariable("dPhiIn",  &dPhiIn);
+      ElectronIDv2ConvMVAReader->AddVariable("EoverP",  &EoverP);
+      ElectronIDv2ConvMVAReader->AddVariable("FBrem",  &FBrem);
+      ElectronIDv2ConvMVAReader->AddVariable("R9",  &R9);
+      ElectronIDv2ConvMVAReader->AddVariable("TrkIso",  &TrkIso);
+      ElectronIDv2ConvMVAReader->AddVariable("EtaWidth",  &EtaWidth);
+      ElectronIDv2ConvMVAReader->AddVariable("PhiWidth",  &PhiWidth);
+      ElectronIDv2ConvMVAReader->AddVariable("InvEminusInvP", &InvEminusInvP);
+      ElectronIDv2ConvMVAReader->AddVariable("ecalPFClusterIso",  &ecalPFClusterIso);
+      ElectronIDv2ConvMVAReader->AddVariable("MissingHits",  &MissingHits);
+      ElectronIDv2ConvMVAReader->AddVariable("PassConversionVeto",  &PassConversionVeto);
+      ElectronIDv2ConvMVAReader->AddVariable("IsGsfCtfScPixChargeConsistent",  &IsGsfCtfScPixChargeConsistent);
+      ElectronIDv2ConvMVAReader->AddVariable("IsGsfScPixChargeConsistent",  &IsGsfScPixChargeConsistent);
+      ElectronIDv2ConvMVAReader->AddVariable("IsGsfCtfChargeConsistent",  &IsGsfCtfChargeConsistent);
+      ElectronIDv2ConvMVAReader->AddSpectator("w_id_tot", &w_id_tot);
+    }
 
 
     // Version 3
-    ElectronIDv3CFMVAReader->AddVariable("PtBinned", &PtBinned);
-    ElectronIDv3CFMVAReader->AddVariable("Eta", &Eta);
-    ElectronIDv3CFMVAReader->AddVariable("Dxy", &Dxy);
-    ElectronIDv3CFMVAReader->AddVariable("DxySig",  &DxySig);
-    ElectronIDv3CFMVAReader->AddVariable("Dz",  &Dz);
-    ElectronIDv3CFMVAReader->AddVariable("DzSig", &DzSig);
-    ElectronIDv3CFMVAReader->AddVariable("IP3D",&IP3D);
-    ElectronIDv3CFMVAReader->AddVariable("JetDiscCJ",&JetDiscCJ);
-    ElectronIDv3CFMVAReader->AddVariable("MVA",  &MVA);
-    ElectronIDv3CFMVAReader->AddVariable("Full5x5_sigmaIetaIeta",&Full5x5_sigmaIetaIeta);
-    ElectronIDv3CFMVAReader->AddVariable("dPhiIn", &dPhiIn);
-    ElectronIDv3CFMVAReader->AddVariable("EoverP", &EoverP);
-    ElectronIDv3CFMVAReader->AddVariable("FBrem", &FBrem);
-    ElectronIDv3CFMVAReader->AddVariable("R9",  &R9);
-    ElectronIDv3CFMVAReader->AddVariable("EtaWidth",&EtaWidth);
-    ElectronIDv3CFMVAReader->AddVariable("PhiWidth", &PhiWidth);
-    ElectronIDv3CFMVAReader->AddVariable("PassConversionVeto", &PassConversionVeto);
-    ElectronIDv3CFMVAReader->AddVariable("IsGsfCtfScPixChargeConsistent", &IsGsfCtfScPixChargeConsistent);
-    ElectronIDv3CFMVAReader->AddVariable("IsGsfScPixChargeConsistent", &IsGsfScPixChargeConsistent);
-    ElectronIDv3CFMVAReader->AddVariable("IsGsfCtfChargeConsistent",  &IsGsfCtfChargeConsistent);
-    ElectronIDv3CFMVAReader->AddVariable("InvEminusInvP",&InvEminusInvP);
-    ElectronIDv3CFMVAReader->AddVariable("RelMiniIsoCh", &RelMiniIsoCh);
-    ElectronIDv3CFMVAReader->AddVariable("RelMiniIsoN",  &RelMiniIsoN);
-    ElectronIDv3CFMVAReader->AddVariable("NEMFracCJ",  &NEMFracCJ);
-    ElectronIDv3CFMVAReader->AddVariable("CHFracCJ",  &CHFracCJ);
-    ElectronIDv3CFMVAReader->AddVariable("NHFracCJ", &NHFracCJ);
-    ElectronIDv3CFMVAReader->AddVariable("dEtaSeed", &dEtaSeed);
-    ElectronIDv3CFMVAReader->AddVariable("dEtaIn",  &dEtaIn);
-    ElectronIDv3CFMVAReader->AddVariable("e2x5OverE5x5", &e2x5OverE5x5);
-    ElectronIDv3CFMVAReader->AddVariable("e1x5OverE5x5",&e1x5OverE5x5);
-    ElectronIDv3CFMVAReader->AddVariable("e15", &e15);
-    ElectronIDv3CFMVAReader->AddVariable("e25", &e25);
-    ElectronIDv3CFMVAReader->AddVariable("e55", &e55);
-    ElectronIDv3CFMVAReader->AddVariable("PtRatio",&PtRatio);
-    ElectronIDv3CFMVAReader->AddVariable("PtRel", &PtRel);
-    ElectronIDv3CFMVAReader->AddVariable("MVAIso", &MVAIso);
-    ElectronIDv3CFMVAReader->AddVariable("HoverE", &HoverE);
-    ElectronIDv3CFMVAReader->AddVariable("MissingHits", &MissingHits);
-    ElectronIDv3CFMVAReader->AddVariable("CEMFracCJ",&CEMFracCJ);
-    ElectronIDv3CFMVAReader->AddVariable("hcalPFClusterIso", &hcalPFClusterIso);
-    ElectronIDv3CFMVAReader->AddVariable("ecalPFClusterIso", &ecalPFClusterIso);
-    ElectronIDv3CFMVAReader->AddVariable("dr03TkSumPt", &dr03TkSumPt);
-    ElectronIDv3CFMVAReader->AddSpectator("w_id_tot", &w_id_tot);
-    
-    // same as ElectronIDFakeMVAReader but order changed
-    ElectronIDv2FakeMVAReader->AddVariable("Pt", &Pt);
-    ElectronIDv2FakeMVAReader->AddVariable("Eta", &Eta);
-    ElectronIDv2FakeMVAReader->AddVariable("MiniIsoChHad", &MiniIsoChHad);
-    ElectronIDv2FakeMVAReader->AddVariable("MiniIsoPhHad", &MiniIsoPhHad);
-    ElectronIDv2FakeMVAReader->AddVariable("MiniIsoNHad", &MiniIsoNHad);
-    ElectronIDv2FakeMVAReader->AddVariable("RelMiniIsoCh", &RelMiniIsoCh);
-    ElectronIDv2FakeMVAReader->AddVariable("RelMiniIsoN", &RelMiniIsoN);
-    ElectronIDv2FakeMVAReader->AddVariable("RelIso", &RelIso);
-    ElectronIDv2FakeMVAReader->AddVariable("Dxy",  &Dxy);
-    ElectronIDv2FakeMVAReader->AddVariable("Dz",  &Dz);
-    ElectronIDv2FakeMVAReader->AddVariable("IP3D", &IP3D);
-    ElectronIDv2FakeMVAReader->AddVariable("PtRatio",  &PtRatio);
-    ElectronIDv2FakeMVAReader->AddVariable("PtRel",  &PtRel);
-    ElectronIDv2FakeMVAReader->AddVariable("NEMFracCJ",&NEMFracCJ);
-    ElectronIDv2FakeMVAReader->AddVariable("CHFracCJ",&CHFracCJ);
-    ElectronIDv2FakeMVAReader->AddVariable("JetDiscCJ",&JetDiscCJ);
-    ElectronIDv2FakeMVAReader->AddVariable("NHFracCJ",&NHFracCJ);
-    ElectronIDv2FakeMVAReader->AddVariable("CEMFracCJ",&CEMFracCJ);
-    ElectronIDv2FakeMVAReader->AddVariable("MVA",  &MVA);
-    ElectronIDv2FakeMVAReader->AddVariable("MVAIso",  &MVAIso);
-    ElectronIDv2FakeMVAReader->AddSpectator("w_tot", &w_id_tot);
-
+    if(setupCF){
+      ElectronIDv3CFMVAReader->AddVariable("PtBinned", &PtBinned);
+      //      ElectronIDv3CFMVAReader->AddVariable("Pt", &Pt);
+      ElectronIDv3CFMVAReader->AddVariable("Eta", &Eta);
+      ElectronIDv3CFMVAReader->AddVariable("Dxy",  &Dxy);
+      ElectronIDv3CFMVAReader->AddVariable("DxySig",  &DxySig);
+      ElectronIDv3CFMVAReader->AddVariable("Dz",  &Dz);
+      ElectronIDv3CFMVAReader->AddVariable("DzSig",  &DzSig);
+      ElectronIDv3CFMVAReader->AddVariable("IP3D", &IP3D);
+      ElectronIDv3CFMVAReader->AddVariable("JetDiscCJ",&JetDiscCJ);
+      ElectronIDv3CFMVAReader->AddVariable("MVA",  &MVA);
+      ElectronIDv3CFMVAReader->AddVariable("Full5x5_sigmaIetaIeta",  &Full5x5_sigmaIetaIeta);
+      ElectronIDv3CFMVAReader->AddVariable("dPhiIn",  &dPhiIn);
+      ElectronIDv3CFMVAReader->AddVariable("EoverP",  &EoverP);
+      ElectronIDv3CFMVAReader->AddVariable("FBrem",  &FBrem);
+      ElectronIDv3CFMVAReader->AddVariable("R9",  &R9);
+      ElectronIDv3CFMVAReader->AddVariable("dr03TkSumPt",  &dr03TkSumPt);
+      ElectronIDv3CFMVAReader->AddVariable("e55",  &e55);
+      ElectronIDv3CFMVAReader->AddVariable("e2x5OverE5x5",  &e2x5OverE5x5);
+      ElectronIDv3CFMVAReader->AddVariable("EtaWidth",  &EtaWidth);
+      ElectronIDv3CFMVAReader->AddVariable("PhiWidth",  &PhiWidth);
+      ElectronIDv3CFMVAReader->AddVariable("ecalPFClusterIso",  &ecalPFClusterIso);
+      ElectronIDv3CFMVAReader->AddVariable("PassConversionVeto",  &PassConversionVeto);
+      ElectronIDv3CFMVAReader->AddVariable("IsGsfCtfScPixChargeConsistent",  &IsGsfCtfScPixChargeConsistent);
+      ElectronIDv3CFMVAReader->AddVariable("IsGsfScPixChargeConsistent",  &IsGsfScPixChargeConsistent);
+      ElectronIDv3CFMVAReader->AddVariable("IsGsfCtfChargeConsistent",  &IsGsfCtfChargeConsistent);
+      ElectronIDv3CFMVAReader->AddSpectator("w_id_tot", &w_id_tot);
+    }
 
   }
+
+
+
 
   TString AnalyzerPath=std::getenv("SKFlat_WD");
 
@@ -989,429 +1035,208 @@ void AnalyzerCore::SetupIDMVAReader(bool isMuon){
   TString MVAPathCFv1="/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeICF/Version1/"+GetYearString()+"/dataset/weights/";
 
   /// Version 2 paths
-  TString MVAPathFakev2="/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIElectronFake/Version2/"+GetYearString()+"/dataset/weights/";
-  TString MVAPathConvv2="/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIConv/Version2/"+GetYearString()+"/dataset/weights/";
-  TString MVAPathCFv2="/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeICF/Version2/"+GetYearString()+"/dataset/weights/";
-  TString MVAPathCFv3="/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeICFFullList/Version2/"+GetYearString()+"/dataset/weights/";
-  TString MVAPathMuonFake="/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIMuonFake/Version2/"+GetYearString()+"/dataset/weights/";
+  TString MVAPathFakev2="/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIElectronFake/Version3/"+GetYearString()+"/dataset/weights/";
+  TString MVAPathConvv2="/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIConv/Version3/"+GetYearString()+"/dataset/weights/";
+  TString MVAPathCFv2  ="/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeICF/Version3/"+GetYearString()+"/dataset/weights/";
+  TString MVAPathCFv3  ="/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeICFVersion1/Version3/"+GetYearString()+"/dataset/weights/";
+  TString MVAPathMuonFake="/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIMuonFake/Version3/"+GetYearString()+"/dataset/weights/";
+
+
+  TString xmlpf = "_TMVAClassification_BDTG.weights.xml";
 
   if(isMuon){
     
-    /// XML file picked with BEST AUC && GOF > 0.1
-    //TString BDTGv1_Conv = "";
-    //if(GetYear() == 2016) BDTGv1_Conv = "BDTG_ConvSignalConvTypeI_MuMu_SignalConv_2016_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT";
-    //if(GetYear() == 2017) BDTGv1_Conv = "BDTG_ConvSignalConvTypeI_MuMu_SignalConv_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
-    //if(GetYear() == 2018) BDTGv1_Conv = "BDTG_ConvSignalConvTypeI_MuMu_SignalConv_2018_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT";
-    
-    
     TString BDTGv1_Fake = "";
-    if(GetYear() == 2016) BDTGv1_Fake = "BDTG_FakeSignalTypeI_MuMu_Signal_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
-    if(GetYear() == 2017) BDTGv1_Fake = "BDTG_FakeSignalTypeI_MuMu_Signal_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
-    if(GetYear() == 2018) BDTGv1_Fake = "BDTG_FakeSignalTypeI_MuMu_Signal_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
-
-    TString BDTGv1_FakeLowPt = "";
-    if(GetYear() == 2016) BDTGv1_FakeLowPt = "BDTG_FakeSignalLowLepPtTypeI_MuMu_SignalLowLepPt_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT";
-    if(GetYear() == 2017) BDTGv1_FakeLowPt = "BDTG_FakeSignalLowLepPtTypeI_MuMu_SignalLowLepPt_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT";
-    if(GetYear() == 2018) BDTGv1_FakeLowPt = "BDTG_FakeSignalLowLepPtTypeI_MuMu_SignalLowLepPt_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
-    
-    TString BDTGv1_FakeHighPt = "";
-    if(GetYear() == 2016) BDTGv1_FakeHighPt = "BDTG_FakeSignalHighLepPtTypeI_MuMu_SignalHighLepPt_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
-    if(GetYear() == 2017) BDTGv1_FakeHighPt = "BDTG_FakeSignalHighLepPtTypeI_MuMu_SignalHighLepPt_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
-    if(GetYear() == 2018) BDTGv1_FakeHighPt = "BDTG_FakeSignalHighLepPtTypeI_MuMu_SignalHighLepPt_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
+    if(GetYear() == 2016) BDTGv1_Fake = "BDTG_version3_MuonFakeBkg_LF_TypeI_MuMu_SignalMuonFake_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf;
+    if(GetYear() == 2017) BDTGv1_Fake = "BDTG_version3_MuonFakeBkg_LF_TypeI_MuMu_SignalMuonFake_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf;
+    if(GetYear() == 2018) BDTGv1_Fake = "BDTG_version3_MuonFakeBkg_LF_TypeI_MuMu_SignalMuonFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf;
 
     vector<pair<TString,TString> > BDTInput =     {
-      make_pair("BDTGv1_Fake", BDTGv1_Fake),
-      make_pair("BDTGv1_FakeLowPt", BDTGv1_FakeLowPt),
-      make_pair("BDTGv1_FakeHighPt", BDTGv1_FakeHighPt),
+      make_pair("BDTGv2_Fake", BDTGv1_Fake),
     };
     
-    //for (auto ibdt : BDTInput)   MuonIDFakeMVAReader->BookMVA(ibdt.first,MVAPathMuonFake+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
+    for (auto ibdt : BDTInput)   MuonIDFakeMVAReader->BookMVA(ibdt.first, MVAPathMuonFake+ibdt.second);
     
-    
+    return;
+
   }
-  else{
-    
-    /////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////
-    ///
-    ///    VERSION 1 ELECTRON MVA (Dec 22)
-    ///
-    /////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////
-
-    TString BDTGv1_Fake(""), BDTGv1_BB_Fake(""), BDTGv1_EC_Fake("");
+  
+  
+  /////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////
+  ///
+  ///    VERSION 1 ELECTRON MVA (Dec 22)
+  ///
+  /////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////
+  
+  if(setupV1){
     
     if(GetYear() == 2016) {
-      BDTGv1_Fake = "BDTG_FakeSignalTypeI_EE_Signal_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
-      BDTGv1_BB_Fake = "BDTG_FakeSignalHNLTopTypeI_EE_SignalHNLTop_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT";
-      BDTGv1_EC_Fake = "BDTG_FakeSignalHNLTopECTypeI_EE_SignalHNLTopEC_2016_NTrees2100_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
+      
+      if(setupFake)ElectronIDFakeMVAReader->BookMVA("BDTGv1_Fake",	 MVAPathFakev1+"BDTG_FakeSignalTypeI_EE_Signal_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" + xmlpf);
+      if(setupConv)ElectronIDConvMVAReader->BookMVA("BDTGv1_Conv",MVAPathConvv1+ "BDTG_ConvSignalConvTypeI_EE_SignalConv_2016_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"  + xmlpf);
+      
+      if(setupCF){
+	ElectronIDCFMVAReader->BookMVA("BDTGv1_BB_CF",MVAPathCFv1+"BDTGv1_CFSignalCFTypeI_EE_SignalCF_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT_TMVAClassification_BDTG.weights.xml");
+	ElectronIDCFMVAReader->BookMVA("BDTGv1_EC_CF",MVAPathCFv1+"BDTGv1_CFSignalCFECTypeI_EE_SignalCFEC_2016_NTrees300_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT_TMVAClassification_BDTG.weights.xml");
+      }
     }
     
     if(GetYear() == 2017) {
-      BDTGv1_Fake = "BDTG_FakeSignalTypeI_EE_Signal_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
-      BDTGv1_BB_Fake = "BDTG_FakeSignalHNLTopTypeI_EE_SignalHNLTop_2017_NTrees2100_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_301_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
-      BDTGv1_EC_Fake = "BDTG_FakeSignalHNLTopECTypeI_EE_SignalHNLTopEC_2017_NTrees2100_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
+      if(setupFake)ElectronIDFakeMVAReader->BookMVA("BDTGv1_Fake",MVAPathFakev1+ "BDTG_FakeSignalTypeI_EE_Signal_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"  + xmlpf);
+      if(setupConv)ElectronIDConvMVAReader->BookMVA("BDTGv1_Conv",MVAPathConvv1+ "BDTG_ConvSignalConvTypeI_EE_SignalConv_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"  + xmlpf);
+      
+      if(setupCF){
+	ElectronIDCFMVAReader->BookMVA("BDTGv1_BB_CF",MVAPathCFv1+"BDTGv1_CFSignalCFTypeI_EE_SignalCF_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" + xmlpf);
+	ElectronIDCFMVAReader->BookMVA("BDTGv1_EC_CF",MVAPathCFv1+"BDTGv1_CFSignalCFECTypeI_EE_SignalCFEC_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" + xmlpf);
+      }
     }
+    
     if(GetYear() == 2018){
-      BDTGv1_Fake = "BDTG_FakeSignalTypeI_EE_Signal_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
-      BDTGv1_BB_Fake = "BDTG_FakeSignalHNLTopTypeI_EE_SignalHNLTop_2018_NTrees1100_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_5_nCuts_500_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
-      BDTGv1_EC_Fake = "BDTG_FakeSignalHNLTopECTypeI_EE_SignalHNLTopEC_2018_NTrees2100_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
+      if(setupFake)ElectronIDFakeMVAReader->BookMVA("BDTGv1_Fake",MVAPathFakev1+ "BDTG_FakeSignalTypeI_EE_Signal_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"  + xmlpf);
+      if(setupConv)ElectronIDConvMVAReader->BookMVA("BDTGv1_Conv",MVAPathConvv1+ "BDTG_ConvSignalConvTypeI_EE_SignalConv_2018_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"  + xmlpf);
+      
+      if(setupCF){
+	ElectronIDCFMVAReader->BookMVA("BDTGv1_BB_CF",MVAPathCFv1+"BDTGv1_CFSignalCFTypeI_EE_SignalCF_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" + xmlpf);
+	ElectronIDCFMVAReader->BookMVA("BDTGv1_EC_CF",MVAPathCFv1+"BDTGv1_CFSignalCFECTypeI_EE_SignalCFEC_2018_NTrees300_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" + xmlpf);
+      }
     }
+  }
+  
+  
+  // Look at corrected samples
+  /// CF has 3 versions
+  /// V1 = Original training with some minor bugs
+  /// V2 = new training with bug fix and some variables changed + ptbinned
+  /// V3 is new with bug fix plus All variables 
+  
+  /////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////
+  ///                                                                             
+  ///    VERSION 3 ELECTRON MVA (Feb 20)                                          
+  ///                                                                             
+  /////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////         
+  
+  cout << " GetYear()  = " << GetYear()  << " GetYearString()  = " << GetYearString()<< endl;
+  
+  if(setupCF){
     
-
-    TString BDTGv1_Conv = "",BDTGv1_BB_Conv = "",BDTGv1_EC_Conv = "";
     if(GetYear() == 2016) {
-      BDTGv1_Conv = "BDTG_ConvSignalConvTypeI_EE_SignalConv_2016_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
-      BDTGv1_BB_Conv = "BDTG_ConvSignalHNLTopConv_BBTypeI_EE_SignalHNLTopConv_BB_2016_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
-      BDTGv1_EC_Conv = "BDTG_ConvSignalHNLTopConv_ECTypeI_EE_SignalHNLTopConv_EC_2016_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
+      
+      cout << "Setting up 2016 CF READER " <<endl;
+      
+      ElectronIDv2CFMVAReader->BookMVA("BDTGv2_BB_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      
+      
+      ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
+      
+      ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      
+      
+      ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_BB_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_BB_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_EC_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_EC_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
+      ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      
+      ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_BB_CF", MVAPathCFv3+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      
+      ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_EC_CF", MVAPathCFv3+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      
+      ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_CF", MVAPathCFv3+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      
     }
     if(GetYear() == 2017) {
-      BDTGv1_Conv = "BDTG_ConvSignalConvTypeI_EE_SignalConv_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT";
-      BDTGv1_BB_Conv = "BDTG_ConvSignalHNLTopConv_BBTypeI_EE_SignalHNLTopConv_BB_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
-      BDTGv1_EC_Conv = "BDTG_ConvSignalHNLTopConv_ECTypeI_EE_SignalHNLTopConv_EC_2017_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
+      
+      cout << "ElectronIDv2CFMVAReader 2017 " << endl;
+      ElectronIDv2CFMVAReader->BookMVA("BDTGv2_BB_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      
+      ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      
+      
+      ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_BB_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_BB_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);                                                        
+      ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_EC_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_EC_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);                                                        
+      ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);                                                           
+      
+      ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_BB_CF", MVAPathCFv3+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      
+      ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_EC_CF", MVAPathCFv3+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      
+      ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_CF", MVAPathCFv3+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      
+      
     }
-    if(GetYear() == 2018) {
-      BDTGv1_Conv = "BDTG_ConvSignalConvTypeI_EE_SignalConv_2018_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
-      BDTGv1_BB_Conv = "BDTG_ConvSignalHNLTopConv_BBTypeI_EE_SignalHNLTopConv_BB_2018_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
-      BDTGv1_EC_Conv = "BDTG_ConvSignalHNLTopConv_ECTypeI_EE_SignalHNLTopConv_EC_2018_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
-    }
-
     
-
-    TString BDTGv1_BB_CF= "", BDTGv1_EC_CF= "";
+    if(GetYear() == 2018) {
+      
+      ElectronIDv2CFMVAReader->BookMVA("BDTGv2_BB_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
+      
+      ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      
+      ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      
+      
+      ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_BB_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_BB_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);                                                        
+      ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_EC_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_EC_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);  
+      ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);   
+      
+      ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_BB_CF", MVAPathCFv3+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      
+      ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_EC_CF", MVAPathCFv3+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
+      
+      ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_CF", MVAPathCFv3+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      
+      
+    }
+  }
+  
+  /// FAKE ID BDT
+  if(setupFake){
+    
     if(GetYear() == 2016) {
-      BDTGv1_BB_CF= "BDTGv1_CFSignalCFTypeI_EE_SignalCF_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT";
-
-      BDTGv1_EC_CF= "BDTGv1_CFSignalCFECTypeI_EE_SignalCFEC_2016_NTrees300_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_HF_Fake",MVAPathFakev2+"BDTG_version3_FakeBkg_HF_TypeI_EE_SignalElectronFake_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+      
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_LF_Fake",MVAPathFakev2+"BDTG_version3_FakeBkg_LF_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+      
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake",MVAPathFakev2+"BDTG_version3_FakeBkg_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
+      
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Top_Fake",MVAPathFakev2+"BDTG_version3_FakeBkgTop_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
+      
     }
     if(GetYear() == 2017) {
-      BDTGv1_BB_CF= "BDTGv1_CFSignalCFTypeI_EE_SignalCF_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
-      BDTGv1_EC_CF= "BDTGv1_CFSignalCFECTypeI_EE_SignalCFEC_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT";
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_HF_Fake",MVAPathFakev2+"BDTG_version3_FakeBkg_HF_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+      
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_LF_Fake",MVAPathFakev2+"BDTG_version3_FakeBkg_LF_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+      
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake",MVAPathFakev2+"BDTG_version3_FakeBkg_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
+      
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Top_Fake",MVAPathFakev2+"BDTG_version3_FakeBkgTop_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+      
     }
     if(GetYear() == 2018) {
-      BDTGv1_BB_CF= "BDTGv1_CFSignalCFTypeI_EE_SignalCF_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
-      BDTGv1_EC_CF= "BDTGv1_CFSignalCFECTypeI_EE_SignalCFEC_2018_NTrees300_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT";
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_HF_Fake",MVAPathFakev2+"BDTG_version3_FakeBkg_HF_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+      
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_LF_Fake",MVAPathFakev2+"BDTG_version3_FakeBkg_LF_TypeI_EE_SignalElectronFake_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+      
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake",MVAPathFakev2+"BDTG_version3_FakeBkg_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+      
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Top_Fake",MVAPathFakev2+"BDTG_version3_FakeBkgTop_TypeI_EE_SignalElectronFake_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
+      
     }
-
-    vector<pair<TString,TString> > BDTInput =     {
-
-      make_pair("BDTGv1_Fake", BDTGv1_Fake),
-      make_pair("BDTGv1_BB_Fake", BDTGv1_BB_Fake),
-      make_pair("BDTGv1_EC_Fake", BDTGv1_EC_Fake),
-      make_pair("BDTGv1_BB_CF",BDTGv1_BB_CF),
-      make_pair("BDTGv1_EC_CF",BDTGv1_EC_CF),
-      make_pair("BDTGv1_Conv",BDTGv1_Conv),
-      make_pair("BDTGv1_BB_Conv",BDTGv1_BB_Conv),
-      make_pair("BDTGv1_EC_Conv",BDTGv1_EC_Conv),
-
-    };
-
-    for (auto ibdt : BDTInput)  {
-      cout <<  ibdt.first << " " << ibdt.second << endl;
-      if(ibdt.first.Contains("_CF"))    ElectronIDCFMVAReader->BookMVA(ibdt.first,MVAPathCFv1+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
-      else if(ibdt.first.Contains("_Conv")) ElectronIDConvMVAReader->BookMVA(ibdt.first,MVAPathConvv1+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
-      else  ElectronIDFakeMVAReader->BookMVA(ibdt.first,MVAPathFakev1+ibdt.second+"_TMVAClassification_BDTG.weights.xml");
-    }
-        
-    
-    // Look at corrected samples
-    /// CF has 3 versions
-    /// V1 = Original training with some minor bugs
-    /// V2 = new training with bug fix and some variables changed + ptbinned
-    /// V3 is new with bug fix plus All variables 
+  }
+  
   
 
-    TString xmlpf = "_TMVAClassification_BDTG.weights.xml";
+  /// FAKE ID BDT                                                                                                                                           
+  if(setupConv){
 
-    bool RunAllForOptCF=true;
-    bool RunAllForOptFake=false;
+    if(GetYear() == 2016)   ElectronIDv2ConvMVAReader->BookMVA("BDTGv2_Conv",MVAPathConvv2+"BDTG_version3_Conv_TypeI_EE_SignalConv_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
 
+    if(GetYear() == 2017)   ElectronIDv2ConvMVAReader->BookMVA("BDTGv2_Conv",MVAPathConvv2+"BDTG_version3_Conv_TypeI_EE_SignalConv_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
 
-    cout << " GetYear()  = " << GetYear()  << " GetYearString()  = " << GetYearString()<< endl;
-    
-    bool RunMD2=false;
-    bool RunMD3=true;
-    bool RunMD4=false;
-    bool RunMD5=false;
+    if(GetYear() == 2018)   ElectronIDv2ConvMVAReader->BookMVA("BDTGv2_Conv",MVAPathConvv2+"BDTG_version3_Conv_TypeI_EE_SignalConv_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
 
-    
-    ////  IB training only 
-    if(GetYear() == 2016) {
-      cout << "Setting up 2016 CF READER " <<endl;
-
-      if(RunAllForOptCF){
-	if(RunMD5){
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_IB_CF_MD5", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf); 
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_OB_CF_MD5", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF_MD5", MVAPathCFv2+ "BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF_MD5",    MVAPathCFv2+ "BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_IB_CF_MD5", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_OB_CF_MD5", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_EC_CF_MD5", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_CF_MD5",    MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	}
-        if(RunMD4){
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_IB_CF_MD4", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_OB_CF_MD4", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF_MD4", MVAPathCFv2+ "BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF_MD4",    MVAPathCFv2+ "BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_IB_CF_MD4", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_OB_CF_MD4", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_EC_CF_MD4", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_CF_MD4",    MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	}
-        if(RunMD3){
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_IB_CF_MD3", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_OB_CF_MD3", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF_MD3", MVAPathCFv2+ "BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF_MD3",    MVAPathCFv2+ "BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_IB_CF_MD3", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_OB_CF_MD3", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_EC_CF_MD3",     MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2016_NTrees300_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_CF_MD3",        MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_IB_CF_MD3", MVAPathCFv2+"BDTG_CFSignalCF_IBTypeI_EE_SignalCF_IB_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_OB_CF_MD3", MVAPathCFv2+"BDTG_CFSignalCF_OBTypeI_EE_SignalCF_OB_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_EC_CF_MD3", MVAPathCFv2+"BDTG_CFSignalCF_ECTypeI_EE_SignalCF_EC_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_CF_MD3",    MVAPathCFv2+"BDTG_CFSignalCFTypeI_EE_SignalCF_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	}
-        if(RunMD2){
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_IB_CF_MD2", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_OB_CF_MD2", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF_MD2", MVAPathCFv2+ "BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF_MD2",    MVAPathCFv2+ "BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_IB_CF_MD2", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_OB_CF_MD2", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_CF_MD2",    MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_EC_CF_MD2", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	}
-	
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_IB_CF_MD5", MVAPathCFv2+"BDTG_CFSignalCF_IBTypeI_EE_SignalCF_IB_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_IB_CF_MD4", MVAPathCFv2+"BDTG_CFSignalCF_IBTypeI_EE_SignalCF_IB_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_IB_CF_MD2", MVAPathCFv2+"BDTG_CFSignalCF_IBTypeI_EE_SignalCF_IB_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_OB_CF_MD5", MVAPathCFv2+"BDTG_CFSignalCF_OBTypeI_EE_SignalCF_OB_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_OB_CF_MD4", MVAPathCFv2+"BDTG_CFSignalCF_OBTypeI_EE_SignalCF_OB_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_OB_CF_MD2", MVAPathCFv2+"BDTG_CFSignalCF_OBTypeI_EE_SignalCF_OB_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_EC_CF_MD5", MVAPathCFv2+"BDTG_CFSignalCF_ECTypeI_EE_SignalCF_EC_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_EC_CF_MD4", MVAPathCFv2+"BDTG_CFSignalCF_ECTypeI_EE_SignalCF_EC_2016_NTrees300_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_EC_CF_MD2", MVAPathCFv2+"BDTG_CFSignalCF_ECTypeI_EE_SignalCF_EC_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_CF_MD5", MVAPathCFv2+"BDTG_CFSignalCFTypeI_EE_SignalCF_2016_NTrees300_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_CF_MD4", MVAPathCFv2+"BDTG_CFSignalCFTypeI_EE_SignalCF_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_CF_MD2", MVAPathCFv2+"BDTG_CFSignalCFTypeI_EE_SignalCF_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-
-      }
-
-    }
-    if(GetYear() == 2017) {
-      
-      if(RunAllForOptCF){
-	cout << "Setting up 2017 CF READER " <<endl;
-
-	if(RunMD5){
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_IB_CF_MD5", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_OB_CF_MD5", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF_MD5", MVAPathCFv2+ "BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF_MD5",    MVAPathCFv2+ "BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_IB_CF_MD5", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2017_NTrees300_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_OB_CF_MD5", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_EC_CF_MD5", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_CF_MD5",    MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-
-	}
-	if(RunMD4){
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_IB_CF_MD4", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_OB_CF_MD4", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF_MD4", MVAPathCFv2+ "BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF_MD4",    MVAPathCFv2+ "BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_IB_CF_MD4", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_OB_CF_MD4", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_EC_CF_MD4", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_CF_MD4",    MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-
-	}
-	if(RunMD3){
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_OB_CF_MD3", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_IB_CF_MD3", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF_MD3", MVAPathCFv2+ "BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF_MD3",    MVAPathCFv2+ "BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_IB_CF_MD3", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_OB_CF_MD3", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_EC_CF_MD3", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_CF_MD3",    MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_IB_CF_MD3", MVAPathCFv2+"BDTG_CFSignalCF_IBTypeI_EE_SignalCF_IB_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_OB_CF_MD3", MVAPathCFv2+"BDTG_CFSignalCF_OBTypeI_EE_SignalCF_OB_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_EC_CF_MD3", MVAPathCFv2+"BDTG_CFSignalCF_ECTypeI_EE_SignalCF_EC_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_CF_MD3", MVAPathCFv2+"BDTG_CFSignalCFTypeI_EE_SignalCF_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-
-	}
-	if(RunMD2){
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_IB_CF_MD2", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_OB_CF_MD2", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF_MD2", MVAPathCFv2+ "BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF_MD2",    MVAPathCFv2+ "BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_IB_CF_MD2", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_OB_CF_MD2", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_EC_CF_MD2", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_CF_MD2",    MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	}
-	//ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_IB_CF_MD5", MVAPathCFv2+"BDTG_CFSignalCF_IBTypeI_EE_SignalCF_IB_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_IB_CF_MD4", MVAPathCFv2+"BDTG_CFSignalCF_IBTypeI_EE_SignalCF_IB_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_IB_CF_MD2", MVAPathCFv2+"BDTG_CFSignalCF_IBTypeI_EE_SignalCF_IB_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_OB_CF_MD5", MVAPathCFv2+"BDTG_CFSignalCF_OBTypeI_EE_SignalCF_OB_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_OB_CF_MD4", MVAPathCFv2+"BDTG_CFSignalCF_OBTypeI_EE_SignalCF_OB_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_OB_CF_MD2", MVAPathCFv2+"BDTG_CFSignalCF_OBTypeI_EE_SignalCF_OB_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_EC_CF_MD5", MVAPathCFv2+"BDTG_CFSignalCF_ECTypeI_EE_SignalCF_EC_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_EC_CF_MD4", MVAPathCFv2+"BDTG_CFSignalCF_ECTypeI_EE_SignalCF_EC_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_EC_CF_MD2", MVAPathCFv2+"BDTG_CFSignalCF_ECTypeI_EE_SignalCF_EC_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_CF_MD5", MVAPathCFv2+"BDTG_CFSignalCFTypeI_EE_SignalCF_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_CF_MD4", MVAPathCFv2+"BDTG_CFSignalCFTypeI_EE_SignalCF_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_CF_MD2", MVAPathCFv2+"BDTG_CFSignalCFTypeI_EE_SignalCF_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-
-      }
-    }
-    
-    if(GetYear() == 2018) {
-      
-      if(RunAllForOptCF){
-	
-	cout << "Setting up 2018 CF READER " << endl;
-	cout << "MVAPathCFv2 = " << MVAPathCFv2 << endl;
-	cout << "MVAPathCFv3 = " << MVAPathCFv3 << endl;
-
-	if(RunMD5){
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_IB_CF_MD5", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_OB_CF_MD5", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF_MD5", MVAPathCFv2+ "BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF_MD5",    MVAPathCFv2+ "BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_IB_CF_MD5", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_OB_CF_MD5", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_EC_CF_MD5", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_CF_MD5",    MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-
-	}
-	if(RunMD4){
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_IB_CF_MD4", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_OB_CF_MD4", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF_MD4", MVAPathCFv2+ "BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF_MD4",    MVAPathCFv2+ "BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_IB_CF_MD4", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_OB_CF_MD4", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_EC_CF_MD4", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_CF_MD4",    MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-
-	}
-	if(RunMD3){
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_IB_CF_MD3", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_OB_CF_MD3", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF_MD3", MVAPathCFv2+ "BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF_MD3",    MVAPathCFv2+ "BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_IB_CF_MD3", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_OB_CF_MD3", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_EC_CF_MD3", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_CF_MD3",    MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_IB_CF_MD3", MVAPathCFv2+"BDTG_CFSignalCF_IBTypeI_EE_SignalCF_IB_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_OB_CF_MD3", MVAPathCFv2+"BDTG_CFSignalCF_OBTypeI_EE_SignalCF_OB_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_EC_CF_MD3", MVAPathCFv2+"BDTG_CFSignalCF_ECTypeI_EE_SignalCF_EC_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_CF_MD3", MVAPathCFv2+"BDTG_CFSignalCFTypeI_EE_SignalCF_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-
-	}
-	if(RunMD2){
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_IB_CF_MD2", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_OB_CF_MD2", MVAPathCFv2+ "BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF_MD2", MVAPathCFv2+ "BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF_MD2",    MVAPathCFv2+ "BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_IB_CF_MD2", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_IBTypeI_EE_SignalCFPtBinned_IB_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_OB_CF_MD2", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinned_OBTypeI_EE_SignalCFPtBinned_OB_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_EC_CF_MD2", MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinneed_ECTypeI_EE_SignalCFPtBinneed_EC_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	  ElectronIDv3CFMVAReader->BookMVA("BDTGv3_CF_MD2",    MVAPathCFv3+ "Full_BDTG_CFSignalCFPtBinnedTypeI_EE_SignalCFPtBinned_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-	}
-
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_IB_CF_MD5", MVAPathCFv2+"BDTG_CFSignalCF_IBTypeI_EE_SignalCF_IB_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_IB_CF_MD4", MVAPathCFv2+"BDTG_CFSignalCF_IBTypeI_EE_SignalCF_IB_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-	// ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_IB_CF_MD2", MVAPathCFv2+"BDTG_CFSignalCF_IBTypeI_EE_SignalCF_IB_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_OB_CF_MD5", MVAPathCFv2+"BDTG_CFSignalCF_OBTypeI_EE_SignalCF_OB_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_OB_CF_MD4", MVAPathCFv2+"BDTG_CFSignalCF_OBTypeI_EE_SignalCF_OB_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_OB_CF_MD2", MVAPathCFv2+"BDTG_CFSignalCF_OBTypeI_EE_SignalCF_OB_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_EC_CF_MD5", MVAPathCFv2+"BDTG_CFSignalCF_ECTypeI_EE_SignalCF_EC_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_EC_CF_MD4", MVAPathCFv2+"BDTG_CFSignalCF_ECTypeI_EE_SignalCF_EC_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_EC_CF_MD2", MVAPathCFv2+"BDTG_CFSignalCF_ECTypeI_EE_SignalCF_EC_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_CF_MD5", MVAPathCFv2+"BDTG_CFSignalCFTypeI_EE_SignalCF_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_CF_MD4", MVAPathCFv2+"BDTG_CFSignalCFTypeI_EE_SignalCF_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-        //ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2Pt_CF_MD2", MVAPathCFv2+"BDTG_CFSignalCFTypeI_EE_SignalCF_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-
-      }
-    }
-      
-    /// FAKE ID BDT
-    
-    if(GetYear() == 2016) {
-
-      if(RunAllForOptFake){
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_BB_MD5",MVAPathFakev2+"BDTG_version2_FakeBkgTop_SignalElectronFake_BBTypeI_EE_SignalElectronFake_BB_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_BB_MD4",MVAPathFakev2+"BDTG_version2_FakeBkgTop_SignalElectronFake_BBTypeI_EE_SignalElectronFake_BB_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_BB_MD3",MVAPathFakev2+"BDTG_version2_FakeBkgTop_SignalElectronFake_BBTypeI_EE_SignalElectronFake_BB_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_BB_MD2",MVAPathFakev2+"BDTG_version2_FakeBkgTop_SignalElectronFake_BBTypeI_EE_SignalElectronFake_BB_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_EC_MD5",MVAPathFakev2+"BDTG_version2_FakeBkgTop_SignalElectronFake_ECTypeI_EE_SignalElectronFake_EC_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);  
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_EC_MD4",MVAPathFakev2+"BDTG_version2_FakeBkgTop_SignalElectronFake_ECTypeI_EE_SignalElectronFake_EC_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_EC_MD3",MVAPathFakev2+"BDTG_version2_FakeBkgTop_SignalElectronFake_ECTypeI_EE_SignalElectronFake_EC_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_EC_MD2",MVAPathFakev2+"BDTG_version2_FakeBkgTop_SignalElectronFake_ECTypeI_EE_SignalElectronFake_EC_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_MD5",MVAPathFakev2+"BDTG_version2_FakeBkg_SignalElectronFakeTypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);   
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_MD4",MVAPathFakev2+"BDTG_version2_FakeBkg_SignalElectronFakeTypeI_EE_SignalElectronFake_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);   
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_MD3",MVAPathFakev2+"BDTG_version2_FakeBkg_SignalElectronFakeTypeI_EE_SignalElectronFake_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);   
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_MD2",MVAPathFakev2+"BDTG_version2_FakeBkg_SignalElectronFakeTypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);   
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_Top_MD5",MVAPathFakev2+"BDTG_version2_FakeBkgTop_SignalElectronFakeTypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_Top_MD4",MVAPathFakev2+"BDTG_version2_FakeBkgTop_SignalElectronFakeTypeI_EE_SignalElectronFake_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_Top_MD3",MVAPathFakev2+"BDTG_version2_FakeBkgTop_SignalElectronFakeTypeI_EE_SignalElectronFake_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_Top_MD2",MVAPathFakev2+"BDTG_version2_FakeBkgTop_SignalElectronFakeTypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_HF_MD5",MVAPathFakev2+"BDTG_version2_FakeBkg_HF_SignalElectronFakeTypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_HF_MD4",MVAPathFakev2+"BDTG_version2_FakeBkg_HF_SignalElectronFakeTypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_HF_MD3",MVAPathFakev2+"BDTG_version2_FakeBkg_HF_SignalElectronFakeTypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_HF_MD2",MVAPathFakev2+"BDTG_version2_FakeBkg_HF_SignalElectronFakeTypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_LF_MD5",MVAPathFakev2+"BDTG_version2_FakeBkg_LF_SignalElectronFakeTypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_LF_MD4",MVAPathFakev2+"BDTG_version2_FakeBkg_LF_SignalElectronFakeTypeI_EE_SignalElectronFake_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_LF_MD3",MVAPathFakev2+"BDTG_version2_FakeBkg_LF_SignalElectronFakeTypeI_EE_SignalElectronFake_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_LF_MD2",MVAPathFakev2+"BDTG_version2_FakeBkg_LF_SignalElectronFakeTypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-      }
-    }
-    if(GetYear() == 2017) {
-      if(RunAllForOptFake){
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_MD5",MVAPathFakev2+"BDTG_version2_FakeBkg_SignalElectronFakeTypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_MD4",MVAPathFakev2+"BDTG_version2_FakeBkg_SignalElectronFakeTypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_MD3",MVAPathFakev2+"BDTG_version2_FakeBkg_SignalElectronFakeTypeI_EE_SignalElectronFake_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_MD2",MVAPathFakev2+"BDTG_version2_FakeBkg_SignalElectronFakeTypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_Top_MD5",MVAPathFakev2+"BDTG_version2_FakeBkgTop_SignalElectronFakeTypeI_EE_SignalElectronFake_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_Top_MD4",MVAPathFakev2+"BDTG_version2_FakeBkgTop_SignalElectronFakeTypeI_EE_SignalElectronFake_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_Top_MD3",MVAPathFakev2+"BDTG_version2_FakeBkgTop_SignalElectronFakeTypeI_EE_SignalElectronFake_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_Top_MD2",MVAPathFakev2+"BDTG_version2_FakeBkgTop_SignalElectronFakeTypeI_EE_SignalElectronFake_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_HF_MD5",MVAPathFakev2+"BDTG_version2_FakeBkg_HF_SignalElectronFakeTypeI_EE_SignalElectronFake_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_HF_MD4",MVAPathFakev2+"BDTG_version2_FakeBkg_HF_SignalElectronFakeTypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT."+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_HF_MD3",MVAPathFakev2+"BDTG_version2_FakeBkg_HF_SignalElectronFakeTypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_HF_MD2",MVAPathFakev2+"BDTG_version2_FakeBkg_HF_SignalElectronFakeTypeI_EE_SignalElectronFake_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_LF_MD5",MVAPathFakev2+"BDTG_version2_FakeBkg_LF_SignalElectronFakeTypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_LF_MD4",MVAPathFakev2+"BDTG_version2_FakeBkg_LF_SignalElectronFakeTypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_LF_MD3",MVAPathFakev2+"BDTG_version2_FakeBkg_LF_SignalElectronFakeTypeI_EE_SignalElectronFake_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_LF_MD2",MVAPathFakev2+"BDTG_version2_FakeBkg_LF_SignalElectronFakeTypeI_EE_SignalElectronFake_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-      }
-    }
-    if(GetYear() == 2018) {
-      if(RunAllForOptFake){
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_MD5",MVAPathFakev2+"BDTG_version2_FakeBkg_SignalElectronFakeTypeI_EE_SignalElectronFake_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_MD4",MVAPathFakev2+"BDTG_version2_FakeBkg_SignalElectronFakeTypeI_EE_SignalElectronFake_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_MD3",MVAPathFakev2+"BDTG_version2_FakeBkg_SignalElectronFakeTypeI_EE_SignalElectronFake_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_MD2",MVAPathFakev2+"BDTG_version2_FakeBkg_SignalElectronFakeTypeI_EE_SignalElectronFake_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_Top_MD5",MVAPathFakev2+"BDTG_version2_FakeBkgTop_SignalElectronFakeTypeI_EE_SignalElectronFake_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_Top_MD4",MVAPathFakev2+"BDTG_version2_FakeBkgTop_SignalElectronFakeTypeI_EE_SignalElectronFake_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_Top_MD3",MVAPathFakev2+"BDTG_version2_FakeBkgTop_SignalElectronFakeTypeI_EE_SignalElectronFake_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_Top_MD2",MVAPathFakev2+"BDTG_version2_FakeBkgTop_SignalElectronFakeTypeI_EE_SignalElectronFake_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_HF_MD5",MVAPathFakev2+"BDTG_version2_FakeBkg_HF_SignalElectronFakeTypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_HF_MD4",MVAPathFakev2+"BDTG_version2_FakeBkg_HF_SignalElectronFakeTypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_HF_MD3",MVAPathFakev2+"BDTG_version2_FakeBkg_HF_SignalElectronFakeTypeI_EE_SignalElectronFake_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_HF_MD2",MVAPathFakev2+"BDTG_version2_FakeBkg_HF_SignalElectronFakeTypeI_EE_SignalElectronFake_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_LF_MD5",MVAPathFakev2+"BDTG_version2_FakeBkg_LF_SignalElectronFakeTypeI_EE_SignalElectronFake_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_5_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_LF_MD4",MVAPathFakev2+"BDTG_version2_FakeBkg_LF_SignalElectronFakeTypeI_EE_SignalElectronFake_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_LF_MD3",MVAPathFakev2+"BDTG_version2_FakeBkg_LF_SignalElectronFakeTypeI_EE_SignalElectronFake_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-	ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake_LF_MD2",MVAPathFakev2+"BDTG_version2_FakeBkg_LF_SignalElectronFakeTypeI_EE_SignalElectronFake_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-      }
-    }
   }
   
   
@@ -1513,9 +1338,11 @@ void AnalyzerCore::SetBDTIDVariablesElectron(Electron el){
 }
 
 
-double AnalyzerCore::GetBDTScoreEl_EtaDependant(Electron el ,BkgType bkg, TString BDTTag, TString tag){
+double AnalyzerCore::GetBDTScoreEl_EtaDependant(Electron el ,BkgType bkg, TString BDTTag){
 
   InitializeIDTreeVars();
+  
+  if(bkg != BkgType::CF) return 1.;
 
   Lepton *lep = (Lepton *)(&el);
   SetBDTIDVar(lep);
@@ -1523,28 +1350,20 @@ double AnalyzerCore::GetBDTScoreEl_EtaDependant(Electron el ,BkgType bkg, TStrin
   
   TString  MVATagStr = BDTTag;
   
-  if(fabs(el.Eta()) < 0.8)    MVATagStr += "_IB";
-  else if(fabs(el.Eta()) < 1.5)    MVATagStr += "_OB";
+  if(fabs(el.Eta()) < 1.5)    MVATagStr += "_BB";
   else  MVATagStr += "_EC";
   
-  if (bkg == BkgType::Fake) MVATagStr += "_Fake";
-  if (bkg == BkgType::Conv) MVATagStr += "_Conv";
   if (bkg == BkgType::CF)   MVATagStr += "_CF";
 
-  MVATagStr +=  tag;
 
   if(MVATagStr.Contains("BDTGv2")){
-    if(MVATagStr.Contains("BDTGv2Pt")){
-      if(MVATagStr.Contains("CF"))     return  ElectronIDv2CFMVAReaderPt->EvaluateMVA(MVATagStr);
-    }
-    if(MVATagStr.Contains("CF"))     return  ElectronIDv2CFMVAReader->EvaluateMVA(MVATagStr);
-    
+    if(MVATagStr.Contains("BDTGv2p1"))  return  ElectronIDv2CFMVAReaderPt->EvaluateMVA(MVATagStr);
+    if(MVATagStr.Contains("BDTGv2p2"))   return  ElectronIDv3CFMVAReader->EvaluateMVA(MVATagStr);
+    return  ElectronIDv2CFMVAReader->EvaluateMVA(MVATagStr);
   }
   
-  if(MVATagStr.Contains("BDTGv3")){
-    if(MVATagStr.Contains("CF"))     return  ElectronIDv3CFMVAReader->EvaluateMVA(MVATagStr);
-  }
 
+  
   return -1.;
 }
 
@@ -1650,7 +1469,7 @@ double AnalyzerCore::GetBDTScoreElV1(Electron el ,BkgType bkg, TString BDTTag){
 
 
 
-double AnalyzerCore::GetBDTScoreEl(Electron el ,BkgType bkg, TString BDTTag, TString tag){
+double AnalyzerCore::GetBDTScoreEl(Electron el ,BkgType bkg, TString BDTTag){
 
   InitializeIDTreeVars();
 
@@ -1668,22 +1487,15 @@ double AnalyzerCore::GetBDTScoreEl(Electron el ,BkgType bkg, TString BDTTag, TSt
     if (bkg == BkgType::Conv) MVATagStr += "_Conv";
     if (bkg == BkgType::CF) MVATagStr += "_CF";
     
-    MVATagStr += tag;
 
     if (bkg == BkgType::CF){
-      if(MVATagStr.Contains("BDTGv2Pt"))     return  ElectronIDv2CFMVAReaderPt->EvaluateMVA(MVATagStr);
+      if(MVATagStr.Contains("BDTGv2p1"))     return  ElectronIDv2CFMVAReaderPt->EvaluateMVA(MVATagStr);
+      if(MVATagStr.Contains("BDTGv2p2"))     return  ElectronIDv3CFMVAReader->EvaluateMVA(MVATagStr);
       return  ElectronIDv2CFMVAReader->EvaluateMVA(MVATagStr);
     }
     if (bkg == BkgType::Fake)  return  ElectronIDv2FakeMVAReader->EvaluateMVA(MVATagStr);
-    //if (bkg == BkgType::Conv)  return  ElectronIDv2ConvMVAReader->EvaluateMVA(MVATagStr);
+    if (bkg == BkgType::Conv) return  ElectronIDv2ConvMVAReader->EvaluateMVA(MVATagStr);
 
-  }
-
-
-  if(MVATagStr.Contains("BDTGv3")){
-    if (bkg == BkgType::CF) MVATagStr += "_CF";
-    MVATagStr += tag;
-    return  ElectronIDv3CFMVAReader->EvaluateMVA(MVATagStr);
   }
 
   return -1.;
@@ -1848,36 +1660,23 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(bool SetupBDT){
     if(fChain->GetBranch("electron_ptratio")) el.SetJetPtRatio(electron_ptratio->at(i));
     if(fChain->GetBranch("electron_cj_bjetdisc")) el.SetCloseJetBScore(electron_cj_bjetdisc->at(i));
     
-    if(Analyzer=="HNL_LeptonID_BDT_KinVar") SetupLeptonBDT=false;
-    if(!SetupBDT) SetupLeptonBDT=false;
-    if(SetupLeptonBDT){
-
-      if(fChain->GetBranch("electron_mva_fake")) {
-	el.SetHNL_LepMVA(electron_mva_fake->at(i), electron_mva_conv->at(i), electron_mva_cf->at(i));
-      }
-      else {
-	/// If electron_mva_fake is NULL then non BDT skim is bein used and so variables need to be set by hand
-	el.SetHNL_LepMVA(GetBDTScoreElV1(el,AnalyzerCore::Fake,  "BDTGv1"),GetBDTScoreElV1(el,AnalyzerCore::Conv,  "BDTGv1"),GetBDTScoreElV1(el,AnalyzerCore::CF,  "BDTGv1"));                            
-      } 
-      //vector<TString> MDList = {"_MD2","_MD3","_MD4","_MD5"};
-      vector<TString> MDList = {"_MD3"};
-      for(auto i : MDList){
-	el.SetHNL_LepMVAMap("CF_ED_BDTGv2"+i,GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv2",i));
-	el.SetHNL_LepMVAMap("CF_ED_BDTGv3"+i,GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv3",i));
-	el.SetHNL_LepMVAMap("CF_BDTGv2"+i,  GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2",i));
-	el.SetHNL_LepMVAMap("CF_BDTGv3"+i,  GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv3",i));
-	
-	if(i=="_MD3")el.SetHNL_LepMVAMap("CF_BDTGv2Pt"+i,GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2Pt",i));
-	if(i=="_MD3")el.SetHNL_LepMVAMap("CF_ED_BDTGv2Pt"+i,GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv2Pt",i));
-      }
-
-      //el.SetHNL_LepMVA_EtaDependantVersion2(GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv2","_MD3"));
-      //el.SetHNL_LepMVA_EtaDependantVersion3(GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv2Pt","_MD3"));
-      //el.SetHNL_LepMVA_EtaDependantVersion4(GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv3","_MD3"));
-      //el.SetHNL_LepMVAVersion2(1,1,GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2","_MD3"));
-      //el.SetHNL_LepMVAVersion3(GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2Pt","_MD3"));
-      //el.SetHNL_LepMVAVersion4(GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv3","_MD3"));
+    
+    //   if(fChain->GetBranch("electron_mva_fake_v1"))    el.SetHNL_LepMVA(electron_mva_fake->at(i), electron_mva_conv->at(i), electron_mva_cf->at(i));
+    
+    if(iSetupLeptonBDT&&SetupBDT){
+      /// If electron_mva_fake is NULL then non BDT skim is bein used and so variables need to be set by hand
+      el.SetHNL_LepMVA(GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTGv2"),GetBDTScoreEl(el,AnalyzerCore::Conv,  "BDTGv2"),GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2"));                           
+      el.SetHNL_LepMVAVersion1(GetBDTScoreElV1(el,AnalyzerCore::Fake,  "BDTGv1"),GetBDTScoreElV1(el,AnalyzerCore::Conv,  "BDTGv1"),GetBDTScoreElV1(el,AnalyzerCore::CF,  "BDTGv1"));
+      el.SetHNL_LepMVAVersion2(GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTGv2"),GetBDTScoreEl(el,AnalyzerCore::Conv,  "BDTGv2"),GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2"));
       
+
+      el.SetHNL_FakeLepMVA(GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTGv2_HF"),GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTGv2_LF"),GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTGv2_Top"));
+      el.SetHNL_CFLepMVA_EtaDependantVersion2(GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv2"));
+      el.SetHNL_CFLepMVA_EtaDependantVersion2p1(GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv2p1"));
+      el.SetHNL_CFLepMVA_EtaDependantVersion2p2(GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv2p2"));
+
+      el.SetHNL_CFLepMVAVersion2p1(GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2p1"));
+      el.SetHNL_CFLepMVAVersion2p2(GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2p2"));
     }
 
     bool FillCloseJetVar=!fChain->GetBranch("electron_cj_flavour");
@@ -4002,34 +3801,34 @@ double AnalyzerCore::GetCFWeightElectron(vector<Lepton *> lepptrs, AnalyzerParam
 
 
 
+void AnalyzerCore::SetupLeptonBDT(){
+
+  iSetupLeptonBDT=true;
+  
+  TMVA::Tools::Instance();
+  // Version 1 (BUGGY, still in use for cross check) 
+                                                                                                                                                                                
+  ElectronIDFakeMVAReader = new TMVA::Reader();
+  ElectronIDCFMVAReader = new TMVA::Reader();
+  ElectronIDConvMVAReader = new TMVA::Reader();
+
+  /// Version 2                                                                                                                                                               
+
+  ElectronIDv2FakeMVAReader = new TMVA::Reader();    
+
+  ElectronIDv2CFMVAReader   = new TMVA::Reader();
+  ElectronIDv2CFMVAReaderPt = new TMVA::Reader();
+  ElectronIDv2ConvMVAReader = new TMVA::Reader();
+
+  /// Version 3 (Full list of var)                   
+                                                                                                                                                                                
+  ElectronIDv3CFMVAReader = new TMVA::Reader();
+  MuonIDFakeMVAReader = new TMVA::Reader();
+  
+  return;
+}
 
 void AnalyzerCore::initializeAnalyzerTools(){
-
-  /// HNL BDT ID CODES                                                                                                                                                                                                                                                        
-  if(SetupLeptonBDT){
-    TMVA::Tools::Instance();
-    // Version 1 (BUGGY, still in use for cross check)                                                                                                                                                                                                                          
-    ElectronIDFakeMVAReader = new TMVA::Reader();
-    ElectronIDCFMVAReader = new TMVA::Reader();
-    ElectronIDConvMVAReader = new TMVA::Reader();
-    
-    /// Version 2                                                                                                                                                                                                                                                               
-    ElectronIDv2FakeMVAReader = new TMVA::Reader();
-    ElectronIDv2CFMVAReader   = new TMVA::Reader();
-    ElectronIDv2CFMVAReaderPt = new TMVA::Reader();
-    ElectronIDv2ConvMVAReader = new TMVA::Reader();
-    
-    /// Version 3 (Full list of var)                                                                                                                                                                                                                                            
-    ElectronIDv3CFMVAReader = new TMVA::Reader();
-    MuonIDFakeMVAReader = new TMVA::Reader();
-    //  MuonIDFakeNoPtMVAReader = new TMVA::Reader();                                                                                                                                                                                                                           
-    
-    // Call SetupIDMVAReader to Initialise BDTReader's                                                                                                                                                                                                                          
-    if(AnalyserRunsFullBkg()){
-      SetupIDMVAReader(false);                                                                                                                                                                                                                                                
-      //SetupIDMVAReader(true);                    
-    }
-  }
 
   //==== MCCorrection
   mcCorr->SetMCSample(MCSample);

@@ -33,14 +33,21 @@ Lepton::Lepton() : Particle() {
   j_lep_mva_hnl_fake=-999;
   j_lep_mva_hnl_conv=-999;
   j_lep_mva_hnl_cf=-999;
+  j_lep_mva_hnl_fake_hf=-999;
+  j_lep_mva_hnl_fake_lf=-999;
+  j_lep_mva_hnl_fake_top=-999;
+  j_lep_mvav1_hnl_fake=-999;
+  j_lep_mvav1_hnl_conv=-999;
+  j_lep_mvav1_hnl_cf=-999;
   j_lep_mvav2_hnl_fake=-999;
   j_lep_mvav2_hnl_conv=-999;
   j_lep_mvav2_hnl_cf=-999;
-  j_lep_mvav3_hnl_cf=-999;
-  j_lep_mvav4_hnl_cf=-999;
+  j_lep_mvav2p1_hnl_cf=-999;
+  j_lep_mvav2p2_hnl_cf=-999;
+  j_lep_mvav1_hnl_ed_cf=-999;
   j_lep_mvav2_hnl_ed_cf=-999;
-  j_lep_mvav3_hnl_ed_cf=-999;
-  j_lep_mvav4_hnl_ed_cf=-999;
+  j_lep_mvav2p1_hnl_ed_cf=-999;
+  j_lep_mvav2p2_hnl_ed_cf=-999;
   
   j_lep_map_mva_hnl_cf.clear();
 
@@ -141,6 +148,21 @@ void Lepton::SetHNL_LepMVA(double mvafake, double mvaconv,double mvacf){
   j_lep_mva_hnl_cf=mvacf;
 }
 
+void Lepton::SetHNL_FakeLepMVA(double mvafake_hf, double mvafake_lf, double mvafake_top){
+
+  j_lep_mva_hnl_fake_hf=mvafake_hf;
+  j_lep_mva_hnl_fake_lf=mvafake_lf;
+  j_lep_mva_hnl_fake_top=mvafake_top;
+
+}
+
+void Lepton::SetHNL_LepMVAVersion1(double mvafake, double mvaconv,double mvacf){
+
+  j_lep_mvav1_hnl_fake=mvafake;
+  j_lep_mvav1_hnl_conv=mvaconv;
+  j_lep_mvav1_hnl_cf=mvacf;
+}
+
 void Lepton::SetHNL_LepMVAVersion2(double mvafake, double mvaconv,double mvacf){
 
   j_lep_mvav2_hnl_fake=mvafake;
@@ -148,22 +170,24 @@ void Lepton::SetHNL_LepMVAVersion2(double mvafake, double mvaconv,double mvacf){
   j_lep_mvav2_hnl_cf=mvacf;
 }
 
-void Lepton::SetHNL_LepMVAVersion3(double mvacf)  {
-  j_lep_mvav3_hnl_cf=mvacf;
+void Lepton::SetHNL_CFLepMVAVersion2p1(double mvacf)  {
+  j_lep_mvav2p1_hnl_cf=mvacf;
 }
-void Lepton::SetHNL_LepMVAVersion4(double mvacf){
-  j_lep_mvav4_hnl_cf=mvacf;
+void Lepton::SetHNL_CFLepMVAVersion2p2(double mvacf){
+  j_lep_mvav2p2_hnl_cf=mvacf;
 }
 
 
-void Lepton::SetHNL_LepMVA_EtaDependantVersion2(double mvacf) {
+
+
+void Lepton::SetHNL_CFLepMVA_EtaDependantVersion2(double mvacf) {
   j_lep_mvav2_hnl_ed_cf=mvacf;
 }
-void Lepton::SetHNL_LepMVA_EtaDependantVersion3(double mvacf) {
-  j_lep_mvav3_hnl_ed_cf=mvacf;
+void Lepton::SetHNL_CFLepMVA_EtaDependantVersion2p1(double mvacf) {
+  j_lep_mvav2p1_hnl_ed_cf=mvacf;
 }
-void Lepton::SetHNL_LepMVA_EtaDependantVersion4(double mvacf) {
-  j_lep_mvav4_hnl_ed_cf=mvacf;
+void Lepton::SetHNL_CFLepMVA_EtaDependantVersion2p2(double mvacf) {
+  j_lep_mvav2p2_hnl_ed_cf=mvacf;
 }
 
 

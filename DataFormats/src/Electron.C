@@ -276,11 +276,11 @@ bool Electron::PassID(TString ID) const{
   if(ID=="HNVeto")    return Pass_HNVetoCutBased(0.6); // -- VETO POG + VVLoose ISO/IP                                
   if(ID=="HNLoosest") return Pass_HNLoosest(); // OR of VETO IDs  LOOSEST                                     
 
-  if(PassIDLoose(ID)   >=0) return (PassIDLoose(ID)==1) ? true : false;
-  if(PassIDTight(ID)   >=0) return (PassIDTight(ID)==1)  ?  true : false;
+  if(PassIDLoose(ID)   >=0) return (PassIDLoose(ID)==1)    ? true : false;
+  if(PassIDTight(ID)   >=0) return (PassIDTight(ID)==1)    ? true : false;
 
   if(PassIDOptLoose(ID)>=0) return (PassIDOptLoose(ID)==1) ? true : false;
-  if(PassIDOpt(ID)     >=0) return (PassIDOpt(ID)==1)  ?  true : false;
+  if(PassIDOpt(ID)     >=0) return (PassIDOpt(ID)==1)      ? true : false;
 
   cout << "[Electron::PassID] No id : " << ID << endl;
   exit(ENODATA);
@@ -288,28 +288,6 @@ bool Electron::PassID(TString ID) const{
   return false;
 
 }
-
-
-bool Electron::PassStandardIDs(TString ID) const{
-  
-  //==== POG
-  //======== VETO IDs
-  if(ID=="passVetoID") return passVetoID(); // --- VETO POG
-
-  /// HNL   //==== VETO IDS
-
-  if(ID=="HNVetoMVA") return Pass_HNVetoMVA(); // --- veto POG MVA (95%) + VVLoose ISO/IP
-  if(ID=="HNVeto")    return Pass_HNVetoCutBased(0.6); // -- VETO POG + VVLoose ISO/IP        
-  if(ID=="HNLoosest") return Pass_HNLoosest(); // OR of VETO IDs  LOOSEST
-
-  if(PassIDLoose(ID)   >=0) return (PassIDLoose(ID)==1) ? true : false;
-  if(PassIDOptLoose(ID)>=0) return (PassIDOptLoose(ID)==1) ? true : false;
-  if(PassIDTight(ID)   >=0) return (PassIDTight(ID)==1)  ?  true : false;
-
-
-  return false;
-}
-
 
 
 bool Electron::Pass_LepMVAID() const {
@@ -495,7 +473,7 @@ bool Electron::Pass_CB_Opt(TString ID) const {
   if(!Pass_LepMVAID()) return false;
   
   
-  return PassIDOptMulti( CFMVAString,  mva_methodBB, mva_methodEB,mva_methodEC, conv_mva_methodBB,conv_mva_methodEC, cf_mva_methodBB,cf_mva_methodEC, pog_method, conv_method, chg_method, iso_methodB,iso_methodEC);
+  return (PassIDOptMulti( CFMVAString,  mva_methodBB, mva_methodEB,mva_methodEC, conv_mva_methodBB,conv_mva_methodEC, cf_mva_methodBB,cf_mva_methodEC, pog_method, conv_method, chg_method, iso_methodB,iso_methodEC) == 1) ? true : false;
   
 }
  
@@ -636,32 +614,33 @@ int  Electron::PassIDOptMulti( TString CFMVAString, TString np_mva_BB, TString n
 int  Electron::PassIDTight(TString ID) const{
 
   /// Loose MVA used to train
-  if(ID=="MVALoose") return Pass_LepMVAID();
+  if(ID=="MVALoose") return Pass_LepMVAID() ? 1 : 0 ;;
 
 
   // breakdown of ID for checking Eff.
   if(ID=="HNL_ULID_Baseline"){
 
-    if(!PassMVABaseLine()) return false;
+    if(!PassMVABaseLine()) return 0;
     
-    return true;
+    return 1;
   }
 
   // breakdown of 2016 ID for checking Eff.                                                                                                                                                                                                  
   if(ID=="HNL_ULID_CF"){
 
-    if(!Pass_LepMVAID()) return false;
+    if(!Pass_LepMVAID()) return 0;
     
     if( IsBB()){
-      if(j_lep_mva_hnl_cf < 0.7) return false;
+      if(j_lep_mva_hnl_cf < 0.7) return 0;
     }
-    else      if(j_lep_mva_hnl_cf < 0.84) return false;
-    return true;
+    else      if(j_lep_mva_hnl_cf < 0.84) return 0;
+
+    return 1;
   }
 
   if(ID.Contains("HNL_ULID_CF")){
-    //HNL_ULID_CFM_ED_BDTGv2Pt_MD3
-    if(!Pass_LepMVAID()) return false;
+    if(!Pass_LepMVAID()) return 0;
+
     double _cut=1;
     if(ID.Contains("_CFT_")) _cut=0.7;
     if(ID.Contains("_CFM_")) _cut=0.5;
@@ -672,41 +651,74 @@ int  Electron::PassIDTight(TString ID) const{
     IDTmp=IDTmp.ReplaceAll("_CFM_","_CF_");
     IDTmp=IDTmp.ReplaceAll("_CFL_","_CF_");
     IDTmp=IDTmp.ReplaceAll("_CFVL_","_CF_");
-    IDTmp=IDTmp.ReplaceAll("HNL_ULID_","");
-    
-    if(GetHNL_LepMVA(IDTmp) < _cut)  return false;
-    return true;
-    
+    //IDTmp=IDTmp.ReplaceAll("HNL_ULID_","");
+
+    if(IDTmp == "HNL_ULID_CF_BDTGv0" && j_lep_mva_hnl_cf < _cut)  return 0;
+    if(IDTmp == "HNL_ULID_CF_BDTGv1" && j_lep_mvav1_hnl_cf < _cut)  return 0;
+    if(IDTmp == "HNL_ULID_CF_BDTGv2" && j_lep_mvav2_hnl_cf < _cut)  return 0;
+    if(IDTmp == "HNL_ULID_CF_BDTGv2p1" && j_lep_mvav2p1_hnl_cf < _cut)  return 0;
+    if(IDTmp == "HNL_ULID_CF_BDTGv2p2" && j_lep_mvav2p2_hnl_cf < _cut)  return 0;
+    if(IDTmp == "HNL_ULID_CF_ED_BDTGv2" && j_lep_mvav2_hnl_ed_cf < _cut)  return 0;
+    if(IDTmp == "HNL_ULID_CF_ED_BDTGv2p1" && j_lep_mvav2p1_hnl_ed_cf < _cut)  return 0;
+    if(IDTmp == "HNL_ULID_CF_ED_BDTGv2p2" && j_lep_mvav2p2_hnl_ed_cf < _cut)  return 0;
+
+    return 1;
+
   }
+
+  
+  if(ID.Contains("HNL_ULID_FAKE")){
+
+    if(!Pass_LepMVAID()) return 0;
+
+    double _cut=1;
+    if(ID.Contains("_FAKET_")) _cut=0.7;
+    if(ID.Contains("_FAKEM_")) _cut=0.5;
+    if(ID.Contains("_FAKEL_")) _cut=0.2;
+    if(ID.Contains("_FAKEVL_")) _cut=0.;
+    TString IDTmp = ID;
+    IDTmp=IDTmp.ReplaceAll("_FAKET_","_FAKE_");
+    IDTmp=IDTmp.ReplaceAll("_FAKEM_","_FAKE_");
+    IDTmp=IDTmp.ReplaceAll("_FAKEL_","_FAKE_");
+    IDTmp=IDTmp.ReplaceAll("_FAKEVL_","_FAKE_");
+
+    if(IDTmp == "HNL_ULID_FAKE_BDTG" && j_lep_mva_hnl_fake < _cut)  return 0;
+
+    return 1;
+  }
+
+
+
+
 
 
   // breakdown of 2016 ID for checking Eff.                                                                                                                                                                                                  
 
   if(ID=="HNL_ULID_Fake"){
 
-    if(!Pass_LepMVAID()) return false;
+    if(!Pass_LepMVAID()) return 0;
 
     if( IsIB()){
-      if(j_lep_mva_hnl_fake < 0.15) return false;
+      if(j_lep_mva_hnl_fake < 0.15) return 0;
     }
     else   if( IsOB()){
-      if(j_lep_mva_hnl_fake < 0.15) return false;
+      if(j_lep_mva_hnl_fake < 0.15) return 0;
     }
     else{
-      if(j_lep_mva_hnl_fake < 0.2) return false;
+      if(j_lep_mva_hnl_fake < 0.2) return 0;
     }
     
-    return true;
+    return 1;
   }
 
   // breakdown of 2016 ID for checking Eff.                                                                                                                                                                                                  
   if(ID=="HNL_ULID_Conv"){
-    if(!Pass_LepMVAID()) return false;
+    if(!Pass_LepMVAID()) return 0;
 
-    if(j_lep_mva_hnl_conv < -0.7) return false;
+    if(j_lep_mva_hnl_conv < -0.7) return 1;
 
 
-    return true;
+    return 1;
   }
 
 
@@ -714,79 +726,79 @@ int  Electron::PassIDTight(TString ID) const{
 
   if(ID == "HNL_ULID_2016" || ID == "HNL_ULID_2017" || ID == "HNL_ULID_2018"){
     
-    if(!PassMVABaseLine()) return false;
+    if(!PassMVABaseLine()) return 0;
     
     if( IsBB()){
-      if(!PassHNLMVA(0.15,0.7,-0.7)) return false;
+      if(!PassHNLMVA(0.15,0.7,-0.7)) return 0;
     }
     else{
-      if(!PassHNLMVA(0.2,0.84,-0.7)) return false;
+      if(!PassHNLMVA(0.2,0.84,-0.7)) return 0;
 
     }
-    return true;
+    return 1;
   }
 
 
 
   if(ID.Contains("HNL_ULID_FO_201")){
     
-    if(!PassMVABaseLine()) return false;
+    if(!PassMVABaseLine()) return 0;
 
     if( IsIB() || IsOB()){
-      if(j_lep_mva_hnl_cf < 0.7)  return false;
-	//if(CloseJet_Ptratio() < 0.5) return false;
+      if(j_lep_mva_hnl_cf < 0.7)  return 0;
+	//if(CloseJet_Ptratio() < 0.5) return 0;
       //}
       if(j_lep_mva_hnl_fake < 0.15) {
-	if(CloseJet_Ptratio() < 0.5) return false;
-	//if(CloseJet_BScore() > 0.1) return false;
+	if(CloseJet_Ptratio() < 0.5) return 0;
+	//if(CloseJet_BScore() > 0.1) return 0;
       }
     }
     else{
-      if(j_lep_mva_hnl_cf < 0.84)  return false;
-      //if(CloseJet_Ptratio() < 0.5) return false;
+      if(j_lep_mva_hnl_cf < 0.84)  return 0;
+      //if(CloseJet_Ptratio() < 0.5) return 0;
       //}
       if(j_lep_mva_hnl_fake < 0.2){
-	if(CloseJet_Ptratio() < 0.5) return false;
-        //if(CloseJet_BScore() > 0.1) return false;
+	if(CloseJet_Ptratio() < 0.5) return 0;
+        //if(CloseJet_BScore() > 0.1) return 0;
       }
     }
-    if(j_lep_mva_hnl_conv < -0.7) return false;
-    return true;
+    if(j_lep_mva_hnl_conv < -0.7) return 0;
+    return 1;
   }
 
   if(ID=="HNL_Peking_2016") {
-    if(! (passTightID()) ) return false;
+    if(! (passTightID()) ) return 0;
     if( IsBB()){
-      if( !(fabs(dXY()) < 0.05 && fabs(dZ())< 0.1)) return false;
+      if( !(fabs(dXY()) < 0.05 && fabs(dZ())< 0.1)) return 0;
 
-      if(  (NMissingHits()>1) ) return false;
+      if(  (NMissingHits()>1) ) return 0;
 
     }
     else {
-      if( !(fabs(dXY()) < 0.1 && fabs(dZ())< 0.2)) return false;
+      if( !(fabs(dXY()) < 0.1 && fabs(dZ())< 0.2)) return 0;
       
-      if(  (NMissingHits()>1) ) return false;
+      if(  (NMissingHits()>1) ) return 0;
 
     }
 
-    if(! IsGsfCtfScPixChargeConsistent())  return false;
-    if(! (Pass_TriggerEmulation()) ) return false;
-    return true;
+    if(! IsGsfCtfScPixChargeConsistent())  return 0;
+    if(! (Pass_TriggerEmulation()) ) return 0;
+    return 1;
 
   }
 
   if(ID=="HNL_Peking") {
 
-    if(!passMVAID_Iso_WP90()) return false;
-    if(! IsGsfCtfScPixChargeConsistent())  return false;
-    if(! (Pass_TriggerEmulation()) ) return false;
+    if(!passMVAID_Iso_WP90()) return 0;
+    if(! IsGsfCtfScPixChargeConsistent())  return 0;
+    if(! (Pass_TriggerEmulation()) ) return 0;
     if(IsBB()){
-      if(! (RelIso() < 0.0571 )) return false;
+      if(! (RelIso() < 0.0571 )) return 0;
     }
-    else       if(! (RelIso() < 0.05880 )) return false;
+    else       if(! (RelIso() < 0.05880 )) return 0;
 
 
-    return true;
+    return 1;
     
   }
   
@@ -797,11 +809,11 @@ int  Electron::PassIDTight(TString ID) const{
   //if(ID=="HNTight_ULInProgress") return Pass_HNTightUL()? 1 : 0 ;  
 
   // No Isoc
-  if(ID=="CutBasedLooseNoIso") return Pass_CutBasedLooseNoIso();
-  if(ID=="CutBasedMediumNoIso") return Pass_CutBasedMediumNoIso();
-  if(ID=="CutBasedTightNoIso") return Pass_CutBasedTightNoIso();
-  if(ID=="MVALooseNoIso") return passMVAID_noiso_WPLoose();
-  if(ID=="CutBasedVetoNoIso") return Pass_CutBasedVetoNoIso();
+  if(ID=="CutBasedLooseNoIso") return Pass_CutBasedLooseNoIso()? 1 : 0 ;
+  if(ID=="CutBasedMediumNoIso") return Pass_CutBasedMediumNoIso()? 1 : 0 ;
+  if(ID=="CutBasedTightNoIso") return Pass_CutBasedTightNoIso()? 1 : 0 ;
+  if(ID=="MVALooseNoIso") return passMVAID_noiso_WPLoose()? 1 : 0 ;
+  if(ID=="CutBasedVetoNoIso") return Pass_CutBasedVetoNoIso()? 1 : 0 ;
   
 
   //=== POG
@@ -865,7 +877,7 @@ int  Electron::PassIDTight(TString ID) const{
   if(ID=="HN2016MVA")                 {
     bool passID = passIDHN(3,0.02, 0.02, 0.05,0.05, 5.,5., 0.08, 0.08, -999., -999.)&&passMVAID_noIso_WP90()  ? 1 : 0 ;
     if(! (Pass_TriggerEmulation()) ) return 0;
-    return passID;
+    return passID ? 1 : 0 ;
   };
   if(ID=="HN2016MVA2")                 {
     bool passID = passIDHN(3,0.02, 0.02, 0.05,0.05, 5.,5., 0.08, 0.08, -999., -999.)  ? 1 : 0 ;
@@ -943,7 +955,7 @@ int  Electron::PassIDLoose(TString ID) const{
   if(ID=="HNHEEPLoose")  return passLooseHEEPID()&&PassHNID() ? 1 : 0; 
 
   //=== loose user                                                                                                                                                                                       
-  if(ID=="HNLooseMVA") return ((passIDHN(3,0.2, 0.2, 0.2,0.2, 10.,10., 0.6, 0.6, -999., -999.)&&passMVAID_noiso_WPLoose())  ? 1 : 0);
+  if(ID=="HNLooseMVA") return (passIDHN(3,0.2, 0.2, 0.2,0.2, 10.,10., 0.6, 0.6, -999., -999.)&&passMVAID_noiso_WPLoose())  ? 1 : 0;
     
   if(ID=="HNLooseV1")   return      Pass_HNLooseID(0.6,0.2,0.1,10) ? 1 : 0;  // V POG IP/ISO   17028 IP                                                                                                                   
   if(ID=="HNLooseV2")   return  Pass_HNLooseID(0.6,0.2,0.1,9999) ? 1 : 0;  // V POG IP/ISO                                                                                                                   
@@ -969,7 +981,7 @@ int  Electron::PassIDLoose(TString ID) const{
   }
 
   // ===== Type-1                                                                                                                                                                                     
-  if(ID=="HNLoose2016")           return ((passIDHN(3,0.01, 0.01, 0.04,0.04, 4.,4., 0.6, 0.6, -999., -999.)&&passMVAID_noiso_WPLoose())  ? 1 : 0); 
+  if(ID=="HNLoose2016")     return (passIDHN(3,0.01, 0.01, 0.04,0.04, 4.,4., 0.6, 0.6, -999., -999.)&&passMVAID_noiso_WPLoose())  ? 1 : 0; 
 
   
 
@@ -1159,11 +1171,6 @@ int Electron::PassIDOpt(TString ID) const{
     return (true) ? 1 : 0 ;
   }
   
- 
-
-  
-
-
   if(ID=="CutBasedLooseNoIso") return Pass_CutBasedLooseNoIso()? 1 : 0 ;
   if(ID=="CutBasedMediumNoIso") return Pass_CutBasedMediumNoIso()? 1 : 0 ;
   if(ID=="CutBasedTightNoIso") return Pass_CutBasedTightNoIso()? 1 : 0 ;

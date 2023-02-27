@@ -69,7 +69,7 @@ args = parser.parse_args()
 
 
 
-BDTFile_Dir = "/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIWFake/Default/"+args.Era+"/"
+BDTFile_Dir = "/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIMuonFake/Version3/"+args.Era+"/"
 BDTFileList  = [f for f in listdir(BDTFile_Dir) if isfile(join(BDTFile_Dir,f))]
 
 MaxAUC=0.
@@ -81,12 +81,6 @@ addVal=0.00001
 for File in BDTFileList:
 
     if not args.Bkg in File:
-        continue
-
-    if not "LepPt" in File:
-        continue
-
-    if not args.Channel in File:
         continue
         
     if not args.Classifier in File:
