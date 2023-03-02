@@ -389,7 +389,12 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
     //else {
     //  if(iSetupLeptonBDT) mu.SetHNL_LepMVA( GetBDTScoreMuon(mu,AnalyzerCore::Fake,  "BDTGv2"),-999,-999);
     // }
-    mu.SetHNL_LepMVA( GetBDTScoreMuon(mu,AnalyzerCore::Fake,  "BDTGv2"),-999,-999);                                                                                                                                                            
+
+    if(fChain->GetBranch("muon_mva_fake"))   mu.SetHNL_LepMVA(muon_mva_fake->at(i),-999,-999);  
+    
+    if(iSetupLeptonBDT) {
+      if(!fChain->GetBranch("muon_mva_fake")) mu.SetHNL_LepMVA( GetBDTScoreMuon(mu,AnalyzerCore::Fake,  "BDTGv2"),-999,-999);
+    }
 
     if(fChain->GetBranch("muon_ptrel"))      mu.SetJetPtRel(muon_ptrel->at(i));
     if(fChain->GetBranch("muon_ptratio"))    mu.SetJetPtRatio(muon_ptratio->at(i));
@@ -752,7 +757,6 @@ void AnalyzerCore::SetupIDMVAReader(bool isMuon, bool setupV1, bool setupFake, b
     MuonIDFakeMVAReader->AddVariable("Chi2",  &Chi2);
     MuonIDFakeMVAReader->AddVariable("Validhits",  &Validhits);
     MuonIDFakeMVAReader->AddVariable("Matched_stations",  &Matched_stations);
-
     MuonIDFakeMVAReader->AddSpectator("w_id_tot", &w_id_tot);
 
   }
@@ -1661,20 +1665,26 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(bool SetupBDT){
     if(fChain->GetBranch("electron_cj_bjetdisc")) el.SetCloseJetBScore(electron_cj_bjetdisc->at(i));
     
     
-    //   if(fChain->GetBranch("electron_mva_fake_v1"))    el.SetHNL_LepMVA(electron_mva_fake->at(i), electron_mva_conv->at(i), electron_mva_cf->at(i));
+    ///if(fChain->GetBranch("electron_mva_fake_v2"))  el.SetHNL_LepMVA(electron_mva_fake->at(i), electron_mva_conv->at(i), electron_mva_cf->at(i));
     
     if(iSetupLeptonBDT&&SetupBDT){
-      /// If electron_mva_fake is NULL then non BDT skim is bein used and so variables need to be set by hand
+      /// If v2 branches exist then no need to recaculate values... 
+      /// electron_mva_fake is NULL then non BDT skim is bein used and so variables need to be set by hand
+      
+      ///if(!fChain->GetBranch("electron_mva_fake_v2"))  
+
+      /// SetHNL_LepMVA is  setting MAIN var used in UL
       el.SetHNL_LepMVA(GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTGv2"),GetBDTScoreEl(el,AnalyzerCore::Conv,  "BDTGv2"),GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2"));                           
+      
+      /// Sets up V1/V2 variables 
       el.SetHNL_LepMVAVersion1(GetBDTScoreElV1(el,AnalyzerCore::Fake,  "BDTGv1"),GetBDTScoreElV1(el,AnalyzerCore::Conv,  "BDTGv1"),GetBDTScoreElV1(el,AnalyzerCore::CF,  "BDTGv1"));
       el.SetHNL_LepMVAVersion2(GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTGv2"),GetBDTScoreEl(el,AnalyzerCore::Conv,  "BDTGv2"),GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2"));
       
-
+      /// sets up other setups of V2 ie extra var or Eta dep training....
       el.SetHNL_FakeLepMVA(GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTGv2_HF"),GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTGv2_LF"),GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTGv2_Top"));
       el.SetHNL_CFLepMVA_EtaDependantVersion2(GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv2"));
       el.SetHNL_CFLepMVA_EtaDependantVersion2p1(GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv2p1"));
       el.SetHNL_CFLepMVA_EtaDependantVersion2p2(GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv2p2"));
-
       el.SetHNL_CFLepMVAVersion2p1(GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2p1"));
       el.SetHNL_CFLepMVAVersion2p2(GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2p2"));
     }
@@ -3800,6 +3810,147 @@ double AnalyzerCore::GetCFWeightElectron(vector<Lepton *> lepptrs, AnalyzerParam
 }
 
 
+void AnalyzerCore::SetupLeptonBDTSKFlat(){
+
+  std::vector<Muon>     AllmuonColl     = GetAllMuons();
+  std::vector<Electron> AllelectronColl = GetAllElectrons();
+
+  std::vector<Jet>    AK4_JetAllColl = GetAllJets();
+
+  for(auto i: AllmuonColl){
+    vmuon_mva_fake->push_back(GetBDTScoreMuon(i,AnalyzerCore::Fake,  "BDTGv2"));
+    vmuon_ptratio->push_back(JetLeptonPtRatioLepAware(i,false));
+    vmuon_ptrel->push_back(JetLeptonPtRelLepAware(i,true));
+
+    float  JetDiscCJ = -999;
+    int JetFlavourCJ=-999;
+    int IdxMatchJet=-1;
+    float mindR1=999.;
+
+    for(unsigned int ij=0; ij<AK4_JetAllColl.size(); ij++){
+      float dR1=i.DeltaR(AK4_JetAllColl.at(ij));
+      if(dR1>0.4) continue;
+      if(dR1<mindR1){ mindR1=dR1; IdxMatchJet=ij; }
+    }
+    if(IdxMatchJet!=-1)    {
+      JetDiscCJ = AK4_JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet);
+      JetFlavourCJ = AK4_JetAllColl.at(IdxMatchJet).hadronFlavour();
+
+    }
+    else {
+      JetDiscCJ=1.5;
+      JetFlavourCJ=0;
+    }
+    vmuon_cj_bjetdisc->push_back(JetDiscCJ);
+    vmuon_cj_flavour->push_back(JetFlavourCJ);
+  }
+  for(auto i: AllelectronColl){
+    velectron_mva_fake_v1->push_back(GetBDTScoreElV1(i,AnalyzerCore::Fake,  "BDTGv1"));
+    velectron_mva_cf_v1->push_back(GetBDTScoreElV1(i,AnalyzerCore::CF,  "BDTGv1"));
+    velectron_mva_conv_v1->push_back(GetBDTScoreElV1(i,AnalyzerCore::Conv,  "BDTGv1"));
+
+    velectron_mva_fake_v2->push_back(GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv2"));
+    velectron_mva_fakeHF_v2->push_back(GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv2_HF"));
+    velectron_mva_fakeLF_v2->push_back(GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv2_LF"));
+    velectron_mva_fakeTop_v2->push_back(GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv2_Top"));
+    velectron_mva_cf_v2->push_back(GetBDTScoreEl(i,AnalyzerCore::CF,  "BDTGv2"));
+    velectron_mva_cf_v2p1->push_back(GetBDTScoreEl(i,AnalyzerCore::CF,  "BDTGv2p1"));
+    velectron_mva_cf_v2p2->push_back(GetBDTScoreEl(i,AnalyzerCore::CF,  "BDTGv2p2"));
+    velectron_mva_cf_ed_v2->push_back(GetBDTScoreEl_EtaDependant(i,AnalyzerCore::CF,  "BDTGv2"));
+    velectron_mva_cf_ed_v2p1->push_back(GetBDTScoreEl_EtaDependant(i,AnalyzerCore::CF,  "BDTGv2p1"));
+    velectron_mva_cf_ed_v2p2->push_back(GetBDTScoreEl_EtaDependant(i,AnalyzerCore::CF,  "BDTGv2p2"));
+    velectron_mva_conv_v2->push_back(GetBDTScoreEl(i,AnalyzerCore::Conv,  "BDTGv2"));
+    velectron_ptratio->push_back(JetLeptonPtRatioLepAware(i,false));
+    velectron_ptrel->push_back(JetLeptonPtRelLepAware(i,true));
+    float  JetDiscCJ = -999;
+    int  JetFlavourCJ = -999;
+
+    int IdxMatchJet=-1;
+    float mindR1=999.;
+
+    for(unsigned int ij=0; ij<AK4_JetAllColl.size(); ij++){
+      float dR1=i.DeltaR(AK4_JetAllColl.at(ij));
+      if(dR1>0.4) continue;
+      if(dR1<mindR1){ mindR1=dR1; IdxMatchJet=ij; }
+    }
+    if(IdxMatchJet!=-1) {
+      JetDiscCJ = AK4_JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet);
+      JetFlavourCJ  = AK4_JetAllColl.at(IdxMatchJet).hadronFlavour();
+
+    }
+    else {
+      JetDiscCJ=1.5;
+      JetDiscCJ=0;
+
+    }
+    velectron_cj_bjetdisc->push_back(JetDiscCJ);
+    velectron_cj_flavour->push_back(JetFlavourCJ);
+  }
+
+
+  return;
+
+
+}
+void AnalyzerCore::ResetLeptonBDTSKFlat(){
+
+  velectron_ptrel->clear();
+  velectron_ptratio->clear();
+  velectron_cj_bjetdisc->clear();
+  velectron_mva_cf_v1->clear();
+  velectron_mva_cf_v2->clear();
+  velectron_mva_cf_v2p1->clear();
+  velectron_mva_cf_v2p2->clear();
+  velectron_mva_cf_ed_v2->clear();
+  velectron_mva_cf_ed_v2p1->clear();
+  velectron_mva_cf_ed_v2p2->clear();
+  velectron_mva_conv_v1->clear();
+  velectron_mva_conv_v2->clear();
+  velectron_mva_fake_v1->clear();
+  velectron_mva_fake_v2->clear();
+  velectron_mva_fakeHF_v2->clear();
+  velectron_mva_fakeLF_v2->clear();
+  velectron_mva_fakeTop_v2->clear();
+  velectron_cj_flavour->clear();
+
+  vmuon_mva_fake->clear();
+  vmuon_ptrel->clear();
+  vmuon_ptratio->clear();
+  vmuon_cj_bjetdisc->clear();
+  vmuon_cj_flavour->clear();
+
+  return;
+}
+void AnalyzerCore::InitialiseLeptonBDTSKFlat(){
+
+  vSKWeight=0;
+  velectron_ptratio = 0;
+  velectron_ptrel  = 0;
+  velectron_cj_bjetdisc = 0;
+  velectron_cj_flavour = 0;
+  velectron_mva_cf_v1 = 0;
+  velectron_mva_cf_v2 = 0;
+  velectron_mva_cf_v2p1 = 0;
+  velectron_mva_cf_v2p2 = 0;
+  velectron_mva_cf_ed_v2 = 0;
+  velectron_mva_cf_ed_v2p1 = 0;
+  velectron_mva_cf_ed_v2p2 = 0;
+  velectron_mva_conv_v1 = 0;
+  velectron_mva_conv_v2 = 0;
+  velectron_mva_fake_v1 = 0 ;
+  velectron_mva_fake_v2 = 0 ;
+  velectron_mva_fakeHF_v2 = 0 ;
+  velectron_mva_fakeLF_v2 = 0 ;
+  velectron_mva_fakeTop_v2 = 0 ;
+
+  vmuon_mva_fake = 0;
+  vmuon_ptratio = 0;
+  vmuon_ptrel  = 0;
+  vmuon_cj_bjetdisc = 0;
+  vmuon_cj_flavour = 0;
+
+  return;
+}
 
 void AnalyzerCore::SetupLeptonBDT(){
 

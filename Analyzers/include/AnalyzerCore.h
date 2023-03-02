@@ -136,8 +136,12 @@ public:
   void InitializeIDTreeVars();
   void InitializeElectronIDTreeVars();
   
+  /// For adding var to Trees
+  void SetupLeptonBDTSKFlat();
+  void ResetLeptonBDTSKFlat();
+  void InitialiseLeptonBDTSKFlat();
 
-  
+  /// Use in analysis 
   void SetupLeptonBDT();
   void SetBDTIDVar(Lepton*  lep);
   void SetBDTIDVarV1(Lepton*  lep);

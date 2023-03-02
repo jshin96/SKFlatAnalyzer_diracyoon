@@ -1,10 +1,40 @@
-#include "SkimTree_HNMultiLep.h"
+#include "SkimTree_HNMultiLepBDT.h"
 
-void SkimTree_HNMultiLep::initializeAnalyzer(){
+void SkimTree_HNMultiLepBDT::initializeAnalyzer(){
 
   outfile->cd();
-  cout << "[SkimTree_HNMultiLep::initializeAnalyzer()] gDirectory = " << gDirectory->GetName() << endl;
+  cout << "[SkimTree_HNMultiLepBDT::initializeAnalyzer()] gDirectory = " << gDirectory->GetName() << endl;
   newtree = fChain->CloneTree(0);
+
+  SetupIDMVAReaderDefault();
+  InitialiseLeptonBDTSKFlat();
+
+  newtree->Branch("electron_ptrel",&velectron_ptrel);
+  newtree->Branch("electron_ptratio",&velectron_ptratio);
+  newtree->Branch("electron_cj_bjetdisc",&velectron_cj_bjetdisc);
+  newtree->Branch("electron_mva_cf_v1",&velectron_mva_cf_v1);
+  newtree->Branch("electron_mva_cf_v2",&velectron_mva_cf_v2);
+  newtree->Branch("electron_mva_cf_v2p1",&velectron_mva_cf_v2p1);
+  newtree->Branch("electron_mva_cf_v2p2",&velectron_mva_cf_v2p2);
+  newtree->Branch("electron_mva_cf_ed_v2",&velectron_mva_cf_ed_v2);
+  newtree->Branch("electron_mva_cf_ed_v2p1",&velectron_mva_cf_ed_v2p1);
+  newtree->Branch("electron_mva_cf_ed_v2p2",&velectron_mva_cf_ed_v2p2);
+  newtree->Branch("electron_mva_conv_v1",&velectron_mva_conv_v1);
+  newtree->Branch("electron_mva_conv_v2",&velectron_mva_conv_v2);
+  newtree->Branch("electron_mva_fake_v1",&velectron_mva_fake_v1);
+  newtree->Branch("electron_mva_fake_v2",&velectron_mva_fake_v2);
+  newtree->Branch("electron_mva_fakeHF_v2",&velectron_mva_fakeHF_v2);
+  newtree->Branch("electron_mva_fakeLF_v2",&velectron_mva_fakeLF_v2);
+  newtree->Branch("electron_mva_fakeTop_v2",&velectron_mva_fakeTop_v2);
+  newtree->Branch("electron_cj_flavour",&velectron_cj_flavour);
+
+  newtree->Branch("muon_ptrel",&vmuon_ptrel);
+  newtree->Branch("muon_ptratio",&vmuon_ptratio);
+  newtree->Branch("muon_cj_bjetdisc",&vmuon_cj_bjetdisc);
+  newtree->Branch("muon_mva_fake",&vmuon_mva_fake);
+  newtree->Branch("muon_cj_flavour",&vmuon_cj_flavour);
+
+  newtree->Branch("SKWeight", &vSKWeight);
 
   triggers_dimu.clear();
 
@@ -144,20 +174,34 @@ void SkimTree_HNMultiLep::initializeAnalyzer(){
     };
   }
   else{
-    cout << "[SkimTree_HNMultiLep::initializeAnalyzer] DataYear is wrong : " << DataYear << endl;
+    cout << "[SkimTree_HNMultiLepBDT::initializeAnalyzer] DataYear is wrong : " << DataYear << endl;
   }
 
-  cout << "[SkimTree_HNMultiLep::initializeAnalyzer] triggers to skim = " << endl;
+  cout << "[SkimTree_HNMultiLepBDT::initializeAnalyzer] triggers to skim = " << endl;
   for(unsigned int i=0; i<triggers.size(); i++){
-    cout << "[SkimTree_HNMultiLep::initializeAnalyzer]   " << triggers.at(i) << endl;
+    cout << "[SkimTree_HNMultiLepBDT::initializeAnalyzer]   " << triggers.at(i) << endl;
   }
 
 }
 
-void SkimTree_HNMultiLep::executeEvent(){
+void SkimTree_HNMultiLepBDT::executeEvent(){
 
   Event ev;
   ev.SetTrigger(*HLT_TriggerName);
+  
+  ResetLeptonBDTSKFlat();
+
+  vSKWeight=MCweight(true,true);
+
+  SetupLeptonBDTSKFlat();
+
+  
+  if(MCSample.Contains("Type")){
+    
+    newtree->Fill();
+    
+    return;
+  }
   
 
   //==== Skim 1 ) trigger
@@ -237,21 +281,21 @@ void SkimTree_HNMultiLep::executeEvent(){
 
 }
 
-void SkimTree_HNMultiLep::executeEventFromParameter(AnalyzerParameter param){
+void SkimTree_HNMultiLepBDT::executeEventFromParameter(AnalyzerParameter param){
 
 }
 
-SkimTree_HNMultiLep::SkimTree_HNMultiLep(){
+SkimTree_HNMultiLepBDT::SkimTree_HNMultiLepBDT(){
 
   newtree = NULL;
 
 }
 
-SkimTree_HNMultiLep::~SkimTree_HNMultiLep(){
+SkimTree_HNMultiLepBDT::~SkimTree_HNMultiLepBDT(){
 
 }
 
-void SkimTree_HNMultiLep::WriteHist(){
+void SkimTree_HNMultiLepBDT::WriteHist(){
 
   outfile->mkdir("recoTree");
   outfile->cd("recoTree");

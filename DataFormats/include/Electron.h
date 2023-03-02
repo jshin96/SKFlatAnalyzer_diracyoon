@@ -159,6 +159,8 @@ public:
   bool PassMVA_UL_EB(double mva1, double mva2, double mva3) const ;
   bool PassMVA_UL_EE(double mva1, double mva2, double mva3) const ;
   bool PassMVA(double mva1, double mva2, double mva3) const;
+  bool PassULMVA(double mva1, double cut, TString s_mva) const;
+
   bool PassHNID()const ;
   int PassHNOpt()const ;
   void SetPassConversionVeto(bool b);
