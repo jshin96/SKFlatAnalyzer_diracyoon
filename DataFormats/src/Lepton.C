@@ -119,6 +119,23 @@ Lepton::~Lepton(){
 
 }
 
+
+
+bool Lepton::PassULMVA(double mva, double cut, TString s_mva) const {
+
+  if(mva == -999){
+
+    cout<<"[Electron::PassMVA] mva value not set "<< s_mva<<endl;
+    exit(ENODATA);
+  }
+
+  if ( mva < cut)  return false;
+
+  return true;
+}
+
+
+
 double  Lepton::GetHNL_LepMVA(TString key) const{
 
   map<TString, double>::const_iterator it = j_lep_map_mva_hnl_cf.find(key);

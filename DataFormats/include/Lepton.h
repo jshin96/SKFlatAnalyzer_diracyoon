@@ -217,6 +217,9 @@ public:
 
   inline double fEta() const {return fabs(this->Eta());}
 
+  bool PassULMVA(double mva1, double cut, TString s_mva) const;
+
+
   inline bool PassLepID()  const {return j_passID;}
   inline bool LepIDSet()  const {return j_IDSet;}
 

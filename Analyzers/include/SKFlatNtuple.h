@@ -215,10 +215,20 @@ public :
    vector<float>   *electron_ptratio;
    vector<float>   *electron_cj_bjetdisc;
    vector<float>   *electron_cj_flavour;
-   vector<float>   *electron_mva_cf;
-   vector<float>   *electron_mva_conv;
-   vector<float>   *electron_mva_fake;
-
+   vector<float>   *electron_mva_cf_v1;
+   vector<float>   *electron_mva_cf_v2;
+   vector<float>   *electron_mva_cf_v2p1;
+   vector<float>   *electron_mva_cf_v2p2;
+   vector<float>   *electron_mva_cf_ed_v2;
+   vector<float>   *electron_mva_cf_ed_v2p1;
+   vector<float>   *electron_mva_cf_ed_v2p2;
+   vector<float>   *electron_mva_fake_v1;
+   vector<float>   *electron_mva_fake_v2;
+   vector<float>   *electron_mva_fakeHF_v2;
+   vector<float>   *electron_mva_fakeLF_v2;
+   vector<float>   *electron_mva_fakeTop_v2;
+   vector<float>   *electron_mva_conv_v1;
+   vector<float>   *electron_mva_conv_v2;
 
    vector<float>   *electron_conv_ntracks;
    vector<float>   *electron_conv_fitprob;
@@ -662,9 +672,20 @@ public :
    TBranch        *b_electron_ptratio;
    TBranch        *b_electron_cj_bjetdisc;
    TBranch        *b_electron_cj_flavour;
-   TBranch        *b_electron_mva_cf;
-   TBranch        *b_electron_mva_conv;
-   TBranch        *b_electron_mva_fake;
+   TBranch        *b_electron_mva_cf_v1;
+   TBranch        *b_electron_mva_cf_v2;
+   TBranch        *b_electron_mva_cf_v2p1;
+   TBranch        *b_electron_mva_cf_v2p2;
+   TBranch        *b_electron_mva_cf_ed_v2;
+   TBranch        *b_electron_mva_cf_ed_v2p1;
+   TBranch        *b_electron_mva_cf_ed_v2p2;
+   TBranch        *b_electron_mva_fake_v1;
+   TBranch        *b_electron_mva_fake_v2;
+   TBranch        *b_electron_mva_fakeHF_v2;
+   TBranch        *b_electron_mva_fakeLF_v2;
+   TBranch        *b_electron_mva_fakeTop_v2;
+   TBranch        *b_electron_mva_conv_v1;
+   TBranch        *b_electron_mva_conv_v2;
    TBranch        *b_electron_MVAIso;   //!
    TBranch        *b_electron_MVANoIso;   //!
    TBranch        *b_electron_Energy;   //!

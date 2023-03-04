@@ -384,12 +384,6 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
     mu.SetPathBits(muon_pathbits->at(i));
 
 
-    ///// Load branch if running BDT skim  
-    //if(fChain->GetBranch("muon_mva_fake_v1"))   mu.SetHNL_LepMVA(muon_mva_fake->at(i),-999,-999); 
-    //else {
-    //  if(iSetupLeptonBDT) mu.SetHNL_LepMVA( GetBDTScoreMuon(mu,AnalyzerCore::Fake,  "BDTGv2"),-999,-999);
-    // }
-
     if(fChain->GetBranch("muon_mva_fake"))   mu.SetHNL_LepMVA(muon_mva_fake->at(i),-999,-999);  
     
     if(iSetupLeptonBDT) {
@@ -717,8 +711,12 @@ void AnalyzerCore::SetupIDMVAReaderDefault(){
   SetupLeptonBDT();
 
   // setup ALL MVA Readers for Mu and El
-  SetupIDMVAReader(true,true, true, true,true);
-  SetupIDMVAReader(false,true, true, true,true);
+  // Muon ID Setup
+  if(!fChain->GetBranch("muon_mva_fake"))        SetupIDMVAReader(true,true, true, true,true);
+
+  // Electron ID setup
+  if(!fChain->GetBranch("electron_mva_fake_v2")) SetupIDMVAReader(false,true, true, true,true);
+
   return ;
 }
 
@@ -1574,7 +1572,7 @@ std::vector<Muon> AnalyzerCore::GetMuons(AnalyzerParameter param, TString id, do
 
 
 
-std::vector<Electron> AnalyzerCore::GetAllElectrons(bool SetupBDT){
+std::vector<Electron> AnalyzerCore::GetAllElectrons(){
 
   std::vector<Electron> out;
   if(!electron_Energy) return out;
@@ -1665,28 +1663,29 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(bool SetupBDT){
     if(fChain->GetBranch("electron_cj_bjetdisc")) el.SetCloseJetBScore(electron_cj_bjetdisc->at(i));
     
     
-    ///if(fChain->GetBranch("electron_mva_fake_v2"))  el.SetHNL_LepMVA(electron_mva_fake->at(i), electron_mva_conv->at(i), electron_mva_cf->at(i));
-    
-    if(iSetupLeptonBDT&&SetupBDT){
-      /// If v2 branches exist then no need to recaculate values... 
-      /// electron_mva_fake is NULL then non BDT skim is bein used and so variables need to be set by hand
-      
-      ///if(!fChain->GetBranch("electron_mva_fake_v2"))  
+    if(fChain->GetBranch("electron_mva_fake_v2"))  el.SetHNL_LepMVA(electron_mva_fake_v2->at(i), electron_mva_conv_v2->at(i), electron_mva_cf_v2->at(i));
+    if(fChain->GetBranch("electron_mva_fake_v1"))  el.SetHNL_LepMVAVersion1(electron_mva_fake_v1->at(i), electron_mva_conv_v1->at(i), electron_mva_cf_v1->at(i));
+    if(fChain->GetBranch("electron_mva_fake_v2"))  el.SetHNL_LepMVAVersion2(electron_mva_fake_v2->at(i), electron_mva_conv_v2->at(i), electron_mva_cf_v2->at(i));
 
-      /// SetHNL_LepMVA is  setting MAIN var used in UL
-      el.SetHNL_LepMVA(GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTGv2"),GetBDTScoreEl(el,AnalyzerCore::Conv,  "BDTGv2"),GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2"));                           
-      
-      /// Sets up V1/V2 variables 
-      el.SetHNL_LepMVAVersion1(GetBDTScoreElV1(el,AnalyzerCore::Fake,  "BDTGv1"),GetBDTScoreElV1(el,AnalyzerCore::Conv,  "BDTGv1"),GetBDTScoreElV1(el,AnalyzerCore::CF,  "BDTGv1"));
-      el.SetHNL_LepMVAVersion2(GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTGv2"),GetBDTScoreEl(el,AnalyzerCore::Conv,  "BDTGv2"),GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2"));
-      
+    if(fChain->GetBranch("electron_mva_fakeHF_v2")) el.SetHNL_FakeLepMVA(electron_mva_fakeHF_v2->at(i), electron_mva_fakeLF_v2->at(i),electron_mva_fakeTop_v2->at(i));
+    if(fChain->GetBranch("electron_mva_cf_ed_v2"))  el.SetHNL_CFLepMVA_EtaDependantVersion2(electron_mva_cf_ed_v2->at(i));
+    if(fChain->GetBranch("electron_mva_cf_ed_v2p1"))el.SetHNL_CFLepMVA_EtaDependantVersion2p1(electron_mva_cf_ed_v2p1->at(i));
+    if(fChain->GetBranch("electron_mva_cf_ed_v2p2"))el.SetHNL_CFLepMVA_EtaDependantVersion2p2(electron_mva_cf_ed_v2p2->at(i));
+    if(fChain->GetBranch("electron_mva_cf_v2p1"))   el.SetHNL_CFLepMVAVersion2p1(electron_mva_cf_v2p1->at(i));
+    if(fChain->GetBranch("electron_mva_cf_v2p2"))   el.SetHNL_CFLepMVAVersion2p2(electron_mva_cf_v2p2->at(i));
+
+
+    if(iSetupLeptonBDT){
+      if(!fChain->GetBranch("electron_mva_fake_v2")) el.SetHNL_LepMVA(        GetBDTScoreEl(el,  AnalyzerCore::Fake,  "BDTGv2"),GetBDTScoreEl(el,AnalyzerCore::Conv,  "BDTGv2"),GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2"));                           
+      if(!fChain->GetBranch("electron_mva_fake_v1")) el.SetHNL_LepMVAVersion1(GetBDTScoreElV1(el,AnalyzerCore::Fake,  "BDTGv1"),GetBDTScoreElV1(el,AnalyzerCore::Conv,  "BDTGv1"),GetBDTScoreElV1(el,AnalyzerCore::CF,  "BDTGv1"));
+      if(!fChain->GetBranch("electron_mva_fake_v2")) el.SetHNL_LepMVAVersion2(GetBDTScoreEl(el,  AnalyzerCore::Fake,  "BDTGv2"),GetBDTScoreEl(el,AnalyzerCore::Conv,  "BDTGv2"),GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2"));
       /// sets up other setups of V2 ie extra var or Eta dep training....
-      el.SetHNL_FakeLepMVA(GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTGv2_HF"),GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTGv2_LF"),GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTGv2_Top"));
-      el.SetHNL_CFLepMVA_EtaDependantVersion2(GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv2"));
-      el.SetHNL_CFLepMVA_EtaDependantVersion2p1(GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv2p1"));
-      el.SetHNL_CFLepMVA_EtaDependantVersion2p2(GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv2p2"));
-      el.SetHNL_CFLepMVAVersion2p1(GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2p1"));
-      el.SetHNL_CFLepMVAVersion2p2(GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2p2"));
+      if(!fChain->GetBranch("electron_mva_fakeHF_v2")) el.SetHNL_FakeLepMVA(GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTGv2_HF"),GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTGv2_LF"),GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTGv2_Top"));
+      if(!fChain->GetBranch("electron_mva_cf_ed_v2"))  el.SetHNL_CFLepMVA_EtaDependantVersion2(GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv2"));
+      if(!fChain->GetBranch("electron_mva_cf_ed_v2p1"))el.SetHNL_CFLepMVA_EtaDependantVersion2p1(GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv2p1"));
+      if(!fChain->GetBranch("electron_mva_cf_ed_v2p2"))el.SetHNL_CFLepMVA_EtaDependantVersion2p2(GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv2p2"));
+      if(!fChain->GetBranch("electron_mva_cf_v2p1"))   el.SetHNL_CFLepMVAVersion2p1(GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2p1"));
+      if(!fChain->GetBranch("electron_mva_cf_v2p2"))   el.SetHNL_CFLepMVAVersion2p2(GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2p2"));
     }
 
     bool FillCloseJetVar=!fChain->GetBranch("electron_cj_flavour");

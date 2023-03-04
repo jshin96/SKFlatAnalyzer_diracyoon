@@ -25,7 +25,8 @@ void HNL_LeptonIDSF::executeEvent(){
   return ;
 }
 
-void HNL_LeptonIDSF::MeasureMuonIDSF(AnalyzerParameter param){
+
+void HNL_LeptonIDSF::PlotBDTVariablesMuon(AnalyzerParameter param){
 
   Event ev = GetEvent();
   double weight =SetupWeight(ev,param);
@@ -70,67 +71,60 @@ void HNL_LeptonIDSF::MeasureMuonIDSF(AnalyzerParameter param){
       FillHist(channel_string+i+"Fake_"+channel_string, imu.MVA() , weight, 200, -1., 1);
     }
   }
+}
 
+void HNL_LeptonIDSF::MeasureMuonIDSF(AnalyzerParameter param){
 
+  Event ev = GetEvent();
+  double weight =SetupWeight(ev,param);
+
+  std::vector<Electron>   ElectronCollProbe = GetElectrons("passPOGTight", 10., 2.5);
+  std::vector<Muon>       MuonCollProbe     = GetMuons    ("POGLoose", 10., 2.4);
+
+  HNL_LeptonCore::Channel dilep_channel = MuMu;
+
+  /// Event cuts                                                                                                                                                                                                                       
   std::vector<Jet> BJetColl  = GetHNLJets("BJetM", param);
-  
-  std::vector<Lepton *> LeptonColl      = MakeLeptonPointerVector(MuonCollProbe,ElectronCollProbe);
-
-  // Chose Typ1 Phi corr MET + smear jets 
-  Particle METv = GetvMET("PuppiT1xyCorr"); // reyturns MET with systematic correction                                                                                                
+  Particle METv = GetvMET("PuppiT1xyCorr"); // reyturns MET with systematic correction                                                                                                                                                                                                                                                                                                                                                                                       
   if(METv.Pt() > 40) return;
   if(BJetColl.size() > 0 ) return;
   if(!PassMETFilter()) return;
 
+  std::vector<Lepton *> LeptonColl      = MakeLeptonPointerVector(MuonCollProbe,ElectronCollProbe);
 
-
+  // Chose Typ1 Phi corr MET + smear jets 
   if(!CheckLeptonFlavourForChannel(dilep_channel, LeptonColl)) return;
   if (!PassTriggerSelection(dilep_channel, ev, LeptonColl,"POG")) return;
 
-  MeasureIDSF(param,dilep_channel, MuonCollProbe, param.Muon_Tight_ID, weight);
+  if(MuonCollProbe.size() != 2) return;
+  if(fabs(GetLLMass(MuonCollProbe)- 90.1) > 10) return;
+  if(SameCharge(MuonCollProbe)) return;
+
+  /// Obj cuts   
+
+  std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5);
+  if(ElectronCollV.size() != 0) return;                                                                                                                                                                                                
+
+  vector<TString> IDs = {
+    "MVALoose",
+    "HNL_ULID_FAKET_BDTG",
+    "HNL_ULID_FAKEM_BDTG",
+    "HNL_ULID_FAKEL_BDTG",
+    "HNL_ULID_FAKEVL_BDTG",
+
+  }
+
+  for(auto id : IDs)   MeasureIDSF(param,dilep_channel, MuonCollProbe, id, weight);
  
 
 }
 
-void HNL_LeptonIDSF::MeasureElectronIDSF(AnalyzerParameter param){
-
-  //passProbeID = MVA Loose WP 
+void HNL_LeptonIDSF::PlotBDTVariablesElectron(AnalyzerParameter param){
 
   Event ev = GetEvent();
   double weight =SetupWeight(ev,param);
   
   std::vector<Electron>   ElectronCollProbe = GetElectrons("passProbeID", 10., 2.5);
-
-  // POG TRigger is Single lepton
-  //if(!PassTriggerSelection(dilep_channel, ev, LeptonColl,"POG")) return; // check if trigger passes and steam is correct and pt applied
-
-  vector<TString> IDs = {
-                         "HNL_ULID_CFT_ED_BDTGv2",
-                         "HNL_ULID_CFM_ED_BDTGv2",
-                         "HNL_ULID_CFL_ED_BDTGv2",
-			 "HNL_ULID_CFT_ED_BDTGv2p1",
-                         "HNL_ULID_CFM_ED_BDTGv2p1",
-                         "HNL_ULID_CFL_ED_BDTGv2p1",
-			 "HNL_ULID_CFT_BDTGv1",
-                         "HNL_ULID_CFM_BDTGv1",
-                         "HNL_ULID_CFL_BDTGv1",
-			 "HNL_ULID_CFT_BDTGv2",
-			 "HNL_ULID_CFM_BDTGv2",
-			 "HNL_ULID_CFL_BDTGv2",
-			 "HNL_ULID_CFT_BDTGv2p1",
-                         "HNL_ULID_CFM_BDTGv2p1",
-                         "HNL_ULID_CFL_BDTGv2p1",
-			 "HNL_ULID_CFT_BDTGv2p2",
-                         "HNL_ULID_CFM_BDTGv2p2",
-                         "HNL_ULID_CFL_BDTGv2p2",
-			 "HNL_ULID_FAKET_BDTG",
-			 "HNL_ULID_FAKEM_BDTG",
-			 "HNL_ULID_FAKEL_BDTG",
-			 "HNL_ULID_FAKEVL_BDTG",
-			 "HNTightV2",
-			 "MVALoose"
-			 
-  };
 
   HNL_LeptonCore::Channel dilep_channel= EE;
 
@@ -185,24 +179,29 @@ void HNL_LeptonIDSF::MeasureElectronIDSF(AnalyzerParameter param){
       FillHist(channel_string+i+"CFv2p2_ED_"+channel_string,iel.HNL_MVAv2p2_ED_CF() , weight, 200, -1., 1);
     } 
   }
+  
+  return;
+}
 
+void HNL_LeptonIDSF::MeasureElectronIDSF(AnalyzerParameter param){
+
+  Event ev = GetEvent();
+  double weight =SetupWeight(ev,param);
+
+  HNL_LeptonCore::Channel dilep_channel= EE;
+
+  /// Event cuts
   std::vector<Jet> BJetColl  = GetHNLJets("BJetM", param);
-
-
   Particle METv = GetvMET("PuppiT1xyCorr"); // reyturns MET with systematic correction                                                                                                                            
-
   if(METv.Pt() > 40) return;
   if(BJetColl.size() > 0 ) return;
   if(!PassMETFilter()) return;
 
-
-
+  /// Obj cuts
   std::vector<Muon>       MuonCollV     = GetMuons    (param.Muon_Veto_ID, 5., 2.4);
   if(MuonCollV.size() != 0) return;
 
-  std::vector<Electron> this_AllElectrons = GetAllElectrons(false);
-  std::vector<Electron> ProbeEl = SelectElectrons(this_AllElectrons, "passProbeID", 10., 2.5, true);
-
+  std::vector<Electron> ProbeEl = GetElectrons( "passProbeID", 10., 2.5);
   if(ProbeEl.size() != 2) return;
   if(fabs(GetLLMass(ProbeEl)- 90.1) > 10) return;
   if(SameCharge(ProbeEl)) return;
@@ -211,7 +210,39 @@ void HNL_LeptonIDSF::MeasureElectronIDSF(AnalyzerParameter param){
   std::vector<Lepton *> LeptonColl      = MakeLeptonPointerVector(MuonCollProbe,ProbeEl);
   if(!PassTriggerSelection(dilep_channel, ev, LeptonColl,"POG")) return;
   if(!CheckLeptonFlavourForChannel(dilep_channel, LeptonColl)) return; // Check if EE cahnnel has 2 el...                                                                                                         
-  for(auto id : IDs)    MeasureIDSF(param ,dilep_channel, ElectronCollProbe, id, weight);
+
+  vector<TString> IDs = {
+    "HNL_ULID_CFT_ED_BDTGv2",
+    "HNL_ULID_CFM_ED_BDTGv2",
+    "HNL_ULID_CFL_ED_BDTGv2",
+    "HNL_ULID_CFT_ED_BDTGv2p1",
+    "HNL_ULID_CFM_ED_BDTGv2p1",
+    "HNL_ULID_CFL_ED_BDTGv2p1",
+    "HNL_ULID_CFT_ED_BDTGv2p2",
+    "HNL_ULID_CFM_ED_BDTGv2p2",
+    "HNL_ULID_CFL_ED_BDTGv2p2",
+    "HNL_ULID_CFT_BDTGv1",
+    "HNL_ULID_CFM_BDTGv1",
+    "HNL_ULID_CFL_BDTGv1",
+    "HNL_ULID_CFT_BDTGv2",
+    "HNL_ULID_CFM_BDTGv2",
+    "HNL_ULID_CFL_BDTGv2",
+    "HNL_ULID_CFT_BDTGv2p1",
+    "HNL_ULID_CFM_BDTGv2p1",
+    "HNL_ULID_CFL_BDTGv2p1",
+    "HNL_ULID_CFT_BDTGv2p2",
+    "HNL_ULID_CFM_BDTGv2p2",
+    "HNL_ULID_CFL_BDTGv2p2",
+    "HNL_ULID_FAKET_BDTG",
+    "HNL_ULID_FAKEM_BDTG",
+    "HNL_ULID_FAKEL_BDTG",
+    "HNL_ULID_FAKEVL_BDTG",
+    "HNTightV2",
+    "MVALoose"
+
+  };
+
+  for(auto id : IDs)    MeasureIDSF(param ,dilep_channel, ProbeEl, id, weight);
   
   return;
   
@@ -220,18 +251,8 @@ void HNL_LeptonIDSF::MeasureElectronIDSF(AnalyzerParameter param){
 
 void HNL_LeptonIDSF::MeasureIDSF(AnalyzerParameter param,HNL_LeptonCore::Channel dilep_channel, vector<Muon> MuonColl, TString ID, double weight_ll){
 
-  std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5);
-  std::vector<Muon>       MuonCollV     = GetMuons    (param.Muon_Veto_ID, 5., 2.4);
-
-  if(ElectronCollV.size() != 0) return;
-  if(MuonCollV.size() != 2) return; 
-
-
   TString channel_string = GetChannelString(dilep_channel) ;
        
-  if(MuonColl.size() != 2) return;
-  if(SameCharge(MuonColl)) return;
-
   std::vector<Lepton *> LeptonColl      = MakeLeptonPointerVector(MuonColl);
 
   if(!ZmassOSSFWindowCheck(LeptonColl, 10.)) return;
@@ -293,14 +314,6 @@ void HNL_LeptonIDSF::MeasureIDSF(AnalyzerParameter param,HNL_LeptonCore::Channel
 void HNL_LeptonIDSF::MeasureIDSF(AnalyzerParameter param,HNL_LeptonCore::Channel dilep_channel, vector<Electron> ElectronColl, TString ID, double weight_ll){
   
   TString channel_string = GetChannelString(dilep_channel) ;
-
-  //std::vector<Lepton *> LeptonColl      = MakeLeptonPointerVector(ElectronColl);
-  // std::vector<FatJet>   AK8_JetColl = GetHNLAK8Jets("", param);
-  //std::vector<Jet>      JetColl     = GetHNLJets("Tight", param);
-
-  //  std::vector<Tau> TauColl;
-
-  ///Fill_RegionPlots(dilep_channel, 0, param.Name,"ZPeak" ,  TauColl, JetColl, AK8_JetColl, LeptonColl,  GetvMET("PuppiT1xyCorr"), nPV, weight_ll,param.WriteOutVerbose);
 
 
   if(!IsData){

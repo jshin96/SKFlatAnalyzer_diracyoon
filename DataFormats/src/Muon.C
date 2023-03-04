@@ -206,6 +206,23 @@ bool Muon::PassID(TString ID) const {
   }
 
 
+  if(ID=="HNL_ULID_FAKE") {
+    if(!PassID("MVALoose")) return false;
+    double _cut=1;
+    if(ID.Contains("_FAKET_")) _cut=0.5;
+    if(ID.Contains("_FAKEM_")) _cut=0.2;
+    if(ID.Contains("_FAKEL_")) _cut=0.;
+    if(ID.Contains("_FAKEVL_")) _cut=-0.2;
+
+    TString IDTmp = ID;
+    IDTmp=IDTmp.ReplaceAll("_FAKET_","_FAKE_");
+    IDTmp=IDTmp.ReplaceAll("_FAKEM_","_FAKE_");
+    IDTmp=IDTmp.ReplaceAll("_FAKEL_","_FAKE_");
+    IDTmp=IDTmp.ReplaceAll("_FAKEVL_","_FAKE_");
+
+    if(IDTmp == "HNL_ULID_FAKE_BDTG"  && !PassULMVA(j_lep_mva_hnl_fake,_cut,"j_lep_mva_hnl_fake"))            return false;
+    return true;
+  }
 
   if(ID=="HNL_HN3L" || ID == "HNL_TopMVA_MM") {
     if(!PassID("MVALoose")) return false;

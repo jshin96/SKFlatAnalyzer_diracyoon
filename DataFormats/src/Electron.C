@@ -1902,19 +1902,6 @@ bool Electron::PassMVA_UL_EE(double c, double tau, double A) const {
 
 
 
-bool Electron::PassULMVA(double mva, double cut, TString s_mva) const {
- 
-  if(mva == -999){
-    
-    cout<<"[Electron::PassMVA] mva value not set "<< s_mva<<endl;
-    exit(ENODATA);
-  }
-  
-  if ( mva < cut)  return false;
-  
-  return true;
-}
-
 
 bool Electron::PassMVA(double mva1, double mva2, double mva3) const {
 
