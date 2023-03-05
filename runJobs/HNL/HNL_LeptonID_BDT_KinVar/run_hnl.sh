@@ -4,16 +4,18 @@ sigpath=${SKFlat_WD}/runJobs/HNL/${analyzer}/Signals/
 mcpath=${SKFlat_WD}/runJobs/HNL/${analyzer}/Bkg/
 njobs=300
 nmax=250
-declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
 
+declare  -a era_list=("2017")
+# "2016postVFP" "2016preVFP" "2018")
 
 if [[ $1 == "TT" ]]; then
 
-    nmax=400
+    declare  -a era_list=("2016postVFP")
+    nmax=2
 
     for i in "${era_list[@]}"
     do
-	SKFlat.py -a $analyzer  -i TTLJ_powheg  -n 300  --nmax ${nmax}   -e ${i}  --userflags SeperateFake &
+	SKFlat.py -a $analyzer  -i  WZ_pythia  -n 300  --nmax ${nmax}   -e ${i}  --userflags SeperateFake &
     
     done
 fi
@@ -30,7 +32,8 @@ if [[ $1 == "" ]]; then
         SKFlat.py -a $analyzer  -l $sigpath/SSWWsample.txt  -n 10  --nmax ${nmax}   -e ${i} &
 	SKFlat.py -a $analyzer  -l $mcpath/Prompt.txt      -n 400  --nmax ${nmax}   -e ${i}  --userflags SeperatePrompt &
 	SKFlat.py -a $analyzer  -l   $mcpath/Fake.txt  -n 300  --nmax ${nmax}   -e ${i}  --userflags SeperateFake &
-	SKFlat.py -a $analyzer  -l   $mcpath/Fake.txt  -n 300  --nmax ${nmax}   -e ${i}  --userflags SeperateFake,HF &
+	SKFlat.py -a $analyzer  -l   $mcpath/Fake.txt  -n 300  --nmax ${nmax}   -e ${i}  --userflags SeperateFake,HFB &
+	SKFlat.py -a $analyzer  -l   $mcpath/Fake.txt  -n 300  --nmax ${nmax}   -e ${i}  --userflags SeperateFake,HFC &
 	SKFlat.py -a $analyzer  -l   $mcpath/Fake.txt  -n 300  --nmax ${nmax}   -e ${i}  --userflags SeperateFake,LF 
 	SKFlat.py -a $analyzer  -l   $mcpath/Conv.txt  -n 500  --nmax ${nmax}   -e ${i}  --userflags SeperateConv &
 	SKFlat.py -a $analyzer  -l   $mcpath/CF.txt    -n 1000  --nmax ${nmax}   -e ${i}  --userflags SeperateCF  

@@ -154,8 +154,6 @@ bool Muon::PassID(TString ID) const {
   if(ID=="POGMedium") return isPOGMedium();
   if(ID=="POGLoose") return isPOGLoose();
 
-  
-
   if(ID=="POGTightWithTightIso") return Pass_POGTightWithTightIso();
   if(ID=="POGHighPtWithLooseTrkIso") return Pass_POGHighPtWithLooseTrkIso();
   //==== Customized
@@ -177,7 +175,16 @@ bool Muon::PassID(TString ID) const {
   if(ID=="HNLooseMVA") return Pass_HNLooseMVA();
   if(ID=="HNLooseV1") return Pass_HNLoose(0.4,  0.2, 0.5,10.);
   if(ID=="HNLoosePOG") return Pass_HNLoose(0.4,  0.2, 0.5,99999.);
-  
+
+  //// Probe ID for IDSF
+  if(ID=="passProbe") {
+    if(!isPOGLoose()) return false;
+    if(this->fdXY() > 0.2) return false;
+    if(this->fdZ() > 0.5) return false;
+    return true;
+  }
+
+  /// Loose ID for SR with MVA
   if(ID == "MVALoose") {
     if(!Pass_LepMVAID()) return false;
     if(!isPOGMedium()) return false;
@@ -206,23 +213,48 @@ bool Muon::PassID(TString ID) const {
   }
 
 
-  if(ID=="HNL_ULID_FAKE") {
+  if(ID.Contains("HNL_ULID_FAKE")) {
     if(!PassID("MVALoose")) return false;
     double _cut=1;
-    if(ID.Contains("_FAKET_")) _cut=0.5;
-    if(ID.Contains("_FAKEM_")) _cut=0.2;
-    if(ID.Contains("_FAKEL_")) _cut=0.;
-    if(ID.Contains("_FAKEVL_")) _cut=-0.2;
+    if(ID.Contains("_FAKET_")) _cut=0.7;
+    if(ID.Contains("_FAKEM_")) _cut=0.5;
+    if(ID.Contains("_FAKEL_")) _cut=0.2;
+    if(ID.Contains("_FAKEVL_")) _cut=0.;
+    if(ID.Contains("_FAKEVVL_")) _cut=-0.2;
+
 
     TString IDTmp = ID;
     IDTmp=IDTmp.ReplaceAll("_FAKET_","_FAKE_");
     IDTmp=IDTmp.ReplaceAll("_FAKEM_","_FAKE_");
     IDTmp=IDTmp.ReplaceAll("_FAKEL_","_FAKE_");
     IDTmp=IDTmp.ReplaceAll("_FAKEVL_","_FAKE_");
+    IDTmp=IDTmp.ReplaceAll("_FAKEVVL_","_FAKE_");
 
     if(IDTmp == "HNL_ULID_FAKE_BDTG"  && !PassULMVA(j_lep_mva_hnl_fake,_cut,"j_lep_mva_hnl_fake"))            return false;
     return true;
   }
+
+
+  if(ID.Contains("HNL_ULID_TopFAKE")) {
+    if(!PassID("MVALoose")) return false;
+    double _cut=1;
+    if(ID.Contains("_TopFAKET_")) _cut=0.7;
+    if(ID.Contains("_TopFAKEM_")) _cut=0.5;
+    if(ID.Contains("_TopFAKEL_")) _cut=0.2;
+    if(ID.Contains("_TopFAKEV_")) _cut=0.;
+    if(ID.Contains("_TopFAKEVVL_")) _cut=-0.2;
+
+    TString IDTmp = ID;
+    IDTmp=IDTmp.ReplaceAll("_TopFAKET_","_TopFAKE_");
+    IDTmp=IDTmp.ReplaceAll("_TopFAKEM_","_TopFAKE_");
+    IDTmp=IDTmp.ReplaceAll("_TopFAKEL_","_TopFAKE_");
+    IDTmp=IDTmp.ReplaceAll("_TopFAKEVL_","_TopFAKE_");
+    IDTmp=IDTmp.ReplaceAll("_TopFAKEVVL_","_TopFAKE_");
+
+    if(IDTmp == "HNL_ULID_TopFAKE_BDTG"  && !PassULMVA(j_MVA,_cut,"j_MVA"))            return false;
+    return true;
+  }
+
 
   if(ID=="HNL_HN3L" || ID == "HNL_TopMVA_MM") {
     if(!PassID("MVALoose")) return false;

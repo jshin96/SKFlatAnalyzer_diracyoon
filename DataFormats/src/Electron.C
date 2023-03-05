@@ -913,6 +913,8 @@ int  Electron::PassIDLoose(TString ID) const{
     
   if(ID=="passProbeID") return passMVAID_noiso_WPLoose() ? 1 : 0;  // --- VETO POG                                                                                                                                           
   //=== POG
+  if(ID=="passProbeIDTight") return passMVAID_noiso_WPLoose()&&Pass_TriggerEmulationLoose() ? 1 : 0;  // --- VETO POG                                                                                                                                             
+
   if(ID=="passLooseID")  return passLooseID()     ? 1 : 0; 
   if(ID=="HEEPLoose")    return passLooseHEEPID() ? 1 : 0; 
   if(ID=="HNHEEPLoose")  return passLooseHEEPID()&&PassHNID() ? 1 : 0; 

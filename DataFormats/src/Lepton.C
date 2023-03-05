@@ -130,7 +130,6 @@ bool Lepton::PassULMVA(double mva, double cut, TString s_mva) const {
   }
 
   if ( mva < cut)  return false;
-
   return true;
 }
 

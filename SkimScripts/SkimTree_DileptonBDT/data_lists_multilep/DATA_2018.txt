@@ -1,4 +1,4 @@
-EGamma:A
-EGamma:B
-EGamma:C
-EGamma:D
+DoubleMuon:A
+DoubleMuon:B
+DoubleMuon:C
+DoubleMuon:D

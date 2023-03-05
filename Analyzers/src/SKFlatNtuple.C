@@ -893,9 +893,9 @@ void SKFlatNtuple::Init()
   if(fChain->GetBranch("electron_mva_cf_v2")) fChain->SetBranchAddress("electron_mva_cf_v2",&electron_mva_cf_v2,&b_electron_mva_cf_v2);
   if(fChain->GetBranch("electron_mva_cf_v2p1")) fChain->SetBranchAddress("electron_mva_cf_v2p1",&electron_mva_cf_v2p1,&b_electron_mva_cf_v2p1);
   if(fChain->GetBranch("electron_mva_cf_v2p2")) fChain->SetBranchAddress("electron_mva_cf_v2p2",&electron_mva_cf_v2p2,&b_electron_mva_cf_v2p2);
-  if(fChain->GetBranch("electron_mva_ed_cf_v2")) fChain->SetBranchAddress("electron_mva_ed_cf_v2",&electron_mva_cf_ed_v2,&b_electron_mva_cf_ed_v2);
-  if(fChain->GetBranch("electron_mva_ed_cf_v2p1")) fChain->SetBranchAddress("electron_mva_ed_cf_v2p1",&electron_mva_cf_ed_v2p1,&b_electron_mva_cf_ed_v2p1);
-  if(fChain->GetBranch("electron_mva_ed_cf_v2p2")) fChain->SetBranchAddress("electron_mva_ed_cf_v2p2",&electron_mva_cf_ed_v2p2,&b_electron_mva_cf_ed_v2p2);
+  if(fChain->GetBranch("electron_mva_cf_ed_v2")) fChain->SetBranchAddress("electron_mva_cf_ed_v2",&electron_mva_cf_ed_v2,&b_electron_mva_cf_ed_v2);
+  if(fChain->GetBranch("electron_mva_cf_ed_v2p1")) fChain->SetBranchAddress("electron_mva_cf_ed_v2p1",&electron_mva_cf_ed_v2p1,&b_electron_mva_cf_ed_v2p1);
+  if(fChain->GetBranch("electron_mva_cf_ed_v2p2")) fChain->SetBranchAddress("electron_mva_cf_ed_v2p2",&electron_mva_cf_ed_v2p2,&b_electron_mva_cf_ed_v2p2);
 
   if(fChain->GetBranch("electron_mva_conv_v2")) fChain->SetBranchAddress("electron_mva_conv_v2",&electron_mva_conv_v2,&b_electron_mva_conv_v2);
   if(fChain->GetBranch("electron_mva_fake_v2")) fChain->SetBranchAddress("electron_mva_fake_v2",&electron_mva_fake_v2,&b_electron_mva_fake_v2);

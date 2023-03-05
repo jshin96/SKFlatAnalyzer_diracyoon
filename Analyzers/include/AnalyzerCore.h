@@ -152,25 +152,24 @@ public:
 
 
   /// Var for ID BDTs
-  Float_t Pt,  Eta, PtBinned; //3
-  Float_t PtRatio,  PtRel,MassDrop; //3
-  Float_t CEMFracCJ, NEMFracCJ, CHFracCJ, NHFracCJ, MuFracCJ, JetDiscCJ; //6
-  Float_t Dxy,Dz,DxySig, DzSig, RelIso,IP3D,MVA,MVAIso,Chi2, Minireliso; //10
-  Float_t Full5x5_sigmaIetaIeta,dEtaSeed,dPhiIn,HoverE,Rho,TrkIso,InvEminusInvP,ecalPFClusterIso,hcalPFClusterIso; //9
-  Float_t RelDxy,RelDz,RelIP3D,RelMVA,RelMVAIso,PileUp;//6
-  Float_t R9,dr03TkSumPt,dr03HcalTowerSumEt,dr03HcalDepth1TowerSumEt,dr03EcalRecHitSumEt, e2x5OverE5x5,e1x5OverE5x5;//7
-  Float_t e15,e25,e55,EtaWidth,PhiWidth,dEtaIn, MiniIsoChHad,MiniIsoNHad,MiniIsoPhHad,IsoChHad,IsoNHad,IsoPhHad;//12
-  Float_t RelMiniIsoCh,RelMiniIsoN,EoverP,FBrem;//4
+  Float_t bdt_id_Pt,        bdt_id_Eta,      bdt_id_PtBinned; //3
+  Float_t bdt_id_PtRatio,   bdt_id_PtRel   , bdt_id_MassDrop; //3
+  Float_t bdt_id_CEMFracCJ, bdt_id_NEMFracCJ,bdt_id_CHFracCJ, bdt_id_NHFracCJ, bdt_id_MuFracCJ, bdt_id_JetDiscCJ; //6
+  Float_t bdt_id_Dxy,       bdt_id_Dz,       bdt_id_DxySig, bdt_id_DzSig, bdt_id_RelIso,bdt_id_IP3D,bdt_id_MVA,bdt_id_MVAIso,bdt_id_Chi2, bdt_id_Minireliso; //10
+  Float_t bdt_id_Full5x5_sigmaIetaIeta,bdt_id_dEtaSeed,bdt_id_dPhiIn,bdt_id_HoverE,bdt_id_Rho,bdt_id_TrkIso,bdt_id_InvEminusInvP,bdt_id_ecalPFClusterIso,bdt_id_hcalPFClusterIso; //9
+  Float_t bdt_id_RelDxy,bdt_id_RelDz,bdt_id_RelIP3D,bdt_id_RelMVA,bdt_id_RelMVAIso,bdt_id_PileUp;//6
+  Float_t bdt_id_R9,bdt_id_dr03TkSumPt,bdt_id_dr03HcalTowerSumEt,bdt_id_dr03HcalDepth1TowerSumEt,bdt_id_dr03EcalRecHitSumEt, bdt_id_e2x5OverE5x5,bdt_id_e1x5OverE5x5;//7
+  Float_t bdt_id_e15,bdt_id_e25,bdt_id_e55,bdt_id_EtaWidth,bdt_id_PhiWidth,bdt_id_dEtaIn, bdt_id_MiniIsoChHad,bdt_id_MiniIsoNHad,bdt_id_MiniIsoPhHad,bdt_id_IsoChHad,bdt_id_IsoNHad,bdt_id_IsoPhHad;//12
+  Float_t bdt_id_RelMiniIsoCh,bdt_id_RelMiniIsoN,bdt_id_EoverP,bdt_id_FBrem;//4
   //Float_t fIsEcalDriven,Pixel_hits,  fValidhits,fMatched_stations,fTracker_layers,fMissingHits;//6
   //Float_t fPassConversionVeto,fIsGsfCtfScPixChargeConsistent, fIsGsfScPixChargeConsistent, fIsGsfCtfChargeConsistent;//4
   //Float_t fPOGTight, fPOGMedium,fHNTightID;
-  Float_t w_id_tot;
+  Float_t bdt_id_w_id_tot;
 
   
-  Float_t POGTight, POGMedium,HNTightID;
-  Float_t isEcalDriven,Pixel_hits,  Validhits,Matched_stations,Tracker_layers,MissingHits;//6                                                                                                                                                                                  
-  Float_t PassConversionVeto,IsGsfCtfScPixChargeConsistent, IsGsfScPixChargeConsistent, IsGsfCtfChargeConsistent;//4                                                                                                                                                          
-
+  Float_t bdt_id_POGTight, bdt_id_POGMedium,bdt_id_HNTightID;
+  Float_t bdt_id_isEcalDriven,bdt_id_Pixel_hits,  bdt_id_Validhits,bdt_id_Matched_stations,bdt_id_Tracker_layers,bdt_id_MissingHits;//6                                                                                                    
+  Float_t bdt_id_PassConversionVeto,bdt_id_IsGsfCtfScPixChargeConsistent, bdt_id_IsGsfScPixChargeConsistent, bdt_id_IsGsfCtfChargeConsistent;//4                                                                                                                                                          
   
   /// ID functions MVA
   double GetBDTScoreEl(Electron el ,BkgType bkg,TString bdttag);
