@@ -4973,6 +4973,55 @@ void AnalyzerCore::PrintGen(const std::vector<Gen>& gens){
 
 }
 
+TString AnalyzerCore::MatchGenDef(std::vector<Gen>& gens,const Lepton& Lep){
+  
+  if(Lep.GetFlavour() == "Muon"){
+    
+    int Idx_Closest    = GenMatchedIdx(Lep,gens);
+
+    if (Idx_Closest < 0){
+      for(unsigned int i=2; i<gens.size(); i++){
+	Gen gen = gens.at(i);
+	if(Lep.DeltaR(gen) < 0.4)  {
+	  if(fabs(gen.PID()) == 11 && gen.Status()==1) return "_Welectron";
+	}
+      }
+    }
+    else{
+      if(fabs(gens.at(gens[Idx_Closest].MotherIndex()).PID()) == 521)return "_B+";
+      if(fabs(gens.at(gens[Idx_Closest].MotherIndex()).PID()) == 411)return "_D+";
+
+    }
+  }
+
+  return "__";
+}
+
+void AnalyzerCore::PrintMatchedGen(std::vector<Gen>& gens,const Lepton& Lep){
+
+  cout << "===========================================================" << endl;
+  cout << "RunNumber:EventNumber = " << run << ":" << event << endl;
+  cout << "index\tPID\tStatus\tMIdx\tMPID\tStart\tPt\tEta\tPhi\tM" << endl;
+  
+  int Idx_Closest    = GenMatchedIdx(Lep,gens);
+  cout << "Matched gen = " << Idx_Closest << endl;
+  for(unsigned int i=2; i<gens.size(); i++){
+
+    Gen gen = gens.at(i);
+    vector<int> history = TrackGenSelfHistory(gen, gens);
+    
+    if(Lep.DeltaR(gen) < 0.4)     cout << "\033[91m\033[107m"<<  i << "\t" << gen.SPID() << "\t" << gen.Status() << "\t" << gen.MotherIndex() << "\t" << gens.at(gen.MotherIndex()).SPID()<< "\t" << history[0] << "\t \033[0m";
+    //else cout << i << "\t" << gen.SPID() << "\t" << gen.Status() << "\t" << gen.MotherIndex() << "\t" << gens.at(gen.MotherIndex()).SPID()<< "\t" << history[0] << "\t";
+
+    if(Lep.DeltaR(gen) < 0.4)  printf("\033[91m\033[107m%.2f\t%.2f\t%.2f\t%.2f\033[0m\n",gen.Pt(), gen.Eta(), gen.Phi(), gen.M());
+    //else  printf("%.2f\t%.2f\t%.2f\t%.2f\n",gen.Pt(), gen.Eta(), gen.Phi(), gen.M());
+    
+  }
+
+}
+
+
+
 void AnalyzerCore::PrintEvent(AnalyzerParameter param,TString selection,double w){
 
   // if run_timestamp is not set dont run                                                                                                        

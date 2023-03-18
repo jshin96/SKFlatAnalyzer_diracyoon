@@ -13,7 +13,7 @@ Seeds = ["100"]
 MinNodeSizes = ["2.5","5.0"]
 BoostLearningValues = ["0.05","0.5"]
 BaggedFracs =  ["0.5","0.8"]
-BDTVersion = "Version3"
+BDTVersion = "Version4"
 
 
 for Classifier in Classifiers:
@@ -31,7 +31,7 @@ for Classifier in Classifiers:
                                         for Seed in Seeds:
                                             for MinNodeSize in MinNodeSizes:
                                                 for SignalMode in SignalModes:
-                                                    nMAX = " --nmax 40"
+                                                    nMAX = " --nmax 100"
 
                                                     os.system("RunIDBDT.py -a runIDBDT_HNtypeIConv -m " + str(Classifier) + " -b Conv -ns "+str(SignalMode)+ "  -nt "+ str(NTREES) + " -c " + Channel + " -MaxDepth  " + str(MaxDepth) + " -ncut " + str(NCut) + " -eta "+ str(Eta) +  " -Nrom " +NormMode+ " -BoostLearningRate  " + BoostLearningValue + " -BaggedFrac " + BaggedFrac +  " -s " + Seed + "  -e "+Era+" " + nMAX + " -MinNodeSize "+MinNodeSize+ " -t " + BDTVersion)    
                                                     

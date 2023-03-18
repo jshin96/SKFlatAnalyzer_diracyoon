@@ -19,6 +19,52 @@ public:
   void SetIndexPIDStatus(int i, int p, int t);
   inline int Index() const { return j_index; }
   inline int PID() const { return j_PID; }
+  inline TString SPID() const {
+    
+    if(fabs(j_PID)  < 7){
+      TString sign="";
+      if (j_PID < 0) sign="bar";
+      if(fabs(j_PID) == 6) return "t"+sign;
+      if(fabs(j_PID) == 5) return "b"+sign;
+      if(fabs(j_PID) == 4) return "c"+sign;
+      if(fabs(j_PID) == 3) return "s"+sign;
+      if(fabs(j_PID) == 2) return "d"+sign;
+      if(fabs(j_PID) == 1) return "u"+sign;
+    }
+    
+    if(fabs(j_PID) == 11) return "e";
+    if(fabs(j_PID) == 12) return "nue";
+    if(fabs(j_PID) == 13) return "mu";
+    if(fabs(j_PID) == 14) return "numu";
+    if(fabs(j_PID) == 15) return "tau";
+    if(fabs(j_PID) == 16) return "nutau";
+
+    if(fabs(j_PID) == 21) return "g";
+    if(fabs(j_PID) == 22) return "ph";
+    if(fabs(j_PID) == 23) return "Z";
+    if(fabs(j_PID) == 24) return "W";
+    if(fabs(j_PID) == 2212) return "proton";
+
+    if(fabs(j_PID) == 111) return "pi0";
+    if(fabs(j_PID) == 211) return "pi+";
+    if(fabs(j_PID) == 421) return "D0";
+    if(fabs(j_PID) == 411) return "D+";
+    if(fabs(j_PID) == 213) return "ρ(770)+";
+    if(fabs(j_PID) == 311) return "K0";
+    if(fabs(j_PID) == 321) return "K+";
+    if(fabs(j_PID) == 511) return "B0";
+    if(fabs(j_PID) == 521) return "B+";
+    if(fabs(j_PID) == 523) return "B∗+";
+    if(fabs(j_PID) == 425) return "D∗2(2460)0";
+    if(fabs(j_PID) == 130) return "K0L";
+    if(fabs(j_PID) == 310) return "K0S";
+
+    if(fabs(j_PID) == 10313) return "K1(1270)0";
+
+    return to_string(j_PID); 
+
+  }
+
   inline int Status() const { return j_status; }
   void SetMother(int mindex);
   inline int MotherIndex() const { return j_mother_index; }

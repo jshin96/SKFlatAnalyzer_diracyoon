@@ -155,6 +155,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   
   // ------ General 
   bool IsSignal(); //// checks if sample is Signal
+  double ScaleLepToSS(TString bkg, bool isMuon, int lepttype);
   void PrintParam(AnalyzerParameter param); 
   void OutCutFlow(TString lab, double w);
   TString QToString(HNL_LeptonCore::ChargeType q);

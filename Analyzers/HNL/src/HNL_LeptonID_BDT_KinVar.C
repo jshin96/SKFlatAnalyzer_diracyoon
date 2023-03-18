@@ -312,6 +312,12 @@ void HNL_LeptonID_BDT_KinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,v
     
     float weight_lep = weight;
 
+    if(SeperateFakes && HasFlag("SSWeight")){
+      bool ismuon = (lep->LeptonFlavour() == Lepton::MUON);
+      weight_lep *= ScaleLepToSS("Fake",ismuon, GetLeptonType_JH(*lep, gens));
+    }
+
+
     if(SeperateFakes && HasFlag("HFB")){
       std::vector<Jet>    AK4_JetAllColl = GetAllJets();
 

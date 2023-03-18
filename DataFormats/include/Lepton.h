@@ -174,8 +174,8 @@ public:
   inline double CloseJet_BScore()  const {return j_lep_jetbscore;}
   inline int CloseJet_FlavourInt()  const {return j_lep_jetflavour;}
   inline TString CloseJet_Flavour()  const {
-    if(j_lep_jetflavour == 5) return "HF";
-    if(j_lep_jetflavour == 4) return "HF";
+    if(j_lep_jetflavour == 5) return "HF_B";
+    if(j_lep_jetflavour == 4) return "HF_C";
     if(j_lep_jetflavour == 0) return "LF";
     return "Pileup";
   }

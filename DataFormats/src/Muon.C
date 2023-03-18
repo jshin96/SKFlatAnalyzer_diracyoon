@@ -145,34 +145,132 @@ void Muon::SetSoftMVA(double MVA){
   j_softMVA = MVA;
 }
 
+
+
+
 bool Muon::PassID(TString ID) const {
 
+  ////////////// BASIC IDS
+
+  /// ALL LEPTONS
   if(ID=="NoCut") return true;
-  //==== POG
+  if(ID=="NOCUT") return true;
+
+
+  //==== POG/ POG BASED IDs
   if(ID=="POGTight") return isPOGTight();
   if(ID=="POGHighPt") return isPOGHighPt();
   if(ID=="POGMedium") return isPOGMedium();
   if(ID=="POGLoose") return isPOGLoose();
-
   if(ID=="POGTightWithTightIso") return Pass_POGTightWithTightIso();
   if(ID=="POGHighPtWithLooseTrkIso") return Pass_POGHighPtWithLooseTrkIso();
+  if(ID=="POGHighPtTight") return Pass_POGHighPtTight();
+  if(ID=="POGHighPtLoose") return Pass_POGHighPtLoose();
+  if(ID=="POGHighPtMixTight") return Pass_POGHighPtTightOR();
+  if(ID=="POGHighPtMixLoose") return Pass_POGHighPtLooseOR();
+  if(ID=="HNTightPFIsoLoose") return Pass_POGTightPFIsoLoose(true);
+  if(ID=="HNTightPFIsoMedium") return Pass_POGTightPFIsoMedium(true);
+  if(ID=="HNTightPFIsoTight") return Pass_POGTightPFIsoTight(true);
+  if(ID=="HNTightPFIsoVeryTight") return Pass_POGTightPFIsoVeryTight(true);
+  if(ID=="HNTightPFIsoVeryVeryTight") return Pass_POGTightPFIsoVeryVeryTight(true);
+  if(ID=="POGTightPFIsoLoose") return Pass_POGTightPFIsoLoose(false);
+  if(ID=="POGTightPFIsoMedium") return Pass_POGTightPFIsoMedium(false);
+  if(ID=="POGTightPFIsoTight") return Pass_POGTightPFIsoTight(false);
+  if(ID=="POGTightPFIsoVeryTight") return Pass_POGTightPFIsoVeryTight(false);
+  if(ID=="POGTightPFIsoVeryVeryTight") return Pass_POGTightPFIsoVeryVeryTight(false);
+  if(ID=="CutBasedTightNoIP") return Pass_CutBasedTightNoIP();
+
+
+  /// Previous IDs
+  if(ID=="HNTightV1") return Pass_HNTight(0.07, 0.02, 0.05, 3.);
+  if(ID=="HNTightV2") return Pass_HNTight(0.07, 0.05, 0.1, 3.);
+
+
+  /// OTHER GROUP IDs
+
+  if(ID=="HNL_Peking") {
+
+    if(!isPOGTight()) return false;
+    if(!( RelIso()<0.15 ))  return false;
+    double dxy_cut = (this->Pt() < 20) ? 0.01 : 0.02 ;
+    if(fabs(dXY()) >  dxy_cut)   return false;
+    if(fabs(dZ()) >  0.1)   return false;
+
+    return true;
+  }
+
+  if(ID=="HNL_HN3L" || ID == "HNL_TopMVA_MM") {
+    if(!PassID("MVALoose")) return false;
+    if(MVA() < 0.64)  return false;
+    return true;
+  }
+
+  if(ID=="HNL_TopMVA_FO_MM") {
+    if(!PassID("MVALoose")) return false;
+    if(MVA() < 0.64) {
+      if(CloseJet_Ptratio() < 0.45) return false;
+      if(CloseJet_BScore() > 0.025) return false;
+    }
+    return true;
+  }
+
+  if(ID=="HNL_TopMVA_TT") {
+    if(!PassID("MVALoose")) return false;
+    if(MVA() < 0.81)  return false;
+    return true;
+  }
+
+
+  if(ID=="HNL_TopMVA_MT") {
+    if(!PassID("MVALoose")) return false;
+    if( fabs(this->Eta()) <= 1.479 ){
+      if(MVA() < 0.64)  return false;
+    }
+    else if(MVA() < 0.81)  return false;
+
+    return true;
+  }
+
+  if(ID=="HNL_TopMVA_TM") {
+    if(!PassID("MVALoose")) return false;
+    if( fabs(this->Eta()) <= 1.479 ){
+      if(MVA() < 0.81)  return false;
+    }
+    else if(MVA() < 0.64)  return false;
+    return true;
+  }
+
+  if(ID=="HNL_TopMVA_FO_TM") {
+    if(!PassID("MVALoose")) return false;
+    if( fabs(this->Eta()) <= 1.479 ){
+      if(MVA() < 0.81) {
+        if(MVA() < 0.64) {
+          if(CloseJet_Ptratio() < 0.45) return false;
+          if(CloseJet_BScore() > 0.025) return false;
+        }
+      }
+    }
+    else if(MVA() < 0.64){
+      if(MVA() < 0.64) {
+        if(CloseJet_Ptratio() < 0.45) return false;
+	if(CloseJet_BScore() > 0.025) return false;
+      }
+    }
+    return true;
+  }
+
+
+
   //==== Customized
-  
-  if(ID=="POGHighPtTight") return  Pass_POGHighPtTight();
-  if(ID=="POGHighPtLoose") return  Pass_POGHighPtLoose();
 
-  if(ID=="POGHighPtMixTight") return  Pass_POGHighPtTightOR();
-  if(ID=="POGHighPtMixLoose") return  Pass_POGHighPtLooseOR();
 
+  if(ID=="HNLoosest") return (Pass_LepMVAID() || Pass_HNVeto2016());
   if(ID=="HNVeto2016") return Pass_HNVeto2016();
-  if(ID=="HNLoosest") return Pass_HNVeto2016();
-
   if(ID=="HNVeto_17028") return Pass_HNVeto2016();
   if(ID=="HNLoose_17028") return Pass_HNLoose2016(0.4, 0.2, 0.1, 3.);
   if(ID=="HNTight_17028") return Pass_HNTight2016();
 
   /// looser IP
-  if(ID=="HNLooseMVA") return Pass_HNLooseMVA();
   if(ID=="HNLooseV1") return Pass_HNLoose(0.4,  0.2, 0.5,10.);
   if(ID=="HNLoosePOG") return Pass_HNLoose(0.4,  0.2, 0.5,99999.);
 
@@ -184,13 +282,21 @@ bool Muon::PassID(TString ID) const {
     return true;
   }
 
-  /// Loose ID for SR with MVA
+  /////////////////   MVA ID FUNCTIONS
+  
+  /// MVAID used to train 
+  if(ID=="MVAID") return Pass_LepMVAID();
+  if(ID.Contains("MuOpt")) return Pass_CB_Opt(ID);
+  if(ID=="HNL_ULID_Baseline") return Pass_LepMVAID();
+
+  /// Loose ID for SR with MVA cuts
   if(ID == "MVALoose") {
     if(!Pass_LepMVAID()) return false;
     if(!isPOGMedium()) return false;
     return true;
   }
 
+  /// Breakdown of MVA ID cuts
   if(ID == "MVALooseCut1") {
     if(!( isPOGLoose() )) return false;
     if(MiniRelIso() > 0.4) return false;
@@ -212,6 +318,8 @@ bool Muon::PassID(TString ID) const {
     return true;
   }
 
+
+  //// ISDF functions to check several WP for each MVA
 
   if(ID.Contains("HNL_ULID_FAKE")) {
     if(!PassID("MVALoose")) return false;
@@ -256,99 +364,8 @@ bool Muon::PassID(TString ID) const {
   }
 
 
-  if(ID=="HNL_HN3L" || ID == "HNL_TopMVA_MM") {
-    if(!PassID("MVALoose")) return false;
-    if(MVA() < 0.64)  return false;
-    return true;
-  }
-  if(ID=="HNL_TopMVA_FO_MM") {
-
-    if(!PassID("MVALoose")) return false;
-
-    if(MVA() < 0.64) { 
-      if(CloseJet_Ptratio() < 0.45) return false;
-      if(CloseJet_BScore() > 0.025) return false;
-    }
+  //// FUNCTIONS for MVA ID 
   
-    return true;
-  }
-
-
-  if(ID=="HNL_TopMVA_TT") {
-
-    if(!PassID("MVALoose")) return false;
-
-    if(MVA() < 0.81)  return false;
-
-    return true;
-  }
-
-  if(ID=="HNL_TopMVA_MT") {
-
-    if(!PassID("MVALoose")) return false;
-    
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(MVA() < 0.64)  return false;
-    }
-    else if(MVA() < 0.81)  return false;
-
-    return true;
-  }
-
-  if(ID=="HNL_TopMVA_TM") {
-
-    if(!PassID("MVALoose")) return false;
-
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(MVA() < 0.81)  return false;
-    }
-    else if(MVA() < 0.64)  return false;
-
-    return true;
-  }
-
-  if(ID=="HNL_TopMVA_FO_TM") {
-
-    if(!PassID("MVALoose")) return false;
-
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(MVA() < 0.81) {
-	if(MVA() < 0.64) {  
-	  if(CloseJet_Ptratio() < 0.45) return false;
-	  if(CloseJet_BScore() > 0.025) return false;
-	}
-      }
-    }
-    else if(MVA() < 0.64){
-      if(MVA() < 0.64) {  
-	if(CloseJet_Ptratio() < 0.45) return false;
-	if(CloseJet_BScore() > 0.025) return false;
-      }
-    }
-    return true;
-  }
-
-  
-
-  if(ID=="HNL_Peking") {
-
-    if(!isPOGTight()) return false;
-    if(!( RelIso()<0.15 ))  return false;
-    double dxy_cut = (this->Pt() < 20) ? 0.01 : 0.02 ;
-    if(fabs(dXY()) >  dxy_cut)   return false;
-    if(fabs(dZ()) >  0.1)   return false;
-
-    return true;
-  }
-
-
-
-  /// Loose ID used for MVA
-  if(ID=="MVAID") return Pass_LepMVAID();
-
-  if(ID.Contains("MuOpt")) return Pass_CB_Opt(ID);
-
-  if(ID=="HNL_ULID_Baseline") return Pass_LepMVAID();
 
   if(ID.Contains("HNL_ULID_2016") || ID.Contains("HNL_ULID_2017") )  {
 
@@ -384,205 +401,10 @@ bool Muon::PassID(TString ID) const {
     if(fabs(dZ()) >  0.05)   return false;
     if(fabs(IP3D()/IP3Derr()) >5.) return false;
     return true;
-
-
   }
 
   //// Following are functions to test UL UDs
   
-  if(ID.Contains("HNL_ULID_v1_2016"))  {
-
-    if(!PassID("MVALoose")) return false;
-
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(MVA() < 0.77)  return false;
-    }
-    else{
-      if(MVA() < 0.6)  return false;
-    }
-
-    double dxy_cut = 0.02 ;
-    if(fabs(dXY()) >  dxy_cut)   return false;
-    if(fabs(dZ()) >  0.05)   return false;
-    if(fabs(IP3D()/IP3Derr()) >5.) return false;
-    return true;
-  }
-
-  if(ID.Contains("HNL_ULID_v2_2016"))  {
-
-    if(!PassID("MVALoose")) return false;
-
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(MVA() < 0.77)  return false;
-    }
-    else{
-      if(MVA() < 0.6)  return false;
-    }
-
-    return true;
-  }
-
-
-
-  if(ID.Contains("HNL_ULID_2016v0"))  {
-
-    if(!PassID("MVALoose")) return false;
-
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(!PassMVA_UL_Slope("NPMVABB10p05", "NPMVABB20p77", "NPMVAPt20"))  return false;
-    }
-    else{
-      if(MVA() < 0.6)  return false;
-    }
-
-    double dxy_cut = 0.02 ;
-    if(fabs(dXY()) >  dxy_cut)   return false;
-    if(fabs(dZ()) >  0.05)   return false;
-    if(fabs(IP3D()/IP3Derr()) >5.) return false;
-    return true;
-
-    
-  }
-
-  if(ID == "HNL_ULID_FO_2016" || ID == "HNL_ULID_FO_2017" )  {
-
-    if(!PassID("MVALoose")) return false;
-    
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(MVA() < 0.77)  {
-	if(CloseJet_Ptratio() < 0.45) return false;
-	//if(CloseJet_BScore() > 0.025) return false;
-      }
-    }
-    else{
-      if(MVA() < 0.6) {
-	if(CloseJet_Ptratio() < 0.45) return false;
-	//if(CloseJet_BScore() > 0.025) return false;
-
-      }
-    }
-
-    return true;
-
-  }
-
-  if(ID.Contains("HNL_ULID_FO_2018"))  {
-
-    if(!PassID("MVALoose")) return false;
-
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(MVA() < 0.71)  {
-	if(CloseJet_Ptratio() < 0.45) return false;
-        //if(CloseJet_BScore() > 0.025) return false;
-      }
-    }
-    else{
-      if(MVA() < 0.65) {
-	if(CloseJet_Ptratio() < 0.45) return false;
-        //if(CloseJet_BScore() > 0.025) return false;
-      }
-    }
-
-    return true;
-
-  }
-
-
-
-  if(ID.Contains("HNL_ULID_2017v0"))  {
-
-    if(!PassID("MVALoose")) return false;
-
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(!PassMVA_UL_Slope("NPMVABB10p27", "NPMVABB20p77", "NPMVAPt20"))  return false;
-    }
-    else{
-      if(MVA() < 0.6)  return false;
-    }
-
-    double dxy_cut = 0.02 ;
-    if(fabs(dXY()) >  dxy_cut)   return false;
-    if(fabs(dZ()) >  0.05)   return false;
-    if(fabs(IP3D()/IP3Derr()) >6.) return false;
-    return true;
-
-  }
-
-  if(ID.Contains("HNL_ULID_v1_2017"))  {
-
-    if(!PassID("MVALoose")) return false;
-
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(MVA() < 0.77)  return false;
-    }
-    else{
-      if(MVA() < 0.6)  return false;
-    }
-
-    double dxy_cut = 0.02 ;
-    if(fabs(dXY()) >  dxy_cut)   return false;
-    if(fabs(dZ()) >  0.05)   return false;
-    if(fabs(IP3D()/IP3Derr()) >6.) return false;
-    return true;
-  }
-
-
-  if(ID.Contains("HNL_ULID_v2_2017"))  {
-
-    if(!PassID("MVALoose")) return false;
-
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(MVA() < 0.77)  return false;
-    }
-    else{
-      if(MVA() < 0.6)  return false;
-    }
-
-    return true;
-
-  }
-
-  
-  if(ID.Contains("HNL_ULID_v1_2018"))  {
-
-    if(!PassID("MVALoose")) return false;
-
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(MVA() < 0.71)  return false;
-    }
-    else{
-      if(MVA() < 0.65)  return false;
-    }
-
-    return true;
-  }
-
-
-
-  if(ID=="HNTightV1") return Pass_HNTight(0.07, 0.02, 0.05, 3.);
-  if(ID=="HNTightV2") return Pass_HNTight(0.07, 0.05, 0.1, 3.);
-  if(ID=="HNTightV3") { 
-   
-    if(!PassID("MVALoose")) return false;
-
-
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(MVA() < 0.7)  return false;
-    }
-    else{
-      if(MVA() < 0.65)  return false;
-    }
-    
-    
-    double dxy_cut = 0.01 ;
-    if(this->Pt() > 10 && this->Pt()  < 60.) dxy_cut -= (this->Pt() - 10.) * 0.005/ 50.;
-    if(this->Pt() > 60.) dxy_cut = 0.005;
-    if(fabs(dXY()) >  dxy_cut)   return false;
-    if(fabs(dZ()) >  0.05)   return false;
-    return true;
-   
-  }
-
   if(ID=="HNLIPv1") {
     double dxy_cut = 0.01 ;
     if(this->Pt() > 10 && this->Pt()  < 60.) dxy_cut -= (this->Pt() - 10.) * 0.005/ 50.;
@@ -644,8 +466,6 @@ bool Muon::PassID(TString ID) const {
     if(fabs(IP3D()/IP3Derr()) >6.) return false;
     return true;
   }
-
-
   if(ID=="HNLIPv9") {
     double dxy_cut = 0.01 ;
     if(fabs(dXY()) >  dxy_cut)   return false;
@@ -653,11 +473,9 @@ bool Muon::PassID(TString ID) const {
     if(fabs(IP3D()/IP3Derr()) >4.) return false;
     return true;
   }
-
   
   
   ///. Simple ISO/IP sels
-
   if(ID=="HNTight_Iso05_dxy_01_ip_3") return Pass_HNTight(0.05,0.01,0.05,3.);
   if(ID=="HNTight_Iso05_dxy_01_ip_4") return Pass_HNTight(0.05,0.01,0.05,4.);
   if(ID=="HNTight_Iso05_dxy_01_ip_999") return Pass_HNTight(0.05,0.01,0.05,999.);
@@ -667,8 +485,6 @@ bool Muon::PassID(TString ID) const {
   if(ID=="HNTight_Iso05_dxy_05_ip_3") return Pass_HNTight(0.05,0.05, 0.05,3.);
   if(ID=="HNTight_Iso05_dxy_05_ip_4") return Pass_HNTight(0.05,0.05, 0.05,4.);
   if(ID=="HNTight_Iso05_dxy_05_ip_999") return Pass_HNTight(0.05,0.05, 0.05,999.);
-
-
   if(ID=="HNTight_Iso06_dxy_01_ip_3") return Pass_HNTight(0.06,0.01,0.05,3.);
   if(ID=="HNTight_Iso06_dxy_01_ip_4") return Pass_HNTight(0.06,0.01,0.05,4.);
   if(ID=="HNTight_Iso06_dxy_01_ip_999") return Pass_HNTight(0.06,0.01,0.05,999.);
@@ -678,8 +494,6 @@ bool Muon::PassID(TString ID) const {
   if(ID=="HNTight_Iso06_dxy_05_ip_3") return Pass_HNTight(0.06,0.05, 0.05,3.);
   if(ID=="HNTight_Iso06_dxy_05_ip_4") return Pass_HNTight(0.06,0.05, 0.05,4.);
   if(ID=="HNTight_Iso06_dxy_05_ip_999") return Pass_HNTight(0.06,0.05, 0.05,999.);
-
-
   if(ID=="HNTight_Iso07_dxy_01_ip_3") return Pass_HNTight(0.07,0.01,0.05,3.);
   if(ID=="HNTight_Iso07_dxy_01_ip_4") return Pass_HNTight(0.07,0.01,0.05,4.);
   if(ID=="HNTight_Iso07_dxy_01_ip_999") return Pass_HNTight(0.07,0.01,0.05,999.);
@@ -689,8 +503,6 @@ bool Muon::PassID(TString ID) const {
   if(ID=="HNTight_Iso07_dxy_05_ip_3") return Pass_HNTight(0.07,0.05, 0.05,3.);
   if(ID=="HNTight_Iso07_dxy_05_ip_4") return Pass_HNTight(0.07,0.05, 0.05,4.);
   if(ID=="HNTight_Iso07_dxy_05_ip_999") return Pass_HNTight(0.07,0.05, 0.05,999.);
-
-
   if(ID=="HNTight_Iso08_dxy_01_ip_3") return Pass_HNTight(0.08,0.01,0.05,3.);
   if(ID=="HNTight_Iso08_dxy_01_ip_4") return Pass_HNTight(0.08,0.01,0.05,4.);
   if(ID=="HNTight_Iso08_dxy_01_ip_999") return Pass_HNTight(0.08,0.01,0.05,999.);
@@ -700,8 +512,6 @@ bool Muon::PassID(TString ID) const {
   if(ID=="HNTight_Iso08_dxy_05_ip_3") return Pass_HNTight(0.08,0.05, 0.05,3.);
   if(ID=="HNTight_Iso08_dxy_05_ip_4") return Pass_HNTight(0.08,0.05, 0.05,4.);
   if(ID=="HNTight_Iso08_dxy_05_ip_999") return Pass_HNTight(0.08,0.05, 0.05,999.);
-
-
   if(ID=="HNTight_Iso09_dxy_01_ip_3") return Pass_HNTight(0.09,0.01,0.05,3.);
   if(ID=="HNTight_Iso09_dxy_01_ip_4") return Pass_HNTight(0.09,0.01,0.05,4.);
   if(ID=="HNTight_Iso09_dxy_01_ip_999") return Pass_HNTight(0.09,0.01,0.05,999.);
@@ -711,8 +521,6 @@ bool Muon::PassID(TString ID) const {
   if(ID=="HNTight_Iso09_dxy_05_ip_3") return Pass_HNTight(0.09,0.05, 0.05,3.);
   if(ID=="HNTight_Iso09_dxy_05_ip_4") return Pass_HNTight(0.09,0.05, 0.05,4.);
   if(ID=="HNTight_Iso09_dxy_05_ip_999") return Pass_HNTight(0.09,0.05, 0.05,999.);
-
-
   if(ID=="HNTight_Iso10_dxy_01_ip_3") return Pass_HNTight(0.10,0.01,0.05,3.);
   if(ID=="HNTight_Iso10_dxy_01_ip_4") return Pass_HNTight(0.10,0.01,0.05,4.);
   if(ID=="HNTight_Iso10_dxy_01_ip_999") return Pass_HNTight(0.10,0.01,0.05,999.);
@@ -722,26 +530,6 @@ bool Muon::PassID(TString ID) const {
   if(ID=="HNTight_Iso10_dxy_05_ip_3") return Pass_HNTight(0.10,0.05, 0.05,3.);
   if(ID=="HNTight_Iso10_dxy_05_ip_4") return Pass_HNTight(0.10,0.05, 0.05,4.);
   if(ID=="HNTight_Iso10_dxy_05_ip_999") return Pass_HNTight(0.10,0.05, 0.05,999.);
-
-
-  if(ID=="HNTightPFIsoLoose") return Pass_POGTightPFIsoLoose(true);
-  if(ID=="HNTightPFIsoMedium") return Pass_POGTightPFIsoMedium(true);
-  if(ID=="HNTightPFIsoTight") return Pass_POGTightPFIsoTight(true);
-  if(ID=="HNTightPFIsoVeryTight") return Pass_POGTightPFIsoVeryTight(true);
-  if(ID=="HNTightPFIsoVeryVeryTight") return Pass_POGTightPFIsoVeryVeryTight(true);
-
-  if(ID=="POGTightPFIsoLoose") return Pass_POGTightPFIsoLoose(false);
-  if(ID=="POGTightPFIsoMedium") return Pass_POGTightPFIsoMedium(false);
-  if(ID=="POGTightPFIsoTight") return Pass_POGTightPFIsoTight(false);
-  if(ID=="POGTightPFIsoVeryTight") return Pass_POGTightPFIsoVeryTight(false);
-  if(ID=="POGTightPFIsoVeryVeryTight") return Pass_POGTightPFIsoVeryVeryTight(false);
-  
-  
-
-  if(ID=="CutBasedTightNoIP") return Pass_CutBasedTightNoIP();
-
-  //==== No cut
-  if(ID=="NOCUT") return true;
 
   cout << "[Muon::PassID] No id : " << ID << endl;
   exit(ENODATA);
@@ -1112,16 +900,6 @@ bool Muon::Pass_HNTight2016() const {
   return true;
 }
 
-bool Muon::Pass_HNLooseMVA() const{
-
-  if(!( isPOGLoose() )) return false;
-  if(!( fabs(dXY())< 0.2 && fabs(dZ())<0.1) ) return false;
-  if(!( RelIso()< 0.4 )) return false;
-  //if(!(fabs(IP3D()/IP3Derr())< 3 )) return false;
-  return true;
-
-
-}
 
 bool Muon::Pass_HNLoose(double relisoCut, double dxyCut, double dzCut,double sipCut) const {
   // Individual cuts of the POG cut-based ID

@@ -27,5 +27,8 @@
 #pragma link C++ class SkimTree_HNL_SS_MuMu+;
 #pragma link C++ class SkimTree_HNL_SS_ElEl+;
 #pragma link C++ class SkimTree_HNL_SS_ElMu+;
+#pragma link C++ class SkimTree_CFEventSkim+;
+#pragma link C++ class SkimTree_ConvEventSkim+;
+#pragma link C++ class SkimTree_FakeEventSkim+;
 
 #endif

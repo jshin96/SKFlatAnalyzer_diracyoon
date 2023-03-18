@@ -20,10 +20,11 @@ fi
 
 if [[ $1 == "" ]]; then
 
+    declare  -a era_list=("2018")
     for i in "${era_list[@]}"
     do
-	SKFlat.py -a $analyzer  -l $datapath/DATA_${i}.txt  -n 200  --nmax 250   -e ${i}  --skim SkimTree_DileptonBDT&
-	#SKFlat.py -a $analyzer  -l   $mcpath/MC.txt  -n 200  --nmax 250  -e ${i}  --skim SkimTree_DileptonBDT&
+	SKFlat.py -a $analyzer  -l $datapath/DATA_${i}.txt  -n 200  --nmax 100   -e ${i}  --skim SkimTree_DileptonBDT&
+	SKFlat.py -a $analyzer  -l   $mcpath/MC.txt  -n 200  --nmax 100  -e ${i}  --skim SkimTree_DileptonBDT&
     done
 fi
 

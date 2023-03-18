@@ -14,7 +14,7 @@ Seeds = ["100"]
 MinNodeSizes = ["2.5","5.0"]
 BoostLearningValues = ["0.05","0.5"]
 BaggedFracs = ["0.5","0.8"]
-BDTVersion = "Version3"
+BDTVersion = "Version4"
 
 
 for Classifier in Classifiers:
@@ -33,7 +33,7 @@ for Classifier in Classifiers:
                                             for Seed in Seeds:
                                                 for MinNodeSize in MinNodeSizes:
 
-                                                    nMAX = " --nmax 80"
+                                                    nMAX = " --nmax 10"
 
 
                                                     os.system("RunIDBDT.py -a runIDBDT_HNtypeIMuonFake -m " + str(Classifier) + " -b FakeBkg_LF -ns "+str(SignalMode)+ "  -nt "+ str(NTREES) + " -c " + Channel + " -MaxDepth  " + str(MaxDepth) + " -ncut " + str(NCut) + " -eta "+ str(Eta) +  " -Nrom " +NormMode+ " -BoostLearningRate  " + BoostLearningValue + " -BaggedFrac " + BaggedFrac +  " -s " + Seed + "  -e "+Era+" " + nMAX + " -MinNodeSize "+MinNodeSize+ " -t " + BDTVersion)   

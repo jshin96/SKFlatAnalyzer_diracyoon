@@ -382,6 +382,8 @@ public:
   //==== GenMatching
 
   void PrintGen(const std::vector<Gen>& gens);
+  void PrintMatchedGen(std::vector<Gen>& gens,const Lepton& Lep);
+  TString MatchGenDef(std::vector<Gen>& gens,const Lepton& Lep);
   static Gen GetGenMatchedLepton(const Lepton& lep, const std::vector<Gen>& gens);
   static Gen GetGenMatchedPhoton(const Lepton& lep, const std::vector<Gen>& gens);
   static vector<int> TrackGenSelfHistory(const Gen& me, const std::vector<Gen>& gens);

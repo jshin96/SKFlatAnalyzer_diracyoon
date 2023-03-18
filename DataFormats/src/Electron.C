@@ -1951,7 +1951,7 @@ bool Electron::Pass_HNVetoCutBased(double relisoCut) const{
 
 bool Electron::Pass_HNLoosest() const{
 
-  if(! (RelIso()< 0.6) ) return false;
+  if(! (RelIso()< 0.6 || MiniRelIso() < 0.4) ) return false;
   if(!( Pass_CutBasedVetoNoIso() || passMVAID_noiso_WPLoose()))  return false;
 
   return true;
