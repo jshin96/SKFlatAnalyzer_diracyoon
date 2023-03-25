@@ -13,7 +13,7 @@ if [[ $1 == "TEST" ]]; then
     declare  -a era_list=("2018")
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -i TTLJ_powheg  -n 400  --nmax 100  -e ${i}    --userflags Fakes --skim SkimTree_FakeEventSkim&
+        SKFlat.py -a $analyzer  -i TTLJ_powheg  -n 200  --nmax 300  -e ${i}    --userflags Fakes --skim SkimTree_FakeEventSkim&
     done
 fi
 
@@ -23,7 +23,7 @@ if [[ $1 == "" ]]; then
 
     for i in "${era_list[@]}"
     do
-	SKFlat.py -a $analyzer  -l   $mcpath/MC.txt  -n 1000  --nmax 200  -e ${i}  --userflags Fakes&
+	SKFlat.py -a $analyzer  -l   $mcpath/MC.txt  -n 200  --nmax 300  -e ${i}  --userflags Fakes --skim SkimTree_FakeEventSkim&
     done
 fi
 

@@ -65,6 +65,7 @@ parser.add_argument('-e', dest='Era', default="2017")
 parser.add_argument('-f', dest='Flag', default="Fake")
 parser.add_argument('-c', dest='Classifier', default="BDTG")
 parser.add_argument('-v', dest='Version', default="Version4")
+parser.add_argument('--All', action='store_true')
 
 args = parser.parse_args()
 
@@ -112,14 +113,16 @@ for File in BDTFileList:
 
 print "AUC              KS_signal   KS_bkg      File "
 for key in sorted(Results,reverse=True):
-    if float(Results[key][0]) < 0.05 or float(Results[key][1])< 0.05:
-        continue
 
-    if float(Results[key][0]) > 0.95 or float(Results[key][1])> 0.95:
-        continue
+    if not args.All:
+        if float(Results[key][0]) < 0.1 or float(Results[key][1])< 0.1:
+            continue
 
-    print 
-    print "%s: %s" % (key, Results[key])
+        if float(Results[key][0]) > 0.9 or float(Results[key][1])> 0.9:
+            continue
+        
+    print "----> %s: %s" % (key, Results[key])
+
 
 #for x in Results:
 #    print x[3] + " " + x[2] + " " + x[0] + " " + x[1]

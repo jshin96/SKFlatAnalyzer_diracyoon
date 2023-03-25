@@ -2,6 +2,9 @@ void runIDBDT_HNtypeIElectronFake(TString Classifier ="BDTG" ,TString BkgType = 
   
   int nTermWidth=50;
   
+
+  TString version="version5";
+
   for(int i=0; i < nTermWidth; i++)  cout << "=" ;   cout << endl;
   cout << "Running runIDBDT_HNtypeI{"+BkgType+"}: [Setup Options]" << endl;
   if(Classifier == "BDTA")cout << "** BDT ADABOOST *** " <<endl;
@@ -38,7 +41,7 @@ void runIDBDT_HNtypeIElectronFake(TString Classifier ="BDTG" ,TString BkgType = 
   cout << "signal File Name= " << signal << endl;
   for(int i=0; i < nTermWidth; i++)  cout << "-" ;   cout << endl;
 
-  TString JobTag = Classifier +  "_version4_"+ BkgType +"_TypeI_"+channel+"_"+signal+"_"+era+"_NTrees"+NTrees+"_NormMode_"+NormMode+"_MinNodeSize_"+MinNodeSize+"_MaxDepth_"+MaxDepth+"_nCuts_"+nCuts+ClassTag +"_Seed_"+seed+"_BDT";
+  TString JobTag = Classifier +  "_"+version+"_"+ BkgType +"_TypeI_"+channel+"_"+signal+"_"+era+"_NTrees"+NTrees+"_NormMode_"+NormMode+"_MinNodeSize_"+MinNodeSize+"_MaxDepth_"+MaxDepth+"_nCuts_"+nCuts+ClassTag +"_Seed_"+seed+"_BDT";
 
   TMVA::gConfig().GetVariablePlotting().fNbins1D = 500; 
 

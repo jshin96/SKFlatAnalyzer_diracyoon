@@ -53,13 +53,13 @@ void HNL_LeptonIDSF::PlotBDTVariablesMuon(AnalyzerParameter param){
     else  ptbin = "Ptgt50_";
 
 
-    vector<TString> Tags = {tag+"/El_MVA_",
-                            tag+imu.CloseJet_Flavour()+"/El_MVA_",
-                            tag+etabin+"/El_MVA_",
-                            tag+etabin+imu.CloseJet_Flavour()+"/El_MVA_",
-                            tag+etabin+ptbin+"/El_MVA_",
-                            tag+etabin+ptbin+imu.CloseJet_Flavour()+"/El_MVA_",
-
+    vector<TString> Tags = {tag+"/Lep_MVA_",
+                            tag+imu.CloseJet_Flavour()+"/Lep_MVA_",
+                            //tag+etabin+"/El_MVA_",
+                            //tag+etabin+imu.CloseJet_Flavour()+"/El_MVA_",
+                            //tag+etabin+ptbin+"/El_MVA_",
+                            //tag+etabin+ptbin+imu.CloseJet_Flavour()+"/El_MVA_",
+			    
     };
 
     for(auto i  : Tags){
@@ -69,7 +69,10 @@ void HNL_LeptonIDSF::PlotBDTVariablesMuon(AnalyzerParameter param){
       if(i.Contains("LF") && !i.Contains("IsFake")) continue;
       if(i.Contains("HF") && !i.Contains("IsFake")) continue;
 
-      FillHist(channel_string+i+"FakeLF_"+channel_string, imu.HNL_MVA_Fake() , weight, 200, -1., 1);
+      map<TString, double> mapBDT = imu.MAPBDT();
+
+      for(auto imap : mapBDT ) FillHist(channel_string+i+"_"+imap.first+"_"+channel_string, imap.second , weight, 200, -1., 1);
+
       FillHist(channel_string+i+"Fake_"+channel_string, imu.MVA() , weight, 200, -1., 1);
     }
   }
@@ -151,7 +154,6 @@ void HNL_LeptonIDSF::PlotBDTVariablesElectron(AnalyzerParameter param){
 
   for(auto iel : ElectronCollProbe){
 
-  
     TString channel_string = GetChannelString(dilep_channel) ;
 
     FillHist("ElectronIDPlots/"+channel_string+"_MiniIso",iel.MiniRelIso() , weight, 200, 0., 5);
@@ -171,14 +173,13 @@ void HNL_LeptonIDSF::PlotBDTVariablesElectron(AnalyzerParameter param){
     if(iel.Pt() < 20) ptbin = "Ptlt20_";
     else if(iel.Pt() < 50) ptbin = "Ptlt50_";
     else  ptbin = "Ptgt50_";
-
-
+    
     vector<TString> Tags = {tag+"/El_MVA_",
 			    tag+iel.CloseJet_Flavour()+"/El_MVA_",
-			    tag+etabin+"/El_MVA_",
-                            tag+etabin+iel.CloseJet_Flavour()+"/El_MVA_",
-			    tag+etabin+ptbin+"/El_MVA_",
-                            tag+etabin+ptbin+iel.CloseJet_Flavour()+"/El_MVA_",
+			    //tag+etabin+"/El_MVA_",
+                            //tag+etabin+iel.CloseJet_Flavour()+"/El_MVA_",
+			    //tag+etabin+ptbin+"/El_MVA_",
+                            //tag+etabin+ptbin+iel.CloseJet_Flavour()+"/El_MVA_",
 		    
     };
 
@@ -190,22 +191,10 @@ void HNL_LeptonIDSF::PlotBDTVariablesElectron(AnalyzerParameter param){
       if(i.Contains("LF") && !i.Contains("IsFake")) continue;
       if(i.Contains("HF") && !i.Contains("IsFake")) continue;
 
-      FillHist(channel_string+i+"FakeHF_"+channel_string, iel.HNL_MVA_HF_Fake() , weight, 200, -1., 1);
-      FillHist(channel_string+i+"FakeLF_"+channel_string, iel.HNL_MVA_LF_Fake() , weight, 200, -1., 1);
-      FillHist(channel_string+i+"FakeTop_"+channel_string, iel.HNL_MVA_Top_Fake() , weight, 200, -1., 1);
-      FillHist(channel_string+i+"Fake_"+channel_string, iel.HNL_MVA_Fake() , weight, 200, -1., 1);
-      FillHist(channel_string+i+"Conv_"+channel_string,iel.HNL_MVA_Conv() , weight, 200, -1., 1);
-      FillHist(channel_string+i+"CF_"+channel_string,iel.HNL_MVA_CF()    , weight, 200, -1., 1);
+      map<TString, double> mapBDT = iel.MAPBDT();
+
+      for(auto imap : mapBDT ) FillHist(channel_string+i+"_"+imap.first+"_"+channel_string, imap.second , weight, 200, -1., 1);
       
-      FillHist(channel_string+i+"CFv1_"+channel_string,iel.HNL_MVAv1_CF()   , weight, 200, -1., 1);
-      FillHist(channel_string+i+"CFv2_"+channel_string,iel.HNL_MVAv2_CF()   , weight, 200, -1., 1);
-      FillHist(channel_string+i+"CFv2p1_"+channel_string,iel.HNL_MVAv2p1_CF()   , weight, 200, -1., 1);
-      FillHist(channel_string+i+"CFv2p2_"+channel_string,iel.HNL_MVAv2p2_CF()   , weight, 200, -1., 1);
-      
-      FillHist(channel_string+i+"CFv1_ED_"+channel_string,iel.HNL_MVAv1_ED_CF() , weight, 200, -1., 1);
-      FillHist(channel_string+i+"CFv2_ED_"+channel_string,iel.HNL_MVAv2_ED_CF() , weight, 200, -1., 1);
-      FillHist(channel_string+i+"CFv2p1_ED_"+channel_string,iel.HNL_MVAv2p1_ED_CF() , weight, 200, -1., 1);
-      FillHist(channel_string+i+"CFv2p2_ED_"+channel_string,iel.HNL_MVAv2p2_ED_CF() , weight, 200, -1., 1);
     } 
   }
   

@@ -147,7 +147,8 @@ public:
   void SetBDTIDVarV1(Lepton*  lep);
   void SetBDTIDVariablesElectron(Electron el);
   void SetBDTIDVariablesMuon(Muon mu);
-  void SetupIDMVAReader(bool isMuon, bool setupV1, bool setupFake, bool setupCF,bool setupConv);
+  void SetupIDMVAReaderMuon();
+  void SetupIDMVAReaderElectron(bool v1, bool v2);
   void SetupIDMVAReaderDefault();
 
 
@@ -381,8 +382,15 @@ public:
 
   //==== GenMatching
 
+  vector<TString> GetGenList();
+  vector<TString> GetGenListPlot();
+
   void PrintGen(const std::vector<Gen>& gens);
   void PrintMatchedGen(std::vector<Gen>& gens,const Lepton& Lep);
+
+  bool GenTypeMatched(TString gen_string);
+  TString MatchGenPID(int PID, vector<Gen> gens, Gen gen);
+
   TString MatchGenDef(std::vector<Gen>& gens,const Lepton& Lep);
   static Gen GetGenMatchedLepton(const Lepton& lep, const std::vector<Gen>& gens);
   static Gen GetGenMatchedPhoton(const Lepton& lep, const std::vector<Gen>& gens);
@@ -527,22 +535,42 @@ public:
   vector<float>* velectron_ptrel;
   vector<float>* velectron_cj_bjetdisc;
   vector<float>* velectron_cj_flavour;
-  vector<float>* velectron_mva_cf_v1;
-  vector<float>* velectron_mva_conv_v1;
+
   vector<float>* velectron_mva_fake_v1;
+  vector<float>* velectron_mva_fake_v2;
+  vector<float>* velectron_mva_fakeHF_v2;
+  vector<float>* velectron_mva_fakeLF_v2;
+  vector<float>* velectron_mva_fakeTop_v2;
+  vector<float>* velectron_mva_fake_v3;
+  vector<float>* velectron_mva_fakeHF_v3;
+  vector<float>* velectron_mva_fakeHFB_v3;
+  vector<float>* velectron_mva_fakeHFC_v3;
+  vector<float>* velectron_mva_fakeLF_v3;
+  vector<float>* velectron_mva_fakeTop_v3;
+  vector<float>* velectron_mva_fake_v4;
+  vector<float>* velectron_mva_fakeHF_v4;
+  vector<float>* velectron_mva_fakeHFB_v4;
+  vector<float>* velectron_mva_fakeHFC_v4;
+  vector<float>* velectron_mva_fakeLF_v4;
+  vector<float>* velectron_mva_fakeTop_v4;
+
+ 
+  vector<float>* velectron_mva_conv_v1;
+  vector<float>* velectron_mva_conv_v2;
+
+  vector<float>* velectron_mva_cf_v1;
   vector<float>* velectron_mva_cf_v2;
   vector<float>* velectron_mva_cf_v2p1;
   vector<float>* velectron_mva_cf_v2p2;
   vector<float>* velectron_mva_cf_ed_v2;
   vector<float>* velectron_mva_cf_ed_v2p1;
   vector<float>* velectron_mva_cf_ed_v2p2;
-  vector<float>* velectron_mva_conv_v2;
-  vector<float>* velectron_mva_fake_v2;
-  vector<float>* velectron_mva_fakeHF_v2;
-  vector<float>* velectron_mva_fakeLF_v2;
-  vector<float>* velectron_mva_fakeTop_v2;
 
-  vector<float>* vmuon_mva_fake;
+
+
+  vector<float>* vmuon_mva_fake_v1;
+  vector<float>* vmuon_mva_fake_v2;
+  vector<float>* vmuon_mva_fake_v3;
   vector<float>* vmuon_ptrel;
   vector<float>* vmuon_ptratio;
   vector<float>* vmuon_cj_bjetdisc;

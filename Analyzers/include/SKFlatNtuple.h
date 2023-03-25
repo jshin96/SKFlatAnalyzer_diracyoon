@@ -222,11 +222,27 @@ public :
    vector<float>   *electron_mva_cf_ed_v2;
    vector<float>   *electron_mva_cf_ed_v2p1;
    vector<float>   *electron_mva_cf_ed_v2p2;
+
    vector<float>   *electron_mva_fake_v1;
    vector<float>   *electron_mva_fake_v2;
    vector<float>   *electron_mva_fakeHF_v2;
    vector<float>   *electron_mva_fakeLF_v2;
    vector<float>   *electron_mva_fakeTop_v2;
+   
+   vector<float>   *electron_mva_fake_v3;
+   vector<float>   *electron_mva_fakeHF_v3;
+   vector<float>   *electron_mva_fakeHFB_v3;
+   vector<float>   *electron_mva_fakeHFC_v3;
+   vector<float>   *electron_mva_fakeLF_v3;
+   vector<float>   *electron_mva_fakeTop_v3;
+   
+   vector<float>   *electron_mva_fake_v4;
+   vector<float>   *electron_mva_fakeHF_v4;
+   vector<float>   *electron_mva_fakeHFB_v4;
+   vector<float>   *electron_mva_fakeHFC_v4;
+   vector<float>   *electron_mva_fakeLF_v4;
+   vector<float>   *electron_mva_fakeTop_v4;
+
    vector<float>   *electron_mva_conv_v1;
    vector<float>   *electron_mva_conv_v2;
 
@@ -327,7 +343,9 @@ public :
    vector<float>   *muon_ptratio;
    vector<float>   *muon_cj_bjetdisc;
    vector<float>   *muon_cj_flavour;
-   vector<float>   *muon_mva_fake;
+   vector<float>   *muon_mva_fake_v1;
+   vector<float>   *muon_mva_fake_v2;
+   vector<float>   *muon_mva_fake_v3;
 
    vector<float>   *muon_PfChargedHadronIsoR04;
    vector<float>   *muon_PfNeutralHadronIsoR04;
@@ -679,11 +697,28 @@ public :
    TBranch        *b_electron_mva_cf_ed_v2;
    TBranch        *b_electron_mva_cf_ed_v2p1;
    TBranch        *b_electron_mva_cf_ed_v2p2;
+
    TBranch        *b_electron_mva_fake_v1;
+
    TBranch        *b_electron_mva_fake_v2;
    TBranch        *b_electron_mva_fakeHF_v2;
    TBranch        *b_electron_mva_fakeLF_v2;
    TBranch        *b_electron_mva_fakeTop_v2;
+   
+   TBranch        *b_electron_mva_fake_v3;
+   TBranch        *b_electron_mva_fakeHF_v3;
+   TBranch        *b_electron_mva_fakeHFB_v3;
+   TBranch        *b_electron_mva_fakeHFC_v3;
+   TBranch        *b_electron_mva_fakeLF_v3;
+   TBranch        *b_electron_mva_fakeTop_v3;
+
+   TBranch        *b_electron_mva_fake_v4;
+   TBranch        *b_electron_mva_fakeHF_v4;
+   TBranch        *b_electron_mva_fakeHFB_v4;
+   TBranch        *b_electron_mva_fakeHFC_v4;
+   TBranch        *b_electron_mva_fakeLF_v4;
+   TBranch        *b_electron_mva_fakeTop_v4;
+
    TBranch        *b_electron_mva_conv_v1;
    TBranch        *b_electron_mva_conv_v2;
    TBranch        *b_electron_MVAIso;   //!
@@ -772,7 +807,9 @@ public :
    TBranch        *b_muon_ptratio;
    TBranch        *b_muon_cj_bjetdisc;
    TBranch        *b_muon_cj_flavour;
-   TBranch        *b_muon_mva_fake;
+   TBranch        *b_muon_mva_fake_v1;
+   TBranch        *b_muon_mva_fake_v2;
+   TBranch        *b_muon_mva_fake_v3;
                                                               
    TBranch        *b_muon_PfChargedHadronIsoR04;   //!
    TBranch        *b_muon_PfNeutralHadronIsoR04;   //!

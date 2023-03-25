@@ -97,10 +97,8 @@ public:
   void SetUncorrectedPt(double d);
 
 
-
   
   /// Standard Functions
-  double  GetHNL_LepMVA(TString key) const;
 
   void SetdXY(double dXY, double dXYerr);
   inline double fdXY() const {return fabs(j_dXY);}
@@ -112,57 +110,128 @@ public:
   inline double LogdXYSig() const {return std::log(fabs(j_dXY/j_dXYerr));}
   inline double LogdZSig() const {return std::log(fabs(j_dZ/j_dZerr));}
 
-  inline void PrintMVAMap() const {
 
-    cout << "PrintMVAMap::BEGIN " << j_lep_map_mva_hnl_cf.size() << endl;
-    
-    for (auto imap : j_lep_map_mva_hnl_cf ) cout << "Key " << imap.first << " val=" << imap.second << endl;
-    cout << "PrintMVAMap::END" << endl;
-  }
-
-  inline vector<TString> GetMVAList() const {
-
-    vector<TString> list;
-    for (auto imap : j_lep_map_mva_hnl_cf ) list.push_back(imap.first);
-    return list;
-
-  }
 
   void SetLepMVA(double mva);
   inline double lep_mva() const {return j_lep_mva;}
 
-  //// BDT  Functions
-  void SetHNL_LepMVAMap(TString key,double mvacf);
-  void SetHNL_LepMVA(double mvaf, double mvacf, double mvaconv);
-  void SetHNL_FakeLepMVA(double mvafake_hf, double mvafake_lf, double mvafake_top);
-  void SetHNL_LepMVAVersion1(double mvaf, double mvacf, double mvaconv);
-  void SetHNL_LepMVAVersion2(double mvaf, double mvacf, double mvaconv);
-  void SetHNL_CFLepMVAVersion2p1(double mvacf);
-  void SetHNL_CFLepMVAVersion2p2(double mvacf);
+  //// BDT ID Functions
+  void SetHNL_FakeLepMVAV1(double mvafake);
+  void SetHNL_FakeLepMVAV2(double mvafake,double mvafake_hf, double mvafake_lf, double mvafake_top);
+  void SetHNL_FakeLepMVAV3(double mvafake,double mvafake_hf,double mvafake_hfb,double mvafake_hfc, double mvafake_lf, double mvafake_top);
+  void SetHNL_FakeLepMVAV4(double mvafake,double mvafake_hf,double mvafake_hfb,double mvafake_hfc, double mvafake_lf, double mvafake_top);
 
-  void SetHNL_CFLepMVA_EtaDependantVersion2( double mvacf);
-  void SetHNL_CFLepMVA_EtaDependantVersion2p1( double mvacf);
-  void SetHNL_CFLepMVA_EtaDependantVersion2p2( double mvacf);
+  void SetHNL_FakeLepMVAMuonV1(double mvafake);
+  void SetHNL_FakeLepMVAMuonV2(double mvafake);
+  void SetHNL_FakeLepMVAMuonV3(double mvafake);
 
-  inline double HNL_MVA_Fake() const {return j_lep_mva_hnl_fake;}
-  inline double HNL_MVA_Conv() const {return j_lep_mva_hnl_conv;}
-  inline double HNL_MVA_CF()   const {return j_lep_mva_hnl_cf;}
+  void SetHNL_ConvLepMVAV1(double mvaconv);
+  void SetHNL_ConvLepMVAV2(double mvaconv);
+
+  void SetHNL_CFLepMVAV1(double mvacf);
+  void SetHNL_CFLepMVAV2(double mvacf);
+  void SetHNL_CFLepMVAV2p1(double mvacf);
+  void SetHNL_CFLepMVAV2p2(double mvacf);
+
+  void SetHNL_CFLepMVA_EtaDependantV2( double mvacf);
+  void SetHNL_CFLepMVA_EtaDependantV2p1( double mvacf);
+  void SetHNL_CFLepMVA_EtaDependantV2p2( double mvacf);
+
+  map<TString, double> MAPBDT() const {
+
+    map<TString, double> _map;
+    if(j_LeptonFlavour==ELECTRON){
+      _map["El_Fake_v1"] = j_lep_mva_hnl_fake_v1;
+      _map["El_Fake_v2"] = j_lep_mva_hnl_fake_v2;
+      _map["El_Fake_v2_HF"] = j_lep_mva_hnl_fake_v2_hf;
+      _map["El_Fake_v2_LF"] = j_lep_mva_hnl_fake_v2_lf;
+      _map["El_Fake_v2_Top"] = j_lep_mva_hnl_fake_v2_top;
+      _map["El_Fake_v3"] = j_lep_mva_hnl_fake_v3;
+      _map["El_Fake_v3_HF"] = j_lep_mva_hnl_fake_v3_hf;
+      _map["El_Fake_v3_HFB"] = j_lep_mva_hnl_fake_v3_hfb;
+      _map["El_Fake_v3_HFC"] = j_lep_mva_hnl_fake_v3_hfc;
+      _map["El_Fake_v3_LF"] = j_lep_mva_hnl_fake_v3_lf;
+      _map["El_Fake_v3_Top"] = j_lep_mva_hnl_fake_v3_top;
+      _map["El_Fake_v4"] = j_lep_mva_hnl_fake_v4;
+      _map["El_Fake_v4_HF"] = j_lep_mva_hnl_fake_v4_hf;
+      _map["El_Fake_v4_HFB"] = j_lep_mva_hnl_fake_v4_hfb;
+      _map["El_Fake_v4_HFC"] = j_lep_mva_hnl_fake_v4_hfc;
+      _map["El_Fake_v4_LF"] = j_lep_mva_hnl_fake_v4_lf;
+      _map["El_Fake_v4_Top"] = j_lep_mva_hnl_fake_v4_top;
+      _map["El_Conv_v1"] = j_lep_mva_hnl_conv_v1;
+      _map["El_Conv_v2"] = j_lep_mva_hnl_conv_v2;
+      _map["El_CF_v1"] = j_lep_mva_hnl_cf_v1;
+      _map["El_CF_v2"] = j_lep_mva_hnl_cf_v2;
+      _map["El_CF_v2p1"] = j_lep_mva_hnl_cf_v2p1;
+      _map["El_CF_v2p2"] = j_lep_mva_hnl_cf_v2p2;
+      _map["El_ED_CF_v2"] = j_lep_mva_hnl_ed_cf_v2;
+      _map["El_ED_CF_v2p1"] = j_lep_mva_hnl_ed_cf_v2p1;
+      _map["El_ED_CF_v2p2"] = j_lep_mva_hnl_ed_cf_v2p2;
+    }
+    else{
+      _map["Mu_LF_Fake_v1"] = j_lep_mva_hnl_fake_v1;
+      _map["Mu_LF_Fake_v2"] = j_lep_mva_hnl_fake_v2;
+      _map["Mu_LF_Fake_v3"] = j_lep_mva_hnl_fake_v3;
+      
+    }
+    return _map;
+  }
+
+  inline double HNL_MVA_Fake(TString vers) const {
+    if(j_LeptonFlavour==ELECTRON){
+      if(vers=="v1")  return j_lep_mva_hnl_fake_v1;
+      else if(vers=="v2")  return j_lep_mva_hnl_fake_v2;
+      else if(vers=="v2_HF")  return j_lep_mva_hnl_fake_v2_hf;
+      else if(vers=="v2_LF")  return j_lep_mva_hnl_fake_v2_lf;
+      else if(vers=="v2_Top")  return j_lep_mva_hnl_fake_v2_top;
+      else if(vers=="v3")  return j_lep_mva_hnl_fake_v3;
+      else if(vers=="v3_HF")  return j_lep_mva_hnl_fake_v3_hf;
+      else if(vers=="v3_HFB")  return j_lep_mva_hnl_fake_v3_hfb;
+      else if(vers=="v3_HFC")  return j_lep_mva_hnl_fake_v3_hfc;
+      else if(vers=="v3_LF")  return j_lep_mva_hnl_fake_v3_lf;
+      else if(vers=="v3_Top")  return j_lep_mva_hnl_fake_v3_top;
+      else if(vers=="v4")  return j_lep_mva_hnl_fake_v4;
+      else if(vers=="v4_HF")  return j_lep_mva_hnl_fake_v4_hf;
+      else if(vers=="v4_HFB")  return j_lep_mva_hnl_fake_v4_hfb;
+      else if(vers=="v4_HFC")  return j_lep_mva_hnl_fake_v4_hfc;
+      else if(vers=="v4_LF")  return j_lep_mva_hnl_fake_v4_lf;
+      else if(vers=="v4_Top")  return j_lep_mva_hnl_fake_v4_top;
+    }
+    else{
+      if(vers=="v1")  return j_lep_mva_hnl_fake_v1;
+      else if(vers=="v2")  return j_lep_mva_hnl_fake_v2;
+      else if(vers=="v3")  return j_lep_mva_hnl_fake_v3;
+    }
+    cout<<"[Lepton::HNL_MVA_Fake] no version set "<< endl;
+    exit(ENODATA);
+    
+  }
+
+  inline double HNL_MVA_Conv(TString vers) const {
+    if(j_LeptonFlavour==ELECTRON){
+      if(vers=="v1")return j_lep_mva_hnl_conv_v1;
+      else if(vers=="v2")return j_lep_mva_hnl_conv_v2;
+    }
+    
+    cout<<"[Lepton::HNL_MVA_CONV]"<< endl;
+    exit(ENODATA);
+
+  }
+  inline double HNL_MVA_CF(TString vers) const {
+    if(j_LeptonFlavour==ELECTRON){
+      if(vers=="v1")return j_lep_mva_hnl_cf_v1;
+      else if(vers=="v2")return j_lep_mva_hnl_cf_v2;
+      else if(vers=="v2p1")return j_lep_mva_hnl_cf_v2p1;
+      else if(vers=="v2p2")return j_lep_mva_hnl_cf_v2p2;
+      else if(vers=="EDv2")return j_lep_mva_hnl_ed_cf_v2;
+      else if(vers=="EDv2p1")return j_lep_mva_hnl_ed_cf_v2p1;
+      else if(vers=="EDv2p2")return j_lep_mva_hnl_ed_cf_v2p2;
+    }
+    cout<<"[Lepton::HNL_MVA_CONV]"<< endl;
+    exit(ENODATA);
+
+  }
   
-  inline double HNL_MVA_HF_Fake() const {return j_lep_mva_hnl_fake_hf;}
-  inline double HNL_MVA_LF_Fake() const {return j_lep_mva_hnl_fake_lf;}
-  inline double HNL_MVA_Top_Fake() const {return j_lep_mva_hnl_fake_top;}
-
-  inline double HNL_MVAv1_CF()   const {return j_lep_mvav1_hnl_cf;}
-  inline double HNL_MVAv2_CF()   const {return j_lep_mvav2_hnl_cf;}
-  inline double HNL_MVAv2p1_CF()   const {return j_lep_mvav2p1_hnl_cf;}
-  inline double HNL_MVAv2p2_CF()   const {return j_lep_mvav2p2_hnl_cf;}
-
-  inline double HNL_MVAv1_ED_CF()   const {return j_lep_mvav1_hnl_ed_cf;}
-  inline double HNL_MVAv2_ED_CF()   const {return j_lep_mvav2_hnl_ed_cf;}
-  inline double HNL_MVAv2p1_ED_CF()   const {return j_lep_mvav2p1_hnl_ed_cf;}
-  inline double HNL_MVAv2p2_ED_CF()   const {return j_lep_mvav2p2_hnl_ed_cf;}
-  
-
 
   //// Close jet functionality  NOT IN SKFLAT ADDED in ANALYZERCORE OR IN BDT SKIM
   void SetJetPtRel(double ptrel);
@@ -274,9 +343,29 @@ public:
 
   std::map<TString, double> j_lep_map_mva_hnl_cf;
 
-  double j_lep_mva_hnl_fake,j_lep_mva_hnl_conv,j_lep_mva_hnl_cf,j_lep_mva_hnl_fake_hf,j_lep_mva_hnl_fake_lf,j_lep_mva_hnl_fake_top;
-  double j_lep_mvav1_hnl_ed_cf,j_lep_mvav2_hnl_ed_cf,j_lep_mvav2p1_hnl_ed_cf,j_lep_mvav2p2_hnl_ed_cf,j_lep_mvav1_hnl_fake,j_lep_mvav1_hnl_conv,j_lep_mvav1_hnl_cf,j_lep_mvav2_hnl_fake,j_lep_mvav2_hnl_conv,j_lep_mvav2_hnl_cf,j_lep_mvav2p1_hnl_cf,j_lep_mvav2p2_hnl_cf;
+  /////// FaKE
+  /// Version 1
+  double j_lep_mva_hnl_fake_v1;
+  //// Version 2
+  double j_lep_mva_hnl_fake_v2_hf,j_lep_mva_hnl_fake_v2_lf, j_lep_mva_hnl_fake_v2_top, j_lep_mva_hnl_fake_v2;
+  //// Version 3                                                                                                                                                                                                                                              
+  double j_lep_mva_hnl_fake_v3_hf,j_lep_mva_hnl_fake_v3_hfb,j_lep_mva_hnl_fake_v3_hfc,j_lep_mva_hnl_fake_v3_lf, j_lep_mva_hnl_fake_v3_top, j_lep_mva_hnl_fake_v3;
 
+  //// Version 4                                                                                                                                                                                                                                       
+
+  double j_lep_mva_hnl_fake_v4_hf,j_lep_mva_hnl_fake_v4_hfb,j_lep_mva_hnl_fake_v4_hfc,j_lep_mva_hnl_fake_v4_lf, j_lep_mva_hnl_fake_v4_top, j_lep_mva_hnl_fake_v4;
+  
+
+  ///// Conv
+  
+  double j_lep_mva_hnl_conv_v1, j_lep_mva_hnl_conv_v2;
+
+  ////// CF
+ 
+  double j_lep_mva_hnl_cf_v1,j_lep_mva_hnl_cf_v2,j_lep_mva_hnl_cf_v2p1,j_lep_mva_hnl_cf_v2p2;
+  
+  double j_lep_mva_hnl_ed_cf_v2,j_lep_mva_hnl_ed_cf_v2p1,j_lep_mva_hnl_ed_cf_v2p2;
+  
 
 private:
   double j_dXY, j_dXYerr;

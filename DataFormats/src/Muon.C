@@ -338,7 +338,7 @@ bool Muon::PassID(TString ID) const {
     IDTmp=IDTmp.ReplaceAll("_FAKEVL_","_FAKE_");
     IDTmp=IDTmp.ReplaceAll("_FAKEVVL_","_FAKE_");
 
-    if(IDTmp == "HNL_ULID_FAKE_BDTG"  && !PassULMVA(j_lep_mva_hnl_fake,_cut,"j_lep_mva_hnl_fake"))            return false;
+    if(IDTmp == "HNL_ULID_FAKE_BDTG"  && !PassULMVA(HNL_MVA_Fake("v2"),_cut,"j_lep_mva_hnl_fake_v2"))            return false;
     return true;
   }
 
@@ -640,12 +640,7 @@ bool Muon::Pass_CB_Opt(TString ID) const {
   */
 
   //cout << "mva_methodConv " << mva_methodConv << endl;  
-  if( mva_methodConv != "") {
 
-    double mva_cut = StringToDouble(mva_methodConv,"MVAConv");
-
-    if (j_lep_mva_hnl_conv < mva_cut) return false;
-  }  
 
   if(dxy_method.Contains("DXYv")){
     

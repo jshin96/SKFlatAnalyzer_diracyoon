@@ -4614,13 +4614,12 @@ void HNL_LeptonCore::FillAllMuonPlots(TString label , TString cut,  std::vector<
     if (LepType >= 0) gen_label = to_string(LepType);
     else gen_label = "Minus_"+to_string(fabs(LepType));
 
-    //gen_label += MatchGenDef(gens,muons[i]);
+    //if(GenTypeMatched(MatchGenDef(gens,muons[i]))){
+    //  if(label.Contains("Fake")) FillMuonKinematicPlots("muon"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(gens,muons[i]), cut, muons.at(i), w);
+    // }
+    FillMuonKinematicPlots("muon"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);
 
-    FillMuonKinematicPlots("muon"+label+"_"+gen_label, cut, muons.at(i), w);
-    FillMuonKinematicPlots("muon"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(gens,muons[i]), cut, muons.at(i), w);
     
-    //FillMuonKinematicPlots("muon"+label+"_"+gen_label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);
-    //FillMuonKinematicPlots("muon"+label+eta_label, cut, muons.at(i), w);
     
   }
 
@@ -4685,17 +4684,8 @@ void HNL_LeptonCore::FillLeptonKinematicPlots(TString label , TString cut,  Lept
     FillHist( cut+ "/Lepton_PtRatioAwayJet_"+label, PtRatioAwayJet , w, 100, 0., 5., "");
   }
 
-  if(lep.LeptonFlavour()==Lepton::ELECTRON){
-    FillHist( cut+ "/Lepton_Conv_Mva_"+label  , lep.HNL_MVA_Conv(), w, 100, -1., 1., "MVA");
-    FillHist( cut+ "/Lepton_Fake_Mva_"+label  , lep.HNL_MVA_Fake(), w, 100, -1., 1., "MVA");
-    FillHist( cut+ "/Lepton_CF_Mva_"+label  , lep.HNL_MVA_CF(), w, 100, -1., 1., "MVA");
-    FillHist( cut+ "/Lepton_CFv2_Mva_"+label  , lep.HNL_MVAv2_CF(), w, 100, -1., 1., "MVA");
-    FillHist( cut+ "/Lepton_CFv3_Mva_"+label  , lep.HNL_MVAv2p1_CF(), w, 100, -1., 1., "MVA");
-    FillHist( cut+ "/Lepton_CFv4_Mva_"+label  , lep.HNL_MVAv2p2_CF(), w, 100, -1., 1., "MVA");
-    FillHist( cut+ "/Lepton_EDCFv2_Mva_"+label  , lep.HNL_MVAv2_ED_CF(), w, 100, -1., 1., "MVA");
-    FillHist( cut+ "/Lepton_EDCFv3_Mva_"+label  , lep.HNL_MVAv2p1_ED_CF(), w, 100, -1., 1., "MVA");
-    FillHist( cut+ "/Lepton_EDCFv4_Mva_"+label  , lep.HNL_MVAv2p2_ED_CF(), w, 100, -1., 1., "MVA");
-  }
+  map<TString, double> lep_bdt_map = lep.MAPBDT();
+  for(auto i : lep_bdt_map)     FillHist( cut+ "/Lepton_mva_"+i.first+label  , i.second, w, 100, -1., 1., "MVA");
   
   // Isolation 
 
@@ -4761,9 +4751,12 @@ void HNL_LeptonCore::FillAllElectronPlots(TString label , TString cut,  std::vec
     if (LepType >= 0) gen_label = to_string(LepType);
     else gen_label = "Minus_"+to_string(fabs(LepType));
     
-    FillElectronKinematicPlots("Electron_"+label+"_"+gen_label, cut, ElectronColl.at(i), w);
-    FillElectronKinematicPlots("Electron_"+label+"_"+ ElectronColl.at(i).CloseJet_Flavour()+"_"+MatchGenDef(gens,ElectronColl[i]), cut, ElectronColl.at(i), w);
-    
+    //if(GenTypeMatched(MatchGenDef(gens,ElectronColl.at(i)))){
+    //  
+    //  if(label.Contains("Fake")) FillElectronKinematicPlots("Electron_"+label+"_"+ ElectronColl.at(i).CloseJet_Flavour()+"_"+MatchGenDef(gens,ElectronColl[i]), cut, ElectronColl.at(i), w)//;
+
+    //    }
+    FillElectronKinematicPlots("Electron_"+label+"_"+ ElectronColl.at(i).CloseJet_Flavour() , cut, ElectronColl.at(i), w);
   }
   return;
 }

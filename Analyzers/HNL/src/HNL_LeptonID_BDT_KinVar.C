@@ -158,7 +158,8 @@ void HNL_LeptonID_BDT_KinVar::executeEvent(){
 
   if(!PassMETFilter()) return;
 
-  double weight =SetupWeight(ev,param_bdt);
+  /// Ignore PU and Prefireweight
+  double weight = MCweight(true, true)*ev.GetTriggerLumi("Full") ;//SetupWeight(ev,param_bdt);
 
   vector<TString> MCMergeList = {"DY","WG"};
   if(SeperateConv || SeperateCF)weight *= MergeMultiMC(MCMergeList,"CombineAll");
@@ -171,14 +172,14 @@ void HNL_LeptonID_BDT_KinVar::executeEvent(){
   }
   
   if(SeperateFakes){
-    weight  = GetPrefireWeight(0) * GetPileUpWeight(nPileUp,0); 
-    if(MCSample.Contains("TTL")) weight*= 0.25;
+    weight  = 1.;//GetPrefireWeight(0) * GetPileUpWeight(nPileUp,0); 
+    if(MCSample.Contains("TTL")) weight*= 0.5;
   }
   if(SeperatePrompt) {
-    weight  = GetPrefireWeight(0) * GetPileUpWeight(nPileUp,0);
+    weight  = 1.;//GetPrefireWeight(0) * GetPileUpWeight(nPileUp,0);
   }
   
-  if(MCSample.Contains("Type")) weight = GetPrefireWeight(0) * GetPileUpWeight(nPileUp,0);
+  if(MCSample.Contains("Type")) weight = 1;//GetPrefireWeight(0) * GetPileUpWeight(nPileUp,0);
   
   FillHist("CutFlow", 0, weight,  20, 0., 20.);
   FillHist( "nPV", nPV ,weight, 100., 0., 100.);
@@ -354,10 +355,67 @@ void HNL_LeptonID_BDT_KinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,v
       if (JetHadFlavour != 4)  return;
     }
 
-
-
-
     if(SeperateFakes && HasFlag("LF")){
+      
+      /// Remove some types of fakes based on SS  study
+      
+      if(lep->LeptonFlavour() == Lepton::MUON) {
+	if(MCSample.Contains("TT")){
+	  
+	  if(MatchGenDef(gens, *lep) == "pi+"){
+	    double r = ((double) rand() / (RAND_MAX));
+	    if(r > 0.1) return;
+	  }
+	  if(MatchGenDef(gens, *lep) == "electron"){
+	    double r = ((double) rand() / (RAND_MAX));
+	    if(r > 0.1) return;
+	  }
+	  if(MatchGenDef(gens, *lep) == "K+"){
+	    double r = ((double) rand() / (RAND_MAX));
+	    if(r > 0.1) return;
+	  }
+	}
+	else{
+	  if(MatchGenDef(gens, *lep) == "pi+"){
+	    double r = ((double) rand() / (RAND_MAX));
+          if(r > 0.05) return;
+	  }
+	  if(MatchGenDef(gens, *lep) == "electron") return;
+	  if(MatchGenDef(gens, *lep) == "K+") return;	
+	}
+      }
+      else{
+	
+	if(MCSample.Contains("TT")){
+
+          if(MatchGenDef(gens, *lep) == "pi+"){
+            double r = ((double) rand() / (RAND_MAX));
+            if(r > 0.1) return;
+          }
+
+          if(MatchGenDef(gens, *lep) == "tau"){
+            double r = ((double) rand() / (RAND_MAX));
+            if(r > 0.1) return;
+          }
+        }
+        else{
+          if(MatchGenDef(gens, *lep) == "pi+"){
+            double r = ((double) rand() / (RAND_MAX));
+	    if(r > 0.05) return;
+          }
+
+	  if(MatchGenDef(gens, *lep) == "tau"){
+            double r = ((double) rand() / (RAND_MAX));
+            if(r > 0.2) return;
+          }
+	  if(MatchGenDef(gens, *lep) == "__"){
+            double r = ((double) rand() / (RAND_MAX));
+            if(r > 0.2) return;
+          }
+        }
+      }
+      
+      
       std::vector<Jet>    AK4_JetAllColl = GetAllJets();
       
       int JetHadFlavour = -999;

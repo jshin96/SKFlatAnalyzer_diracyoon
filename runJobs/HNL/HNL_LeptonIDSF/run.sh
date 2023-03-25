@@ -9,10 +9,10 @@ declare  -a era_list=("2018" "2016postVFP" "2016preVFP" "2017")
 
 if [[ $1 == "TEST" ]]; then
     
-    declare  -a era_list=("2018")
+    declare  -a era_list=("2017")
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -i VBFTypeI_DF_M500_private  -n 2  --nmax 2  -e ${i} 
+        SKFlat.py -a $analyzer  -i TTLJ_powheg  -n 600  --nmax 200  -e ${i} 
     done
 fi
 
