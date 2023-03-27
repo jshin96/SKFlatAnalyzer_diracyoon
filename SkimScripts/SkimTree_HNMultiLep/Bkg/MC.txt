@@ -1,10 +1,5 @@
-WZ_pythia
 VHToNonbb
-ZZ_pythia
-ZZTo4L_m_1toInf_powheg
-ZZTo4L_powheg
 WZTo3LNu_mllmin4p0_powheg
-WW_pythia
 ZZTo2L2Nu_powheg
 ZGToLLG
 WZG
@@ -22,9 +17,6 @@ ttZToQQ
 TTJJ_powheg
 ttHToNonbb
 TG_LNu
-DYJets
-TTLJ_powheg
-TTLL_powheg
 ttWToLNu
 ttWToQQ
 ttZToLLNuNu
@@ -55,7 +47,6 @@ TTZZ
 tZq
 ttZToQQ_ll
 WJets_amcatnlo
-WGJJToLNu
 WZ_EWK
 WWTo2L2Nu_DS
 ttWJets

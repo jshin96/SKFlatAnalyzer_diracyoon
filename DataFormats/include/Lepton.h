@@ -129,13 +129,9 @@ public:
   void SetHNL_ConvLepMVAV2(double mvaconv);
 
   void SetHNL_CFLepMVAV1(double mvacf);
-  void SetHNL_CFLepMVAV2(double mvacf);
-  void SetHNL_CFLepMVAV2p1(double mvacf);
-  void SetHNL_CFLepMVAV2p2(double mvacf);
+  void SetHNL_CFLepMVAV2(double mvacfv2, double mvacfv2p1,double mvacfv2p2);
+  void SetHNL_CFLepMVA_EtaDependantV2( double mvacfv2, double mvacfv2p1,double mvacfv2p2);
 
-  void SetHNL_CFLepMVA_EtaDependantV2( double mvacf);
-  void SetHNL_CFLepMVA_EtaDependantV2p1( double mvacf);
-  void SetHNL_CFLepMVA_EtaDependantV2p2( double mvacf);
 
   map<TString, double> MAPBDT() const {
 

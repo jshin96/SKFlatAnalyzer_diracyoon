@@ -20,8 +20,8 @@ void HNL_LeptonIDSF::executeEvent(){
   
   if(!IsData)  gens = GetGens();
   AnalyzerParameter param =  HNL_LeptonCore::InitialiseHNLParameter("MVAUL","");
-  MeasureElectronIDSF(param);
-  MeasureMuonIDSF(param);
+  //MeasureElectronIDSF(param);
+  //MeasureMuonIDSF(param);
   PlotBDTVariablesElectron(param);
   PlotBDTVariablesMuon(param);
   return ;
@@ -71,9 +71,19 @@ void HNL_LeptonIDSF::PlotBDTVariablesMuon(AnalyzerParameter param){
 
       map<TString, double> mapBDT = imu.MAPBDT();
 
-      for(auto imap : mapBDT ) FillHist(channel_string+i+"_"+imap.first+"_"+channel_string, imap.second , weight, 200, -1., 1);
-
+      for(auto imap : mapBDT ) {
+	FillHist(channel_string+i+"_"+imap.first, imap.second , weight, 200, -1., 1);
+	if(imap.second > 0.)     FillHist(channel_string+i+"HFvar__LFcut_"+imap.first, imu.MVA() , weight, 200, -1., 1);
+      }
+      
       FillHist(channel_string+i+"Fake_"+channel_string, imu.MVA() , weight, 200, -1., 1);
+
+      if(imu.MVA() > 0.5){
+	for(auto imap : mapBDT ) FillHist(channel_string+i+"LFVar__HFcut_"+imap.first+"_mvacut", imap.second , weight, 200, -1., 1);
+      }
+      if(imu.MVA() > 0.5 && imu.HNL_MVA_Fake("v3") > 0.2){
+	FillMuonKinematicPlots("muon_"+i, "PassMVA", imu, weight);
+      }
     }
   }
 }
@@ -194,6 +204,10 @@ void HNL_LeptonIDSF::PlotBDTVariablesElectron(AnalyzerParameter param){
       map<TString, double> mapBDT = iel.MAPBDT();
 
       for(auto imap : mapBDT ) FillHist(channel_string+i+"_"+imap.first+"_"+channel_string, imap.second , weight, 200, -1., 1);
+      
+      
+      if(iel.HNL_MVA_Fake("v4_LF") > 0. && iel.HNL_MVA_Fake("v4_HF") > 0. && iel.HNL_MVA_Conv("v2") > -0.7 && iel.HNL_MVA_CF("v2") > 0.5 )   FillElectronKinematicPlots("electron_"+i, "PassMVA", iel, weight);
+      
       
     } 
   }

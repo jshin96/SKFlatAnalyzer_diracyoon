@@ -22,9 +22,7 @@ ttZToQQ
 TTJJ_powheg
 ttHToNonbb
 TG_LNu
-DYJets
 TTLJ_powheg
-TTLL_powheg
 ttWToLNu
 ttWToQQ
 ttZToLLNuNu

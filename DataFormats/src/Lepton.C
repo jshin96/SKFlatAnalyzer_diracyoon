@@ -150,36 +150,36 @@ void Lepton::SetHNL_FakeLepMVAV1(double mvafake){
   j_lep_mva_hnl_fake_v1=mvafake;
 }
 
-void Lepton::SetHNL_FakeLepMVAV2(double mvafake_hf, double mvafake_lf, double mvafake_top, double mvafake){
+void Lepton::SetHNL_FakeLepMVAV2(double mvafake,double mvafake_hf, double mvafake_lf, double mvafake_top){
 
+  j_lep_mva_hnl_fake_v2=mvafake;
   j_lep_mva_hnl_fake_v2_hf=mvafake_hf;
   j_lep_mva_hnl_fake_v2_lf=mvafake_lf;
   j_lep_mva_hnl_fake_v2_top=mvafake_top;
-  j_lep_mva_hnl_fake_v2=mvafake;
 
 }
 
-void Lepton::SetHNL_FakeLepMVAV3(double mvafake_hf, double mvafake_hfb,double mvafake_hfc, double mvafake_lf, double mvafake_top, double mvafake){
+void Lepton::SetHNL_FakeLepMVAV3(double mvafake,double mvafake_hf, double mvafake_hfb,double mvafake_hfc, double mvafake_lf, double mvafake_top){
 
+  j_lep_mva_hnl_fake_v3=mvafake;
   j_lep_mva_hnl_fake_v3_hf=mvafake_hf;
   j_lep_mva_hnl_fake_v3_hfb=mvafake_hfb;
   j_lep_mva_hnl_fake_v3_hfc=mvafake_hfc;
   j_lep_mva_hnl_fake_v3_lf=mvafake_lf;
   j_lep_mva_hnl_fake_v3_top=mvafake_top;
-  j_lep_mva_hnl_fake_v3=mvafake;
 
 }
 
 
 
-void Lepton::SetHNL_FakeLepMVAV4(double mvafake_hf, double mvafake_hfb,double mvafake_hfc, double mvafake_lf, double mvafake_top, double mvafake){
+void Lepton::SetHNL_FakeLepMVAV4(double mvafake,double mvafake_hf, double mvafake_hfb,double mvafake_hfc, double mvafake_lf, double mvafake_top){
 
+  j_lep_mva_hnl_fake_v4=mvafake;
   j_lep_mva_hnl_fake_v4_hf=mvafake_hf;
   j_lep_mva_hnl_fake_v4_hfb=mvafake_hfb;
   j_lep_mva_hnl_fake_v4_hfc=mvafake_hfc;
   j_lep_mva_hnl_fake_v4_lf=mvafake_lf;
   j_lep_mva_hnl_fake_v4_top=mvafake_top;
-  j_lep_mva_hnl_fake_v4=mvafake;
 
 }
 
@@ -211,31 +211,18 @@ void Lepton::SetHNL_CFLepMVAV1( double mvacf){
 }
 
 
-void Lepton::SetHNL_CFLepMVAV2(double mvacf){
+void Lepton::SetHNL_CFLepMVAV2(double mvacfv2, double mvacfv2p1,double mvacfv2p2) {
+  j_lep_mva_hnl_cf_v2=mvacfv2;
+  j_lep_mva_hnl_cf_v2p1=mvacfv2p1;
+  j_lep_mva_hnl_cf_v2p2=mvacfv2p2;
 
-  j_lep_mva_hnl_cf_v2=mvacf;
 }
 
-void Lepton::SetHNL_CFLepMVAV2p1(double mvacf)  {
-  j_lep_mva_hnl_cf_v2p1=mvacf;
+void Lepton::SetHNL_CFLepMVA_EtaDependantV2(double mvacfv2, double mvacfv2p1,double mvacfv2p2) {
+  j_lep_mva_hnl_ed_cf_v2=mvacfv2;
+  j_lep_mva_hnl_ed_cf_v2p1=mvacfv2p1;
+  j_lep_mva_hnl_ed_cf_v2p2=mvacfv2p2;
 }
-
-void Lepton::SetHNL_CFLepMVAV2p2(double mvacf){
-  j_lep_mva_hnl_cf_v2p2=mvacf;
-}
-
-
-void Lepton::SetHNL_CFLepMVA_EtaDependantV2(double mvacf) {
-  j_lep_mva_hnl_ed_cf_v2=mvacf;
-}
-void Lepton::SetHNL_CFLepMVA_EtaDependantV2p1(double mvacf) {
-  j_lep_mva_hnl_ed_cf_v2p1=mvacf;
-}
-void Lepton::SetHNL_CFLepMVA_EtaDependantV2p2(double mvacf) {
-  j_lep_mva_hnl_ed_cf_v2p2=mvacf;
-}
-
-
 
 
 void Lepton::SetJetNTracks(double d){
