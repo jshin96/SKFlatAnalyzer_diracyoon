@@ -790,7 +790,9 @@ void AnalyzerCore::SetupIDMVAReaderMuon(){
   
   /*                                                                                                                                                                                                                                                                            
     Year  |   AUC            |  KS_signal |  KS_bkg  |  FileName 
-    ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------                                           2016   0.989115346052:   ['0.173',     '0.129', 'BDTG_version4_MuonFakeBkg_LF_TypeI_MuMu_SignalMuonFake_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT.root']
+    ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------                                           
+    
+    2016   0.989115346052:   ['0.173',     '0.129', 'BDTG_version4_MuonFakeBkg_LF_TypeI_MuMu_SignalMuonFake_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT.root']
     2017   0.988019052564:   ['0.338',     '0.188', 'BDTG_version4_MuonFakeBkg_LF_TypeI_MuMu_SignalMuonFake_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT.root'] 
     2018   0.989323202403:   ['0.544',     '0.248', 'BDTG_version4_MuonFakeBkg_LF_TypeI_MuMu_SignalMuonFake_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
     
@@ -1132,13 +1134,13 @@ void AnalyzerCore::SetupIDMVAReaderElectron(bool  electron_v1, bool electron_v2p
     }
   }
   
-  
-  // Look at corrected samples
-  /// CF has 3 versions
-  /// V1 = Original training with some minor bugs
-  /// V2 = new training with bug fix and some variables changed + ptbinned
-  /// V3 is new with bug fix plus All variables 
-  
+  /////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////
+  /// Version1 : Original training with some minor bugs
+  /// Version2 : new training with bug fix and some variables changed + ptbinned
+  /// Version3 : is new with bug fix plus All variables checked,
+  /// Version4 : fixed rho bug ub version3
+  /// Version5 : is same as 4 but with pi+ fakes suppressed
   /////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////
   ///                                                                             
@@ -1155,46 +1157,77 @@ void AnalyzerCore::SetupIDMVAReaderElectron(bool  electron_v1, bool electron_v2p
   if(GetYear() == 2016) {
     cout << "Setting up 2016 CF READER: ElectronIDv2CFMVAReader/ElectronIDv2CFMVAReaderPt/ElectronIDv3CFMVAReader" <<endl;
     
-    ElectronIDv2CFMVAReader->BookMVA("BDTGv2_BB_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-    ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    
+    ElectronIDv2CFMVAReader->BookMVA("BDTGv2_BB_CF",     MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+    ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF",     MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
+    ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF",        MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_BB_CF",   MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_EC_CF",   MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_CF",      MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
     ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_BB_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_BB_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
     ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_EC_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_EC_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    
-    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_BB_CF", MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_EC_CF", MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_CF", MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_CF",    MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+
+    // AUC              KS_signal   KS_bkg      File 
+    // 0.991274785181: ['0.856', '0.127', 'BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT.root']
+    // 0.971147417873: ['0.29',  '0.26',  'BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
+    // 0.990190441643: ['0.635', '0.109', 'BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT.root']
+    // 0.990820236102: ['0.649', '0.313', 'BDTG_version3_CF_TypeI_EE_SignalCF_BB_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT.root']
+    // 0.969881506646: ['0.23',  '0.331', 'BDTG_version3_CF_TypeI_EE_SignalCF_EC_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
+    // 0.990368638127: ['0.439', '0.156', 'BDTG_version3_CF_TypeI_EE_SignalCF_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT.root']
+    // 0.990981816155: ['0.304', '0.109', 'V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT.root']
+    // 0.970489212619: ['0.224', '0.124', 'V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT.root']
+    // 0.990020023134: ['0.619', '0.198', 'V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT.root']   
+
   }
   if(GetYear() == 2017) {
     cout << "ElectronIDv2CFMVAReader 2017 ElectronIDv2CFMVAReader/ElectronIDv2CFMVAReaderPt/ElectronIDv3CFMVAReader" << endl;
-    ElectronIDv2CFMVAReader->BookMVA("BDTGv2_BB_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+    ElectronIDv2CFMVAReader->BookMVA("BDTGv2_BB_CF",     MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+    ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF",     MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+    ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF",        MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_BB_CF",   MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_EC_CF",   MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_CF",      MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_BB_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_BB_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_EC_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_EC_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
+    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_CF",    MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+
+    // AUC              KS_signal   KS_bkg      File 
+    // 0.98861219038:  ['0.624', '0.219', 'BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT.root']
+    // 0.978985596446: ['0.329', '0.429', 'BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT.root']
+    // 0.990651945346: ['0.722', '0.147', 'BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT.root']
+    // 0.988311817272: ['0.611', '0.353', 'BDTG_version3_CF_TypeI_EE_SignalCF_BB_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT.root']
+    // 0.977604902687: ['0.265', '0.467', 'BDTG_version3_CF_TypeI_EE_SignalCF_EC_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
+    // 0.990853924541: ['0.636', '0.218', 'BDTG_version3_CF_TypeI_EE_SignalCF_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT.root']
+    // 0.988033159027: ['0.63',  '0.688', 'V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT.root']
+    // 0.978717083074: ['0.152', '0.16',  'V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT.root']
+    // 0.990578792625: ['0.82',  '0.44',  'V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT.root']
     
-    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_BB_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_BB_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf); 
-    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_EC_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_EC_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf); 
-    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);                                            
-    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_BB_CF", MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_EC_CF", MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_CF", MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
   }
   
   if(GetYear() == 2018) {
     cout << "ElectronIDv2CFMVAReader 2018 ElectronIDv2CFMVAReader/ElectronIDv2CFMVAReaderPt/ElectronIDv3CFMVAReader" << endl;
-
-    ElectronIDv2CFMVAReader->BookMVA("BDTGv2_BB_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-    ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
     
-    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_BB_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_BB_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf); 
-    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_EC_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_EC_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);  
-    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);   
+    ElectronIDv2CFMVAReader->BookMVA("BDTGv2_BB_CF",     MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+    ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF",     MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
+    ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF",        MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_BB_CF",   MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_EC_CF",   MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
+    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_CF",      MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_BB_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_BB_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
+    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_EC_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_EC_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
+    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_CF",    MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
     
-    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_BB_CF", MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_EC_CF", MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_CF", MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+    // AUC              KS_signal   KS_bkg      File
+    // 0.987915231074: ['0.41',  '0.123', 'BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
+    // 0.978419806829: ['0.242', '0.123', 'BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
+    // 0.990543087192: ['0.415', '0.15',  'BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT.root']
+    // 0.987253998735: ['0.549', '0.137', 'BDTG_version3_CF_TypeI_EE_SignalCF_BB_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
+    // 0.977239342615: ['0.109', '0.456', 'BDTG_version3_CF_TypeI_EE_SignalCF_EC_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
+    // 0.990678214094: ['0.414', '0.139', 'BDTG_version3_CF_TypeI_EE_SignalCF_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT.root']
+    // 0.986919574698: ['0.684', '0.134', 'V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT.root']
+    // 0.977403587395: ['0.155', '0.124', 'V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT.root']
+    // 0.990393162503: ['0.476', '0.324', 'V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT.root']
+    
   }
   
   /// FAKE ID BDT
@@ -1213,9 +1246,13 @@ void AnalyzerCore::SetupIDMVAReaderElectron(bool  electron_v1, bool electron_v2p
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_HFB_Fake" ,MVAPathFakev3+"BDTG_version4_FakeBkg_HFB_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_HFC_Fake" ,MVAPathFakev3+"BDTG_version4_FakeBkg_HFC_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
     ////// Version 5 training--> v4 variable                                                                                                                                                                                                                                
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_Fake"     ,MVAPathFakev4+"BDTG_version5_FakeBkg_TypeI_EE_SignalElectronFake_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_Top_Fake" ,MVAPathFakev4+"BDTG_version5_FakeBkgTop_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_LF_Fake"  ,MVAPathFakev4+"BDTG_version5_FakeBkg_LF_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
+    ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_Fake"     ,MVAPathFakev4+"BDTG_version5_FakeBkg_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
+    ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_Top_Fake" ,MVAPathFakev4+"BDTG_version5_FakeBkgTop_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+    ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_LF_Fake"  ,MVAPathFakev4+"BDTG_version5_FakeBkg_LF_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf); 
+    // 0.971327007236: ['0.202', '0.815', 'BDTG_version5_FakeBkg_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT.root']
+    // 0.976957626476: ['0.372', '0.332', 'BDTG_version5_FakeBkgTop_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
+    // 0.975798366843: ['0.504', '0.11',  'BDTG_version5_FakeBkg_LF_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT.root']
+    
   }
   if(GetYear() == 2017) {
     ////// Version 3 training--> v2 variable                                                                                                                                                                                                                                 
@@ -1234,6 +1271,10 @@ void AnalyzerCore::SetupIDMVAReaderElectron(bool  electron_v1, bool electron_v2p
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_Fake",    MVAPathFakev4+"BDTG_version5_FakeBkg_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_Top_Fake",MVAPathFakev4+"BDTG_version5_FakeBkgTop_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_LF_Fake", MVAPathFakev4+"BDTG_version5_FakeBkg_LF_TypeI_EE_SignalElectronFake_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
+    //  0.975586771441: ['0.223', '0.123', 'BDTG_version5_FakeBkg_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
+    //  0.979394122213: ['0.577', '0.367', 'BDTG_version5_FakeBkgTop_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
+    //  0.980371549497: ['0.164', '0.111', 'BDTG_version5_FakeBkg_LF_TypeI_EE_SignalElectronFake_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT.root']
+
   }
   if(GetYear() == 2018) {
     ////// Version 3 training--> v2 variable                                                                                                                                                                                                                                 
@@ -1249,16 +1290,25 @@ void AnalyzerCore::SetupIDMVAReaderElectron(bool  electron_v1, bool electron_v2p
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_HFB_Fake",MVAPathFakev3+"BDTG_version4_FakeBkg_HFB_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_HFC_Fake",MVAPathFakev3+"BDTG_version4_FakeBkg_HFC_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
     ////// Version 5 training--> v4 variable                                                                                                                                                                                                                                 
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_Fake",MVAPathFakev3+"BDTG_version5_FakeBkg_TypeI_EE_SignalElectronFake_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_Top_Fake",MVAPathFakev3+"BDTG_version5_FakeBkgTop_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);  
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_LF_Fake",MVAPathFakev3+"BDTG_version5_FakeBkg_LF_TypeI_EE_SignalElectronFake_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+    ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_Fake",MVAPathFakev4+"BDTG_version5_FakeBkg_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
+    ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_Top_Fake",MVAPathFakev4+"BDTG_version5_FakeBkgTop_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);  
+    ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_LF_Fake",MVAPathFakev4+"BDTG_version5_FakeBkg_LF_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+    //  0.976461138531: ['0.125', '0.139', 'BDTG_version5_FakeBkg_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT.root']
+    //  0.979605314702: ['0.254', '0.209', 'BDTG_version5_FakeBkgTop_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
+    //  0.980518631458: ['0.339', '0.15',  'BDTG_version5_FakeBkg_LF_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
+
   }
   
   /// CONV ID BDT                                                                                                                                           
   if(GetYear() == 2016)   ElectronIDv2ConvMVAReader->BookMVA("BDTGv2_Conv",MVAPathConvv2+"BDTG_version3_Conv_TypeI_EE_SignalConv_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
   if(GetYear() == 2017)   ElectronIDv2ConvMVAReader->BookMVA("BDTGv2_Conv",MVAPathConvv2+"BDTG_version3_Conv_TypeI_EE_SignalConv_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
   if(GetYear() == 2018)   ElectronIDv2ConvMVAReader->BookMVA("BDTGv2_Conv",MVAPathConvv2+"BDTG_version3_Conv_TypeI_EE_SignalConv_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-  
+  // AUC              KS_signal   KS_bkg      File 
+
+  // 0.964866659147: ['0.503', '0.127', 'BDTG_version3_Conv_TypeI_EE_SignalConv_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
+  // 0.96530088056:  ['0.504', '0.107', 'BDTG_version3_Conv_TypeI_EE_SignalConv_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT.root']
+  // 0.966752119434: ['0.162', '0.214', 'BDTG_version3_Conv_TypeI_EE_SignalConv_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
+
   return;
 
 
