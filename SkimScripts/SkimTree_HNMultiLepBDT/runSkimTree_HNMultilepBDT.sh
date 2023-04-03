@@ -7,9 +7,9 @@ njobs=600
 njobs_data=100
 nmax=200
 skim=' '
-#declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
+declare  -a era_list=("2016postVFP" "2016preVFP"  "2017" "2018")
 
-declare  -a era_list=("2017")
+#declare  -a era_list=("2017")
 
 if [[ $1 == "DATA" ]]; then
     for i in "${era_list[@]}"
@@ -38,7 +38,11 @@ fi
 if [[ $1 == "" ]]; then
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -i DYTypeI_DF_M100_private  -n 100  --nmax ${nmax}   -e ${i} &
-
+        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}    --skim  SkimTree_HNMultiLep &
+        SKFlat.py -a $analyzer  -l $datapath/DATA_l_${i}.txt   -n ${njobs_data}  --nmax ${nmax}    -e ${i} --skim  SkimTree_HNMultiLep &
+        SKFlat.py -a $analyzer  -l ${mcpath}/MC.txt  -n 50  --nmax ${nmax}   -e ${i}   --skim  SkimTree_HNMultiLep&
+        SKFlat.py -a $analyzer  -l ${mcpath}/MC2.txt  -n 300  --nmax ${nmax}   -e ${i}   --skim  SkimTree_HNMultiLep&
+        SKFlat.py -a $analyzer  -l ${mcpath}/MC3.txt  -n 300  --nmax ${nmax}   -e ${i}   --skim  SkimTree_HNMultiLep&
+        SKFlat.py -a $analyzer  -l ${mcpath}/MC4.txt  -n 50  --nmax ${nmax}   -e ${i}   --skim  SkimTree_HNMultiLep
     done
 fi
