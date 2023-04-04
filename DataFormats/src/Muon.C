@@ -205,6 +205,8 @@ bool Muon::PassID(TString ID) const {
     return true;
   }
 
+
+
   if(ID=="HNL_TopMVA_FO_MM") {
     if(!PassID("MVALoose")) return false;
     if(MVA() < 0.64) {
@@ -543,9 +545,9 @@ bool Muon::Pass_CB_Opt(TString ID) const {
   //
   //cout << "ID = " << ID << "  " << this->Pt() << " " << this->Eta()<< endl;
 
-  if (ID.Contains("HNL2016") && !PassID("HNL_ULID_2016")) return false;
-  if (ID.Contains("HNL2017") && !PassID("HNL_ULID_2017")) return false;
-  if (ID.Contains("HNL2018") && !PassID("HNL_ULID_2018")) return false;
+  //if (ID.Contains("HNL2016") && !PassID("HNL_ULID_2016")) return false;
+  //if (ID.Contains("HNL2017") && !PassID("HNL_ULID_2017")) return false;
+  //if (ID.Contains("HNL2018") && !PassID("HNL_ULID_2018")) return false;
 
  
   TString ID_sub = ID;
@@ -567,23 +569,14 @@ bool Muon::Pass_CB_Opt(TString ID) const {
   TString pog_methodB="";
   TString pog_methodEC="";
   
-  // Step/slope
-  TString mva_methodBB1="";
-  TString mva_methodBB2="";
-  TString mva_methodEC1="";
-  TString mva_methodEC2="";
-  TString mva_methodPt="";
 
-  // Exp
-  TString mva_methodBBC ="";
-  TString mva_methodBBTau ="";
-  TString mva_methodBBA ="";
-  TString mva_methodECC ="";
-  TString mva_methodECTau ="";
-  TString mva_methodECA ="";
+  TString mva_methodBB="";
+  TString mva_methodEC="";
 
-  TString mva_methodConv ="";
+  TString mva_methodLFBB="";
+  TString mva_methodLFEC="";
 
+  TString NPMVAString="";
 
   // If MVA ID then need Loose MVA and pog medium
   if(ID.Contains("MVA")&& !Pass_LepMVAID()) return false;
@@ -592,25 +585,17 @@ bool Muon::Pass_CB_Opt(TString ID) const {
   if(!isPOGMedium()) return false;
 
   for(unsigned int i=0; i < subStrings.size(); i++){
-    //MuOpt_HNLUL_vMVANPBB1neg1_vMVANPBB2neg1_vMVANPBB3neg1_NPMVABB40p72_vMVANPEC1neg1_vMVANPEC2neg1_vMVANPEC3neg1_NPMVAEC40p64_
-    //MuOpt_HNLUL_HNL2017_MVAConvneg1_
-    //HNLOpt_UL_MuOpt_HNLUL_MVABBC0p75_MVABBTAU4p5_MVABBA3p5_MVAECC0p65_MVAECTAU0_MVAECA0_DXYv1
-    // MuOpt_HNLUL_MVABBC0p7_MVABBTAU3p5_MVABBA3p5_MVAECC0p65_MVAECTAU0_MVAECA0_DXYv1
-    if (subStrings[i].Contains("MVAConv")) mva_methodConv=subStrings[i];
-
-    if (subStrings[i].Contains("MVABB1")) mva_methodBB1=subStrings[i];
-    if (subStrings[i].Contains("MVABB2")) mva_methodBB2=subStrings[i];
-    if (subStrings[i].Contains("MVAEC1")) mva_methodEC1=subStrings[i];
-    if (subStrings[i].Contains("MVAEC2")) mva_methodEC2=subStrings[i];
-    if (subStrings[i].Contains("MVAPt")) mva_methodPt=subStrings[i];
-
     
-    if (subStrings[i].Contains("MVABBC"))  mva_methodBBC=subStrings[i];
-    if (subStrings[i].Contains("MVABBTau"))  mva_methodBBTau= subStrings[i];
-    if (subStrings[i].Contains("MVABBA"))  mva_methodBBA=subStrings[i];
-    if (subStrings[i].Contains("MVAECC"))  mva_methodECC=subStrings[i];
-    if (subStrings[i].Contains("MVAECTau"))  mva_methodECTau=subStrings[i];
-    if (subStrings[i].Contains("MVAECA"))  mva_methodECA=subStrings[i];
+    if (subStrings[i].Contains("NPMVAMethod")){
+      NPMVAString =subStrings[i];
+      NPMVAString = NPMVAString.ReplaceAll("NPMVAMethod","");
+    }
+
+    if (subStrings[i].Contains("MVAHFBB")) mva_methodBB=subStrings[i];
+    if (subStrings[i].Contains("MVAHFEC")) mva_methodEC=subStrings[i];
+
+    if (subStrings[i].Contains("MVALFBB")) mva_methodLFBB=subStrings[i];
+    if (subStrings[i].Contains("MVALFEC")) mva_methodLFEC=subStrings[i];
 
     if (subStrings[i].Contains("POGB")) pog_methodB=subStrings[i];
     if (subStrings[i].Contains("POGEC")) pog_methodEC=subStrings[i];
@@ -622,7 +607,6 @@ bool Muon::Pass_CB_Opt(TString ID) const {
 
   }
 
-  
   
   /*cout << "mva_methodBB1 = " << mva_methodBB1 << endl;
   cout << "mva_methodBB2 = " << mva_methodBB2 << endl;
@@ -654,7 +638,7 @@ bool Muon::Pass_CB_Opt(TString ID) const {
   if(ID.Contains("MuOptLoose")) return PassLooseIDOpt();
 
 
-  return   PassIDOptMulti(pog_methodB,pog_methodEC,mva_methodBB1,mva_methodBB2,mva_methodPt ,mva_methodEC1,mva_methodEC2,mva_methodPt,mva_methodBBC, mva_methodBBTau,mva_methodBBA,mva_methodECC, mva_methodECTau,mva_methodECA, iso_methodB,iso_methodEC);
+  return   PassIDOptMulti(NPMVAString,pog_methodB,pog_methodEC,mva_methodBB,mva_methodEC ,mva_methodLFBB,mva_methodLFEC,  iso_methodB,iso_methodEC);
   
 }
 bool Muon::passIDHN(int ID, double dxy_b, double dxy_e, double dz_b,double dz_e, double sip_b, double sip_e, double iso_b,double iso_e, double miso_b, double miso_e) const{
@@ -764,7 +748,7 @@ int  Muon::PassLooseIDOpt( ) const{
 
 }
 
-int  Muon::PassIDOptMulti(TString sel_methodB,TString sel_methodEC,  TString mva_methodBB1, TString mva_methodBB2,TString mva_methodBBPt,TString mva_methodEC1, TString mva_methodEC2,TString mva_methodECPt,  TString mva_methodBBC,  TString mva_methodBBTau, TString mva_methodBBA, TString mva_methodECC, TString mva_methodECTau,  TString mva_methodECA, TString iso_methodB,TString iso_methodEC ) const{
+int  Muon::PassIDOptMulti(TString mva_method,TString sel_methodB,TString sel_methodEC,  TString mva_methodBB, TString mva_methodEC,TString mva_methodLFBB, TString mva_methodLFEC, TString iso_methodB,TString iso_methodEC ) const{
 
   bool DEBUG=false;
 
@@ -772,11 +756,10 @@ int  Muon::PassIDOptMulti(TString sel_methodB,TString sel_methodEC,  TString mva
   //cout << "PassIDOptMulti " << endl;
   if( fabs(this->Eta())<= 1.479 ){
     
-    if(mva_methodBB1.Contains("MVA") && !PassMVA_UL_Slope(mva_methodBB1,mva_methodBB2, mva_methodBBPt)  ) return 0;   
+    if(mva_methodLFBB.Contains("MVALFBB") && !PassULMVA(HNL_MVA_Fake(mva_method),StringToDouble(mva_methodLFBB,"MVALFBB"),  mva_methodLFBB )) return 0;   
     
-    if(mva_methodBBTau.Contains("MVA")){
-      if(!PassMVA_UL_Exp(mva_methodBBC, mva_methodBBTau,mva_methodBBA)) return 0;
-    }
+    if(mva_methodBB.Contains("MVABB") && !PassULMVA(MVA(),StringToDouble(mva_methodBB,"MVABB"), mva_methodBB )) return 0;
+    
 
     if(sel_methodB == "POGBT"){
       if(! (isPOGTight()) ) return 0;
@@ -797,11 +780,11 @@ int  Muon::PassIDOptMulti(TString sel_methodB,TString sel_methodEC,  TString mva
     if(DEBUG) cout << "PassIDOpt ENDCAP " << endl;
 
 
-    if(mva_methodEC1.Contains("MVA") && !PassMVA_UL_Slope(mva_methodEC1,mva_methodEC2, mva_methodECPt)  ) return 0;
+    if(mva_methodLFEC.Contains("MVALFv3EC") && !PassULMVA(HNL_MVA_Fake("v3"),StringToDouble(mva_methodLFEC,"MVALFv3EC"),  mva_methodLFEC )) return 0;
+    if(mva_methodLFEC.Contains("MVALFv2EC") && !PassULMVA(HNL_MVA_Fake("v2"),StringToDouble(mva_methodLFEC,"MVALFv2EC"),  mva_methodLFEC )) return 0;
+    if(mva_methodLFEC.Contains("MVALFv1EC") && !PassULMVA(HNL_MVA_Fake("v1"),StringToDouble(mva_methodLFEC,"MVALFv1EC"),  mva_methodLFEC )) return 0;
 
-    if(mva_methodECTau.Contains("MVA")){
-      if(!PassMVA_UL_Exp(mva_methodECC, mva_methodECTau,mva_methodECA)) return 0;
-    }   
+    if(mva_methodEC.Contains("MVAEC") && !PassULMVA(MVA(),StringToDouble(mva_methodEC,"MVAEC"), mva_methodEC )) return 0;
 
     if(iso_methodEC != ""){
 
@@ -1048,80 +1031,6 @@ void Muon::SetPixelHits(int n){
 void Muon::SetTrackerLayers(int n){
   j_trackerLayers = n;
 }
-
-double Muon::PassMultiStepCut(double Val1, double Val2, double PtBoundary ) const{
-  
-  //// Apply slope cuts for 5-20-40-60 - inf
-  
-  //cout << "PassMultiStepCut = " << Val1 << " " << Val2 << " " << PtBoundary << endl;
-  double pt1 = 5.;
-  double mva_cut = -999;
-
-  if(this->Pt() > PtBoundary) mva_cut = Val2;
-  else   if(this->Pt() > pt1) mva_cut = Val1 +  (this->Pt() -pt1) * (Val2 - Val1)/ (PtBoundary-pt1);
-  else mva_cut = Val1;
-
-  
-  return mva_cut;
-
-}
-
-double Muon::PassStepCut(double val1, double val2, double pt1, double pt2) const{
-
-  double mva_cut = -999;
-
-  if(this->Pt() > pt2) mva_cut = val2;
-  else if(this->Pt() > 10) mva_cut = val1 +  (this->Pt() -pt1) * (val2 - val1)/ (pt2-pt1);
-  else mva_cut = val1;
-
-  return mva_cut;
-
-}
-
-bool Muon::PassMVA_UL_Exp(TString  c, TString tau, TString A) const {
-  
-
-  double MVACut = 1.;
-  if( fabs(this->Eta()) <= 1.479 ) MVACut =  StringToDouble(c,"MVABBC") - exp(- (this->Pt() / StringToDouble(tau,"MVABBTau"))) * StringToDouble(A,"MVABBA");
-  else MVACut =  StringToDouble(c,"MVAECC") - exp(- (this->Pt() / StringToDouble(tau,"MVAECTau"))) * StringToDouble(A,"MVAECA");
-
-  
-  /*if( fabs(this->Eta()) <= 1.479 ) cout << "PassMVA_ULBB " << StringToDouble(c,"MVABBC") << " " <<  StringToDouble(tau,"MVABBTau") << " " << StringToDouble(A,"MVABBA") << endl;
-  else cout << "PassMVA_ULEC " << StringToDouble(c,"MVAECC") << " " <<  StringToDouble(tau,"MVAECTau") << " " << StringToDouble(A,"MVAECA") << endl;
-  cout << MVACut << endl;
-  */
-
-  if(! (MVA()> MVACut ))  return false;
-  return true;
-
-}
-
-bool Muon::PassMVA_UL_Slope(TString val1, TString val2, TString ptboundary) const {
-
-  double mva_cut = -999;
-    
-  
-  if( fabs(this->Eta()) <= 1.479 ) {
-    double pt_b = (ptboundary == "") ?  20. : StringToDouble(ptboundary,"NPMVAPt");
-
-    mva_cut = PassMultiStepCut(StringToDouble(val1,"NPMVABB1"),StringToDouble(val2,"NPMVABB2"), pt_b);
-
-  }
-  
-  else {
-    double pt_ec = (ptboundary == "") ?  20. : StringToDouble(ptboundary,"NPMVAPt");
-    mva_cut = PassMultiStepCut(StringToDouble(val1,"NPMVAEC1"),StringToDouble(val2,"NPMVAEC2"), pt_ec);
-  }
-  
-  //cout << val1 << " " << val2 << " ptboundary=" << ptboundary << endl;
-  // cout << "MVA() = " << MVA() << " mva_cut = " << mva_cut << endl;
-
-  if( MVA() < mva_cut) return false;
-  else return true;
-
-}
-
-
 
 
 

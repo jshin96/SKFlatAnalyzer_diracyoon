@@ -325,9 +325,9 @@ bool Electron::Pass_LepMVATopID() const {
 
 bool Electron::Pass_CB_Opt(TString ID) const {
     
-  if (ID.Contains("HNL2016") && !PassID("HNL_ULID_2016")) return false;
-  if (ID.Contains("HNL2017") && !PassID("HNL_ULID_2017")) return false;
-  if (ID.Contains("HNL2018") && !PassID("HNL_ULID_2018")) return false;
+  //  if (ID.Contains("HNL2016") && !PassID("HNL_ULID_2016")) return false;
+  //if (ID.Contains("HNL2017") && !PassID("HNL_ULID_2017")) return false;
+  //if (ID.Contains("HNL2018") && !PassID("HNL_ULID_2018")) return false;
 
 
   /// OPTIMISATION CODES
@@ -367,6 +367,7 @@ bool Electron::Pass_CB_Opt(TString ID) const {
   TString cf_mva_methodEC="";
 
   TString CFMVAString="";
+  TString NPMVAString="";
   //HNLUL_POGT_ConvBConvEC_LooseTrig_CFMVABB10p85_CFMVABB20p85_CFMVAPt30_CFMVAEC10p85_CFMVAEC20p85__DXYv1
 
   for(unsigned int i=0; i < subStrings.size(); i++){
@@ -376,6 +377,7 @@ bool Electron::Pass_CB_Opt(TString ID) const {
     if (subStrings[i].Contains("ConvEC")) conv_method +="EC";
     if (subStrings[i].Contains("CCB")) chg_method +="B";
     if (subStrings[i].Contains("CCEC")) chg_method +="EC";
+  
     if (subStrings[i].Contains("DXY")) dxy_method=subStrings[i];
 
     if (subStrings[i].Contains("CFMVAMethod")){
@@ -383,14 +385,15 @@ bool Electron::Pass_CB_Opt(TString ID) const {
       CFMVAString = CFMVAString.ReplaceAll("CFMVAMethod","");
     }
 
+    if (subStrings[i].Contains("NPMVAMethod")){
+      NPMVAString =subStrings[i];
+      NPMVAString = NPMVAString.ReplaceAll("NPMVAMethod","");
+    }
+
     if (subStrings[i].Contains("NPMVABB")){
       if (subStrings[i].Contains("NPMVABB")) mva_methodBB=subStrings[i];
     }
     
-    if (subStrings[i].Contains("NPMVAEB")) {
-      if (subStrings[i].Contains("NPMVAEB")) mva_methodEB=subStrings[i];
-    }
-
     if (subStrings[i].Contains("NPMVAEC")){
       if (subStrings[i].Contains("NPMVAEC")) mva_methodEC=subStrings[i];
     }
@@ -474,12 +477,12 @@ bool Electron::Pass_CB_Opt(TString ID) const {
   if(!Pass_LepMVAID()) return false;
   
   
-  return (PassIDOptMulti( CFMVAString,  mva_methodBB, mva_methodEB,mva_methodEC, conv_mva_methodBB,conv_mva_methodEC, cf_mva_methodBB,cf_mva_methodEC, pog_method, conv_method, chg_method, iso_methodB,iso_methodEC) == 1) ? true : false;
+  return (PassIDOptMulti( CFMVAString, NPMVAString, mva_methodBB, mva_methodEC, conv_mva_methodBB,conv_mva_methodEC, cf_mva_methodBB,cf_mva_methodEC, pog_method, conv_method, chg_method, iso_methodB,iso_methodEC) == 1) ? true : false;
   
 }
  
 
-int  Electron::PassIDOptMulti( TString CFMVAString, TString np_mva_BB, TString np_mva_EB,  TString np_mva_EC,TString conv_mva_BB, TString conv_mva_EC, TString cf_mva_BB, TString cf_mva_EC,  TString pog_method,  TString conv_method, TString chg_method, TString iso_methodB,TString iso_methodEC ) const{
+int  Electron::PassIDOptMulti( TString CFMVAString, TString NPMVAString, TString np_mva_BB, TString np_mva_EC,TString conv_mva_BB, TString conv_mva_EC, TString cf_mva_BB, TString cf_mva_EC,  TString pog_method,  TString conv_method, TString chg_method, TString iso_methodB,TString iso_methodEC ) const{
 
   
   bool DEBUG=false;  
@@ -499,23 +502,15 @@ int  Electron::PassIDOptMulti( TString CFMVAString, TString np_mva_BB, TString n
   
 
   //  map<TString, double>::const_iterator it = j_lep_map_mva_hnl_cf.find(CFMVAString);  it->second;
-  double tmp_j_lep_mva_hnl_cf = HNL_MVA_CF("v2");
+  double tmp_j_lep_mva_hnl_cf = HNL_MVA_CF(CFMVAString);
+  double tmp_j_lep_mva_hnl_fake = HNL_MVA_Fake(NPMVAString);
 
   if( IsBB() ){
-    if(IsIB()){
-      if(np_mva_BB.Contains("MVA")){
-	double   mva_cut = StringToDouble(np_mva_BB,"NPMVABB");
-	if(HNL_MVA_Fake("v1") < mva_cut) return 0;
-      }
-      
-    }
-    else{
-      if(np_mva_EB.Contains("MVA")){
-        double   mva_cut = StringToDouble(np_mva_EB,"NPMVAEB");
-        if(HNL_MVA_Fake("v1") < mva_cut) return 0;
-      }
-    }
-
+    if(np_mva_BB.Contains("MVA")){
+      double   mva_cut = StringToDouble(np_mva_BB,"NPMVABB");
+      if(tmp_j_lep_mva_hnl_fake < mva_cut) return 0;
+    }      
+    
     if(conv_mva_BB.Contains("MVA")){
       if(conv_mva_BB.Contains("MVA")){
         double   mva_cut = StringToDouble(conv_mva_BB,"CVMVABB");
@@ -527,6 +522,7 @@ int  Electron::PassIDOptMulti( TString CFMVAString, TString np_mva_BB, TString n
     if(cf_mva_BB.Contains("MVA")){
       if(cf_mva_BB.Contains("MVA")){
 	double mva_cut = StringToDouble(cf_mva_BB,"CFMVABB");
+
 	if(tmp_j_lep_mva_hnl_cf < mva_cut) return 0;
       }
     }
@@ -567,7 +563,7 @@ int  Electron::PassIDOptMulti( TString CFMVAString, TString np_mva_BB, TString n
 
     if(np_mva_EC.Contains("MVA")){
       double   mva_cut = StringToDouble(np_mva_EC,"NPMVAEC");
-      if(HNL_MVA_Fake("v1") < mva_cut) return 0;
+      if(tmp_j_lep_mva_hnl_fake < mva_cut) return 0;
     }
     
     if(conv_mva_EC.Contains("MVA")){
