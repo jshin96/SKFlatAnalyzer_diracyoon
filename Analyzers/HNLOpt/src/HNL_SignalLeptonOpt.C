@@ -6,8 +6,8 @@ void HNL_SignalLeptonOpt::initializeAnalyzer(){
 
   HNL_LeptonCore::initializeAnalyzer();
   cout << "SetupMVAReader " << endl;
-  SetupMVAReader();
 
+  SetupIDMVAReaderDefault();
 
   RunHighPt= HasFlag("RunHighPt");
   RunEE = HasFlag("RunEE");
@@ -459,267 +459,51 @@ void HNL_SignalLeptonOpt::executeEvent(){
   
 
     vector<TString> ID;
-    vector<TString> IDBB;
-    vector<TString> IDEC;
+    vector<TString> mvaHF;
+    vector<TString> mvaLF;
 
     if(HasFlag("MuID_NP")){
 
-      if(HasFlag("HighPt")){
-	
-	if(HasFlag("BB")){
-	  
-	  IDEC = {"POGECT_ISOEC0p15_"};
-	  TString BBID="NPMVAPt20_NPMVABB1neg1_NPMVABB2";
-	  for(unsigned int imva=0 ; imva < 56 ; imva++){
-	    double mva_d= 0.4 + double(imva)*0.01;
-	    TString mvaTS= DoubleToString(mva_d);
-	    IDBB.push_back(BBID+mvaTS+"_");
-	  }
-
-	  for(auto i1 : IDBB){
-            for(auto i2 : IDEC){
-              MuonsIDs.push_back("HNLUL_"+i1+i2+"DXYv1");
-            }
-          }
-
-	}
-	else if(HasFlag("EC")){
-
-          IDBB = {"POGBT_ISOB0p15_"};
-          TString ECID="NPMVAPt20_NPMVAEC1neg1_NPMVAEC2";
-          for(unsigned int imva=0 ; imva < 56 ; imva++){
-            double mva_d= 0.4 + double(imva)*0.01;
-            TString mvaTS= DoubleToString(mva_d);
-            IDEC.push_back(ECID+mvaTS+"_");
-          }
-
-
-	  for(auto i1 : IDBB){
-            for(auto i2 : IDEC){
-              MuonsIDs.push_back("HNLUL_"+i1+i2+"DXYv1");
-            }
-          }
-
-	}
-	else if(HasFlag("FullEta")){
-
-	  /// B+EC 
-
-	  vector<TString> mvaBB,  mvaEC;
-	  for(unsigned int imva=0 ; imva < 16 ; imva++){
-            double mva_d= 0.5 + double(imva)*0.02;
-            TString mvaTS= DoubleToString(mva_d);
-            mvaBB.push_back("NPMVAPt20_NPMVABB1neg1_NPMVABB2"+mvaTS+"_");
-	    mvaEC.push_back("NPMVAPt20_NPMVAEC1neg1_NPMVAEC2"+mvaTS+"_");
-	  }
-	  for(auto ib : mvaBB){
-	    for(auto ie : mvaEC){
-	      ID.push_back(ib+ie);
-	    }
-	  }
-	  
-	  for(auto i1 : ID){
-            MuonsIDs.push_back("HNLUL_"+i1+"DXYv1");
-          }
-
-
-	}
-	else if(HasFlag("Full")){
-
-          /// B+EC                                                                                                                                                                                               
-          vector<TString> mvaBB = {"NPMVAPt20_NPMVABB10p7_NPMVABB20p7_"};
-	  vector<TString>mvaEC = {"NPMVAPt20_NPMVAEC10p65_NPMVAEC20p65_"};
-
-          for(auto ib : mvaBB){
-            for(auto ie : mvaEC){
-              ID.push_back(ib+ie);
-            }
-          }
-	  
-	}//FULL
-      }// High Pt
-      
-      
       if(HasFlag("FullPt")){
 	
 	if(HasFlag("BB")){
-	  IDEC = {"POGECT_ISOEC0p15_"};
-	  
-	  vector<TString> mvaBBTau;
-	  for(unsigned int imva=0 ; imva < 21 ; imva++){
-	    double mva_d= 2.5 + double(imva)*0.5;
-	    TString mvaTS= DoubleToString(mva_d);
-	    mvaBBTau.push_back("MVABBTau"+mvaTS+"_");
-	  }
-	  vector<TString> mvaBBA;
-	  for(unsigned int imva=0 ; imva < 21 ; imva++){
-	    double mva_d= 0. + double(imva)*0.5;
-	    TString mvaTS= DoubleToString(mva_d);
-	    mvaBBA.push_back("MVABBA"+mvaTS+"_");
-	  }
-	  
-	  ///
-	  TString cVal="";
-	  if(GetYear()==2016) cVal="MVABBC0p73_";
-	  if(GetYear()==2017) cVal="MVABBC0p71_";
-	  if(GetYear()==2018) cVal="MVABBC0p65_";
 
-	  for(auto it : mvaBBTau){
-	    for(unsigned int it2 =0; it2 <  mvaBBA.size(); it2++){
-	      if( it2 == 0 && it != "MVABBTau2p5_") continue;
-	      if(it.Contains("MVABBTau4") && it2 > 16) continue;
-	      if(it.Contains("MVABBTau5") && it2 > 14) continue;
-	      if(it.Contains("MVABBTau6") && it2 > 10) continue;
-	      if(it.Contains("MVABBTau7") && it2 > 8) continue;
-	      if(it.Contains("MVABBTau8") && it2 > 7) continue;
-	      if(it.Contains("MVABBTau9") && it2 > 6) continue;
-	      if(it.Contains("MVABBTau10") && it2 > 6) continue;
-	      if(it.Contains("MVABBTau11") && it2 > 5) continue;
-	      if(it.Contains("MVABBTau12") && it2 > 5) continue;
-	      IDBB.push_back(cVal+it+mvaBBA[it2]);
-	    }
-	  }
-
-	  for(auto i1 : IDBB){
-            for(auto i2 : IDEC){
-              MuonsIDs.push_back("HNLUL_"+i1+i2+"DXYv1");
+	  vector<TString> mvaHF;
+          for(unsigned int imva=0 ; imva < 21 ; imva++){
+            double mva_d= -1. + double(imva)*0.1;
+            TString mvaTS= DoubleToString(mva_d);
+            mvaHF.push_back("MVAHFBB"+mvaTS+"_");
+            mvaLF.push_back("MVALFBB"+mvaTS+"_");
+          }
+	  for(auto i1 : mvaHF){
+	    MuonsIDs.push_back("HNLUL_POGECT_ISOEC0p15_"+i1+"DXYv1");
+	    for(auto i2 : mvaLF){
+              MuonsIDs.push_back("HNLUL_POGECT_ISOEC0p15_"+i1+i2+"_NPMMv1_DXYv1");
+              MuonsIDs.push_back("HNLUL_POGECT_ISOEC0p15_"+i1+i2+"_NPMMv2_DXYv1");
+              MuonsIDs.push_back("HNLUL_POGECT_ISOEC0p15_"+i1+i2+"_NPMMv3_DXYv1");
             }
           }
 	}
 	if(HasFlag("EC")){
-
-	  TString cVal="";
-          if(GetYear()==2016) cVal="MVAECC0p52_";
-          if(GetYear()==2017) cVal="MVAECC0p54_";
-          if(GetYear()==2018) cVal="MVAECC0p55_";
-
 	  
-          IDBB = {"POGBT_ISOB0p15_"};
-          vector<TString> mvaECTau;
+          vector<TString> mvaHF;
           for(unsigned int imva=0 ; imva < 21 ; imva++){
-            double mva_d= 2.5 + double(imva)*0.5;
+            double mva_d= -1. + double(imva)*0.1;
             TString mvaTS= DoubleToString(mva_d);
-            mvaECTau.push_back("MVAECTau"+mvaTS+"_");
+            mvaHF.push_back("MVAHFBB"+mvaTS+"_");
+            mvaLF.push_back("MVALFBB"+mvaTS+"_");
           }
-          vector<TString> mvaECA;
-          for(unsigned int imva=0 ; imva < 21 ; imva++){
-            double mva_d= 0. + double(imva)*0.5;
-            TString mvaTS= DoubleToString(mva_d);
-            mvaECA.push_back("MVAECA"+mvaTS+"_");
+          for(auto i1 : mvaHF){
+	    MuonsIDs.push_back("HNLUL_POGBT_ISOB0p15_"+i1+"DXYv1");
+            for(auto i2 : mvaLF){
+	      MuonsIDs.push_back("HNLUL_POGBT_ISOB0p15_"+i1+i2+"_NPMMv1_DXYv1");
+	      MuonsIDs.push_back("HNLUL_POGBT_ISOB0p15_"+i1+i2+"_NPMMv2_DXYv1");
+	      MuonsIDs.push_back("HNLUL_POGBT_ISOB0p15_"+i1+i2+"_NPMMv3_DXYv1");
+            }
           }
-
-          for(auto it : mvaECTau){
-            for(unsigned int it2 =0; it2 <  mvaECA.size(); it2++){
-	      if( it2 == 0 && it != "MVAECTau2p5_") continue;
-              if(it.Contains("MVAECTau4") && it2 > 16) continue;
-              if(it.Contains("MVAECTau5") && it2 > 14) continue;
-              if(it.Contains("MVAECTau6") && it2 > 10) continue;
-              if(it.Contains("MVAECTau7") && it2 > 8) continue;
-              if(it.Contains("MVAECTau8") && it2 > 7) continue;
-              if(it.Contains("MVAECTau9") && it2 > 6) continue;
-              if(it.Contains("MVAECTau10") && it2 > 6) continue;
-              if(it.Contains("MVAECTau11") && it2 > 5) continue;
-              if(it.Contains("MVAECTau12") && it2 > 5) continue;
-
-              IDEC.push_back(cVal+it+mvaECA[it2]);
-	    }   
-          }
-	  
-	  for(auto i1 : IDBB){
-	    for(auto i2 : IDEC){
-	      MuonsIDs.push_back("HNLUL_"+i1+i2+"DXYv1");
-	    }
-	  }
-
-
-        }
-
-	if(HasFlag("FullEtaSlope")){
-
-          /// B+EC                                                                                                                                                                                        
-	  vector<TString> mvaPt = {"NPMVAPt20_"};
-	  
-          vector<TString> mvaBB,  mvaEC;
-	  
-	  for(unsigned int imva2=0 ; imva2 < 1 ; imva2++){
-	    double mva2B_d= 0.77 + double(imva2)*0.02;
-	    double mva2EC_d= 0.6 + double(imva2)*0.02;
-	    for(unsigned int imva1=0 ; imva1 < 81 ; imva1++){
-	      double mvaB_d= -0.83 + double(imva1)*(0.02);
-	      double mvaEC_d= -1.0 + double(imva1)*(0.02);
-	      
-	      mvaBB.push_back("NPMVABB1"+DoubleToString(mvaB_d)+"_NPMVABB2"+DoubleToString(mva2B_d)+"_");
-	      mvaEC.push_back("NPMVAEC1"+DoubleToString(mvaEC_d)+"_NPMVAEC2"+DoubleToString(mva2EC_d)+"_");
-	    }
-	  }
-	  TString EEID = "NPMVAPt20_NPMVAEC10p6_NPMVAEC20p6_";
-	  TString BBID = "NPMVAPt20_NPMVABB10p77_NPMVABB20p77_";
-	  for(auto ib : mvaBB)   {
-	    for(auto ipt :  mvaPt) {
-	      ID.push_back(EEID+ib+ipt);
-	    }
-	  }
-	  
-	  for(auto ie : mvaEC){
-	    for(auto ipt :  mvaPt) {
-	      
-	      ID.push_back(BBID+ie+ipt);
-	    }
-	  }
-
-
-	  for(auto i1 : ID){
-	    MuonsIDs.push_back("HNLUL_"+i1+"DXYv1");
-	  }
-
-	  
-        }
-	if(HasFlag("FullEtaExp")){
-
-	  vector<TString> mvaBB,  mvaEC;
-
-          for(unsigned int imva=0 ; imva < 5 ; imva++){
-            double mva_c= 0.55 + double(imva)*0.05;
-	    for(unsigned int imva2=0 ; imva2 < 21 ; imva2++){
-	      double mva_tau= 2.5 + double(imva2)*0.5;
-	      for(unsigned int imva3=0 ; imva3 < 11 ; imva3++){
-		double mva_a= 0. + double(imva3)*0.5;
-		if( imva3 == 0 && imva2 != 0) continue;
-		
-		double cutCategory10 =  mva_c - exp(- 10. / mva_tau) * mva_a;
-		if(cutCategory10 < 0.) continue;
-		
-		mvaBB.push_back("MVABBC"+DoubleToString(mva_c)+"_MVABBTau"+DoubleToString(mva_tau)+"_MVABBA"+DoubleToString(mva_a)+"_");
-		mvaEC.push_back("MVAECC"+DoubleToString(mva_c)+"_MVAECTau"+DoubleToString(mva_tau)+"_MVAECA"+DoubleToString(mva_a)+"_");
-	      }
-	    }
-	  }
-
-          for(auto ib : mvaBB)  ID.push_back(ib+"MVAECC0p65_MVAECTau0_MVAECA0_");
-	  for(auto ie : mvaEC)  ID.push_back(ie+"MVABBC0p77_MVABBTau0_MVABBA0_");
-	  for(auto i1 : ID)  MuonsIDs.push_back("HNLUL_"+i1+"DXYv1");
-	
 	}
       }
     }
-    
-    if(HasFlag("Mu_Conv")){
-      
-      vector<TString> mvaConv;
-      
-      for(unsigned int imva=0 ; imva < 50 ; imva++){
-	
-	double mva_c= -1 + double(imva)*0.04;
-	mvaConv.push_back("MVAConv"+DoubleToString(mva_c)+"_");
-	
-      }
-      
-      for(auto ib : mvaConv){
-	MuonsIDs.push_back("HNLUL_HNL" + GetYearString()+"_"+ ib);
-      }
-    }
-   
-    
     
     
     //cout << " MuonsIDs = " <<  MuonsIDs.size() << endl;
@@ -851,20 +635,8 @@ void HNL_SignalLeptonOpt::executeEvent(){
     
     MuonsIDs.push_back("HNTight_17028");
     MuonsIDs.push_back("HNTightV2");
-    MuonsIDs.push_back("HNTightV3");
-    MuonsIDs.push_back("HNL_ULID_2016");
-    MuonsIDs.push_back("HNL_ULID_2017");
-    MuonsIDs.push_back("HNL_ULID_2018");
-    MuonsIDs.push_back("HNL_ULID_v1_2016");
-    MuonsIDs.push_back("HNL_ULID_v1_2017");
-    MuonsIDs.push_back("HNL_ULID_v1_2018");
-    MuonsIDs.push_back("HNL_ULID_v2_2016");
-    MuonsIDs.push_back("HNL_ULID_v2_2017");
     MuonsIDs.push_back("HNL_Peking");
     MuonsIDs.push_back("HNL_HN3L");
-    MuonsIDs.push_back("HNL_Top1");
-    MuonsIDs.push_back("HNL_Top2");
-    MuonsIDs.push_back("HNL_Top3");
 
 
     for (unsigned int i=0; i<MuonsIDs.size(); i++) {

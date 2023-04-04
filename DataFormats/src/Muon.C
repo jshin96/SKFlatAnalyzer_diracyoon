@@ -586,9 +586,9 @@ bool Muon::Pass_CB_Opt(TString ID) const {
 
   for(unsigned int i=0; i < subStrings.size(); i++){
     
-    if (subStrings[i].Contains("NPMVAMethod")){
+    if (subStrings[i].Contains("NPMM")){
       NPMVAString =subStrings[i];
-      NPMVAString = NPMVAString.ReplaceAll("NPMVAMethod","");
+      NPMVAString = NPMVAString.ReplaceAll("NPMM","");
     }
 
     if (subStrings[i].Contains("MVAHFBB")) mva_methodBB=subStrings[i];
@@ -758,7 +758,7 @@ int  Muon::PassIDOptMulti(TString mva_method,TString sel_methodB,TString sel_met
     
     if(mva_methodLFBB.Contains("MVALFBB") && !PassULMVA(HNL_MVA_Fake(mva_method),StringToDouble(mva_methodLFBB,"MVALFBB"),  mva_methodLFBB )) return 0;   
     
-    if(mva_methodBB.Contains("MVABB") && !PassULMVA(MVA(),StringToDouble(mva_methodBB,"MVABB"), mva_methodBB )) return 0;
+    if(mva_methodBB.Contains("MVAHFBB") && !PassULMVA(MVA(),StringToDouble(mva_methodBB,"MVAHFBB"), mva_methodBB )) return 0;
     
 
     if(sel_methodB == "POGBT"){
