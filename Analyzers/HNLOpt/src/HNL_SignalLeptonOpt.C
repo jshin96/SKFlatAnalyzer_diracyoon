@@ -5,9 +5,9 @@ void HNL_SignalLeptonOpt::initializeAnalyzer(){
   // All default settings like trigger/ PD/ BJet are decalred in HNL_LeptonCore::initializeAnalyzer to make them consistent for all HNL codes
 
   HNL_LeptonCore::initializeAnalyzer();
-  cout << "SetupMVAReader " << endl;
-
-  SetupIDMVAReaderDefault();
+  
+  SetupIDMVAReaderDefault(); /// Not needed for BDT skim
+  SetupEventMVAReader();                                                                                                                                                                                           
 
   RunHighPt= HasFlag("RunHighPt");
   RunEE = HasFlag("RunEE");
@@ -768,7 +768,8 @@ void HNL_SignalLeptonOpt::RunULAnalysis(AnalyzerParameter param, vector<Electron
   std::vector<FatJet> FatjetColl   = SelectAK8Jetsv2(fatjets_tmp, 200., 2.7, true,  1., true, -999, true, 40., 130.,-999, ElectronCollV, MuonCollV);
   std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
 
-  std::vector<Jet> JetCollLoose                    = SelectAK4Jets(jets_tmp,     15., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl);
+  std::vector<Jet> AllJetColl                     = GetJets   ( "NoID", 10., 3.);
+  std::vector<Jet> JetCollLoose                   = SelectAK4Jets(jets_tmp,     15., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl);
   std::vector<Jet> BJetCollNLV                    = SelectAK4Jets(jets_tmp,     20., 2.4, false,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl);
   std::vector<Jet> JetColl                        = SelectAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl);
   std::vector<Jet> VBF_JetColl                    = SelectAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, "",  ElectronCollV,MuonCollV, FatjetColl);  
@@ -799,7 +800,7 @@ void HNL_SignalLeptonOpt::RunULAnalysis(AnalyzerParameter param, vector<Electron
 
   //if(IsData)cout << "Run data " << param.Name << endl;
   // Runs main SR functionality
-  RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,FatjetColl , BJetColl,BJetCollSR1, ev,METv, param,weight);
+  RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, AllJetColl,JetCollLoose, JetColl, VBF_JetColl,FatjetColl , BJetColl,BJetCollSR1, ev,METv, param,weight);
 
 
   return;
@@ -815,14 +816,14 @@ void HNL_SignalLeptonOpt::RunULAnalysis(AnalyzerParameter param, vector<Electron
 HNL_SignalLeptonOpt::HNL_SignalLeptonOpt(){
 
   TMVA::Tools::Instance();
-  MVAReader = new TMVA::Reader();
-
+  MVAReaderMM = new TMVA::Reader();
+  MVAReaderEE = new TMVA::Reader();
+  MVAReaderEM = new TMVA::Reader();
 
 }
  
 HNL_SignalLeptonOpt::~HNL_SignalLeptonOpt(){
 
-  delete MVAReader;
 }
 
 
