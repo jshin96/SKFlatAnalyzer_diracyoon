@@ -7,7 +7,9 @@ void HNL_SignalLeptonOpt::initializeAnalyzer(){
   HNL_LeptonCore::initializeAnalyzer();
   
   SetupIDMVAReaderDefault(); /// Not needed for BDT skim
-  SetupEventMVAReader();                                                                                                                                                                                           
+  
+  if(HasFlag("RunEE")) SetupEventMVAReader(true,false,false); 
+  else SetupEventMVAReader(false,true,true);
 
   RunHighPt= HasFlag("RunHighPt");
   RunEE = HasFlag("RunEE");
