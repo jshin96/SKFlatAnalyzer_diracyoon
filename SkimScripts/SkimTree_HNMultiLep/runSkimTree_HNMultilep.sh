@@ -45,7 +45,7 @@ fi
 if [[ $1 == "MC" ]]; then
     for i in "${era_list[@]}"
     do
-	SKFlat.py -a $analyzer  -l ${mcpath}/MC5.txt  -n 100  --nmax ${nmax}   -e ${i}  &
+	SKFlat.py -a $analyzer  -l ${mcpath}/MC5.txt  -n 200  --nmax ${nmax}   -e ${i}  &
 		
     done
 

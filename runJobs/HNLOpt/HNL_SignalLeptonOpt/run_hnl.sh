@@ -100,7 +100,7 @@ fi
 if [[ $1 == "NP_MUON_FullPt" ]]; then
 
     declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
-    declare  -a era_list=("2018")
+    declare  -a era_list=("2017")
     for i in "${era_list[@]}"
     do
 
