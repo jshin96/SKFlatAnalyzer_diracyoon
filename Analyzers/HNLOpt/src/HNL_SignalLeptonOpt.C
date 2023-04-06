@@ -404,10 +404,12 @@ void HNL_SignalLeptonOpt::executeEvent(){
     ElectronsIDs.push_back("HN2016POGCC");
     ElectronsIDs.push_back("HNOpt");
     ElectronsIDs.push_back("HNTight2016Update");
-    //ElectronsIDs.push_back("HNTight_Opt_ECCC_Iso1_dxy1_dz1");
-    //ElectronsIDs.push_back("");
-    //ElectronsIDs.push_back("");
     ElectronsIDs.push_back("HNTight_ULInProgress");
+
+    std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(MuonCollV,ElectronCollV,param_signal);
+
+    Event ev = GetEvent();
+    ev.SetMVA("EE",100, EvaluateEventMVA("100", "300","850", MuMu,  leps_veto,ev, GetvMET("PuppiT1xyCorr",param_signal) ,param_signal));
 
 
     //cout << "ElectronsIDs size = " << ElectronsIDs.size() << endl;
@@ -435,22 +437,22 @@ void HNL_SignalLeptonOpt::executeEvent(){
       param_signal.Muon_FR_ID = "HNLooseV1";
 
 
-      //cout << param_signal.Name << endl;
-      RunULAnalysis(param_signal,ElectronCollV,MuonCollV);
 
+      RunULAnalysis(param_signal,ElectronCollV,MuonCollV,ev);
+      
       param_signal.Name = param_signal.DefName;
       param_signal.SRConfig  = "";
     }
   }
 
-
+  
 
   
 
 
   bool opt_IDMu=!RunEE;
   if(opt_IDMu){
-
+    
     vector<TString> MuonsIDs;
 
     if(!SameCharge(MuonCollV)) return;
@@ -654,9 +656,14 @@ void HNL_SignalLeptonOpt::executeEvent(){
       }
     }
 
-
+    /// Caulcate BDT for MM events
+    
+    std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(MuonCollV,ElectronCollV,param_signal);
+    
+    Event ev = GetEvent();
+    ev.SetMVA("MuMu",100, EvaluateEventMVA("100", "300","850", MuMu,  leps_veto,ev, GetvMET("PuppiT1xyCorr",param_signal),param_signal));
+    
     for(auto id : MuonsIDs){
-      //      cout << id << endl;
       if(id.Contains("HNLUL")){
         param_signal.Name = param_signal.DefName  + "_MuOpt_"+ id;
         param_signal.SRConfig  = "";
@@ -664,8 +671,7 @@ void HNL_SignalLeptonOpt::executeEvent(){
         param_signal.Muon_FR_ID = "MuOptLoose_"+id;
         param_signal.Electron_Tight_ID = "HNTightV2";
         param_signal.Electron_FR_ID = "HNLooseV4";
-
-        RunULAnalysis(param_signal,ElectronCollV,MuonCollV);
+        RunULAnalysis(param_signal,ElectronCollV,MuonCollV,ev);
       }
       else{
         param_signal.Name = param_signal.DefName  + id;
@@ -676,7 +682,7 @@ void HNL_SignalLeptonOpt::executeEvent(){
         param_signal.Electron_Tight_ID = "HNTightV2";
         param_signal.Electron_FR_ID = "HNLooseV4";
 
-        RunULAnalysis(param_signal,ElectronCollV,MuonCollV);
+        RunULAnalysis(param_signal,ElectronCollV,MuonCollV,ev);
 
       }
     }
@@ -684,31 +690,14 @@ void HNL_SignalLeptonOpt::executeEvent(){
   }
 
   
-  
-
-  if(!IsData) RunSyst=false;
-  if(RunSyst){
-    TString param_signal_name = param_signal.Name;
-    vector<AnalyzerParameter::Syst> SystList;// = GetSystList("Initial");
-
-    for(auto isyst : SystList){
-      param_signal.syst_ = AnalyzerParameter::Syst(isyst);
-      
-      param_signal.Name = "Syst_"+param_signal.GetSystType()+param_signal_name;
-      param_signal.DefName = "Syst_"+param_signal.GetSystType()+param_signal_name;
-      RunULAnalysis(param_signal,ElectronCollV,MuonCollV);
-    }
-  }    
-
 
   return ;
 }
 
-void HNL_SignalLeptonOpt::RunULAnalysis(AnalyzerParameter param, vector<Electron> ElectronCollV, vector<Muon> MuonCollV){
+void HNL_SignalLeptonOpt::RunULAnalysis(AnalyzerParameter param, vector<Electron> ElectronCollV, vector<Muon> MuonCollV, Event ev){
 
   if(run_Debug) cout << "HNL_SignalLeptonOpt::executeEvent " << endl;
 
-  Event ev = GetEvent();
   double weight =SetupWeight(ev,param);
   
   //cout << "weight = " << weight << endl;
@@ -740,7 +729,6 @@ void HNL_SignalLeptonOpt::RunULAnalysis(AnalyzerParameter param, vector<Electron
   double Min_Electron_Pt = (RunFake) ? 7. : 10.;
 
 
-
   std::vector<Muon>       MuonCollTInit; 
   std::vector<Electron>   ElectronCollTInit ;
 
@@ -766,44 +754,21 @@ void HNL_SignalLeptonOpt::RunULAnalysis(AnalyzerParameter param, vector<Electron
 
   Particle METv = GetvMET("PuppiT1xyCorr",param); // returns MET with systematic correction
 
+  std::vector<FatJet> FatjetColl                  = GetHNLAK8Jets("HNL",param);
+  std::vector<Jet> AllJetColl                     = GetHNLJets("NoCut3",param);
+  std::vector<Jet> JetColl                        = GetHNLJets("Tight",param);
+  std::vector<Jet> JetCollLoose                   = GetHNLJets("Loose",param);
+  std::vector<Jet> VBF_JetColl                    = GetHNLJets("VBFTight",param);
+  std::vector<Jet> BJetColl                       = GetHNLJets("BJetM_NoLC",param);
+  std::vector<Jet> BJetCollSR1                    = GetHNLJets("BJetT_NoLC",param);
 
-
-  std::vector<FatJet> fatjets_tmp  = GetFatJets(param, param.FatJet_ID, 200., 5.);
-  std::vector<FatJet> FatjetColl   = SelectAK8Jetsv2(fatjets_tmp, 200., 2.7, true,  1., true, -999, true, 40., 130.,-999, ElectronCollV, MuonCollV);
-  std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
-
-  std::vector<Jet> AllJetColl                     = GetJets   ( "NoID", 10., 3.);
-  std::vector<Jet> JetCollLoose                   = SelectAK4Jets(jets_tmp,     15., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl);
-  std::vector<Jet> BJetCollNLV                    = SelectAK4Jets(jets_tmp,     20., 2.4, false,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl);
-  std::vector<Jet> JetColl                        = SelectAK4Jets(jets_tmp,     20., 2.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, FatjetColl);
-  std::vector<Jet> VBF_JetColl                    = SelectAK4Jets(jets_tmp,     30., 4.7, true,  0.4,0.8, "",  ElectronCollV,MuonCollV, FatjetColl);  
-  
-
-  JetTagging::Parameters param_jetsM = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
-  JetTagging::Parameters param_jetsT = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Tight, JetTagging::incl, JetTagging::mujets);
-
-  std::vector<Jet> BJetColl    = SelectBJets(param,  BJetCollNLV, param_jetsM);
-  double sf_btagM_NLV               = GetBJetSF(param, BJetCollNLV, param_jetsM);
-  std::vector<Jet> BJetCollSR1    = SelectBJets(param,  BJetCollNLV, param_jetsT);
-  double sf_btagSR1_NLV               = GetBJetSF(param, BJetCollNLV, param_jetsT);
-
+  param.WriteOutVerbose=1; // Does not Fill Cutflow OR Region Plotter                                                                                                                                                                                                                                                      
+  //if(!IsData && FatjetColl.size()==0)  weight = weight*GetBJetSF(param, BJetColl, param_jetsM);
+  //if(!IsData && FatjetColl.size()>0)   weight = weight*GetBJetSF(param, BJetCollSR1, param_jetsT);
   
   param.WriteOutVerbose=1; // Does not Fill Cutflow OR Region Plotter  
 
-  //if(param.Name.Contains("HNTightV2"))  param.WriteOutVerbose=0;
 
-  
-  if(!IsData && FatjetColl.size()==0)weight = weight*sf_btagM_NLV;
-  if(!IsData && FatjetColl.size()>0)weight = weight*sf_btagSR1_NLV;
-
-
-    
-  /// Runs adapted SR functionality
-  //FillSignalRegionForOpt(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, JetCollLoose, JetColl, VBF_JetColl,FatjetColl , BJetColl, ev,METv, param,weight);
-
-
-  //if(IsData)cout << "Run data " << param.Name << endl;
-  // Runs main SR functionality
   RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, AllJetColl,JetCollLoose, JetColl, VBF_JetColl,FatjetColl , BJetColl,BJetCollSR1, ev,METv, param,weight);
 
 

@@ -1049,6 +1049,29 @@ void HNL_LeptonCore::SetupEventBDTVariables(std::vector<Lepton *> LepTColl,
 }
 
 
+double HNL_LeptonCore::EvaluateEventMVA(TString mN, TString NCut, TString NTree,HNL_LeptonCore::Channel channel ,
+					std::vector<Lepton *> LepTColl, Event  ev, Particle METv, AnalyzerParameter param){
+
+  std::vector<FatJet> FatjetColl                  = GetHNLAK8Jets("HNL",param);
+  std::vector<Jet> All_JetColl                    = GetHNLJets("NoCut3",param);
+  std::vector<Jet> B_JetColl                      = GetHNLJets("BJetM_NoLC",param);
+  std::vector<Jet> JetColl                        = GetHNLJets("Tight",param);
+  std::vector<Jet> VBF_JetColl                    = GetHNLJets("VBFTight",param);
+  
+  SetupEventBDTVariables(LepTColl,
+                         All_JetColl, JetColl,VBF_JetColl,B_JetColl,
+                         ev,METv,param);
+
+  TString MVATagStr = "BDT_M"+mN+"_NCut"+NCut+"_NTree"+NTree+"_"+GetChannelString(channel);
+  float MVAvalue = -99999.;
+  if(GetChannelString(channel) == "MuMu") MVAvalue = MVAReaderMM->EvaluateMVA(MVATagStr);
+  if(GetChannelString(channel) == "EE")   MVAvalue = MVAReaderEE->EvaluateMVA(MVATagStr);
+  if(GetChannelString(channel) == "EMu")  MVAvalue = MVAReaderEM->EvaluateMVA(MVATagStr);
+
+
+  return MVAvalue;
+}
+
 void HNL_LeptonCore::TriggerPrintOut(Event ev){
   
   vector<TString> PDs = {"DoubleEG","DoubleMuon","MuonEG","SingleElectron","SingleMuon", "EGamma"};
@@ -2508,7 +2531,11 @@ std::vector<FatJet> HNL_LeptonCore::GetHNLAK8Jets(TString JetType, AnalyzerParam
   std::vector<FatJet>   FatjetColl  = GetFatJets(param, "tight", 200., 5.);
   if(JetType=="Loose") return FatjetColl;
 
-  std::vector<FatJet> AK8_JetColl                  = SelectAK8Jets(FatjetColl, 200., 5., true,  1., false, -999, false, 0., 20000., ElectronCollV, MuonCollV);
+  std::vector<FatJet> AK8_JetColl                  = SelectAK8Jets  (FatjetColl, 200., 5., true,  1., false, -999, false, 0., 20000., ElectronCollV, MuonCollV);
+
+  std::vector<FatJet> AK8_JetCollHNL                  = SelectAK8Jetsv2(FatjetColl, 200., 2.7, true,  1., true, -999, true, 40., 130.,-999, ElectronCollV, MuonCollV);
+
+  if(JetType=="HNL") return AK8_JetCollHNL;
 
   return AK8_JetColl;
 }
@@ -2521,27 +2548,31 @@ std::vector<Jet> HNL_LeptonCore::GetHNLJets(TString JetType, AnalyzerParameter p
 
   /// AK4 
   std::vector<Jet> AK4_Loose     = GetJets   ( param, param.Jet_ID, 10., 5.);
-  std::vector<Jet> AK4_All       = GetJets   ( param, "NoID",      0.,  5.);
+  std::vector<Jet> AK4_All       = GetJets   ( param, "NoID",      10.,  5.);
+  std::vector<Jet> AK4_NoCut3    = GetJets   ( param, "NoID",      10.,  3.);
 
   // AK8
   std::vector<FatJet> AK8_JetCollLoose             = GetHNLAK8Jets("Loose", param);
 
-  /// BJET
-  std::vector<Jet> BJetCollLoose                   = SelectAK4Jets(AK4_Loose,  15., 2.4, true,  0.4,0.8, "",   ElectronCollV,MuonCollV,  AK8_JetCollLoose);
-  std::vector<Jet> BJetCollNoLepClean              = SelectAK4Jets(AK4_Loose,  20., 2.4, false,  0.4,0.8, "",   ElectronCollV,MuonCollV,  AK8_JetCollLoose);
-  
-  if(JetType=="All")   return AK4_Loose;
+  if(JetType=="All")      return AK4_All;
+  if(JetType=="NoCut3")   return AK4_NoCut3;
 
   if(JetType=="Loose")    return SelectAK4Jets(AK4_Loose,     15., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetCollLoose);
   if(JetType=="Tight")    return SelectAK4Jets(AK4_Loose,     20., 2.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetCollLoose);
   if(JetType=="VBFTight") return SelectAK4Jets(AK4_Loose,     20., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetCollLoose);
 
+  /// BJET
+  std::vector<Jet> BJetCollLoose                   = SelectAK4Jets(AK4_Loose,  20., 2.4, true,  0.4,0.8, "",   ElectronCollV,MuonCollV,  AK8_JetCollLoose);
+  std::vector<Jet> BJetCollNoLepClean              = SelectAK4Jets(AK4_Loose,  20., 2.4, false,  0.4,0.8, "",   ElectronCollV,MuonCollV,  AK8_JetCollLoose);
+
+  
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
   JetTagging::Parameters param_jetsT = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Tight, JetTagging::incl, JetTagging::mujets);
-  if(JetType=="BJetM")     return SelectBJets(param, BJetCollLoose, param_jets);
-  if(JetType=="BJetT")     return SelectBJets(param, BJetCollLoose, param_jetsT);
-  if(JetType=="BJetM_NoLC")     return SelectBJets(param, BJetCollLoose, param_jets);
-  if(JetType=="BJetT_NoLC")     return SelectBJets(param, BJetCollLoose, param_jetsT);
+
+  if(JetType=="BJetM")          return SelectBJets(param, BJetCollLoose, param_jets);
+  if(JetType=="BJetT")          return SelectBJets(param, BJetCollLoose, param_jetsT);
+  if(JetType=="BJetM_NoLC")     return SelectBJets(param, BJetCollNoLepClean, param_jets);
+  if(JetType=="BJetT_NoLC")     return SelectBJets(param, BJetCollNoLepClean, param_jetsT);
 
   // Else just return Standard Jet coll for HNL
   return SelectAK4Jets(AK4_Loose,     20., 2.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetCollLoose);

@@ -156,29 +156,22 @@ void HNL_RegionDefinitionsOpt::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq
     else{
       
       TString SRbin = RunSignalRegionWWString( dilep_channel,qq, leps, leps_veto,  TauColl, JetCollLoose, VBF_JetColl,  AK8_JetColl, B_JetColl,ev, METv, param_channel,  "", weight_channel);
-      
-      
+            
       if(SRbin != "false"){
-
-
 	FillEventCutflow(LimitRegions, weight_channel, SRbin,"LimitInput/"+param.Name);
 	FillEventCutflow(LimitRegionsBDT, weight_channel, SRbin,"LimitInputBDT/"+param.Name+"/100");
-
       }
       else{
 	SRbin  = RunSignalRegionAK4String (dilep_channel,qq, leps, leps_veto, TauColl, JetColl, AK8_JetColl, B_JetColl, ev, METv ,param_channel,"", weight_channel);
 
-	TString SRBDT100 = RunSignalRegionAK4StringBDT("100", dilep_channel,qq, 
-						       leps, leps_veto,  
-						       AllJetColl, JetColl, VBF_JetColl, B_JetColl, 
-						       ev, METv ,param_channel,"", weight_channel);
+	TString SRBDT100 = RunSignalRegionAK4StringBDT("100", dilep_channel, leps, ev);   
 
 	if(SRBDT100 != "false") FillEventCutflow(LimitRegionsBDT, weight_channel, SRBDT100,"LimitInputBDT/"+param.Name+"/100");
 
 	if(SRbin != "false"){
  
 	  FillEventCutflow(LimitRegions, weight_channel, SRbin,"LimitInput/"+param.Name);
-	  //FillEventCutflow(LimitRegionsQ, weight_channel, lep_charge+SRbin,"LimitInput/"+param.Name);
+
 
 	}
       }
@@ -435,37 +428,15 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK8String(HNL_LeptonCore::Chann
 
 
 
-TString HNL_RegionDefinitionsOpt::RunSignalRegionAK4StringBDT(TString mN, HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType qq ,
-							      std::vector<Lepton *> LepTColl,   std::vector<Lepton *> leps_veto, 
-							      std::vector<Jet> JetAllColl,std::vector<Jet> JetColl, std::vector<Jet> JetVBFColl, 
-							      std::vector<Jet> B_JetColl, Event  ev, Particle METv, AnalyzerParameter param, TString PostLabel ,  float w){
-
+TString HNL_RegionDefinitionsOpt::RunSignalRegionAK4StringBDT(TString mN, HNL_LeptonCore::Channel channel, 
+							      std::vector<Lepton *> LepTColl,  Event  ev){
   if(!CheckLeptonFlavourForChannel(channel, LepTColl)) return "false";
-  FillEventCutflow(HNL_LeptonCore::SR3BDT, w, "SR3_lep_pt",param.Name,param.WriteOutVerbose);
-
-  if (leps_veto.size() != 2) return "false";
-
-  if(qq==Plus && LepTColl[0]->Charge() < 0) return "false";
-  if(qq==Minus && LepTColl[0]->Charge() > 0) return "false";
-
-  FillEventCutflow(HNL_LeptonCore::SR3BDT, w, "SR3_lep_charge",param.Name,param.WriteOutVerbose);
-
+  if (LepTColl.size() != 2) return "false";
   Particle ll =  (*LepTColl[0]) + (*LepTColl[1]);
   if (channel==EE  && (fabs(ll.M()-90.) < 15)) return "false";
 
-  FillEventCutflow(HNL_LeptonCore::SR3BDT, w, "SR3_dilep_mass",param.Name,param.WriteOutVerbose);
+  float MVAvalue = ev.HNL_MVA_Event(GetChannelString(channel)+"_"+mN);
 
-  SetupEventBDTVariables(LepTColl,
-			 JetAllColl, JetColl,JetVBFColl,B_JetColl,
-			 ev,METv,param);
-
-  TString MVATagStr = "BDT_M"+mN+"_NCut300_NTree850_"+GetChannelString(channel);
-  float MVAvalue = 0.;
-  if(GetChannelString(channel) == "MuMu") MVAvalue = MVAReaderMM->EvaluateMVA(MVATagStr);
-  if(GetChannelString(channel) == "EE")   MVAvalue = MVAReaderEE->EvaluateMVA(MVATagStr);
-  if(GetChannelString(channel) == "EMu")  MVAvalue = MVAReaderEM->EvaluateMVA(MVATagStr);
-
-  //FillHist("LimitSR3BDT/"+param.Name+"/SignalBins_M"+mN, MVAvalue, w, 40, -1., 1.);
   if(MVAvalue < 0.)       return "SR3_bin1";
   else if(MVAvalue< 0.05) return "SR3_bin2";
   else if(MVAvalue< 0.10) return "SR3_bin3";

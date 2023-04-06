@@ -6,9 +6,50 @@ Event::Event(){
   j_nPV = -999;
   j_DataYear = -999;
   j_DataEra = "";
+  j_mva_mm_100=-1000;
+  j_mva_mm_200=-1000;
+  j_mva_mm_300=-1000;
+  j_mva_mm_400=-1000;
+  j_mva_ee_100=-1000;
+  j_mva_ee_200=-1000;
+  j_mva_ee_300=-1000;
+  j_mva_ee_400=-1000;
+  j_mva_em_100=-1000;
+  j_mva_em_200=-1000;
+  j_mva_em_300=-1000;
+  j_mva_em_400=-1000;
+
 }
 
 Event::~Event(){
+
+}
+
+void Event::SetMVA(TString channel, double mass, double value){
+  
+  if(channel == "MM" || channel == "MuMu"){
+    if(mass==100) j_mva_mm_100 = value;
+    if(mass==200) j_mva_mm_200 = value;
+    if(mass==300) j_mva_mm_300 = value;
+    if(mass==410) j_mva_mm_400 = value;
+  }
+
+  if(channel =="EE" ){
+    if(mass==100) j_mva_ee_100 = value;
+    if(mass==200) j_mva_ee_200 = value;
+    if(mass==300) j_mva_ee_300 = value;
+    if(mass==410) j_mva_ee_400 = value;
+  }
+
+  if(channel =="EM" ||channel== "EMu"){
+    if(mass==100) j_mva_em_100 = value;
+    if(mass==200) j_mva_em_200 = value;
+    if(mass==300) j_mva_em_300 = value;
+    if(mass==410) j_mva_em_400 = value;
+  }
+
+
+  return;
 
 }
 

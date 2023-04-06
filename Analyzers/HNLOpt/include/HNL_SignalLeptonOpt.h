@@ -17,7 +17,7 @@ class HNL_SignalLeptonOpt : public HNL_RegionDefinitionsOpt {
 
 
 
-  void RunULAnalysis(AnalyzerParameter param, vector<Electron> el, vector<Muon> mu);
+  void RunULAnalysis(AnalyzerParameter param, vector<Electron> el, vector<Muon> mu, Event ev);
 
 
 };
