@@ -6,10 +6,10 @@ void HNL_SignalLeptonOpt::initializeAnalyzer(){
 
   HNL_LeptonCore::initializeAnalyzer();
   
-  SetupIDMVAReaderDefault(); /// Not needed for BDT skim
+  //SetupIDMVAReaderDefault(); /// Not needed for BDT skim
   
-  if(HasFlag("RunEE")) SetupEventMVAReader(true,false,false); 
-  else SetupEventMVAReader(false,true,true);
+  //if(HasFlag("RunEE")) SetupEventMVAReader(true,false,false); 
+  //else SetupEventMVAReader(false,true,true);
 
   RunHighPt= HasFlag("RunHighPt");
   RunEE = HasFlag("RunEE");
@@ -410,6 +410,7 @@ void HNL_SignalLeptonOpt::executeEvent(){
 
     Event ev = GetEvent();
     ev.SetMVA("EE",100, EvaluateEventMVA("100", "300","850", MuMu,  leps_veto,ev, GetvMET("PuppiT1xyCorr",param_signal) ,param_signal));
+    //    ev.SetMVA("EE",400, EvaluateEventMVA("400", "300","850", MuMu,  leps_veto,ev, GetvMET("PuppiT1xyCorr",param_signal) ,param_signal));
 
 
     //cout << "ElectronsIDs size = " << ElectronsIDs.size() << endl;
@@ -460,12 +461,7 @@ void HNL_SignalLeptonOpt::executeEvent(){
 
     /// TEMP                                                                                                                               
     if(HasFlag("HighPt") && MuonCollV[1].Pt() <60) return;
-  
-
-    vector<TString> ID;
-    vector<TString> mvaHF;
-    vector<TString> mvaLF;
-
+    
     if(HasFlag("MuID_NP")){
 
       if(HasFlag("FullPt")){
@@ -474,37 +470,75 @@ void HNL_SignalLeptonOpt::executeEvent(){
 	
 	if(HasFlag("BB")){
 
+	  vector<TString> mvaLF;
 	  vector<TString> mvaHF;
+
           for(unsigned int imva=0 ; imva < 20 ; imva++){
             double mva_d= -1. + double(imva)*0.1;
             TString mvaTS= DoubleToString(mva_d);
             mvaHF.push_back("MVAHFBB"+mvaTS+"_");
             mvaLF.push_back("MVALFBB"+mvaTS+"_");
           }
+	  
+	  vector<TString> mvaLF2;
+          vector<TString> mvaHF2;
+
+          for(unsigned int imva=0 ; imva < 5 ; imva++){
+            double mva_d= -1. + double(imva)*0.4;
+            TString mvaTS= DoubleToString(mva_d);
+            mvaHF2.push_back("MVAHFBB"+mvaTS+"_");
+            mvaLF2.push_back("MVALFBB"+mvaTS+"_");
+          }
+
 	  for(auto i1 : mvaHF){
 	    MuonsIDs.push_back("HNLUL_POGECT_ISOEC0p15_"+i1+"DXYv1");
+	  }
+	  for(auto i1 : mvaLF){
+            MuonsIDs.push_back("HNLUL_POGECT_ISOEC0p15_"+i1+"DXYv1");
+          }
+
+	  for(auto i1 : mvaHF2){
 	    for(auto i2 : mvaLF){
-              MuonsIDs.push_back("HNLUL_POGECT_ISOEC0p15_"+i1+i2+"_NPMMv1_DXYv1");
-              MuonsIDs.push_back("HNLUL_POGECT_ISOEC0p15_"+i1+i2+"_NPMMv2_DXYv1");
-              MuonsIDs.push_back("HNLUL_POGECT_ISOEC0p15_"+i1+i2+"_NPMMv3_DXYv1");
+              MuonsIDs.push_back("HNLUL_POGECT_ISOEC0p15_"+i1+i2+"NPMMv1_DXYv1");
+              MuonsIDs.push_back("HNLUL_POGECT_ISOEC0p15_"+i1+i2+"NPMMv2_DXYv1");
+              MuonsIDs.push_back("HNLUL_POGECT_ISOEC0p15_"+i1+i2+"NPMMv3_DXYv1");
             }
           }
 	}
 	if(HasFlag("EC")){
 	  
+          vector<TString> mvaLF;
           vector<TString> mvaHF;
           for(unsigned int imva=0 ; imva < 20 ; imva++){
             double mva_d= -1. + double(imva)*0.1;
             TString mvaTS= DoubleToString(mva_d);
-            mvaHF.push_back("MVAHFBB"+mvaTS+"_");
-            mvaLF.push_back("MVALFBB"+mvaTS+"_");
+            mvaHF.push_back("MVAHFEC"+mvaTS+"_");
+            mvaLF.push_back("MVALFEC"+mvaTS+"_");
           }
-          for(auto i1 : mvaHF){
-	    MuonsIDs.push_back("HNLUL_POGBT_ISOB0p15_"+i1+"DXYv1");
+	  
+	  vector<TString> mvaLF2;
+          vector<TString> mvaHF2;
+
+          for(unsigned int imva=0 ; imva < 5 ; imva++){
+            double mva_d= -1. + double(imva)*0.4;
+            TString mvaTS= DoubleToString(mva_d);
+            mvaHF2.push_back("MVAHFEC"+mvaTS+"_");
+            mvaLF2.push_back("MVALFEC"+mvaTS+"_");
+          }
+
+
+	  for(auto i1 : mvaHF){
+            MuonsIDs.push_back("HNLUL_POGBT_ISOEC0p15_"+i1+"DXYv1");
+          }
+          for(auto i1 : mvaLF){
+            MuonsIDs.push_back("HNLUL_POGBT_ISOEC0p15_"+i1+"DXYv1");
+          }
+
+          for(auto i1 : mvaHF2){
             for(auto i2 : mvaLF){
-	      MuonsIDs.push_back("HNLUL_POGBT_ISOB0p15_"+i1+i2+"_NPMMv1_DXYv1");
-	      MuonsIDs.push_back("HNLUL_POGBT_ISOB0p15_"+i1+i2+"_NPMMv2_DXYv1");
-	      MuonsIDs.push_back("HNLUL_POGBT_ISOB0p15_"+i1+i2+"_NPMMv3_DXYv1");
+              MuonsIDs.push_back("HNLUL_POGBT_ISOEC0p15_"+i1+i2+"NPMMv1_DXYv1");
+              MuonsIDs.push_back("HNLUL_POGBT_ISOEC0p15_"+i1+i2+"NPMMv2_DXYv1");
+              MuonsIDs.push_back("HNLUL_POGBT_ISOEC0p15_"+i1+i2+"NPMMv3_DXYv1");
             }
           }
 	}
@@ -656,14 +690,19 @@ void HNL_SignalLeptonOpt::executeEvent(){
       }
     }
 
+    
     /// Caulcate BDT for MM events
     
     std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(MuonCollV,ElectronCollV,param_signal);
     
     Event ev = GetEvent();
     ev.SetMVA("MuMu",100, EvaluateEventMVA("100", "300","850", MuMu,  leps_veto,ev, GetvMET("PuppiT1xyCorr",param_signal),param_signal));
+    //ev.SetMVA("MuMu",400, EvaluateEventMVA("400", "300","850", MuMu,  leps_veto,ev, GetvMET("PuppiT1xyCorr",param_signal),param_signal));
+    
+    //cout << "Number of MuonsIDs = " << MuonsIDs.size() << endl;
     
     for(auto id : MuonsIDs){
+
       if(id.Contains("HNLUL")){
         param_signal.Name = param_signal.DefName  + "_MuOpt_"+ id;
         param_signal.SRConfig  = "";
@@ -676,21 +715,16 @@ void HNL_SignalLeptonOpt::executeEvent(){
       else{
         param_signal.Name = param_signal.DefName  + id;
         param_signal.SRConfig  = "";
-
         param_signal.Muon_Tight_ID=id;
         param_signal.Muon_FR_ID = id;
         param_signal.Electron_Tight_ID = "HNTightV2";
         param_signal.Electron_FR_ID = "HNLooseV4";
-
         RunULAnalysis(param_signal,ElectronCollV,MuonCollV,ev);
-
       }
     }
 
   }
-
   
-
   return ;
 }
 
@@ -755,16 +789,16 @@ void HNL_SignalLeptonOpt::RunULAnalysis(AnalyzerParameter param, vector<Electron
   Particle METv = GetvMET("PuppiT1xyCorr",param); // returns MET with systematic correction
 
   std::vector<FatJet> FatjetColl                  = GetHNLAK8Jets("HNL",param);
-  std::vector<Jet> AllJetColl                     = GetHNLJets("NoCut3",param);
+  std::vector<Jet> AllJetColl                     = GetHNLJets("NoCut_Eta3",param);
   std::vector<Jet> JetColl                        = GetHNLJets("Tight",param);
   std::vector<Jet> JetCollLoose                   = GetHNLJets("Loose",param);
   std::vector<Jet> VBF_JetColl                    = GetHNLJets("VBFTight",param);
-  std::vector<Jet> BJetColl                       = GetHNLJets("BJetM_NoLC",param);
-  std::vector<Jet> BJetCollSR1                    = GetHNLJets("BJetT_NoLC",param);
+  std::vector<Jet> BJetColl                       = GetHNLJets("BJetM",param);
+  std::vector<Jet> BJetCollSR1                    = GetHNLJets("BJetT",param);
 
   param.WriteOutVerbose=1; // Does not Fill Cutflow OR Region Plotter                                                                                                                                                                                                                                                      
-  //if(!IsData && FatjetColl.size()==0)  weight = weight*GetBJetSF(param, BJetColl, param_jetsM);
-  //if(!IsData && FatjetColl.size()>0)   weight = weight*GetBJetSF(param, BJetCollSR1, param_jetsT);
+  //if(!IsData && FatjetColl.size()==0)  weight = weight*GetBJetSF(param, JetColl, param_jetsM);
+  //if(!IsData && FatjetColl.size()>0)   weight = weight*GetBJetSF(param, JetColl, param_jetsT);
   
   param.WriteOutVerbose=1; // Does not Fill Cutflow OR Region Plotter  
 

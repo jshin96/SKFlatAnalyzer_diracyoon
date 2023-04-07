@@ -12,10 +12,10 @@ datapath=${SKFlat_WD}/runJobs/SampleLists/DATA/
 skim=' '
 
 # JOB CONFIG                                                                                                                                               
-njobs=5
-nLargejobs=15
+njobs=10
+nLargejobs=25
 njobs_sig=5
-njobs_data=5
+njobs_data=10
 
 nmax=300
 

@@ -2,8 +2,6 @@
 
 void HNL_LeptonCore::initializeAnalyzer(){
 
-
-  
   SglMuon_Channel    =   (IsDATA && (this->DataStream == "SingleMuon"        )); //--> Needed when adding Mu50 + validation                 
   DblEG_Channel      =   (IsDATA && (this->DataStream == DoubleElectronPD()  ));
   DblMuon_Channel    =   (IsDATA && (this->DataStream == DoubleMuonPD()      ));
@@ -23,7 +21,6 @@ void HNL_LeptonCore::initializeAnalyzer(){
 
   /// Other flags                                                                                                                                      
   RunSyst = HasFlag("RunSyst");
-
   HEM1516 = HasFlag("HEM1516");
 
 
@@ -795,26 +792,6 @@ void HNL_LeptonCore::SetupEventMVAReader(bool ee, bool mm, bool emu){
 
 }
 
-
-
-double HNL_LeptonCore::GetHNLMVAMuon(Muon mu ,BkgType bkg){
-  
-  //  if(mu.Pt() < 20&&bkg==BkgType::Fake) return GetBDTScoreMuon(mu, bkg, "BDTG_LowPt");
-  //  return GetBDTScoreMuon(mu, bkg, "BDTG");
-  return -999;
-
-}
-
-double HNL_LeptonCore::GetHNLMVAElectron(Electron el ,BkgType bkg){
-
-  //if(el.Pt() < 20) return GetBDTScoreEl(el, bkg, "BDTG_Bin1");
-  //return GetBDTScoreEl(el, bkg, "BDTG");
-  return -999;
-
-}
-
-
-
 /// Event BDT Variables 
 
 void HNL_LeptonCore::InitializeTreeVars(){
@@ -1052,9 +1029,9 @@ void HNL_LeptonCore::SetupEventBDTVariables(std::vector<Lepton *> LepTColl,
 double HNL_LeptonCore::EvaluateEventMVA(TString mN, TString NCut, TString NTree,HNL_LeptonCore::Channel channel ,
 					std::vector<Lepton *> LepTColl, Event  ev, Particle METv, AnalyzerParameter param){
 
-  std::vector<FatJet> FatjetColl                  = GetHNLAK8Jets("HNL",param);
-  std::vector<Jet> All_JetColl                    = GetHNLJets("NoCut3",param);
-  std::vector<Jet> B_JetColl                      = GetHNLJets("BJetM_NoLC",param);
+  std::vector<FatJet> FatjetColl                  = GetHNLAK8Jets("BDT",param);
+  std::vector<Jet> All_JetColl                    = GetHNLJets("NoCut_Eta3",param);
+  std::vector<Jet> B_JetColl                      = GetHNLJets("BJetM",param);
   std::vector<Jet> JetColl                        = GetHNLJets("Tight",param);
   std::vector<Jet> VBF_JetColl                    = GetHNLJets("VBFTight",param);
   
@@ -2533,9 +2510,12 @@ std::vector<FatJet> HNL_LeptonCore::GetHNLAK8Jets(TString JetType, AnalyzerParam
 
   std::vector<FatJet> AK8_JetColl                  = SelectAK8Jets  (FatjetColl, 200., 5., true,  1., false, -999, false, 0., 20000., ElectronCollV, MuonCollV);
 
+  std::vector<FatJet> AK8_JetCollBDT                  = SelectAK8Jets(FatjetColl  , 200., 2.7, true, 1., false, -999, false, 40., 130., ElectronCollV, MuonCollV);
   std::vector<FatJet> AK8_JetCollHNL                  = SelectAK8Jetsv2(FatjetColl, 200., 2.7, true,  1., true, -999, true, 40., 130.,-999, ElectronCollV, MuonCollV);
 
   if(JetType=="HNL") return AK8_JetCollHNL;
+  if(JetType=="BDT") return AK8_JetCollBDT;
+
 
   return AK8_JetColl;
 }
@@ -2554,12 +2534,12 @@ std::vector<Jet> HNL_LeptonCore::GetHNLJets(TString JetType, AnalyzerParameter p
   // AK8
   std::vector<FatJet> AK8_JetCollLoose             = GetHNLAK8Jets("Loose", param);
 
-  if(JetType=="All")      return AK4_All;
-  if(JetType=="NoCut3")   return AK4_NoCut3;
+  if(JetType=="All")          return AK4_All;
+  if(JetType=="NoCut_Eta3")   return AK4_NoCut3;
 
   if(JetType=="Loose")    return SelectAK4Jets(AK4_Loose,     15., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetCollLoose);
   if(JetType=="Tight")    return SelectAK4Jets(AK4_Loose,     20., 2.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetCollLoose);
-  if(JetType=="VBFTight") return SelectAK4Jets(AK4_Loose,     20., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetCollLoose);
+  if(JetType=="VBFTight") return SelectAK4Jets(AK4_Loose,     30., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetCollLoose);
 
   /// BJET
   std::vector<Jet> BJetCollLoose                   = SelectAK4Jets(AK4_Loose,  20., 2.4, true,  0.4,0.8, "",   ElectronCollV,MuonCollV,  AK8_JetCollLoose);

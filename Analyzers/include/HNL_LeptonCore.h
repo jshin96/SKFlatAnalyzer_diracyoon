@@ -145,8 +145,6 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   double MergeMultiMC(vector<TString> vec, TString Method);
 
-  double GetHNLMVAMuon(Muon mu ,BkgType bkg);
-  double GetHNLMVAElectron(Electron mu ,BkgType bkg);
 
 
   // JETS
