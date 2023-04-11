@@ -2502,29 +2502,22 @@ TString HNL_LeptonCore::QToString(HNL_LeptonCore::ChargeType q){
 
 std::vector<FatJet> HNL_LeptonCore::GetHNLAK8Jets(TString JetType, AnalyzerParameter param){
 
-  std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5);
-  std::vector<Muon>       MuonCollV     = GetMuons    (param.Muon_Veto_ID,     5.,  2.4);
-  
   std::vector<FatJet>   FatjetColl  = GetFatJets(param, "tight", 200., 5.);
   if(JetType=="Loose") return FatjetColl;
 
-  std::vector<FatJet> AK8_JetColl                  = SelectAK8Jets  (FatjetColl, 200., 5., true,  1., false, -999, false, 0., 20000., ElectronCollV, MuonCollV);
+  std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5);
+  std::vector<Muon>       MuonCollV     = GetMuons    (param.Muon_Veto_ID,     5.,  2.4);
 
+  std::vector<FatJet> AK8_JetColl                  = SelectAK8Jets  (FatjetColl, 200., 5., true,  1., false, -999, false, 0., 20000., ElectronCollV, MuonCollV);
   std::vector<FatJet> AK8_JetCollBDT                  = SelectAK8Jets(FatjetColl  , 200., 2.7, true, 1., false, -999, false, 40., 130., ElectronCollV, MuonCollV);
   std::vector<FatJet> AK8_JetCollHNL                  = SelectAK8Jetsv2(FatjetColl, 200., 2.7, true,  1., true, -999, true, 40., 130.,-999, ElectronCollV, MuonCollV);
 
   if(JetType=="HNL") return AK8_JetCollHNL;
   if(JetType=="BDT") return AK8_JetCollBDT;
-
-
   return AK8_JetColl;
 }
 
 std::vector<Jet> HNL_LeptonCore::GetHNLJets(TString JetType, AnalyzerParameter param){
-
-  /// Lepotns for cleaninh 
-  std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5);
-  std::vector<Muon>       MuonCollV     = GetMuons    (param.Muon_Veto_ID,     5.,  2.4);
 
   /// AK4 
   std::vector<Jet> AK4_Loose     = GetJets   ( param, param.Jet_ID, 10., 5.);
@@ -2536,6 +2529,10 @@ std::vector<Jet> HNL_LeptonCore::GetHNLJets(TString JetType, AnalyzerParameter p
 
   if(JetType=="All")          return AK4_All;
   if(JetType=="NoCut_Eta3")   return AK4_NoCut3;
+
+  /// Lepotns for cleaning                                                                                                                                                                                          
+  std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5);
+  std::vector<Muon>       MuonCollV     = GetMuons    (param.Muon_Veto_ID,     5.,  2.4);
 
   if(JetType=="Loose")    return SelectAK4Jets(AK4_Loose,     15., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetCollLoose);
   if(JetType=="Tight")    return SelectAK4Jets(AK4_Loose,     20., 2.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetCollLoose);
@@ -4470,15 +4467,15 @@ void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::SearchRegion sr, double ev
   
   if(verbose_level >= 0){
     if(sr==MuonSR){
-      labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1", "SR2_bin2", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8"};
+      labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1", "SR2_bin2", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8","SR3_bin9","SR3_bin10","SR3_bin11","SR3_bin12","SR3_bin13","SR3_bin14","SR3_bin15","SR3_bin16"};
       EVhitname ="MuonSR";
     }
     if(sr==ElectronSR){
-      labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1","SR2_bin2", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8"};
+      labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1","SR2_bin2", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8","SR3_bin9","SR3_bin10","SR3_bin11","SR3_bin12","SR3_bin13","SR3_bin14","SR3_bin15","SR3_bin16"};
       EVhitname ="ElectronSR";
     }
     if(sr==ElectronMuonSR){
-      labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1","SR2_bin2", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8"};
+      labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1","SR2_bin2", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8","SR3_bin9","SR3_bin10","SR3_bin11","SR3_bin12","SR3_bin13","SR3_bin14","SR3_bin15","SR3_bin16"};
       EVhitname ="ElectronMuonSR";
     }
     
@@ -4498,15 +4495,15 @@ void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::SearchRegion sr, double ev
     }
 
     if(sr==MuonSRBDT){
-      labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1", "SR2_bin2",  "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8"};
+      labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1", "SR2_bin2",  "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8","SR3_bin9"};
       EVhitname ="MuonSR";
     }
     if(sr==ElectronSRBDT){
-      labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1","SR2_bin2",  "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8"};
+      labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1","SR2_bin2",  "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8","SR3_bin9"};
       EVhitname ="ElectronSR";
     }
     if(sr==ElectronMuonSRBDT){
-      labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1","SR2_bin2",  "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8"};
+      labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1","SR2_bin2",  "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8","SR3_bin9"};
       EVhitname ="ElectronMuonSR";
     }
 

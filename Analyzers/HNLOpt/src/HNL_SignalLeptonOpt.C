@@ -8,8 +8,8 @@ void HNL_SignalLeptonOpt::initializeAnalyzer(){
   
   //SetupIDMVAReaderDefault(); /// Not needed for BDT skim
   
-  //if(HasFlag("RunEE")) SetupEventMVAReader(true,false,false); 
-  //else SetupEventMVAReader(false,true,true);
+  if(HasFlag("RunEE")) SetupEventMVAReader(true,false,false); 
+  else SetupEventMVAReader(false,true,false);
 
   RunHighPt= HasFlag("RunHighPt");
   RunEE = HasFlag("RunEE");
@@ -30,10 +30,25 @@ void HNL_SignalLeptonOpt::executeEvent(){
 
   std::vector<Electron>   ElectronCollV = GetElectrons(param_signal.Electron_Veto_ID, 10., 2.5);
   std::vector<Muon>       MuonCollV     = GetMuons    (param_signal.Muon_Veto_ID, 5., 2.4);
+  std::vector<Lepton *>   LepsVeto     = MakeLeptonPointerVector(MuonCollV,ElectronCollV,param_signal);
+  std::vector<Tau>        TauColl       = GetTaus     (LepsVeto,param_signal.Tau_Veto_ID,20., 2.3);
+
   if(opt_IDEl){
 
     if(!SameCharge(ElectronCollV)) return;
     if(MuonCollV.size() > 0) return;
+
+
+    
+    std::vector<FatJet> FatjetColl                  = GetHNLAK8Jets("HNL",param_signal);
+    std::vector<Jet> AllJetColl                     = GetHNLJets("NoCut_Eta3",param_signal);
+    std::vector<Jet> JetColl                        = GetHNLJets("Tight",param_signal);
+    std::vector<Jet> JetCollLoose                   = GetHNLJets("Loose",param_signal);
+    std::vector<Jet> VBF_JetColl                    = GetHNLJets("VBFTight",param_signal);
+    std::vector<Jet> BJetColl                       = GetHNLJets("BJetM",param_signal);
+    std::vector<Jet> BJetCollSR1                    = GetHNLJets("BJetT",param_signal);
+
+
 
     if(HasFlag("HighPt") && ElectronCollV[1].Pt() <20) return;
 
@@ -406,11 +421,11 @@ void HNL_SignalLeptonOpt::executeEvent(){
     ElectronsIDs.push_back("HNTight2016Update");
     ElectronsIDs.push_back("HNTight_ULInProgress");
 
-    std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(MuonCollV,ElectronCollV,param_signal);
+
 
     Event ev = GetEvent();
-    ev.SetMVA("EE",100, EvaluateEventMVA("100", "300","850", MuMu,  leps_veto,ev, GetvMET("PuppiT1xyCorr",param_signal) ,param_signal));
-    //    ev.SetMVA("EE",400, EvaluateEventMVA("400", "300","850", MuMu,  leps_veto,ev, GetvMET("PuppiT1xyCorr",param_signal) ,param_signal));
+    ev.SetMVA("EE",100, EvaluateEventMVA("100", "300","850", MuMu,  LepsVeto,ev, GetvMET("PuppiT1xyCorr",param_signal) ,param_signal));
+    //ev.SetMVA("EE",400, EvaluateEventMVA("400", "300","850", MuMu,  LepsVeto,ev, GetvMET("PuppiT1xyCorr",param_signal) ,param_signal));
 
 
     //cout << "ElectronsIDs size = " << ElectronsIDs.size() << endl;
@@ -438,8 +453,7 @@ void HNL_SignalLeptonOpt::executeEvent(){
       param_signal.Muon_FR_ID = "HNLooseV1";
 
 
-
-      RunULAnalysis(param_signal,ElectronCollV,MuonCollV,ev);
+      RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetColl,BJetColl,BJetCollSR1,ev);
       
       param_signal.Name = param_signal.DefName;
       param_signal.SRConfig  = "";
@@ -456,8 +470,21 @@ void HNL_SignalLeptonOpt::executeEvent(){
     
     vector<TString> MuonsIDs;
 
+    FillHist( "TESTHIST/"+param_signal.Name+"/NEvents",  1,  1, 10, 0,10 );
+
     if(!SameCharge(MuonCollV)) return;
     if(ElectronCollV.size() > 0) return;
+
+
+    std::vector<FatJet> FatjetColl                  = GetHNLAK8Jets("HNL",param_signal);
+    std::vector<Jet> AllJetColl                     = GetHNLJets("NoCut_Eta3",param_signal);
+    std::vector<Jet> JetColl                        = GetHNLJets("Tight",param_signal);
+    std::vector<Jet> JetCollLoose                   = GetHNLJets("Loose",param_signal);
+    std::vector<Jet> VBF_JetColl                    = GetHNLJets("VBFTight",param_signal);
+    std::vector<Jet> BJetColl                       = GetHNLJets("BJetM",param_signal);
+    std::vector<Jet> BJetCollSR1                    = GetHNLJets("BJetT",param_signal);
+    
+    FillHist( "TESTHIST/"+param_signal.Name+"/NEvents",  2,  1, 10, 0,10 );
 
     /// TEMP                                                                                                                               
     if(HasFlag("HighPt") && MuonCollV[1].Pt() <60) return;
@@ -465,6 +492,9 @@ void HNL_SignalLeptonOpt::executeEvent(){
     if(HasFlag("MuID_NP")){
 
       if(HasFlag("FullPt")){
+
+
+	FillHist( "TESTHIST/"+param_signal.Name+"/NEvents", 3, 1, 10, 0,10 );
 
 	MuonsIDs.push_back("HNLUL_POGBT_ISOB0p15_POGECT_ISOEC0p15_DXYv1");
 	
@@ -693,11 +723,10 @@ void HNL_SignalLeptonOpt::executeEvent(){
     
     /// Caulcate BDT for MM events
     
-    std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(MuonCollV,ElectronCollV,param_signal);
     
     Event ev = GetEvent();
-    ev.SetMVA("MuMu",100, EvaluateEventMVA("100", "300","850", MuMu,  leps_veto,ev, GetvMET("PuppiT1xyCorr",param_signal),param_signal));
-    //ev.SetMVA("MuMu",400, EvaluateEventMVA("400", "300","850", MuMu,  leps_veto,ev, GetvMET("PuppiT1xyCorr",param_signal),param_signal));
+    ev.SetMVA("MuMu",100, EvaluateEventMVA("100", "300","850", MuMu,  LepsVeto,ev, GetvMET("PuppiT1xyCorr",param_signal),param_signal));
+    //    ev.SetMVA("MuMu",400, EvaluateEventMVA("400", "300","850", MuMu,  LepsVeto,ev, GetvMET("PuppiT1xyCorr",param_signal),param_signal));
     
     //cout << "Number of MuonsIDs = " << MuonsIDs.size() << endl;
     
@@ -710,7 +739,7 @@ void HNL_SignalLeptonOpt::executeEvent(){
         param_signal.Muon_FR_ID = "MuOptLoose_"+id;
         param_signal.Electron_Tight_ID = "HNTightV2";
         param_signal.Electron_FR_ID = "HNLooseV4";
-        RunULAnalysis(param_signal,ElectronCollV,MuonCollV,ev);
+	RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetColl,BJetColl,BJetCollSR1,ev);
       }
       else{
         param_signal.Name = param_signal.DefName  + id;
@@ -719,7 +748,7 @@ void HNL_SignalLeptonOpt::executeEvent(){
         param_signal.Muon_FR_ID = id;
         param_signal.Electron_Tight_ID = "HNTightV2";
         param_signal.Electron_FR_ID = "HNLooseV4";
-        RunULAnalysis(param_signal,ElectronCollV,MuonCollV,ev);
+	RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetColl,BJetColl,BJetCollSR1,ev);
       }
     }
 
@@ -728,7 +757,7 @@ void HNL_SignalLeptonOpt::executeEvent(){
   return ;
 }
 
-void HNL_SignalLeptonOpt::RunULAnalysis(AnalyzerParameter param, vector<Electron> ElectronCollV, vector<Muon> MuonCollV, Event ev){
+void HNL_SignalLeptonOpt::RunULAnalysis(AnalyzerParameter param, vector<Electron> ElectronCollV, vector<Muon> MuonCollV, std::vector<Tau> TauColl,  std::vector<Jet> AllJetColl ,  std::vector<Jet> JetCollLoose,std::vector<Jet> JetColl, std::vector<Jet> VBF_JetColl,std::vector<FatJet>  AK8_JetColl,std::vector<Jet> B_JetColl,std::vector<Jet> B_JetCollSR1, Event ev){
 
   if(run_Debug) cout << "HNL_SignalLeptonOpt::executeEvent " << endl;
 
@@ -779,32 +808,9 @@ void HNL_SignalLeptonOpt::RunULAnalysis(AnalyzerParameter param, vector<Electron
   std::vector<Muon>       MuonCollT     = GetLepCollByRunType    ( MuonCollTInit,gens,param);
   std::vector<Electron>   ElectronCollT  =  GetLepCollByRunType   ( ElectronCollTInit,gens,param);
   
-  
-  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(MuonCollV,ElectronCollV);
-
-  std::vector<Tau>        TauColl        = GetTaus     (leps_veto,param.Tau_Veto_ID,20., 2.3);
-
-  // Creat Lepton vector to have lepton blind codes 
-
-  Particle METv = GetvMET("PuppiT1xyCorr",param); // returns MET with systematic correction
-
-  std::vector<FatJet> FatjetColl                  = GetHNLAK8Jets("HNL",param);
-  std::vector<Jet> AllJetColl                     = GetHNLJets("NoCut_Eta3",param);
-  std::vector<Jet> JetColl                        = GetHNLJets("Tight",param);
-  std::vector<Jet> JetCollLoose                   = GetHNLJets("Loose",param);
-  std::vector<Jet> VBF_JetColl                    = GetHNLJets("VBFTight",param);
-  std::vector<Jet> BJetColl                       = GetHNLJets("BJetM",param);
-  std::vector<Jet> BJetCollSR1                    = GetHNLJets("BJetT",param);
-
-  param.WriteOutVerbose=1; // Does not Fill Cutflow OR Region Plotter                                                                                                                                                                                                                                                      
-  //if(!IsData && FatjetColl.size()==0)  weight = weight*GetBJetSF(param, JetColl, param_jetsM);
-  //if(!IsData && FatjetColl.size()>0)   weight = weight*GetBJetSF(param, JetColl, param_jetsT);
-  
-  param.WriteOutVerbose=1; // Does not Fill Cutflow OR Region Plotter  
-
-
-  RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, AllJetColl,JetCollLoose, JetColl, VBF_JetColl,FatjetColl , BJetColl,BJetCollSR1, ev,METv, param,weight);
-
+  Particle METv = GetvMET("PuppiT1xyCorr",param); // returns MET with systematic correction                                                                                                                      
+   
+  RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, AllJetColl,JetCollLoose, JetColl, VBF_JetColl,AK8_JetColl , B_JetColl,B_JetCollSR1, ev,METv, param,weight);
 
   return;
   

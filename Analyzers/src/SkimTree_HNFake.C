@@ -213,7 +213,6 @@ void SkimTree_HNFake::executeEvent(){
   Event ev;
   ev.SetTrigger(*HLT_TriggerName);
 
-
   if(!(ev.PassTrigger(triggers))) return;
 
   ResetLeptonBDTSKFlat();
