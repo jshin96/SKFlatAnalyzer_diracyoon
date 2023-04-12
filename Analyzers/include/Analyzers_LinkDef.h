@@ -31,5 +31,6 @@
 #pragma link C++ class SkimTree_CFEventSkim+;
 #pragma link C++ class SkimTree_ConvEventSkim+;
 #pragma link C++ class SkimTree_FakeEventSkim+;
+#pragma link C++ class SkimTree_FakeEventSkimBDT+;
 
 #endif
