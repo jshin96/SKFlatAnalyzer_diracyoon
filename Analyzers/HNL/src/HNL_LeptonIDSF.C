@@ -20,10 +20,10 @@ void HNL_LeptonIDSF::executeEvent(){
   
   if(!IsData)  gens = GetGens();
   AnalyzerParameter param =  HNL_LeptonCore::InitialiseHNLParameter("MVAUL","");
-  //MeasureElectronIDSF(param);
-  //MeasureMuonIDSF(param);
-  PlotBDTVariablesElectron(param);
-  PlotBDTVariablesMuon(param);
+  MeasureElectronIDSF(param);
+  MeasureMuonIDSF(param);
+  //PlotBDTVariablesElectron(param);
+  //PlotBDTVariablesMuon(param);
   return ;
 }
 
@@ -112,7 +112,7 @@ void HNL_LeptonIDSF::MeasureMuonIDSF(AnalyzerParameter param){
 
   if(MuonCollProbe.size() != 2) return;
   if(fabs(GetLLMass(MuonCollProbe)- 90.1) > 10) return;
-  //if(SameCharge(MuonCollProbe)) return;
+  if(SameCharge(MuonCollProbe)) return;
 
   /// Obj cuts   
 
@@ -141,15 +141,14 @@ void HNL_LeptonIDSF::MeasureMuonIDSF(AnalyzerParameter param){
     "HNTightV2"
   };
 
-  if(MuonCollProbe[1].Pt() < 20) {
-    if(MT(MuonCollProbe[1], METv) > 30) return;
-  }
+  if(METv.Pt() > 40) return;
+
+  //  if(MuonCollProbe[1].Pt() < 20) {
+  //  if(MT(MuonCollProbe[1], METv) > 30) return;
+  // }
   
-  for(auto id : IDs) {
-    MeasureIDSF(param,dilep_channel, MuonCollProbe, id, weight);
-  }
+  for(auto id : IDs) MeasureIDSF(param,dilep_channel, MuonCollProbe, id, weight);
   
- 
   return;
 }
 
@@ -242,42 +241,38 @@ void HNL_LeptonIDSF::MeasureElectronIDSF(AnalyzerParameter param){
   std::vector<Lepton *> LeptonColl      = MakeLeptonPointerVector(MuonCollProbe,ProbeEl);
   if(!PassTriggerSelection(dilep_channel, ev, LeptonColl,"Dilep")) return;
   if(!CheckLeptonFlavourForChannel(dilep_channel, LeptonColl)) return; // Check if EE cahnnel has 2 el...                                                                                                         
-
-  vector<TString> IDs = {
-    "HNL_ULID_CFT_ED_BDTGv2",
-    "HNL_ULID_CFM_ED_BDTGv2",
-    "HNL_ULID_CFL_ED_BDTGv2",
-    "HNL_ULID_CFT_ED_BDTGv2p1",
-    "HNL_ULID_CFM_ED_BDTGv2p1",
-    "HNL_ULID_CFL_ED_BDTGv2p1",
-    "HNL_ULID_CFT_ED_BDTGv2p2",
-    "HNL_ULID_CFM_ED_BDTGv2p2",
-    "HNL_ULID_CFL_ED_BDTGv2p2",
-    "HNL_ULID_CFT_BDTGv1",
-    "HNL_ULID_CFM_BDTGv1",
-    "HNL_ULID_CFL_BDTGv1",
-    "HNL_ULID_CFT_BDTGv2",
-    "HNL_ULID_CFM_BDTGv2",
-    "HNL_ULID_CFL_BDTGv2",
-    "HNL_ULID_CFT_BDTGv2p1",
-    "HNL_ULID_CFM_BDTGv2p1",
-    "HNL_ULID_CFL_BDTGv2p1",
-    "HNL_ULID_CFT_BDTGv2p2",
-    "HNL_ULID_CFM_BDTGv2p2",
-    "HNL_ULID_CFL_BDTGv2p2",
-    "HNL_ULID_FAKET_BDTG",
-    "HNL_ULID_FAKEM_BDTG",
-    "HNL_ULID_FAKEL_BDTG",
-    "HNL_ULID_FAKEVL_BDTG",
-    "HNTightV2",
-    "passProbeIDTight",
-    "MVALoose"
-
-  };
-
-  if(ProbeEl[1].Pt() < 20) {
-    if(MT(ProbeEl[1], METv) > 30) return;
+  vector<TString> IDWP = {"VT","T","M","L","VL"}; 
+  
+  vector<TString> IDs;
+  for(auto i : IDWP){
+    IDs.push_back("HNL_ULIDs_CF"+i+"_ED_BDTGv2");
+    IDs.push_back("HNL_ULIDs_CF"+i+"_ED_BDTGv2p1");
+    IDs.push_back("HNL_ULIDs_CF"+i+"_ED_BDTGv2p2");
+    IDs.push_back("HNL_ULIDs_CF"+i+"_BDTGv1");
+    IDs.push_back("HNL_ULIDs_CF"+i+"_BDTGv2");
+    IDs.push_back("HNL_ULIDs_CF"+i+"_BDTGv2p1");
+    IDs.push_back("HNL_ULIDs_CF"+i+"_BDTGv2p2");
+    IDs.push_back("HNL_ULIDs_FAKE"+i+"_BDTG_LF");
+    IDs.push_back("HNL_ULIDs_FAKE"+i+"_BDTG_HF");
+    IDs.push_back("HNL_ULIDs_FAKE"+i+"_BDTG_HFC");
+    IDs.push_back("HNL_ULIDs_FAKE"+i+"_BDTG_HFB");
+    IDs.push_back("HNL_ULIDs_FAKE"+i+"_BDTG_Top");
+    IDs.push_back("HNL_ULIDs_FAKE"+i+"_BDTG");
   }
+
+  IDs.push_back("HNL_ULIDs_CONVT_BDTG");
+  IDs.push_back("HNL_ULIDs_CONVM_BDTG");
+  IDs.push_back("HNL_ULIDs_CONVL_BDTG");
+   
+  IDs.push_back("HNTightV2");
+  IDs.push_back("passProbeIDTight");
+  IDs.push_back("MVALoose");
+
+  if(METv.Pt() > 40) return;
+
+  //  if(ProbeEl[1].Pt() < 20) {
+  //  if(MT(ProbeEl[1], METv) > 30) return;
+  // }
 
   for(auto id : IDs)    MeasureIDSF(param ,dilep_channel, ProbeEl, id, weight);
   

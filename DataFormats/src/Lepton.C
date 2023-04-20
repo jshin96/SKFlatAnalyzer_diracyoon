@@ -141,6 +141,7 @@ bool Lepton::PassULMVA(double mva, double cut, TString s_mva) const {
     exit(ENODATA);
   }
 
+  //cout << "PassULMVA " << s_mva << " " << mva << " " << cut << endl;
   if ( mva < cut)  return false;
   return true;
 }
