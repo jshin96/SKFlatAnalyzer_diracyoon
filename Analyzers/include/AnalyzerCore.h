@@ -379,7 +379,6 @@ public:
   void PrintEvent(AnalyzerParameter param,TString selection,double w);
   void FillEventComparisonFile(AnalyzerParameter param, TString label,string time, double w);
 
-
   //==== GenMatching
 
   vector<TString> GetGenList();
@@ -421,6 +420,13 @@ public:
   double GetJECUncertainty(TString source, TString JetType,  double eta, double pt, int sys);
   void  SetupJECUncertainty(TString source , TString JetType="AK4PFchs");
 
+  // ==== TIMING MAP
+
+  std::map< TString, double > TimingMap;
+  std::map< TString, double > TimerMap;
+  std::map< TString, TString> TimeTagMatcher;
+  void AddTimerStamp(TString tag);
+  void FillTimer(TString tag);
   //==== Plotting
 
   std::map< TString, TH1D* > maphist_TH1D;

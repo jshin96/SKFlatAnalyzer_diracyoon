@@ -18,12 +18,22 @@ AnalyzerCore::AnalyzerCore(){
   JECSources = {"AbsoluteStat","AbsoluteScale","AbsoluteFlavMap","AbsoluteMPFBias","Fragmentation","SinglePionECAL","SinglePionHCAL","FlavorQCD","TimePtEta","RelativeJEREC1","RelativeJEREC2","RelativeJERHF","RelativePtBB","RelativePtEC1","RelativePtEC2","RelativePtHF","RelativeBal","RelativeSample","RelativeFSR","RelativeStatFSR","RelativeStatEC","RelativeStatHF","PileUpDataMC","PileUpPtRef","PileUpPtBB","PileUpPtEC1","PileUpPtEC2","PileUpPtHF","FlavorZJet","FlavorPhotonJet","FlavorPureGluon","FlavorPureQuark","FlavorPureCharm","FlavorPureBottom","Total"};
 
   iSetupLeptonBDT=false;
+  TimeTagMatcher.clear();
+  TimerMap.clear();
+  TimerMap["LATEST"] = std::clock();
+  TimingMap.clear();
+  TimingMap["start"] = std::clock();
+
+  //  double time_elapsed_ms = 1000.0 * (c_end-c_start) / CLOCKS_PER_SEC;
+  //std::cout << "CPU time used: " << time_elapsed_ms / 1000.0 << " s\n";
+
     
 }
 
 AnalyzerCore::~AnalyzerCore(){
 
   //=== hist maps
+  
 
   for(std::map< TString, TH1D* >::iterator mapit = maphist_TH1D.begin(); mapit!=maphist_TH1D.end(); mapit++){
     delete mapit->second;
@@ -78,8 +88,55 @@ AnalyzerCore::~AnalyzerCore(){
     
     delete MuonIDFakeMVAReader;
   }
-    
+  
 }
+
+void  AnalyzerCore::FillTimer(TString inittag){
+  
+  TString tag = "";
+  if (TimeTagMatcher.find(inittag) == TimeTagMatcher.end()) {
+    tag = TString(std::to_string(TimeTagMatcher.size())) +"_"+inittag;
+    TimeTagMatcher[inittag] = tag;
+  }
+  else{
+    auto itr = TimeTagMatcher.find(inittag);
+    tag = itr->second;
+  }
+
+  if (TimerMap.find(tag) == TimerMap.end()) {
+    auto itr = TimerMap.find("LATEST");
+    double last_time = itr->second;
+    TimerMap[tag] = (std::clock() - last_time)/ CLOCKS_PER_SEC;
+  }
+  else{
+    auto itr = TimerMap.find("LATEST");
+    auto itr2= TimerMap.find(tag);
+    TimerMap[tag]= itr2->second + ( (std::clock() - itr->second)/ CLOCKS_PER_SEC);
+  }
+  TimerMap["LATEST"] =std::clock() ;
+  
+  if(_jentry==0) return;
+
+  if(_jentry%10000==0){
+    vector<TString> TimerLabels;
+    for(auto i: TimeTagMatcher) TimerLabels.push_back(i.first);
+    for(auto i : TimerMap) {
+      if(i.first != "LATEST")    cout << i.first << " processing time = " << i.second << endl;
+    }
+  }
+
+  return;
+}
+
+void  AnalyzerCore::AddTimerStamp(TString tag){
+  
+  if (TimingMap.find(tag) == TimingMap.end()) TimingMap[tag] = std::clock();
+  
+  return;
+
+}
+
+
 
 bool AnalyzerCore::AnalyserRunsFullBkg(){
 
@@ -6414,6 +6471,42 @@ void AnalyzerCore::WriteHist(){
 
   }
 
+
+  //=== hist maps                                                                                                                                                                                                                                                             
+  if(TimingMap.size() > 0){
+    auto itr = TimingMap.find("start");
+    double start_time = itr->second;
+
+    for(auto i : TimingMap) {
+      cout << i.first << " processing time = " << (i.second- start_time) / CLOCKS_PER_SEC << endl;
+    }
+  }
+
+
+  if(TimerMap.size() > 0){
+    vector<TString> TimerLabels;
+    for(auto i: TimeTagMatcher) TimerLabels.push_back(i.second);
+    sort(TimerLabels.begin(), TimerLabels.end());
+
+    TH1* timer_hist = new TH1D("TimeHist", "", TimerLabels.size(), 0, TimerLabels.size());
+    for (unsigned int i=0 ; i < TimerLabels.size(); i++) timer_hist->GetXaxis()->SetBinLabel(i+1,TimerLabels[i]);
+    timer_hist->SetDirectory(NULL);
+    for(auto i : TimerMap) {
+      if(i.first != "LATEST"){
+        cout << i.first << " processing time = " << i.second << endl;
+	timer_hist->Fill(i.first, i.second);
+      }
+    }
+
+    TDirectory *dir = outfile->GetDirectory("Timer");
+    if(!dir)  outfile->mkdir("Timer");
+    outfile->cd("Timer");
+    
+    timer_hist->Write();
+    outfile->cd();
+    delete timer_hist;
+  }
+  
 }
 
 

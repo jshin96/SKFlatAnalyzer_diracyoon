@@ -19,8 +19,10 @@ void HNL_SignalStudies::initializeAnalyzer(){
 
 void HNL_SignalStudies::executeEvent(){
 
+  AddTimerStamp("start_ev");
   
- 
+  FillTimer("START_EV");
+
   //==== Gen for genmatching
   AnalyzerParameter param  = InitialiseHNLParameter("SignalStudy","UL");
   Event ev = GetEvent();
@@ -50,7 +52,8 @@ void HNL_SignalStudies::executeEvent(){
   }
   if(process.Contains("OS")) return;
 
-  
+  FillTimer("SS_EV");
+
   vector<HNL_LeptonCore::Channel> channels = {EE,MuMu};
 
   for(auto dilep_channel : channels){
@@ -61,6 +64,9 @@ void HNL_SignalStudies::executeEvent(){
 
     TString channel = GetChannelString(dilep_channel) ;
 
+    FillTimer("START_RUN_"+channel);
+
+    
     //double ptbins[11] = { 0., 10.,15., 20., 30., 40.,50., 100.,500. ,1000., 2000.};
 
     std::vector<Jet>      jetsTmp     = GetJets   ( "NoID",    10., 5.);
@@ -116,6 +122,11 @@ void HNL_SignalStudies::executeEvent(){
       */
     }
 
+    AddTimerStamp("end_ev");
+
+    FillTimer("END_RUN_"+channel);
+
+    continue;
     return;
 
     if(SameCharge(leps_veto))    FillHist ("DiLepton_Veto_"+channel, 1, weight, 2, 0., 2.,"");
