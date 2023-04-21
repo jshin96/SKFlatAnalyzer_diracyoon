@@ -2,7 +2,7 @@ analyzer=SkimTree_HNL_SS_ElMu
 rundir=runSkims
 mcpath=${SKFlat_WD}/SkimScripts/${analyzer}/Signals/
 njobs=20
-nmax=100
+nmax=300
 skim=' '
 declare  -a era_list=("2016preVFP" "2016postVFP" "2017" "2018") 
 
