@@ -112,7 +112,7 @@ void HNL_LeptonIDSF::MeasureMuonIDSF(AnalyzerParameter param){
 
   if(MuonCollProbe.size() != 2) return;
   if(fabs(GetLLMass(MuonCollProbe)- 90.1) > 10) return;
-  if(SameCharge(MuonCollProbe)) return;
+  //if(SameCharge(MuonCollProbe)) return;
 
   /// Obj cuts   
 
@@ -143,9 +143,9 @@ void HNL_LeptonIDSF::MeasureMuonIDSF(AnalyzerParameter param){
 
   if(METv.Pt() > 40) return;
 
-  //  if(MuonCollProbe[1].Pt() < 20) {
-  //  if(MT(MuonCollProbe[1], METv) > 30) return;
-  // }
+  if(MuonCollProbe[1].Pt() < 20) {
+    if(MT(MuonCollProbe[1], METv) > 30) return;
+  }
   
   for(auto id : IDs) MeasureIDSF(param,dilep_channel, MuonCollProbe, id, weight);
   
@@ -270,9 +270,9 @@ void HNL_LeptonIDSF::MeasureElectronIDSF(AnalyzerParameter param){
 
   if(METv.Pt() > 40) return;
 
-  //  if(ProbeEl[1].Pt() < 20) {
-  //  if(MT(ProbeEl[1], METv) > 30) return;
-  // }
+  if(ProbeEl[1].Pt() < 20) {
+    if(MT(ProbeEl[1], METv) > 30) return;
+  }
 
   for(auto id : IDs)    MeasureIDSF(param ,dilep_channel, ProbeEl, id, weight);
   
@@ -291,10 +291,6 @@ void HNL_LeptonIDSF::MeasureIDSF(AnalyzerParameter param,HNL_LeptonCore::Channel
 
   if(SameCharge(MuonColl)) channel_string=channel_string+"_SS";
   else  channel_string=channel_string+"_OS";
-
-  FillHist(channel_string+"/"+ID+"/llmass_"+channel_string, GetLLMass(LeptonColl), weight_ll, 70, 50., 120);
-  FillHist(channel_string+"/"+ID+"/NVTX_"+channel_string, nPileUp, weight_ll, 100, 0., 100);
-  FillHist(channel_string+"/"+ID+"/MET_"+channel_string, GetvMET("PuppiT1xyCorr").Pt(), weight_ll, 100, 0., 100);
 
 
   if(MuonColl[0].PassID("POGTightWithTightIso")) {
@@ -350,6 +346,10 @@ void HNL_LeptonIDSF::MeasureIDSF(AnalyzerParameter param,HNL_LeptonCore::Channel
   
   TString channel_string = GetChannelString(dilep_channel) ;
 
+  std::vector<Lepton *> LeptonColl      = MakeLeptonPointerVector(ElectronColl);
+
+  if(!ZmassOSSFWindowCheck(LeptonColl, 10.)) return;
+
 
   if(!IsData){
     if(!SameCharge(ElectronColl)) {
@@ -357,13 +357,10 @@ void HNL_LeptonIDSF::MeasureIDSF(AnalyzerParameter param,HNL_LeptonCore::Channel
     }
   }
 
-  FillHist(channel_string+"/NVTX_"+channel_string, nPileUp, weight_ll, 100, 0., 100);
-  FillHist(channel_string+"/MET_"+channel_string, GetvMET("PuppiT1xyCorr").Pt(), weight_ll, 100, 0., 100);
-
   if(SameCharge(ElectronColl)) channel_string=channel_string+"_SS";
   else  channel_string=channel_string+"_OS";
   
-  for(unsigned int i=0; i < 2; i++){
+  /*for(unsigned int i=0; i < 2; i++){
     if(ElectronColl[i].PassID("HNTightV2") && ! ElectronColl[i].PassID("MVALoose")) {
       cout << "Pass Tight and not MVALoose" << endl;
       cout << "passMVAID_noiso_WPLoose = " << ElectronColl[i].passMVAID_noiso_WPLoose() << endl;
@@ -378,7 +375,7 @@ void HNL_LeptonIDSF::MeasureIDSF(AnalyzerParameter param,HNL_LeptonCore::Channel
       cout << "passTightID_NoCC() = " << ElectronColl[i].passTightID_NoCC()  << endl;
       cout << "PassHNID() " << ElectronColl[i].PassHNID() << endl;
     }
-  }
+    }*/
 
   if(ElectronColl[0].PassID("passPOGTight")) {
 
@@ -428,9 +425,9 @@ HNL_LeptonIDSF::~HNL_LeptonIDSF(){
 
 void HNL_LeptonIDSF::FilllHistBins(Lepton lep, bool passID,  TString Channel_string,TString _ID, double lep_weight){
   
-  int nbin_pt    =11;
+  int nbin_pt    =10;
   int nbin_eta   =4;
-  double ptbins    [nbin_pt    +1] = { 10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,2000.};
+  double ptbins    [nbin_pt    +1] = { 10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.};
   double etabins   [nbin_eta+1   ] = { 0.,0.8,  1.479, 2.,  2.5};
   
   int lepType = (IsData) ? 1 : GetLeptonType_JH(lep, gens);
@@ -438,18 +435,22 @@ void HNL_LeptonIDSF::FilllHistBins(Lepton lep, bool passID,  TString Channel_str
   if(lepType < 0 ) TypeLable="_NonPrompt";
 
   TString Den_tag=TypeLable+"_denom";
-  
+
+  double PtLep = (lep.Pt() > 200) ? 199 : lep.Pt();
+
   FillHist(Channel_string+"/"+_ID+Den_tag,lep.Pt(), fabs(lep.Eta()),  lep_weight, nbin_pt, ptbins, nbin_eta , etabins);
-  FillHist(Channel_string+"/Pt_"+_ID+Den_tag,lep.Pt(),   lep_weight, 100, 0, 500);
-  FillHist(Channel_string+"/Pt_"+lep.etaRegionString()+"_"+_ID+Den_tag,lep.Pt(),   lep_weight, 100, 0, 500.);
+  FillHist(Channel_string+"/Pt_"+_ID+Den_tag,  PtLep,   lep_weight, 100, 0, 200);
+  FillHist(Channel_string+"/Ptbinned_"+lep.etaRegionString()+"_"+_ID+Den_tag,PtLep,   lep_weight, nbin_pt, ptbins,"");
+  FillHist(Channel_string+"/Pt_"+lep.etaRegionString()+"_"+_ID+Den_tag,PtLep,   lep_weight, 100, 0, 200.);
   FillHist(Channel_string+"/Eta"+_ID+Den_tag,lep.Eta(),   lep_weight, 60., -3, 3.);
   
   if(passID){
     TString Num_tag=TypeLable+"_num";
-    FillHist(Channel_string+"/Pt_"+_ID+Num_tag,lep.Pt(),   lep_weight, 100, 0, 500.);
-    FillHist(Channel_string+"/Pt_"+lep.etaRegionString()+"_"+_ID+Num_tag,lep.Pt(),   lep_weight, 100,0, 500.);
+    FillHist(Channel_string+"/Pt_"+_ID+Num_tag,lep.Pt(),   lep_weight, 100, 0, 200.);
+    FillHist(Channel_string+"/Pt_"+lep.etaRegionString()+"_"+_ID+Num_tag,PtLep,   lep_weight, 100,0, 500.);
+    FillHist(Channel_string+"/Ptbinned_"+lep.etaRegionString()+"_"+_ID+Num_tag,PtLep,   lep_weight, nbin_pt, ptbins,"");
     FillHist(Channel_string+"/Eta"+_ID+Num_tag,lep.Eta(),   lep_weight, 60, -3, 3.);
-    FillHist(Channel_string+"/"+_ID+Num_tag,lep.Pt(), fabs(lep.Eta()),  lep_weight, nbin_pt, ptbins, nbin_eta , etabins);
+    FillHist(Channel_string+"/"+_ID+Num_tag,PtLep, fabs(lep.Eta()),  lep_weight, nbin_pt, ptbins, nbin_eta , etabins);
   }
 
   return;

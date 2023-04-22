@@ -6414,7 +6414,7 @@ void AnalyzerCore::WriteHist(){
       outfile->mkdir(this_suffix);
     }
     outfile->cd(this_suffix);
-    cout << "Writing " << this_name << endl;
+    //cout << "Writing " << this_name << endl;
     mapit->second->Write(this_name);
     outfile->cd();
   }
@@ -6483,7 +6483,7 @@ void AnalyzerCore::WriteHist(){
   }
 
 
-  if(TimerMap.size() > 0){
+  if(TimerMap.size() > 1){
     vector<TString> TimerLabels;
     for(auto i: TimeTagMatcher) TimerLabels.push_back(i.second);
     sort(TimerLabels.begin(), TimerLabels.end());
