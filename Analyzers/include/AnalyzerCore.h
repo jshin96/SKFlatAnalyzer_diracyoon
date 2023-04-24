@@ -582,7 +582,10 @@ public:
   vector<float>* vmuon_cj_bjetdisc;
   vector<float>* vmuon_cj_flavour;
 
-
+  vector<Jet>      All_Jets;
+  vector<FatJet>   All_FatJets;
+  vector<Muon>    All_Muons;
+  vector<Electron> All_Electrons;
 
   string run_timestamp;
 

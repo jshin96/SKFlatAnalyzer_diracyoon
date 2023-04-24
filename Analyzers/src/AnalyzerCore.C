@@ -2521,7 +2521,7 @@ std::vector<Jet> AnalyzerCore::GetAllJets(bool applyCorr){
 
 std::vector<Jet> AnalyzerCore::GetJets(TString ID, double ptmin, double fetamax){
 
-  std::vector<Jet> jets = GetAllJets();
+  std::vector<Jet> jets = All_Jets;
 
   std::vector<Jet> out;
   for(unsigned int i=0; i<jets.size(); i++){
@@ -2555,7 +2555,7 @@ std::vector<Jet> AnalyzerCore::GetJets(AnalyzerParameter param){
 }
 std::vector<Jet> AnalyzerCore::GetJets(AnalyzerParameter param,TString id, double ptmin, double fetamax){
 
-  std::vector<Jet> jets_uncorr = GetAllJets();
+  std::vector<Jet> jets_uncorr = All_Jets;
   std::vector<Jet> jets;
   if(param.syst_ == AnalyzerParameter::JetEnUp)            jets    = ScaleJets( jets_uncorr, +1 );
   else if(param.syst_ == AnalyzerParameter::JetEnDown)     jets    = ScaleJets( jets_uncorr, -1 );
@@ -2638,7 +2638,7 @@ std::vector<FatJet> AnalyzerCore::GetAllFatJets(){
 
 std::vector<FatJet> AnalyzerCore::GetFatJets(TString id, double ptmin, double fetamax){
 
-  std::vector<FatJet> jets = GetAllFatJets();
+  std::vector<FatJet> jets = All_FatJets;
   std::vector<FatJet> out;
   for(unsigned int i=0; i<jets.size(); i++){
     if(!( jets.at(i).Pt()>ptmin )){
@@ -2668,7 +2668,7 @@ std::vector<FatJet> AnalyzerCore::GetFatJets(AnalyzerParameter param){
 }
 std::vector<FatJet> AnalyzerCore::GetFatJets(AnalyzerParameter param,TString id, double ptmin, double fetamax){
 
-  std::vector<FatJet> jets_pc = puppiCorr->Correct(GetAllFatJets());
+  std::vector<FatJet> jets_pc = puppiCorr->Correct(All_FatJets);
   std::vector<FatJet> jets;
   if(param.syst_ == AnalyzerParameter::JetEnUp)            jets    = ScaleFatJets( jets_pc, -1 );
   else if(param.syst_ == AnalyzerParameter::JetEnDown)     jets    = ScaleFatJets( jets_pc, -1 );
@@ -4017,10 +4017,10 @@ double AnalyzerCore::GetCFWeightElectron(vector<Lepton *> lepptrs, AnalyzerParam
 
 void AnalyzerCore::SetupLeptonBDTSKFlat(){
 
-  std::vector<Muon>     AllmuonColl     = GetAllMuons();
-  std::vector<Electron> AllelectronColl = GetAllElectrons();
+  std::vector<Muon>     AllmuonColl     = All_Muons;
+  std::vector<Electron> AllelectronColl = All_Electrons;
 
-  std::vector<Jet>    AK4_JetAllColl = GetAllJets();
+  std::vector<Jet>    AK4_JetAllColl = All_Jets;
 
   for(auto i: AllmuonColl){
     vmuon_mva_fake_v1->push_back(GetBDTScoreMuon(i,AnalyzerCore::Fake,  "BDTGv1"));
@@ -4270,6 +4270,12 @@ void AnalyzerCore::initializeAnalyzerTools(){
     vector<Jet> jets_AbsoluteStatUp = ScaleJetsIndividualSource(jets, 1, "AbsoluteStat");                                                                                                                                                                                     
   */
 
+
+
+  All_Jets      = GetAllJets();
+  All_FatJets   = GetAllFatJets();
+  All_Muons     = GetAllMuons();
+  All_Electrons = GetAllElectrons();
 
 
 }

@@ -189,8 +189,6 @@ void HNL_LeptonCore::initializeAnalyzer(){
     cout << "TrigList_Full_EG  : "<< itrig << endl;
   } 
 
-  
-
 }
 
 void HNL_LeptonCore::OutCutFlow(TString lab, double w){
@@ -2524,11 +2522,13 @@ std::vector<Jet> HNL_LeptonCore::GetHNLJets(TString JetType, AnalyzerParameter p
   std::vector<Jet> AK4_All       = GetJets   ( param, "NoID",      10.,  5.);
   std::vector<Jet> AK4_NoCut3    = GetJets   ( param, "NoID",      10.,  3.);
 
-  // AK8
-  std::vector<FatJet> AK8_JetCollLoose             = GetHNLAK8Jets("Loose", param);
 
   if(JetType=="All")          return AK4_All;
   if(JetType=="NoCut_Eta3")   return AK4_NoCut3;
+
+
+  // AK8
+  std::vector<FatJet> AK8_JetCollLoose             = GetHNLAK8Jets("Loose", param);
 
   /// Lepotns for cleaning                                                                                                                                                                                          
   std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5);
@@ -4783,7 +4783,7 @@ void HNL_LeptonCore::FillAllMuonPlots(TString label , TString cut,  std::vector<
 
 void HNL_LeptonCore::FillLeptonKinematicPlots(TString label , TString cut,  Lepton lep, double w){
 
-  vector<Jet> JetAllColl = GetAllJets();
+  vector<Jet> JetAllColl = All_Jets;
 
   int IdxMatchJet=-1;
   int IdxMatchAwayJet=-1;
