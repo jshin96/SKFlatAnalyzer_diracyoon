@@ -8,11 +8,12 @@ void HNL_SignalRegionPlotter::initializeAnalyzer(){
   
   SetupIDMVAReaderDefault(); /// Not needed for BDT skim
   SetupEventMVAReader();                                                                                                                                                                                                                            
-
 }
 
 
 void HNL_SignalRegionPlotter::executeEvent(){
+
+  FillTimer("START_EV");
   
   if((_jentry==0)){ 
     // Print out trigger info in HNL_LeptonCore::initializeAnalyzer
@@ -38,6 +39,7 @@ void HNL_SignalRegionPlotter::executeEvent(){
     }
   }    
 
+  FillTimer("END_EV");
 
   return ;
 }
@@ -82,8 +84,11 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
   std::vector<Muon>       MuonCollT     = GetLepCollByRunType    ( MuonCollTInit,gens,param);
   std::vector<Electron>   ElectronCollT  =  GetLepCollByRunType   ( ElectronCollTInit,gens,param);
 
-  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(MuonCollV,ElectronCollV);
+  //cout << "Number of MuonCollT = " << MuonCollT.size() << " number of electrons = " << ElectronCollT.size() << endl;
 
+  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(MuonCollV,ElectronCollV);
+  //for(auto i : leps_veto )    cout << i->GetFlavour() << " pt = "<< i->Pt() << " eta = "<< i->Eta() << endl;
+  
   std::vector<Tau>        TauColl        = GetTaus     (leps_veto,param.Tau_Veto_ID,20., 2.3);
 
   // Creat Lepton vector to have lepton blind codes 
@@ -108,7 +113,14 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
   if(!IsData && AK8_JetColl.size()==0)weight = weight*sf_btag;
   if(!IsData && AK8_JetColl.size()>0)weight = weight*sf_btagSR1;
 
-  RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV,  TauColl,JetCollLoose, AK4_JetAllColl, JetColl,VBF_JetColl,AK8_JetColl, BJetColl,BJetCollSR1, ev,METv, param, weight);
+  FillTimer("START_SR");
+
+  RunAllSignalRegions(Inclusive,
+		      ElectronCollT,ElectronCollV,MuonCollT,MuonCollV,  TauColl,
+		      JetCollLoose, AK4_JetAllColl, JetColl,VBF_JetColl,AK8_JetColl, BJetColl,BJetCollSR1, 
+		      ev,METv, param, weight);
+
+  FillTimer("END_SR");
 
 
 }

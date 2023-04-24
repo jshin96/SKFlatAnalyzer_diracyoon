@@ -91,6 +91,7 @@ AnalyzerCore::~AnalyzerCore(){
   
 }
 
+
 void  AnalyzerCore::FillTimer(TString inittag){
   
   TString tag = "";
@@ -461,7 +462,8 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
 
     if(FillCloseJetVar){
       
-      std::vector<Jet>    AK4_JetAllColl = GetAllJets();
+      std::vector<Jet>    AK4_JetAllColl = All_Jets;
+      //std::vector<Jet>    AK4_JetAllColl = GetAllJets();
 
       float  JetDiscCJ = -999;
       int JetHadFlavour = -999;
@@ -507,6 +509,7 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
   return out;
 
 }
+
 
 void AnalyzerCore::InitializeElectronIDTreeVars(){
 
@@ -4232,6 +4235,17 @@ void AnalyzerCore::SetupLeptonBDT(){
   return;
 }
 
+
+void AnalyzerCore::beginEvent(){
+  
+  // fill jets first as they are independant
+  All_Jets      = GetAllJets();
+  All_FatJets   = GetAllFatJets();
+  All_Muons     = GetAllMuons();
+  All_Electrons = GetAllElectrons();
+  
+  return;
+}
 void AnalyzerCore::initializeAnalyzerTools(){
 
   //==== MCCorrection
@@ -4269,13 +4283,6 @@ void AnalyzerCore::initializeAnalyzerTools(){
     std::vector<Jet> AnalyzerCore::ScaleJetsIndividualSource(const std::vector<Jet>& jets, int sys, TString source);                                                                                                                                                          
     vector<Jet> jets_AbsoluteStatUp = ScaleJetsIndividualSource(jets, 1, "AbsoluteStat");                                                                                                                                                                                     
   */
-
-
-
-  All_Jets      = GetAllJets();
-  All_FatJets   = GetAllFatJets();
-  All_Muons     = GetAllMuons();
-  All_Electrons = GetAllElectrons();
 
 
 }

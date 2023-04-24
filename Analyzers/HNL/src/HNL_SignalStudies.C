@@ -35,7 +35,7 @@ void HNL_SignalStudies::executeEvent(){
   TString process="";
   if(!IsData){
     gens = GetGens();
-    
+   
     process = GetProcess();
 
     vector<TString> labels ={"Inclusive","OS_ElEl", "SS_El-El-", "SS_El+El+","OS_MuMu", "SS_Mu-Mu-" , "SS_Mu+Mu+","OS_ElMu","SS_El-Mu-" ,"SS_El+Mu+", "OS_MuEl","SS_Mu-El-","SS_Mu+El+"};
@@ -67,6 +67,7 @@ void HNL_SignalStudies::executeEvent(){
     TString channel = GetChannelString(dilep_channel) ;
 
     FillTimer("START_RUN_"+channel);
+    Particle METv = GetvMET("PuppiT1xyCorr",param); // returns MET with systematic correction                                                                                                    
 
     
     //double ptbins[11] = { 0., 10.,15., 20., 30., 40.,50., 100.,500. ,1000., 2000.};
@@ -76,13 +77,12 @@ void HNL_SignalStudies::executeEvent(){
 
     FillHist ("NoCut_"+channel, 1, weight, 2, 0., 2.,"");
     
-    if(MCSample.Contains("DYType") && MCSample.Contains("private"))  MakeType1SignalPlots(channel, false);
-    if(MCSample.Contains("VBFType") && MCSample.Contains("private"))  MakeType1VBFSignalPlots(channel, false);
+    if(MCSample.Contains("DYType")   && MCSample.Contains("private"))  MakeType1SignalPlots(channel, false);
+    if(MCSample.Contains("VBFType")  && MCSample.Contains("private"))  MakeType1VBFSignalPlots(channel, false);
     if(MCSample.Contains("SSWWType") && MCSample.Contains("private"))  MakeType1SSWWSignalPlots(channel, false);
     
     vector<Gen> gen_lep= GetGenLepronsSignal();
         
-    
     std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5);
     std::vector<Muon>       MuonCollV     = GetMuons    (param.Muon_Veto_ID, 5., 2.4);
 
@@ -102,31 +102,28 @@ void HNL_SignalStudies::executeEvent(){
       for(auto ijet : AllJets){
 	if(ilep->DeltaR(ijet) < 0.4)   nCJ++;
       }	
-      /*if(nCJ > 1) {
-	cout << "Multiple Close Jets " << endl;
-	cout << "ilep pt = " << ilep->Pt() << " eta = " << ilep->Eta() << " phi = " << ilep->Phi() << endl;
-	for(auto ijet : AllJets){
-	  if(ilep->DeltaR(ijet) < 0.4) {
-
-	    int LepType=GetLeptonType_JH(*ilep, gens);
-	    cout << "lep type =  " << LepType << " " <<   ilep->DeltaR(ijet) << " Jet " << ijet.Pt() << " " << ijet.Eta() << " phi = " << ijet.Phi() << " Pass ID " << ijet.PassID("tight") <<  " pass LepVeto = " <<  ijet.PassID("tightLepVeto") << " JetLeptonPtRelLepAware = " << JetLeptonPtRelLepAware(*ilep, ijet) << " JetLeptonPtRatioLepAware = " << JetLeptonPtRatioLepAware(*ilep,ijet) << " 1/(1.+lep->RelIso() = " << 1/(1.+ilep->RelIso()) << endl;
-	    cout << "RelIso() = " << ilep->RelIso() <<endl;
-	    
-	  }
-	}
-      }
-      if(nCJ == 0) {
-	cout << "No Close Jets " << endl;
-	cout << "ilep pt = " << ilep->Pt() << " eta = " << ilep->Eta() <<  " JetLeptonPtRelLepAware = " << JetLeptonPtRelLepAware(*ilep) << " JetLeptonPtRatioLepAware = " << JetLeptonPtRatioLepAware(*ilep) << endl;
-	cout << "RelIso() = " << ilep->RelIso() <<endl;
-	
-      }
-      */
     }
 
-    AddTimerStamp("end_ev");
+    AddTimerStamp("start_limit_Code");
 
-    FillTimer("MID_RUN_"+channel);
+    std::vector<FatJet> AK8_JetColl                 = GetHNLAK8Jets("HNL",param);
+    std::vector<Jet> AK4_JetAllColl                 = GetHNLJets("NoCut_Eta3",param);
+    std::vector<Jet> JetColl                        = GetHNLJets("Tight",param);
+    std::vector<Jet> JetCollLoose                   = GetHNLJets("Loose",param);
+    std::vector<Jet> VBF_JetColl                    = GetHNLJets("VBFTight",param);
+    std::vector<Jet> BJetColl                       = GetHNLJets("BJetM",param);
+    std::vector<Jet> BJetCollSR1                    = GetHNLJets("BJetT",param);
+
+    std::vector<Tau>        TauColl        = GetTaus     (leps_veto,param.Tau_Veto_ID,20., 2.3);
+
+    RunAllSignalRegions(Inclusive, 
+			ElectronCollAll,ElectronCollV,MuonCollAll,MuonCollV,  TauColl,
+			JetCollLoose, AK4_JetAllColl, JetColl,VBF_JetColl,AK8_JetColl, BJetColl,BJetCollSR1, 
+			ev,METv, param		, weight);
+
+
+    FillTimer("END_Limitcode_"+channel);
+    FillTimer("END_Run_"+channel);
 
   }
 }
@@ -159,11 +156,10 @@ void HNL_SignalStudies::PlotBDTVariablesMuon(AnalyzerParameter param){
 
     vector<TString> Tags = {tag+"/Lep_MVA_",
                             tag+imu.CloseJet_Flavour()+"/Lep_MVA_",
-                            //tag+etabin+"/El_MVA_",
-                            //tag+etabin+imu.CloseJet_Flavour()+"/El_MVA_",
-                            //tag+etabin+ptbin+"/El_MVA_",
-                            //tag+etabin+ptbin+imu.CloseJet_Flavour()+"/El_MVA_",
-			    
+                            tag+etabin+"/El_MVA_",
+                            tag+etabin+imu.CloseJet_Flavour()+"/El_MVA_",
+                            tag+etabin+ptbin+"/El_MVA_",
+                            tag+etabin+ptbin+imu.CloseJet_Flavour()+"/El_MVA_",
     };
 
     for(auto i  : Tags){
@@ -225,10 +221,10 @@ void HNL_SignalStudies::PlotBDTVariablesElectron(AnalyzerParameter param){
     
     vector<TString> Tags = {tag+"/El_MVA_",
 			    tag+iel.CloseJet_Flavour()+"/El_MVA_",
-			    //tag+etabin+"/El_MVA_",
-                            //tag+etabin+iel.CloseJet_Flavour()+"/El_MVA_",
-			    //tag+etabin+ptbin+"/El_MVA_",
-                            //tag+etabin+ptbin+iel.CloseJet_Flavour()+"/El_MVA_",
+			    tag+etabin+"/El_MVA_",
+                            tag+etabin+iel.CloseJet_Flavour()+"/El_MVA_",
+			    tag+etabin+ptbin+"/El_MVA_",
+                            tag+etabin+ptbin+iel.CloseJet_Flavour()+"/El_MVA_",
 		    
     };
 
