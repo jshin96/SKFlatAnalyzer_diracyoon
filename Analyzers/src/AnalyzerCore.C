@@ -1634,7 +1634,7 @@ double AnalyzerCore::GetBDTScoreEl(Electron el ,BkgType bkg, TString BDTTag){
 
 std::vector<Muon> AnalyzerCore::GetMuons(TString id, double ptmin, double fetamax){
 
-  std::vector<Muon> muons = GetAllMuons();
+  std::vector<Muon> muons =  All_Muons;
   std::vector<Muon> out;
   for(unsigned int i=0; i<muons.size(); i++){
     if(!( muons.at(i).Pt()>ptmin )){
@@ -1664,7 +1664,7 @@ std::vector<Muon> AnalyzerCore::GetMuons(AnalyzerParameter param, bool Run_Fake)
 
 std::vector<Muon> AnalyzerCore::GetMuons(AnalyzerParameter param, TString id, double ptmin, double fetamax, bool Run_Fake){
 
-  std::vector<Muon> this_AllMuons = GetAllMuons();
+  std::vector<Muon> this_AllMuons =  All_Muons;
   std::vector<Muon> muons ;
 
   if(param.syst_ == AnalyzerParameter::MuonEnUp)    muons = ScaleMuons( this_AllMuons, +1 );
@@ -1871,7 +1871,7 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
     if(Analyzer=="HNL_LeptonID_BDT_KinVar") FillCloseJetVar=false;
     if(FillCloseJetVar){
       
-      std::vector<Jet>    AK4_JetAllColl = GetAllJets();
+      std::vector<Jet>    AK4_JetAllColl = All_Jets;
       
       float  JetDiscCJ = -999;
       float mindR1=999.;
@@ -1914,7 +1914,7 @@ std::vector<Electron> AnalyzerCore::GetElectrons(AnalyzerParameter param,  bool 
 
 std::vector<Electron> AnalyzerCore::GetElectrons(AnalyzerParameter param, TString id, double ptmin, double fetamax, bool run_fake, bool vetoHEM){
   
-  std::vector<Electron> this_AllElectrons = GetAllElectrons();
+  std::vector<Electron> this_AllElectrons = All_Electrons;
   std::vector<Electron> electrons ;
 
   if(param.syst_ == AnalyzerParameter::ElectronResUp)   electrons = SmearElectrons( this_AllElectrons, +1 );
@@ -1961,7 +1961,7 @@ std::vector<Electron> AnalyzerCore::GetElectrons(AnalyzerParameter param, TStrin
 
 std::vector<Electron> AnalyzerCore::GetElectrons(TString id, double ptmin, double fetamax, bool vetoHEM){
 
-  std::vector<Electron> electrons = GetAllElectrons();
+  std::vector<Electron> electrons = All_Electrons;
 
   std::vector<Electron> out;
   for(unsigned int i=0; i<electrons.size(); i++){
