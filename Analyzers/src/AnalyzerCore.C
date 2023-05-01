@@ -27,6 +27,8 @@ AnalyzerCore::AnalyzerCore(){
   //  double time_elapsed_ms = 1000.0 * (c_end-c_start) / CLOCKS_PER_SEC;
   //std::cout << "CPU time used: " << time_elapsed_ms / 1000.0 << " s\n";
 
+  /// TESTBDT couts comparison of branches and Function 
+  TESTBDT=false;
     
 }
 
@@ -504,7 +506,7 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
 
   }
 
-  std::sort(out.begin(),       out.end(),        PtComparing);
+  if(PtOrderObj) std::sort(out.begin(),       out.end(),        PtComparing);
 
   return out;
 
@@ -626,6 +628,94 @@ void AnalyzerCore::InitializeIDTreeVars(){
   return;
 
 }
+
+void AnalyzerCore::PrintBDTInput(){
+  
+  cout << "bdt_id_Pt " << bdt_id_Pt<< endl;
+  cout << "bdt_id_Eta " << bdt_id_Eta<< endl;
+  cout << "bdt_id_PtBinned " << bdt_id_PtBinned<< endl;
+  cout << "bdt_id_PtRatio " << bdt_id_PtRatio<< endl;
+  cout << "bdt_id_PtRel " << bdt_id_PtRel<< endl;
+  cout << "bdt_id_MassDrop " << bdt_id_MassDrop<< endl;
+  cout << "bdt_id_PileUp " << bdt_id_PileUp << endl;
+
+  cout << "bdt_id_MiniIsoChHad " << bdt_id_MiniIsoChHad<< endl;;  
+  cout << "bdt_id_MiniIsoNHad " << bdt_id_MiniIsoNHad<< endl;;  
+  cout << "bdt_id_MiniIsoPhHad " << bdt_id_MiniIsoPhHad<< endl;;
+  cout << "bdt_id_IsoChHad " << bdt_id_IsoChHad<< endl;;  
+  cout << "bdt_id_IsoNHad " << bdt_id_IsoNHad<< endl;;  
+  cout << "bdt_id_IsoPhHad" << bdt_id_IsoPhHad<< endl;;
+  cout << "bdt_id_Minireliso " << bdt_id_Minireliso<< endl;
+  cout << "bdt_id_RelMiniIsoCh " << bdt_id_RelMiniIsoCh<< endl;
+  cout << "bdt_id_RelMiniIsoN " << bdt_id_RelMiniIsoN<< endl;
+  cout << "bdt_id_RelIso " << bdt_id_RelIso<< endl;;
+
+  cout << "bdt_id_CEMFracCJ " << bdt_id_CEMFracCJ<< endl;
+  cout << "bdt_id_NEMFracCJ " << bdt_id_NEMFracCJ<< endl;
+  cout << "bdt_id_CHFracCJ " << bdt_id_CHFracCJ<< endl;
+  cout << "bdt_id_NHFracCJ " << bdt_id_NHFracCJ<< endl;
+  cout << "bdt_id_MuFracCJ " << bdt_id_MuFracCJ<< endl;
+  cout << "bdt_id_JetDiscCJ " << bdt_id_JetDiscCJ<< endl;
+
+  /// IP                                                                                                                                                                                                                                    
+  cout << "bdt_id_Dxy " << bdt_id_Dxy<< endl; 
+  cout << "bdt_id_DxySig " << bdt_id_DxySig<< endl;
+  cout << "bdt_id_Dz" << bdt_id_Dz<< endl;
+  cout << "bdt_id_DzSig " << bdt_id_DzSig<< endl;
+  cout << "bdt_id_IP3D " << bdt_id_IP3D<< endl;
+  cout << "bdt_id_RelDxy " << bdt_id_RelDxy<< endl;
+  cout << "bdt_id_RelDz " << bdt_id_RelDz<< endl;
+  cout << "bdt_id_RelIP3D " << bdt_id_RelIP3D<< endl;
+
+  cout << "bdt_id_MVA " << bdt_id_MVA<< endl;
+  cout << "bdt_id_MVAIso " << bdt_id_MVAIso<< endl;
+  cout << "bdt_id_Chi2 " << bdt_id_Chi2<< endl;
+  cout << "bdt_id_RelMVA " << bdt_id_RelMVA<< endl;
+  cout << "bdt_id_RelMVAIso " << bdt_id_RelMVAIso<< endl;; //36                                                                                                                                                                                            
+
+  cout << "bdt_id_Validhits " << bdt_id_Validhits<< endl;
+  cout << "bdt_id_Matched_stations " << bdt_id_Matched_stations<< endl;
+  cout << "bdt_id_Pixel_hits " << bdt_id_Pixel_hits<< endl;
+  cout << "bdt_id_Tracker_layers " << bdt_id_Tracker_layers<< endl;
+  cout << "bdt_id_MissingHits " << bdt_id_MissingHits<< endl;
+
+  // El Shower/SCL                                                                                                                                                                                                                          
+  cout << "bdt_id_Full5x5_sigmaIetaIeta " << bdt_id_Full5x5_sigmaIetaIeta<< endl;
+  cout << "bdt_id_dEtaSeed " << bdt_id_dEtaSeed<< endl;
+  cout << "bdt_id_dPhiIn " << bdt_id_dPhiIn<< endl;
+  cout << "bdt_id_dEtaIn " << bdt_id_dEtaIn<< endl;
+  cout << "bdt_id_EtaWidth " << bdt_id_EtaWidth<< endl;  
+  cout << "bdt_id_PhiWidth " << bdt_id_PhiWidth<< endl;  
+  cout << "bdt_id_HoverE "  << bdt_id_HoverE<< endl;
+  cout << "bdt_id_TrkIso " << bdt_id_TrkIso<< endl; 
+  cout << "bdt_id_e2x5OverE5x5 " << bdt_id_e2x5OverE5x5<< endl;;  
+  cout << "bdt_id_e1x5OverE5x5 " << bdt_id_e1x5OverE5x5<< endl;;  
+  cout << "bdt_id_e15 " << bdt_id_e15<< endl;;  
+  cout << "bdt_id_e25 " << bdt_id_e25<< endl;;
+  cout << "bdt_id_e55 " << bdt_id_e55<< endl;;  
+  cout << "bdt_id_dr03EcalRecHitSumEt " << bdt_id_dr03EcalRecHitSumEt<< endl;;  
+  cout << "bdt_id_dr03HcalDepth1TowerSumEt " << bdt_id_dr03HcalDepth1TowerSumEt<< endl;;  
+  cout << "bdt_id_dr03HcalTowerSumEt " << bdt_id_dr03HcalTowerSumEt<< endl;;  
+  cout << "bdt_id_dr03TkSumPt " << bdt_id_dr03TkSumPt<< endl;;
+  cout << "bdt_id_InvEminusInvP " << bdt_id_InvEminusInvP<< endl;  
+  cout << "bdt_id_ecalPFClusterIso " << bdt_id_ecalPFClusterIso<< endl; 
+  cout << "bdt_id_hcalPFClusterIso " << bdt_id_hcalPFClusterIso<< endl;
+
+  // IDs                                                                                                                                                                                                                                    
+  cout << "bdt_id_isEcalDriven " << bdt_id_isEcalDriven << endl;  
+  cout << "bdt_id_EoverP " << bdt_id_EoverP<< endl;;  
+  cout << "bdt_id_FBrem " << bdt_id_FBrem<< endl;;  
+  cout << "bdt_id_PassConversionVeto " << bdt_id_PassConversionVeto<< endl; ;
+  cout << "bdt_id_IsGsfCtfScPixChargeConsistent " << bdt_id_IsGsfCtfScPixChargeConsistent << endl;;  
+  cout << "bdt_id_IsGsfScPixChargeConsistent " << bdt_id_IsGsfScPixChargeConsistent << endl;;  
+  cout << "bdt_id_IsGsfCtfChargeConsistent " << bdt_id_IsGsfCtfChargeConsistent << endl;;  
+  cout << "bdt_id_R9 " << bdt_id_R9<< endl;;
+
+  
+  return;
+ 
+}
+
 
 
 
@@ -757,6 +847,17 @@ void AnalyzerCore::SetBDTIDVar(Lepton*  lep){
     if(dR1<mindR1){ mindR1=dR1; IdxMatchJet=ij; }
   }
 
+  //
+  if(TESTBDT){
+    std::vector<Jet>   JetAllColl2 = GetAllJets(false);
+    
+    for(unsigned int ij=0; ij<JetAllColl2.size(); ij++){
+      float dR1=lep->DeltaR(JetAllColl2.at(ij));
+      cout << "JETS NON CORR Pt = " << JetAllColl2.at(ij).Pt() << " eta = " << JetAllColl2.at(ij).Eta() << " dR1 = " << dR1 << " BTAG = " << JetAllColl2.at(ij).GetTaggerResult(JetTagging::DeepJet) <<  endl;
+    }
+  }
+  //
+
   if(IdxMatchJet!=-1){
 
     bdt_id_CEMFracCJ = JetAllColl.at(IdxMatchJet).ChargedEmEnergyFraction();
@@ -777,6 +878,12 @@ void AnalyzerCore::SetBDTIDVar(Lepton*  lep){
 void AnalyzerCore::SetupIDMVAReaderDefault(){
  
   SetupLeptonBDT();
+
+  if(TESTBDT) {
+    SetupIDMVAReaderMuon();
+    SetupIDMVAReaderElectron(true,true);
+    return;
+  }
 
   // setup ALL MVA Readers for Mu and El
   // Muon ID Setup
@@ -1608,7 +1715,6 @@ double AnalyzerCore::GetBDTScoreEl(Electron el ,BkgType bkg, TString BDTTag){
   SetBDTIDVar(lep);
   SetBDTIDVariablesElectron(el);
   //cout << "El pt = " << el.Pt() << "  PtBinned = " << PtBinned << endl;
-
   if(MVATagStr.Contains("BDTG")){
     
     if (bkg == BkgType::Fake) MVATagStr += "_Fake";
@@ -1712,6 +1818,23 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
 
   std::vector<Electron> out;
   if(!electron_Energy) return out;
+
+
+  if(TESTBDT) cout << "=====================================" << endl;
+  if(TESTBDT) cout << "Event " << event << endl;
+  if(TESTBDT){
+    for(unsigned int i=0; i<electron_Energy->size(); i++)  {
+      Electron el;
+      el.SetPtEtaPhiE(1., electron_eta->at(i), electron_phi->at(i), electron_Energy->at(i));
+      double el_theta = el.Theta();
+      double el_pt = electron_Energy->at(i) * TMath::Sin( el_theta );
+      cout << "Pt = " << el_pt  ;
+      cout << " electron_EnergyUnCorr->at(i) = " << electron_EnergyUnCorr->at(i)  ;
+      cout << " PtRatio = " << electron_ptratio->at(i);
+      cout << " PtRel = " << electron_ptrel->at(i);
+      cout << " BJET = " << electron_cj_bjetdisc->at(i) << endl;
+    }    
+  }
   for(unsigned int i=0; i<electron_Energy->size(); i++){
 
     Electron el;
@@ -1723,7 +1846,8 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
     double el_theta = el.Theta();
     double el_pt = electron_Energy->at(i) * TMath::Sin( el_theta );
     el.SetPtEtaPhiE( el_pt, electron_eta->at(i), electron_phi->at(i), electron_Energy->at(i));
-
+    if(TESTBDT)cout << "Pt = " << el.Pt() << " " << el.Eta() << " " << el.Phi()<< endl;
+    
     el.SetUncorrectedPt(electron_EnergyUnCorr->at(i) * TMath::Sin( el_theta ));
 
     el.SetUncorrE(electron_EnergyUnCorr->at(i));
@@ -1800,6 +1924,12 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
     if(fChain->GetBranch("electron_ptratio")) el.SetJetPtRatio(electron_ptratio->at(i));
     if(fChain->GetBranch("electron_cj_bjetdisc")) el.SetCloseJetBScore(electron_cj_bjetdisc->at(i));
     
+    if(TESTBDT){
+      cout << "electron_ptratio->at(i) = " << electron_ptratio->at(i) << endl;
+      cout << "electron_ptrel->at(i) = " << electron_ptrel->at(i) << endl;
+      cout << "electron_cj_bjetdisc->at(i) = " << electron_cj_bjetdisc->at(i) << endl;
+      cout << "electron_cj_flavour->at(i) = " << electron_cj_flavour->at(i) << endl;
+    }
     
     //////// MVA Branches
     ////*************** FAKE MVA
@@ -1870,6 +2000,44 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
 											 GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv2p2"));
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// TEST 
+
+    if(TESTBDT){
+      el.PrintObject("BDT");
+      //PrintBDTInput();
+
+      CompareBDT( "electron_mva_fake_v1" , GetBDTScoreElV1(el,AnalyzerCore::Fake,  "BDTGv1") , electron_mva_fake_v1->at(i) , i);
+      CompareBDT( "electron_mva_fake_v2" , GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv2"    ) , electron_mva_fake_v2->at(i)  , i);
+      CompareBDT( "electron_mva_fakeHF_v2" , GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv2_HF" ) , electron_mva_fakeHF_v2->at(i)  , i);
+      CompareBDT( "electron_mva_fakeLF_v2" , GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv2_LF" ) , electron_mva_fakeLF_v2->at(i)  , i);
+      CompareBDT( "electron_mva_fakeTop_v2" , GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv2_Top") , electron_mva_fakeTop_v2->at(i)  , i);
+      CompareBDT( "electron_mva_fake_v3" , GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv3"      ) , electron_mva_fake_v3->at(i)  , i);
+      CompareBDT( "electron_mva_fakeHF_v3" , GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv3_HF"      ) , electron_mva_fakeHF_v3->at(i)  , i);
+      CompareBDT( "electron_mva_fakeHFB_v3" , GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv3_HFB"      ) , electron_mva_fakeHFB_v3->at(i)  , i);
+      CompareBDT( "electron_mva_fakeHFC_v3" , GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv3_HFC"      ) , electron_mva_fakeHFC_v3->at(i)  , i);
+      CompareBDT( "electron_mva_fakeLF_v3" , GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv3_LF"      ) , electron_mva_fakeLF_v3->at(i)  , i);
+      CompareBDT( "electron_mva_fakeTop_v3" , GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv3_Top"      ) , electron_mva_fakeTop_v3->at(i)  , i);
+      CompareBDT( "electron_mva_fake_v4"  , GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv4"      ) , electron_mva_fake_v4->at(i)  , i);
+      CompareBDT( "electron_mva_fakeHF_v4" , GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv4_HF"      ) , electron_mva_fakeHF_v4->at(i)  , i);
+      CompareBDT( "electron_mva_fakeHFB_v4" , GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv4_HFB"      ) , electron_mva_fakeHFB_v4->at(i)  , i);
+      CompareBDT( "electron_mva_fakeHFC_v4" , GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv4_HFC"      ) , electron_mva_fakeHFC_v4->at(i)  , i);
+      CompareBDT( "electron_mva_fakeLF_v4"  , GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv4_LF"      ) , electron_mva_fakeLF_v4->at(i)  , i);
+      CompareBDT( "electron_mva_fakeTop_v4" , GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv4_Top"      ) , electron_mva_fakeTop_v4->at(i)  , i);
+      CompareBDT( "electron_mva_conv_v1" , GetBDTScoreElV1(el,AnalyzerCore::Conv,  "BDTGv1") , electron_mva_conv_v1->at(i)  , i);
+      CompareBDT( "electron_mva_conv_v2" , GetBDTScoreEl(el,AnalyzerCore::Conv,  "BDTGv2") , electron_mva_conv_v2->at(i)  , i);
+      CompareBDT( "electron_mva_cf_v1" , GetBDTScoreElV1(el,AnalyzerCore::CF,  "BDTGv1") , electron_mva_cf_v1->at(i)   , i);
+      CompareBDT( "electron_mva_cf_v2" , GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2") , electron_mva_cf_v2->at(i)  , i);
+      CompareBDT( "electron_mva_cf_v2p1" , GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2p1") , electron_mva_cf_v2p1->at(i)  , i);
+      CompareBDT( "electron_mva_cf_v2p2" , GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2p2") ,  electron_mva_cf_v2p2->at(i) , i);
+      CompareBDT( "electron_mva_cf_ed_v2" , GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv2") , electron_mva_cf_ed_v2->at(i)  , i);
+      CompareBDT( "electron_mva_cf_ed_v2p1" , GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv2p1") , electron_mva_cf_ed_v2p1->at(i)  , i);
+      CompareBDT( "electron_mva_cf_ed_v2p2" , GetBDTScoreEl_EtaDependant(el,AnalyzerCore::CF,  "BDTGv2p2") , electron_mva_cf_ed_v2p2->at(i)  , i);
+    }
+    
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     bool FillCloseJetVar=!fChain->GetBranch("electron_cj_flavour");
     if(Analyzer=="HNL_LeptonID_BDT_KinVar") FillCloseJetVar=false;
     if(FillCloseJetVar){
@@ -1882,6 +2050,7 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
       int JetHadFlavour = -999;
 
       for(unsigned int ij=0; ij<AK4_JetAllColl.size(); ij++){
+	if(TESTBDT)cout << "Jet pt = " << AK4_JetAllColl.at(ij).Pt() << " " << AK4_JetAllColl.at(ij).Eta() << " " << AK4_JetAllColl.at(ij).Phi() << endl;
 	float dR1=el.DeltaR(AK4_JetAllColl.at(ij));
 	if(dR1>0.4) continue;
 	if(dR1<mindR1){ mindR1=dR1; IdxMatchJet=ij; }
@@ -1905,11 +2074,12 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
 
   }
 
-  std::sort(out.begin(),       out.end(),        PtComparing);
+  if(PtOrderObj) std::sort(out.begin(),       out.end(),        PtComparing);
 
   return out;
 
 }
+
 
 std::vector<Electron> AnalyzerCore::GetElectrons(AnalyzerParameter param,  bool run_fake, bool vetoHEM){
   return GetElectrons(param, param.Electron_Tight_ID, param.Electron_MinPt, param.Electron_MaxEta, run_fake, vetoHEM);
@@ -2512,11 +2682,12 @@ std::vector<Jet> AnalyzerCore::GetAllJets(bool applyCorr){
     jet.SetPileupJetId(jet_PileupJetId->at(i));
     jet.SetTightJetID(jet_tightJetID->at(i));
     jet.SetTightLepVetoJetID(jet_tightLepVetoJetID->at(i));
+    //if(TESTBDT) cout << "JET BDT = " <<  jet.GetTaggerResult(JetTagging::DeepJet) << endl;
     
     out.push_back(jet);
   }
 
-  std::sort(out.begin(),       out.end(),        PtComparing);
+  if(PtOrderObj)  std::sort(out.begin(),       out.end(),        PtComparing);
 
   return out;
 
@@ -2633,7 +2804,7 @@ std::vector<FatJet> AnalyzerCore::GetAllFatJets(){
     out.push_back(jet);
   }
 
-  std::sort(out.begin(),       out.end(),        PtComparing);
+  if(PtOrderObj)  std::sort(out.begin(),       out.end(),        PtComparing);
 
   return out;
 
@@ -3197,11 +3368,9 @@ vector<FatJet>  AnalyzerCore::SelectAK8Jetsv2(vector<FatJet> fatjets, double pt_
       if(DataYear==2018) tau_21_cut = 0.75;
     }
     else{
-
       if(DataYear==2016) tau_21_cut = 0.35;
       if(DataYear==2017) tau_21_cut = 0.45;
       if(DataYear==2018) tau_21_cut = 0.45;
-
     }
     if( fabs(fatjets[ijet].Eta()) > eta_cut)    continue;
     if( fabs(fatjets[ijet].Pt())  < pt_cut)    continue;
@@ -3488,6 +3657,14 @@ bool AnalyzerCore::PassMETFilter(){
 
   return true;
 
+}
+
+void AnalyzerCore::CompareBDT(TString var1, double a, double b,  int ilep ){
+
+  if( (a/b) != 1 ) cout << "Electron " << ilep << " " << var1 << " " <<  a << "   : " << b <<  "  a/b = " << a/b << endl;
+  
+  
+  return;
 }
 
 
@@ -4020,17 +4197,20 @@ double AnalyzerCore::GetCFWeightElectron(vector<Lepton *> lepptrs, AnalyzerParam
 
 void AnalyzerCore::SetupLeptonBDTSKFlat(){
 
+  // BUG IN PT ORDERING 
+  /// Originally used GetALl* which orders pt, 
+  /// Then if order changes the pushed vector has a mis match in lepton index
+  
   std::vector<Muon>     AllmuonColl     = All_Muons;
   std::vector<Electron> AllelectronColl = All_Electrons;
-
-  std::vector<Jet>    AK4_JetAllColl = All_Jets;
+  std::vector<Jet>      AK4_JetAllColl  = All_Jets;
 
   for(auto i: AllmuonColl){
     vmuon_mva_fake_v1->push_back(GetBDTScoreMuon(i,AnalyzerCore::Fake,  "BDTGv1"));
     vmuon_mva_fake_v2->push_back(GetBDTScoreMuon(i,AnalyzerCore::Fake,  "BDTGv2"));
     vmuon_mva_fake_v3->push_back(GetBDTScoreMuon(i,AnalyzerCore::Fake,  "BDTGv3"));
-    vmuon_ptratio->push_back(JetLeptonPtRatioLepAware(i,false));
-    vmuon_ptrel->push_back(JetLeptonPtRelLepAware(i,true));
+    vmuon_ptratio->push_back(JetLeptonPtRatioLepAware(i));
+    vmuon_ptrel->push_back(JetLeptonPtRelLepAware(i));
 
     float  JetDiscCJ = -999;
     int JetFlavourCJ=-999;
@@ -4089,6 +4269,7 @@ void AnalyzerCore::SetupLeptonBDTSKFlat(){
 
     velectron_ptratio->push_back(JetLeptonPtRatioLepAware(i,false));
     velectron_ptrel->push_back(JetLeptonPtRelLepAware(i,true));
+
     float  JetDiscCJ = -999;
     int  JetFlavourCJ = -999;
 
@@ -4107,8 +4288,7 @@ void AnalyzerCore::SetupLeptonBDTSKFlat(){
     }
     else {
       JetDiscCJ=1.5;
-      JetDiscCJ=0;
-
+      JetFlavourCJ=0;
     }
     velectron_cj_bjetdisc->push_back(JetDiscCJ);
     velectron_cj_flavour->push_back(JetFlavourCJ);
@@ -4239,11 +4419,16 @@ void AnalyzerCore::SetupLeptonBDT(){
 void AnalyzerCore::beginEvent(){
   
   // fill jets first as they are independant
+  if(Analyzer.Contains("BDT") && Analyzer.Contains("SkimTree")) PtOrderObj=false;
+  else PtOrderObj=true;
+  
+  if(_jentry%10000==0) cout << "PtOrderObj = " << PtOrderObj << endl;
+  
   All_Jets      = GetAllJets();
   All_FatJets   = GetAllFatJets();
   All_Muons     = GetAllMuons();
   All_Electrons = GetAllElectrons();
-  
+ 
   return;
 }
 void AnalyzerCore::initializeAnalyzerTools(){
@@ -5021,6 +5206,8 @@ double  AnalyzerCore::JetLeptonPtRelLepAware( Lepton lep, bool CorrLep, bool Cor
 
   Jet closejet;
   for(auto jet : jets){
+    if(TESTBDT) cout << "PTREL JPT=" << jet.Pt() << " corr jetpt = " << GetCorrectedJetCloseToLepton(lep,jet).Pt() << " ptrel= " <<  lep.Perp((GetCorrectedJetCloseToLepton(lep,jet)-lep).Vect()) << endl;
+
     if(checkID && !jet.PassID("tight")) continue;
     if (lep.DeltaR(jet) < mindR) {
       closejet = GetCorrectedJetCloseToLepton(lep,jet);
@@ -5065,6 +5252,13 @@ double  AnalyzerCore::JetLeptonPtRatioLepAware(Lepton lep, bool CorrLep, bool Co
   
   Jet closejet;
   for(auto jet : jets){
+    if(TESTBDT) {
+      cout << "PTRATIO JPT=" << jet.Pt() << " corr jetpt = " << GetCorrectedJetCloseToLepton(lep,jet).Pt()<< " lep/Jet = " << lep.Pt() / GetCorrectedJetCloseToLepton(lep,jet).Pt() << endl;
+      cout << "--PTRATIO JPT=" << jet.Pt() << " corr jetpt = " << GetCorrectedJetCloseToLepton(lep,jet).Pt()<< " lep/Jet = " << lep.Pt() / GetCorrectedJetCloseToLepton(lep,jet).Pt() << endl;
+      cout << GetCorrectedJetCloseToLepton(lep,jet).Pt() << " " << lep.Pt() << endl;
+
+    }
+
     if(checkID && !jet.PassID("tight"))continue;
     if (lep.DeltaR(jet) < mindR) {
       closejet = GetCorrectedJetCloseToLepton(lep,jet);
@@ -5321,7 +5515,6 @@ TString AnalyzerCore::MatchGenPID(int PID, vector<Gen> gens,  Gen gen){
 }
 
 TString AnalyzerCore::MatchGenDef(std::vector<Gen>& gens,const Lepton& Lep){
-  
   
   int Idx_Closest    = GenMatchedIdx(Lep,gens);
   

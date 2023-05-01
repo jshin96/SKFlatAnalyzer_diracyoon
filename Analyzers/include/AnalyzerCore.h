@@ -120,23 +120,22 @@ public:
 
 
   TMVA::Reader *MuonIDFakeMVAReader;
-
   TMVA::Reader *ElectronIDFakeMVAReader;
   TMVA::Reader *ElectronIDCFMVAReader;
   TMVA::Reader *ElectronIDConvMVAReader;
-
   TMVA::Reader *ElectronIDv2FakeMVAReader;
   TMVA::Reader *ElectronIDv2ConvMVAReader;
   TMVA::Reader *ElectronIDv2CFMVAReader;
-
   TMVA::Reader *ElectronIDv2CFMVAReaderPt;
-
   TMVA::Reader *ElectronIDv3CFMVAReader;
+
+  bool PtOrderObj;
 
   // ID MVA                                                                                            
   void InitializeIDTreeVars();
   void InitializeElectronIDTreeVars();
-  
+  void PrintBDTInput();
+
   /// For adding var to Trees
   void SetupLeptonBDTSKFlat();
   void ResetLeptonBDTSKFlat();
@@ -151,6 +150,8 @@ public:
   void SetupIDMVAReaderMuon();
   void SetupIDMVAReaderElectron(bool v1, bool v2);
   void SetupIDMVAReaderDefault();
+
+  void CompareBDT(TString var1, double a, double b,  int ilep );
 
 
   /// Var for ID BDTs
@@ -589,6 +590,9 @@ public:
   vector<Electron> All_Electrons;
 
   string run_timestamp;
+
+
+  bool TESTBDT;
 
 };
 

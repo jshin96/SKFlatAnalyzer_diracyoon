@@ -2509,7 +2509,8 @@ std::vector<FatJet> HNL_LeptonCore::GetHNLAK8Jets(TString JetType, AnalyzerParam
 
   std::vector<FatJet> AK8_JetColl                     = SelectAK8Jets  (FatjetColl, 200., 5., true,  1., false, -999, false, 0., 20000., ElectronCollV, MuonCollV);
   std::vector<FatJet> AK8_JetCollBDT                  = SelectAK8Jets(FatjetColl  , 200., 2.7, true, 1., false, -999, false, 40., 130., ElectronCollV, MuonCollV);
-  std::vector<FatJet> AK8_JetCollHNL                  = SelectAK8Jetsv2(FatjetColl, 200., 2.7, true,  1., true, -999, true, 40., 130.,-999, ElectronCollV, MuonCollV);
+  std::vector<FatJet> AK8_JetCollHNL                  = SelectAK8Jetsv2(FatjetColl, 200., 5., true,  1., true, -999, true, 40., 130.,-999, ElectronCollV, MuonCollV);
+  // std::vector<FatJet> AK8_JetColl                  = SelectAK8Jets(fatjets_tmp, 200., 5., true,  1., false, -999, false, 0., 20000., ElectronCollV, MuonCollV);
 
   if(JetType=="HNL") return AK8_JetCollHNL;
   if(JetType=="BDT") return AK8_JetCollBDT;
@@ -3923,7 +3924,7 @@ void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, TString p
 
   for(auto ilep : leps){
     map<TString, double> lep_bdt_map = ilep->MAPBDT();
-    for(auto i : lep_bdt_map)     FillHist( plot_dir+ "/Lepton_mva_"+i.first + "_"+region , i.second, w, 100, -1., 1., "MVA");
+    for(auto i : lep_bdt_map)     FillHist( plot_dir+"/LepRegionPlots_"+ region+ "/Lepton_mva_"+i.first + "_"+region , i.second, w, 100, -1., 1., "MVA");
     FillHist( plot_dir+ "/LepRegionPlots_"+ region+ "/Lepton_mva_HF_"+region , ilep->LepMVA(), w, 100, -1., 1., "MVA");
     for(auto i : lep_bdt_map)FillHist( plot_dir+ "/LepRegionPlots_"+ region+ "/"+i.first+"_HFMVA_"+region, i.second, ilep->LepMVA(), w, 100, -1., 1.,100, -1., 1.);
   }
@@ -4322,11 +4323,10 @@ void HNL_LeptonCore::FillEventCutflowDef(TString analysis_dir_name,TString histn
 
   TH1D *this_hist = GetHist1D(analysis_dir_name+"/"+histname);
 
-
   if( !this_hist ){
     TString cf_name="FillEventCutflow";
     //if(histname.Contains("Syst")) cf_name= "FillEventCutflow_Syst";
-    //if(histname.Contains("SR")) cf_name="FillEventCutflow_SR";
+    if(histname.Contains("SR")) cf_name="LimitBins/";
     if(histname.Contains("_massbinned")) cf_name="FillEventCutflow_MassBinned";
     
     if(!analysis_dir_name.Contains("ChannelCutFlow"))  cf_name = analysis_dir_name + "/"+cf_name;
@@ -4362,40 +4362,68 @@ void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::SearchRegion sr, double ev
   if (verbose_level == 0) {
     
     if(sr==SR1 ){
-      labels = {  "Presel", "AK8Jet", "SR1_Init",   "SR1_lep_charge",  "SR1_lep_pt", "SR1_dilep_mass" , "SR1_LepPt","SR1_DphiN_Wlep", "SR1_TauVeto", "SR1_HTPt", "SR1_Wmass",  "SR1_MET" , "SR1_bveto" };
-      EVhitname= "SR1";
+      labels = {  "SR1_Init", 
+		  "SR1_lep_charge", 
+		  "SR1_lep_pt", 
+		  "SR1_dilep_mass" , 
+		  "SR1_LepPt",
+		  "SR1_DphiN_Wlep",
+		  "SR1_TauVeto",
+		  "SR1_HTPt", 
+		  "SR1_Wmass", 
+		  "SR1_MET" ,
+		  "SR1_bveto",
+		  "SR1_masscuts" };
+      EVhitname= "Cutflow_SR1";
     }
     
     if(sr==SR2){
-      labels = {   "Presel", "SR2_lep_charge", "SR2_lep_pt", "SR2_DPhi", "SR2_DiJet",  "SR2_DiJetEta",  "SR2_DiJetMass", "SR2_VBF",     "SR2_ht_lt1",      "SR2_bveto"};
-      EVhitname= "SR2";
+      labels = {  "SR2_lep_charge", 
+		  "SR2_lep_pt", 
+		  "SR2_DPhi", 
+		  "SR2_DiJet", 
+		  "SR2_DiJetEta", 
+		  "SR2_DiJetMass", 
+		  "SR2_VBF", 
+		  "SR2_met", 
+		  "SR2_ht_lt1", 
+		  "SR2_bveto",
+		  "SR2_Final"};
+      EVhitname= "Cutflow_SR2";
     }
     
     if( sr==SR3){
-      labels = {  "Presel", "NoAK8Jet", "FailVBF",    "SR3_lep_charge" ,     "SR3_lep_pt",      "SR3_dilep_mass","SR3_0JetBin","SR3_1JetBin",      "SR3_jet",       "SR3_dijet",
-		  "SR3_Wmass", "SR3_J1Pt",     "SR3_MET",      "SR3_bveto"};
-      EVhitname= "SR3";
+      labels = { "SR3_lep_charge" , 
+		 "SR3_lep_pt", 
+		 "SR3_dilep_mass",
+		 "SR3_0JetBinHPT",
+		 "SR3_1JetBinHPT",
+		 "SR3_dijet",
+		 "SR3_Wmass", 
+		 "SR3_J1Pt", 
+		 "SR3_MET", 
+		 "SR3_bveto"};
+      EVhitname= "Cutflow_SR3";
     }
     if( sr==SR3BDT){
-      labels = {  "Presel", "NoAK8Jet", "FailVBF",    "SR3_lep_charge" ,     "SR3_lep_pt",      "SR3_dilep_mass",      "SR3_jet",       "SR3_dijet",
-                  "SR3_Wmass", "SR3_J1Pt",     "SR3_MET",      "SR3_bveto"};
-      EVhitname= "SR3BDT";
+      labels = {  "SR3_lep_charge" , 
+		  "SR3_lep_pt", 
+		  "SR3_dilep_mass", 
+		  "SR3_jet", 
+		  "SR3_dijet",
+                  "SR3_Wmass", 
+		  "SR3_J1Pt", 
+		  "SR3_MET", 
+		  "SR3_bveto"};
+      EVhitname= "Cutflow_SR3BDT";
     }
 
-
-
-    if(sr==SR4){
-      labels = {      "SR4_3lep",             "SR4_3lep_veto", "SR4_3lep_chargereq",   "SR4_3lep_bjet",      "SR4_3lep_Zmlll",       "SR4_3lep_Zmll_os",      "SR4_lll_mu"};
-      EVhitname= "SR4";
-    }
     if(sr==PreselSS || sr==Presel ){
-      labels = {"NoCut", "METFilter", "Trigger", "Dilepton",
-		"SS_Dilep" ,"SS_lep_veto", "SS_Dilep_mass", "SS_Presel"};
+      labels = {"NoCut", "METFilter", "Trigger", "Dilepton","SS_Dilep" ,"SS_lep_veto", "SS_Dilep_mass", "SS_Presel"};
       EVhitname = "SS_Presel";
     }
     if(sr==PreselOS || sr==Presel ){
-      labels = {"NoCut", "METFilter", "Trigger", "Dilepton",
-	      "OS_Dilep" ,"OS_lep_veto", "OS_Dilep_mass", "OS_Presel"};
+      labels = {"NoCut", "METFilter", "Trigger", "Dilepton", "OS_Dilep" ,"OS_lep_veto", "OS_Dilep_mass", "OS_Presel"};
       EVhitname ="OS_Presel";
     }
     if(sr==ChannelDepInc ){
@@ -4461,48 +4489,25 @@ void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::SearchRegion sr, double ev
   }
   
   if(verbose_level >= 0){
-    if(sr==MuonSR){
-      labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1", "SR2_bin2", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7"};
-      EVhitname ="MuonSR";
-    }
-    if(sr==ElectronSR){
-      labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1","SR2_bin2", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7"};
-      EVhitname ="ElectronSR";
-    }
-    if(sr==ElectronMuonSR){
-      labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1","SR2_bin2", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7"};
-      EVhitname ="ElectronMuonSR";
-    }
-    
-    
-    if(sr==MuonSRQQ){
-      labels = {"QMSR1_bin1","QMSR1_bin2","QMSR1_bin3","QMSR1_bin4","QMSR1_bin5","QMSR1_bin6","QMSR1_bin7","QMSR2_bin1", "QMSR2_bin2",  "QMSR3_bin1","QMSR3_bin2","QMSR3_bin3","QMSR3_bin4","QMSR3_bin5","QMSR3_bin6","QMSR3_bin7",  "QPSR1_bin1","QPSR1_bin2","QPSR1_bin3","QPSR1_bin4","QPSR1_bin5","QPSR1_bin6","QPSR1_bin7","QPSR2_bin1","QPSR2_bin2",  "QPSR3_bin1","QPSR3_bin2","QPSR3_bin3","QPSR3_bin4","QPSR3_bin5","QPSR3_bin6","QPSR3_bin7"};
-      EVhitname ="MuonChargeSplitSR";
-    }
-    
-    if(sr==ElectronSRQQ){
-      labels = {"QMSR1_bin1","QMSR1_bin2","QMSR1_bin3","QMSR1_bin4","QMSR1_bin5","QMSR1_bin6","QMSR1_bin7","QMSR2_bin1","QMSR2_bin2",  "QMSR3_bin1","QMSR3_bin2","QMSR3_bin3","QMSR3_bin4","QMSR3_bin5","QMSR3_bin6","QMSR3_bin7", "QPSR1_bin1","QPSR1_bin2","QPSR1_bin3","QPSR1_bin4","QPSR1_bin5","QPSR1_bin6","QPSR1_bin7","QPSR2_bin1","QPSR2_bin2",  "QPSR3_bin1","QPSR3_bin2","QPSR3_bin3","QPSR3_bin4","QPSR3_bin5","QPSR3_bin6","QPSR3_bin7"};
-      EVhitname ="ElectronChargeSplitSR";
-    }
-    if(sr==ElectronMuonSRQQ){
-      labels = {"QMSR1_bin1","QMSR1_bin2","QMSR1_bin3","QMSR1_bin4","QMSR1_bin5","QMSR1_bin6","QMSR1_bin7","QMSR2_bin1","QMSR2_bin2",  "QMSR3_bin1","QMSR3_bin2","QMSR3_bin3","QMSR3_bin4","QMSR3_bin5","QMSR3_bin6","QMSR3_bin7" , "QPSR1_bin1","QPSR1_bin2","QPSR1_bin3","QPSR1_bin4","QPSR1_bin5","QPSR1_bin6","QPSR1_bin7","QPSR2_bin1","QPSR2_bin2",  "QPSR3_bin1","QPSR3_bin2","QPSR3_bin3","QPSR3_bin4","QPSR3_bin5","QPSR3_bin6","QPSR3_bin7"};
-      EVhitname ="ElectronMuonChargeSplitSR";
-    }
+    vector<TString> SRlabels = {"SR1_MNbin1","SR1_MNbin2","SR1_MNbin3","SR1_MNbin4","SR1_MNbin5","SR1_MNbin6","SR1_MNbin7","SR2_HTLTbin1", "SR2_HTLTbin2", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8"};
+    vector<TString> SRQlabels=  {"QMSR1_MNbin1","QMSR1_MNbin2","QMSR1_MNbin3","QMSR1_MNbin4","QMSR1_MNbin5","QMSR1_MNbin6","QMSR1_MNbin7","QMSR2_HTLTbin1", "QMSR2_HTLTbin2",  "QMSR3_bin1","QMSR3_bin2","QMSR3_bin3","QMSR3_bin4","QMSR3_bin5","QMSR3_bin6","QMSR3_bin7",  "QPSR1_MNbin1","QPSR1_MNbin2","QPSR1_MNbin3","QPSR1_MNbin4","QPSR1_MNbin5","QPSR1_MNbin6","QPSR1_MNbin7","QPSR2_HTLTbin1","QPSR2_HTLTbin2",  "QPSR3_bin1","QPSR3_bin2","QPSR3_bin3","QPSR3_bin4","QPSR3_bin5","QPSR3_bin6","QPSR3_bin7"};
+    vector<TString> SRBDTlabels=  {"SR1_MNbin1","SR1_MNbin2","SR1_MNbin3","SR1_MNbin4","SR1_MNbin5","SR1_MNbin6","SR1_MNbin7","SR2_HTLTbin1", "SR2_HTLTbin2",  "SR3_BDTbin1","SR3_BDTbin2","SR3_BDTbin3","SR3_BDTbin4","SR3_BDTbin5","SR3_BDTbin6","SR3_BDTbin7","SR3_BDTbin8","SR3_BDTbin9"};
 
-    if(sr==MuonSRBDT){
-      labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1", "SR2_bin2",  "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8","SR3_bin9"};
-      EVhitname ="MuonSR";
-    }
-    if(sr==ElectronSRBDT){
-      labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1","SR2_bin2",  "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8","SR3_bin9"};
-      EVhitname ="ElectronSR";
-    }
-    if(sr==ElectronMuonSRBDT){
-      labels = {"SR1_bin1","SR1_bin2","SR1_bin3","SR1_bin4","SR1_bin5","SR1_bin6","SR1_bin7","SR2_bin1","SR2_bin2",  "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8","SR3_bin9"};
-      EVhitname ="ElectronMuonSR";
-    }
-
-
+    if(sr==MuonSR || sr==ElectronSR || sr==ElectronMuonSR)       labels = SRlabels;
+    if(sr==MuonSRQQ || sr==ElectronSRQQ || sr==ElectronMuonSRQQ) labels = SRQlabels;
+    if(sr==MuonSRBDT || sr==ElectronSRBDT || sr==ElectronMuonSRBDT) labels = SRBDTlabels ;    
+    //
+    if(sr==MuonSR)         EVhitname ="MuonSR";
+    if(sr==ElectronSR)     EVhitname ="ElectronSR";
+    if(sr==ElectronMuonSR) EVhitname ="ElectronMuonSR";
+    //
+    if(sr==MuonSRQQ )       EVhitname ="MuonChargeSplitSR";
+    if(sr==ElectronSRQQ)    EVhitname ="ElectronChargeSplitSR";
+    if(sr==ElectronMuonSRQQ)EVhitname ="ElectronMuonChargeSplitSR";
+    //
+    if(sr==MuonSRBDT)     EVhitname ="MuonSR";
+    if(sr==ElectronSRBDT) EVhitname ="ElectronSR";
+    if(sr==ElectronMuonSRBDT) EVhitname ="ElectronMuonSR";
   }
   
   

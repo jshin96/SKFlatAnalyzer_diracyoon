@@ -715,7 +715,7 @@ bool Muon::Pass_CB_Opt(TString ID) const {
   cout << "iso_methodB " <<  iso_methodB << endl;  
   cout << "iso_methodEC " <<  iso_methodEC << endl;  
   cout << "dxy_method " <<  dxy_method << endl;  
-  */
+  cout << "NPMVAString " << NPMVAString << endl;*/
 
   if(dxy_method.Contains("DXYv")){
     
@@ -848,12 +848,14 @@ int  Muon::PassIDOptMulti(TString mva_method,TString sel_methodB,TString sel_met
   if( fabs(this->Eta())<= 1.479 ){
     
     if(mva_method != ""){
+      //cout << "LF  " << mva_methodLFBB << "  mva_method " <<  mva_method << " mva_methodLFBB = " << mva_methodLFBB << endl;
       if(mva_methodLFBB.Contains("MVALFBB") && !PassULMVA(HNL_MVA_Fake(mva_method),StringToDouble(mva_methodLFBB,"MVALFBB"),  mva_methodLFBB )) return 0;   
     }
-
-    if(mva_methodBB.Contains("MVAHFBB") && !PassULMVA(MVA(),StringToDouble(mva_methodBB,"MVAHFBB"), mva_methodBB )) return 0;
     
-
+    if(mva_methodBB.Contains("MVAHFBB")) {
+      //cout << "mva_methodBB = " << mva_methodBB << endl;
+      if( !PassULMVA(MVA(),StringToDouble(mva_methodBB,"MVAHFBB"), mva_methodBB )) return 0;
+    }
     if(sel_methodB == "POGBT"){
       if(! (isPOGTight()) ) return 0;
     }
@@ -873,10 +875,15 @@ int  Muon::PassIDOptMulti(TString mva_method,TString sel_methodB,TString sel_met
     if(DEBUG) cout << "PassIDOpt ENDCAP " << endl;
 
     if(mva_method != ""){
+      //cout << "LF  " <<mva_methodLFEC << "  mva_method " <<  mva_method << " mva_methodLFEC = " << mva_methodLFEC << endl;
+
       if(mva_methodLFEC.Contains("MVALFEC") && !PassULMVA(HNL_MVA_Fake(mva_method),StringToDouble(mva_methodLFEC,"MVALFEC"),  mva_methodLFEC )) return 0;
     }
-    if(mva_methodEC.Contains("MVAHFEC") && !PassULMVA(MVA(),StringToDouble(mva_methodEC,"MVAHFEC"), mva_methodEC )) return 0;
-
+    if(mva_methodEC.Contains("MVAHFEC")){
+      //cout << "mva_methodEC = " << mva_methodEC<< endl;
+      if(!PassULMVA(MVA(),StringToDouble(mva_methodEC,"MVAHFEC"), mva_methodEC )) return 0;
+    }
+    
     if(iso_methodEC != ""){
 
       double  iso_cut_EC = StringToDouble(iso_methodEC,"ISOEC");

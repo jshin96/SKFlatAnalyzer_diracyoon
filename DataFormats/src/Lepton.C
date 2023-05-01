@@ -66,29 +66,31 @@ Lepton::Lepton() : Particle() {
 }
 
 void Lepton::PrintObject(TString label){
-  
+  cout << "------------------------------" << endl;
   cout << "Pt = " << this->Pt() << endl;
-  cout << "j_dXY =" << j_dXY << endl;
-  cout << "j_dXYerr =" << j_dXYerr << endl;
-  cout << "j_dZ =" << j_dZ  << endl;
+  cout << "Eta = " << this->fEta() << endl;
+  cout << "j_dXY = " << j_dXY << endl;
+  cout << "j_dXYerr = " << j_dXYerr << endl;
+  cout << "j_dZ = " << j_dZ  << endl;
   cout << "j_dZerr = " << j_dZerr  << endl;
-  cout << "j_IP3D =" << j_IP3D  << endl;
-  cout << "j_IP3Derr =" << j_IP3Derr  << endl;
-  cout << "j_RelIso =" << j_RelIso  << endl;
-  cout << "j_MiniRelIso =" << j_MiniRelIso << endl;
+  cout << "j_IP3D = " << j_IP3D  << endl;
+  cout << "j_IP3Derr = " << j_IP3Derr  << endl;
+  cout << "j_RelIso = " << j_RelIso  << endl;
+  cout << "j_MiniRelIso = " << j_MiniRelIso << endl;
   cout << "j_ptcone = " << j_ptcone  << endl;
-  cout << "j_lep_jetptrel=" << j_lep_jetptrel << endl;
-  cout << "j_lep_jetptratio=" << j_lep_jetptratio << endl;
-  cout << "j_MiniIso_ChHad =" << j_MiniIso_ChHad   << endl;
-  cout << "j_MiniIso_NHad =" << j_MiniIso_NHad  << endl;
-  cout << "j_MiniIso_PhHad =" << j_MiniIso_PhHad  << endl;
-  cout << "j_Iso_ChHad =" << j_Iso_ChHad  << endl;
-  cout << "j_Iso_NHad =" << j_Iso_NHad  << endl;
-  cout << "j_Iso_PhHad =" << j_Iso_PhHad  << endl;
-  cout << "j_jetntracks =" << j_jetntracks  << endl;
-  cout << "j_jetntracks_mva =" << j_jetntracks_mva  << endl;
-  cout << "j_lep_mva=" << j_lep_mva  << endl;
-  cout << "j_LeptonType =" << j_LeptonType  << endl;
+  cout << "j_lep_jetptrel= " << j_lep_jetptrel << endl;
+  cout << "j_lep_jetptratio= " << j_lep_jetptratio << endl;
+  cout << "j_lep_jetbscore = " << j_lep_jetbscore << endl;
+  cout << "j_MiniIso_ChHad = " << j_MiniIso_ChHad   << endl;
+  cout << "j_MiniIso_NHad = " << j_MiniIso_NHad  << endl;
+  cout << "j_MiniIso_PhHad = " << j_MiniIso_PhHad  << endl;
+  cout << "j_Iso_ChHad = " << j_Iso_ChHad  << endl;
+  cout << "j_Iso_NHad = " << j_Iso_NHad  << endl;
+  cout << "j_Iso_PhHad = " << j_Iso_PhHad  << endl;
+  cout << "j_jetntracks = " << j_jetntracks  << endl;
+  cout << "j_jetntracks_mva = " << j_jetntracks_mva  << endl;
+  cout << "j_lep_mva= " << j_lep_mva  << endl;
+  cout << "j_LeptonType = " << j_LeptonType  << endl;
 
   
   return;
@@ -141,7 +143,7 @@ bool Lepton::PassULMVA(double mva, double cut, TString s_mva) const {
     exit(ENODATA);
   }
 
-  //cout << "PassULMVA " << s_mva << " " << mva << " " << cut << endl;
+  //cout << "PassULMVA " << s_mva << " " << mva << " " << cut <<  " ( mva < cut) = " << ( mva < cut)  <<endl;
   if ( mva < cut)  return false;
   return true;
 }

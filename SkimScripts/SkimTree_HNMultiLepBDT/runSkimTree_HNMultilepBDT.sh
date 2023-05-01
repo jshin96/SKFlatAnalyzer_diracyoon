@@ -9,7 +9,12 @@ nmax=300
 skim=' '
 declare  -a era_list=("2016postVFP" "2016preVFP"  "2017" "2018")
 
-#declare  -a era_list=("2017")
+declare  -a era_list=("2017")
+
+if [[ $1 == "TEST" ]]; then
+    SKFlat.py -a $analyzer -i SSWWTypeI_SF_M1000_private -n  100  -e 2017&
+fi
+
 
 if [[ $1 == "DATA" ]]; then
     for i in "${era_list[@]}"
