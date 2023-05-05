@@ -3,7 +3,7 @@ rundir=runSkims
 mcpath=${SKFlat_WD}/SkimScripts/${analyzer}/Bkg/
 njobs=600
 njobs_data=600
-nmax=150
+nmax=50
 skim=' '
 declare  -a era_list=("2018" "2017"  "2016preVFP" "2016postVFP")
 if [[ $1 == "" ]]; then

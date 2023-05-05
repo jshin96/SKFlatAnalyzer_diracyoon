@@ -7,9 +7,10 @@ njobs=600
 njobs_data=100
 nmax=300
 skim=' '
-declare  -a era_list=("2016postVFP" "2016preVFP"  "2017" "2018")
 
-declare  -a era_list=("2017")
+#declare  -a era_list=("2016postVFP" "2016preVFP"  "2017" "2018")
+declare  -a era_list=("2016preVFP"  "2017" "2018")
+
 
 if [[ $1 == "TEST" ]]; then
     SKFlat.py -a $analyzer -i SSWWTypeI_SF_M1000_private -n  100  -e 2017&
@@ -48,6 +49,8 @@ if [[ $1 == "" ]]; then
         SKFlat.py -a $analyzer  -l ${mcpath}/MC.txt  -n 50  --nmax ${nmax}   -e ${i}   --skim  SkimTree_HNMultiLep&
         SKFlat.py -a $analyzer  -l ${mcpath}/MC2.txt  -n 300  --nmax ${nmax}   -e ${i}   --skim  SkimTree_HNMultiLep&
         SKFlat.py -a $analyzer  -l ${mcpath}/MC3.txt  -n 300  --nmax ${nmax}   -e ${i}   --skim  SkimTree_HNMultiLep&
-        SKFlat.py -a $analyzer  -l ${mcpath}/MC4.txt  -n 50  --nmax ${nmax}   -e ${i}   --skim  SkimTree_HNMultiLep
+        SKFlat.py -a $analyzer  -l ${mcpath}/MC4.txt  -n 50  --nmax ${nmax}   -e ${i}   --skim  SkimTree_HNMultiLep &
+        SKFlat.py -a $analyzer  -l ${mcpath}/MC5.txt  -n 200  --nmax ${nmax}   -e ${i}   --skim  SkimTree_HNMultiLep 
+        SKFlat.py -a $analyzer  -l ${sigpath}/Signal.txt  -n 100  --nmax 100   -e ${i}
     done
 fi

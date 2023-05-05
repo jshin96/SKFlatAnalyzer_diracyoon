@@ -506,7 +506,7 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
 
   }
 
-  if(PtOrderObj) std::sort(out.begin(),       out.end(),        PtComparing);
+  //if(PtOrderObj) std::sort(out.begin(),       out.end(),        PtComparing);
 
   return out;
 
@@ -2074,7 +2074,7 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
 
   }
 
-  if(PtOrderObj) std::sort(out.begin(),       out.end(),        PtComparing);
+  //if(PtOrderObj) std::sort(out.begin(),       out.end(),        PtComparing);
 
   return out;
 
@@ -2687,7 +2687,7 @@ std::vector<Jet> AnalyzerCore::GetAllJets(bool applyCorr){
     out.push_back(jet);
   }
 
-  if(PtOrderObj)  std::sort(out.begin(),       out.end(),        PtComparing);
+  //if(PtOrderObj)  std::sort(out.begin(),       out.end(),        PtComparing);
 
   return out;
 
@@ -2804,7 +2804,7 @@ std::vector<FatJet> AnalyzerCore::GetAllFatJets(){
     out.push_back(jet);
   }
 
-  if(PtOrderObj)  std::sort(out.begin(),       out.end(),        PtComparing);
+  //if(PtOrderObj)  std::sort(out.begin(),       out.end(),        PtComparing);
 
   return out;
 
