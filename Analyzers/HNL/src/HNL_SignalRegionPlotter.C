@@ -93,8 +93,6 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
 
   // Creat Lepton vector to have lepton blind codes 
 
-  Particle METv = GetvMET("PuppiT1xyCorr",param); // returns MET with systematic correction
-
   
   std::vector<FatJet> AK8_JetColl                 = GetHNLAK8Jets("HNL",param);
   std::vector<Jet> AK4_JetAllColl                 = GetHNLJets("NoCut_Eta3",param);
@@ -103,7 +101,9 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
   std::vector<Jet> VBF_JetColl                    = GetHNLJets("VBFTight",param);
   std::vector<Jet> BJetColl                       = GetHNLJets("BJetM",param);
   std::vector<Jet> BJetCollSR1                    = GetHNLJets("BJetT",param);
-  
+ 
+  Particle METv = GetvMET("PuppiT1xyCorr", param, VBF_JetColl, AK8_JetColl, MuonCollT, ElectronCollT); // returns MET with systematic correction; run this after all object selection done; NOTE that VBF jet is used here
+
   // select B jets                                                                                                                                                                        
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
   double sf_btag               = GetBJetSF(param, JetColl, param_jets);
