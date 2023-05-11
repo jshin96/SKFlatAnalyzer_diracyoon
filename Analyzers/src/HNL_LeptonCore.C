@@ -2913,6 +2913,61 @@ Particle HNL_LeptonCore::GetvMET(TString METType){
 
 }
 
+Particle HNL_LeptonCore::GetvMET(TString METType, AnalyzerParameter param, std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Muon> muons, std::vector<Electron> electrons){
+
+  //cout << "MET updating..." << endl;
+  bool IsType1   = METType.Contains("T1");
+  bool IsxyCorr  = METType.Contains("xyCorr");
+  bool UsePuppi  = METType.Contains("Puppi");
+
+  int IdxSyst = -1;
+
+  if(param.syst_ == AnalyzerParameter::METUnclUp)   IdxSyst = 10;
+  if(param.syst_ == AnalyzerParameter::METUnclDown)   IdxSyst = 11;
+
+  if(param.syst_ == AnalyzerParameter::JetResUp)  IdxSyst = 0;
+  if(param.syst_ == AnalyzerParameter::JetResDown)  IdxSyst = 1;
+  if(param.syst_ == AnalyzerParameter::JetEnUp)  IdxSyst = 2;
+  if(param.syst_ == AnalyzerParameter::JetEnDown)  IdxSyst = 3;
+  if(param.syst_ == AnalyzerParameter::MuonEnUp)  IdxSyst = 4;
+  if(param.syst_ == AnalyzerParameter::MuonEnDown)  IdxSyst = 5;
+  if(param.syst_ == AnalyzerParameter::ElectronEnUp)  IdxSyst = 6;
+  if(param.syst_ == AnalyzerParameter::ElectronEnDown)  IdxSyst = 7;
+
+  bool ApplySyst = (!IsDATA) && (param.syst_ != AnalyzerParameter::Central);
+  //cout << "Apply syst? " << ApplySyst << endl;
+
+  Particle vMET;
+
+  if(UsePuppi){
+    if(IsType1){
+      if(IsxyCorr) vMET.SetPtEtaPhiM(PuppiMET_Type1_PhiCor_pt, 0., PuppiMET_Type1_PhiCor_phi, 0.);
+      else         vMET.SetPtEtaPhiM(PuppiMET_Type1_pt, 0., PuppiMET_Type1_phi, 0.);
+    }
+  }
+  else{ // not using PFMET now
+    if(IsType1){
+      if( (!ApplySyst) or ( IdxSyst>=0 && (!isfinite(pfMET_Type1_PhiCor_pt_shifts->at(IdxSyst))) ) ){
+        if(IsxyCorr) vMET.SetPtEtaPhiM(pfMET_Type1_PhiCor_pt, 0., pfMET_Type1_PhiCor_phi, 0.);
+        else         vMET.SetPtEtaPhiM(pfMET_Type1_pt, 0., pfMET_Type1_phi, 0.);
+      }
+      else{
+        if(IsxyCorr) vMET.SetPtEtaPhiM(pfMET_Type1_PhiCor_pt_shifts->at(IdxSyst), 0., pfMET_Type1_PhiCor_phi_shifts->at(IdxSyst), 0.);
+        else         vMET.SetPtEtaPhiM(pfMET_Type1_pt_shifts->at(IdxSyst), 0., pfMET_Type1_phi_shifts->at(IdxSyst), 0.);
+      }
+    }
+  }
+
+  Particle vMETSyst;
+  if(METType.Contains("CMSSW")){ // use CMSSW-stored systematics
+    if(IsxyCorr) vMETSyst.SetPtEtaPhiM(PuppiMET_Type1_PhiCor_pt, 0., PuppiMET_Type1_PhiCor_phi, 0.); // FIXME NO puppi+type1+xycorr systematics is stored. Is this just omitted or not provided by CMSSW?
+    else         vMETSyst.SetPtEtaPhiM(PuppiMET_Type1_pt_shifts->at(IdxSyst), 0.,  PuppiMET_Type1_phi_shifts->at(IdxSyst), 0.);
+  }
+  else vMETSyst = UpdateMETSyst(param, vMET, jets, fatjets, muons, electrons); // Note that MET should be updated even when using the central MET, cuz there are some default corrections (Rochester, jet smearing, ...) in SKFlat and this must be propagated into the central MET.
+
+  return vMETSyst;
+}
+
 
 
 double HNL_LeptonCore::GetFilterEffType1(TString SigProcess, int mass){
