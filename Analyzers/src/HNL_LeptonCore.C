@@ -3205,7 +3205,9 @@ vector<Muon> HNL_LeptonCore::GetLepCollByRunType(const std::vector<Muon>& MuColl
   for(unsigned int i=0; i<MuColl.size(); i++){
     if(Option=="NoSel")  ReturnVec.push_back(MuColl.at(i));
     else {
-      int LepType=GetLeptonType_JH(MuColl.at(i), TruthColl); bool PassSel=true;
+      int LepType=GetLeptonType_JH(MuColl.at(i), TruthColl);
+      bool PassSel=false;
+
       if( LepType > 0 && LepType < 4) PassSel=true;
       if( GetHadFake    && (LepType<0 && LepType>=-4) ) PassSel=true;
       if( GetNHIntConv &&         LepType>=4         ) PassSel=true;
@@ -3303,7 +3305,9 @@ vector<Electron> HNL_LeptonCore::GetLepCollByRunType(const vector<Electron>& ElC
   for(unsigned int i=0; i<ElColl.size(); i++){
     if (Option == "NoSel") ReturnVec.push_back(ElColl.at(i));
     else {
-      int LepType=GetLeptonType_JH(ElColl.at(i), TruthColl); bool PassSel=true;
+      int LepType=GetLeptonType_JH(ElColl.at(i), TruthColl); 
+
+      bool PassSel=false;
       if( LepType > 0 && LepType < 4) PassSel=true;
       if( GetHadFake    && (LepType<0 && LepType>=-4) ) PassSel=true;
       if( GetNHIntConv &&         LepType>=4         ) PassSel=true;

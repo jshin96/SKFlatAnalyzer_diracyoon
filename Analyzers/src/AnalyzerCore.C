@@ -2174,8 +2174,8 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
 											  electron_mva_fakeTop_ed_v4->at(i));
     
     ////*************** CONV MVA
-    if(fChain->GetBranch("electron_mva_conv_v1")) el.SetHNL_ConvLepMVAV1(electron_mva_conv_v1->at(i));
-    if(fChain->GetBranch("electron_mva_conv_v2")) el.SetHNL_ConvLepMVAV2(electron_mva_conv_v2->at(i));
+    if(fChain->GetBranch("electron_mva_conv_v1"))    el.SetHNL_ConvLepMVAV1(electron_mva_conv_v1->at(i));
+    if(fChain->GetBranch("electron_mva_conv_v2"))    el.SetHNL_ConvLepMVAV2(electron_mva_conv_v2->at(i));
     if(fChain->GetBranch("electron_mva_conv_ed_v2")) el.SetHNL_ConvLepMVA_EtaDependantV2(electron_mva_conv_ed_v2->at(i));
 
     ////*************** CF MVA

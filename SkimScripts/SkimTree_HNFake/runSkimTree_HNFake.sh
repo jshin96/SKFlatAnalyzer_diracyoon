@@ -4,7 +4,7 @@ mcpath=${SKFlat_WD}/SkimScripts/${analyzer}/Bkg/
 datapath=${SKFlat_WD}/SkimScripts/${analyzer}/data_lists_multilep/
 njobs=400
 njobs_data=400
-nmax=140
+nmax=350
 skim=' '
 declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
 
