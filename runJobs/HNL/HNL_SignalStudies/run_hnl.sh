@@ -54,7 +54,7 @@ if [[ $1 == "QCD" ]]; then
 
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -i TTLJ_powheg   -n $njobs  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT &
+        SKFlat.py -a $analyzer  -i TTLJ_powheg   -n 500  --nmax 350  -e ${i}  &
     done
 
 fi

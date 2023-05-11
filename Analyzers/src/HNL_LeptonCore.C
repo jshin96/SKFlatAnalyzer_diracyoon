@@ -3118,6 +3118,7 @@ double  HNL_LeptonCore::GetMass(TString type , std::vector<Jet> jets, std::vecto
 
 vector<Muon> HNL_LeptonCore::GetLepCollByRunType(const std::vector<Muon>& MuColl, vector<Gen>& TruthColl, AnalyzerParameter param, TString Option){
 
+  /// Empty Option means  param is used to configure
   if(Option == ""){
     if(param.MuFakeMethod == "MC") Option+="HFake";
 
@@ -3129,7 +3130,7 @@ vector<Muon> HNL_LeptonCore::GetLepCollByRunType(const std::vector<Muon>& MuColl
 
   if(RunPromptTLRemoval) Option == "NHIntConv";
 
-  ///cout << "AnalyzerCore::GetLepCollByRunType  Muon Option = " << Option << endl;                                                                                                                                                                                                                        
+  ///cout << "AnalyzerCore::GetLepCollByRunType  Muon Option = " << Option << endl;                                                                                                                                                                                                                   
 
   bool GetHadFake=false,  GetNHIntConv=false, GetNHExtConv=false;
 
@@ -4768,9 +4769,21 @@ void HNL_LeptonCore::FillAllMuonPlots(TString label , TString cut,  std::vector<
     if (LepType >= 0) gen_label = to_string(LepType);
     else gen_label = "Minus_"+to_string(fabs(LepType));
 
-    //if(GenTypeMatched(MatchGenDef(gens,muons[i]))){
-    //  if(label.Contains("Fake")) FillMuonKinematicPlots("muon"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(gens,muons[i]), cut, muons.at(i), w);
-    // }
+    if(Analyzer == "HNL_LeptonIDBDTStudies"){
+      if(GenTypeMatched(MatchGenDef(gens,muons[i]))){
+	if(label.Contains("Fake")) FillMuonKinematicPlots("muon"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(gens,muons[i]), cut, muons.at(i), w);
+      }
+      
+      if(muons[i].HNL_MVA_Fake("v1") < -0.5) FillMuonKinematicPlots("muon_lowMVAv1_"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(gens,muons[i]), cut, muons.at(i), w);
+      if(muons[i].HNL_MVA_Fake("v1") > 0.5) FillMuonKinematicPlots("muon_highMVAv1_"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);
+      if(muons[i].HNL_MVA_Fake("v2") < -0.5) FillMuonKinematicPlots("muon_lowMVAv2_"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(gens,muons[i]), cut, muons.at(i), w);
+      if(muons[i].HNL_MVA_Fake("v2") > 0.5) FillMuonKinematicPlots("muon_highMVAv2_"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);
+      if(muons[i].HNL_MVA_Fake("v3") < -0.5) FillMuonKinematicPlots("muon_lowMVAv3_"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(gens,muons[i]), cut, muons.at(i), w);
+      if(muons[i].HNL_MVA_Fake("v3") > 0.5) FillMuonKinematicPlots("muon_highMVAv3_"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);
+      if(muons[i].MVA() < -0.5) FillMuonKinematicPlots("muon_lowMVAHF_"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(gens,muons[i]), cut, muons.at(i), w);
+      if(muons[i].MVA() > 0.5) FillMuonKinematicPlots("muon_highMVAHF_"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);
+
+    }
     FillMuonKinematicPlots("muon"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);
 
     
@@ -4905,11 +4918,13 @@ void HNL_LeptonCore::FillAllElectronPlots(TString label , TString cut,  std::vec
     if (LepType >= 0) gen_label = to_string(LepType);
     else gen_label = "Minus_"+to_string(fabs(LepType));
     
-    //if(GenTypeMatched(MatchGenDef(gens,ElectronColl.at(i)))){
-    //  
-    //  if(label.Contains("Fake")) FillElectronKinematicPlots("Electron_"+label+"_"+ ElectronColl.at(i).CloseJet_Flavour()+"_"+MatchGenDef(gens,ElectronColl[i]), cut, ElectronColl.at(i), w)//;
-
-    //    }
+    if(Analyzer== "HNL_LeptonIDBDTStudies"){
+      
+      if(GenTypeMatched(MatchGenDef(gens,ElectronColl.at(i)))){
+	
+	if(label.Contains("Fake")) FillElectronKinematicPlots("Electron_"+label+"_"+ ElectronColl.at(i).CloseJet_Flavour()+"_"+MatchGenDef(gens,ElectronColl[i]), cut, ElectronColl.at(i), w);
+      }
+    }
     FillElectronKinematicPlots("Electron_"+label+"_"+ ElectronColl.at(i).CloseJet_Flavour() , cut, ElectronColl.at(i), w);
   }
   return;

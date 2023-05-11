@@ -5,6 +5,7 @@ void HNL_LeptonIDBDTStudies::initializeAnalyzer(){
   // All default settings like trigger/ PD/ BJet are decalred in HNL_LeptonCore::initializeAnalyzer to make them consistent for all HNL codes
 
   HNL_LeptonCore::initializeAnalyzer();
+  SetupIDMVAReaderDefault(); /// Not needed for BDT skim                                                                                                                    
 
 }
 
@@ -254,21 +255,11 @@ void HNL_LeptonIDBDTStudies::executeEvent(){
 
   if(!PassMETFilter()) return;
 
-  
-  if(HasFlag("JetDisc"))MakeJetDiscPlots("LooseMuE",param,MuMu, ElectronCollProbe, MuonColl, weight);
-  if(HasFlag("JetDisc"))MakeJetDiscPlots("TightMuE",param,MuMu, ElectronColl, MuonColl, weight);
-
-  if(HasFlag("JetDisc"))MakeJetDiscPlots("LooseEMu",param,EE, ElectronColl, MuonCollProbe, weight);
-  if(HasFlag("JetDisc"))MakeJetDiscPlots("TightEMu",param,EE, ElectronColl, MuonColl, weight);
-
-
-
   if(HasFlag("Fakes")) {
-
     
     std::vector<Lepton *> LeptonCollProbe      = MakeLeptonPointerVector(MuonCollProbe, ElectronCollProbe);
     
-    
+
     if(SameCharge(MuonCollProbe)&&ElectronCollProbe.size()==0) {
       
       for( auto ilep : LeptonCollProbe){
@@ -865,7 +856,6 @@ void HNL_LeptonIDBDTStudies::CheckSSFakeBreakDown(AnalyzerParameter param,HNL_Le
                                                  
     for(auto imu : MuonCollFake) {
 
-
       TString lep_fake_tag=MatchGenDef(gens, imu);
       
       if (std::find(lables.begin(), lables.end(), lep_fake_tag) == lables.end()){
@@ -894,12 +884,10 @@ void HNL_LeptonIDBDTStudies::CheckSSFakeBreakDown(AnalyzerParameter param,HNL_Le
     }
     if(!SameCharge(LeptonColl))return;
 
-    //FillAllMuonPlots("SS_FakeMuon","MC"+channel_string,MuonCollFake,weight_ll);
-    //FillAllMuonPlots("SS_PromptMuon","MC"+channel_string,MuonCollPrompt,weight_ll);
-    
-    //FillHist(channel_string+"_SSFake/NFake", MuonCollFake.size(), weight_ll, 5, 0, 5);
-    
-    }
+    FillAllMuonPlots("SS_FakeMuon","MC"+channel_string,MuonCollFake,weight_ll);
+    FillAllMuonPlots("SS_PromptMuon","MC"+channel_string,MuonCollPrompt,weight_ll);
+        
+  }
   
     
 

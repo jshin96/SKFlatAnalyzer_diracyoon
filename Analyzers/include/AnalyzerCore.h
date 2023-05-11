@@ -120,6 +120,7 @@ public:
 
 
   TMVA::Reader *MuonIDFakeMVAReader;
+  TMVA::Reader *MuonIDFakeNoPtMVAReader;
   TMVA::Reader *ElectronIDFakeMVAReader;
   TMVA::Reader *ElectronIDCFMVAReader;
   TMVA::Reader *ElectronIDConvMVAReader;
@@ -179,6 +180,7 @@ public:
   double GetBDTScoreElV1(Electron el ,BkgType bkg,TString bdttag);
   double GetBDTScoreMuon(Muon mu ,BkgType bkg, TString bdttag="BDTA");
   double GetBDTScoreEl_EtaDependant(Electron el ,BkgType bkg, TString BDTTag);
+  double GetBDTScoreMuon_EtaDependant(Muon el ,BkgType bkg, TString BDTTag);
 
 
   double GetIsoFromID(TString type_lep, TString id, double eta, double pt);
@@ -561,10 +563,17 @@ public:
   vector<float>* velectron_mva_fakeHFC_v4;
   vector<float>* velectron_mva_fakeLF_v4;
   vector<float>* velectron_mva_fakeTop_v4;
+  vector<float>* velectron_mva_fake_ed_v4;
+  vector<float>* velectron_mva_fakeHF_ed_v4;
+  vector<float>* velectron_mva_fakeHFB_ed_v4;
+  vector<float>* velectron_mva_fakeHFC_ed_v4;
+  vector<float>* velectron_mva_fakeLF_ed_v4;
+  vector<float>* velectron_mva_fakeTop_ed_v4;
 
  
   vector<float>* velectron_mva_conv_v1;
   vector<float>* velectron_mva_conv_v2;
+  vector<float>* velectron_mva_conv_ed_v2;
 
   vector<float>* velectron_mva_cf_v1;
   vector<float>* velectron_mva_cf_v2;
@@ -579,6 +588,8 @@ public:
   vector<float>* vmuon_mva_fake_v1;
   vector<float>* vmuon_mva_fake_v2;
   vector<float>* vmuon_mva_fake_v3;
+  vector<float>* vmuon_mva_fake_v4;
+  vector<float>* vmuon_mva_fake_ed_v4;
   vector<float>* vmuon_ptrel;
   vector<float>* vmuon_ptratio;
   vector<float>* vmuon_cj_bjetdisc;
