@@ -492,21 +492,17 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
 	JetHadFlavour=0;
       }
 
-      //if(mu.Pt() > 10){
-	
-	//cout << "muon_jetPtRel = " << muon_jetPtRel->at(i) << " prov  =" <<  JetLeptonPtRelLepAware(mu,true,true) << " " << JetLeptonPtRelLepAware(mu,true,false) << endl;
-	
-	//cout << "muon_jetPtRatio = " << muon_jetPtRatio->at(i) << " prov  =" <<  JetLeptonPtRatioLepAware(mu,false,true) << " " << JetLeptonPtRatioLepAware(mu,false,false) << endl;
-
-      //      }
-
-      
-
       mu.SetJetPtRel(JetLeptonPtRelLepAware(mu));
       mu.SetJetPtRatio(JetLeptonPtRatioLepAware(mu));
       mu.SetCloseJetBScore(JetDiscCJ);
       mu.SetCloseJetFlavour(JetHadFlavour);
     }
+
+    if(!fChain->GetBranch("muon_lepton_type") ){
+      int lep_type = GetLeptonType_JH(mu, All_Gens);
+      mu.SetLeptonType(lep_type);
+    }
+    else     mu.SetLeptonType(muon_lepton_type->at(i));
     
     out.push_back(mu);
 
@@ -2302,12 +2298,21 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
       el.SetJetPtRatio(JetLeptonPtRatioLepAware(el));
       el.SetCloseJetBScore(JetDiscCJ);
       el.SetCloseJetFlavour(JetHadFlavour);
+      
     }
-    
+
+    if(!fChain->GetBranch("electron_lepton_type") ||  ! fChain->GetBranch("electron_is_cf"))  {
+      int lep_type = GetLeptonType_JH(el, All_Gens);
+      el.SetLeptonType(lep_type);
+      el.SetLeptonIsCF(IsCF(el, All_Gens) );
+    }
+    else {
+      el.SetLeptonType(electron_lepton_type->at(i));
+      el.SetLeptonIsCF(electron_is_cf->at(i));
+    }
     out.push_back(el);
-
   }
-
+  
   //if(PtOrderObj) std::sort(out.begin(),       out.end(),        PtComparing);
 
   return out;
@@ -4472,6 +4477,7 @@ void AnalyzerCore::SetupLeptonBDTSKFlat(){
     }
     vmuon_cj_bjetdisc->push_back(JetDiscCJ);
     vmuon_cj_flavour->push_back(JetFlavourCJ);
+    vmuon_lepton_type->push_back(GetLeptonType_JH(i, All_Gens));
   }
   for(auto i: AllelectronColl){
 
@@ -4540,6 +4546,10 @@ void AnalyzerCore::SetupLeptonBDTSKFlat(){
     }
     velectron_cj_bjetdisc->push_back(JetDiscCJ);
     velectron_cj_flavour->push_back(JetFlavourCJ);
+
+    velectron_lepton_type->push_back(GetLeptonType_JH(i, All_Gens));
+    velectron_is_cf->push_back(IsCF(i, All_Gens));
+    
   }
 
 
@@ -4586,8 +4596,10 @@ void AnalyzerCore::ResetLeptonBDTSKFlat(){
   velectron_mva_fakeHFC_ed_v4->clear();
   velectron_mva_fakeLF_ed_v4->clear();
   velectron_mva_fakeTop_ed_v4->clear();
-
+ 
   velectron_cj_flavour->clear();
+  velectron_lepton_type->clear();
+  velectron_is_cf->clear();
 
   vmuon_mva_fake_v1->clear();
   vmuon_mva_fake_v2->clear();
@@ -4598,6 +4610,7 @@ void AnalyzerCore::ResetLeptonBDTSKFlat(){
   vmuon_ptratio->clear();
   vmuon_cj_bjetdisc->clear();
   vmuon_cj_flavour->clear();
+  vmuon_lepton_type->clear();
 
   return;
 }
@@ -4643,6 +4656,8 @@ void AnalyzerCore::InitialiseLeptonBDTSKFlat(){
   velectron_mva_fakeLF_ed_v4 = 0 ;
   velectron_mva_fakeTop_ed_v4 = 0 ;
 
+  velectron_lepton_type=0;
+  velectron_is_cf=0;
 
   vmuon_mva_fake_v1 = 0;
   vmuon_mva_fake_v2 = 0;
@@ -4653,6 +4668,7 @@ void AnalyzerCore::InitialiseLeptonBDTSKFlat(){
   vmuon_ptrel  = 0;
   vmuon_cj_bjetdisc = 0;
   vmuon_cj_flavour = 0;
+  vmuon_lepton_type=0;
 
   return;
 }
@@ -4693,12 +4709,13 @@ void AnalyzerCore::beginEvent(){
   else PtOrderObj=true;
   
   if(_jentry%10000==0) cout << "PtOrderObj = " << PtOrderObj << endl;
-  
+
+  if(!IsData) All_Gens = GetGens();  
   All_Jets      = GetAllJets();
   All_FatJets   = GetAllFatJets();
   All_Muons     = GetAllMuons();
   All_Electrons = GetAllElectrons();
- 
+
   return;
 }
 void AnalyzerCore::initializeAnalyzerTools(){
@@ -4924,7 +4941,7 @@ std::vector<Muon> AnalyzerCore::MuonWithoutGap(const std::vector<Muon>& muons){
 }
 
 
-vector<Muon> AnalyzerCore::SkimLepColl(const vector<Muon>& MuColl, vector<Gen>& TruthColl, AnalyzerParameter param, TString Option){
+vector<Muon> AnalyzerCore::SkimLepColl(const vector<Muon>& MuColl,  AnalyzerParameter param, TString Option){
 
   bool GetPrompt=false, GetHadFake=false, GetEWtau=false, GetNHIntConv=false, GetNHExtConv=false;
 
@@ -4945,7 +4962,7 @@ vector<Muon> AnalyzerCore::SkimLepColl(const vector<Muon>& MuColl, vector<Gen>& 
 
     if(IsData) ReturnVec.push_back(MuColl.at(i));
     else {
-      int LepType=GetLeptonType_JH(MuColl.at(i), TruthColl); 
+      int LepType= MuColl.at(i).LeptonGenType(); 
       bool PassSel=false;
       
       if( GetPrompt    && (LepType==1 || LepType==2) ) PassSel=true;
@@ -4962,7 +4979,7 @@ vector<Muon> AnalyzerCore::SkimLepColl(const vector<Muon>& MuColl, vector<Gen>& 
 
 
 
-vector<Electron> AnalyzerCore::SkimLepColl(const vector<Electron>& ElColl, vector<Gen>& TruthColl, AnalyzerParameter param,TString Option){
+vector<Electron> AnalyzerCore::SkimLepColl(const vector<Electron>& ElColl, AnalyzerParameter param,TString Option){
 
   bool GetPrompt=false, GetHadFake=false, GetEWtau=false, GetNHIntConv=false, GetNHExtConv=false, GetCF=false;
   //CFHFakeNHConv
@@ -4980,15 +4997,16 @@ vector<Electron> AnalyzerCore::SkimLepColl(const vector<Electron>& ElColl, vecto
   for(unsigned int i=0; i<ElColl.size(); i++){
     if(IsData) ReturnVec.push_back(ElColl.at(i));
     else {
-      int LepType=GetLeptonType_JH(ElColl.at(i), TruthColl); bool PassSel=false;
+      int LepType= ElColl.at(i).LeptonGenType();
+      bool PassSel=false;
       
       if( GetPrompt    && (LepType==1 || LepType==2) ) PassSel=true;
       if( GetHadFake   && (LepType<0 && LepType>=-4) ) PassSel=true;
       if( GetEWtau     &&         LepType==3         ) PassSel=true;
       if( GetNHIntConv &&         LepType>=4         ) PassSel=true;
       if( GetNHExtConv &&         LepType<-4         ) PassSel=true;
-      if( GetCF        &&         IsCF(ElColl.at(i), TruthColl) ) PassSel=true;
-      if( Option.Contains("NoCF") && IsCF(ElColl.at(i), TruthColl) ) PassSel=false;
+      if( GetCF        &&         ElColl.at(i).LeptonIsCF() ) PassSel=true;
+      if( Option.Contains("NoCF") && ElColl.at(i).LeptonIsCF()) PassSel=false;
       if( PassSel ) ReturnVec.push_back(ElColl.at(i));
     }
   }
@@ -5296,7 +5314,7 @@ std::vector<Electron> AnalyzerCore::ElectronPromptOnly(const std::vector<Electro
       if(GetLeptonType(electrons.at(i), gens)== -6)pass=true;
     }
     if(param.CFMethod == "Data"){
-      if(IsCF(electrons.at(i), gens)) pass=false;
+      if(electrons.at(i).LeptonIsCF()) pass=false;
     }
     
     if(pass)out.push_back( electrons.at(i) );
@@ -6041,11 +6059,11 @@ void AnalyzerCore::PrintMatchedGen(std::vector<Gen>& gens,const Lepton& Lep){
   cout << "RunNumber:EventNumber = " << run << ":" << event << endl;
   cout << "index\tPID\tStatus\tMIdx\tMPID\tStart\tPt\tEta\tPhi\tM" << endl;
   
-  int Idx_Closest    = GenMatchedIdx(Lep,gens);
+  unsigned int Idx_Closest    = GenMatchedIdx(Lep,gens);
   cout << "Matched gen = " << Idx_Closest << endl;
 
   float minDr=1.;
-  int closest_index = 0;
+  unsigned int closest_index = 0;
   for(unsigned int i=2; i<gens.size(); i++){
 
     Gen gen = gens.at(i);
@@ -6283,7 +6301,7 @@ bool AnalyzerCore::IsFromHadron(const Gen& me, const std::vector<Gen>& gens){
 }
 
 
-bool AnalyzerCore::ConversionSplitting(std::vector<Lepton *> leps,const std::vector<Gen>& gens){
+bool AnalyzerCore::ConversionSplitting(std::vector<Lepton *> leps){
   
 
   if(IsData) return true;

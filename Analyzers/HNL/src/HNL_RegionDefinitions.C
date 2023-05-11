@@ -175,9 +175,9 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
     std::vector<Lepton *> leps       = MakeLeptonPointerVector(muons,electrons,param);
     
     
-    if(!PassEventTypeFilter(leps, gens)) continue;
+    if(!PassEventTypeFilter(leps)) continue;
 
-    if(!ConversionSplitting(leps,gens)) continue;
+    if(!ConversionSplitting(leps)) continue;
 
     if(!IsData && RunPromptTLRemoval){
       weight_channel = -1*weight_ll* GetFakeWeight(leps, param , false);
@@ -1034,7 +1034,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
   FillHist("CR_BeforeConvCut", 1. , weight_ll, 2., 0.,  2.);
 
   
-  if(!PassEventTypeFilter(LepsT, gens)) return;
+  if(!PassEventTypeFilter(LepsT)) return;
   
   if(!IsData && RunPromptTLRemoval){
     weight_ll = -1*weight_ll* GetFakeWeight(LepsT, param , false);
@@ -1080,8 +1080,8 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     if(! (CheckLeptonFlavourForChannel(dilep_channel, LepsT) || CheckLeptonFlavourForChannel(trilep_channel, LepsT) || CheckLeptonFlavourForChannel(fourlep_channel, LepsT))) continue;
     
     if(SameCharge(LepsT)){
-      int LepType1=GetLeptonType_JH(*LepsT[0], gens);
-      int LepType2=GetLeptonType_JH(*LepsT[1], gens);
+      int LepType1= LepsT[0]->LeptonGenType();
+      int LepType2= LepsT[1]->LeptonGenType();
       FillHist("ControlRegionLeptonType/"+param.Name + "/"+GetChannelString(channels[ic]) , LepType1, LepType2,  weight_channel, 14,-7., 7.,14, -7.,7.);
     }
    
@@ -1146,15 +1146,15 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     if(FillWZCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("WZ_CR");
     if(FillZNPCRPlots(trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("ZNP_CR");
 
-    if(run_Debug)cout << "Conv split "  <<  ConversionVeto(LepsT,gens) << " " << ConversionSplitting(LepsT,gens) << endl;
+    if(run_Debug)cout << "Conv split "  <<  ConversionVeto(LepsT,All_Gens) << " " << ConversionSplitting(LepsT) << endl;
     
     // Treat conversions using GENT MEthod
-    if(ConversionVeto(LepsT,gens)){
+    if(ConversionVeto(LepsT,All_Gens)){
       if(FillWGCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("WG_CR");
       if(FillZGCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("ZG_CR");
     }
     // Treat using pt cit method
-    if(ConversionSplitting(LepsT,gens)){
+    if(ConversionSplitting(LepsT)){
       
       AnalyzerParameter paramTMP=param;
       paramTMP.Name=param.Name+"_ConvMethodPt";
@@ -1219,7 +1219,7 @@ bool HNL_RegionDefinitions::FillTopCRPlots(HNL_LeptonCore::Channel channel, std:
 
   if(run_Debug){
     cout << "HNL_TopAK8_TwoLepton_CR " << event << endl;
-    for(auto ilep: leps) cout << "HNL_TopAK8_TwoLepton_CR Type " <<  GetLeptonType(*ilep, gens) << endl;
+    for(auto ilep: leps) cout << "HNL_TopAK8_TwoLepton_CR Type " <<  ilep->LeptonGenType() << endl;
     //PrintGen(gens);                                                                                                                                                                                              
   }
   if(SameCharge(leps)) Fill_RegionPlots(channel,1,"HNL_SS_TopAK8_TwoLepton_CR" , param.Name, JetColl  ,AK8_JetColl,  leps,  METv, nPV, w);
@@ -1244,7 +1244,7 @@ bool HNL_RegionDefinitions::FillZNPCRPlots(HNL_LeptonCore::Channel channel, std:
 
   if(run_Debug){
     cout << "HNL_ZNP_ThreeLepton_CR " << param.Name << " " << event  << endl;
-    for(auto ilep: leps) cout << "HNL_ZNP_ThreeLepton_CR Type " <<  GetLeptonType(*ilep, gens) << endl;
+    for(auto ilep: leps) cout << "HNL_ZNP_ThreeLepton_CR Type " <<  ilep->LeptonGenType() << endl;
   }
 
   Fill_RegionPlots(channel,1,"HNL_ZNP_ThreeLepton_CR" , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
@@ -1273,7 +1273,7 @@ bool HNL_RegionDefinitions::FillZCRPlots(HNL_LeptonCore::Channel channel, std::v
 
   if(run_Debug){
     cout << "HNL_ZAK8_TwoLepton_CR " << param.Name << " " << event  << endl;
-    for(auto ilep: leps) cout << "HNL_ZAK8_TwoLepton_CR Type " <<  GetLeptonType(*ilep, gens) << endl;
+    for(auto ilep: leps) cout << "HNL_ZAK8_TwoLepton_CR Type " <<  ilep->LeptonGenType() << endl;
   }
   if(SameCharge(leps))Fill_RegionPlots(channel, true,"HNL_SS_ZAK8_TwoLepton_CR" , param.Name, JetColl , AK8_JetColl,  leps,  METv, nPV, w);
   else Fill_RegionPlots(channel, true,"HNL_OS_ZAK8_TwoLepton_CR" , param.Name, JetColl , AK8_JetColl,  leps,  METv, nPV, w);
@@ -1325,7 +1325,7 @@ bool HNL_RegionDefinitions::FillWWCR1Plots(HNL_LeptonCore::Channel channel, std:
 
   if(run_Debug){
     cout << "HNL_WpWp_TwoLepton_CR " << param.Name << " " << event  << endl;
-    for(auto ilep: leps) cout << "HNL_WpWp_TwoLepton_CR Type " <<  GetLeptonType(*ilep, gens) << endl;
+    for(auto ilep: leps) cout << "HNL_WpWp_TwoLepton_CR Type " <<  ilep->LeptonGenType() << endl;
   }
   Fill_RegionPlots(channel, true,"HNL_WpWp_TwoLepton_CR1" , param.Name, jets_eta5,  AK8_JetColl,  leps,  METv, nPV, w);
 
@@ -1381,7 +1381,7 @@ bool HNL_RegionDefinitions::FillWWCR2Plots(HNL_LeptonCore::Channel channel, std:
 
   if(run_Debug){
     cout << "HNL_WpWp_TwoLepton_CR " << param.Name << " " << event  << endl;
-    for(auto ilep: leps) cout << "HNL_WpWp_TwoLepton_CR Type " <<  GetLeptonType(*ilep, gens) << endl;
+    for(auto ilep: leps) cout << "HNL_WpWp_TwoLepton_CR Type " <<  ilep->LeptonGenType() << endl;
   }
   Fill_RegionPlots(channel, true,"HNL_WpWp_TwoLepton_CR2" , param.Name, jets_eta5,  AK8_JetColl,  leps,  METv, nPV, w);
 
@@ -1433,7 +1433,7 @@ bool HNL_RegionDefinitions::FillWWCRNPPlots(HNL_LeptonCore::Channel channel, std
 
   if(run_Debug){
     cout << "HNL_WpWpNP_TwoLepton_CR " << param.Name << " " << event  << endl;
-    for(auto ilep: leps) cout << "HNL_WpWpNP_TwoLepton_CR Type " <<  GetLeptonType(*ilep, gens) << endl;
+    for(auto ilep: leps) cout << "HNL_WpWpNP_TwoLepton_CR Type " <<  ilep->LeptonGenType() << endl;
   }
 
   Fill_RegionPlots(channel, true,"HNL_WpWpNP_TwoLepton_CR" , param.Name, jets_eta5,  AK8_JetColl,  leps,  METv, nPV, w);
@@ -1483,7 +1483,7 @@ bool HNL_RegionDefinitions::FillWWCRNP2Plots(HNL_LeptonCore::Channel channel, st
 
   if(run_Debug){
     cout << "HNL_WpWpNP2_TwoLepton_CR " << param.Name << " " << event  << endl;
-    for(auto ilep: leps) cout << "HNL_WpWpNP2_TwoLepton_CR Type " <<  GetLeptonType(*ilep, gens) << endl;
+    for(auto ilep: leps) cout << "HNL_WpWpNP2_TwoLepton_CR Type " <<  ilep->LeptonGenType() << endl;
   }
 
   Fill_RegionPlots(channel, true,"HNL_WpWpNP2_TwoLepton_CR" , param.Name, jets_eta5,  AK8_JetColl,  leps,  METv, nPV, w);
@@ -1523,7 +1523,7 @@ bool HNL_RegionDefinitions::FillWWCRNP3Plots(HNL_LeptonCore::Channel channel, st
 
   if(run_Debug){
     cout << "HNL_WpWpNP3_TwoLepton_CR " << param.Name << " " << event  << endl;
-    for(auto ilep: leps) cout << "HNL_WpWpNP3_TwoLepton_CR Type " <<  GetLeptonType(*ilep, gens) << endl;
+    for(auto ilep: leps) cout << "HNL_WpWpNP3_TwoLepton_CR Type " <<  ilep->LeptonGenType() << endl;
   }
 
   Fill_RegionPlots(channel, true,"HNL_WpWpNP3_TwoLepton_CR" , param.Name, jets_eta5,  AK8_JetColl,  leps,  METv, nPV, w);
@@ -1628,14 +1628,14 @@ bool HNL_RegionDefinitions::FillHighMassSR1CRPlots(HNL_LeptonCore::Channel chann
   if(run_Debug){
     cout << "HNL_HighMassSR1_TwoLepton_CR " << param.Name << " " << event  << endl;
     for(auto ilep: leps){
-      Gen gen_closest = GetGenMatchedLepton(*ilep, gens);
+      Gen gen_closest = GetGenMatchedLepton(*ilep, All_Gens);
 
-      cout << "HNL_HighMassSR1_TwoLepton_CR Type " <<  GetLeptonType(*ilep, gens) << " " << ilep->Pt() << " " << ilep->Eta() << " " << ilep->Phi() << " matched gen = " <<  gen_closest.Index() << endl;
+      cout << "HNL_HighMassSR1_TwoLepton_CR Type " <<  ilep->LeptonGenType() << " " << ilep->Pt() << " " << ilep->Eta() << " " << ilep->Phi() << " matched gen = " <<  gen_closest.Index() << endl;
 
 
     }
 
-    for(auto ilep: leps)  cout << "HNL_HighMassSR1_TwoLepton_CR Type " <<  GetLeptonType(*ilep, gens) << " " << ilep->Pt() << " " << ilep->Eta() << " " << ilep->Phi() << endl;
+    for(auto ilep: leps)  cout << "HNL_HighMassSR1_TwoLepton_CR Type " <<  ilep->LeptonGenType() << " " << ilep->Pt() << " " << ilep->Eta() << " " << ilep->Phi() << endl;
   }
 
 
@@ -2179,14 +2179,14 @@ bool HNL_RegionDefinitions::FillZGCRPlots(HNL_LeptonCore::Channel channel, std::
     cout << "HNL_ZG_ThreeLepton_CR " << param.Name << " " << event  << endl;
 
     //for(auto ilep: leps){
-    // Gen gen_closest = GetGenMatchedLepton(*ilep, gens);
-    //  Gen gen_photon_closest = GetGenMatchedPhoton(*ilep, gens);
-      //int NearPhotonType = GetGenPhotonType(gen_photon_closest,gens);
+    // Gen gen_closest = GetGenMatchedLepton(*ilep, All_Gens);
+    //  Gen gen_photon_closest = GetGenMatchedPhoton(*ilep, All_Gens);
+      //int NearPhotonType = GetGenPhotonType(gen_photon_closest,All_Gens);
 
     //      FillHist("Photon_pt_HNL_ZG_ThreeLepton_CR",gen_photon_closest.Pt() , w, 100., 0.,  200.);
     // }
 
-    //PrintGen(gens);
+    //PrintGen(All_Gens);
   }
 
   Fill_RegionPlots(channel,1,"HNL_ZG_ThreeLepton_CR" , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
@@ -2226,7 +2226,7 @@ bool HNL_RegionDefinitions::FillWGCRPlots(HNL_LeptonCore::Channel channel, std::
   if(run_Debug){
     cout << "HNL_WG_ThreeLepton_CR " << param.Name << " " << event  << endl;
 
-    PrintGen(gens);
+    PrintGen(All_Gens);
   }
   Fill_RegionPlots(channel,1,"HNL_WG_ThreeLepton_CR"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 

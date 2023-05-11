@@ -28,6 +28,7 @@ Lepton::Lepton() : Particle() {
   j_jetntracks_mva = -1;
   j_lep_mva=-999;
   j_LeptonType = -999;
+  j_LeptonIsCF = false;
   j_passID = false;
   j_IDSet= false;
 
@@ -352,6 +353,9 @@ void Lepton::SetLeptonType(int t){
   j_LeptonType= t;
 }
 
+void Lepton::SetLeptonIsCF(bool t){
+  j_LeptonIsCF= t;
+}
 
 
 void Lepton::SetID(){

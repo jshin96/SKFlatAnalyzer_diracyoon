@@ -576,18 +576,18 @@ double HNL_LeptonCore::MergeMultiMC(vector<TString> vec, TString Method){
       
       int NearPhotonIdx=-1;
       
-      for(unsigned int i=2; i<gens.size(); i++){
-	Gen gen = gens[i];
-	if( gens.at(i).MotherIndex()<0   ) continue;
-	if( !(gens.at(i).PID()==22 && (gens.at(i).Status()==23)) ) continue;
+      for(unsigned int i=2; i<All_Gens.size(); i++){
+	Gen gen = All_Gens[i];
+	if( All_Gens.at(i).MotherIndex()<0   ) continue;
+	if( !(All_Gens.at(i).PID()==22 && (All_Gens.at(i).Status()==23)) ) continue;
 	NearPhotonIdx=i;
       }
       if(NearPhotonIdx < 0) {
 	double maxpt=0;
-	for(unsigned int i=2; i<gens.size(); i++){
-	  Gen gen = gens[i];
-	  if( gens.at(i).MotherIndex()<0   ) continue;
-	  if( !(gens.at(i).PID()==22 && (gens.at(i).Status()==1)) ) continue;
+	for(unsigned int i=2; i<All_Gens.size(); i++){
+	  Gen gen = All_Gens[i];
+	  if( All_Gens.at(i).MotherIndex()<0   ) continue;
+	  if( !(All_Gens.at(i).PID()==22 && (All_Gens.at(i).Status()==1)) ) continue;
 	  if(gen.isPromptFinalState() && gen.Pt() > maxpt) {
 	    NearPhotonIdx=i;
 	    maxpt = gen.Pt();
@@ -597,7 +597,7 @@ double HNL_LeptonCore::MergeMultiMC(vector<TString> vec, TString Method){
 
       if(NearPhotonIdx < 0) return 0;
       
-      double phPt= gens[NearPhotonIdx].Pt();
+      double phPt= All_Gens[NearPhotonIdx].Pt();
     
       if(Method == "Split"){
 	if (MCSample == "WGToLNuG_01J_PtG_130"){
@@ -1686,7 +1686,7 @@ double HNL_LeptonCore::SetupWeight(Event ev, AnalyzerParameter param){
 
   double w_topptrw(1.);
   if(MCSample.Contains("TT") and MCSample.Contains("powheg")) {
-    w_topptrw = mcCorr->GetTopPtReweight(GetGens()); 
+    w_topptrw = mcCorr->GetTopPtReweight(All_Gens); 
     FillWeightHist("TopPtWeight_" , w_topptrw);
   }
   
@@ -2082,17 +2082,16 @@ Particle HNL_LeptonCore::GetSignalObject(TString obj, TString Sig){
   
   if(Sig=="DY"){
 
-    if(gens.size()==0)   gens = GetGens();
 
     int N_Mother_ind(-1); // Index of N                                                                                                                                                                                                                                
     int W2_ind(0); // Index of W2 : i.e W from N decay                                                                                                                
 
-    for(unsigned int i=2; i<gens.size(); i++){
-      Gen gen = gens.at(i);
-      if(fabs(gen.PID()) == 24 && (gens.at(gen.MotherIndex()).PID() == 9900012 || gens.at(gen.MotherIndex()).PID() == 9900014)){
+    for(unsigned int i=2; i<All_Gens.size(); i++){
+      Gen gen = All_Gens.at(i);
+      if(fabs(gen.PID()) == 24 && (All_Gens.at(gen.MotherIndex()).PID() == 9900012 || All_Gens.at(gen.MotherIndex()).PID() == 9900014)){
 	W2_ind= i;
-	for(unsigned int i2=2; i2<gens.size(); i2++){
-	  Gen gen2 = gens.at(i2);
+	for(unsigned int i2=2; i2<All_Gens.size(); i2++){
+	  Gen gen2 = All_Gens.at(i2);
 	  if(gen2.MotherIndex() == W2_ind){
 	    if (fabs(gen2.PID()) == 24 ) W2_ind = i2;
 	  }
@@ -2110,22 +2109,22 @@ Particle HNL_LeptonCore::GetSignalObject(TString obj, TString Sig){
     Gen j1,j2;
     bool j1IsSet(false);
 
-    for(unsigned int i=2; i<gens.size(); i++){
-      Gen gen = gens.at(i);
+    for(unsigned int i=2; i<All_Gens.size(); i++){
+      Gen gen = All_Gens.at(i);
 
       if(int(gen.MotherIndex()) == W2_ind && gen.Status() == 23) {
-	W2 = gens.at(gen.MotherIndex());
+	W2 = All_Gens.at(gen.MotherIndex());
 	if(!j1IsSet) {  j1= gen; j1IsSet=true;}
 	else j2 = gen;
       }
       if(gen.PID() == 9900012 || gen.PID() == 9900014){
-	N= gens.at(i);
+	N= All_Gens.at(i);
       }
       if( ! ( ( fabs(gen.PID()) == 13)  || (fabs(gen.PID()) == 11) )) continue;
 
       TString LepFl = (fabs(gen.PID()) == 13) ? "Mu" : "El";
 
-      if(gens.at(gen.MotherIndex()).PID() == 9900012|| gens.at(gen.MotherIndex()).PID() == 9900014) {
+      if(All_Gens.at(gen.MotherIndex()).PID() == 9900012|| All_Gens.at(gen.MotherIndex()).PID() == 9900014) {
 	LepFromN = gen;
       }
       else if(gen.MotherIndex() == N_Mother_ind){
@@ -2556,27 +2555,27 @@ std::vector<Jet> HNL_LeptonCore::GetHNLJets(TString JetType, AnalyzerParameter p
 vector<Gen> HNL_LeptonCore::GetGenLepronsSignal(){
 
   bool isDYVBF=false;
-  vector<Gen> gens= GetGens();
+
   vector<Gen> gen_lep;
   int N_Mother(0);
 
-  for (auto i : gens){ Gen gen = i; if(gen.PID() == 9900012 || gen.PID() == 9900014) isDYVBF=true; }
+  for (auto i : All_Gens){ Gen gen = i; if(gen.PID() == 9900012 || gen.PID() == 9900014) isDYVBF=true; }
 
   if(isDYVBF){
 
-    for(unsigned int i=2; i<gens.size(); i++){
+    for(unsigned int i=2; i<All_Gens.size(); i++){
 
-      Gen gen = gens.at(i);
+      Gen gen = All_Gens.at(i);
 
       if((gen.PID() == 9900012 || gen.PID() == 9900014)  && gen.Status()==22) {
         N_Mother= gen.MotherIndex();
       }
     }
 
-    for(unsigned int i=2; i<gens.size(); i++){
-      Gen gen = gens.at(i);     TString lep_ch="";
+    for(unsigned int i=2; i<All_Gens.size(); i++){
+      Gen gen = All_Gens.at(i);     TString lep_ch="";
 
-      if((gens.at(gen.MotherIndex()).PID() == 9900012|| gens.at(gen.MotherIndex()).PID() == 9900014) && !(gens.at(i).PID() == 9900012 || gens.at(i).PID() == 9900014)){
+      if((All_Gens.at(gen.MotherIndex()).PID() == 9900012|| All_Gens.at(gen.MotherIndex()).PID() == 9900014) && !(All_Gens.at(i).PID() == 9900012 || All_Gens.at(i).PID() == 9900014)){
 
         if(fabs(gen.PID()) == 15)     gen_lep.push_back(gen);
 
@@ -2584,7 +2583,7 @@ vector<Gen> HNL_LeptonCore::GetGenLepronsSignal(){
         if(fabs(gen.PID()) == 11)     gen_lep.push_back(gen);
 
       }
-      else if(gen.MotherIndex() == N_Mother&& !(gens.at(i).PID() == 9900012 || gens.at(i).PID() == 9900014)){
+      else if(gen.MotherIndex() == N_Mother&& !(All_Gens.at(i).PID() == 9900012 || All_Gens.at(i).PID() == 9900014)){
 
 
         if(fabs(gen.PID()) == 15) gen_lep.push_back(gen);
@@ -2600,8 +2599,8 @@ vector<Gen> HNL_LeptonCore::GetGenLepronsSignal(){
 
 
 
-    for(unsigned int i=2; i<gens.size(); i++){
-      Gen gen = gens.at(i);
+    for(unsigned int i=2; i<All_Gens.size(); i++){
+      Gen gen = All_Gens.at(i);
       if (fabs(gen.PID()) == 13 && gen.Status() == 23) gen_lep.push_back(gen);
       if (fabs(gen.PID()) == 11 && gen.Status() == 23) gen_lep.push_back(gen);
       if (fabs(gen.PID()) == 15 && gen.Status() == 23)gen_lep.push_back(gen);
@@ -2641,23 +2640,22 @@ TString HNL_LeptonCore::GetProcess(){
   //  cout << "index\tPID\tStatus\tMIdx\tMPID\tStart\tPt\tEta\tPhi\tM" << endl;                                                                                                                                          
 
   bool isDYVBF=false;
-  vector<Gen> gens= GetGens();
 
-  for (auto i : gens){ Gen gen = i; if(gen.PID() == 9900012 || gen.PID() == 9900014) isDYVBF=true; }
+  for (auto i : All_Gens){ Gen gen = i; if(gen.PID() == 9900012 || gen.PID() == 9900014) isDYVBF=true; }
 
   if(isDYVBF){
 
     /*bool isVBF=false;                                                                                                                                                                                                  
                                                                                                                                                                                                                          
-    for (auto i : gens){                                                                                                                                                                                                 
+    for (auto i : All_Gens){                                                                                                                                                                                                 
       Gen gen = i;                                                                                                                                                                                                       
       if (gen.PID() == 22 && gen.Status() == 21) isVBF=true;                                                                                                                                                             
     }                                                                                                                                                                                                                    
     */
 
-    for(unsigned int i=2; i<gens.size(); i++){
+    for(unsigned int i=2; i<All_Gens.size(); i++){
 
-      Gen gen = gens.at(i);
+      Gen gen = All_Gens.at(i);
 
       if((gen.PID() == 9900012 || gen.PID() == 9900014)  && gen.Status()==22) {
         N_Mother= gen.MotherIndex();
@@ -2670,10 +2668,10 @@ TString HNL_LeptonCore::GetProcess(){
     TString lep1_s="", lep2_s="";
     TString lep1_ss="", lep2_ss="";
 
-    for(unsigned int i=2; i<gens.size(); i++){
-      Gen gen = gens.at(i);     TString lep_ch="";
+    for(unsigned int i=2; i<All_Gens.size(); i++){
+      Gen gen = All_Gens.at(i);     TString lep_ch="";
 
-      if((gens.at(gen.MotherIndex()).PID() == 9900012|| gens.at(gen.MotherIndex()).PID() == 9900014) && !(gens.at(i).PID() == 9900012 || gens.at(i).PID() == 9900014)){
+      if((All_Gens.at(gen.MotherIndex()).PID() == 9900012|| All_Gens.at(gen.MotherIndex()).PID() == 9900014) && !(All_Gens.at(i).PID() == 9900012 || All_Gens.at(i).PID() == 9900014)){
         //if(fabs(gen.PID())  < 16 && fabs(gen.PID())  > 10) lep_2_ch = (gen.PID() < 0) ? 1 : -1;                                                                                                                        
 
         if(fabs(gen.PID()) == 15) {
@@ -2696,7 +2694,7 @@ TString HNL_LeptonCore::GetProcess(){
           lep_2_ch = (gen.PID() < 0) ? 1 : -1;
         }
       }
-      else if(gen.MotherIndex() == N_Mother&& !(gens.at(i).PID() == 9900012 || gens.at(i).PID() == 9900014)){
+      else if(gen.MotherIndex() == N_Mother&& !(All_Gens.at(i).PID() == 9900012 || All_Gens.at(i).PID() == 9900014)){
 
         //if(fabs(gen.PID())  < 16 && fabs(gen.PID())  > 10)  lep_1_ch = (gen.PID() < 0) ? 1 : -1;                                                                                                                      
         if(fabs(gen.PID()) == 15) {
@@ -2728,8 +2726,8 @@ TString HNL_LeptonCore::GetProcess(){
 
 
     TString pr="SS_";
-    for(unsigned int i=2; i<gens.size(); i++){
-      Gen gen = gens.at(i);
+    for(unsigned int i=2; i<All_Gens.size(); i++){
+      Gen gen = All_Gens.at(i);
       if (fabs(gen.PID()) == 13 && gen.Status() == 23) {
         pr=pr+"Mu";
         if (gen.PID() < 0) pr = pr+"+";
@@ -3171,7 +3169,8 @@ double  HNL_LeptonCore::GetMass(TString type , std::vector<Jet> jets, std::vecto
 
 
 
-vector<Muon> HNL_LeptonCore::GetLepCollByRunType(const std::vector<Muon>& MuColl, vector<Gen>& TruthColl, AnalyzerParameter param, TString Option){
+vector<Muon> HNL_LeptonCore::GetLepCollByRunType(const std::vector<Muon>& MuColl, AnalyzerParameter param, TString Option){
+
 
   /// Empty Option means  param is used to configure
   if(Option == ""){
@@ -3205,7 +3204,8 @@ vector<Muon> HNL_LeptonCore::GetLepCollByRunType(const std::vector<Muon>& MuColl
   for(unsigned int i=0; i<MuColl.size(); i++){
     if(Option=="NoSel")  ReturnVec.push_back(MuColl.at(i));
     else {
-      int LepType=GetLeptonType_JH(MuColl.at(i), TruthColl);
+      int LepType= MuColl.at(i).LeptonGenType();
+
       bool PassSel=false;
 
       if( LepType > 0 && LepType < 4) PassSel=true;
@@ -3269,7 +3269,7 @@ vector<Muon> HNL_LeptonCore::GetSignalLeptons(const std::vector<Muon>& MuColl, v
 
 
 
-vector<Electron> HNL_LeptonCore::GetLepCollByRunType(const vector<Electron>& ElColl, vector<Gen>& TruthColl, AnalyzerParameter param, TString Option){
+vector<Electron> HNL_LeptonCore::GetLepCollByRunType(const vector<Electron>& ElColl, AnalyzerParameter param, TString Option){
 
 
   if(Option == ""){
@@ -3305,15 +3305,15 @@ vector<Electron> HNL_LeptonCore::GetLepCollByRunType(const vector<Electron>& ElC
   for(unsigned int i=0; i<ElColl.size(); i++){
     if (Option == "NoSel") ReturnVec.push_back(ElColl.at(i));
     else {
-      int LepType=GetLeptonType_JH(ElColl.at(i), TruthColl); 
+      int LepType= ElColl.at(i).LeptonGenType();
 
       bool PassSel=false;
       if( LepType > 0 && LepType < 4) PassSel=true;
       if( GetHadFake    && (LepType<0 && LepType>=-4) ) PassSel=true;
       if( GetNHIntConv &&         LepType>=4         ) PassSel=true;
       if( GetNHExtConv &&         LepType<-4         ) PassSel=true;
-      if( GetCF   && IsCF(ElColl.at(i), TruthColl) ) PassSel=true;
-      if( !GetCF && IsCF(ElColl.at(i), TruthColl) ) PassSel=false;
+      if( GetCF   && ElColl.at(i).LeptonIsCF() ) PassSel=true;
+      if( !GetCF && ElColl.at(i).LeptonIsCF() ) PassSel=false;
       if( PassSel ) ReturnVec.push_back(ElColl.at(i));
     }
   }
@@ -3650,62 +3650,43 @@ TString HNL_LeptonCore::GetEtaLabel(Muon mu){
 }
 
 
-double HNL_LeptonCore::PassEventTypeFilter(vector<Lepton *> leps , vector<Gen> gens){
+double HNL_LeptonCore::PassEventTypeFilter(vector<Lepton *> leps){
 
   if(IsData) return true;
-
-
+  
   int nConv(0);
-  //int nCF=(0);                                                                                                                                                                                                                                                                                           
+  int nCF=(0);                                                                                                                                                                                                                                                                                           
   for(auto ilep: leps){
-    int LepType=GetLeptonType_JH(*ilep, gens);
-    if( LepType >=4 || LepType < -4) nConv++;
+    //int LepType= GetLeptonType_JH(*ilep, gens);
+    if( ilep->IsConv())  nConv++;
+    if( ilep->LeptonIsCF()) nCF++;
   }
   if(RunConv && nConv==0)  return false;
+  if(RunCF && nCF == 0)  return false;
+
   if(!RunPromptTLRemoval){
     if(!RunConv && nConv > 0) return false;
+    if(!RunCF && nCF > 0) return false;
   }
 
   return true;
 }
 
-TString HNL_LeptonCore::GetElType(Electron el, const std::vector<Gen>& gens){
+
+TString HNL_LeptonCore::GetElTypeTString(Electron el){
   if(IsDATA) return "";
   TString tag = "";
-  if(GetLeptonType(el, gens) > 0) tag += "NF";
-  else tag += "F";
 
-  if(fabs(GetLeptonType(el, gens))  >=4)  tag += "_Conv";
-  if(IsCF(el, gens)) tag += "_CF";
-
-  return tag;
-}
-TString HNL_LeptonCore::GetElTypeString(Electron el, const std::vector<Gen>& gens){
-  if(IsDATA) return "";
-  TString tag = "";
-  if(GetLeptonType(el, gens) > 0) tag += "NonFake";
-  else tag += "Fake";
-
-  if(fabs(GetLeptonType(el, gens))  >=4)  tag += "_Conv";
-  if(IsCF(el, gens)) tag += "_CF";
-
+  if(GetLeptonType(el, All_Gens) < 0) tag = "Minus";
+  tag+=TString::Itoa(fabs( el.LeptonGenType()), 10);
   return tag;
 }
 
-TString HNL_LeptonCore::GetElTypeTString(Electron el, const std::vector<Gen>& gens){
+TString HNL_LeptonCore::GetLepTypeTString(const Lepton& lep){
   if(IsDATA) return "";
   TString tag = "";
-
-  if(GetLeptonType(el, gens) < 0) tag = "Minus";
-  tag+=TString::Itoa(fabs(GetLeptonType(el, gens)), 10);
-  return tag;
-}
-
-TString HNL_LeptonCore::GetLepTypeTString(const Lepton& lep, const std::vector<Gen>& gens){
-  if(IsDATA) return "";
-  TString tag = "";
-  if(GetLeptonType(lep, gens) < 0) tag = "Minus";
-  tag+=TString::Itoa(fabs(GetLeptonType(lep, gens)), 10);
+  if(GetLeptonType(lep, All_Gens) < 0) tag = "Minus";
+  tag+=TString::Itoa(fabs(lep.LeptonGenType()), 10);
   return tag;
 }
 
@@ -4823,23 +4804,24 @@ void HNL_LeptonCore::FillAllMuonPlots(TString label , TString cut,  std::vector<
  
     TString pt_label=GetPtBin(true,muons.at(i).Pt());
 
-    int LepType= GetLeptonType_JH(muons.at(i), gens);
+    int LepType= muons.at(i).LeptonGenType();
+
     TString gen_label = "";
     if (LepType >= 0) gen_label = to_string(LepType);
     else gen_label = "Minus_"+to_string(fabs(LepType));
 
     if(Analyzer == "HNL_LeptonIDBDTStudies"){
-      if(GenTypeMatched(MatchGenDef(gens,muons[i]))){
-	if(label.Contains("Fake")) FillMuonKinematicPlots("muon"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(gens,muons[i]), cut, muons.at(i), w);
+      if(GenTypeMatched(MatchGenDef(All_Gens,muons[i]))){
+	if(label.Contains("Fake")) FillMuonKinematicPlots("muon"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,muons[i]), cut, muons.at(i), w);
       }
       
-      if(muons[i].HNL_MVA_Fake("v1") < -0.5) FillMuonKinematicPlots("muon_lowMVAv1_"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(gens,muons[i]), cut, muons.at(i), w);
+      if(muons[i].HNL_MVA_Fake("v1") < -0.5) FillMuonKinematicPlots("muon_lowMVAv1_"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,muons[i]), cut, muons.at(i), w);
       if(muons[i].HNL_MVA_Fake("v1") > 0.5) FillMuonKinematicPlots("muon_highMVAv1_"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);
-      if(muons[i].HNL_MVA_Fake("v2") < -0.5) FillMuonKinematicPlots("muon_lowMVAv2_"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(gens,muons[i]), cut, muons.at(i), w);
+      if(muons[i].HNL_MVA_Fake("v2") < -0.5) FillMuonKinematicPlots("muon_lowMVAv2_"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,muons[i]), cut, muons.at(i), w);
       if(muons[i].HNL_MVA_Fake("v2") > 0.5) FillMuonKinematicPlots("muon_highMVAv2_"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);
-      if(muons[i].HNL_MVA_Fake("v3") < -0.5) FillMuonKinematicPlots("muon_lowMVAv3_"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(gens,muons[i]), cut, muons.at(i), w);
+      if(muons[i].HNL_MVA_Fake("v3") < -0.5) FillMuonKinematicPlots("muon_lowMVAv3_"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,muons[i]), cut, muons.at(i), w);
       if(muons[i].HNL_MVA_Fake("v3") > 0.5) FillMuonKinematicPlots("muon_highMVAv3_"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);
-      if(muons[i].MVA() < -0.5) FillMuonKinematicPlots("muon_lowMVAHF_"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(gens,muons[i]), cut, muons.at(i), w);
+      if(muons[i].MVA() < -0.5) FillMuonKinematicPlots("muon_lowMVAHF_"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,muons[i]), cut, muons.at(i), w);
       if(muons[i].MVA() > 0.5) FillMuonKinematicPlots("muon_highMVAHF_"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);
 
     }
@@ -4972,16 +4954,16 @@ void HNL_LeptonCore::FillAllElectronPlots(TString label , TString cut,  std::vec
 
     TString pt_label=GetPtBin(false,ElectronColl.at(i).Pt());
 
-    int LepType= GetLeptonType_JH(ElectronColl.at(i), gens);
+    int LepType= ElectronColl.at(i).LeptonGenType();
     TString gen_label ="";
     if (LepType >= 0) gen_label = to_string(LepType);
     else gen_label = "Minus_"+to_string(fabs(LepType));
     
     if(Analyzer== "HNL_LeptonIDBDTStudies"){
       
-      if(GenTypeMatched(MatchGenDef(gens,ElectronColl.at(i)))){
+      if(GenTypeMatched(MatchGenDef(All_Gens,ElectronColl.at(i)))){
 	
-	if(label.Contains("Fake")) FillElectronKinematicPlots("Electron_"+label+"_"+ ElectronColl.at(i).CloseJet_Flavour()+"_"+MatchGenDef(gens,ElectronColl[i]), cut, ElectronColl.at(i), w);
+	if(label.Contains("Fake")) FillElectronKinematicPlots("Electron_"+label+"_"+ ElectronColl.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,ElectronColl[i]), cut, ElectronColl.at(i), w);
       }
     }
     FillElectronKinematicPlots("Electron_"+label+"_"+ ElectronColl.at(i).CloseJet_Flavour() , cut, ElectronColl.at(i), w);

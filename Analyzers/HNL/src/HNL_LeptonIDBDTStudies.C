@@ -237,8 +237,6 @@ void HNL_LeptonIDBDTStudies::executeEvent(){
     TriggerPrintOut(GetEvent());
   }
   
-  if(!IsData)  gens = GetGens();
-
   TString ID = "POG";
 
   AnalyzerParameter param  = HNL_LeptonCore::InitialiseHNLParameter(ID,"");
@@ -264,36 +262,36 @@ void HNL_LeptonIDBDTStudies::executeEvent(){
       
       for( auto ilep : LeptonCollProbe){
 	
-	int LepType=GetLeptonType_JH(*ilep, gens);
+	int LepType=ilep->LeptonGenType();
 	if(LepType >0 ) continue;
 
 	
-	//if(!(MatchGenDef(gens, *ilep) == "__" || MatchGenDef(gens, *ilep) == "pi0") ) continue;
-	if(!(MatchGenDef(gens, *ilep) == "__") ) continue;
+	//if(!(MatchGenDef(All_Gens, *ilep) == "__" || MatchGenDef(All_Gens, *ilep) == "pi0") ) continue;
+	if(!(MatchGenDef(All_Gens, *ilep) == "__") ) continue;
 
-	cout << "SSMM MatchGenDef = " << MatchGenDef(gens, *ilep) << endl;
+	cout << "SSMM MatchGenDef = " << MatchGenDef(All_Gens, *ilep) << endl;
 	cout << "Reco " << ilep->GetFlavour() << " pt = " << ilep->Pt() << " eta = " << ilep->Eta() << " phi = " << ilep->Phi() << endl;
 	cout << "CloseJet_Flavour = " << ilep->CloseJet_Flavour() << " type = " << LepType << endl;
 	
-	PrintMatchedGen(gens, *ilep);
+	PrintMatchedGen(All_Gens, *ilep);
       }
     }  
     if(SameCharge(ElectronCollProbe) && MuonCollProbe.size()==0) {
       
       for( auto ilep: LeptonCollProbe){
 	
-	int LepType=GetLeptonType_JH(*ilep, gens);
+	int LepType=ilep->LeptonGenType();
 
 	if(LepType >0 ) continue;
 
 	
-        //if(!(MatchGenDef(gens, *ilep) == "__" || MatchGenDef(gens, *ilep) == "pi0") ) continue;
-	if(!(MatchGenDef(gens, *ilep) == "__") ) continue;   
+        //if(!(MatchGenDef(All_Gens, *ilep) == "__" || MatchGenDef(All_Gens, *ilep) == "pi0") ) continue;
+	if(!(MatchGenDef(All_Gens, *ilep) == "__") ) continue;   
 	
-	cout << "SSEE MatchGenDef = " << MatchGenDef(gens, *ilep) << endl;
+	cout << "SSEE MatchGenDef = " << MatchGenDef(All_Gens, *ilep) << endl;
 	cout << "Reco " << ilep->GetFlavour() << " pt = " << ilep->Pt() << " eta = " << ilep->Eta() << " phi = " << ilep->Phi() << endl;
 	cout << "CloseJet_Flavour = " << ilep->CloseJet_Flavour() << " type = " << LepType << endl;
-	PrintMatchedGen(gens, *ilep);
+	PrintMatchedGen(All_Gens, *ilep);
       }
     }
 
@@ -392,7 +390,7 @@ void HNL_LeptonIDBDTStudies::MakeJetDiscPlots(TString label, AnalyzerParameter p
                 FillHist( cut+ "/"+ilep->GetFlavour() + "Jet_PtRatio7_"+label   , JetLeptonPtRatioLepAware(*ilep,true,true,true) , weight_ll, 200,0,2);
 		FillHist( cut+ "/"+ilep->GetFlavour() + "Jet_PtRatio8_"+label   , JetLeptonPtRatioLepAware(*ilep,false,false,true) , weight_ll, 200,0,2);
 		
-		if(ilep->IsPrompt( GetLeptonType_JH(*ilep, gens))){
+		if(ilep->IsPrompt( )){
 		  FillHist( cut+ "/"+ilep->GetFlavour() + "PromptLep_Jet_PtRel_"+label   , JetLeptonPtRelLepAware(*ilep) , weight_ll, 200,0,200);
 		  FillHist( cut+ "/"+ilep->GetFlavour() + "PromptLep_Jet_PtRel2_"+label   , JetLeptonPtRelLepAware(*ilep,false,true,false) , weight_ll, 200,0,200);
 		  FillHist( cut+ "/"+ilep->GetFlavour() + "PromptLep_Jet_PtRel3_"+label   , JetLeptonPtRelLepAware(*ilep,true,false,false) , weight_ll, 200,0,200);
@@ -429,7 +427,7 @@ void HNL_LeptonIDBDTStudies::MakeJetDiscPlots(TString label, AnalyzerParameter p
 		    if(ilep->Pt() < 20) ptlabel="lt20_";
 		    else if(ilep->Pt() < 35)ptlabel="lt35_";
 		    else ptlabel="gt35_";
-		    if(!ilep->IsPrompt( GetLeptonType_JH(*ilep, gens))) isprompt=false;
+		    if(!ilep->IsPrompt( )) isprompt=false;
 		  }
 		}
 		
@@ -519,7 +517,7 @@ void HNL_LeptonIDBDTStudies::MakeJetDiscPlots(TString label, AnalyzerParameter p
                 FillHist( cut+ "/"+ilep->GetFlavour() + "Jet_PtRatio7_"+label   , JetLeptonPtRatioLepAware(*ilep,true,true,true) , weight_ll, 200,0,2);
                 FillHist( cut+ "/"+ilep->GetFlavour() + "Jet_PtRatio8_"+label   , JetLeptonPtRatioLepAware(*ilep,false,false,true) , weight_ll, 200,0,2);
 
-		if(ilep->IsPrompt( GetLeptonType_JH(*ilep, gens))){
+		if(ilep->IsPrompt()){
                   FillHist( cut+ "/"+ilep->GetFlavour() + "PromptLep_Jet_PtRel_"+label   , JetLeptonPtRelLepAware(*ilep) , weight_ll, 200,0,200);
                   FillHist( cut+ "/"+ilep->GetFlavour() + "PromptLep_Jet_PtRel2_"+label   , JetLeptonPtRelLepAware(*ilep,false,true,false) , weight_ll, 200,0,200);
                   FillHist( cut+ "/"+ilep->GetFlavour() + "PromptLep_Jet_PtRel3_"+label   , JetLeptonPtRelLepAware(*ilep,true,false,false) , weight_ll, 200,0,200);
@@ -556,7 +554,7 @@ void HNL_LeptonIDBDTStudies::MakeJetDiscPlots(TString label, AnalyzerParameter p
 		    if(ilep->Pt() < 20)ptlabel="lt20_";
                     else if(ilep->Pt() < 35)ptlabel="lt35_";
                     else ptlabel="gt35_";
-                    if(!ilep->IsPrompt( GetLeptonType_JH(*ilep, gens))) isprompt=false;
+                    if(!ilep->IsPrompt()) isprompt=false;
 
 		  }
 		}
@@ -672,7 +670,7 @@ void HNL_LeptonIDBDTStudies::MakeJetDiscPlots(TString label, AnalyzerParameter p
 	    if(ilep->Pt() < 20)ptlabel="lt20_";
 	    else if(ilep->Pt() < 35)ptlabel="lt35_";
 	    else ptlabel="gt35_";
-	    if(!ilep->IsPrompt( GetLeptonType_JH(*ilep, gens))) isprompt=false;
+	    if(!ilep->IsPrompt()) isprompt=false;
 	  }
 	}
 	
@@ -745,7 +743,7 @@ void HNL_LeptonIDBDTStudies::MakeJetDiscPlots(TString label, AnalyzerParameter p
 	FillHist( cut+ "/"+ilep->GetFlavour() + "Jet_PtRatio7_"+label   , JetLeptonPtRatioLepAware(*ilep,true,true,true) , weight_ll, 200,0,2);
 	FillHist( cut+ "/"+ilep->GetFlavour() + "Jet_PtRatio8_"+label   , JetLeptonPtRatioLepAware(*ilep,false,false,true) , weight_ll, 200,0,2);
 
-	if(ilep->IsPrompt( GetLeptonType_JH(*ilep, gens))){
+	if(ilep->IsPrompt()){
 	  FillHist( cut+ "/"+ilep->GetFlavour() + "PromptLep_Jet_PtRel_"+label   , JetLeptonPtRelLepAware(*ilep) , weight_ll, 200,0,200);
 	  FillHist( cut+ "/"+ilep->GetFlavour() + "PromptLep_Jet_PtRel2_"+label   , JetLeptonPtRelLepAware(*ilep,false,true,false) , weight_ll, 200,0,200);
 	  FillHist( cut+ "/"+ilep->GetFlavour() + "PromptLep_Jet_PtRel3_"+label   , JetLeptonPtRelLepAware(*ilep,true,false,false) , weight_ll, 200,0,200);
@@ -794,21 +792,21 @@ void HNL_LeptonIDBDTStudies::CheckSSFakeBreakDown(AnalyzerParameter param,HNL_Le
 
     if(MuonColl.size()>0) return;
 
-    vector<Electron> ElectronCollFake     = SkimLepColl(ElectronColl, gens, param, "HFake");
-    vector<Electron> ElectronCollPrompt   = SkimLepColl(ElectronColl, gens, param, "PromptNoCF");
+    vector<Electron> ElectronCollFake     = SkimLepColl(ElectronColl, param, "HFake");
+    vector<Electron> ElectronCollPrompt   = SkimLepColl(ElectronColl, param, "PromptNoCF");
     
     if(ElectronCollFake.size()==0) return;
     
     for(auto iel : ElectronCollFake) {
       
-      TString lep_fake_tag=MatchGenDef(gens, iel); 
+      TString lep_fake_tag=MatchGenDef(All_Gens, iel); 
       if (std::find(lables.begin(), lables.end(), lep_fake_tag) == lables.end()){
 
         cout << "Reco " << iel.GetFlavour() << " pt = " << iel.Pt() << " eta = " << iel.Eta() << " phi = " << iel.Phi() << endl;                                        
         cout << "CloseJet_Flavour = " << iel.CloseJet_Flavour() << endl;                                                                             
 	
 	cout << "lep_fake_tag = " << lep_fake_tag << " missing "<< endl;
-        PrintMatchedGen(gens, iel);                                                                                                                                
+        PrintMatchedGen(All_Gens, iel);                                                                                                                                
 	
       }
       else {
@@ -845,8 +843,8 @@ void HNL_LeptonIDBDTStudies::CheckSSFakeBreakDown(AnalyzerParameter param,HNL_Le
 
     if(ElectronColl.size()>0) return;
 
-    vector<Muon> MuonCollFake     = SkimLepColl(MuonColl, gens, param, "HFake");
-    vector<Muon> MuonCollPrompt   = SkimLepColl(MuonColl, gens, param, "Prompt");
+    vector<Muon> MuonCollFake     = SkimLepColl(MuonColl, param, "HFake");
+    vector<Muon> MuonCollPrompt   = SkimLepColl(MuonColl, param, "Prompt");
     
     if(MuonCollFake.size()==0) return;
 
@@ -856,13 +854,13 @@ void HNL_LeptonIDBDTStudies::CheckSSFakeBreakDown(AnalyzerParameter param,HNL_Le
                                                  
     for(auto imu : MuonCollFake) {
 
-      TString lep_fake_tag=MatchGenDef(gens, imu);
+      TString lep_fake_tag=MatchGenDef(All_Gens, imu);
       
       if (std::find(lables.begin(), lables.end(), lep_fake_tag) == lables.end()){
 	cout << "Reco " << imu.GetFlavour() << " pt = " << imu.Pt() << " eta = " << imu.Eta() << " phi = " << imu.Phi() << endl;
 	cout << "CloseJet_Flavour = " << imu.CloseJet_Flavour() << endl;
 	cout <<"lep_fake_tag = " << lep_fake_tag << " missing "<< endl;
-        PrintMatchedGen(gens, imu);
+        PrintMatchedGen(All_Gens, imu);
 
       }
 
@@ -903,16 +901,16 @@ void HNL_LeptonIDBDTStudies::MakeBDTPlots(AnalyzerParameter param,HNL_LeptonCore
   
   if(!IsData){
 
-    vector<Electron> ElectronCollFake     = SkimLepColl(ElectronColl, gens, param, "HFake");
+    vector<Electron> ElectronCollFake     = SkimLepColl(ElectronColl, param, "HFake");
     FillAllElectronPlots("FakeElectron","MC"+channel_string,ElectronCollFake,weight_ll);
 
-    vector<Electron> ElectronCollCF     = SkimLepColl(ElectronColl, gens, param, "CF");
+    vector<Electron> ElectronCollCF     = SkimLepColl(ElectronColl,  param, "CF");
     FillAllElectronPlots("CFElectron","MC"+channel_string,ElectronCollCF,weight_ll);
 
-    vector<Electron> ElectronCollConv     = SkimLepColl(ElectronColl, gens, param, "NHConv");
+    vector<Electron> ElectronCollConv     = SkimLepColl(ElectronColl, param, "NHConv");
     FillAllElectronPlots("ConvElectron","MC"+channel_string,ElectronCollConv,weight_ll);
 
-    vector<Electron> ElectronCollPrompt   = SkimLepColl(ElectronColl, gens, param, "PromptNoCF");
+    vector<Electron> ElectronCollPrompt   = SkimLepColl(ElectronColl, param, "PromptNoCF");
     FillAllElectronPlots("PromptElectron","MC"+channel_string,ElectronCollPrompt,weight_ll);
   }
   

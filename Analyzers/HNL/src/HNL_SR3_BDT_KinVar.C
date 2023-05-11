@@ -141,8 +141,8 @@ void HNL_SR3_BDT_KinVar::executeEvent(){
   
   for(auto dilep_channel : channels){
 
-    std::vector<Muon>       MuonCollT     = GetLepCollByRunType    ( GetMuons    ( param_bdt,param_bdt.Muon_Tight_ID, 10., 2.4, RunFake)    , gens,param_bdt, "NoSel");
-    std::vector<Electron>   ElectronCollT = GetLepCollByRunType    ( GetElectrons( param_bdt,param_bdt.Electron_Tight_ID, 10., 2.5, RunFake), gens,param_bdt, "NoSel");
+    std::vector<Muon>       MuonCollT     = GetLepCollByRunType    ( GetMuons    ( param_bdt,param_bdt.Muon_Tight_ID, 10., 2.4, RunFake)    , param_bdt, "NoSel");
+    std::vector<Electron>   ElectronCollT = GetLepCollByRunType    ( GetElectrons( param_bdt,param_bdt.Electron_Tight_ID, 10., 2.5, RunFake), param_bdt, "NoSel");
     
     std::vector<Electron>   ElectronCollV = GetElectrons(param_bdt.Electron_Veto_ID, 10., 2.5);
     std::vector<Muon>       MuonCollV     = GetMuons    (param_bdt.Muon_Veto_ID, 5., 2.4);

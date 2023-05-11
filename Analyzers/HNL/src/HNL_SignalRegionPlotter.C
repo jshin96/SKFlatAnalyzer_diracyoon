@@ -20,8 +20,6 @@ void HNL_SignalRegionPlotter::executeEvent(){
     TriggerPrintOut(GetEvent());
   }
   
-  if(!IsData)  gens = GetGens();
-
   AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("MVAUL","_UL");
   RunULAnalysis(param_signal);
 
@@ -81,9 +79,9 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
 
   std::vector<Muon>       MuonCollTInit = GetMuons    ( param,mu_ID, Min_Muon_Pt, 2.4, false);
   std::vector<Electron>   ElectronCollTInit = GetElectrons( param,el_ID, Min_Electron_Pt, 2.5, false)  ;
-
-  std::vector<Muon>       MuonCollT     = GetLepCollByRunType    ( MuonCollTInit,gens,param);
-  std::vector<Electron>   ElectronCollT  =  GetLepCollByRunType   ( ElectronCollTInit,gens,param);
+ 
+  std::vector<Muon>       MuonCollT     = GetLepCollByRunType    ( MuonCollTInit ,param);
+  std::vector<Electron>   ElectronCollT  =  GetLepCollByRunType   ( ElectronCollTInit,param);
 
   //cout << "Number of MuonCollT = " << MuonCollT.size() << " number of electrons = " << ElectronCollT.size() << endl;
 

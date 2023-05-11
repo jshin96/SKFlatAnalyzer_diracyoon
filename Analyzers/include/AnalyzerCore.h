@@ -227,7 +227,7 @@ public:
   double  JetLeptonPtRatioLepAware( Electron lep, bool CorrLep=false, bool CorrJet=false,bool CheckID=false);
 
 
-  bool ConversionSplitting(std::vector<Lepton *> leps,const std::vector<Gen>& gens);
+  bool ConversionSplitting(std::vector<Lepton *> leps);
   bool ConversionVeto(std::vector<Lepton *> leps,const std::vector<Gen>& gens);
   bool IsCF(Electron el, std::vector<Gen> gens);
 
@@ -514,8 +514,8 @@ public:
 
   // JA Added functions 
 
-  vector<Muon> SkimLepColl(const vector<Muon>& MuColl, vector<Gen>& TruthColl, AnalyzerParameter param, TString Option);
-  vector<Electron> SkimLepColl(const vector<Electron>& ElColl, vector<Gen>& TruthColl, AnalyzerParameter param,TString Option);
+  vector<Muon> SkimLepColl(const vector<Muon>& MuColl, AnalyzerParameter param, TString Option);
+  vector<Electron> SkimLepColl(const vector<Electron>& ElColl, AnalyzerParameter param,TString Option);
   vector<Electron> SkimLepColl(const vector<Electron>& ElColl,TString Option);
   vector<Muon> SkimLepColl(const vector<Muon>& MuColl,  TString Option);
   vector<Jet> SkimJetColl(const vector<Jet>& JetColl, vector<Gen>& TruthColl, AnalyzerParameter param,TString Option);
@@ -596,10 +596,15 @@ public:
   vector<float>* vmuon_cj_bjetdisc;
   vector<float>* vmuon_cj_flavour;
 
+  vector<int>*   vmuon_lepton_type;
+  vector<int>*   velectron_lepton_type;
+  vector<bool>*  velectron_is_cf;
+
   vector<Jet>      All_Jets;
   vector<FatJet>   All_FatJets;
   vector<Muon>    All_Muons;
   vector<Electron> All_Electrons;
+  vector<Gen> All_Gens;
 
   string run_timestamp;
 

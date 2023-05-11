@@ -240,8 +240,7 @@ void HNL_LeptonFakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon>
 
   bool truth_match= false;
   if(!IsDATA) {
-    gens = GetGens();
-    if(GetLeptonType_JH(loose_mu.at(0), gens) > 0 ) truth_match=true;
+    if(loose_mu.at(0).LeptonGenType() > 0 ) truth_match=true;
   }
   else truth_match=true;
 
@@ -377,8 +376,7 @@ void HNL_LeptonFakeRate::RunE( std::vector<Electron> loose_el, std::vector<Muon>
 
   bool truth_match= false;
   if(!IsDATA) {
-    gens = GetGens();
-    if(GetLeptonType(loose_el.at(0), gens) > 0 ) truth_match=true;
+    if(loose_el.at(0).LeptonGenType() > 0 ) truth_match=true;
   }
   else truth_match=true;
 
@@ -947,15 +945,12 @@ float HNL_LeptonFakeRate::GetPrescale(std::vector<Lepton *>   leps  ){
 
 void HNL_LeptonFakeRate::MakeFakeRatePlots(TString label, TString mutag,AnalyzerParameter param,  std::vector<Lepton *> leps , std::vector<bool> blepsT ,  std::vector<Jet> jets,  float event_weight, float isocut, Particle MET){
 				
-  if(!IsDATA)gens = GetGens();
-
-
   /// FOR FAKE RATE SUBTRACTION NEED ONLY PROMPT MUONS                                                                                                                                                  
   bool truth_match= false;
 
   if(!IsDATA) {
     if(leps.size() > 0){
-      if(GetLeptonType(*leps[0], gens) > 0 ) truth_match=true;
+      if(leps[0]->LeptonGenType() > 0 ) truth_match=true;
     }
   }
   else truth_match=true;
@@ -1091,7 +1086,7 @@ void HNL_LeptonFakeRate::GetFakeRates(std::vector<Lepton *> leps,std::vector<boo
 
     bool El8PD=  (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_8, this->DataStream) ));
     bool El12PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_12, this->DataStream) ));
-    bool El17PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_17, this->DataStream) ));
+    //    bool El17PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_17, this->DataStream) ));
     bool El23PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_23, this->DataStream) ));
 
 
@@ -1124,7 +1119,6 @@ void HNL_LeptonFakeRate::GetFakeRates(std::vector<Lepton *> leps,std::vector<boo
   if(!IsData )weight_pt*= sf_btag;
 
   
-  double ptminfix = IsMuon ? 8 : 12;
   double ptmin    = IsMuon ? 10 : 10;
 
   for(int ilep = 0 ; ilep < 2; ilep++)  {

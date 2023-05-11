@@ -32,7 +32,6 @@ void HNL_SignalStudies::executeEvent(){
 
   TString process="";
   if(!IsData){
-    gens = GetGens();
    
     process = GetProcess();
 
@@ -44,7 +43,7 @@ void HNL_SignalStudies::executeEvent(){
 
     if(_jentry% 10000==0){
       cout << "process = " << process << endl;
-      PrintGen(gens);
+      PrintGen(All_Gens);
     }
   }
   if(process.Contains("OS")) return;
@@ -139,17 +138,16 @@ void HNL_SignalStudies::PlotBDTVariablesMuon(AnalyzerParameter param){
 
   HNL_LeptonCore::Channel dilep_channel = MuMu;
 
-  //PrintGen(gens);
+
   for(auto imu : MuonCollProbe){
 
     TString channel_string = GetChannelString(dilep_channel) ;
 
     if(!imu.PassID("MVALoose")) continue;
 
-    TString tag= imu.LepGenType(GetLeptonType_JH(imu, gens));
+    TString tag= imu.LepGenTypeString();
     
     //cout << "Muon Pt = " << imu.Pt() << " eta = " << imu.Eta() << endl;
-    //cout << " Muon Lep Type = " << GetLeptonType_JH(imu, gens) << " " <<  GenMatchedIdx(imu, gens) <<  endl;
     
     TString etabin = (fabs(imu.Eta()) < 1.5) ? "BB_" : "EC_";
     TString ptbin = "Ptlt20_";
@@ -217,8 +215,8 @@ void HNL_SignalStudies::PlotBDTVariablesElectron(AnalyzerParameter param){
 
     if(!iel.PassID("MVALoose")) continue;
 
-    TString tag= iel.LepGenType(GetLeptonType_JH(iel, gens));
-    if(IsCF(iel,gens)) tag = tag +"_IsCF";
+    TString tag= iel.LepGenTypeString();
+    if(iel.LeptonIsCF()) tag = tag +"_IsCF";
     
     TString etabin = (fabs(iel.Eta()) < 1.5) ? "BB_" : "EC_";
     TString ptbin = "Ptlt20_";
@@ -492,8 +490,8 @@ void HNL_SignalStudies::MakeType1SSWWSignalPlots(TString process, bool apply_rec
 
   if(apply_reco_cut) process=process+"_PtEtaReq";
 
-  for(unsigned int i=2; i<gens.size(); i++){
-    Gen gen = gens.at(i);
+  for(unsigned int i=2; i< All_Gens.size(); i++){
+    Gen gen = All_Gens.at(i);
     
     if(apply_reco_cut){
       if( (fabs(gen.PID()) == 13 )|| (fabs(gen.PID()) == 11 )){
@@ -515,8 +513,8 @@ void HNL_SignalStudies::MakeType1SSWWSignalPlots(TString process, bool apply_rec
   TString LepFl_l1, LepFl_l2;
   int Lep_Mother_ind(-1);
 
-  for(unsigned int i=2; i<gens.size(); i++){
-    Gen gen = gens.at(i);
+  for(unsigned int i=2; i<All_Gens.size(); i++){
+    Gen gen = All_Gens.at(i);
     if( ! ( ( fabs(gen.PID()) == 13)  || (fabs(gen.PID()) == 11) )) continue;
     if (gen.Status() == 23){
       TString LepFl = (fabs(gen.PID()) == 13) ? "Mu" : "El";
@@ -527,8 +525,8 @@ void HNL_SignalStudies::MakeType1SSWWSignalPlots(TString process, bool apply_rec
     }
   }
 
-  for(unsigned int i=2; i<gens.size(); i++){
-    Gen gen = gens.at(i);
+  for(unsigned int i=2; i<All_Gens.size(); i++){
+    Gen gen = All_Gens.at(i);
 
     if (gen.MotherIndex() == Lep_Mother_ind){
       if(fabs(gen.PID()) > 6) continue;
@@ -542,7 +540,7 @@ void HNL_SignalStudies::MakeType1SSWWSignalPlots(TString process, bool apply_rec
     cout << "Lep2 " << Lep2.Pt() << endl;
     cout <<  "j1 " << j1.Pt() << endl;
     cout <<  "j2 " << j2.Pt() << endl;
-    PrintGen(gens);
+    PrintGen(All_Gens);
     exit(EXIT_FAILURE);
   }
   
@@ -630,16 +628,15 @@ void HNL_SignalStudies::MakeType1VBFSignalPlots(TString process, bool apply_reco
   
   TString  mu_ch="";
   
-  gens = GetGens();
   
   if(apply_reco_cut) process=process+"_PtEtaReq";
 
 
   // First loop over gen collection to get index of W/N and apply pt/eta cuts if needed                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
-  for(unsigned int i=2; i<gens.size(); i++){
-    Gen gen = gens.at(i);
+  for(unsigned int i=2; i<All_Gens.size(); i++){
+    Gen gen = All_Gens.at(i);
 
-    if(gens.at(gen.MotherIndex()).PID() == 9900012 || gens.at(gen.MotherIndex()).PID() == 9900014){
+    if(All_Gens.at(gen.MotherIndex()).PID() == 9900012 || All_Gens.at(gen.MotherIndex()).PID() == 9900014){
 
       if(apply_reco_cut){
         if( (fabs(gen.PID()) == 13 )|| (fabs(gen.PID()) == 11 )){
@@ -649,11 +646,11 @@ void HNL_SignalStudies::MakeType1VBFSignalPlots(TString process, bool apply_reco
     }
 
 
-    if(fabs(gen.PID()) == 24 && (gens.at(gen.MotherIndex()).PID() == 9900012 || gens.at(gen.MotherIndex()).PID() == 9900014)){
+    if(fabs(gen.PID()) == 24 && (All_Gens.at(gen.MotherIndex()).PID() == 9900012 || All_Gens.at(gen.MotherIndex()).PID() == 9900014)){
       W2_ind= i;
       // If W decays to W in gen then get daughter                                                                                                                                                                                                                                                                                                                                                                                    
-      for(unsigned int i2=2; i2<gens.size(); i2++){
-        Gen gen2 = gens.at(i2);
+      for(unsigned int i2=2; i2<All_Gens.size(); i2++){
+        Gen gen2 = All_Gens.at(i2);
         if(gen2.MotherIndex() == W2_ind){
           if (fabs(gen2.PID()) == 24 ) W2_ind = i2;
         }
@@ -666,8 +663,8 @@ void HNL_SignalStudies::MakeType1VBFSignalPlots(TString process, bool apply_reco
   }
 
   // Loop over again to cut on Lep from W1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
-  for(unsigned int i=2; i<gens.size(); i++){
-    Gen gen = gens.at(i);
+  for(unsigned int i=2; i<All_Gens.size(); i++){
+    Gen gen = All_Gens.at(i);
 
     if(gen.MotherIndex() == N_Mother_ind){
       if(apply_reco_cut){
@@ -689,16 +686,16 @@ void HNL_SignalStudies::MakeType1VBFSignalPlots(TString process, bool apply_reco
   TString LepFl_l1, LepFl_l2;
 
   // Loop over Gen collection and Natch N/W/l/j objects                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-  for(unsigned int i=2; i<gens.size(); i++){
-    Gen gen = gens.at(i);
+  for(unsigned int i=2; i<All_Gens.size(); i++){
+    Gen gen = All_Gens.at(i);
 
     if(int(gen.MotherIndex()) == W2_ind && gen.Status() == 23) {
-      W2 = gens.at(gen.MotherIndex());
+      W2 = All_Gens.at(gen.MotherIndex());
       if(!j1IsSet) {  j1= gen; j1IsSet=true;}
       else j2 = gen;
     }
     if(gen.PID() == 9900012 || gen.PID() == 9900014){
-      N= gens.at(i);
+      N= All_Gens.at(i);
     }
 
     if( fabs(gen.PID()) < 7 && gen.Status() == 23){
@@ -709,7 +706,7 @@ void HNL_SignalStudies::MakeType1VBFSignalPlots(TString process, bool apply_reco
 
     TString LepFl = (fabs(gen.PID()) == 13) ? "Mu" : "El";
 
-    if(gens.at(gen.MotherIndex()).PID() == 9900012|| gens.at(gen.MotherIndex()).PID() == 9900014) {
+    if(All_Gens.at(gen.MotherIndex()).PID() == 9900012|| All_Gens.at(gen.MotherIndex()).PID() == 9900014) {
       LepFromN = gen;
       LepFl_l1=LepFl;
     }
@@ -849,12 +846,12 @@ void HNL_SignalStudies::MakeType1VBFSignalPlots(TString process, bool apply_reco
     cout << "j1.Pt()  " << j1.Pt() << endl;
     cout << "j2.Pt()  " << j2.Pt() << endl;
     
-    PrintGen(gens);
+    PrintGen(All_Gens);
     exit(EXIT_FAILURE);
   }
   if(LepFromN.Pt() == 0 || LepFromW.Pt() == 0.) {
     cout << "LepFromN pt = " << LepFromN.Pt() << "  LepFromW pt = " << LepFromW.Pt() << endl;
-    PrintGen(gens);
+    PrintGen(All_Gens);
     exit(EXIT_FAILURE);
   }
 
@@ -869,16 +866,14 @@ void HNL_SignalStudies::MakeType1SignalPlots(TString process, bool apply_reco_cu
   int W2_ind(0); // Index of W2 : i.e W from N decay 
   TString  mu_ch="";
 
-  gens = GetGens();
-  
   if(apply_reco_cut) process=process+"_PtEtaReq";
   
 
   // First loop over gen collection to get index of W/N and apply pt/eta cuts if needed
-  for(unsigned int i=2; i<gens.size(); i++){
-    Gen gen = gens.at(i);
+  for(unsigned int i=2; i<All_Gens.size(); i++){
+    Gen gen = All_Gens.at(i);
     
-    if(gens.at(gen.MotherIndex()).PID() == 9900012 || gens.at(gen.MotherIndex()).PID() == 9900014){
+    if(All_Gens.at(gen.MotherIndex()).PID() == 9900012 || All_Gens.at(gen.MotherIndex()).PID() == 9900014){
 
       if(apply_reco_cut){
 	if( (fabs(gen.PID()) == 13 )|| (fabs(gen.PID()) == 11 )){
@@ -888,12 +883,12 @@ void HNL_SignalStudies::MakeType1SignalPlots(TString process, bool apply_reco_cu
     }
    
     
-    if(fabs(gen.PID()) == 24 && (gens.at(gen.MotherIndex()).PID() == 9900012 || gens.at(gen.MotherIndex()).PID() == 9900014)){
+    if(fabs(gen.PID()) == 24 && (All_Gens.at(gen.MotherIndex()).PID() == 9900012 || All_Gens.at(gen.MotherIndex()).PID() == 9900014)){
       W2_ind= i;
       // If W decays to W in gen then get daughter
       
-      for(unsigned int i2=2; i2<gens.size(); i2++){
-	Gen gen2 = gens.at(i2);
+      for(unsigned int i2=2; i2<All_Gens.size(); i2++){
+	Gen gen2 = All_Gens.at(i2);
 	if(gen2.MotherIndex() == W2_ind){
 	  if (fabs(gen2.PID()) == 24 ) W2_ind = i2;
 	}
@@ -906,8 +901,8 @@ void HNL_SignalStudies::MakeType1SignalPlots(TString process, bool apply_reco_cu
   }
 
   // Loop over again to cut on Lep from W1
-  for(unsigned int i=2; i<gens.size(); i++){
-    Gen gen = gens.at(i);
+  for(unsigned int i=2; i<All_Gens.size(); i++){
+    Gen gen = All_Gens.at(i);
     
     if(gen.MotherIndex() == N_Mother_ind){
       if(apply_reco_cut){
@@ -929,23 +924,23 @@ void HNL_SignalStudies::MakeType1SignalPlots(TString process, bool apply_reco_cu
   TString LepFl_l1, LepFl_l2;
   
   // Loop over Gen collection and Natch N/W/l/j objects
-  for(unsigned int i=2; i<gens.size(); i++){
-    Gen gen = gens.at(i);
+  for(unsigned int i=2; i<All_Gens.size(); i++){
+    Gen gen = All_Gens.at(i);
     
     if(int(gen.MotherIndex()) == W2_ind && gen.Status() == 23) {
-      W2 = gens.at(gen.MotherIndex());
+      W2 = All_Gens.at(gen.MotherIndex());
       if(!j1IsSet) {  j1= gen; j1IsSet=true;}
       else j2 = gen;
     }
     if(gen.PID() == 9900012 || gen.PID() == 9900014){
-      N= gens.at(i);
+      N= All_Gens.at(i);
     }
     
     if( ! ( ( fabs(gen.PID()) == 13)  || (fabs(gen.PID()) == 11) )) continue;
     
     TString LepFl = (fabs(gen.PID()) == 13) ? "Mu" : "El";
 
-    if(gens.at(gen.MotherIndex()).PID() == 9900012|| gens.at(gen.MotherIndex()).PID() == 9900014) {
+    if(All_Gens.at(gen.MotherIndex()).PID() == 9900012|| All_Gens.at(gen.MotherIndex()).PID() == 9900014) {
       LepFromN = gen;
       LepFl_l1=LepFl;
     }
@@ -957,7 +952,7 @@ void HNL_SignalStudies::MakeType1SignalPlots(TString process, bool apply_reco_cu
   
   if(LepFromN.Pt() == 0 || LepFromW.Pt() == 0.) {
     cout << "LepFromN pt = " << LepFromN.Pt() << "  LepFromW pt = " << LepFromW.Pt() << endl;
-    PrintGen(gens);
+    PrintGen(All_Gens);
     exit(EXIT_FAILURE);
   }
   
@@ -1003,7 +998,7 @@ void HNL_SignalStudies::MakeType1SignalPlots(TString process, bool apply_reco_cu
   
   if(j1.Pt() == 0  || j2.Pt() == 0.)      {
     cout << "J1 pt = " << j1.Pt() << " J2 pt = " << j2.Pt() << endl;   
-    PrintGen(gens);
+    PrintGen(All_Gens);
     exit(EXIT_FAILURE);
   }
 
@@ -1021,7 +1016,7 @@ void HNL_SignalStudies::MakeType1SignalPlots(TString process, bool apply_reco_cu
   //  cout << (LepFromN + j1+j2).Phi() << " " << N.Phi() << endl;
   //  cout << (LepFromN + j1+j2).M() << " " << N.M() << endl;
   //  cout << (j1+j2).M() << " " << W2.M() << endl;
-  //  PrintGen(gens);
+  //  PrintGen(All_Gens);
   //  exit(EXIT_FAILURE);
   // }
 

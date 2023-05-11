@@ -158,7 +158,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   void OutCutFlow(TString lab, double w);
   TString QToString(HNL_LeptonCore::ChargeType q);
   bool CheckLeptonFlavourForChannel(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps);
-  double PassEventTypeFilter(vector<Lepton *> leps , vector<Gen> gens);
+  double PassEventTypeFilter(vector<Lepton *> leps);
   bool HasLowMassMeson(std::vector<Lepton *> leps);
 
   double SetupWeight(Event ev, AnalyzerParameter param);
@@ -204,8 +204,8 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   vector<Muon> GetSignalLeptons(const std::vector<Muon>& MuColl, vector<Gen>& TruthColl);
   vector<Electron> GetSignalLeptons(const std::vector<Electron>& ElColl, vector<Gen>& TruthColl);
-  vector<Muon> GetLepCollByRunType(const vector<Muon>& MuColl, vector<Gen>& TruthColl, AnalyzerParameter param, TString Option="");
-  vector<Electron> GetLepCollByRunType(const vector<Electron>& ElColl, vector<Gen>& TruthColl, AnalyzerParameter param, TString Option="");
+  vector<Muon> GetLepCollByRunType(const vector<Muon>& MuColl,  AnalyzerParameter param, TString Option="");
+  vector<Electron> GetLepCollByRunType(const vector<Electron>& ElColl,AnalyzerParameter param, TString Option="");
 
 
   //================== KINEMATIC HELPER
@@ -240,10 +240,8 @@ class HNL_LeptonCore : public AnalyzerCore {
   TString GetPtLabel(Muon mu);
   TString GetEtaLabel(Muon mu);
 
-  TString GetElType(Electron el, const std::vector<Gen>& gens);
-  TString GetElTypeString(Electron el, const std::vector<Gen>& gens);
-  TString GetElTypeTString(Electron el, const std::vector<Gen>& gens);
-  TString GetLepTypeTString(const Lepton& lep, const std::vector<Gen>& gens);
+  TString GetElTypeTString(Electron el);
+  TString GetLepTypeTString(const Lepton& lep);
 
   //==== LEPTON CHARGE                                                                                                                                                                                           
   bool SameCharge(vector<Electron> els, int ch=0);
@@ -305,8 +303,8 @@ class HNL_LeptonCore : public AnalyzerCore {
   // Lepton pT cut
 
   // obj vectors
-  vector<Gen> gens;
-  vector<FatJet> AllFatJets;
+  //vector<Gen> gens;
+  //vector<FatJet> AllFatJets;
 
   double weight_Prefire, weight_Prefire_Up, weight_Prefire_Down;
 

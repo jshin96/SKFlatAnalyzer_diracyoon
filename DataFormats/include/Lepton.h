@@ -14,31 +14,35 @@ public:
 
   //// Function to Check Nature of lepton
 
-  
-  inline TString LepGenType(int LepType) const {
-    if((LepType==1 || LepType==2)) return "IsPrompt";
-    if( (LepType<0 && LepType>=-4)) return "IsFake";
-    if(LepType==3) return "IsEWtau";
-    if((LepType>=4 || LepType<-4 )) return "IsConv";
+  inline TString LepGenTypeString() const {
+    if(j_LeptonIsCF) {
+      if((j_LeptonType==1 || j_LeptonType==2)) return "IsPromptCF";
+      else if ((j_LeptonType>=4 || j_LeptonType<-4 ))  return "IsConvCF";
+      else return "IsFakeCF";
+    }
+    if((j_LeptonType==1 || j_LeptonType==2)) return "IsPrompt";
+    if( (j_LeptonType<0 && j_LeptonType>=-4)) return "IsFake";
+    if(j_LeptonType==3) return "IsEWtau";
+    if((j_LeptonType>=4 || j_LeptonType<-4 )) return "IsConv";
     else return "NULL";
   }
 
-  inline bool IsPrompt(int LepType) const {
-    if((LepType==1 || LepType==2)) return true;
+  inline bool IsPrompt() const {
+    if((j_LeptonType==1 || j_LeptonType==2)) return true;
     else return false;
   }
 
-  inline bool IsFake(int LepType) const {
-    if( (LepType<0 && LepType>=-4)) return true;
+  inline bool IsFake() const {
+    if( (j_LeptonType<0 && j_LeptonType>=-4)) return true;
     else return false;
   }
-  inline bool IsEWtau(int LepType) const {
-    if(LepType==3) return true;
+  inline bool IsEWtau() const {
+    if(j_LeptonType==3) return true;
     else return false;
   }
 
-  inline bool IsConv(int LepType) const {
-    if((LepType>=4 || LepType<-4 )) return true;
+  inline bool IsConv() const {
+    if((j_LeptonType>=4 || j_LeptonType<-4 )) return true;
     else return false;
   }
 
@@ -312,9 +316,11 @@ public:
   inline bool PassLepID()  const {return j_passID;}
   inline bool LepIDSet()  const {return j_IDSet;}
 
-
-  inline int LeptonType() const {return j_LeptonType;}
+  inline int LeptonGenType() const {return j_LeptonType;}
   void SetLeptonType(int t);
+
+  inline bool LeptonIsCF() const {return j_LeptonIsCF;}
+  void SetLeptonIsCF(bool t);
 
   inline Flavour LeptonFlavour() const {return j_LeptonFlavour;}
   void SetLeptonFlavour(Flavour f);
@@ -405,6 +411,7 @@ private:
   Flavour j_LeptonFlavour;
 
   int j_LeptonType;
+  bool j_LeptonIsCF;
 
   bool j_passID;
   

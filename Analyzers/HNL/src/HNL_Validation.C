@@ -18,7 +18,6 @@ void HNL_Validation::executeEvent(){
   if(ValPOG)  ParamSetup="POG";
   if(ValPOG)  TriggerConfig="POG";
 
-  if(!IsData)  gens = GetGens();
 
   AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter(ParamSetup,"_UL");
   
@@ -42,10 +41,10 @@ void HNL_Validation::executeEvent(){
     weight = ev.GetTriggerLumi("Full") * MCweight(true, true) *  GetKFactor() * GetPrefireWeight(0);
     weight_pu = GetPileUpWeight(nPileUp,0);
     weight_puM = GetPileUpWeight(nPileUp-1,0);
-    weight_dy = (IsData) ? 1:  mcCorr->GetOfficialDYReweight(GetGens(),0);
+    weight_dy = (IsData) ? 1:  mcCorr->GetOfficialDYReweight(All_Gens,0);
 
     if(MCSample.Contains("TT") and MCSample.Contains("powheg")) {
-      w_topptrw = mcCorr->GetTopPtReweight(GetGens());
+      w_topptrw = mcCorr->GetTopPtReweight(All_Gens);
       FillWeightHist("TopPtWeight_" , w_topptrw);
     }
   }
@@ -57,11 +56,11 @@ void HNL_Validation::executeEvent(){
   TString el_ID = (RunFake) ?  param_signal.Electron_FR_ID : param_signal.Electron_Tight_ID ;
   TString mu_ID = (RunFake) ?  param_signal.Muon_FR_ID :  param_signal.Muon_Tight_ID ;
 
-  std::vector<Muon>       MuonCollT     = MuonPromptOnly    ( GetMuons    ( param_signal,mu_ID, 5, 2.4, RunFake)      ,gens,param_signal);
-  std::vector<Electron>   ElectronCollT = ElectronPromptOnly( GetElectrons( param_signal,el_ID, 10, 2.5, RunFake) ,gens,param_signal);
+  std::vector<Muon>       MuonCollT     = MuonPromptOnly    ( GetMuons    ( param_signal,mu_ID, 5, 2.4, RunFake)      ,All_Gens,param_signal);
+  std::vector<Electron>   ElectronCollT = ElectronPromptOnly( GetElectrons( param_signal,el_ID, 10, 2.5, RunFake) ,All_Gens,param_signal);
   
-  std::vector<Muon>       MuonCollTM = MuonPromptOnly( MuonCollT,gens);
-  std::vector<Electron>       ElectronCollTM = ElectronPromptOnly( ElectronCollT,gens);
+  std::vector<Muon>       MuonCollTM = MuonPromptOnly( MuonCollT,All_Gens);
+  std::vector<Electron>       ElectronCollTM = ElectronPromptOnly( ElectronCollT,All_Gens);
   
   std::vector<Tau>        mytaus        = GetTaus     (param_signal.Tau_Veto_ID,20., 2.3); 
 
