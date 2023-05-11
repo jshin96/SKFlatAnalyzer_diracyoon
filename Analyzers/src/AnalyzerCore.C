@@ -2596,6 +2596,8 @@ std::vector<FatJet> AnalyzerCore::GetAllFatJets(){
   for(unsigned int i=0; i<fatjet_pt->size(); i++){
     FatJet jet;
     jet.SetPtEtaPhiM(fatjet_pt->at(i), fatjet_eta->at(i), fatjet_phi->at(i), fatjet_m->at(i));
+    jet.SetPxUnSmeared(jet.Px());
+    jet.SetPyUnSmeared(jet.Py());
     jet.SetEnShift( fatjet_shiftedEnUp->at(i), fatjet_shiftedEnDown->at(i) );
     if(!IsDATA){
       jet *= fatjet_smearedRes->at(i);
