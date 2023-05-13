@@ -230,6 +230,7 @@ public:
   bool ConversionSplitting(std::vector<Lepton *> leps);
   bool ConversionVeto(std::vector<Lepton *> leps,const std::vector<Gen>& gens);
   bool IsCF(Electron el, std::vector<Gen> gens);
+  bool IsCF(Muon mu, std::vector<Gen> gens);
 
 
   //===================================================
@@ -599,6 +600,7 @@ public:
   vector<int>*   vmuon_lepton_type;
   vector<int>*   velectron_lepton_type;
   vector<bool>*  velectron_is_cf;
+  vector<bool>*  vmuon_is_cf;
 
   vector<Jet>      All_Jets;
   vector<FatJet>   All_FatJets;

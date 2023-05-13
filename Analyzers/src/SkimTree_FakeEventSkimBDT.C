@@ -67,6 +67,7 @@ void SkimTree_FakeEventSkimBDT::initializeAnalyzer(){
   newtree->Branch("muon_cj_bjetdisc",&vmuon_cj_bjetdisc);
   newtree->Branch("muon_cj_flavour",&vmuon_cj_flavour);
   newtree->Branch("muon_lepton_type",&vmuon_lepton_type);
+  newtree->Branch("muon_is_cf",   &vmuon_is_cf);
 
   newtree->Branch("SKWeight", &vSKWeight);
 

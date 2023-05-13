@@ -636,6 +636,7 @@ void SKFlatNtuple::Init()
   muon_mva_fake_v4=0;
   muon_mva_fake_ed_v4=0;
   muon_lepton_type=0;
+  muon_is_cf=0;
   muon_simType = 0;
   muon_simExtType = 0;
   muon_simFlavour = 0;
@@ -1065,7 +1066,7 @@ void SKFlatNtuple::Init()
   if(fChain->GetBranch("muon_mva_fake_v4"))fChain->SetBranchAddress("muon_mva_fake_v4",&muon_mva_fake_v4,&b_muon_mva_fake_v4);
   if(fChain->GetBranch("muon_mva_fake_ed_v4"))fChain->SetBranchAddress("muon_mva_fake_ed_v4",&muon_mva_fake_ed_v4,&b_muon_mva_fake_ed_v4);
   if(fChain->GetBranch("muon_lepton_type"))fChain->SetBranchAddress("muon_lepton_type",&muon_lepton_type,&b_muon_lepton_type);
-  
+  if(fChain->GetBranch("muon_is_cf")) fChain->SetBranchAddress("muon_is_cf",&muon_is_cf,&b_muon_is_cf);
   
   fChain->SetBranchAddress("muon_simType", &muon_simType, &b_muon_simType);
   fChain->SetBranchAddress("muon_simExtType", &muon_simExtType, &b_muon_simExtType);

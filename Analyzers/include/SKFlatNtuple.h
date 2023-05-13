@@ -360,6 +360,7 @@ public :
    vector<float>   *muon_mva_fake_v4;
    vector<float>   *muon_mva_fake_ed_v4;
    vector<int>     *muon_lepton_type;
+   vector<bool>   *muon_is_cf;
 
    vector<float>   *muon_PfChargedHadronIsoR04;
    vector<float>   *muon_PfNeutralHadronIsoR04;
@@ -841,7 +842,8 @@ public :
    TBranch        *b_muon_mva_fake_v4;
    TBranch        *b_muon_mva_fake_ed_v4;
    TBranch        *b_muon_lepton_type;
-                                  
+   TBranch        *b_muon_is_cf;
+
    
    TBranch        *b_muon_PfChargedHadronIsoR04;   //!
    TBranch        *b_muon_PfNeutralHadronIsoR04;   //!

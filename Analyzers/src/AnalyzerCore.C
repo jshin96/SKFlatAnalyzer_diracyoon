@@ -498,11 +498,16 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
       mu.SetCloseJetFlavour(JetHadFlavour);
     }
 
-    if(!fChain->GetBranch("muon_lepton_type") ){
+    if(!fChain->GetBranch("muon_lepton_type") ||  !fChain->GetBranch("muon_is_cf"))  {
       int lep_type = GetLeptonType_JH(mu, All_Gens);
       mu.SetLeptonType(lep_type);
+      mu.SetLeptonIsCF(IsCF(mu, All_Gens));
+
     }
-    else     mu.SetLeptonType(muon_lepton_type->at(i));
+    else {
+      mu.SetLeptonType(muon_lepton_type->at(i));
+      mu.SetLeptonIsCF(muon_is_cf->at(i));
+    }
     
     out.push_back(mu);
 
@@ -895,7 +900,7 @@ void AnalyzerCore::SetupIDMVAReaderDefault(){
   // Muon ID Setup
   if(!(fChain->GetBranch("muon_mva_fake_v1") || fChain->GetBranch("muon_mva_fake_v2") || fChain->GetBranch("muon_mva_fake_v3") || fChain->GetBranch("muon_mva_fake_v4"))) SetupIDMVAReaderMuon();
   // Electron ID setup
-  SetupIDMVAReaderElectron(!fChain->GetBranch("electron_mva_fake_v1"), ! (fChain->GetBranch("electron_mva_fake_v2") || fChain->GetBranch("electron_mva_fake_v3") || fChain->GetBranch("electron_mva_fake_v4")));
+  SetupIDMVAReaderElectron(!fChain->GetBranch("electron_mva_fake_v1"), !(fChain->GetBranch("electron_mva_fake_v2") || fChain->GetBranch("electron_mva_fake_v3") || fChain->GetBranch("electron_mva_fake_v4")));
 
   return ;
 }
@@ -1073,7 +1078,7 @@ void AnalyzerCore::SetupIDMVAReaderElectron(bool  electron_v1, bool electron_v2p
 
   InitializeIDTreeVars();
 
-  if(! (electron_v1 || electron_v2plus)) return;
+  if(!(electron_v1 || electron_v2plus)) return;
   
   if(electron_v1){
     ElectronIDConvMVAReader->AddVariable("Pt", &bdt_id_Pt);
@@ -2301,7 +2306,7 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
       
     }
 
-    if(!fChain->GetBranch("electron_lepton_type") ||  ! fChain->GetBranch("electron_is_cf"))  {
+    if(!fChain->GetBranch("electron_lepton_type") ||  !fChain->GetBranch("electron_is_cf"))  {
       int lep_type = GetLeptonType_JH(el, All_Gens);
       el.SetLeptonType(lep_type);
       el.SetLeptonIsCF(IsCF(el, All_Gens) );
@@ -4164,7 +4169,7 @@ double AnalyzerCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParameter
   }
   if (leps.size() == 2){
 
-    if(! (leps[0]->LepIDSet() || leps[1]->LepIDSet())) {
+    if(!(leps[0]->LepIDSet() || leps[1]->LepIDSet())) {
       cout << "Lepton ID not set" << endl;
       exit(EXIT_FAILURE);
     }
@@ -4478,6 +4483,7 @@ void AnalyzerCore::SetupLeptonBDTSKFlat(){
     vmuon_cj_bjetdisc->push_back(JetDiscCJ);
     vmuon_cj_flavour->push_back(JetFlavourCJ);
     vmuon_lepton_type->push_back(GetLeptonType_JH(i, All_Gens));
+    vmuon_is_cf->push_back(IsCF(i, All_Gens));
   }
   for(auto i: AllelectronColl){
 
@@ -4611,6 +4617,7 @@ void AnalyzerCore::ResetLeptonBDTSKFlat(){
   vmuon_cj_bjetdisc->clear();
   vmuon_cj_flavour->clear();
   vmuon_lepton_type->clear();
+  vmuon_is_cf->clear();
 
   return;
 }
@@ -4669,6 +4676,7 @@ void AnalyzerCore::InitialiseLeptonBDTSKFlat(){
   vmuon_cj_bjetdisc = 0;
   vmuon_cj_flavour = 0;
   vmuon_lepton_type=0;
+  vmuon_is_cf=0;
 
   return;
 }
@@ -6136,6 +6144,24 @@ bool AnalyzerCore::IsCF(Electron el, std::vector<Gen> truthColl){
   return false;
 }
 
+bool AnalyzerCore::IsCF(Muon mu, std::vector<Gen> truthColl){
+
+  int charge_mu_reco = mu.Charge();
+  Lepton l = Lepton(mu);
+
+  int LepType = GetLeptonType_JH(mu, truthColl);
+
+  if(LepType<= 0)    return false;
+  int Idx_Closest    = GenMatchedIdx(mu,truthColl);
+  int IdxType_NearEl = LepType>3? GetPrElType_InSameSCRange(Idx_Closest, truthColl, "IdxType"):Idx_Closest;
+  int Idx_NearEl     = LepType>3? IdxType_NearEl/10:Idx_Closest;
+
+  if(charge_mu_reco*truthColl.at(Idx_NearEl).PID()>0) return true;
+
+  return false;
+}
+
+
 
 Gen AnalyzerCore::GetGenMatchedLepton(const Lepton& lep, const std::vector<Gen>& gens){
 
@@ -6184,7 +6210,7 @@ Gen AnalyzerCore::GetGenMatchedPhoton(const Lepton& lep, const std::vector<Gen>&
     Gen gen = gens.at(i);
 
     if( gen.MotherIndex() < 0 ) continue;
-    if( ! ( abs(gen.PID())==22 && (gen.Status()==1 || gen.Status()==23) ) ) continue;//2)
+    if( !( abs(gen.PID())==22 && (gen.Status()==1 || gen.Status()==23) ) ) continue;//2)
     if( gen.Pt() < pt_min ) continue;
     if( !(lep.Pt()/gen.Pt()>(1.-dPtRelmax) && lep.Pt()/gen.Pt()<(1.+dPtRelmax)) ) continue;
     if( gen.DeltaR( lep ) > dRmax ) continue;
