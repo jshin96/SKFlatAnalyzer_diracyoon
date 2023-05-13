@@ -1,4 +1,6 @@
+DYJets10to50_MG
 VHToNonbb
+WZTo3LNu_mllmin0p1_powheg
 WZTo3LNu_mllmin4p0_powheg
 ZZTo2L2Nu_powheg
 ZGToLLG
