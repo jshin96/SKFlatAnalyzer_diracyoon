@@ -505,8 +505,8 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
 
     }
     else {
-      mu.SetLeptonType(muon_lepton_type->at(i));
-      mu.SetLeptonIsCF(muon_is_cf->at(i));
+      if(fChain->GetBranch("muon_lepton_type")) mu.SetLeptonType(muon_lepton_type->at(i));
+      if(fChain->GetBranch("muon_is_cf")) mu.SetLeptonIsCF(muon_is_cf->at(i));
     }
     
     out.push_back(mu);
@@ -2312,8 +2312,8 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
       el.SetLeptonIsCF(IsCF(el, All_Gens) );
     }
     else {
-      el.SetLeptonType(electron_lepton_type->at(i));
-      el.SetLeptonIsCF(electron_is_cf->at(i));
+      if(fChain->GetBranch("electron_lepton_type")) el.SetLeptonType(electron_lepton_type->at(i));
+      if(fChain->GetBranch("electron_is_cf")) el.SetLeptonIsCF(electron_is_cf->at(i));
     }
     out.push_back(el);
   }

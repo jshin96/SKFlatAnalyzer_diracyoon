@@ -52,15 +52,16 @@ if [[ $1 == "MC" ]]; then
 fi
 
 
-if [[ $1 == "WZ" ]]; then
+if [[ $1 == "" ]]; then
 
-    declare  -a era_list=("2018")
+        
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -i WZTo3LNu_mllmin4p0_powheg  -n 50  --nmax ${nmax}   -e ${i}  &
-
+	SKFlat.py -a $analyzer  -i WZTo3LNu_mllmin0p1_powheg  -n 200  --nmax ${nmax}   -e  ${i}  &
+	SKFlat.py -a $analyzer  -i DYJets10to50_MG  -n 150  --nmax ${nmax}   -e ${i}  &
+	SKFlat.py -a $analyzer  -l  ${mcpath}/${i}/QCD.txt -n 20  --nmax ${nmax}   -e ${i}  &
     done
-
+    
 fi
 
 
