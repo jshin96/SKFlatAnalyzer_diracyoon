@@ -303,3 +303,4 @@
 /gv0/DATA/SKFlat/Run2UltraLegacy_v3/2016preVFP/MC/WZTo3LNu_mllmin0p1_TuneCP5_13TeV-powheg-pythia8/SKFlat_Run2UltraLegacy_v3/230504_032151/0000/SKFlatNtuple_2016preVFP_MC_303.root
 /gv0/DATA/SKFlat/Run2UltraLegacy_v3/2016preVFP/MC/WZTo3LNu_mllmin0p1_TuneCP5_13TeV-powheg-pythia8/SKFlat_Run2UltraLegacy_v3/230504_032151/0000/SKFlatNtuple_2016preVFP_MC_304.root
 /gv0/DATA/SKFlat/Run2UltraLegacy_v3/2016preVFP/MC/WZTo3LNu_mllmin0p1_TuneCP5_13TeV-powheg-pythia8/SKFlat_Run2UltraLegacy_v3/230504_032151/0000/SKFlatNtuple_2016preVFP_MC_305.root
+/gv0/DATA/SKFlat/Run2UltraLegacy_v3/2016preVFP/MC/WZTo3LNu_mllmin0p1_TuneCP5_13TeV-powheg-pythia8/SKFlat_Run2UltraLegacy_v3/230504_032151/0000/getSumW.py

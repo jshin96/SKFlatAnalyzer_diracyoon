@@ -5,12 +5,12 @@ datapath=${SKFlat_WD}/SkimScripts/${analyzer}/data_lists_multilep/
 sigpath=${SKFlat_WD}/SkimScripts/${analyzer}/Signals/
 njobs=400
 njobs_data=100
-nmax=250
+nmax=350
 skim=' '
 declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
 
 
-if [[ $1 == "" ]]; then
+if [[ $1 == "ALL" ]]; then
     for i in "${era_list[@]}"
     do
         SKFlat.py -a $analyzer  -l $datapath/DATA_${i}.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  & 
@@ -52,7 +52,7 @@ if [[ $1 == "MC" ]]; then
 fi
 
 
-if [[ $1 == "" ]]; then
+if [[ $1 == "IND" ]]; then
 
         
     for i in "${era_list[@]}"
