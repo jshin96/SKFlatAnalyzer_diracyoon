@@ -25,11 +25,8 @@ if [[ $1 == "DATA" ]]; then
 
 fi
 if [[ $1 == "MC" ]]; then
-    for i in "${era_list[@]}"
-    do
-        SKFlat.py -a $analyzer  -l ${mcpath}/MC6.txt  -n 200  --nmax ${nmax}   -e ${i}   --skim  SkimTree_HNMultiLep &
+    SKFlat.py -a $analyzer  -l ${mcpath}/2016postVFP/QCD.txt -n 2  --nmax ${nmax}   -e ${i}  --skim  SkimTree_HNMultiLep
 
-    done
 fi
 
 
