@@ -3655,14 +3655,17 @@ double HNL_LeptonCore::PassEventTypeFilter(vector<Lepton *> leps){
   if(IsData) return true;
   
   int nConv(0);
-  int nCF=(0);                                                                                                                                                                                                                                                                                           
+  int nCF=(0);
+  int nFake=(0);                                                                                                                                                                                                                                                                                           
   for(auto ilep: leps){
     //int LepType= GetLeptonType_JH(*ilep, gens);
-    if( ilep->IsConv())  nConv++;
+    if( ilep->IsConv())     nConv++;
     if( ilep->LeptonIsCF()) nCF++;
+    if( ilep->IsFake())     nFake++;
   }
-  if(RunConv && nConv==0)  return false;
-  if(RunCF && nCF == 0)  return false;
+  if(RunConv && nConv == 0)  return false;
+  if(RunCF   && nCF   == 0)  return false;
+  if(RunFake && nFake == 0)  return false;
 
   if(!RunPromptTLRemoval){
     if(!RunConv && nConv > 0) return false;
