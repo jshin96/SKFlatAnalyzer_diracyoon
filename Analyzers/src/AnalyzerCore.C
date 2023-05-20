@@ -471,7 +471,6 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
     if(FillCloseJetVar){
       
       std::vector<Jet>    AK4_JetAllColl = All_Jets;
-      //std::vector<Jet>    AK4_JetAllColl = GetAllJets();
 
       float  JetDiscCJ = -999;
       int JetHadFlavour = -999;
@@ -857,17 +856,6 @@ void AnalyzerCore::SetBDTIDVar(Lepton*  lep){
     if(dR1>0.4) continue;
     if(dR1<mindR1){ mindR1=dR1; IdxMatchJet=ij; }
   }
-
-  //
-  if(TESTBDT){
-    std::vector<Jet>   JetAllColl2 = GetAllJets(false);
-    
-    for(unsigned int ij=0; ij<JetAllColl2.size(); ij++){
-      float dR1=lep->DeltaR(JetAllColl2.at(ij));
-      cout << "JETS NON CORR Pt = " << JetAllColl2.at(ij).Pt() << " eta = " << JetAllColl2.at(ij).Eta() << " dR1 = " << dR1 << " BTAG = " << JetAllColl2.at(ij).GetTaggerResult(JetTagging::DeepJet) <<  endl;
-    }
-  }
-  //
 
   if(IdxMatchJet!=-1){
 
@@ -2884,7 +2872,7 @@ std::vector<Photon> AnalyzerCore::GetPhotons(TString id, double ptmin, double fe
 
 
 
-std::vector<Jet> AnalyzerCore::GetAllJets(bool applyCorr){
+std::vector<Jet> AnalyzerCore::GetAllJets(bool applySmear){
 
   std::vector<Jet> out;
   for(unsigned int i=0; i<jet_pt->size(); i++){
@@ -2899,7 +2887,7 @@ std::vector<Jet> AnalyzerCore::GetAllJets(bool applyCorr){
     //==== Jet energy up and down are 1.xx or 0.99, not energy
     jet.SetEnShift( jet_shiftedEnUp->at(i), jet_shiftedEnDown->at(i) );
     if(!IsDATA){
-      if(applyCorr){
+      if(applySmear){
 	jet *= jet_smearedRes->at(i);
       }
       jet.SetResShift( jet_smearedResUp->at(i)/jet_smearedRes->at(i), jet_smearedResDown->at(i)/jet_smearedRes->at(i) );
@@ -4527,9 +4515,9 @@ void AnalyzerCore::SetupLeptonBDTSKFlat(){
     velectron_mva_cf_ed_v2p1->push_back(GetBDTScoreEl_EtaDependant(i,AnalyzerCore::CF,  "BDTGv2p1"));
     velectron_mva_cf_ed_v2p2->push_back(GetBDTScoreEl_EtaDependant(i,AnalyzerCore::CF,  "BDTGv2p2"));
 
-    velectron_ptratio->push_back(JetLeptonPtRatioLepAware(i,false));
-    velectron_ptrel->push_back(JetLeptonPtRelLepAware(i,true));
-
+    velectron_ptratio->push_back(JetLeptonPtRatioLepAware(i));
+    velectron_ptrel->push_back(JetLeptonPtRelLepAware(i));
+    
     float  JetDiscCJ = -999;
     int  JetFlavourCJ = -999;
 
@@ -5179,6 +5167,26 @@ Muon AnalyzerCore::MuonUsePtCone(const Muon& muon){
 
 }
 
+Particle AnalyzerCore::UpdateMETSyst(double met_pt, double met_phi, double met_shift_pt, double met_shift_phi, const Particle& METv){
+  
+  double met_px = met_pt*TMath::Cos(met_phi);
+  double met_py = met_pt*TMath::Sin(met_phi);
+  double met_shift_px = met_shift_pt*TMath::Cos(met_shift_phi);
+  double met_shift_py = met_shift_pt*TMath::Sin(met_shift_phi);
+
+  double met_x = METv.Px();
+  double met_y = METv.Py();
+  
+  met_x = met_x + met_shift_px - met_px;
+  met_y = met_y + met_shift_py - met_py;
+
+  Particle METout;
+  METout.SetPxPyPzE(met_x,met_y,0,sqrt(met_x*met_x+met_y*met_y));
+  return METout;
+
+  
+}
+
 Particle AnalyzerCore::UpdateMET(const Particle& METv, const std::vector<Muon>& muons){
 
   double met_x = METv.Px();
@@ -5233,29 +5241,54 @@ Particle AnalyzerCore::UpdateMETSyst(AnalyzerParameter param, const Particle& ME
   double met_y = METv.Py();
 
   double px_orig(0.), py_orig(0.),px_corrected(0.), py_corrected(0.);
-  for(unsigned int i=0; i<jets.size(); i++){
-    px_orig += jets.at(i).PxUnSmeared();
-    py_orig += jets.at(i).PyUnSmeared();
-    px_corrected += jets.at(i).Px();
-    py_corrected += jets.at(i).Py();
+
+  if(param.syst_ == AnalyzerParameter::JetResUp || 
+     param.syst_ == AnalyzerParameter::JetResDown || 
+     param.syst_ == AnalyzerParameter::JetEnUp || 
+     param.syst_ == AnalyzerParameter::JetEnDown){
+    
+    for(unsigned int i=0; i<jets.size(); i++){
+      px_orig += jets.at(i).PxUnSmeared();
+      py_orig += jets.at(i).PyUnSmeared();
+      px_corrected += jets.at(i).Px();
+      py_corrected += jets.at(i).Py();
+    }
   }
-  for(unsigned int i=0; i<fatjets.size(); i++){
-    px_orig += fatjets.at(i).PxUnSmeared();
-    py_orig += fatjets.at(i).PyUnSmeared();
-    px_corrected += fatjets.at(i).Px();
-    py_corrected += fatjets.at(i).Py();
+
+  if(param.syst_ == AnalyzerParameter::JetResUp ||
+     param.syst_ == AnalyzerParameter::JetResDown ||
+     param.syst_ == AnalyzerParameter::JetEnUp ||
+     param.syst_ == AnalyzerParameter::JetEnDown ||
+     param.syst_ == AnalyzerParameter::JetMassSmearUp ||
+     param.syst_ == AnalyzerParameter::JetMassSmearDown){
+    
+    for(unsigned int i=0; i<fatjets.size(); i++){
+      px_orig += fatjets.at(i).PxUnSmeared();
+      py_orig += fatjets.at(i).PyUnSmeared();
+      px_corrected += fatjets.at(i).Px();
+      py_corrected += fatjets.at(i).Py();
+    }
   }
-  for(unsigned int i=0; i<muons.size(); i++){
-    px_orig += muons.at(i).UncorrectedPt() * TMath::Cos(muons.at(i).Phi());
-    py_orig += muons.at(i).UncorrectedPt() * TMath::Sin(muons.at(i).Phi());
-    px_corrected += muons.at(i).Px();
-    py_corrected += muons.at(i).Py();
+  
+  if(param.syst_ ==AnalyzerParameter::MuonEnUp ||
+     param.syst_ ==AnalyzerParameter::MuonEnDown){
+    for(unsigned int i=0; i<muons.size(); i++){
+      px_orig += muons.at(i).UncorrectedPt() * TMath::Cos(muons.at(i).Phi());
+      py_orig += muons.at(i).UncorrectedPt() * TMath::Sin(muons.at(i).Phi());
+      px_corrected += muons.at(i).Px();
+      py_corrected += muons.at(i).Py();
+    }
   }
-  for(unsigned int i=0; i<electrons.size(); i++){
-    px_orig += electrons.at(i).UncorrectedPt() * TMath::Cos(electrons.at(i).Phi());
-    py_orig += electrons.at(i).UncorrectedPt() * TMath::Sin(electrons.at(i).Phi());
-    px_corrected += electrons.at(i).Px();
-    py_corrected += electrons.at(i).Py();
+  if(param.syst_ ==AnalyzerParameter::ElectronEnUp ||
+     param.syst_ ==AnalyzerParameter::ElectronEnDown ||
+     param.syst_ ==AnalyzerParameter::ElectronResUp ||
+     param.syst_ ==AnalyzerParameter::ElectronResDown){
+    for(unsigned int i=0; i<electrons.size(); i++){
+      px_orig += electrons.at(i).UncorrectedPt() * TMath::Cos(electrons.at(i).Phi());
+      py_orig += electrons.at(i).UncorrectedPt() * TMath::Sin(electrons.at(i).Phi());
+      px_corrected += electrons.at(i).Px();
+      py_corrected += electrons.at(i).Py();
+    }
   }
 
   met_x = met_x + px_orig - px_corrected;
@@ -5484,38 +5517,28 @@ double  AnalyzerCore::JetLeptonMassDropLepAware( Muon lep, bool removeLep, bool 
 
 
 double  AnalyzerCore::JetLeptonMassDropLepAware( Electron lep, bool removeLep, bool ApplyCorr){
-
-
   std::vector<Jet> jets = GetAllJets(ApplyCorr);
-
   double mindR=0.4;
-
   Jet closejet;
   for(auto jet : jets){
     if (lep.DeltaR(jet) < mindR) closejet = GetCorrectedJetCloseToLepton(lep,jet);
   }
-
   TLorentzVector lepp4 = lep;
   TLorentzVector jetp4 = closejet;
-
-
   if(removeLep)   jetp4 = jetp4 - lep;
-
   TLorentzVector LJ =  jetp4 + lep;
-
   return (LJ.M() - jetp4.M());
-
-
 }
 
 
-double  AnalyzerCore::JetLeptonPtRelLepAware( Muon lep, bool CorrLep, bool CorrJet, bool checkID){
+double  AnalyzerCore::JetLeptonPtRelLepAware( Muon lep, bool CorrLep){
 
   if(!CorrLep)lep.SetPtEtaPhiE(lep.MiniAODPt(), lep.Eta(), lep.Phi(), lep.E());
-  return JetLeptonPtRelLepAware(Lepton(lep), CorrLep,CorrJet,checkID);
+  return JetLeptonPtRelLepAware(Lepton(lep));
 }
-double  AnalyzerCore::JetLeptonPtRelLepAware( Electron lep, bool CorrLep, bool CorrJet,bool checkID){
-  return JetLeptonPtRelLepAware(Lepton(lep), CorrLep,CorrJet,checkID);
+
+double  AnalyzerCore::JetLeptonPtRelLepAware( Electron lep){
+  return JetLeptonPtRelLepAware(Lepton(lep));
 }
 
 double  AnalyzerCore::JetLeptonPtRelLepAware( Lepton lep, Jet jet){
@@ -5530,20 +5553,17 @@ double  AnalyzerCore::JetLeptonPtRelLepAware( Lepton lep, Jet jet){
 }
 
 
-double  AnalyzerCore::JetLeptonPtRelLepAware( Lepton lep, bool CorrLep, bool CorrJet,bool checkID){
+double  AnalyzerCore::JetLeptonPtRelLepAware( Lepton lep){
   
   // ApplyCorr def is false, this is same as Mini/NanoAOD value stored
   // if ApplyCorr is true then Jet smearing and lepton smearing is applied and values are corrected
 
-  std::vector<Jet> jets = GetAllJets(CorrJet);
+  std::vector<Jet> jets = GetAllJets(false);
 
   double mindR=0.4;
 
   Jet closejet;
   for(auto jet : jets){
-    if(TESTBDT) cout << "PTREL JPT=" << jet.Pt() << " corr jetpt = " << GetCorrectedJetCloseToLepton(lep,jet).Pt() << " ptrel= " <<  lep.Perp((GetCorrectedJetCloseToLepton(lep,jet)-lep).Vect()) << endl;
-
-    if(checkID && !jet.PassID("tight")) continue;
     if (lep.DeltaR(jet) < mindR) {
       closejet = GetCorrectedJetCloseToLepton(lep,jet);
       mindR = lep.DeltaR(jet);
@@ -5561,40 +5581,29 @@ double  AnalyzerCore::JetLeptonPtRelLepAware( Lepton lep, bool CorrLep, bool Cor
 
 }
 
-double  AnalyzerCore::JetLeptonPtRatioLepAware(Muon lep, bool CorrLep, bool CorrJet,bool checkID){
+double  AnalyzerCore::JetLeptonPtRatioLepAware(Muon lep, bool CorrLep){
   if(!CorrLep)lep.SetPtEtaPhiE(lep.MiniAODPt(), lep.Eta(), lep.Phi(), lep.E());
-  return JetLeptonPtRatioLepAware(Lepton(lep), CorrLep,CorrJet,checkID);
+  return JetLeptonPtRatioLepAware(Lepton(lep));
 }
-double  AnalyzerCore::JetLeptonPtRatioLepAware( Electron lep, bool CorrLep, bool CorrJet,bool checkID){
-  return JetLeptonPtRatioLepAware(Lepton(lep), CorrLep,CorrJet,checkID);
+double  AnalyzerCore::JetLeptonPtRatioLepAware( Electron lep){
+  return JetLeptonPtRatioLepAware(Lepton(lep));
 }
 
 
 double  AnalyzerCore::JetLeptonPtRatioLepAware(Lepton lep, Jet jet){
-  
   Jet closejet = GetCorrectedJetCloseToLepton(lep,jet);
-
   Particle lepp4 = lep;
-
   return std::min(lepp4.Pt() / closejet.Pt(),1.5);
-
 }
-double  AnalyzerCore::JetLeptonPtRatioLepAware(Lepton lep, bool CorrLep, bool CorrJet,bool checkID){
 
-  std::vector<Jet> jets = GetAllJets(CorrJet);
+double  AnalyzerCore::JetLeptonPtRatioLepAware(Lepton lep){
+
+  std::vector<Jet> jets = GetAllJets(false);
 
   double  mindR=0.4;
   
   Jet closejet;
   for(auto jet : jets){
-    if(TESTBDT) {
-      cout << "PTRATIO JPT=" << jet.Pt() << " corr jetpt = " << GetCorrectedJetCloseToLepton(lep,jet).Pt()<< " lep/Jet = " << lep.Pt() / GetCorrectedJetCloseToLepton(lep,jet).Pt() << endl;
-      cout << "--PTRATIO JPT=" << jet.Pt() << " corr jetpt = " << GetCorrectedJetCloseToLepton(lep,jet).Pt()<< " lep/Jet = " << lep.Pt() / GetCorrectedJetCloseToLepton(lep,jet).Pt() << endl;
-      cout << GetCorrectedJetCloseToLepton(lep,jet).Pt() << " " << lep.Pt() << endl;
-
-    }
-
-    if(checkID && !jet.PassID("tight"))continue;
     if (lep.DeltaR(jet) < mindR) {
       closejet = GetCorrectedJetCloseToLepton(lep,jet);
       mindR = lep.DeltaR(jet);

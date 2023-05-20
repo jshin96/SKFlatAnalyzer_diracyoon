@@ -250,7 +250,7 @@ void HNL_SignalLeptonOpt::executeEvent(){
     ElectronsIDs.push_back("HN2016POGCC");
 
     Event ev = GetEvent();
-    ev.SetMVA("EE",100, EvaluateEventMVA("100", "300","850", EE,  LepsVeto,ev, GetvMET("PuppiT1xyCorr",param_signal) ,param_signal));
+    ev.SetMVA("EE",100, EvaluateEventMVA("100", "300","850", EE,  LepsVeto,ev, GetvMET("PuppiT1xyCorr") ,param_signal));
     //ev.SetMVA("EE",400, EvaluateEventMVA("400", "300","850", EE,  LepsVeto,ev, GetvMET("PuppiT1xyCorr",param_signal) ,param_signal));
 
 
@@ -315,14 +315,14 @@ void HNL_SignalLeptonOpt::executeEvent(){
       if(BJetColl.size() == 0){
 	if(MuonCollV[0].PassID("MVALoose") && MuonCollV[1].PassID("MVALoose")){
 
-	  Fill_RegionPlots(MuMu, 0, param_signal.Name,"Preselection" , TauColl, JetColl, FatjetColl, LepsVeto, GetvMET("PuppiT1xyCorr",param_signal), nPV, SetupWeight(ev,param_signal),param_signal.WriteOutVerbose);
-	  if(MuonCollV[0].PassID("HNL_HN3L") && MuonCollV[1].PassID("HNL_HN3L")) Fill_RegionPlots(MuMu, 0, param_signal.Name,"Preselection2" , TauColl, JetColl, FatjetColl, LepsVeto, GetvMET("PuppiT1xyCorr",param_signal), nPV, SetupWeight(ev,param_signal),param_signal.WriteOutVerbose);
+	  Fill_RegionPlots(MuMu, 0, param_signal.Name,"Preselection" , TauColl, JetColl, FatjetColl, LepsVeto, GetvMET("PuppiT1xyCorr"), nPV, SetupWeight(ev,param_signal),param_signal.WriteOutVerbose);
+	  if(MuonCollV[0].PassID("HNL_HN3L") && MuonCollV[1].PassID("HNL_HN3L")) Fill_RegionPlots(MuMu, 0, param_signal.Name,"Preselection2" , TauColl, JetColl, FatjetColl, LepsVeto, GetvMET("PuppiT1xyCorr"), nPV, SetupWeight(ev,param_signal),param_signal.WriteOutVerbose);
 
-	  if(MuonCollV[0].PassID("HNTightV2") && MuonCollV[1].PassID("HNTightV2")) Fill_RegionPlots(MuMu, 0, param_signal.Name,"Preselection3" , TauColl, JetColl, FatjetColl, LepsVeto, GetvMET("PuppiT1xyCorr",param_signal), nPV, SetupWeight(ev,param_signal),param_signal.WriteOutVerbose);
+	  if(MuonCollV[0].PassID("HNTightV2") && MuonCollV[1].PassID("HNTightV2")) Fill_RegionPlots(MuMu, 0, param_signal.Name,"Preselection3" , TauColl, JetColl, FatjetColl, LepsVeto, GetvMET("PuppiT1xyCorr"), nPV, SetupWeight(ev,param_signal),param_signal.WriteOutVerbose);
 
-	  if(MuonCollV[0].PassID("HNL_ULIDv2") && MuonCollV[1].PassID("HNL_ULIDv2")) Fill_RegionPlots(MuMu, 0, param_signal.Name,"Preselection4" , TauColl, JetColl, FatjetColl, LepsVeto, GetvMET("PuppiT1xyCorr",param_signal), nPV, SetupWeight(ev,param_signal),param_signal.WriteOutVerbose);
-	  if(MuonCollV[0].PassID("HNL_ULIDv3") && MuonCollV[1].PassID("HNL_ULIDv3")) Fill_RegionPlots(MuMu, 0, param_signal.Name,"Preselection5" , TauColl, JetColl, FatjetColl, LepsVeto, GetvMET("PuppiT1xyCorr",param_signal), nPV, SetupWeight(ev,param_signal),param_signal.WriteOutVerbose);
-	  if(MuonCollV[0].PassID("HNL_ULIDv4") && MuonCollV[1].PassID("HNL_ULIDv4")) Fill_RegionPlots(MuMu, 0, param_signal.Name,"Preselection6" , TauColl, JetColl, FatjetColl, LepsVeto, GetvMET("PuppiT1xyCorr",param_signal), nPV, SetupWeight(ev,param_signal),param_signal.WriteOutVerbose);
+	  if(MuonCollV[0].PassID("HNL_ULIDv2") && MuonCollV[1].PassID("HNL_ULIDv2")) Fill_RegionPlots(MuMu, 0, param_signal.Name,"Preselection4" , TauColl, JetColl, FatjetColl, LepsVeto, GetvMET("PuppiT1xyCorr"), nPV, SetupWeight(ev,param_signal),param_signal.WriteOutVerbose);
+	  if(MuonCollV[0].PassID("HNL_ULIDv3") && MuonCollV[1].PassID("HNL_ULIDv3")) Fill_RegionPlots(MuMu, 0, param_signal.Name,"Preselection5" , TauColl, JetColl, FatjetColl, LepsVeto, GetvMET("PuppiT1xyCorr"), nPV, SetupWeight(ev,param_signal),param_signal.WriteOutVerbose);
+	  if(MuonCollV[0].PassID("HNL_ULIDv4") && MuonCollV[1].PassID("HNL_ULIDv4")) Fill_RegionPlots(MuMu, 0, param_signal.Name,"Preselection6" , TauColl, JetColl, FatjetColl, LepsVeto, GetvMET("PuppiT1xyCorr"), nPV, SetupWeight(ev,param_signal),param_signal.WriteOutVerbose);
 	  
 	  
 	}      
@@ -549,8 +549,8 @@ void HNL_SignalLeptonOpt::executeEvent(){
     
     
 
-    ev.SetMVA("MuMu",100, EvaluateEventMVA("100", "300","850", MuMu,  LepsVeto,ev, GetvMET("PuppiT1xyCorr",param_signal),param_signal));
-    //    ev.SetMVA("MuMu",400, EvaluateEventMVA("400", "300","850", MuMu,  LepsVeto,ev, GetvMET("PuppiT1xyCorr",param_signal),param_signal));
+    ev.SetMVA("MuMu",100, EvaluateEventMVA("100", "300","850", MuMu,  LepsVeto,ev, GetvMET("PuppiT1xyCorr"),param_signal));
+    //    ev.SetMVA("MuMu",400, EvaluateEventMVA("400", "300","850", MuMu,  LepsVeto,ev, GetvMET("PuppiT1xyCorr"),param_signal));
     
     //cout << "Number of MuonsIDs = " << MuonsIDs.size() << endl;
     
@@ -649,7 +649,7 @@ void HNL_SignalLeptonOpt::RunULAnalysis(AnalyzerParameter param, vector<Electron
   std::vector<Muon>       MuonCollT     = GetLepCollByRunType    ( MuonCollTInit,param);
   std::vector<Electron>   ElectronCollT  =  GetLepCollByRunType   ( ElectronCollTInit,param);
   
-  Particle METv = GetvMET("PuppiT1xyCorr",param); // returns MET with systematic correction                                                                                                                      
+  Particle METv = GetvMET("PuppiT1xyCorr"); // returns MET with systematic correction                                                                                                                      
 
   FillHist( "TESTHIST/"+param.Name+"/NEvents",  5,  1, 10, 0,10 );
    

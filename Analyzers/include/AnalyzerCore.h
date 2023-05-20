@@ -217,14 +217,14 @@ public:
 
 
   double  JetLeptonPtRelLepAware(  Lepton lep, Jet jet);
-  double  JetLeptonPtRelLepAware(  Lepton lep, bool CorrLep=false, bool CorrJet=false,bool CheckID=false);
-  double  JetLeptonPtRelLepAware(  Muon lep, bool CorrLep=false, bool CorrJet=false,bool CheckID=false);
-  double  JetLeptonPtRelLepAware(  Electron lep, bool CorrLep=false, bool CorrJet=false,bool CheckID=false);
+  double  JetLeptonPtRelLepAware(  Lepton lep);
+  double  JetLeptonPtRelLepAware(  Electron lep);
+  double  JetLeptonPtRelLepAware(  Muon lep,     bool CorrLep=false);
 
-  double  JetLeptonPtRatioLepAware(  Lepton lep, Jet jet);
-  double  JetLeptonPtRatioLepAware( Lepton lep, bool CorrLep=false, bool CorrJet=false,bool CheckID=false);
-  double  JetLeptonPtRatioLepAware( Muon lep, bool CorrLep=false, bool CorrJet=false,bool CheckID=false);
-  double  JetLeptonPtRatioLepAware( Electron lep, bool CorrLep=false, bool CorrJet=false,bool CheckID=false);
+  double  JetLeptonPtRatioLepAware( Lepton lep, Jet jet);
+  double  JetLeptonPtRatioLepAware( Lepton lep);
+  double  JetLeptonPtRatioLepAware( Muon lep, bool CorrLep=false);
+  double  JetLeptonPtRatioLepAware( Electron lep);
 
 
   bool ConversionSplitting(std::vector<Lepton *> leps);
@@ -365,6 +365,7 @@ public:
   Particle UpdateMET(const Particle& METv, const std::vector<Muon>& muons);
   Particle UpdateMETSmearedJet(const Particle& METv, const std::vector<Jet>& jets);
   Particle UpdateMETSyst(AnalyzerParameter param, const Particle& METv, std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Muon> muons, std::vector<Electron> electrons);
+  Particle UpdateMETSyst(double met_pt, double met_phi, double met_shift_pt, double met_shift_phi, const Particle& METv);
 
   std::vector<Muon> MuonApplyPtCut(const std::vector<Muon>& muons, double ptcut);
   std::vector<Electron> ElectronPromptOnly(const std::vector<Electron>& electrons, const std::vector<Gen>& gens,AnalyzerParameter param);

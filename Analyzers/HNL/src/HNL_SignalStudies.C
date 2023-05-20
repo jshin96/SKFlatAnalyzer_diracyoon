@@ -78,7 +78,7 @@ void HNL_SignalStudies::executeEvent(){
     if(MCSample.Contains("SSWWType") && MCSample.Contains("private"))  MakeType1SSWWSignalPlots(channel, false);
     
   }
-  Particle METv = GetvMET("PuppiT1xyCorr",param); // returns MET with systematic correction                                                                                                    
+  Particle METv = GetvMET("PuppiT1xyCorr"); // returns MET with systematic correction                                                                                                    
   
   std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5);
   std::vector<Muon>       MuonCollV     = GetMuons    (param.Muon_Veto_ID, 5., 2.4);

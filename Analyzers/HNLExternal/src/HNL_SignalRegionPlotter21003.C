@@ -53,7 +53,7 @@ void HNL_SignalRegionPlotter21003::RunULAnalysis(AnalyzerParameter param){
 
   // Creat Lepton vector to have lepton blind codes 
 
-  Particle METv = GetvMET("T1xyCorr",param); // returns MET with systematic correction
+  Particle METv = GetvMET("T1xyCorr"); // returns MET with systematic correction
 
   
   std::vector<FatJet> AK8_JetColl;
