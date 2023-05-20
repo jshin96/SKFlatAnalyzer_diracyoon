@@ -100,7 +100,7 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param){
   //std::vector<Lepton *> LepsT       = MakeLeptonPointerVector(MuonCollT,ElectronCollT,param);
   //std::vector<Lepton *> LepsV  = MakeLeptonPointerVector(MuonCollV,ElectronCollV,param);
   
-  Particle METv = GetvMET("PuppiT1xyULCorr",param); // reyturns MET with systematic correction                                                                      
+  Particle METv = GetvMET("PuppiT1xyULCorr"); // reyturns MET with systematic correction                                                                      
 
   if(run_Debug) cout << "PuppiT1xyULCorr = " << METv.Pt() << endl;
 

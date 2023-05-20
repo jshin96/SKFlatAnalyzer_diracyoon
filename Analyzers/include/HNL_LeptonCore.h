@@ -125,7 +125,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   std::pair<double,double> METXYCorr_Met_MetPhi(double uncormet, double uncormet_phi, int runnb, TString year, bool isMC, int npv, bool isUL =false,bool ispuppi=false);
   std::map<TString, double> cfmap;
 
-
+  map<TString, Particle> METMap(AnalyzerParameter param);
 
 
   /// Jet Functions                                                                                                                                                                                                 
@@ -197,9 +197,14 @@ class HNL_LeptonCore : public AnalyzerCore {
   TString GetProcess();
   TString GetChannelString(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType  q=HNL_LeptonCore::ChargeType::Inclusive);
   std::vector<Jet> SelBJets(std::vector<Jet>& jetColl, JetTagging::Parameters jtp);
-  Particle GetvMET(TString METType, AnalyzerParameter param);
-  Particle GetvMET(TString METType, AnalyzerParameter param, std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Muon> muons, std::vector<Electron> electrons);
+
+  ///// MET FUNCTIONS 
+  Particle GetvMET(TString METType, AnalyzerParameter param, std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Muon> muons, std::vector<Electron> electrons, bool propsmear=false);
+  Particle GetvMET(TString METType, AnalyzerParameter param, bool propsmear=false);
   Particle GetvMET(TString METType);
+  Particle GetvCorrMET(TString METType, AnalyzerParameter param, Particle METUncorr);
+
+
   Particle GetSignalObject(TString obj, TString Sig);
 
   vector<Muon> GetSignalLeptons(const std::vector<Muon>& MuColl, vector<Gen>& TruthColl);

@@ -169,7 +169,7 @@ void HNL_ConversionStudy::executeEvent(){
   std::vector<Lepton *> LepsT       = MakeLeptonPointerVector(MuonCollT,ElectronCollT);
   //std::vector<Lepton *> LepsV  = MakeLeptonPointerVector(MuonCollV,ElectronCollV);
   
-  Particle METv = GetvMET("PuppiT1xyULCorr",param); // reyturns MET with systematic correction                                              
+  Particle METv = GetvMET("PuppiT1xyULCorr"); // reyturns MET with systematic correction                                              
 
   std::map< TString, bool > map_Region_to_Bool;
   map_Region_to_Bool.clear();

@@ -168,7 +168,7 @@ void HNL_SR3_BDT_KinVar::executeEvent(){
     std::vector<Jet>    AK4_JetColl    = SelectAK4Jets(jets_tmp,     20., 2.7, true, 0.4, 0.8, "", ElectronCollV, MuonCollV, AK8_JetColl);
     std::vector<Jet>    AK4_JetVBFColl = SelectAK4Jets(jets_tmp,     30., 4.7, true, 0.4, 0.8, "", ElectronCollV, MuonCollV, AK8_JetColl);
 
-    Particle METv = GetvMET("PuppiT1xyULCorr",param_bdt);
+    Particle METv = GetvMET("PuppiT1xyULCorr");
  
     std::vector<Jet> bjets_tmp                  = SelectAK4Jets(jets_tmp,     20., 2.4, true, 0.4, 0.8, "", ElectronCollV, MuonCollV, AK8_JetColl);
 

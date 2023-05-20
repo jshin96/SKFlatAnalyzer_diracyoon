@@ -269,7 +269,7 @@ void HNL_FakeRateOpt::RunM(std::vector<Electron> loose_el,  std::vector<Muon> lo
   TString channel_s="_MuMu";
   Event ev = GetEvent();
 
-  Particle METv = GetvMET("PuppiT1xyULCorr",param);
+  Particle METv = GetvMET("PuppiT1xyULCorr");
 
   if(loose_mu.size() == 0) return;
 
@@ -402,7 +402,7 @@ void HNL_FakeRateOpt::RunE( std::vector<Electron> loose_el, std::vector<Muon> lo
   TString label = param.Name;
   Event ev = GetEvent();
 
-  Particle METv = GetvMET("PuppiT1xyULCorr",param);
+  Particle METv = GetvMET("PuppiT1xyULCorr");
   
   if(loose_el.size() == 0) return;
  
@@ -834,7 +834,7 @@ void HNL_FakeRateOpt::GetFakeRateAndPromptRates(AnalyzerParameter param, std::ve
   if (leps.size()<1) return;
   
   Event ev = GetEvent();
-  Particle METv = GetvMET("PuppiT1xyULCorr",param);
+  Particle METv = GetvMET("PuppiT1xyULCorr");
 
   
   if(leps.size()==1){
