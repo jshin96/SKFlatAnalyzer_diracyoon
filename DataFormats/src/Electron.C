@@ -729,20 +729,6 @@ if(ID.Contains("HNL_ULIDs_CONV")){
     return 1;
   }
 
-  if(ID == "HNL_ULIDv2_2016" || ID == "HNL_ULIDv2_2017" || ID == "HNL_ULIDv2_2018"){
-
-    if(!PassMVABaseLine()) return 0;
-
-    if( IsBB()){
-      if(!PassHNLMVA(0.15,0.7,-0.7)) return 0;
-    }
-    else{
-      if(!PassHNLMVA(0.2,0.84,-0.7)) return 0;
-
-    }
-    return 1;
-  }
-
 
 
   if(ID.Contains("HNL_ULID_FO_201")){
@@ -943,8 +929,8 @@ bool Electron::PassMVABaseLine() const{
 bool Electron::PassHNLMVA(double fake_cut,double cf_cut, double conv_cut) const{
   
   if(!PassULMVA(HNL_MVA_CF("EDv2"),  cf_cut,  "j_lep_mva_hnl_cf_v2"))   return false;
-  if(!PassULMVA(HNL_MVA_Fake("v2"),fake_cut,"j_lep_mva_hnl_fake_v2")) return false;
-  if(!PassULMVA(HNL_MVA_Conv("v2"),conv_cut,"j_lep_mva_hnl_conv_v2")) return false;
+  if(!PassULMVA(HNL_MVA_Fake("EDv4"),fake_cut,"j_lep_mva_hnl_fake_v2")) return false;
+  if(!PassULMVA(HNL_MVA_Conv("EDv2"),conv_cut,"j_lep_mva_hnl_conv_ed_v2")) return false;
   return true;
 }
 

@@ -101,8 +101,7 @@ void HNL_SignalStudies::executeEvent(){
   
   vector<TString>  IDList = {"HNTightV2",
 			     "MVAID",
-			     "HNL_ULID_2016",
-			     "HNL_ULIDv2_2016"};
+			     "HNL_ULID_2016"};
   
   TString pnameD = param.DefName;
   TString pname = param.Name;

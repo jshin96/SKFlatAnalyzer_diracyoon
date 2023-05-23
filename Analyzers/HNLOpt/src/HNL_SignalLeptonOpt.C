@@ -518,12 +518,9 @@ void HNL_SignalLeptonOpt::executeEvent(){
       MuonsIDs.push_back("POGTightPFIsoVeryVeryTight");
     }
     
-    MuonsIDs.push_back("HNL_ULIDv1_2016");
-    MuonsIDs.push_back("HNL_ULIDv1_2017");
-    MuonsIDs.push_back("HNL_ULIDv1_2018");
-    MuonsIDs.push_back("HNL_ULIDv2_2016");
-    MuonsIDs.push_back("HNL_ULIDv2_2017");
-    MuonsIDs.push_back("HNL_ULIDv2_2018");
+    MuonsIDs.push_back("HNL_ULID_2016");
+    MuonsIDs.push_back("HNL_ULID_2017");
+    MuonsIDs.push_back("HNL_ULID_2018");
     MuonsIDs.push_back("HNL_ULIDv2");
     MuonsIDs.push_back("HNL_ULIDv3");
     MuonsIDs.push_back("HNL_ULIDv4");

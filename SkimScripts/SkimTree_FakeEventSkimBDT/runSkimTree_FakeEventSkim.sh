@@ -6,10 +6,11 @@ njobs_data=600
 nmax=50
 skim=' '
 declare  -a era_list=("2018" "2017"  "2016preVFP" "2016postVFP")
+declare  -a era_list=( "2016preVFP")
 if [[ $1 == "" ]]; then
     for i in "${era_list[@]}"
     do
-	SKFlat.py -a $analyzer  -l  $mcpath/QCD_${i}.txt  -n 400  --nmax ${nmax}   -e ${i}  --skim SkimTree_FakeEventSkim
+	SKFlat.py -a $analyzer  -i QCD_Pt-1000_MuEnriched  -n 1  --nmax 1   -e ${i}  --skim SkimTree_FakeEventSkim &
     done
 
 fi

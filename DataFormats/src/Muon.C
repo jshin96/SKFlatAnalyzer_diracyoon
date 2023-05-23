@@ -390,7 +390,7 @@ bool Muon::PassID(TString ID) const {
 
 
 
-  if(ID.Contains("HNL_ULIDv1_2016")  || ID.Contains("HNL_ULID_2016")){
+  if(ID.Contains("HNL_ULID_2016")){
 
     if(!PassID("MVALoose")) return false;
 
@@ -401,12 +401,10 @@ bool Muon::PassID(TString ID) const {
       if(MVA() < 0.6)  return false;
     }
     
-    //if(!PassID("HNLIPv7"))  return false;
-
     return true;
   }
 
-  if(ID.Contains("HNL_ULIDv1_2017") || ID.Contains("HNL_ULID_2017"))  {
+  if(ID.Contains("HNL_ULID_2017"))  {
 
     if(!PassID("MVALoose")) return false;
 
@@ -422,7 +420,7 @@ bool Muon::PassID(TString ID) const {
     return true;
   }
 
-  if(ID.Contains("HNL_ULIDv1_2018")|| ID.Contains("HNL_ULID_2018"))  {
+  if(ID.Contains("HNL_ULID_2018"))  {
 
     if(!PassID("MVALoose")) return false;
 
@@ -437,62 +435,6 @@ bool Muon::PassID(TString ID) const {
 
     return true;
   }
-
-
-  if(ID.Contains("HNL_ULIDv2_2016"))   {
-
-    if(!PassID("MVALoose")) return false;
-
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(HNL_MVA_Fake("v3") < -0.3)  return false;
-      if(MVA() < 0.76)  return false;
-    }
-    else{
-      if(HNL_MVA_Fake("v3") < -0.1)  return false;
-      if(MVA() < 0.6)  return false;
-    }
-
-      //if(!PassID("HNLIPv7"))  return false;
-
-    return true;
-  }
-
-
-  if(ID.Contains("HNL_ULIDv2_2017"))   {
-
-    if(!PassID("MVALoose")) return false;
-
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(HNL_MVA_Fake("v3") < -0.1)  return false;
-      if(MVA() < 0.68)  return false;
-    }
-    else{
-      if(HNL_MVA_Fake("v3") < -0.3)  return false;
-      if(MVA() < 0.64)  return false;
-    }
-
-    if(!PassID("HNLIPv8"))  return false;
-    return true;
-  }
-
-  if(ID.Contains("HNL_ULIDv2_2018"))   {
-
-    if(!PassID("MVALoose")) return false;
-
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(HNL_MVA_Fake("v3") < -0.1)  return false;
-      if(MVA() < 0.6)  return false;
-    }
-    else{
-      if(HNL_MVA_Fake("v3") < 0.3)  return false;
-      if(MVA() < 0.7)  return false;
-    }
-
-    //if(!PassID("HNLIPv7"))  return false;
-
-    return true;
-  }
-
 
 
 
