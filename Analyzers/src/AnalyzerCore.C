@@ -1017,7 +1017,6 @@ void AnalyzerCore::SetupIDMVAReaderMuon(){
 
   TString BDTGv4_Fake = "";
   if(GetYear() == 2016) BDTGv4_Fake = "BDTG_version6_MuonFakeBkg_LF_TypeI_MuMu_SignalMuonFakeNoPt_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf;
-  
   if(GetYear() == 2017) BDTGv4_Fake = "BDTG_version6_MuonFakeBkg_LF_TypeI_MuMu_SignalMuonFakeNoPt_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf;
   if(GetYear() == 2018) BDTGv4_Fake = "BDTG_version6_MuonFakeBkg_LF_TypeI_MuMu_SignalMuonFakeNoPt_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf;
 
@@ -1039,9 +1038,19 @@ void AnalyzerCore::SetupIDMVAReaderMuon(){
   MuonIDFakeNoPtMVAReader->BookMVA("BDTGv4_BB_Fake", MVAPathMuonFakeV4+BDTGv4_BB_Fake);
   MuonIDFakeNoPtMVAReader->BookMVA("BDTGv4_EC_Fake", MVAPathMuonFakeV4+BDTGv4_EC_Fake);
 
+  // ----> 0.990249335302: ['0.478', '0.195', 'BDTG_version6_MuonFakeBkg_LF_TypeI_MuMu_SignalMuonFakeNoPtBB_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
+  // ----> 0.983556816291: ['0.167', '0.551', 'BDTG_version6_MuonFakeBkg_LF_TypeI_MuMu_SignalMuonFakeNoPtEC_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT.root']
+  //----> 0.988444335798: ['0.135', '0.129', 'BDTG_version6_MuonFakeBkg_LF_TypeI_MuMu_SignalMuonFakeNoPt_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT.root']
+
+  //----> 0.988732999523: ['0.348', '0.105', 'BDTG_version6_MuonFakeBkg_LF_TypeI_MuMu_SignalMuonFakeNoPtBB_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT.root']
+  // ----> 0.981577613688: ['0.479', '0.184', 'BDTG_version6_MuonFakeBkg_LF_TypeI_MuMu_SignalMuonFakeNoPtEC_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_200_BDT.root']
+  //----> 0.983863690644: ['0.72', '0.151', 'BDTG_version6_MuonFakeBkg_LF_TypeI_MuMu_SignalMuonFakeNoPt_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
+
+  // ----> 0.98889260451: ['0.742', '0.172', 'BDTG_version6_MuonFakeBkg_LF_TypeI_MuMu_SignalMuonFakeNoPtBB_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_200_BDT.root']
+  // ----> 0.982613570019: ['0.639', '0.217', 'BDTG_version6_MuonFakeBkg_LF_TypeI_MuMu_SignalMuonFakeNoPtEC_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_200_BDT.root']
+  //----> 0.987515887664: ['0.805', '0.28', 'BDTG_version6_MuonFakeBkg_LF_TypeI_MuMu_SignalMuonFakeNoPt_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
 
 
-  
   return;
   
  
