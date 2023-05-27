@@ -4,7 +4,7 @@ void HNL_Validation::initializeAnalyzer(){
 
   // All default settings like trigger/ PD/ BJet are decalred in HNL_LeptonCore::initializeAnalyzer to make them consistent for all HNL codes
 
-  HNL_LeptonCore::initializeAnalyzer();
+  // HNL_LeptonCore::initializeAnalyzer();
   SetupEventMVAReader();			
 
 }
