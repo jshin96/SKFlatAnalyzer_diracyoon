@@ -175,7 +175,7 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
     std::vector<Lepton *> leps       = MakeLeptonPointerVector(muons,electrons,param);
     
     
-    if(!PassEventTypeFilter(leps)) continue;
+    if(!PassGenMatchFilter(leps,param)) continue;
 
     if(!ConversionSplitting(leps)) continue;
 
@@ -227,7 +227,7 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
       if(!SameCharge(leps)) continue;
     }
 
-    if(RunFake){
+    if(RunFake&& IsData){
       weight_channel = GetFakeWeight(leps, param_channel, true);
       FillWeightHist(param_channel.Name+"/FakeWeight",weight_channel);
     }
@@ -889,7 +889,7 @@ bool HNL_RegionDefinitions::RunSignalRegionTrilepton(HNL_LeptonCore::Channel cha
   
   // If running fake bkg now set weight to Fake weight
   //if(RunFake)   w= GetFakeWeightMuon(leps, param);
-  if(RunFake)   FillWeightHist(param.Name+"/FakeWeight_"+param.Name,w);
+  if(RunFake&&IsData)   FillWeightHist(param.Name+"/FakeWeight_"+param.Name,w);
 
   int n_veto_lep  = leps_veto.size();
   
@@ -1034,7 +1034,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
   FillHist("CR_BeforeConvCut", 1. , weight_ll, 2., 0.,  2.);
 
   
-  if(!PassEventTypeFilter(LepsT)) return;
+  if(!PassGenMatchFilter(LepsT,param)) return;
   
   if(!IsData && RunPromptTLRemoval){
     weight_ll = -1*weight_ll* GetFakeWeight(LepsT, param , false);

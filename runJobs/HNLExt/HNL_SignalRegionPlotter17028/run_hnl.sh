@@ -1,8 +1,8 @@
 analyzer=HNL_SignalRegionPlotter17028
 rundir=HNL_SignalRegionPlotter17028
-sigpath=${SKFlat_WD}/runJobs/${analyzer}/Signals/
-mcpath=${SKFlat_WD}/runJobs/${analyzer}/Bkg/
-datapath=${SKFlat_WD}/runJobs/${analyzer}/DATA/
+sigpath=${SKFlat_WD}/runJobs/HNLExt/${analyzer}/Signals/
+mcpath=${SKFlat_WD}/runJobs/HNLExt/${analyzer}/Bkg/
+datapath=${SKFlat_WD}/runJobs/HNLExt/${analyzer}/DATA/
 njobs=30
 njobs_data=100
 nmax=300
@@ -92,7 +92,11 @@ if [[ $1 == "" ]]; then
     for i in "${era_list[@]}"
     do
 	
+        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep 
+        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLep --userflags RunFake  
+        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_Dilepton --userflags RunCF
 	
+	SKFlat.py -a $analyzer  -l $mcpath/MC.txt  -n $njobs  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLep 
 	SKFlat.py -a $analyzer  -l $sigpath/SSWW.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
 	SKFlat.py -a $analyzer  -l $sigpath/DY.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
         SKFlat.py -a $analyzer  -l $sigpath/VBF.txt  -n $njobs  --nmax ${nmax}   -e ${i} 

@@ -13,6 +13,7 @@ void HNL_LeptonCore::initializeAnalyzer(){
   
 
   //=== bkg flags                                                                                                                                      
+  RunPrompt = HasFlag("RunPrompt");
   RunFake   = HasFlag("RunFake");
   RunCF     = HasFlag("RunCF");
   RunConv   = HasFlag("RunConv");
@@ -1312,19 +1313,13 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
   AnalyzerParameter param  ;
   param.Clear();
 
-  param.Name  = s_setup+tag;
-  param.DefName  =s_setup+tag;
-
+  param.Name     = s_setup+tag;
+  param.DefName  = s_setup+tag;
 
   // Default settings
-  
   param.syst_ = AnalyzerParameter::Central;
   param.MCCorrrectionIgnoreNoHist = true;
-
-  /// By default setup POG ID 
-  /// By Default use MC for all Bkgs
-  param.MuFakeMethod = "MC";
-  param.ElFakeMethod = "MC";
+  param.FakeMethod = "MC";
   param.CFMethod   = "MC";
   param.ConvMethod = "MC";
 
@@ -1332,38 +1327,32 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
   param.Jet_ID                     = "tight";
   param.Jet_MinPt = 10.;
   param.Jet_MaxEta = 5.;
-
+  param.BJet_Method                = "1a";
+  /// ---------
   param.FatJet_ID                  = "tight";
   param.FatJet_MinPt = 200.;
   param.FatJet_MaxEta = 5.;
-
-  param.BJet_Method                = "1a";
-
+  /// ---------
   param.Muon_MinPt = 5.;
   param.Muon_MaxEta = 2.4;
-
+  /// ---------                                                                                                                             
   param.Electron_MinPt = 10.;
   param.Electron_MaxEta = 2.5;
-
   /// Lepton IDs
-  param.Muon_Veto_ID = "HNVeto2016";
+  param.Muon_Veto_ID     = "HNVeto2016";
   param.Electron_Veto_ID = "HNVeto";
-  param.Tau_Veto_ID = "JetVLElVLMuVL";
-  
+  param.Tau_Veto_ID      = "JetVLElVLMuVL";
   /// Fakes
   param.Muon_FR_Key  ="pt_eta_AwayJetPt40";
   param.Muon_PR_Key  ="ptcone_eta_central";
   param.Electron_FR_Key  = "pt_eta_AwayJetPt40";
   param.Electron_PR_Key  ="ptcone_eta_central";
-
-  /// Defaul Corrections                                                                                                                     
-
+  /// Defaul Corrections                                                                                                                    
   param.Muon_ID_SF_Key = "NUM_TightID_DEN_TrackerMuons";
   param.Muon_ISO_SF_Key = "NUM_TightRelIso_DEN_TightIDandIPCut";
   param.Muon_Tight_ID = "POGTightWithTightIso";
   param.Muon_RECO_SF_Key = "MuonRecoSF";
-
-
+  /// ---------                                                                                                                             
   param.Electron_ID_SF_Key = "passTightID";
   param.Electron_Tight_ID = "passPOGTight";
 
@@ -1387,19 +1376,19 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
     return param;
   }
   else if (s_setup=="HNL"){
-    param.CFMethod   = "Data";
-    param.Muon_Tight_ID = "HNTightV2";
-    param.Electron_Tight_ID = "HNTightV2";
+    param.FakeMethod = "DATA";
+    param.CFMethod         = "DATA";
+    param.Muon_Tight_ID    = "HNTightV2";
+    param.Muon_ID_SF_Key   = "TmpHNTightV2";
+    param.Muon_FR_ID       = "HNLooseV1";
+    param.Muon_RECO_SF_Key =  "MuonRecoSF";
+    param.Electron_Tight_ID  = "HNTightV2";
     param.Electron_ID_SF_Key = "TmpHNTightV2";
-    param.Muon_ID_SF_Key = "TmpHNTightV2";
-    param.Muon_FR_ID = "HNLooseV1";
-    param.Electron_FR_ID = "HNLooseV4";
-    param.Muon_RECO_SF_Key = "MuonRecoSF";
+    param.Electron_FR_ID     = "HNLooseV4";
     return param;
   }
   else if (s_setup=="HNLOpt"){
-    param.MuFakeMethod = "MC";
-    param.ElFakeMethod = "MC";
+    param.FakeMethod = "MC";
     param.CFMethod   = "MC";
     param.ConvMethod = "MC";
     param.Muon_Tight_ID = "HNTightV2";
@@ -1424,8 +1413,7 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
     return param;
   }
   else if (s_setup=="BDT"){
-    param.MuFakeMethod = "MC";
-    param.ElFakeMethod = "MC";
+    param.FakeMethod = "MC";
     param.CFMethod   = "MC";
     param.ConvMethod = "MC";
     param.Muon_Tight_ID = "MVAID";
@@ -1438,8 +1426,7 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
     return param;
   }
   else if (s_setup=="MVAUL"){
-    param.MuFakeMethod = "DATA";
-    param.ElFakeMethod = "DATA";
+    param.FakeMethod = "DATA";
     param.CFMethod   = "MC";
     param.ConvMethod = "MC";
     param.Muon_Tight_ID = "HNL_ULID_"+GetYearString();
@@ -1493,8 +1480,7 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
     return param;
   }
   else if (s_setup=="BDTTop"){
-    param.MuFakeMethod = "MC";
-    param.ElFakeMethod = "MC";
+    param.FakeMethod = "MC";
     param.CFMethod   = "MC";
     param.ConvMethod = "MC";
     param.Muon_Tight_ID = "MVAID";
@@ -1516,10 +1502,19 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
     param.Electron_FR_ID = "HNLoose_17028";
     return param;
   }
+  else if (s_setup=="Peking"){
+    param.CFMethod     = "MC";
+    param.FakeMethod   = "MC";
+    param.ConvMethod   = "MC";
+    param.Muon_Tight_ID = "HNL_Peking";
+    param.Electron_Tight_ID = "HNL_Peking_"+GetYearString();
+    param.Electron_ID_SF_Key = "-";
+    param.Muon_ID_SF_Key = "-";
+    return param;
+  }
   else if (s_setup=="POG"){
     param.CFMethod   = "MC";
-    param.MuFakeMethod = "MC";
-    param.ElFakeMethod = "MC";
+    param.FakeMethod = "MC";
     param.Electron_ID_SF_Key = "passTightID";
     param.Electron_Tight_ID = "passPOGTight";
     param.Muon_ID_SF_Key = "NUM_TightID_DEN_TrackerMuons";
@@ -1537,8 +1532,7 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
   }
   else if (s_setup=="POGCR"){
     param.CFMethod   = "MC";
-    param.MuFakeMethod = "Data";
-    param.ElFakeMethod = "Data";
+    param.FakeMethod = "DATA";
     param.Electron_ID_SF_Key = "passTightID";
     param.Electron_Tight_ID = "passPOGTight";
     param.Muon_ID_SF_Key = "NUM_TightID_DEN_TrackerMuons";
@@ -1627,8 +1621,7 @@ void HNL_LeptonCore::PrintParam(AnalyzerParameter param){
   cout << "------------------------------------------------------------" << endl;
   cout << "param name = " << param.Name << endl;
   cout << "param Default name = " << param.DefName << endl;
-  cout << "param.MuFakeMethod = " << param.MuFakeMethod << endl;
-  cout << "param.ElFakeMethod = " << param.ElFakeMethod << endl;
+  cout << "param.FakeMethod = " << param.FakeMethod << endl;
   cout << "param.CFMethod   = " << param.CFMethod << endl;
   cout << "param.ConvMethod = " << param.ConvMethod << endl;
 
@@ -3200,11 +3193,8 @@ vector<Muon> HNL_LeptonCore::GetLepCollByRunType(const std::vector<Muon>& MuColl
 
   /// Empty Option means  param is used to configure
   if(Option == ""){
-    if(param.MuFakeMethod == "MC") Option+="HFake";
-
-    if(RunConv){
-      if(param.ConvMethod == "MC") Option+="NHConv";
-    }
+    if(param.FakeMethod == "MC") Option+="HFake";
+    if(param.ConvMethod == "MC") Option+="NHConv";
   }
 
 
@@ -3299,14 +3289,9 @@ vector<Electron> HNL_LeptonCore::GetLepCollByRunType(const vector<Electron>& ElC
 
 
   if(Option == ""){
-    if(param.ElFakeMethod == "MC") Option+="HFake";
-
-    if(RunConv){
-      if(param.ConvMethod == "MC") Option+="NHConv";
-    }
-    if(RunCF){
-      if(param.CFMethod == "MC")     Option+="CF";
-    }
+    if(param.FakeMethod == "MC") Option+="HFake";
+    if(param.ConvMethod == "MC") Option+="NHConv";
+    if(param.CFMethod == "MC")   Option+="CF";
   }
   if(RunPromptTLRemoval) Option == "CFNHIntConv";
 
@@ -3676,29 +3661,55 @@ TString HNL_LeptonCore::GetEtaLabel(Muon mu){
 }
 
 
-double HNL_LeptonCore::PassEventTypeFilter(vector<Lepton *> leps){
+bool HNL_LeptonCore::PassGenMatchFilter(vector<Lepton *> leps, AnalyzerParameter param){
+
+  /// Function to split Prompt/Conv/CF/Fake IF code uses RunPrompt etc.... 
+  /// If code does not use Run* to sepeate MC samples then function should return true
+
+  /// If user used Data driven method for Fake/CF then function returns for Fake/F bkf true for data and false for MC 
+  /// If user used Data driven method for Fake/CF then for Conv function requires at least one conv lepton is present 
 
   if(IsData) return true;
+  if(RunFake && param.FakeMethod != "MC") return false;
+  if(RunCF   && param.CFMethod   != "MC") return false;
+  if(RunConv && param.ConvMethod != "MC") return false;
+
+  if(MCSample.Contains("Type")) return true;
+
+  //// Function filters events when using MC based on if they are Fake/CF/Conv
   
   int nConv(0);
   int nCF=(0);
-  int nFake=(0);                                                                                                                                                                                                                                                                                           
+  int nFake=(0);                                         
+  unsigned int nPrompt(0);
   for(auto ilep: leps){
     //int LepType= GetLeptonType_JH(*ilep, gens);
     if( ilep->IsConv())     nConv++;
     if( ilep->LeptonIsCF()) nCF++;
     if( ilep->IsFake())     nFake++;
+    if( ilep->IsPrompt())   nPrompt++;
   }
-  if(RunConv && nConv == 0)  return false;
-  if(RunCF   && nCF   == 0)  return false;
-  if(RunFake && nFake == 0)  return false;
+  
+  if(RunPrompt && (nPrompt == leps.size())) return true;
+  if(RunPrompt && (nPrompt != leps.size())) return false;
 
-  if(!RunPromptTLRemoval){
+
+  if( (RunFake || RunConv || RunCF )){
+
+    if(RunFake  && nFake > 0)  return true;
+    if(!RunFake && nFake > 0)  return false;
+    
+    if(RunCF    && nCF   > 0)  return true;
+    if(!RunCF   && nCF > 0)    return false;
+
+    if(RunConv  && nConv > 0)  return true;
     if(!RunConv && nConv > 0) return false;
-    if(!RunCF && nCF > 0) return false;
+    
+    return false;
   }
-
+  
   return true;
+
 }
 
 

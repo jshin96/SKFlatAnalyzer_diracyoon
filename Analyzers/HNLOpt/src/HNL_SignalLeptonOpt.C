@@ -29,7 +29,7 @@ void HNL_SignalLeptonOpt::executeEvent(){
 
   std::vector<Electron>   ElectronCollV = GetElectrons(param_signal.Electron_Veto_ID, 10., 2.5);
   std::vector<Muon>       MuonCollV     = GetMuons    (param_signal.Muon_Veto_ID, 5., 2.4);
-  std::vector<Lepton *>   LepsVeto     = MakeLeptonPointerVector(MuonCollV,ElectronCollV,param_signal);
+  std::vector<Lepton *>   LepsVeto      = MakeLeptonPointerVector(MuonCollV,ElectronCollV,param_signal);
   std::vector<Tau>        TauColl       = GetTaus     (LepsVeto,param_signal.Tau_Veto_ID,20., 2.3);
 
 
@@ -311,7 +311,7 @@ void HNL_SignalLeptonOpt::executeEvent(){
     std::vector<Jet> BJetColl                       = GetHNLJets("BJetM",param_signal);
     std::vector<Jet> BJetCollSR1                    = GetHNLJets("BJetT",param_signal);
     
-    if(MuonCollV[0].Pt() > 15 && MuonCollV[1].Pt() > 10 ) {
+    if(MuonCollV[0].Pt() > 20 && MuonCollV[1].Pt() > 10 ) {
       if(BJetColl.size() == 0){
 	if(MuonCollV[0].PassID("MVALoose") && MuonCollV[1].PassID("MVALoose")){
 
@@ -363,28 +363,35 @@ void HNL_SignalLeptonOpt::executeEvent(){
         for(unsigned int imva=0 ; imva < 12 ; imva++){
           double mva_d= 0.2 + double(imva)*0.05;
           TString mvaTS= DoubleToString(mva_d);
-          mvaHF1.push_back("MVAHFBB"+mvaTS+"_");
-          mvaHF2.push_back("MVAHFEC"+mvaTS+"_");
+          mvaHF1.push_back("MVAHFBB"+mvaTS+"_"+"MVAHFEC"+mvaTS+"_");
+          //mvaHF2.push_back("MVAHFEC"+mvaTS+"_");
         }
 
         vector<TString> mvaLF1;
         vector<TString> mvaLF2;
-	for(unsigned int imva=0 ; imva < 6 ; imva++){
-          double mva_d= -0.7 + double(imva)*0.1;
+	
+	TString mvaTS1= DoubleToString(-1.);
+	mvaLF1.push_back("MVALFBB"+mvaTS1+"_");
+	mvaLF2.push_back("MVALFEC"+mvaTS1+"_");
+
+	for(unsigned int imva=0 ; imva < 10 ; imva++){
+          double mva_d= -0.7 + double(imva)*0.15;
           TString mvaTS= DoubleToString(mva_d);
 	  mvaLF1.push_back("MVALFBB"+mvaTS+"_");
 	  mvaLF2.push_back("MVALFEC"+mvaTS+"_");
         }
 
+
 	for(auto i1 : mvaHF1){
-	  for(auto i2 : mvaHF2){
-	    MuonsIDs.push_back("HNLUL_"+i1+i2+"DXYv1");
-	    for(auto i3 : mvaLF1){
-	      for(auto i4 : mvaLF2){
-		MuonsIDs.push_back("HNLUL_"+i1+i2+i3+i4+"NPMMv1_DXYv1");
-		MuonsIDs.push_back("HNLUL_"+i1+i2+i3+i4+"NPMMv2_DXYv1");
-		MuonsIDs.push_back("HNLUL_"+i1+i2+i3+i4+"NPMMv3_DXYv1");
-	      }
+	  //for(auto i2 : mvaHF2){
+	  MuonsIDs.push_back("HNLUL_"+i1+"DXYv1");
+	  for(auto i3 : mvaLF1){
+	    for(auto i4 : mvaLF2){
+	      MuonsIDs.push_back("HNLUL_"+i1+i3+i4+"NPMMv1_DXYv1");
+	      MuonsIDs.push_back("HNLUL_"+i1+i3+i4+"NPMMv2_DXYv1");
+	      MuonsIDs.push_back("HNLUL_"+i1+i3+i4+"NPMMv3_DXYv1");
+	      MuonsIDs.push_back("HNLUL_"+i1+i3+i4+"NPMMv4_DXYv1");
+	      MuonsIDs.push_back("HNLUL_"+i1+i3+i4+"NPMMEDv4_DXYv1");
 	    }
 	  }
 	}
@@ -547,7 +554,7 @@ void HNL_SignalLeptonOpt::executeEvent(){
     
 
     ev.SetMVA("MuMu",100, EvaluateEventMVA("100", "300","850", MuMu,  LepsVeto,ev, GetvMET("PuppiT1xyCorr"),param_signal));
-    //    ev.SetMVA("MuMu",400, EvaluateEventMVA("400", "300","850", MuMu,  LepsVeto,ev, GetvMET("PuppiT1xyCorr"),param_signal));
+    ev.SetMVA("MuMu",400, EvaluateEventMVA("400", "300","850", MuMu,  LepsVeto,ev, GetvMET("PuppiT1xyCorr"),param_signal));
     
     //cout << "Number of MuonsIDs = " << MuonsIDs.size() << endl;
     

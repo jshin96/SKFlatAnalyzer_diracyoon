@@ -158,7 +158,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   void OutCutFlow(TString lab, double w);
   TString QToString(HNL_LeptonCore::ChargeType q);
   bool CheckLeptonFlavourForChannel(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps);
-  double PassEventTypeFilter(vector<Lepton *> leps);
+  bool PassGenMatchFilter(vector<Lepton *> leps,AnalyzerParameter param);
   bool HasLowMassMeson(std::vector<Lepton *> leps);
 
   double SetupWeight(Event ev, AnalyzerParameter param);
@@ -255,7 +255,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   bool SameCharge(std::vector<Lepton *> leps, int ch=0);
 
   /// global var for user flags
-  bool RunFake, RunCF,  RunConv, RunSyst,RunPromptTLRemoval,run_ORTrigger;
+  bool RunPrompt,RunFake, RunCF,  RunConv, RunSyst,RunPromptTLRemoval,run_ORTrigger;
   bool IsSkimmed;
   bool Signal;
   bool HEM1516 ,BeforeRun319077;

@@ -5129,7 +5129,7 @@ std::vector<Muon> AnalyzerCore::MuonPromptOnly(const std::vector<Muon>& muons, c
   std::vector<Muon> out;
 
   for(unsigned int i=0; i<muons.size(); i++){
-    if(param.MuFakeMethod == "Data"){
+    if(param.FakeMethod == "Data"){
       if(GetLeptonType(muons.at(i), gens)<=0) continue;
     }
     out.push_back( muons.at(i) );
@@ -5354,11 +5354,11 @@ std::vector<Electron> AnalyzerCore::ElectronPromptOnly(const std::vector<Electro
     bool pass=true;
     //if(GetLeptonType(electrons.at(i), gens)<=0) continue;
 
-    if(param.ElFakeMethod == "Data"){
+    if(param.FakeMethod == "Data"){
       if(GetLeptonType(electrons.at(i), gens) <= 0)pass=false;
     }
 
-    if(param.ElFakeMethod == "DataNoConv"){
+    if(param.FakeMethod == "DataNoConv"){
       if(GetLeptonType(electrons.at(i), gens) <= 0)pass=false;
       if(GetLeptonType(electrons.at(i), gens)== -5)pass=true;
       if(GetLeptonType(electrons.at(i), gens)== -6)pass=true;
