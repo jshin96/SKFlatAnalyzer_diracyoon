@@ -630,11 +630,11 @@ void HNL_SignalLeptonOpt::RunULAnalysis(AnalyzerParameter param, vector<Electron
   
   // HL ID
 
-  TString el_ID = (RunFake) ?  param.Electron_FR_ID : param.Electron_Tight_ID ;
-  TString mu_ID = (RunFake) ?  param.Muon_FR_ID :  param.Muon_Tight_ID ;
+  TString el_ID =  param.Electron_Tight_ID ;
+  TString mu_ID =  param.Muon_Tight_ID ;
 
-  double Min_Muon_Pt     = (RunFake) ? 3. : 5.;
-  double Min_Electron_Pt = (RunFake) ? 7. : 10.;
+  double Min_Muon_Pt     = 5.;
+  double Min_Electron_Pt = 10.;
 
 
   std::vector<Muon>       MuonCollTInit; 

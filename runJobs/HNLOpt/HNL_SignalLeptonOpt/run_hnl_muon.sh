@@ -63,15 +63,23 @@ fi
 if [[ $1 == "Muon" ]]; then
     
    
-    #source ${runPATH}/run_hnl_muon.sh Signals ${3} ${2} 
+    source ${runPATH}/run_hnl_muon.sh Signals ${3} ${2} 
     
-    #FakeFlag=${2}',RunFake'
-    #source ${runPATH}/run_hnl_muon.sh Fake  ${3} ${FakeFlag}  
+    FakeFlag=${2}',RunFake'
+    source ${runPATH}/run_hnl_muon.sh Fake  ${3} ${FakeFlag}  
     PromptFlag=${2}',RunPrompt'
     source ${runPATH}/run_hnl_muon.sh Prompt  ${3} ${PromptFlag}  
-    #ConvFlag=${2}',RunConv'
-    #source ${runPATH}/run_hnl_muon.sh Conv ${3} ${ConvFlag} 
-    
+    ConvFlag=${2}',RunConv'
+    source ${runPATH}/run_hnl_muon.sh Conv ${3} ${ConvFlag} 
+
+    FakeFlag=${2}
+    source ${runPATH}/run_hnl_muon.sh Fake  ${3} ${FakeFlag}
+    PromptFlag=${2}
+    source ${runPATH}/run_hnl_muon.sh Prompt  ${3} ${PromptFlag}
+    ConvFlag=${2}
+    source ${runPATH}/run_hnl_muon.sh Conv ${3} ${ConvFlag}
+
+
 fi
 
 
@@ -107,11 +115,3 @@ fi
 
 
 
-if [[ $1 == "TMP" ]]; then
-    
-    Flag='MuID_NP,FullPt,BB'
-    
-    SKFlat.py -a $analyzer  -i DYTypeI_DF_M100_private  -n 20  --nmax 1000   -e 2017  --userflags $Flag   --skim SkimTree_HNMultiLepBDT&
-       
-
-fi
