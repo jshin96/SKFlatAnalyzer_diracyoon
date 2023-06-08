@@ -36,7 +36,7 @@ class HNL_RegionDefinitionsOpt : public HNL_LeptonCore {
 			   std::vector<Jet> jets, std::vector<FatJet>  fatjets, std::vector<Jet> bjets, 
 			   Event ev,  Particle METv, AnalyzerParameter param, TString channel_string ,  float w);
   
-  TString  RunSignalRegionAK8String(HNL_LeptonCore::Channel channel,HNL_LeptonCore::ChargeType q, 
+  TString  RunSignalRegionAK8String(TString mass, HNL_LeptonCore::Channel channel,HNL_LeptonCore::ChargeType q, 
 				    std::vector<Lepton *> leps,std::vector<Lepton *> leps_veto, std::vector<Tau> Taus, 
 				    std::vector<Jet> jets, std::vector<FatJet>  fatjets, std::vector<Jet> bjets, 
 				    Event ev,  Particle METv, AnalyzerParameter param, TString channel_string ,  float w);
@@ -65,9 +65,8 @@ class HNL_RegionDefinitionsOpt : public HNL_LeptonCore {
 				    std::vector<Jet> jets, std::vector<FatJet>  fatjets, std::vector<Jet> bjets, 
 				    Event ev,  Particle METv, AnalyzerParameter param, TString channel_string ,  float w);
   
-  TString RunSignalRegionAK4StringBDT(TString mn, HNL_LeptonCore::Channel channel ,
-				      std::vector<Lepton *> LepTCol, Event ev);
-
+  TString RunSignalRegionAK4StringBDT(TString mn, HNL_LeptonCore::Channel channel , std::vector<Lepton *> LepTCol ,
+				      std::vector<Jet> JetColl,std::vector<Jet> B_JetColl, Particle METv,   Event ev);
 
 
 
@@ -78,7 +77,8 @@ class HNL_RegionDefinitionsOpt : public HNL_LeptonCore {
 
 
 
-
+  double LowMassEdgeSR1(HNL_LeptonCore::Channel channel, TString mass );
+  double UpperMassEdgeSR1(HNL_LeptonCore::Channel channel, TString mass );
 
 
 

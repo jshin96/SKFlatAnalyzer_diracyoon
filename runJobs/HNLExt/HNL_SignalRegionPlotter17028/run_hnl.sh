@@ -27,11 +27,13 @@ if [[ $1 == "VBF" ]]; then
 
 fi
 
-if [[ $1 == "VBF1500" ]]; then
+if [[ $1 == "M1000" ]]; then
 
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -i VBFTypeI_SF_ll_M1500  -n 1  --nmax ${nmax}   -e ${i} &
+        SKFlat.py -a $analyzer  -i DYTypeI_DF_M1000_private  -n 10  --nmax ${nmax}   -e ${i} &
+        SKFlat.py -a $analyzer  -i VBFTypeI_DF_M1000_private  -n 10  --nmax ${nmax}   -e ${i} &
+
     done
 
 fi

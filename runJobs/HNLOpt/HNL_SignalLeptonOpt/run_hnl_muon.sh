@@ -26,8 +26,10 @@ if [[ $1 == "" ]]; then
 
     for i in "${era_list[@]}"
     do
-	
-	SKFlat.py -a $analyzer  -i DYTypeI_DF_M100_private    -n 1   --nmax 1   -e ${i}  --skim SkimTree_HNMultiLepBDT  &
+	SKFlat.py -a $analyzer  -i DYTypeI_DF_M600_private    -n  10   --nmax 400   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags Mu_SelectionOpt&
+	SKFlat.py -a $analyzer  -i VBFTypeI_DF_M600_private    -n  10   --nmax 400   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags Mu_SelectionOpt&
+        SKFlat.py -a $analyzer  -i DYTypeI_DF_M1000_private    -n  10   --nmax 400   -e ${i}  --skim SkimTree_HNMultiLepBDT  --userflags Mu_SelectionOpt&
+	SKFlat.py -a $analyzer  -i VBFTypeI_DF_M1000_private    -n  10   --nmax 400   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags Mu_SelectionOpt&
     done
 fi
 
@@ -38,10 +40,38 @@ fi
 #############################################################################                                                                                                                                                               
 #############################################################################     
 
-if [[ $1 == "NP_MUON" ]]; then
+if [[ $1 == "MUON_SEL" ]]; then
+
+    declare  -a era_list=("2017")
+    for i in "${era_list[@]}"
+    do
+        Flag='Mu_SelectionOptSR3'
+        source ${runPATH}/run_hnl_muon.sh Muon ${Flag} ${i}
+	
+    done
+
+fi
+
+
+
+if [[ $1 == "NP_MUON_HF" ]]; then
 
     declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
     declare  -a era_list=("2017")
+    for i in "${era_list[@]}"
+    do
+
+        Flag='MuID_NP_HF,FullEta'
+        source ${runPATH}/run_hnl_muon.sh Muon ${Flag} ${i}
+
+    done
+
+fi
+
+
+if [[ $1 == "NP_MUON" ]]; then
+
+    declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
     for i in "${era_list[@]}"
     do
 
@@ -72,12 +102,7 @@ if [[ $1 == "Muon" ]]; then
     ConvFlag=${2}',RunConv'
     source ${runPATH}/run_hnl_muon.sh Conv ${3} ${ConvFlag} 
 
-    FakeFlag=${2}
-    source ${runPATH}/run_hnl_muon.sh Fake  ${3} ${FakeFlag}
-    PromptFlag=${2}
-    source ${runPATH}/run_hnl_muon.sh Prompt  ${3} ${PromptFlag}
-    ConvFlag=${2}
-    source ${runPATH}/run_hnl_muon.sh Conv ${3} ${ConvFlag}
+
 
 
 fi

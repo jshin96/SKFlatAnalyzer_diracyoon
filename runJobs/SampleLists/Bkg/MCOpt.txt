@@ -2,7 +2,6 @@ ttWToLNu
 ttWToQQ
 ttZToLLNuNu
 ttZToQQ_ll
-WWTo2L2Nu_powheg
 WWW
 WWZ
 WZZ

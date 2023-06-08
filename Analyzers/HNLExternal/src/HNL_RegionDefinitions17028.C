@@ -13,9 +13,9 @@ void HNL_RegionDefinitions17028::RunEXO17028SignalRegions( std::vector<Electron>
       if (!SelectChannel(dilep_channel)) continue;
     }
 
-    if(dilep_channel != EMu){
-      if(MCSample.Contains("Type") &&(! MCSample.Contains("SS"))) weight_ll = weight_ll*2;
-    }
+    //if(dilep_channel != EMu){
+    //  if(MCSample.Contains("Type") &&(! MCSample.Contains("SS"))) weight_ll = weight_ll*2;
+    // }
     AnalyzerParameter param_channel = param;
 
     TString channel_string = GetChannelString(dilep_channel);
