@@ -26,10 +26,9 @@ if [[ $1 == "" ]]; then
 
     for i in "${era_list[@]}"
     do
-	SKFlat.py -a $analyzer  -i DYTypeI_DF_M600_private    -n  10   --nmax 400   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags Mu_SelectionOpt&
-	SKFlat.py -a $analyzer  -i VBFTypeI_DF_M600_private    -n  10   --nmax 400   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags Mu_SelectionOpt&
-        SKFlat.py -a $analyzer  -i DYTypeI_DF_M1000_private    -n  10   --nmax 400   -e ${i}  --skim SkimTree_HNMultiLepBDT  --userflags Mu_SelectionOpt&
-	SKFlat.py -a $analyzer  -i VBFTypeI_DF_M1000_private    -n  10   --nmax 400   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags Mu_SelectionOpt&
+	SKFlat.py -a $analyzer  -i DYTypeI_DF_M600_private    -n  10   --nmax 400   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags Mu_SelectionOptSR1&
+	SKFlat.py -a $analyzer  -i VBFTypeI_DF_M600_private    -n  10   --nmax 400   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags Mu_SelectionOptSR2&
+        SKFlat.py -a $analyzer  -i DYTypeI_DF_M1000_private    -n  10   --nmax 400   -e ${i}  --skim SkimTree_HNMultiLepBDT  --userflags Mu_SelectionOptSR3&
     done
 fi
 
@@ -45,9 +44,12 @@ if [[ $1 == "MUON_SEL" ]]; then
     declare  -a era_list=("2017")
     for i in "${era_list[@]}"
     do
+        Flag='Mu_SelectionOptSR1'
+        source ${runPATH}/run_hnl_muon.sh Muon ${Flag} ${i}
+	Flag='Mu_SelectionOptSR2'
+        source ${runPATH}/run_hnl_muon.sh Muon ${Flag} ${i}
         Flag='Mu_SelectionOptSR3'
         source ${runPATH}/run_hnl_muon.sh Muon ${Flag} ${i}
-	
     done
 
 fi
@@ -135,7 +137,7 @@ fi
 
 if [[ $1 == "Conv" ]]; then
 
-    SKFlat.py -a $analyzer  -l $mcpath/Conv.txt  -n 5  --nmax ${nmax}   -e ${2} --skim SkimTree_HNMultiLepBDT  --userflags ${3} &
+    SKFlat.py -a $analyzer  -l $mcpath/Conv.txt  -n 5  --nmax ${nmax}   -e ${2} --skim SkimTree_HNMultiLepBDT  --userflags ${3} 
 fi
 
 

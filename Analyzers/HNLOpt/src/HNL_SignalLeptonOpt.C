@@ -301,6 +301,7 @@ void HNL_SignalLeptonOpt::executeEvent(){
 
 
     std::vector<FatJet> FatjetColl                  = GetHNLAK8Jets("HNL",param_signal);
+    std::vector<FatJet> FatjetPNColl                = GetHNLAK8Jets("HNL_PNL",param_signal);
     std::vector<FatJet> FatjetNoMassColl            = GetHNLAK8Jets("HNLNoMass",param_signal);
     std::vector<Jet> AllJetColl                     = GetHNLJets("NoCut_Eta3",param_signal);
     std::vector<Jet> JetColl                        = GetHNLJets("Tight",param_signal);
@@ -308,7 +309,12 @@ void HNL_SignalLeptonOpt::executeEvent(){
     std::vector<Jet> VBF_JetColl                    = GetHNLJets("VBFTight",param_signal);
     std::vector<Jet> BJetColl                       = GetHNLJets("BJetM",param_signal);
     std::vector<Jet> BJetCollSR1                    = GetHNLJets("BJetT",param_signal);
-    
+    std::vector<Jet> BJetColl2                       = GetHNLJets("BJetMPtL",param_signal);
+    std::vector<Jet> BJetColl2SR1                    = GetHNLJets("BJetTPtL",param_signal);
+    std::vector<Jet> BJetColl3                       = GetHNLJets("BJetMPtM",param_signal);
+    std::vector<Jet> BJetColl3SR1                    = GetHNLJets("BJetTPtM",param_signal);
+
+
     
     if(HasFlag("MuID_DXY")){
       MuonsIDs.clear();
@@ -364,40 +370,27 @@ void HNL_SignalLeptonOpt::executeEvent(){
       
       if(HasFlag("FullEta")){
 	
-	vector<TString> mvaHF1;
-	vector<TString> mvaHF2;
-        for(unsigned int imva=0 ; imva < 12 ; imva++){
-          double mva_d= 0.2 + double(imva)*0.05;
-          TString mvaTS= DoubleToString(mva_d);
-          mvaHF1.push_back("MVAHFBB"+mvaTS+"_"+"MVAHFEC"+mvaTS+"_");
-          //mvaHF2.push_back("MVAHFEC"+mvaTS+"_");
-        }
+	if(HasFlag("HF_Bin1")){
+	  
+	  vector<TString> mvaHF1;
+	  vector<TString> mvaHF2;
+	  for(unsigned int imva=0 ; imva < 5 ; imva++){
+	    double mva_d= -1 + double(imva)*0.25;
+            TString mvaTS= DoubleToString(mva_d);
+            mvaHF1.push_back("MVAHFBB"+mvaTS+"_");
+            mvaHF2.push_back("MVAHFEC"+mvaTS+"_");
+	  }
+	  
+	  for(unsigned int imva=0 ; imva < 9 ; imva++){
+	    double mva_d= 0.1 + double(imva)*0.1;
+	    TString mvaTS= DoubleToString(mva_d);
+	    mvaHF1.push_back("MVAHFBB"+mvaTS+"_");
+            mvaHF2.push_back("MVAHFEC"+mvaTS+"_");
+	  }
 
-        vector<TString> mvaLF1;
-        vector<TString> mvaLF2;
-	
-	TString mvaTS1= DoubleToString(-1.);
-	mvaLF1.push_back("MVALFBB"+mvaTS1+"_");
-	mvaLF2.push_back("MVALFEC"+mvaTS1+"_");
-
-	for(unsigned int imva=0 ; imva < 10 ; imva++){
-          double mva_d= -0.7 + double(imva)*0.15;
-          TString mvaTS= DoubleToString(mva_d);
-	  mvaLF1.push_back("MVALFBB"+mvaTS+"_");
-	  mvaLF2.push_back("MVALFEC"+mvaTS+"_");
-        }
-
-
-	for(auto i1 : mvaHF1){
-	  //for(auto i2 : mvaHF2){
-	  MuonsIDs.push_back("HNLUL_"+i1+"DXYv1");
-	  for(auto i3 : mvaLF1){
-	    for(auto i4 : mvaLF2){
-	      MuonsIDs.push_back("HNLUL_"+i1+i3+i4+"NPMMv1_DXYv1");
-	      MuonsIDs.push_back("HNLUL_"+i1+i3+i4+"NPMMv2_DXYv1");
-	      MuonsIDs.push_back("HNLUL_"+i1+i3+i4+"NPMMv3_DXYv1");
-	      MuonsIDs.push_back("HNLUL_"+i1+i3+i4+"NPMMv4_DXYv1");
-	      MuonsIDs.push_back("HNLUL_"+i1+i3+i4+"NPMMEDv4_DXYv1");
+	  for(auto i1 : mvaHF1){
+	    for(auto i2 : mvaHF2){
+	      MuonsIDs.push_back("HNLUL_"+i1+i2+"DXYv1");
 	    }
 	  }
 	}
@@ -540,12 +533,24 @@ void HNL_SignalLeptonOpt::executeEvent(){
     MuonsIDs.push_back("HNTightV2");
     MuonsIDs.push_back("HNL_Peking");
     MuonsIDs.push_back("HNL_HN3L");
-
-    if(HasFlag("Mu_SelectionOpt")){
+    
+    bool SROpt=false;
+    if(HasFlag("Mu_SelectionOptSR1")){
+      SROpt=true;
       MuonsIDs.clear();
       MuonsIDs.push_back("HNTightV2");
     }
-    
+    if(HasFlag("Mu_SelectionOptSR2")){
+      SROpt=true;
+      MuonsIDs.clear();
+      MuonsIDs.push_back("HNTightV2");
+    }
+    if(HasFlag("Mu_SelectionOptSR3")){
+      SROpt=true;
+      MuonsIDs.clear();
+      MuonsIDs.push_back("HNTightV2");
+    }
+
 
 
     for (unsigned int i=0; i<MuonsIDs.size(); i++) {
@@ -571,11 +576,7 @@ void HNL_SignalLeptonOpt::executeEvent(){
     //cout << "Number of MuonsIDs = " << MuonsIDs.size() << endl;
     
     for(auto id : MuonsIDs){
-      //      cout << "------------------------------------------------------------------------" << endl;
-      //cout << "------------------------------------------------------------------------" << endl;
-      //cout << "------------------------------------------------------------------------" << endl;
-      //cout << "------------------------------------------------------------------------" << endl;
-      //cout << id << endl;
+
       if(id.Contains("HNLUL")){
         param_signal.Name = param_signal.DefName  + "_MuOpt_"+ id;
         param_signal.SRConfig  = "";
@@ -591,46 +592,202 @@ void HNL_SignalLeptonOpt::executeEvent(){
         param_signal.Muon_FR_ID = id;
         param_signal.Electron_Tight_ID = "HNTightV2";
         param_signal.Electron_FR_ID = "HNLooseV4";
+	
       }
 
-
-      //RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetColl,BJetColl,BJetColl,ev);
-
+      if(!SROpt ){
+	RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
+	continue;
+	
+      }
+      
       if(HasFlag("Mu_SelectionOptSR3")){
+	param_signal.SRConfig  = "OptSR_SigR1_v1_SigR2_v1_SigR3_v1_ParticleNet";
+        param_signal.Name = param_signal.DefName  + id + "_SigR1_v1_SigR2_v1_SigR3_v1_ParticleNet";
+        RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
 
-        vector<TString> Sig1Bin = {"Sig1_v2"};
-        vector<TString> Sig2Bin = {"Sig2_v1","Sig2_v2"};                                                                                                                                              
-        vector<TString> Sig3Bin = {"Sig3_v1","Sig3_v2","Sig3_v3","Sig3_v4"};                                                                                                                                    
+        vector<TString> Sig1Bin = {"SigR1_v3"};
+        vector<TString> Sig2Bin = {"SigR2_v2"};
+        vector<TString> Sig3Bin = {"SigR3_v1","SigR3_v2","SigR3_v3","SigR3_v4","SigR3_v5", "SigR3_v6","SigR3_MD_EXO17"};                                                                                                                                    
         for (auto i : Sig1Bin){
           for (auto j : Sig2Bin){
             for (auto k : Sig3Bin){
 	      param_signal.SRConfig  = "OptSR_"+i+"_"+j+"_"+k;
 	      param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k;
-	      RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetColl,BJetColl,BJetColl,ev);
-	      
+	      RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
+	      if(k == "SigR3_v5"){
+		vector<TString> SigR3MET = {"SR3MET_20", "SR3MET_18", "SR3MET_15","SR3MET_12","SR3MET_10","SR3MET_8","SR3MET_6"};
+                for(auto imet : SigR3MET) {
+                  param_signal.SRConfig  = "OptSR_"+i+"_"+j+"_"+k+"_"+imet;
+                  param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_"+imet;
+                  RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
+                }
+		
+		vector<TString> SigR3PT1 = {"SR3_bin1pt_60","SR3_bin1pt_70","SR3_bin1pt_80","SR3_bin1pt_90","SR3_bin1pt_100","SR3_bin1pt_120","SR3_bin1pt_140","SR3_bin1pt_160"};
+		for(auto ipt : SigR3PT1){
+		  param_signal.SRConfig  = "OptSR_"+i+"_"+j+"_"+k+"_"+ipt;
+                  param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_"+ipt;
+                  RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
+		}
+		vector<TString> SigR3PT2 = {"SR3_bin2pt_60","SR3_bin2pt_70","SR3_bin2pt_80","SR3_bin2pt_90","SR3_bin2pt_100","SR3_bin2pt_120","SR3_bin2pt_140","SR3_bin2pt_160"};
+                for(auto ipt : SigR3PT2){
+                  param_signal.SRConfig  = "OptSR_"+i+"_"+j+"_"+k+"_"+ipt;
+                  param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_"+ipt;
+                  RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
+                }
+
+		
+                param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_SR3BjetM";
+                RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
+                param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_SR3BjetT";
+                RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetCollSR1,BJetColl,ev);
+                param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_SR3B2jetM";
+                RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl2,BJetColl,ev);
+                param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_SR3B2jetT";
+                RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl2SR1,BJetColl,ev);
+                param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_SR3B3jetM";
+                RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl3,BJetColl,ev);
+                param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_SR3B3jetT";
+                RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl3SR1,BJetColl,ev);
+
+
+
+	      }
             }
           }
         }
       }
 
+      if(HasFlag("Mu_SelectionOptSR2")){
+
+	param_signal.SRConfig  = "OptSR_SigR1_v1_SigR2_v1_SigR3_v1_ParticleNet";
+	param_signal.Name = param_signal.DefName  + id + "_SigR1_v1_SigR2_v1_SigR3_v1_ParticleNet";
+        RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
+
+
+        vector<TString> Sig1Bin = {"SigR1_v3"};
+        vector<TString> Sig2Bin = {"SigR2_v1","SigR2_v2"};
+        vector<TString> Sig3Bin = {"SigR3_v5"};
+        for (auto i : Sig1Bin){
+          for (auto j : Sig2Bin){
+            for (auto k : Sig3Bin){
+              param_signal.SRConfig  = "OptSR_"+i+"_"+j+"_"+k;
+              param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k;
+              RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
+
+
+	      if(j == "SigR2_v2"){
+
+		param_signal.SRConfig  = "OptSR_"+i+"_"+j+"_"+k+"_LooseJet";
+		param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_LooseJet";
+		RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
+		
+		param_signal.SRConfig  = "OptSR_"+i+"_"+j+"_"+k+"_TightJet";
+		param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_TightJet";
+		RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
+		
+		
+		vector<TString> SigR2Jet = {"VBFLeadJet_MJJ0p45","VBFLeadJet_MJJ0p5","VBFLeadJet_MJJ0p6","VBFLeadJet_MJJ0p75","VBFLeadJet_MJJ0p8","VBFLeadJet_MJJ0p85","VBFLeadJet_MJJ0p9", "VBFLeadJet_MJJ1", 
+					    "VBFAwayJet_MJJ0p45","VBFAwayJet_MJJ0p5","VBFAwayJet_MJJ0p6","VBFAwayJet_MJJ0p75","VBFAwayJet_MJJ0p8","VBFAwayJet_MJJ0p85","VBFAwayJet_MJJ0p9", "VBFAwayJet_MJJ1"};
+		for(auto ijet : SigR2Jet) {
+		  param_signal.SRConfig  = "OptSR_"+i+"_"+j+"_"+k+"_"+ijet;
+		  param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_"+ijet;
+		  RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
+		}
+		
+                vector<TString> SigR2MET = {"SR2MET_20", "SR2MET_18","SR2MET_15","SR2MET_12","SR2MET_10","SR2MET_8","SR2MET_6"};
+                for(auto imet : SigR2MET) {
+                  param_signal.SRConfig  = "OptSR_"+i+"_"+j+"_"+k+"_"+imet;
+                  param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_"+imet;
+                  RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
+                }
+		
+		vector<TString> SigR2HTLT = {"HTLT_10", "HTLT_15","HTLT_20","HTLT_25","HTLT_30","HTLT_50"};
+		for(auto iht  : SigR2HTLT) {
+		  param_signal.SRConfig  = "OptSR_"+i+"_"+j+"_"+k+"_"+iht;
+                  param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_"+iht;
+                  RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
+		}
+		
+
+                param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_SR2BjetM";
+                RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
+                param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_SR2BjetT";
+                RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetCollSR1,BJetColl,ev);
+                param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_SR2B2jetM";
+                RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl2,BJetColl,ev);
+                param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_SR2B2jetT";
+                RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl2SR1,BJetColl,ev);
+                param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_SR2B3jetM";
+                RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl3,BJetColl,ev);
+                param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_SR2B3jetT";
+                RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl3SR1,BJetColl,ev);
+
+
+	      }
+	    }
+          }
+        }
+      }
 
     
-      if(HasFlag("Mu_SelectionOpt")){
+      if(HasFlag("Mu_SelectionOptSR1")){
 	
-	vector<TString> Sig1Bin = {"Sig1_v1","Sig1_v2","Sig1_v3","Sig1_v4"};
-	vector<TString> Sig2Bin = {"Sig2_v1"};//,"Sig2_v2"};
-	vector<TString> Sig3Bin = {"Sig3_v1"};//,"Sig3_v2","Sig3_v3"};
-	vector<TString> ApplyPPNet = {"_PPNet",""};
+	param_signal.SRConfig  = "OptSR_SigR1_v1_SigR2_v1_SigR3_v1_ParticleNet";
+	param_signal.Name = param_signal.DefName  + id + "_SigR1_v1_SigR2_v1_SigR3_v1_ParticleNet";
+	RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
+
+
+	vector<TString> Sig1Bin = {"SigR1_v1","SigR1_v2","SigR1_v3", "SigR1_MD_v1","SigR1_MD_EXO17"};
+	vector<TString> Sig2Bin = {"SigR2_v2"};//,"Sig2_v2"};
+	vector<TString> Sig3Bin = {"SigR3_v5"};//,"Sig3_v2","Sig3_v3"};
+	
 	for (auto i : Sig1Bin){
 	  for (auto j : Sig2Bin){
 	    for (auto k : Sig3Bin){
-	      for (auto p : ApplyPPNet){
-		param_signal.SRConfig  = "OptSR_"+i+"_"+j+"_"+k+p;
-		param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+p;
-		RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetColl,BJetColl,BJetColl,ev);
+	      param_signal.SRConfig  = "OptSR_"+i+"_"+j+"_"+k;
+	      param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k;
+	      RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetColl,BJetColl,BJetColl,ev);
+	      
+	      
+	      param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_ParticleNet";
+	      RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
+	      
+	      if(i == "SigR1_v3"){
+		vector<TString> SigR1MET = {"SR1MET_20","SR1MET_18", "SR1MET_15","SR1MET_12","SR1MET_10","SR1MET_8","SR1MET_6"};
+		for(auto imet : SigR1MET) {
+		  param_signal.SRConfig  = "OptSR_"+i+"_"+j+"_"+k+"_"+imet;
+		  param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_ParticleNet_"+imet;
+		  RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
+		}
 		
-		param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+p+"_AK8NoSDMass";
-		RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetNoMassColl,BJetColl,BJetColl,ev);
+		vector<TString> SigR1MW = {"SR1MLLJJ_0p3","SR1MLLJJ_0p4","SR1MLLJJ_0p45","SR1MLLJJ_0p5","SR1MLLJJ_0p6","SR1MLLJJ_0p7",};
+		for(auto im : SigR1MW) {
+                  param_signal.SRConfig  = "OptSR_"+i+"_"+j+"_"+k+"_"+im;
+   		  param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_ParticleNet_"+im;
+		  RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
+		} 
+		
+		param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_ParticleNet_SR1BjetM";
+                RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
+		param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_ParticleNet_SR1BjetT";
+		RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetCollSR1,ev);
+		param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_ParticleNet_SR1B2jetM";
+                RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl2,ev);
+                param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_ParticleNet_SR1B2jetT";
+                RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl2SR1,ev);
+                param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_ParticleNet_SR1B3jetM";
+                RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl3,ev);
+                param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_ParticleNet_SR1B3jetT";
+                RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl3SR1,ev);
+
+		
+		vector<TString> SigR1LPt = {"SR1PT_80","SR1PT_90","SR1PT_100","SR1PT_110","SR1PT_120","SR1PT_140","SR1PT_160"};
+		for(auto ip : SigR1LPt) {
+                  param_signal.SRConfig  = "OptSR_"+i+"_"+j+"_"+k+"_"+ip;
+		  param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_ParticleNet_"+ip;
+		  RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
+		}
 	      }
 	    }
 	  }
@@ -663,9 +820,17 @@ void HNL_SignalLeptonOpt::RunULAnalysis(AnalyzerParameter param, vector<Electron
   JetTagging::Parameters param_jetsT = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Tight, JetTagging::incl, JetTagging::mujets);
 
   double sf_btagM_NLV                 = GetBJetSF(param, B_JetColl,    param_jetsM);
-  ///  double sf_btagSR1_NLV               = GetBJetSF(param, B_JetCollSR1, param_jetsT);
-
-  if(!IsData)weight = weight*sf_btagM_NLV;
+  double sf_btagSR1_NLV               = GetBJetSF(param, B_JetCollSR1, param_jetsT);
+  
+  if(AK8_JetColl.size() > 0 ) {
+    if(!IsData){
+      weight  = weight*sf_btagSR1_NLV;
+      if(param.Name.Contains("ParticleNet"))weight*= AK8_JetColl[0].GetTaggerSF(JetTagging::particleNet_WvsQCD, DataEra,0); 
+    }
+  }
+  else{
+    if(!IsData)weight = weight*sf_btagM_NLV;
+  }
 
   //cout << "weight = " << weight << endl;
   if(MCSample.Contains("Type")){
@@ -674,19 +839,21 @@ void HNL_SignalLeptonOpt::RunULAnalysis(AnalyzerParameter param, vector<Electron
   }
   
   /// MERGE WJet samples for more stats
-  if(MCSample.Contains("WJet")){
-    vector<TString> vec = {"WJet"};
-    double merge_weight = MergeMultiMC( vec, "" );
-    weight*= merge_weight;
+  if(!param.SRConfig.Contains("OptSR")){
+    if(MCSample.Contains("WJet")){
+      vector<TString> vec = {"WJet"};
+      double merge_weight = MergeMultiMC( vec, "" );
+      weight*= merge_weight;
+    }
+    
+    /// Merge DY samples for more stats
+    if(MCSample.Contains("DYJets_MG")){
+      vector<TString> vec = {"DYMG"};
+      double merge_weight = MergeMultiMC( vec, "" );
+      weight*= merge_weight;
+    }
   }
 
-  /// Merge DY samples for more stats
-  if(MCSample.Contains("DYJets_MG")){
-    vector<TString> vec = {"DYMG"};
-    double merge_weight = MergeMultiMC( vec, "" );
-    weight*= merge_weight;
-  }
-  
   // HL ID
 
   TString el_ID =  param.Electron_Tight_ID ;
@@ -718,8 +885,10 @@ void HNL_SignalLeptonOpt::RunULAnalysis(AnalyzerParameter param, vector<Electron
   else  param.WriteOutVerbose=1;
 
   if(param.Name== "HNLOpt_ULHNTightV2") OutCutFlow(param.Name+"_pre", weight);
-  RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, AllJetColl,JetCollLoose, JetColl, VBF_JetColl,AK8_JetColl , B_JetColl,B_JetColl, ev,METv, param,weight);
 
+  if(param.SRConfig.Contains("OptSR")) RunAllSignalRegionsOpt(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, AllJetColl,JetCollLoose, JetColl, VBF_JetColl, AK8_JetColl , B_JetColl,B_JetCollSR1, ev,METv, param,weight);
+  else RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, AllJetColl,JetCollLoose, JetColl, VBF_JetColl,AK8_JetColl , B_JetColl,B_JetCollSR1, ev,METv, param,weight);
+  
   return;
   
 

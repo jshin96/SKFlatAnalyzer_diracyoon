@@ -3563,10 +3563,10 @@ double AnalyzerCore::GetJetPileupIDSF(vector<Jet> jets , TString WP, AnalyzerPar
 
 vector<FatJet>  AnalyzerCore::SelectAK8Jets(vector<FatJet> fatjets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean , bool apply_tau21, double tau21_cut , bool apply_masscut, double sdmass_lower_cut,  double sdmass_upper_cut, vector<Electron>  veto_electrons, vector<Muon>  veto_muons){
 
-  return SelectAK8Jetsv2(fatjets,pt_cut,eta_cut, lepton_cleaning, dr_lep_clean,apply_tau21, tau21_cut,apply_masscut,sdmass_lower_cut,sdmass_upper_cut, -999., veto_electrons,veto_muons);
+  return SelectAK8Jetsv2(fatjets,pt_cut,eta_cut, lepton_cleaning, dr_lep_clean,apply_tau21, tau21_cut,apply_masscut,sdmass_lower_cut,sdmass_upper_cut, "", veto_electrons,veto_muons);
 }
 
-vector<FatJet>  AnalyzerCore::SelectAK8Jetsv2(vector<FatJet> fatjets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean , bool apply_tau21, double tau21_cut , bool apply_masscut, double sdmass_lower_cut,  double sdmass_upper_cut, double WQCDTagger, vector<Electron>  veto_electrons, vector<Muon>  veto_muons){
+vector<FatJet>  AnalyzerCore::SelectAK8Jetsv2(vector<FatJet> fatjets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean , bool apply_tau21, double tau21_cut , bool apply_masscut, double sdmass_lower_cut,  double sdmass_upper_cut, TString  tagger,  vector<Electron>  veto_electrons, vector<Muon>  veto_muons){
 
 
   vector<FatJet> output_fatjets;
@@ -3582,8 +3582,8 @@ vector<FatJet>  AnalyzerCore::SelectAK8Jetsv2(vector<FatJet> fatjets, double pt_
       if(fatjets[ijet].DeltaR(veto_muons[iel]) < dr_lep_clean) jetok = false;
     }
 
-    if(WQCDTagger > 0){
-      if (fatjets[ijet].GetTaggerResult(JetTagging::particleNet_WvsQCD) < WQCDTagger) continue;
+    if( tagger != ""){
+      if (!fatjets[ijet].PassTagger(JetTagging::StringToTagger(string(tagger)), DataEra)) continue;
     }
 
     double lower_sd_mass_cut=sdmass_lower_cut;
