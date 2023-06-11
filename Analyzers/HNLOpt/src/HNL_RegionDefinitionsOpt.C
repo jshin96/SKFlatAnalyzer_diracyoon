@@ -18,6 +18,12 @@ void HNL_RegionDefinitionsOpt::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq
                                                    Event ev,   Particle METv, AnalyzerParameter param,   float weight_ll){
 
   
+
+  TString SR1_Binning_Version = "Binning_Version2";
+  TString SR2_Binning_Version = "Binning_Version2";
+  TString SR3_Binning_Version = "Binning_Version6";
+
+
   vector<HNL_LeptonCore::Channel> channels = {EE,MuMu};
   
   for(auto dilep_channel : channels){
@@ -98,8 +104,6 @@ void HNL_RegionDefinitionsOpt::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq
 
     // Run PRESEL + SR1-3                                                                                                                                                                                                                    
     //bool run_ORTrigger = false;                                                                                                                                                                                                            
-
-
     HNL_LeptonCore::SearchRegion LimitRegions = HNL_LeptonCore::MuonSR;
     if (dilep_channel == EE) LimitRegions =HNL_LeptonCore::ElectronSR;
     if (dilep_channel == EMu) LimitRegions =HNL_LeptonCore::ElectronMuonSR;
@@ -121,9 +125,8 @@ void HNL_RegionDefinitionsOpt::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq
 
       FillEventCutflow(Regions,  weight_channel, "AK8","Summary/"+param_channel.Name,param_channel.WriteOutVerbose);
 
-      TString version = "Binning_Version2";
-      
-      TString SRbin= RunSignalRegionAK8String ("---", dilep_channel,qq, leps, leps_veto, TauColl, JetColl, AK8_JetColl, B_JetCollSR1,ev, METv ,param_channel,version, weight_channel) ;
+            
+      TString SRbin= RunSignalRegionAK8String ("---", dilep_channel,qq, leps, leps_veto, TauColl, JetColl, AK8_JetColl, B_JetCollSR1,ev, METv ,param_channel,SR1_Binning_Version, weight_channel) ;
       
       ////// Fill Limit plot                                                                                                                                                                                                               
       if(SRbin != "false") FillEventCutflow(LimitRegions, weight_channel, SRbin,"LimitInput/"+param_channel.Name);
@@ -135,9 +138,8 @@ void HNL_RegionDefinitionsOpt::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq
     }
     else{
 
-      TString Version = "Binning_Version2";
 
-      TString SRbin = RunSignalRegionWWString( dilep_channel,qq, leps, leps_veto,  TauColl, JetCollLoose, VBF_JetColl,  AK8_JetColl, B_JetColl,ev, METv, param_channel,  Version, weight_channel);
+      TString SRbin = RunSignalRegionWWString( dilep_channel,qq, leps, leps_veto,  TauColl, JetCollLoose, VBF_JetColl,  AK8_JetColl, B_JetColl,ev, METv, param_channel,  SR2_Binning_Version, weight_channel);
 
       if(SRbin != "false"){
 	FillEventCutflow(LimitRegions, weight_channel, SRbin,"LimitInput/"+param_channel.Name);
@@ -148,8 +150,7 @@ void HNL_RegionDefinitionsOpt::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq
         FillEventCutflow(Regions,  weight_channel, "SigReg3","Summary/"+param_channel.Name,param_channel.WriteOutVerbose);
 
 
-        TString Version = "Binning_Version6";
-        TString SRbin  = RunSignalRegionAK4String (dilep_channel,qq, leps, leps_veto, TauColl, JetColl, AK8_JetColl, B_JetColl, ev, METv ,param_channel,Version, weight_channel);
+        TString SRbin  = RunSignalRegionAK4String (dilep_channel,qq, leps, leps_veto, TauColl, JetColl, AK8_JetColl, B_JetColl, ev, METv ,param_channel,SR3_Binning_Version, weight_channel);
         TString SRBDT100 = RunSignalRegionAK4StringBDT("100", dilep_channel, leps,JetColl,B_JetColl, METv , ev);
         TString SRBDT400 = RunSignalRegionAK4StringBDT("400", dilep_channel, leps,JetColl,B_JetColl, METv, ev);
         TString SRBDT500 = RunSignalRegionAK4StringBDT("500", dilep_channel, leps,JetColl,B_JetColl, METv, ev);
@@ -158,11 +159,9 @@ void HNL_RegionDefinitionsOpt::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq
         if(SRBDT400 != "false") FillEventCutflow(LimitRegionsBDT, weight_channel, SRBDT400,"LimitInputBDT/"+param_channel.Name+"/400");
         if(SRBDT500 != "false") FillEventCutflow(LimitRegionsBDT, weight_channel, SRBDT500,"LimitInputBDT/"+param_channel.Name+"/500");
 
-
         if(SRbin != "false") {
 
 	  FillEventCutflow(LimitRegions, weight_channel, SRbin, "LimitInput/"+param_channel.Name);
-
           FillEventCutflow(Regions,  weight_channel, "SigReg3Pass","Summary/"+param_channel.Name,param_channel.WriteOutVerbose);
         }
         else           FillEventCutflow(Regions,  weight_channel, "SigReg3Fail","Summary/"+param_channel.Name,param_channel.WriteOutVerbose);
@@ -293,9 +292,9 @@ void HNL_RegionDefinitionsOpt::RunAllSignalRegionsOpt(HNL_LeptonCore::ChargeType
     bool SR1_MassBinning_Version1 (false);
 
     if(param_channel.SRConfig.Contains("OptSR")){
-      if(param_channel.SRConfig.Contains("SigR1_v1")) SR1_Version= "Binning_Version1";
-      if(param_channel.SRConfig.Contains("SigR1_v2")) SR1_Version= "Binning_Version2";
-      if(param_channel.SRConfig.Contains("SigR1_v3")) SR1_Version= "Binning_Version3";
+      if(param_channel.SRConfig.Contains("SigR1_v1"))    SR1_Version= "Binning_Version1";
+      if(param_channel.SRConfig.Contains("SigR1_v2"))    SR1_Version= "Binning_Version2";
+      if(param_channel.SRConfig.Contains("SigR1_v3"))    SR1_Version= "Binning_Version3";
       if(param_channel.SRConfig.Contains("SigR1_MD_v1")) SR1_Version= "MassDep_Version1";
       if(param_channel.SRConfig.Contains("SigR1_MD_EXO17")) SR1_Version= "MassDep_EXO17028";
       SR1_MassBinning_Version1 = (param_channel.SRConfig.Contains("SigR1_MD_v1")) ? true :  false;
@@ -420,7 +419,7 @@ void HNL_RegionDefinitionsOpt::RunAllSignalRegionsOpt(HNL_LeptonCore::ChargeType
 	  }
 	  else   FillEventCutflow(LimitRegions, weight_channel, SRbin, "LimitInput/"+param_channel.Name);
 
-	  Fill_RegionPlots(dilep_channel, 0, param_channel.Name,"FailSelection" , TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, weight_channel,param_channel.WriteOutVerbose);
+	  
 	  FillEventCutflow(Regions,  weight_channel, "SigReg3Pass","Summary/"+param_channel.Name);
 	}
 	else           FillEventCutflow(Regions,  weight_channel, "SigReg3Fail","Summary/"+param_channel.Name);
@@ -517,6 +516,7 @@ bool  HNL_RegionDefinitionsOpt::PassPreselection(HNL_LeptonCore::Channel channel
  
 
   Fill_RegionPlots(channel, 0, param.Name,"Preselection" , TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w,param.WriteOutVerbose);
+
   FillEventCutflow(HNL_LeptonCore::ChannelDepPresel, w, GetChannelString(channel) +"_Presel", "ChannelCutFlow/"+param.Name,param.WriteOutVerbose);//Def
   
   return true;
@@ -561,7 +561,6 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK8String(TString mass, HNL_Lep
   if(qq==Minus && leps[0]->Charge() > 0) return "false";
 
   FillEventCutflow(HNL_LeptonCore::ChannelDepSR1, w, GetChannelString(channel) +"_SR1", "ChannelCutFlow/"+PNMass,param.WriteOutVerbose);//Def                                          
-
 
   FillEventCutflow(HNL_LeptonCore::SR1, w, "SR1_lep_charge",PNMass,param.WriteOutVerbose);
   FillEventCutflow(HNL_LeptonCore::SR1, w, "SR1_dilep_mass",PNMass,param.WriteOutVerbose);
@@ -611,6 +610,9 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK8String(TString mass, HNL_Lep
   if (param.SRConfig.Contains("SR1PT_120_"))   pt_cut = 120.;
   if (param.SRConfig.Contains("SR1PT_140_"))   pt_cut = 140.;
   if (param.SRConfig.Contains("SR1PT_160_"))   pt_cut = 160.;
+  if (param.SRConfig.Contains("SR1PT_180_"))   pt_cut = 180.;
+  if (param.SRConfig.Contains("SR1PT_200_"))   pt_cut = 200.;
+
 
   //if(AK8_JetColl.size() > 1) return "false";
   FillEventCutflow(HNL_LeptonCore::SR1, w, "SR1_1AK8",PNMass,param.WriteOutVerbose);
@@ -643,10 +645,6 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK8String(TString mass, HNL_Lep
   
   FillEventCutflow(HNL_LeptonCore::SR1, w, "SR1_bveto",PNMass,param.WriteOutVerbose);
   
-
-  if(leps[1]->Pt() < 20)      return "false";
-  FillEventCutflow(HNL_LeptonCore::SR1, w, "SR1_Lep2Pt",PNMass,param.WriteOutVerbose);
-  
   
   if(Modifier.Contains("Binning_Version1")){
     FillEventCutflow(HNL_LeptonCore::SR1, w, "SR1_PNTagger",PNMass,param.WriteOutVerbose);
@@ -678,18 +676,20 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK8String(TString mass, HNL_Lep
   if(Modifier.Contains("Binning_Version3")){
 
     if(leps[0]->Pt() < pt_cut)  return "SR1_MNbin1";
-    
     FillEventCutflow(HNL_LeptonCore::SR1, w, "SR1_LepPt",PNMass,param.WriteOutVerbose);
 
+    if(leps[1]->Pt() < 20)      return "SR1_MNbin1";
+    FillEventCutflow(HNL_LeptonCore::SR1, w, "SR1_Lep2Pt",PNMass,param.WriteOutVerbose);
+      
     int nSRbins=7;
     double ml1jbins[nSRbins] = { 0., 500., 600, 750.,900, 1500, 2000.};
     for(int ibin=1; ibin < nSRbins; ibin++){
-      if(MN1 < ml1jbins[ibin]) return "SR1_MNbin"+to_string(ibin);
+      if(MN1 < ml1jbins[ibin]) return "SR1_MNbin"+to_string(ibin+1);
     }
     
     cout << "Error in SR1 binning " << Modifier << endl;
-      exit(EXIT_FAILURE); 
-      
+    exit(EXIT_FAILURE); 
+    
   }
   
   else if (Modifier.Contains("Binning_Version2")){
@@ -698,18 +698,23 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK8String(TString mass, HNL_Lep
 
     if(channel==MuMu){
       if(MN1 > 225){
-        if(leps[0]->Pt() < 140)   return SR1Bin;
+	if(leps[0]->Pt() < pt_cut)  return "SR1_MNbin1";
+	FillEventCutflow(HNL_LeptonCore::SR1, w, "SR1_LepPt",PNMass,param.WriteOutVerbose);
       }
       else   if(MN1 > 150){
-        if(leps[0]->Pt() < 70)   return SR1Bin;
+	if(leps[0]->Pt() < pt_cut-50)  return "SR1_MNbin1";
+	FillEventCutflow(HNL_LeptonCore::SR1, w, "SR1_LepPt",PNMass,param.WriteOutVerbose);
       }
     }
 
     int nSRbins=8;
     double ml1jbins[nSRbins] = { 0., 500, 600.,700.,850, 1000.,1400, 2000.};
     for(int ibin=1; ibin < nSRbins; ibin++){
-      if(MN1 < ml1jbins[ibin]) return "SR1_MNbin"+to_string(ibin);
+      if(MN1 < ml1jbins[ibin]) return "SR1_MNbin"+to_string(ibin+1);
     }
+    cout << "Error in SR1 binning " << Modifier << endl;
+    exit(EXIT_FAILURE);
+
   }
 
   else  if (Modifier.Contains("Binning_Version1")){
@@ -765,7 +770,9 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK8String(TString mass, HNL_Lep
 
     TString SR1Bin="SR1_MNbin1";
 
-    if(leps[0]->Pt() < 140)   return SR1Bin;
+    if(leps[0]->Pt() < pt_cut)  return "SR1_MNbin1";
+    FillEventCutflow(HNL_LeptonCore::SR1, w, "SR1_LepPt",PNMass,param.WriteOutVerbose);
+
     if(MN1 < 300) return SR1Bin;
 
     FillEventCutflow(HNL_LeptonCore::SR1, w, "SR1_masscuts",PNMass,param.WriteOutVerbose);
@@ -778,13 +785,17 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK8String(TString mass, HNL_Lep
 
     if(param.WriteOutVerbose == 0)FillHist( "LimitSR1/"+PNMass+"/N1Mass_Central",  MN1,  w, nSRbins-1, ml1jbins, "Reco M_{l1jj}");
 
-
     for(int ibin=1; ibin < nSRbins; ibin++){
       if(MN1 < ml1jbins[ibin]) return "SR1_MNbin"+to_string(ibin);
     }
+
+    cout << "Error in SR1 binning " << Modifier << endl;
+    exit(EXIT_FAILURE);
+
   }
   
   if(Modifier.Contains("MassDep_EXO17028")){
+    FillEventCutflow(HNL_LeptonCore::SR1, w, "SR1_LepPt",PNMass,param.WriteOutVerbose);
     if(AK8_JetColl[0].SDMass() < 150)  return GetEXO17028_SignalRegion2Bin(channel,mass, JetColl, AK8_JetColl, leps,  METv);
     else return "SR1_MNbin3";
   }
@@ -923,46 +934,46 @@ TString  HNL_RegionDefinitionsOpt::GetEXO17028_SignalRegion2Bin(HNL_LeptonCore::
 
   vector<double> VarCuts;
   if(channel == EE){
-    if(mass == "100") VarCuts = {25.,15., 40.,130., 90., 220., 15.};
-    if(mass == "150") VarCuts = {};
-    if(mass== "200") VarCuts =  {100., 20., 40., 130., 173., 220., 15.};
-    if(mass== "250") VarCuts =  {100., 25., 40., 130., 220., 305., 15.};
-    if(mass== "300") VarCuts =  {100., 30., 40., 130., 270, 330., 15.};
-    if(mass== "400") VarCuts =  {100., 35., 40., 130., 330., 440., 15.};
-    if(mass== "500") VarCuts =  {120., 35., 40., 130., 440., 565., 15.};
-    if(mass== "600") VarCuts =  {120., 0., 40., 130., 565., 675., 15.};
-    if(mass== "700") VarCuts =  {140., 0., 40., 130., 635., 775., 15.};
-    if(mass== "800") VarCuts =  {140., 0., 40., 130., 740., 1005., 15.};
-    if(mass== "900") VarCuts =  {140., 0., 40., 130., 865., 1030., 15.};
-    if(mass== "1000") VarCuts = {140., 0., 40., 130., 890., 1185., 15.};
-    if(mass== "1100") VarCuts = {140., 0.,40., 130., 1035., 1395., 15};
-    if(mass== "1200") VarCuts = {140., 0.,40., 130., 1085., 1460., 15.};
-    if(mass== "1300") VarCuts = {140., 0.,40., 130., 1140., 1590., 15};
-    if(mass== "1400") VarCuts = {140., 0.,40., 130., 1245., 1700., 15};
-    if(mass== "1500") VarCuts = {140., 0.,40., 130., 1300., 1800., 15.};
-    if(mass== "1700") VarCuts = {140., 0.,40., 130., 1300., 2000., 15.};
-    if(mass== "2000") VarCuts = {140., 0.,40., 130., 1300., 2800., 15};
+    if(mass == "100") VarCuts = {25.,  15., 40., 130., 100.,  220.,  15.};
+    if(mass == "150") VarCuts = {90,   15,  40., 130., 125,   185,   15};
+    if(mass== "200") VarCuts =  {100., 20., 40., 130., 173.,  220.,  15.};
+    if(mass== "250") VarCuts =  {100., 25., 40., 130., 220.,  305.,  15.};
+    if(mass== "300") VarCuts =  {100., 30., 40., 130., 270,   330.,  15.};
+    if(mass== "400") VarCuts =  {100., 35., 40., 130., 330.,  440.,  15.};
+    if(mass== "500") VarCuts =  {120., 35., 40., 130., 440.,  565.,  15.};
+    if(mass== "600") VarCuts =  {120., 0.,  40., 130., 565.,  675.,  15.};
+    if(mass== "700") VarCuts =  {140., 0.,  40., 130., 635.,  775.,  15.};
+    if(mass== "800") VarCuts =  {140., 0.,  40., 130., 740.,  1005., 15.};
+    if(mass== "900") VarCuts =  {140., 0.,  40., 130., 865.,  1030., 15.};
+    if(mass== "1000") VarCuts = {140., 0.,  40., 130., 890.,  1185., 15.};
+    if(mass== "1100") VarCuts = {140., 0.,  40., 130., 1035., 1395., 15};
+    if(mass== "1200") VarCuts = {140., 0.,  40., 130., 1085., 1460., 15.};
+    if(mass== "1300") VarCuts = {140., 0.,  40., 130., 1140., 1590., 15};
+    if(mass== "1400") VarCuts = {140., 0.,  40., 130., 1245., 1700., 15};
+    if(mass== "1500") VarCuts = {140., 0.,  40., 130., 1300., 1800., 15.};
+    if(mass== "1700") VarCuts = {140., 0.,  40., 130., 1300., 2000., 15.};
+    if(mass== "2000") VarCuts = {140., 0.,  40., 130., 1300., 2800., 15};
   }
   if(channel ==MuMu){
-    if(mass == "100") VarCuts = {25.,  15., 40.,130., 98., 145., 15.};
-    if(mass == "150") VarCuts = {};
+    if(mass == "100") VarCuts = {25.,  15., 40.,130.,  98.,  145., 15.};
+    if(mass == "150") VarCuts = {70,   15,  40.,130.,  145,  175, 15};
     if(mass== "200") VarCuts =  {100., 20., 40., 130., 175., 235., 15.};
     if(mass== "250") VarCuts =  {140., 25., 40., 130., 226., 280., 15.};
-    if(mass== "300") VarCuts =  {140., 20., 40., 130., 280., 340., 15.};
+    if(mass== "300") VarCuts =  {140., 40., 40., 130., 280., 340., 15.};
     if(mass== "400") VarCuts =  {140., 65., 40., 130., 340., 445., 15.};
     if(mass== "500") VarCuts =  {140., 65., 40., 130., 445., 560., 15.};
-    if(mass== "600") VarCuts =  {140., 0., 40., 130., 560., 685., 15};
-    if(mass== "700") VarCuts =  {140., 0., 40., 130., 635., 825., 15.};
-    if(mass== "800") VarCuts =  {140., 0., 40., 130., 755., 960., 15.};
-    if(mass== "900") VarCuts =  {140., 0., 40., 130., 840., 1055., 15};
-    if(mass== "1000") VarCuts = {140., 0., 40., 130., 900., 1205., 15};
-    if(mass== "1100") VarCuts = {140., 0.,40., 130., 990., 1250., 15.};
-    if(mass== "1200") VarCuts = {140., 0.,40., 130., 1035., 1430., 15.};
-    if(mass== "1300") VarCuts = {140., 0.,40., 130., 1110., 1595., 15};
-    if(mass== "1400") VarCuts = {140., 0.,40., 130., 1285., 1700., 15};
-    if(mass== "1500") VarCuts = {140., 0.,40., 130., 1330., 1800., 15};
-    if(mass== "1700") VarCuts = {140., 0.,40., 130., 1330., 2200., 15};
-    if(mass== "2000") VarCuts = {140., 0.,40., 130., 1330., 99999., 15.};
+    if(mass== "600") VarCuts =  {140., 0.,  40., 130., 560., 685., 15};
+    if(mass== "700") VarCuts =  {140., 0.,  40., 130., 635., 825., 15.};
+    if(mass== "800") VarCuts =  {140., 0.,  40., 130., 755., 960., 15.};
+    if(mass== "900") VarCuts =  {140., 0.,  40., 130., 840., 1055., 15};
+    if(mass== "1000") VarCuts = {140., 0.,  40., 130., 900., 1205., 15};
+    if(mass== "1100") VarCuts = {140., 0.,  40., 130., 990., 1250., 15.};
+    if(mass== "1200") VarCuts = {140., 0.,  40., 130., 1035., 1430., 15.};
+    if(mass== "1300") VarCuts = {140., 0.,  40., 130., 1110., 1595., 15};
+    if(mass== "1400") VarCuts = {140., 0.,  40., 130., 1285., 1700., 15};
+    if(mass== "1500") VarCuts = {140., 0.,  40., 130., 1330., 1800., 15};
+    if(mass== "1700") VarCuts = {140., 0.,  40., 130., 1330., 2200., 15};
+    if(mass== "2000") VarCuts = {140., 0.,  40., 130., 1330., 99999., 15.};
   }
 
   if(VarCuts.size() != 7) {
@@ -1292,7 +1303,7 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK4String(HNL_LeptonCore::Chann
 
   FillEventCutflow(HNL_LeptonCore::SR3, w, "SR3_dilep_mass",param.Name,param.WriteOutVerbose);
 
-  double ST = GetST(leps, JetColl, AK8_JetColl, METv);
+  double ST      = GetST(leps, JetColl, AK8_JetColl, METv);
   double met2_st = pow(METv.Pt(),2.)/ ST;
 
   double met_cut = 10;
@@ -1301,14 +1312,13 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK4String(HNL_LeptonCore::Chann
   if (param.SRConfig.Contains("SR3MET_15"))   met_cut = 15.;
   if (param.SRConfig.Contains("SR3MET_12"))   met_cut = 12.;
   if (param.SRConfig.Contains("SR3MET_10"))   met_cut = 10.;
+  if (param.SRConfig.Contains("SR3MET_9"))   met_cut = 9.;
   if (param.SRConfig.Contains("SR3MET_8"))   met_cut = 8.;
+  if (param.SRConfig.Contains("SR3MET_7"))   met_cut = 7.;
   if (param.SRConfig.Contains("SR3MET_6"))   met_cut = 6.;
 
-  bool PassHMMet    = (met2_st < met_cut);
+  bool PassHMMet  = (met2_st < met_cut);
 
-
-  //  double LowerMassSR3WmassCut = 50.;   double UpperMassSR3WmassCut = 120.;
-  
   int  NB_JetColl      =  B_JetColl.size();
 
   double pt_bin1= 140.;
@@ -1406,14 +1416,12 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK4String(HNL_LeptonCore::Chann
   Lepton Nlep = (leps[1]->Pt() < 100.) ?  *leps[1] : *leps[0];
   Lepton Wlep = (leps[1]->Pt() > 100.) ? *leps[1] : *leps[0];
 
-
   if(Wcand.M() < 400) return "SR3_bin3";
   FillEventCutflow(HNL_LeptonCore::SR3, w, "SR3_W1Mass",param.Name,param.WriteOutVerbose);
 
   if(leps[0]->Pt() < pt_bin2) return "SR3_bin3";
   if(leps[1]->Pt() < 20) return "SR3_bin3";
   FillEventCutflow(HNL_LeptonCore::SR3, w, "SR3_LepPt",param.Name,param.WriteOutVerbose);
-
 
   Fill_RegionPlots(channel, 0, param.Name,"InclusiveSRHM3" , TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w,param.WriteOutVerbose);
 

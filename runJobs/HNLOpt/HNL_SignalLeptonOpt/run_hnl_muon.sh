@@ -26,9 +26,8 @@ if [[ $1 == "" ]]; then
 
     for i in "${era_list[@]}"
     do
-	SKFlat.py -a $analyzer  -i DYTypeI_DF_M600_private    -n  10   --nmax 400   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags Mu_SelectionOptSR1&
-	SKFlat.py -a $analyzer  -i VBFTypeI_DF_M600_private    -n  10   --nmax 400   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags Mu_SelectionOptSR2&
-        SKFlat.py -a $analyzer  -i DYTypeI_DF_M1000_private    -n  10   --nmax 400   -e ${i}  --skim SkimTree_HNMultiLepBDT  --userflags Mu_SelectionOptSR3&
+	SKFlat.py -a $analyzer  -i DYTypeI_DF_M600_private    -n  10   --nmax 600   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags 'HF_Bin1,FullEta,MuID_NP' &
+
     done
 fi
 
@@ -59,30 +58,16 @@ fi
 if [[ $1 == "NP_MUON_HF" ]]; then
 
     declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
-    declare  -a era_list=("2017")
     for i in "${era_list[@]}"
     do
 
-        Flag='MuID_NP_HF,FullEta'
+        Flag='HF_Bin1,FullEta,MuID_NP'
         source ${runPATH}/run_hnl_muon.sh Muon ${Flag} ${i}
 
     done
 
 fi
 
-
-if [[ $1 == "NP_MUON" ]]; then
-
-    declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
-    for i in "${era_list[@]}"
-    do
-
-        Flag='MuID_NP,FullEta'
-        source ${runPATH}/run_hnl_muon.sh Muon ${Flag} ${i}
-
-    done
-
-fi
 
 
 #############################################################################

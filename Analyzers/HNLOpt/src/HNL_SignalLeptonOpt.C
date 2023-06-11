@@ -598,7 +598,6 @@ void HNL_SignalLeptonOpt::executeEvent(){
       if(!SROpt ){
 	RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
 	continue;
-	
       }
       
       if(HasFlag("Mu_SelectionOptSR3")){
@@ -615,8 +614,8 @@ void HNL_SignalLeptonOpt::executeEvent(){
 	      param_signal.SRConfig  = "OptSR_"+i+"_"+j+"_"+k;
 	      param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k;
 	      RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
-	      if(k == "SigR3_v5"){
-		vector<TString> SigR3MET = {"SR3MET_20", "SR3MET_18", "SR3MET_15","SR3MET_12","SR3MET_10","SR3MET_8","SR3MET_6"};
+	      if(k == "SigR3_v6"){
+		vector<TString> SigR3MET = {"SR3MET_20", "SR3MET_18", "SR3MET_15","SR3MET_12","SR3MET_10","SR3MET_9","SR3MET_8","SR3MET_7","SR3MET_6"};
                 for(auto imet : SigR3MET) {
                   param_signal.SRConfig  = "OptSR_"+i+"_"+j+"_"+k+"_"+imet;
                   param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_"+imet;
@@ -636,6 +635,7 @@ void HNL_SignalLeptonOpt::executeEvent(){
                   RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
                 }
 
+		
 		
                 param_signal.Name = param_signal.DefName  + id + "_" + i+"_"+j+"_"+k+"_SR3BjetM";
                 RunULAnalysis(param_signal,ElectronCollV,MuonCollV,TauColl,AllJetColl,JetCollLoose,JetColl,VBF_JetColl,FatjetPNColl,BJetColl,BJetColl,ev);
@@ -667,7 +667,7 @@ void HNL_SignalLeptonOpt::executeEvent(){
 
         vector<TString> Sig1Bin = {"SigR1_v3"};
         vector<TString> Sig2Bin = {"SigR2_v1","SigR2_v2"};
-        vector<TString> Sig3Bin = {"SigR3_v5"};
+        vector<TString> Sig3Bin = {"SigR3_v6"};
         for (auto i : Sig1Bin){
           for (auto j : Sig2Bin){
             for (auto k : Sig3Bin){
@@ -883,6 +883,8 @@ void HNL_SignalLeptonOpt::RunULAnalysis(AnalyzerParameter param, vector<Electron
 
   if(param.Name.Contains("HNTightV2")) param.WriteOutVerbose=0; // Does not Fill Cutflow OR Region Plotter  
   else  param.WriteOutVerbose=1;
+
+  if(param.SRConfig.Contains("OptSR"))  param.WriteOutVerbose=1;
 
   if(param.Name== "HNLOpt_ULHNTightV2") OutCutFlow(param.Name+"_pre", weight);
 
