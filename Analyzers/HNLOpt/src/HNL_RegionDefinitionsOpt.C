@@ -129,8 +129,11 @@ void HNL_RegionDefinitionsOpt::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq
       TString SRbin= RunSignalRegionAK8String ("---", dilep_channel,qq, leps, leps_veto, TauColl, JetColl, AK8_JetColl, B_JetCollSR1,ev, METv ,param_channel,SR1_Binning_Version, weight_channel) ;
       
       ////// Fill Limit plot                                                                                                                                                                                                               
-      if(SRbin != "false") FillEventCutflow(LimitRegions, weight_channel, SRbin,"LimitInput/"+param_channel.Name);
-      
+      if(SRbin != "false") {
+	FillEventCutflow(LimitRegions, weight_channel, SRbin,"LimitInput/"+param_channel.Name);
+	for(auto bdt_mass : BDTMasses) FillEventCutflow(LimitRegionsBDT, weight_channel, SRbin,"LimitInputBDT/"+param_channel.Name+"/"+bdt_mass);
+      }
+
       ///// Fill Cutflow                                                                                                                                                                                                                   
       if(SRbin != "false")  FillEventCutflow(Regions,  weight_channel, "SigReg1","Summary/"+param_channel.Name,param_channel.WriteOutVerbose);
       else FillEventCutflow(Regions,  weight_channel, "SigReg1Fail","Summary/"+param_channel.Name,param_channel.WriteOutVerbose);
@@ -139,18 +142,18 @@ void HNL_RegionDefinitionsOpt::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq
     else{
 
 
-      TString SRbin = RunSignalRegionWWString( dilep_channel,qq, leps, leps_veto,  TauColl, JetCollLoose, VBF_JetColl,  AK8_JetColl, B_JetColl,ev, METv, param_channel,  SR2_Binning_Version, weight_channel);
+      TString SR2bin = RunSignalRegionWWString( dilep_channel,qq, leps, leps_veto,  TauColl, JetCollLoose, VBF_JetColl,  AK8_JetColl, B_JetColl,ev, METv, param_channel,  SR2_Binning_Version, weight_channel);
 
-      if(SRbin != "false"){
-	FillEventCutflow(LimitRegions, weight_channel, SRbin,"LimitInput/"+param_channel.Name);
+      if(SR2bin != "false"){
+	FillEventCutflow(LimitRegions, weight_channel, SR2bin,"LimitInput/"+param_channel.Name);
+        for(auto bdt_mass : BDTMasses) FillEventCutflow(LimitRegionsBDT, weight_channel, SR2bin,"LimitInputBDT/"+param_channel.Name+"/"+bdt_mass);
         FillEventCutflow(Regions,  weight_channel, "SigReg2","Summary/"+param_channel.Name,param_channel.WriteOutVerbose);
       }
       else{
 
         FillEventCutflow(Regions,  weight_channel, "SigReg3","Summary/"+param_channel.Name,param_channel.WriteOutVerbose);
 
-
-        TString SRbin  = RunSignalRegionAK4String (dilep_channel,qq, leps, leps_veto, TauColl, JetColl, AK8_JetColl, B_JetColl, ev, METv ,param_channel,SR3_Binning_Version, weight_channel);
+        TString SR3bin  = RunSignalRegionAK4String (dilep_channel,qq, leps, leps_veto, TauColl, JetColl, AK8_JetColl, B_JetColl, ev, METv ,param_channel,SR3_Binning_Version, weight_channel);
         TString SRBDT100 = RunSignalRegionAK4StringBDT("100", dilep_channel, leps,JetColl,B_JetColl, METv , ev);
         TString SRBDT400 = RunSignalRegionAK4StringBDT("400", dilep_channel, leps,JetColl,B_JetColl, METv, ev);
         TString SRBDT500 = RunSignalRegionAK4StringBDT("500", dilep_channel, leps,JetColl,B_JetColl, METv, ev);
@@ -159,9 +162,9 @@ void HNL_RegionDefinitionsOpt::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq
         if(SRBDT400 != "false") FillEventCutflow(LimitRegionsBDT, weight_channel, SRBDT400,"LimitInputBDT/"+param_channel.Name+"/400");
         if(SRBDT500 != "false") FillEventCutflow(LimitRegionsBDT, weight_channel, SRBDT500,"LimitInputBDT/"+param_channel.Name+"/500");
 
-        if(SRbin != "false") {
+        if(SR3bin != "false") {
 
-	  FillEventCutflow(LimitRegions, weight_channel, SRbin, "LimitInput/"+param_channel.Name);
+	  FillEventCutflow(LimitRegions, weight_channel, SR3bin, "LimitInput/"+param_channel.Name);
           FillEventCutflow(Regions,  weight_channel, "SigReg3Pass","Summary/"+param_channel.Name,param_channel.WriteOutVerbose);
         }
         else           FillEventCutflow(Regions,  weight_channel, "SigReg3Fail","Summary/"+param_channel.Name,param_channel.WriteOutVerbose);
@@ -570,29 +573,31 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK8String(TString mass, HNL_Lep
   double met2_st = pow(METv.Pt(),2.)/ ST;
 
   double met_cut = 10.;
-  if (param.SRConfig.Contains("SR1MET_20_"))   met_cut = 20.;
-  if (param.SRConfig.Contains("SR1MET_18_"))   met_cut = 18.;
-  if (param.SRConfig.Contains("SR1MET_17_"))   met_cut = 17.;
-  if (param.SRConfig.Contains("SR1MET_15_"))   met_cut = 15.;
-  if (param.SRConfig.Contains("SR1MET_12_"))   met_cut = 12.;
-  if (param.SRConfig.Contains("SR1MET_10_"))   met_cut = 10.;
-  if (param.SRConfig.Contains("SR1MET_8_"))   met_cut = 8.;
-  if (param.SRConfig.Contains("SR1MET_6_"))   met_cut = 6.;
+  if (param.SRConfig.Contains("SR1MET_20"))   met_cut = 20.;
+  if (param.SRConfig.Contains("SR1MET_18"))   met_cut = 18.;
+  if (param.SRConfig.Contains("SR1MET_17"))   met_cut = 17.;
+  if (param.SRConfig.Contains("SR1MET_15"))   met_cut = 15.;
+  if (param.SRConfig.Contains("SR1MET_12"))   met_cut = 12.;
+  if (param.SRConfig.Contains("SR1MET_10"))   met_cut = 10.;
+  if (param.SRConfig.Contains("SR1MET_9"))   met_cut = 9.;
+  if (param.SRConfig.Contains("SR1MET_8"))   met_cut = 8.;
+  if (param.SRConfig.Contains("SR1MET_7"))   met_cut = 7.;
+  if (param.SRConfig.Contains("SR1MET_6"))   met_cut = 6.;
     
   bool PassHMMet    = (met2_st < met_cut);
   bool PassBJetMVeto = (B_JetColl.size()==0);
 
   double mass_cut = 450.;
 
-  if (param.SRConfig.Contains("SR1MLLJJ_0p3_"))   mass_cut = 300.;
-  if (param.SRConfig.Contains("SR1MLLJJ_0p4_"))   mass_cut = 400.;
-  if (param.SRConfig.Contains("SR1MLLJJ_0p45_"))   mass_cut = 450.;
-  if (param.SRConfig.Contains("SR1MLLJJ_0p5_"))   mass_cut = 500.;
-  if (param.SRConfig.Contains("SR1MLLJJ_0p6_"))   mass_cut = 600.;
-  if (param.SRConfig.Contains("SR1MLLJJ_0p7_"))   mass_cut = 700.;
-  if (param.SRConfig.Contains("SR1MLLJJ_0p8_"))   mass_cut = 800.;
-  if (param.SRConfig.Contains("SR1MLLJJ_0p9_"))   mass_cut = 900.;
-  if (param.SRConfig.Contains("SR1MLLJJ_0p1_"))   mass_cut = 1000.;
+  if (param.SRConfig.Contains("SR1MLLJJ_0p3"))   mass_cut = 300.;
+  if (param.SRConfig.Contains("SR1MLLJJ_0p4"))   mass_cut = 400.;
+  if (param.SRConfig.Contains("SR1MLLJJ_0p45"))   mass_cut = 450.;
+  if (param.SRConfig.Contains("SR1MLLJJ_0p5"))   mass_cut = 500.;
+  if (param.SRConfig.Contains("SR1MLLJJ_0p6"))   mass_cut = 600.;
+  if (param.SRConfig.Contains("SR1MLLJJ_0p7"))   mass_cut = 700.;
+  if (param.SRConfig.Contains("SR1MLLJJ_0p8"))   mass_cut = 800.;
+  if (param.SRConfig.Contains("SR1MLLJJ_0p9"))   mass_cut = 900.;
+  if (param.SRConfig.Contains("SR1MLLJJ_1"))   mass_cut = 1000.;
  
   double LowerMassSR1WmassCut = mass_cut;
   
@@ -603,18 +608,17 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK8String(TString mass, HNL_Lep
   double dPhil2_l = fabs(TVector2::Phi_mpi_pi( ( (AK8_JetColl[0] + *leps[1]).Phi() - (leps[0]->Phi() ))));
   
   double pt_cut = 100.;
-  if (param.SRConfig.Contains("SR1PT_80_"))   pt_cut = 80.;
-  if (param.SRConfig.Contains("SR1PT_90_"))   pt_cut = 90.;
-  if (param.SRConfig.Contains("SR1PT_100_"))   pt_cut = 100.;
-  if (param.SRConfig.Contains("SR1PT_110_"))   pt_cut = 110.;
-  if (param.SRConfig.Contains("SR1PT_120_"))   pt_cut = 120.;
-  if (param.SRConfig.Contains("SR1PT_140_"))   pt_cut = 140.;
-  if (param.SRConfig.Contains("SR1PT_160_"))   pt_cut = 160.;
-  if (param.SRConfig.Contains("SR1PT_180_"))   pt_cut = 180.;
-  if (param.SRConfig.Contains("SR1PT_200_"))   pt_cut = 200.;
+  if(DataEra=="2018")  pt_cut = 200.;
+  if (param.SRConfig.Contains("SR1PT_80"))   pt_cut = 80.;
+  if (param.SRConfig.Contains("SR1PT_90"))   pt_cut = 90.;
+  if (param.SRConfig.Contains("SR1PT_100"))   pt_cut = 100.;
+  if (param.SRConfig.Contains("SR1PT_110"))   pt_cut = 110.;
+  if (param.SRConfig.Contains("SR1PT_120"))   pt_cut = 120.;
+  if (param.SRConfig.Contains("SR1PT_140"))   pt_cut = 140.;
+  if (param.SRConfig.Contains("SR1PT_160"))   pt_cut = 160.;
+  if (param.SRConfig.Contains("SR1PT_180"))   pt_cut = 180.;
+  if (param.SRConfig.Contains("SR1PT_200"))   pt_cut = 200.;
 
-
-  //if(AK8_JetColl.size() > 1) return "false";
   FillEventCutflow(HNL_LeptonCore::SR1, w, "SR1_1AK8",PNMass,param.WriteOutVerbose);
 
   float dijetmass_tmp=999.;
@@ -696,16 +700,15 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK8String(TString mass, HNL_Lep
 
     TString SR1Bin="SR1_MNbin1";
 
-    if(channel==MuMu){
-      if(MN1 > 225){
-	if(leps[0]->Pt() < pt_cut)  return "SR1_MNbin1";
-	FillEventCutflow(HNL_LeptonCore::SR1, w, "SR1_LepPt",PNMass,param.WriteOutVerbose);
-      }
-      else   if(MN1 > 150){
-	if(leps[0]->Pt() < pt_cut-50)  return "SR1_MNbin1";
-	FillEventCutflow(HNL_LeptonCore::SR1, w, "SR1_LepPt",PNMass,param.WriteOutVerbose);
-      }
+    if(MN1 > 225){
+      if(leps[0]->Pt() < pt_cut)  return "SR1_MNbin1";
+      FillEventCutflow(HNL_LeptonCore::SR1, w, "SR1_LepPt",PNMass,param.WriteOutVerbose);
     }
+    else   if(MN1 > 150){
+      if(leps[0]->Pt() < pt_cut-50)  return "SR1_MNbin1";
+      FillEventCutflow(HNL_LeptonCore::SR1, w, "SR1_LepPt",PNMass,param.WriteOutVerbose);
+    }
+    
 
     int nSRbins=8;
     double ml1jbins[nSRbins] = { 0., 500, 600.,700.,850, 1000.,1400, 2000.};
@@ -1058,6 +1061,27 @@ vector<double> HNL_RegionDefinitionsOpt::MassBinsSR1(HNL_LeptonCore::Channel cha
     if(mass== "1500") return  {0., 750,1000, 1800, 2000.};
     if(mass== "2000") return  {0., 750,1000, 1900, 2000.};
   }
+  if(channel == EE){
+    if(mass == "100") return {0., 95,  150,200 , 2000.};
+    if(mass == "150") return {0., 100, 170, 250 , 2000.};
+    if(mass== "200") return  {0., 175, 250 ,300, 2000.};
+    if(mass== "300") return  {0., 275, 350 ,400, 2000.};
+    if(mass== "400") return  {0., 340, 400 ,500, 2000.};
+    if(mass== "500") return  {0., 440, 560, 600 , 2000.};
+    if(mass== "600") return  {0., 560, 700, 750 , 2000.};
+    if(mass== "700") return  {0., 600, 850,1000 , 2000.};
+    if(mass== "800") return  {0., 750 ,1000,1200 , 2000.};
+    if(mass== "900") return  {0., 750, 840,1200 , 2000.};
+    if(mass== "1000") return  {0., 750, 900, 1250 , 2000.};
+    if(mass== "1100") return  {0., 750, 990, 1300, 2000.};
+    if(mass== "1200") return  {0., 750, 1000, 1450, 2000.};
+    if(mass== "1300") return  {0., 750,1000, 1600 , 2000.};
+    if(mass== "1400") return  {0., 750,1000, 1700, 2000.};
+    if(mass== "1500") return  {0., 750,1000, 1800, 2000.};
+    if(mass== "2000") return  {0., 750,1000, 1900, 2000.};
+
+  }
+
   return {0., 600, 850,1000 , 2000.};
 }
 
@@ -1226,9 +1250,10 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionWWString(HNL_LeptonCore::Channe
   if (param.SRConfig.Contains("SR2MET_15"))   met_cut = 15.;
   if (param.SRConfig.Contains("SR2MET_12"))   met_cut = 12.;
   if (param.SRConfig.Contains("SR2MET_10"))   met_cut = 10.;
+  if (param.SRConfig.Contains("SR2MET_9"))   met_cut = 9.;
   if (param.SRConfig.Contains("SR2MET_8"))   met_cut = 8.;
+  if (param.SRConfig.Contains("SR2MET_7"))   met_cut = 7.;
   if (param.SRConfig.Contains("SR2MET_6"))   met_cut = 6.;
-
 
   bool PassHMMet    = (met2_st < met_cut); 
   
@@ -1249,7 +1274,6 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionWWString(HNL_LeptonCore::Channe
     if(param.WriteOutVerbose == 0)FillHist( "LimitSR2/"+param.Name+"/Q_HT_LT1_Central",  (leps[0]->Charge()*HT)/leps[0]->Pt(),  w, 4 , QHTLT, "Reco HT/LT1 * Q");
     
     FillEventCutflow(HNL_LeptonCore::ChannelDepSR2, w, GetChannelString(channel) +"_SR2", "ChannelCutFlow/"+param.Name,param.WriteOutVerbose);//Def
-    
     
     if (HT/leps[0]->Pt() < 1)      return "SR2_HTLTbin1";
     return "SR2_HTLTbin2";
@@ -1329,10 +1353,10 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK4String(HNL_LeptonCore::Chann
   if (param.SRConfig.Contains("SR3_bin1pt_100")) pt_bin1= 100.;
   if (param.SRConfig.Contains("SR3_bin1pt_120")) pt_bin1= 120.;
   if (param.SRConfig.Contains("SR3_bin1pt_140")) pt_bin1= 140.;
-  if (param.SRConfig.Contains("SR3_bin2pt_160")) pt_bin1= 160.;
+  if (param.SRConfig.Contains("SR3_bin1pt_160")) pt_bin1= 160.;
 
 
-  double pt_bin2= 160.;
+  double pt_bin2= 140.;
   if (param.SRConfig.Contains("SR3_bin2pt_60")) pt_bin2= 60.;
   if (param.SRConfig.Contains("SR3_bin2pt_70")) pt_bin2= 70.;
   if (param.SRConfig.Contains("SR3_bin2pt_80")) pt_bin2= 80.;
@@ -1419,8 +1443,8 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK4String(HNL_LeptonCore::Chann
   if(Wcand.M() < 400) return "SR3_bin3";
   FillEventCutflow(HNL_LeptonCore::SR3, w, "SR3_W1Mass",param.Name,param.WriteOutVerbose);
 
-  if(leps[0]->Pt() < pt_bin2) return "SR3_bin3";
   if(leps[1]->Pt() < 20) return "SR3_bin3";
+  if(leps[0]->Pt() < pt_bin2) return "SR3_bin3";
   FillEventCutflow(HNL_LeptonCore::SR3, w, "SR3_LepPt",param.Name,param.WriteOutVerbose);
 
   Fill_RegionPlots(channel, 0, param.Name,"InclusiveSRHM3" , TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w,param.WriteOutVerbose);
@@ -1549,7 +1573,7 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK4String(HNL_LeptonCore::Chann
     
     if(param.WriteOutVerbose == 0)FillHist( "LimitSR3/"+param.Name+"/N1Mass_Central",  N1cand.M(),  w, nSRbins-1, ml1jbins, "Reco M_{l1jj}");
     
-    if(leps[0]->Pt() < 110  || leps[1]->Pt() < 20)  {
+    if(leps[0]->Pt() < pt_bin2  || leps[1]->Pt() < 20)  {
       FillEventCutflow(HNL_LeptonCore::SR3Fail, w, "SR3_leppt",param.Name,param.WriteOutVerbose);
       
       return "false";
@@ -1566,7 +1590,7 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK4String(HNL_LeptonCore::Chann
       return "false";
     }
     
-    if(channel==MuMu){
+    if(channel==MuMu || channel == EE){
       
       if(met2_st > 7 ) {
 	if(Wcand.M() > 600){

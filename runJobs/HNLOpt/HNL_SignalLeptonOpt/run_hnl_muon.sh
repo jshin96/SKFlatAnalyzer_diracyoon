@@ -40,7 +40,7 @@ fi
 
 if [[ $1 == "MUON_SEL" ]]; then
 
-    declare  -a era_list=("2017")
+    declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
     for i in "${era_list[@]}"
     do
         Flag='Mu_SelectionOptSR1'
@@ -58,11 +58,26 @@ fi
 if [[ $1 == "NP_MUON_HF" ]]; then
 
     declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
+    declare  -a era_list=("2017")
     for i in "${era_list[@]}"
     do
 
         Flag='HF_Bin1,FullEta,MuID_NP'
-        source ${runPATH}/run_hnl_muon.sh Muon ${Flag} ${i}
+        source ${runPATH}/run_hnl_muon.sh MuonAll ${Flag} ${i}
+
+    done
+
+fi
+
+if [[ $1 == "NP_MUON_HF_Bin2" ]]; then
+
+    declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
+
+    for i in "${era_list[@]}"
+    do
+
+        Flag='HF_Bin2,FullEta,MuID_NP'
+        source ${runPATH}/run_hnl_muon.sh MuonAll ${Flag} ${i}
 
     done
 
@@ -70,10 +85,26 @@ fi
 
 
 
+
 #############################################################################
 #############################################################################
 #############################################################################
 
+
+
+if [[ $1 == "MuonAll" ]]; then
+
+
+    source ${runPATH}/run_hnl_muon.sh SignalsID ${3} ${2}
+
+    FakeFlag=${2}',RunFake'
+    source ${runPATH}/run_hnl_muon.sh FakeAll  ${3} ${FakeFlag}
+    PromptFlag=${2}',RunPrompt'
+    source ${runPATH}/run_hnl_muon.sh Prompt  ${3} ${PromptFlag}
+    ConvFlag=${2}',RunConv'
+    source ${runPATH}/run_hnl_muon.sh Conv ${3} ${ConvFlag}
+
+fi
 
 
 
@@ -97,9 +128,18 @@ fi
 
 if [[ $1 == "Fake" ]]; then
 
-    SKFlat.py -a $analyzer  -l $mcpath/FakeOpt.txt  -n $njobs  --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLepBDT &
+    SKFlat.py -a $analyzer  -l $mcpath/FakeOpt.txt       -n $njobs       --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLepBDT &
     SKFlat.py -a $analyzer  -l $mcpath/FakeOptLarge.txt  -n $nLargejobs  --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLepBDT &
-    SKFlat.py -a $analyzer  -l $mcpath/FakeOptXLarge.txt  -n 100  --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLepBDT &
+    SKFlat.py -a $analyzer  -l $mcpath/FakeOptXLarge.txt -n 100          --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLepBDT &
+
+fi
+
+
+if [[ $1 == "FakeAll" ]]; then
+
+    SKFlat.py -a $analyzer  -l $mcpath/FakeOptAll.txt     -n $njobs       --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLepBDT &
+    SKFlat.py -a $analyzer  -l $mcpath/FakeOptLarge.txt  -n $nLargejobs  --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLepBDT &
+    SKFlat.py -a $analyzer  -l $mcpath/FakeOptXLarge.txt -n 100          --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLepBDT &
 
 fi
 
@@ -107,6 +147,16 @@ if [[ $1 == "Prompt" ]]; then
 
     SKFlat.py -a $analyzer  -l $mcpath/MCOpt.txt  -n $njobs  --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLepBDT &
     SKFlat.py -a $analyzer  -l $mcpath/MCOptLarge.txt  -n $nLargejobs  --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLepBDT &
+
+fi
+
+
+
+if [[ $1 == "SignalsID" ]]; then
+
+    SKFlat.py -a $analyzer  -l $sigpath/DYIDOpt.txt    -n $njobs_sig  --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLepBDT&
+    SKFlat.py -a $analyzer  -l $sigpath/SSWWOpt.txt  -n $njobs_sig  --nmax ${nmax}  -e ${2}  --userflags ${3}  --skim SkimTree_HNMultiLepBDT&
+    SKFlat.py -a $analyzer  -l $sigpath/VBFOpt.txt   -n $njobs_sig  --nmax ${nmax}   -e ${2}  --userflags ${3} --skim SkimTree_HNMultiLepBDT&
 
 fi
 
