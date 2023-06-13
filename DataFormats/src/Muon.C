@@ -657,7 +657,8 @@ bool Muon::Pass_CB_Opt(TString ID) const {
   cout << "iso_methodB " <<  iso_methodB << endl;  
   cout << "iso_methodEC " <<  iso_methodEC << endl;  
   cout << "dxy_method " <<  dxy_method << endl;  
-  cout << "NPMVAString " << NPMVAString << endl;*/
+  cout << "NPMVAString " << NPMVAString << endl;
+  */
 
   if(dxy_method.Contains("DXYv")){
     
