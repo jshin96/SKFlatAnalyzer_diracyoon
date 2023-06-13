@@ -690,8 +690,8 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4StringBDT(bool isSR, TString mN
   TString LabelPrefix = (isSR) ? "SR3" : "CR3";
   
 
-  if(!PassHMMet) return LabelPrefix+"_BDTbin1";
-  if(B_JetColl.size() > 0)    return LabelPrefix+"_BDTbin1";
+  if(!PassHMMet) return "false";
+  if(B_JetColl.size() > 0)    return "false";
   if(MVAvalue< 0.0) return LabelPrefix+"_BDTbin1";
   else if(MVAvalue< 0.10) return LabelPrefix+"_BDTbin2";
   else if(MVAvalue< 0.15) return LabelPrefix+"_BDTbin3";

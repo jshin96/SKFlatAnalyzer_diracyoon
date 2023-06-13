@@ -417,8 +417,34 @@ void HNL_SignalLeptonOpt::executeEvent(){
               MuonsIDs.push_back("HNLUL_"+i1+i2+"DXYv8");
             }
           }
-        }// Bin1                                                                                                                                                                                                                                                                      
+        }// Bin2                                                                                                                                                            
+        if(HasFlag("HF_Bin3")){
 
+          vector<TString> mvaHF;
+	  if(DataYear == 2016) mvaHF.push_back("MVAHFBB0p75_MVAHFEC0p72_");
+	  if(DataYear == 2017) mvaHF.push_back("MVAHFBB0p68_MVAHFEC0p63_");
+	  if(DataYear == 2018) mvaHF.push_back("MVAHFBB0p68_MVAHFEC0p64_");
+          vector<TString> vdxy = {"DXY0p005_","DXY0p01_","DXY0p02_","DXY0p05_","DXY0p1_"};
+          vector<TString> vdz  = {"DZ0p02_","DZ0p04_","DZ0p05_","DZ0p1_"}; 
+          vector<TString> vsip ;
+
+	  for(unsigned int ip=0 ; ip < 8 ; ip++){
+            double ip_d= 3. + double(ip)*1;
+            TString ipTS= DoubleToString(ip_d);
+            vsip.push_back("SIP"+ipTS+"_");
+          }
+
+          for(auto i1 : mvaHF){
+            for(auto i2 : vdxy){
+	      for(auto i3 : vdz){
+		for(auto i4 : vsip){
+		  MuonsIDs.push_back("HNLUL_"+i1+i2+i3+i4);
+		}
+	      }
+	    }
+          }
+
+        }// Bin3                                                                                                                                            
       }
     }
     
@@ -832,7 +858,7 @@ void HNL_SignalLeptonOpt::executeEvent(){
       //}
     }
     
-  }
+    }
   
   return ;
 }

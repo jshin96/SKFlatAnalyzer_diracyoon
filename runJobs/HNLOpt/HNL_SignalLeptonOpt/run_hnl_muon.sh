@@ -84,6 +84,22 @@ if [[ $1 == "NP_MUON_HF_Bin2" ]]; then
 fi
 
 
+if [[ $1 == "NP_MUON_HF_Bin3" ]]; then
+
+    declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
+
+    for i in "${era_list[@]}"
+    do
+
+        Flag='HF_Bin3,FullEta,MuID_NP'
+        source ${runPATH}/run_hnl_muon.sh MuonAll ${Flag} ${i}
+
+    done
+
+fi
+
+
+
 
 
 #############################################################################
