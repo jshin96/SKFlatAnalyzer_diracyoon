@@ -372,19 +372,19 @@ bool Muon::PassID(TString ID) const {
   if(ID.Contains("HNL_ULIDv2") ) {
       
     if(HNL_MVA_Fake("v3") < 0.)  return false;    
-    if(!PassID("HNL_ULIDv1_2016")) return false;
+    if(!PassID("HNL_ULID_2016")) return false;
     
     return true;
   }
 
   if(ID.Contains("HNL_ULIDv3") ) {
     if(HNL_MVA_Fake("v3") < 0.2)  return false;
-    if(!PassID("HNL_ULIDv1_2016")) return false;
+    if(!PassID("HNL_ULID_2016")) return false;
     return true;
   }
   if(ID.Contains("HNL_ULIDv4") ) {
     if(HNL_MVA_Fake("v3") < 0.4)  return false;
-    if(!PassID("HNL_ULIDv1_2016")) return false;
+    if(!PassID("HNL_ULID_2016")) return false;
     return true;
   }
 
@@ -578,13 +578,9 @@ bool Muon::Pass_CB_Opt(TString ID) const {
   //
   //cout << "ID = " << ID << "  " << this->Pt() << " " << this->Eta()<< endl;
 
-  if (ID.Contains("HNLv12016") && !PassID("HNL_ULIDv1_2016")) return false;
-  if (ID.Contains("HNLv12017") && !PassID("HNL_ULIDv1_2017")) return false;
-  if (ID.Contains("HNLv12018") && !PassID("HNL_ULIDv1_2018")) return false;
-
-  if (ID.Contains("HNLv22016") && !PassID("HNL_ULIDv2_2016")) return false;
-  if (ID.Contains("HNLv22017") && !PassID("HNL_ULIDv2_2017")) return false;
-  if (ID.Contains("HNLv22018") && !PassID("HNL_ULIDv2_2018")) return false;
+  if (ID.Contains("HNL2016") && !PassID("HNL_ULID_2016")) return false;
+  if (ID.Contains("HNL2017") && !PassID("HNL_ULID_2017")) return false;
+  if (ID.Contains("HNL2018") && !PassID("HNL_ULID_2018")) return false;
 
  
   TString ID_sub = ID;

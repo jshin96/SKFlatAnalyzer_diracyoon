@@ -777,7 +777,7 @@ if(ID.Contains("HNL_ULIDs_CONV")){
 
   }
 
-  if(ID=="HNL_Peking") {
+  if(ID=="HNL_Peking_2017" || ID=="HNL_Peking_2018") {
 
     if(!passMVAID_Iso_WP90()) return 0;
     if(! IsGsfCtfScPixChargeConsistent())  return 0;

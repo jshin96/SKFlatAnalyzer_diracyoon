@@ -21,6 +21,7 @@ void HNL_SignalRegionPlotter::executeEvent(){
   }
   
   AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("MVAUL","_UL");
+  //AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("HNL","_UL");
   RunULAnalysis(param_signal);
 
   if(!IsData) RunSyst=true;
@@ -48,8 +49,6 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
 
   Event ev = GetEvent();
   double weight =SetupWeight(ev,param);
-
-  if(TESTBDT && event != 144880) return;
 
   ///// MERGE WJet samples for more stats                                                                                                                                      
   //if(MCSample.Contains("WJet")){
@@ -93,30 +92,30 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
   // Creat Lepton vector to have lepton blind codes 
 
   
-  std::vector<FatJet> AK8_JetColl                 = GetHNLAK8Jets("",param);
+  std::vector<FatJet> AK8_JetColl                 = GetHNLAK8Jets("HNL",param);
   std::vector<Jet> AK4_JetAllColl                 = GetHNLJets("NoCut_Eta3",param);
   std::vector<Jet> JetColl                        = GetHNLJets("Tight",param);
   std::vector<Jet> JetCollLoose                   = GetHNLJets("Loose",param);
   std::vector<Jet> VBF_JetColl                    = GetHNLJets("VBFTight",param);
   std::vector<Jet> BJetColl                       = GetHNLJets("BJetM",param);
-  std::vector<Jet> BJetCollSR1                    = GetHNLJets("BJetT",param);
+  //  std::vector<Jet> BJetCollSR1                    = GetHNLJets("BJetT",param);
  
-  Particle METv = GetvMET("PuppiT1xyCorr", param, VBF_JetColl, AK8_JetColl, MuonCollT, ElectronCollT); // returns MET with systematic correction; run this after all object selection done; NOTE that VBF jet is used here
+  Particle METv = GetvMET("PuppiT1xyULCorr",param); // returns MET with systematic correction; run this after all object selection done; NOTE that VBF jet is used here
 
   // select B jets                                                                                                                                                                        
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
   double sf_btag               = GetBJetSF(param, JetColl, param_jets);
+  
   JetTagging::Parameters param_jetsT = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Tight, JetTagging::incl, JetTagging::mujets);
   double sf_btagSR1               = GetBJetSF(param, JetColl, param_jetsT);
 
-  if(!IsData && AK8_JetColl.size()==0)weight = weight*sf_btag;
-  if(!IsData && AK8_JetColl.size()>0)weight = weight*sf_btagSR1;
+  if(!IsData)weight = weight*sf_btag;
 
   FillTimer("START_SR");
 
   RunAllSignalRegions(Inclusive,
 		      ElectronCollT,ElectronCollV,MuonCollT,MuonCollV,  TauColl,
-		      JetCollLoose, AK4_JetAllColl, JetColl,VBF_JetColl,AK8_JetColl, BJetColl,BJetCollSR1, 
+		      JetCollLoose, AK4_JetAllColl, JetColl,VBF_JetColl,AK8_JetColl, BJetColl,BJetColl, 
 		      ev,METv, param, weight);
 
   FillTimer("END_SR");
