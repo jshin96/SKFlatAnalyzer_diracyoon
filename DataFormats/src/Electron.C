@@ -330,7 +330,10 @@ bool Electron::Pass_CB_Opt(TString ID) const {
   if(DEBUG){
     if (ID.Contains("NPScan") && !PassID("HNL_ULID_NPOpt")) cout << "Fail NPScan cut " << endl;
   }
+
   if (ID.Contains("NPScan") && !PassID("HNL_ULID_NPOpt")) return false;
+  if (ID.Contains("CFScan") && !PassID("HNL_ULID_CFOpt")) return false;
+
 
   TString ID_sub = ID;
   ID_sub = ID_sub.ReplaceAll("_"," ");
@@ -746,6 +749,24 @@ if(ID.Contains("HNL_ULIDs_CONV")){
     }
     if(!PassULMVA(HNL_MVA_Conv("EDv2"), -0.7,"j_lep_mva_hnl_conv_ed_v2")) return false;
     
+    return 1;
+
+  }
+
+  if(ID == "HNL_ULID_CFOpt"){
+
+    if(!PassMVABaseLine()) return 0;
+
+    if( IsBB()){
+      if(!PassULMVA(HNL_MVA_Fake("EDv4Top"),   -0.2,  "j_lep_mva_hnl_fake_topv4"))   return false;
+      if(!PassULMVA(HNL_MVA_Fake("EDv4LF"),   0.2,  "j_lep_mva_hnl_fake_lf4"))   return false;
+    }else {
+      if(!PassULMVA(HNL_MVA_Fake("EDv4Top"),   0.7,  "j_lep_mva_hnl_fake_topv4"))   return false;
+      if(!PassULMVA(HNL_MVA_Fake("EDv4LF"),    0.2,  "j_lep_mva_hnl_fake_lf4"))   return false;
+
+    }
+    if(!PassULMVA(HNL_MVA_Conv("EDv2"), -0.7,"j_lep_mva_hnl_conv_ed_v2")) return false;
+
     return 1;
 
   }

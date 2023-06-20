@@ -878,12 +878,6 @@ void AnalyzerCore::SetupIDMVAReaderDefault(){
  
   SetupLeptonBDT();
 
-  if(TESTBDT) {
-    SetupIDMVAReaderMuon();
-    SetupIDMVAReaderElectron(true,true);
-    return;
-  }
-
   // setup ALL MVA Readers for Mu and El
   // Muon ID Setup
   if(!(fChain->GetBranch("muon_mva_fake_v1") || fChain->GetBranch("muon_mva_fake_v2") || fChain->GetBranch("muon_mva_fake_v3") || fChain->GetBranch("muon_mva_fake_v4"))) SetupIDMVAReaderMuon();
@@ -2033,21 +2027,6 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
   if(!electron_Energy) return out;
 
 
-  if(TESTBDT) cout << "=====================================" << endl;
-  if(TESTBDT) cout << "Event " << event << endl;
-  if(TESTBDT){
-    for(unsigned int i=0; i<electron_Energy->size(); i++)  {
-      Electron el;
-      el.SetPtEtaPhiE(1., electron_eta->at(i), electron_phi->at(i), electron_Energy->at(i));
-      double el_theta = el.Theta();
-      double el_pt = electron_Energy->at(i) * TMath::Sin( el_theta );
-      cout << "Pt = " << el_pt  ;
-      cout << " electron_EnergyUnCorr->at(i) = " << electron_EnergyUnCorr->at(i)  ;
-      cout << " PtRatio = " << electron_ptratio->at(i);
-      cout << " PtRel = " << electron_ptrel->at(i);
-      cout << " BJET = " << electron_cj_bjetdisc->at(i) << endl;
-    }    
-  }
   for(unsigned int i=0; i<electron_Energy->size(); i++){
 
     Electron el;
@@ -2059,8 +2038,6 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
     double el_theta = el.Theta();
     double el_pt = electron_Energy->at(i) * TMath::Sin( el_theta );
     el.SetPtEtaPhiE( el_pt, electron_eta->at(i), electron_phi->at(i), electron_Energy->at(i));
-    if(TESTBDT)cout << "Pt = " << el.Pt() << " " << el.Eta() << " " << el.Phi()<< endl;
-    
     el.SetUncorrectedPt(electron_EnergyUnCorr->at(i) * TMath::Sin( el_theta ));
 
     el.SetUncorrE(electron_EnergyUnCorr->at(i));
@@ -2137,12 +2114,6 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
     if(fChain->GetBranch("electron_ptratio")) el.SetJetPtRatio(electron_ptratio->at(i));
     if(fChain->GetBranch("electron_cj_bjetdisc")) el.SetCloseJetBScore(electron_cj_bjetdisc->at(i));
     
-    if(TESTBDT){
-      cout << "electron_ptratio->at(i) = " << electron_ptratio->at(i) << endl;
-      cout << "electron_ptrel->at(i) = " << electron_ptrel->at(i) << endl;
-      cout << "electron_cj_bjetdisc->at(i) = " << electron_cj_bjetdisc->at(i) << endl;
-      cout << "electron_cj_flavour->at(i) = " << electron_cj_flavour->at(i) << endl;
-    }
     
     //////// MVA Branches
     ////*************** FAKE MVA
@@ -2282,7 +2253,7 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
       int JetHadFlavour = -999;
 
       for(unsigned int ij=0; ij<AK4_JetAllColl.size(); ij++){
-	if(TESTBDT)cout << "Jet pt = " << AK4_JetAllColl.at(ij).Pt() << " " << AK4_JetAllColl.at(ij).Eta() << " " << AK4_JetAllColl.at(ij).Phi() << endl;
+
 	float dR1=el.DeltaR(AK4_JetAllColl.at(ij));
 	if(dR1>0.4) continue;
 	if(dR1<mindR1){ mindR1=dR1; IdxMatchJet=ij; }
@@ -2923,7 +2894,6 @@ std::vector<Jet> AnalyzerCore::GetAllJets(bool applySmear){
     jet.SetPileupJetId(jet_PileupJetId->at(i));
     jet.SetTightJetID(jet_tightJetID->at(i));
     jet.SetTightLepVetoJetID(jet_tightLepVetoJetID->at(i));
-    //if(TESTBDT) cout << "JET BDT = " <<  jet.GetTaggerResult(JetTagging::DeepJet) << endl;
     
     out.push_back(jet);
   }

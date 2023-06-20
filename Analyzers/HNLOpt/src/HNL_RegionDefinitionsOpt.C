@@ -118,7 +118,7 @@ void HNL_RegionDefinitionsOpt::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq
     FillEventCutflow(Regions,  weight_channel, "Preselection","Summary/"+param_channel.Name,param_channel.WriteOutVerbose);
 
     vector<TString> Masses    = {"600", "700","800","1000", "2000" };
-    vector<TString> BDTMasses = {"100","400","500"};
+    vector<TString> BDTMasses = {"100","400"};//,"500"};
 
 
     if(AK8_JetColl.size() > 0) {
@@ -156,11 +156,11 @@ void HNL_RegionDefinitionsOpt::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq
         TString SR3bin  = RunSignalRegionAK4String (dilep_channel,qq, leps, leps_veto, TauColl, JetColl, AK8_JetColl, B_JetColl, ev, METv ,param_channel,SR3_Binning_Version, weight_channel);
         TString SRBDT100 = RunSignalRegionAK4StringBDT("100", dilep_channel, leps,JetColl,B_JetColl, METv , ev);
         TString SRBDT400 = RunSignalRegionAK4StringBDT("400", dilep_channel, leps,JetColl,B_JetColl, METv, ev);
-        TString SRBDT500 = RunSignalRegionAK4StringBDT("500", dilep_channel, leps,JetColl,B_JetColl, METv, ev);
+	//        TString SRBDT500 = RunSignalRegionAK4StringBDT("500", dilep_channel, leps,JetColl,B_JetColl, METv, ev);
 
         if(SRBDT100 != "false") FillEventCutflow(LimitRegionsBDT, weight_channel, SRBDT100,"LimitInputBDT/"+param_channel.Name+"/100");
         if(SRBDT400 != "false") FillEventCutflow(LimitRegionsBDT, weight_channel, SRBDT400,"LimitInputBDT/"+param_channel.Name+"/400");
-        if(SRBDT500 != "false") FillEventCutflow(LimitRegionsBDT, weight_channel, SRBDT500,"LimitInputBDT/"+param_channel.Name+"/500");
+	//        if(SRBDT500 != "false") FillEventCutflow(LimitRegionsBDT, weight_channel, SRBDT500,"LimitInputBDT/"+param_channel.Name+"/500");
 
         if(SR3bin != "false") {
 
