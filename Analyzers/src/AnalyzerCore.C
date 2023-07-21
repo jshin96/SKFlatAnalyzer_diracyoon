@@ -7,7 +7,6 @@ AnalyzerCore::AnalyzerCore(){
   mcCorr = new MCCorrection();
   puppiCorr = new PuppiSoftdropMassCorr();
 
-
   fakeEst = new FakeBackgroundEstimator();
   cfEst = new CFBackgroundEstimator();
   pdfReweight = new PDFReweight();
@@ -18,6 +17,8 @@ AnalyzerCore::AnalyzerCore(){
   JECSources = {"AbsoluteStat","AbsoluteScale","AbsoluteFlavMap","AbsoluteMPFBias","Fragmentation","SinglePionECAL","SinglePionHCAL","FlavorQCD","TimePtEta","RelativeJEREC1","RelativeJEREC2","RelativeJERHF","RelativePtBB","RelativePtEC1","RelativePtEC2","RelativePtHF","RelativeBal","RelativeSample","RelativeFSR","RelativeStatFSR","RelativeStatEC","RelativeStatHF","PileUpDataMC","PileUpPtRef","PileUpPtBB","PileUpPtEC1","PileUpPtEC2","PileUpPtHF","FlavorZJet","FlavorPhotonJet","FlavorPureGluon","FlavorPureQuark","FlavorPureCharm","FlavorPureBottom","Total"};
 
   iSetupLeptonBDT=false;
+  iSetupAllBDT=false;
+  
   TimeTagMatcher.clear();
   TimerMap.clear();
   TimerMap["LATEST"] = std::clock();
@@ -26,6 +27,10 @@ AnalyzerCore::AnalyzerCore(){
 
   //  double time_elapsed_ms = 1000.0 * (c_end-c_start) / CLOCKS_PER_SEC;
   //std::cout << "CPU time used: " << time_elapsed_ms / 1000.0 << " s\n";
+
+
+  //  SetupMVAVersion1 = false;
+
 
   /// TESTBDT couts comparison of branches and Function 
   TESTBDT=false;
@@ -78,18 +83,21 @@ AnalyzerCore::~AnalyzerCore(){
   AK8PUPPIJECUncMap.clear();
 
   if(iSetupLeptonBDT){
-    delete ElectronIDFakeMVAReader;
-    delete ElectronIDCFMVAReader;
-    delete ElectronIDConvMVAReader;
-    
+
     delete ElectronIDv2FakeMVAReader;
     delete ElectronIDv2CFMVAReader;
-    delete ElectronIDv2CFMVAReaderPt;
     delete ElectronIDv2ConvMVAReader;
-    delete ElectronIDv3CFMVAReader;
-    
-    delete MuonIDFakeMVAReader;
     delete MuonIDFakeNoPtMVAReader;
+
+    if(iSetupAllBDT){
+      
+      delete ElectronIDFakeMVAReader; 
+      delete ElectronIDCFMVAReader; 
+      delete ElectronIDConvMVAReader; 
+      delete MuonIDFakeMVAReader; 
+      delete ElectronIDv2CFMVAReaderPt; 
+      delete ElectronIDv3CFMVAReader;                                                                                                                                                                         
+    }
   }
   
 }
@@ -452,9 +460,9 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
     
     if(iSetupLeptonBDT) {
       /// v1 has no muon 
-      if(!fChain->GetBranch("muon_mva_fake_v1")) mu.SetHNL_FakeLepMVAMuonV1( GetBDTScoreMuon(mu,AnalyzerCore::Fake,  "BDTGv1"));
-      if(!fChain->GetBranch("muon_mva_fake_v2")) mu.SetHNL_FakeLepMVAMuonV2( GetBDTScoreMuon(mu,AnalyzerCore::Fake,  "BDTGv2"));
-      if(!fChain->GetBranch("muon_mva_fake_v3")) mu.SetHNL_FakeLepMVAMuonV3( GetBDTScoreMuon(mu,AnalyzerCore::Fake,  "BDTGv3"));
+      //  if(!fChain->GetBranch("muon_mva_fake_v1")) mu.SetHNL_FakeLepMVAMuonV1( GetBDTScoreMuon(mu,AnalyzerCore::Fake,  "BDTGv1"));
+      //if(!fChain->GetBranch("muon_mva_fake_v2")) mu.SetHNL_FakeLepMVAMuonV2( GetBDTScoreMuon(mu,AnalyzerCore::Fake,  "BDTGv2"));
+      //if(!fChain->GetBranch("muon_mva_fake_v3")) mu.SetHNL_FakeLepMVAMuonV3( GetBDTScoreMuon(mu,AnalyzerCore::Fake,  "BDTGv3"));
       if(!fChain->GetBranch("muon_mva_fake_v4")) mu.SetHNL_FakeLepMVAMuonV4( GetBDTScoreMuon(mu,AnalyzerCore::Fake,  "BDTGv4"));
       if(!fChain->GetBranch("muon_mva_fake_ed_v4")) mu.SetHNL_FakeLepMVAMuon_EtaDependantV4( GetBDTScoreMuon_EtaDependant(mu,AnalyzerCore::Fake,  "BDTGv4"));
 
@@ -463,6 +471,8 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
     if(fChain->GetBranch("muon_ptrel"))      mu.SetJetPtRel(muon_ptrel->at(i));
     if(fChain->GetBranch("muon_ptratio"))    mu.SetJetPtRatio(muon_ptratio->at(i));
     if(fChain->GetBranch("muon_cj_bjetdisc"))mu.SetCloseJetBScore(muon_cj_bjetdisc->at(i));
+    if(fChain->GetBranch("muon_cj_cvsjetdisc"))mu.SetCloseJetCvsBScore(muon_cj_cvsbjetdisc->at(i));
+    if(fChain->GetBranch("muon_cj_cvsljetdisc"))mu.SetCloseJetCvsLScore(muon_cj_cvsljetdisc->at(i));
     if(fChain->GetBranch("muon_cj_flavour")) mu.SetCloseJetFlavour(muon_cj_flavour->at(i));
     
     bool FillCloseJetVar=!fChain->GetBranch("muon_cj_flavour");
@@ -473,6 +483,9 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
       std::vector<Jet>    AK4_JetAllColl = All_Jets;
 
       float  JetDiscCJ = -999;
+      float  JetDiscCJ_CvsB = -999;
+      float  JetDiscCJ_CvsL = -999;
+
       int JetHadFlavour = -999;
       int IdxMatchJet=-1;
       float mindR1=999.;
@@ -484,16 +497,23 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
       }
       if(IdxMatchJet!=-1)    {
 	JetDiscCJ     = AK4_JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet);
+	JetDiscCJ_CvsB     = AK4_JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet_CvsB);
+	JetDiscCJ_CvsL     = AK4_JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet_CvsL);
+
 	JetHadFlavour = AK4_JetAllColl.at(IdxMatchJet).hadronFlavour();
       }
       else {
-	JetDiscCJ=1.5;
+	JetDiscCJ=0.1; //// These are low pt ; value chosen to match peak in prompt leptons
+	JetDiscCJ_CvsB=0.4;
+	JetDiscCJ_CvsL=0.1;
 	JetHadFlavour=0;
       }
 
       mu.SetJetPtRel(JetLeptonPtRelLepAware(mu));
       mu.SetJetPtRatio(JetLeptonPtRatioLepAware(mu));
       mu.SetCloseJetBScore(JetDiscCJ);
+      mu.SetCloseJetCvsBScore(JetDiscCJ_CvsB);
+      mu.SetCloseJetCvsLScore(JetDiscCJ_CvsL);
       mu.SetCloseJetFlavour(JetHadFlavour);
     }
 
@@ -535,37 +555,40 @@ void AnalyzerCore::InitializeElectronIDTreeVars(){
   bdt_id_Dz=-1;
   bdt_id_DxySig=-1;
   bdt_id_DzSig=-1;
-  bdt_id_RelDxy=-1;
-  bdt_id_RelDz=-1;
   bdt_id_RelIso=-1;
   bdt_id_IP3D=-1;
-  bdt_id_RelIP3D=-1;
   bdt_id_PtRatio=-1;
+  bdt_id_PtRatioV2=-1;
+  bdt_id_PtRatioV3=-1;
   bdt_id_PtRel=-1;
+  bdt_id_PtRelV2=-1;
+  bdt_id_PtRelV3=-1;
   bdt_id_CEMFracCJ=-1;
   bdt_id_NEMFracCJ=-1;
   bdt_id_CHFracCJ=-1;
   bdt_id_NHFracCJ=-1;
   bdt_id_MuFracCJ=-1;
   bdt_id_JetDiscCJ=-1;
+  bdt_id_JetDiscCJCvsB=-1;
+  bdt_id_JetDiscCJCvsL=-1;
   bdt_id_MVA=-1;
-  bdt_id_RelMVA=-1;
-  bdt_id_RelMVAIso=-1;
   bdt_id_MVAIso=-1;
+  bdt_id_MVARaw=-1;
+  bdt_id_MVAIsoRaw=-1;
   bdt_id_Full5x5_sigmaIetaIeta=-1;
   bdt_id_dEtaSeed=-1;
   bdt_id_dPhiIn=-1;
   bdt_id_HoverE=-1;
   bdt_id_EoverP=-1;
   bdt_id_FBrem=-1;
+  bdt_id_Rho=-1;
   bdt_id_R9=-1;
+  bdt_id_psEoRraw=-1;
+
   bdt_id_TrkIso=-1;   //InvEminusInvP=-1;                                                                    
   bdt_id_dr03TkSumPt=-1;
   bdt_id_dr03HcalTowerSumEt=-1;
-  bdt_id_dr03HcalDepth1TowerSumEt=-1;
-  bdt_id_dr03EcalRecHitSumEt=-1;
-  bdt_id_e15=-1;
-  bdt_id_e25=-1;
+
   bdt_id_e55=-1;
   bdt_id_e2x5OverE5x5=-1;
   bdt_id_e1x5OverE5x5=-1;
@@ -591,6 +614,9 @@ void AnalyzerCore::InitializeIDTreeVars(){
   // Kinematic
   bdt_id_Pt=-999, bdt_id_Eta=-999, bdt_id_PtBinned=-999;
   bdt_id_PtRatio=-999,  bdt_id_PtRel=-999; bdt_id_MassDrop=-999;
+
+  bdt_id_PtRatioV2=-999,  bdt_id_PtRelV2=-999;
+  bdt_id_PtRatioV3=-999,  bdt_id_PtRelV3=-999;
   /// Pileup
   bdt_id_PileUp = -999; 
   
@@ -600,15 +626,17 @@ void AnalyzerCore::InitializeIDTreeVars(){
 
   
   // Closejet
-  bdt_id_CEMFracCJ=-999, bdt_id_NEMFracCJ=-999, bdt_id_CHFracCJ=-999, bdt_id_NHFracCJ=-999,bdt_id_MuFracCJ=-999, bdt_id_JetDiscCJ=-999;
+  bdt_id_CEMFracCJ=-999, bdt_id_NEMFracCJ=-999, bdt_id_CHFracCJ=-999, bdt_id_NHFracCJ=-999,bdt_id_MuFracCJ=-999;
+  
+  bdt_id_JetDiscCJ=-999,  bdt_id_JetDiscCJCvsB=-999,  bdt_id_JetDiscCJCvsL=-999;
 
   /// IP
   bdt_id_Dxy=-999.;  bdt_id_DxySig=-999.;  bdt_id_Dz=-999.;  bdt_id_DzSig=-999., bdt_id_IP3D=-999.; 
-  bdt_id_RelDxy=-999,bdt_id_RelDz=-999.,bdt_id_RelIP3D=-999;
 
   // MVA
   bdt_id_MVA=-999.;  bdt_id_MVAIso=-999.;  bdt_id_Chi2=-999.;
-  bdt_id_RelMVA=-999,bdt_id_RelMVAIso=-999; //36
+  bdt_id_MVARaw=-999;
+  bdt_id_MVAIsoRaw=-999;
   
   // Hits
   bdt_id_Validhits=-999.;  bdt_id_Matched_stations=-999.; 
@@ -616,16 +644,19 @@ void AnalyzerCore::InitializeIDTreeVars(){
 
   // El Shower/SCL
   bdt_id_Full5x5_sigmaIetaIeta=-999.; bdt_id_dEtaSeed=-999.;  bdt_id_dPhiIn=-999.;  bdt_id_dEtaIn=-999.;  bdt_id_EtaWidth=-999.;  bdt_id_PhiWidth=-999.;  bdt_id_HoverE=-999.;
-  bdt_id_TrkIso=-999.;  bdt_id_e2x5OverE5x5=-999;  bdt_id_e1x5OverE5x5=-999;  bdt_id_e15=-999;  bdt_id_e25=-999;
-  bdt_id_e55=-999;  bdt_id_dr03EcalRecHitSumEt=-999;  bdt_id_dr03HcalDepth1TowerSumEt=-999;  bdt_id_dr03HcalTowerSumEt=-999;  bdt_id_dr03TkSumPt=-999;
+  bdt_id_TrkIso=-999.;  bdt_id_e2x5OverE5x5=-999;  bdt_id_e1x5OverE5x5=-999;  
+  bdt_id_e55=-999;  
+  bdt_id_dr03HcalTowerSumEt=-999;  bdt_id_dr03TkSumPt=-999;
   bdt_id_InvEminusInvP=-999.;  bdt_id_ecalPFClusterIso=-999.;  bdt_id_hcalPFClusterIso=-999.;  
   
   // IDs
   bdt_id_POGTight=-999;  bdt_id_POGMedium = -999;  bdt_id_HNTightID = -999;  
 
   // COnv/CF
-  bdt_id_isEcalDriven= -999;  bdt_id_EoverP=-999;  bdt_id_FBrem=-999;  bdt_id_PassConversionVeto=-999 ;
+  bdt_id_isEcalDriven= -999;  bdt_id_EoverP=-999;  bdt_id_FBrem=-999;  bdt_id_PassConversionVeto=-999 ,bdt_id_Rho=-999;
   bdt_id_IsGsfCtfScPixChargeConsistent =-999;  bdt_id_IsGsfScPixChargeConsistent =-999;  bdt_id_IsGsfCtfChargeConsistent =-999;  bdt_id_R9=-999;
+
+  bdt_id_psEoRraw= -999;
 
   //fisEcalDriven= -999;    fPassConversionVeto=-999 ;fIsGsfCtfScPixChargeConsistent =-999;  fIsGsfScPixChargeConsistent =-999;  fIsGsfCtfChargeConsistent =-999;
 
@@ -635,19 +666,187 @@ void AnalyzerCore::InitializeIDTreeVars(){
 
 }
 
+void AnalyzerCore::PrintBDTVariables(Electron el,TString label){
+			
+  if(!el.IsPrompt()) return;
+  if(!el.IsEC()) return;
+
+  cout << "PrintBDTVariables " << label << endl;
+  InitializeIDTreeVars();
+
+  Lepton *lep = (Lepton *)(&el);
+  for(auto i : el.MAPBDT()) cout << i.first << "  " << i.second  << endl;
+  SetBDTIDVar(lep);
+  SetBDTIDVariablesElectron(el);
+  PrintBDTInput();
+  
+}
+
+
+void AnalyzerCore::FillBDTHists(Electron el,TString cut, double w){
+  
+  InitializeIDTreeVars();
+  Lepton *lep = (Lepton *)(&el);
+  SetBDTIDVar(lep);
+  SetBDTIDVariablesElectron(el);
+
+  FillHist( cut+ "/Lepton_bdt_id_Pt",        bdt_id_Pt, w, 100, 0., 500.,"");
+  FillHist( cut+ "/Lepton_bdt_id_Eta",       bdt_id_Eta, w, 60, -3., 3.,"");
+  FillHist( cut+ "/Lepton_bdt_id_PtBinned",  bdt_id_PtBinned, w, 5, 0,5 );
+  FillHist( cut+ "/Lepton_bdt_id_PtRatio",   bdt_id_PtRatio, w,  500, 0., 2., "");
+  FillHist( cut+ "/Lepton_bdt_id_PtRel",     bdt_id_PtRel, w, 500, 0., 500., "");
+  FillHist( cut+ "/Lepton_bdt_id_PtRatio_sk",   el.CloseJet_Ptratio(), w,  500, 0., 2., "");
+  FillHist( cut+ "/Lepton_bdt_id_PtRel_sk",     el.CloseJet_Ptrel(), w, 500, 0., 500., "");
+  
+
+  FillHist( cut+ "/Lepton_bdt_id_PtRatio_CorrJet", JetLeptonPtRatioLepAwareMuon(el,true,false,false) , w,  500, 0., 2., "");
+  FillHist( cut+ "/Lepton_bdt_id_PtRatio_CorrJetMu", JetLeptonPtRatioLepAwareMuon(el,true,true,false) , w,  500, 0., 2., "");
+  FillHist( cut+ "/Lepton_bdt_id_PtRatio_UncorrLep_CorrJet", JetLeptonPtRatioLepAwareMuon(el,true,false,true) , w,  500, 0., 2., "");
+  FillHist( cut+ "/Lepton_bdt_id_PtRatio_UncorrLep_CorrJetMu", JetLeptonPtRatioLepAwareMuon(el,true, true, true) , w,  500, 0., 2., "");
+  
+  
+  FillHist( cut+ "/Lepton_bdt_id_PtRel_CorrJet", JetLeptonPtRelLepAwareMuon(el,true,false,false) , w,  500, 0., 500., "");
+  FillHist( cut+ "/Lepton_bdt_id_PtRel_CorrJetMu", JetLeptonPtRelLepAwareMuon(el,true,true,false) , w,  500, 0., 500., "");
+  FillHist( cut+ "/Lepton_bdt_id_PtRel_UncorrLep_CorrJet", JetLeptonPtRelLepAwareMuon(el,true,false,true) , w,  500, 0., 500., "");
+  FillHist( cut+ "/Lepton_bdt_id_PtRel_UncorrLep_CorrJetMu", JetLeptonPtRelLepAwareMuon(el,true, true, true) , w,  500, 0., 500., "");
+
+  FillHist( cut+ "/Lepton_bdt_id_PtRatio_UnCorrJet", JetLeptonPtRatioLepAwareMuon(el,false,false,false) , w,  500, 0., 2., "");
+  FillHist( cut+ "/Lepton_bdt_id_PtRatio_UnCorrJetMu", JetLeptonPtRatioLepAwareMuon(el,false,true,false) , w,  500, 0., 2., "");
+  FillHist( cut+ "/Lepton_bdt_id_PtRatio_UncorrLep_UnCorrJet", JetLeptonPtRatioLepAwareMuon(el,false,false,true) , w,  500, 0., 2., "");
+  FillHist( cut+ "/Lepton_bdt_id_PtRatio_UncorrLep_UnCorrJetMu", JetLeptonPtRatioLepAwareMuon(el,false, true, true) , w,  500, 0., 2., "");
+
+
+  FillHist( cut+ "/Lepton_bdt_id_PtRel_UnCorrJet", JetLeptonPtRelLepAwareMuon(el,false,false,false) , w,  500, 0., 500., "");
+  FillHist( cut+ "/Lepton_bdt_id_PtRel_UnCorrJetMu", JetLeptonPtRelLepAwareMuon(el,false,true,false) , w,  500, 0., 500., "");
+  FillHist( cut+ "/Lepton_bdt_id_PtRel_UncorrLep_UnCorrJet", JetLeptonPtRelLepAwareMuon(el,false,false,true) , w,  500, 0., 500., "");
+  FillHist( cut+ "/Lepton_bdt_id_PtRel_UncorrLep_UnCorrJetMu", JetLeptonPtRelLepAwareMuon(el,false, true, true) , w,  500, 0., 500., "");
+
+
+  if(1){
+
+    std::vector<Jet> jets = GetAllJets();
+
+    double  mindR=0.4;
+
+    Jet closejet;
+    Jet UnCorrJet;
+    for(auto jet : jets){
+      if(jet.Pt() < 10) continue; //// Make consistent with data cut
+      
+      if (lep->DeltaR(jet) < mindR) {
+	UnCorrJet=jet;
+	closejet = GetCorrectedJetCloseToLepton(*lep,jet);
+	mindR = lep->DeltaR(jet);
+      }
+    }
+    
+    if (mindR == 0.4)  FillHist( cut+ "/Lepton_bdt_id_PtRatio_noLepCorr",  std::min(1./ (1. + el.RelIso()), 1.5) ,  w,  500, 0., 2., "");
+    else FillHist( cut+ "/Lepton_bdt_id_PtRatio_noLepCorr",    std::min(el.Pt() / UnCorrJet.Pt(),1.5)  ,  w,  500, 0., 2., "");
+        
+    
+    FillHist( cut+ "/Lepton_bdt_id_CHMultCJ",   closejet.CHMult() , w, 30, 0., 30., "");
+    FillHist( cut+ "/Lepton_bdt_id_NMultCJ",   closejet.NMult() , w, 30, 0., 30, "");
+
+    /////////// Now test corrected Energy Fractions
+    /// Since Jet Energy is updated the fraction in MC needs updating
+    
+    //// values stored are those from MiniAOD
+    ///https://github.com/cms-sw/cmssw/blob/master/DataFormats/PatCandidates/interface/Jet.h#L399
+
+    
+  }
+
+  FillHist( cut+ "/Lepton_bdt_id_MiniIsoChHad",  bdt_id_MiniIsoChHad, w, 200, 0, 100);
+  FillHist( cut+ "/Lepton_bdt_id_MiniIsoNHad",   bdt_id_MiniIsoNHad, w,  200, 0, 100);
+  FillHist( cut+ "/Lepton_bdt_id_MiniIsoPhHad",  bdt_id_MiniIsoPhHad, w, 200, 0, 100);
+  FillHist( cut+ "/Lepton_bdt_id_IsoChHad",      bdt_id_IsoChHad, w,     200, 0, 100);
+  FillHist( cut+ "/Lepton_bdt_id_IsoNHad",       bdt_id_IsoNHad, w,      200, 0, 100);
+  FillHist( cut+ "/Lepton_bdt_id_IsoPhHad" ,     bdt_id_IsoPhHad, w,     200, 0, 100);
+  FillHist( cut+ "/Lepton_bdt_id_RelMiniIsoCh",  bdt_id_RelMiniIsoCh, w, 200, 0, 0.4);
+  FillHist( cut+ "/Lepton_bdt_id_RelMiniIsoN",   bdt_id_RelMiniIsoN, w,  200, 0, 0.4);
+  FillHist( cut+ "/Lepton_bdt_id_RelIso",        bdt_id_RelIso, w,       200, 0, 6);
+  FillHist( cut+ "/Lepton_bdt_id_Minireliso",    bdt_id_Minireliso, w,   200, 0, 2);
+
+  FillHist( cut+ "/Lepton_bdt_id_CEMFracCJ",  bdt_id_CEMFracCJ, w, 200, 0, 2);
+  FillHist( cut+ "/Lepton_bdt_id_NEMFracCJ",  bdt_id_NEMFracCJ, w, 200, 0, 2);
+  FillHist( cut+ "/Lepton_bdt_id_EMFracCJ",  bdt_id_CEMFracCJ+bdt_id_NEMFracCJ, w, 200, 0, 2);
+  FillHist( cut+ "/Lepton_bdt_id_CHFracCJ",   bdt_id_CHFracCJ, w, 200, 0, 2);
+  FillHist( cut+ "/Lepton_bdt_id_NHFracCJ",   bdt_id_NHFracCJ, w,200, 0, 2);
+  FillHist( cut+ "/Lepton_bdt_id_HFracCJ",   bdt_id_CHFracCJ+bdt_id_NHFracCJ, w,200, 0, 2);
+  FillHist( cut+ "/Lepton_bdt_id_MuFracCJ",   bdt_id_MuFracCJ, w, 200, 0, 2);
+  FillHist( cut+ "/Lepton_bdt_id_JetDiscCJ",  bdt_id_JetDiscCJ, w, 200, 0, 2);
+  FillHist( cut+ "/Lepton_bdt_id_JetDiscCJCvsB",  bdt_id_JetDiscCJCvsB, w, 200, 0, 2);
+  FillHist( cut+ "/Lepton_bdt_id_JetDiscCJCvsL",  bdt_id_JetDiscCJCvsL, w, 200, 0, 2);
+
+  double JetDiscBins[6] = { 0.,0.1, 0.2, 0.3,  0.75, 1.};
+  
+  FillHist( cut+ "/Lepton_bdt_id_JetDiscCJ2",  bdt_id_JetDiscCJ, w, 5, JetDiscBins);
+  FillHist( cut+ "/Lepton_bdt_id_JetDiscCJCvsB2",  bdt_id_JetDiscCJCvsB, w, 5, JetDiscBins);
+  FillHist( cut+ "/Lepton_bdt_id_JetDiscCJCvsL2",  bdt_id_JetDiscCJCvsL, w, 5, JetDiscBins);
+
+
+
+  /// IP                                                                                                                                                                                                                                                                                                                                                                                                                                 
+  FillHist( cut+ "/Lepton_bdt_id_Dxy",     bdt_id_Dxy, w, 200 , -30, 10);
+  FillHist( cut+ "/Lepton_bdt_id_DxySig",  bdt_id_DxySig, w, 200 , -30, 10);
+  FillHist( cut+ "/Lepton_bdt_id_Dz" ,     bdt_id_Dz, w, 200 , -30, 10);
+  FillHist( cut+ "/Lepton_bdt_id_DzSig",   bdt_id_DzSig, w,200 , -30, 10);
+  FillHist( cut+ "/Lepton_bdt_id_IP3D",    bdt_id_IP3D, w, 100, 0, 8);
+
+  FillHist( cut+ "/Lepton_bdt_id_MVA",     bdt_id_MVA, w, 220 , -1 ,  10);
+  FillHist( cut+ "/Lepton_bdt_id_MVAIso",  bdt_id_MVAIso, w,220 , -1 ,10);
+
+  FillHist( cut+ "/Lepton_bdt_id_MVARaw",     bdt_id_MVARaw, w,   500 , -1 ,1);
+  FillHist( cut+ "/Lepton_bdt_id_MVAIsoRaw",  bdt_id_MVAIsoRaw, w,500 , -1 ,1);
+
+  FillHist( cut+ "/Lepton_bdt_id_MissingHits",  bdt_id_MissingHits, w, 5 ,0 ,5);
+
+  // El Shower/SCL                                                                                                                                                                                                                                                                                                                                                                                                                       
+  FillHist( cut+ "/Lepton_bdt_id_Full5x5_sigmaIetaIeta",  bdt_id_Full5x5_sigmaIetaIeta, w, 200 , 0 , 0.04);
+  FillHist( cut+ "/Lepton_bdt_id_dEtaSeed",  bdt_id_dEtaSeed, w, 200, 0., 0.05);
+  FillHist( cut+ "/Lepton_bdt_id_dPhiIn",    bdt_id_dPhiIn, w, 200, 0. , 0.2);
+  FillHist( cut+ "/Lepton_bdt_id_dEtaIn",  bdt_id_dEtaIn, w, 200, 0., 0.1);
+  FillHist( cut+ "/Lepton_bdt_id_EtaWidth",  bdt_id_EtaWidth, w, 200 , 0 , 1);
+  FillHist( cut+ "/Lepton_bdt_id_PhiWidth",  bdt_id_PhiWidth, w, 400, 0, 2);
+  FillHist( cut+ "/Lepton_bdt_id_HoverE "  , bdt_id_HoverE, w, 150 , 0 , 1.5);
+  FillHist( cut+ "/Lepton_bdt_id_TrkIso",  bdt_id_TrkIso, w, 200, 0, 5);
+  FillHist( cut+ "/Lepton_bdt_id_e2x5OverE5x5",  bdt_id_e2x5OverE5x5, w, 220, 0, 1.1);
+  FillHist( cut+ "/Lepton_bdt_id_e1x5OverE5x5",  bdt_id_e1x5OverE5x5, w, 350, -1, 2.5);
+  FillHist( cut+ "/Lepton_bdt_id_e55",  bdt_id_e55, w, 400, 0 , 8000);
+  FillHist( cut+ "/Lepton_bdt_id_dr03TkSumPt",  bdt_id_dr03TkSumPt, w,  250, 0 , 0.25);
+  FillHist( cut+ "/Lepton_bdt_id_InvEminusInvP",  bdt_id_InvEminusInvP, w, 200, 0 ,2);
+  FillHist( cut+ "/Lepton_bdt_id_ecalPFClusterIso",  bdt_id_ecalPFClusterIso, w,200,0 , 0.5);
+  FillHist( cut+ "/Lepton_bdt_id_hcalPFClusterIso",  bdt_id_hcalPFClusterIso, w,200,0 , 0.5);
+
+  // IDs                                                                                                                                                                                                                                                                                                                                                                                                                                 
+  FillHist( cut+ "/Lepton_bdt_id_EoverP",  bdt_id_EoverP, w, 200, -10 ,10);
+  FillHist( cut+ "/Lepton_bdt_id_FBrem",  bdt_id_FBrem, w,  200, -2 , 2);
+  FillHist( cut+ "/Lepton_bdt_id_Rho",  bdt_id_Rho, w,  200, 0 , 20);
+  FillHist( cut+ "/Lepton_bdt_id_IsGsfCtfScPixChargeConsistent",  bdt_id_IsGsfCtfScPixChargeConsistent , w, 3 ,0 ,3);
+  FillHist( cut+ "/Lepton_bdt_id_IsGsfScPixChargeConsistent",  bdt_id_IsGsfScPixChargeConsistent , w, 3 ,0 ,3);
+  FillHist( cut+ "/Lepton_bdt_id_IsGsfCtfChargeConsistent",  bdt_id_IsGsfCtfChargeConsistent , w,3 ,0 ,3);
+  FillHist( cut+ "/Lepton_bdt_id_R9",  bdt_id_R9, w, 200, 0., 5);
+  FillHist( cut+ "/Lepton_bdt_id_PSEoverRawE", bdt_id_psEoRraw, w, 1000, 0., 1);
+
+  return;
+
+}
+
+
 void AnalyzerCore::PrintBDTInput(){
 
+
   cout << "bdt_id_Pt " << bdt_id_Pt<< endl;
-  cout << "bdt_id_Eta " << bdt_id_Eta<< endl;
   cout << "bdt_id_PtBinned " << bdt_id_PtBinned<< endl;
+  cout << "bdt_id_Eta " << bdt_id_Eta<< endl;
   cout << "bdt_id_PtRatio " << bdt_id_PtRatio<< endl;
   cout << "bdt_id_PtRel " << bdt_id_PtRel<< endl;
-  cout << "bdt_id_MassDrop " << bdt_id_MassDrop<< endl;
   cout << "bdt_id_PileUp " << bdt_id_PileUp << endl;
 
   cout << "bdt_id_MiniIsoChHad " << bdt_id_MiniIsoChHad<< endl;;  
   cout << "bdt_id_MiniIsoNHad " << bdt_id_MiniIsoNHad<< endl;;  
   cout << "bdt_id_MiniIsoPhHad " << bdt_id_MiniIsoPhHad<< endl;;
+
   cout << "bdt_id_IsoChHad " << bdt_id_IsoChHad<< endl;;  
   cout << "bdt_id_IsoNHad " << bdt_id_IsoNHad<< endl;;  
   cout << "bdt_id_IsoPhHad" << bdt_id_IsoPhHad<< endl;;
@@ -669,20 +868,10 @@ void AnalyzerCore::PrintBDTInput(){
   cout << "bdt_id_Dz" << bdt_id_Dz<< endl;
   cout << "bdt_id_DzSig " << bdt_id_DzSig<< endl;
   cout << "bdt_id_IP3D " << bdt_id_IP3D<< endl;
-  cout << "bdt_id_RelDxy " << bdt_id_RelDxy<< endl;
-  cout << "bdt_id_RelDz " << bdt_id_RelDz<< endl;
-  cout << "bdt_id_RelIP3D " << bdt_id_RelIP3D<< endl;
 
   cout << "bdt_id_MVA " << bdt_id_MVA<< endl;
   cout << "bdt_id_MVAIso " << bdt_id_MVAIso<< endl;
-  cout << "bdt_id_Chi2 " << bdt_id_Chi2<< endl;
-  cout << "bdt_id_RelMVA " << bdt_id_RelMVA<< endl;
-  cout << "bdt_id_RelMVAIso " << bdt_id_RelMVAIso<< endl;; //36                                                                                                                                                                                            
 
-  cout << "bdt_id_Validhits " << bdt_id_Validhits<< endl;
-  cout << "bdt_id_Matched_stations " << bdt_id_Matched_stations<< endl;
-  cout << "bdt_id_Pixel_hits " << bdt_id_Pixel_hits<< endl;
-  cout << "bdt_id_Tracker_layers " << bdt_id_Tracker_layers<< endl;
   cout << "bdt_id_MissingHits " << bdt_id_MissingHits<< endl;
 
   // El Shower/SCL                                                                                                                                                                                                                          
@@ -696,14 +885,12 @@ void AnalyzerCore::PrintBDTInput(){
   cout << "bdt_id_TrkIso " << bdt_id_TrkIso<< endl; 
   cout << "bdt_id_e2x5OverE5x5 " << bdt_id_e2x5OverE5x5<< endl;;  
   cout << "bdt_id_e1x5OverE5x5 " << bdt_id_e1x5OverE5x5<< endl;;  
-  cout << "bdt_id_e15 " << bdt_id_e15<< endl;;  
-  cout << "bdt_id_e25 " << bdt_id_e25<< endl;;
   cout << "bdt_id_e55 " << bdt_id_e55<< endl;;  
-  cout << "bdt_id_dr03EcalRecHitSumEt " << bdt_id_dr03EcalRecHitSumEt<< endl;;  
-  cout << "bdt_id_dr03HcalDepth1TowerSumEt " << bdt_id_dr03HcalDepth1TowerSumEt<< endl;;  
+
   cout << "bdt_id_dr03HcalTowerSumEt " << bdt_id_dr03HcalTowerSumEt<< endl;;  
   cout << "bdt_id_dr03TkSumPt " << bdt_id_dr03TkSumPt<< endl;;
   cout << "bdt_id_InvEminusInvP " << bdt_id_InvEminusInvP<< endl;  
+
   cout << "bdt_id_ecalPFClusterIso " << bdt_id_ecalPFClusterIso<< endl; 
   cout << "bdt_id_hcalPFClusterIso " << bdt_id_hcalPFClusterIso<< endl;
 
@@ -716,7 +903,7 @@ void AnalyzerCore::PrintBDTInput(){
   cout << "bdt_id_IsGsfScPixChargeConsistent " << bdt_id_IsGsfScPixChargeConsistent << endl;;  
   cout << "bdt_id_IsGsfCtfChargeConsistent " << bdt_id_IsGsfCtfChargeConsistent << endl;;  
   cout << "bdt_id_R9 " << bdt_id_R9<< endl;;
-
+  cout << "bdt_id_psEoRraw " << bdt_id_psEoRraw << endl;
   
   return;
  
@@ -739,10 +926,10 @@ double AnalyzerCore::GetBDTScoreMuon(Muon mu ,BkgType bkg, TString BDTTag){
 
   //// Version 4 is NoPt Reader
   if(MVATagStr.Contains("v4"))  return  MuonIDFakeNoPtMVAReader->EvaluateMVA(MVATagStr);
+  
+  if(iSetupAllBDT) return  MuonIDFakeMVAReader->EvaluateMVA(MVATagStr);
 
-  return  MuonIDFakeMVAReader->EvaluateMVA(MVATagStr);
-
-
+  return -1;  
 }
 
 void AnalyzerCore::SetBDTIDVarV1(Lepton*  lep){
@@ -756,13 +943,10 @@ void AnalyzerCore::SetBDTIDVarV1(Lepton*  lep){
   bdt_id_IsoNHad = lep->IsoNHad();
   bdt_id_IsoPhHad = lep->IsoPhHad();
   bdt_id_Dxy   = lep->LogdXY();
-  bdt_id_RelDxy   = lep->LogdXY()/lep->Pt();
   bdt_id_DxySig   = lep->LogdXYSig();
   bdt_id_Dz   = lep->LogdZ();
-  bdt_id_RelDz   = lep->LogdZ()/lep->Pt();
   bdt_id_DzSig   = lep->LogdZSig();
   bdt_id_IP3D    = lep->SIP3D();
-  bdt_id_RelIP3D    = lep->SIP3D()/lep->Pt();
   bdt_id_RelIso    =  lep->RelIso();
   bdt_id_Minireliso   = lep->MiniRelIso();
   bdt_id_RelMiniIsoCh = lep->MiniRelIsoCharged();
@@ -782,7 +966,6 @@ void AnalyzerCore::SetBDTIDVarV1(Lepton*  lep){
   }
 
   if(IdxMatchJet!=-1){
-
     bdt_id_CEMFracCJ = JetAllColl.at(IdxMatchJet).ChargedEmEnergyFraction();
     bdt_id_NEMFracCJ = JetAllColl.at(IdxMatchJet).NeutralEmEnergyFraction();
     bdt_id_CHFracCJ  = JetAllColl.at(IdxMatchJet).ChargedHadEnergyFraction();
@@ -805,44 +988,45 @@ void AnalyzerCore::SetBDTIDVar(Lepton*  lep){
   bdt_id_PileUp = nPV;
   
   bdt_id_Pt    = (lep->Pt() > 500)  ? 499 : lep->Pt();
-  
+
   if (lep->Pt() < 50.) bdt_id_PtBinned= 0;
   else     if (lep->Pt() < 100.) bdt_id_PtBinned= 1;
   else     if (lep->Pt() < 200.) bdt_id_PtBinned= 2;
   else bdt_id_PtBinned =3;
 
-  bdt_id_Eta   = fabs(lep->Eta());
+  ///bdt_id_Eta   = fabs(lep->Eta());
 
-  if (lep->MiniIsoChHad() > 150) bdt_id_MiniIsoChHad = 150;
+  /////// ISOLATION 
+
+  /// MINI ISO
+  if (lep->MiniIsoChHad() > 100) bdt_id_MiniIsoChHad = 100;
   else   bdt_id_MiniIsoChHad = lep->MiniIsoChHad();
-
-  if (lep->MiniIsoNHad() > 150) bdt_id_MiniIsoNHad = 150.;
+  if (lep->MiniIsoNHad() > 100) bdt_id_MiniIsoNHad = 100.;
   else   bdt_id_MiniIsoNHad = lep->MiniIsoNHad();
-
-  if(lep->MiniIsoPhHad() > 150.) bdt_id_MiniIsoPhHad = 150.;
+  if(lep->MiniIsoPhHad() > 100.) bdt_id_MiniIsoPhHad = 100.;
   else bdt_id_MiniIsoPhHad = lep->MiniIsoPhHad();
 
-  if(lep->IsoChHad() > 150) bdt_id_IsoChHad = 150;
+  //// pfIsolationVariables
+  if(lep->IsoChHad() > 100) bdt_id_IsoChHad = 100;
   else bdt_id_IsoChHad = lep->IsoChHad();
-  if(lep->IsoNHad()  > 150)  bdt_id_IsoNHad  = 150;
+  if(lep->IsoNHad()  > 100)  bdt_id_IsoNHad  = 100;
   else   bdt_id_IsoNHad = lep->IsoNHad();
-  if(lep->IsoPhHad() > 150) bdt_id_IsoPhHad  = 150; 
+  if(lep->IsoPhHad() > 100) bdt_id_IsoPhHad  = 100; 
   else bdt_id_IsoPhHad = lep->IsoPhHad();
 
   bdt_id_Dxy      = lep->LogdXY();
-  bdt_id_RelDxy   = lep->LogdXY()/lep->Pt();
   bdt_id_DxySig   = lep->LogdXYSig();
   bdt_id_Dz       = lep->LogdZ();
-  bdt_id_RelDz    = lep->LogdZ()/lep->Pt();
   bdt_id_DzSig    = lep->LogdZSig();
   bdt_id_IP3D     = lep->SIP3D();
-  bdt_id_RelIP3D    = lep->SIP3D()/lep->Pt();
+
+   
   if (lep->RelIso() > 1)  bdt_id_RelIso = 1;
   else  bdt_id_RelIso     =  lep->RelIso();
 
   bdt_id_Minireliso   = lep->MiniRelIso();
   bdt_id_RelMiniIsoCh = lep->MiniRelIsoCharged();
-  bdt_id_RelMiniIsoN = lep->MiniRelIsoNeutral();
+  bdt_id_RelMiniIsoN  = lep->MiniRelIsoNeutral();
 
   //==== Vars for non-prompt lepton bkg                                                               
 
@@ -850,13 +1034,13 @@ void AnalyzerCore::SetBDTIDVar(Lepton*  lep){
   int IdxMatchJet=-1;
   float mindR1=999.;
   std::vector<Jet>   JetAllColl = GetAllJets();
-
+  
   for(unsigned int ij=0; ij<JetAllColl.size(); ij++){
     float dR1=lep->DeltaR(JetAllColl.at(ij));
     if(dR1>0.4) continue;
     if(dR1<mindR1){ mindR1=dR1; IdxMatchJet=ij; }
   }
-
+  
   if(IdxMatchJet!=-1){
 
     bdt_id_CEMFracCJ = JetAllColl.at(IdxMatchJet).ChargedEmEnergyFraction();
@@ -865,12 +1049,18 @@ void AnalyzerCore::SetBDTIDVar(Lepton*  lep){
     bdt_id_NHFracCJ  = JetAllColl.at(IdxMatchJet).NeutralHadEnergyFraction();
     bdt_id_MuFracCJ  = JetAllColl.at(IdxMatchJet).MuonEnergyFraction();
     bdt_id_JetDiscCJ = JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet);
+    bdt_id_JetDiscCJCvsB = JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet_CvsB);
+    bdt_id_JetDiscCJCvsL = JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet_CvsL);
   }
 
   else{
-    bdt_id_CEMFracCJ=1.5, bdt_id_NEMFracCJ=1.5, bdt_id_CHFracCJ=1.5, bdt_id_NHFracCJ=1.5, bdt_id_MuFracCJ=1.5, bdt_id_JetDiscCJ=1.5;
+    bdt_id_CEMFracCJ=1., bdt_id_NEMFracCJ=0., bdt_id_CHFracCJ=0., bdt_id_NHFracCJ=0, bdt_id_MuFracCJ=1.5, bdt_id_JetDiscCJ=0.1;
+    bdt_id_JetDiscCJCvsB=0.4;
+    bdt_id_JetDiscCJCvsL=0.1;
+   
   }
 
+  /////// TEST                                                                                                                                                                                            
   return;
 }
 
@@ -882,8 +1072,9 @@ void AnalyzerCore::SetupIDMVAReaderDefault(){
   // Muon ID Setup
   if(!(fChain->GetBranch("muon_mva_fake_v1") || fChain->GetBranch("muon_mva_fake_v2") || fChain->GetBranch("muon_mva_fake_v3") || fChain->GetBranch("muon_mva_fake_v4"))) SetupIDMVAReaderMuon();
   // Electron ID setup
-  SetupIDMVAReaderElectron(!fChain->GetBranch("electron_mva_fake_v1"), !(fChain->GetBranch("electron_mva_fake_v2") || fChain->GetBranch("electron_mva_fake_v3") || fChain->GetBranch("electron_mva_fake_v4")));
 
+  //  SetupIDMVAReaderElectron(!fChain->GetBranch("electron_mva_fake_v1"), !(fChain->GetBranch("electron_mva_fake_v2") || fChain->GetBranch("electron_mva_fake_v3") || fChain->GetBranch("electron_mva_fake_v4")));
+  SetupIDMVAReaderElectron(false,true);
   return ;
 }
 
@@ -894,33 +1085,34 @@ void AnalyzerCore::SetupIDMVAReaderMuon(){
 
   //// IF branch for var exists in ntuple by default dont setup reader
 
-  // Fake                                                                                                                                                                                                                                                                     
-  MuonIDFakeMVAReader->AddVariable("Pt", &bdt_id_Pt);
-  MuonIDFakeMVAReader->AddVariable("Eta", &bdt_id_Eta);
-  MuonIDFakeMVAReader->AddVariable("MiniIsoChHad", &bdt_id_MiniIsoChHad);
-  MuonIDFakeMVAReader->AddVariable("MiniIsoPhHad",&bdt_id_MiniIsoPhHad);
-  MuonIDFakeMVAReader->AddVariable("MiniIsoNHad",&bdt_id_MiniIsoNHad);
-  MuonIDFakeMVAReader->AddVariable("RelMiniIsoCh", &bdt_id_RelMiniIsoCh);
-  MuonIDFakeMVAReader->AddVariable("RelMiniIsoN",&bdt_id_RelMiniIsoN);
-  MuonIDFakeMVAReader->AddVariable("Dxy",  &bdt_id_Dxy);
-  MuonIDFakeMVAReader->AddVariable("DxySig",  &bdt_id_DxySig);
-  MuonIDFakeMVAReader->AddVariable("Dz",  &bdt_id_Dz);
-  MuonIDFakeMVAReader->AddVariable("DzSig",  &bdt_id_DzSig);
-  MuonIDFakeMVAReader->AddVariable("RelIso", &bdt_id_RelIso);
-  MuonIDFakeMVAReader->AddVariable("IP3D", &bdt_id_IP3D);
-  MuonIDFakeMVAReader->AddVariable("PtRatio",  &bdt_id_PtRatio);
-  MuonIDFakeMVAReader->AddVariable("PtRel",  &bdt_id_PtRel);
-  MuonIDFakeMVAReader->AddVariable("NEMFracCJ",&bdt_id_NEMFracCJ);
-  MuonIDFakeMVAReader->AddVariable("CHFracCJ",&bdt_id_CHFracCJ);
-  MuonIDFakeMVAReader->AddVariable("JetDiscCJ",&bdt_id_JetDiscCJ);
-  MuonIDFakeMVAReader->AddVariable("NHFracCJ",&bdt_id_NHFracCJ);
-  MuonIDFakeMVAReader->AddVariable("MuFracCJ",&bdt_id_MuFracCJ);
-  MuonIDFakeMVAReader->AddVariable("MVA",  &bdt_id_MVA);
-  MuonIDFakeMVAReader->AddVariable("Chi2",  &bdt_id_Chi2);
-  MuonIDFakeMVAReader->AddVariable("Validhits",  &bdt_id_Validhits);
-  MuonIDFakeMVAReader->AddVariable("Matched_stations",  &bdt_id_Matched_stations);
-  MuonIDFakeMVAReader->AddSpectator("w_id_tot", &bdt_id_w_id_tot);
-
+  // Fake                                                                                                                                                                    
+  if(iSetupAllBDT){
+    MuonIDFakeMVAReader->AddVariable("Pt", &bdt_id_Pt);
+    MuonIDFakeMVAReader->AddVariable("Eta", &bdt_id_Eta);
+    MuonIDFakeMVAReader->AddVariable("MiniIsoChHad", &bdt_id_MiniIsoChHad);
+    MuonIDFakeMVAReader->AddVariable("MiniIsoPhHad",&bdt_id_MiniIsoPhHad);
+    MuonIDFakeMVAReader->AddVariable("MiniIsoNHad",&bdt_id_MiniIsoNHad);
+    MuonIDFakeMVAReader->AddVariable("RelMiniIsoCh", &bdt_id_RelMiniIsoCh);
+    MuonIDFakeMVAReader->AddVariable("RelMiniIsoN",&bdt_id_RelMiniIsoN);
+    MuonIDFakeMVAReader->AddVariable("Dxy",  &bdt_id_Dxy);
+    MuonIDFakeMVAReader->AddVariable("DxySig",  &bdt_id_DxySig);
+    MuonIDFakeMVAReader->AddVariable("Dz",  &bdt_id_Dz);
+    MuonIDFakeMVAReader->AddVariable("DzSig",  &bdt_id_DzSig);
+    MuonIDFakeMVAReader->AddVariable("RelIso", &bdt_id_RelIso);
+    MuonIDFakeMVAReader->AddVariable("IP3D", &bdt_id_IP3D);
+    MuonIDFakeMVAReader->AddVariable("PtRatio",  &bdt_id_PtRatio);
+    MuonIDFakeMVAReader->AddVariable("PtRel",  &bdt_id_PtRel);
+    MuonIDFakeMVAReader->AddVariable("NEMFracCJ",&bdt_id_NEMFracCJ);
+    MuonIDFakeMVAReader->AddVariable("CHFracCJ",&bdt_id_CHFracCJ);
+    MuonIDFakeMVAReader->AddVariable("JetDiscCJ",&bdt_id_JetDiscCJ);
+    MuonIDFakeMVAReader->AddVariable("NHFracCJ",&bdt_id_NHFracCJ);
+    MuonIDFakeMVAReader->AddVariable("MuFracCJ",&bdt_id_MuFracCJ);
+    MuonIDFakeMVAReader->AddVariable("MVA",  &bdt_id_MVA);
+    MuonIDFakeMVAReader->AddVariable("Chi2",  &bdt_id_Chi2);
+    MuonIDFakeMVAReader->AddVariable("Validhits",  &bdt_id_Validhits);
+    MuonIDFakeMVAReader->AddVariable("Matched_stations",  &bdt_id_Matched_stations);
+    MuonIDFakeMVAReader->AddSpectator("w_id_tot", &bdt_id_w_id_tot);
+  }
   MuonIDFakeNoPtMVAReader->AddVariable("Eta", &bdt_id_Eta);
   MuonIDFakeNoPtMVAReader->AddVariable("MiniIsoChHad", &bdt_id_MiniIsoChHad);
   MuonIDFakeNoPtMVAReader->AddVariable("MiniIsoPhHad",&bdt_id_MiniIsoPhHad);
@@ -994,10 +1186,11 @@ void AnalyzerCore::SetupIDMVAReaderMuon(){
   if(GetYear() == 2017) BDTGv3_Fake = "BDTG_version5_MuonFakeBkg_LF_TypeI_MuMu_SignalMuonFake_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_200_BDT"+xmlpf;
   if(GetYear() == 2018) BDTGv3_Fake = "BDTG_version5_MuonFakeBkg_LF_TypeI_MuMu_SignalMuonFake_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_200_BDT"+xmlpf;
   
-  MuonIDFakeMVAReader->BookMVA("BDTGv1_Fake", MVAPathMuonFakeV1+BDTGv1_Fake);
-  MuonIDFakeMVAReader->BookMVA("BDTGv2_Fake", MVAPathMuonFakeV2+BDTGv2_Fake);
-  MuonIDFakeMVAReader->BookMVA("BDTGv3_Fake", MVAPathMuonFakeV3+BDTGv3_Fake);
-
+  if(iSetupAllBDT){
+    MuonIDFakeMVAReader->BookMVA("BDTGv1_Fake", MVAPathMuonFakeV1+BDTGv1_Fake);
+    MuonIDFakeMVAReader->BookMVA("BDTGv2_Fake", MVAPathMuonFakeV2+BDTGv2_Fake);
+    MuonIDFakeMVAReader->BookMVA("BDTGv3_Fake", MVAPathMuonFakeV3+BDTGv3_Fake);
+  }
   /*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
     Year  |   AUC            |  KS_signal |  KS_bkg  |  FileName                                                                                                                                                                                                               
     ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------                                       
@@ -1070,8 +1263,8 @@ void AnalyzerCore::SetupIDMVAReaderElectron(bool  electron_v1, bool electron_v2p
   InitializeIDTreeVars();
 
   if(!(electron_v1 || electron_v2plus)) return;
-  
-  if(electron_v1){
+
+  if(electron_v1&&iSetupAllBDT){
     ElectronIDConvMVAReader->AddVariable("Pt", &bdt_id_Pt);
     ElectronIDConvMVAReader->AddVariable("Eta", &bdt_id_Eta);
     ElectronIDConvMVAReader->AddVariable("MiniIsoChHad", &bdt_id_MiniIsoChHad);
@@ -1218,36 +1411,36 @@ void AnalyzerCore::SetupIDMVAReaderElectron(bool  electron_v1, bool electron_v2p
     ElectronIDv2CFMVAReader->AddVariable("MissingHits",  &bdt_id_MissingHits);
     ElectronIDv2CFMVAReader->AddSpectator("w_id_tot", &bdt_id_w_id_tot);
     
-    
-    ElectronIDv2CFMVAReaderPt->AddVariable("Pt", &bdt_id_Pt);
-    ElectronIDv2CFMVAReaderPt->AddVariable("Eta", &bdt_id_Eta);
-    ElectronIDv2CFMVAReaderPt->AddVariable("Dxy",  &bdt_id_Dxy);
-    ElectronIDv2CFMVAReaderPt->AddVariable("DxySig",  &bdt_id_DxySig);
-    ElectronIDv2CFMVAReaderPt->AddVariable("Dz",  &bdt_id_Dz);
-    ElectronIDv2CFMVAReaderPt->AddVariable("DzSig",  &bdt_id_DzSig);
-    ElectronIDv2CFMVAReaderPt->AddVariable("IP3D", &bdt_id_IP3D);
-    ElectronIDv2CFMVAReaderPt->AddVariable("MVA",  &bdt_id_MVA);
-    ElectronIDv2CFMVAReaderPt->AddVariable("MVAIso",  &bdt_id_MVAIso);
-    ElectronIDv2CFMVAReaderPt->AddVariable("Full5x5_sigmaIetaIeta",  &bdt_id_Full5x5_sigmaIetaIeta);
-    ElectronIDv2CFMVAReaderPt->AddVariable("dPhiIn",  &bdt_id_dPhiIn);
-    ElectronIDv2CFMVAReaderPt->AddVariable("EoverP",  &bdt_id_EoverP);
-    ElectronIDv2CFMVAReaderPt->AddVariable("FBrem",  &bdt_id_FBrem);
-    ElectronIDv2CFMVAReaderPt->AddVariable("R9",  &bdt_id_R9);
-    ElectronIDv2CFMVAReaderPt->AddVariable("e55",  &bdt_id_e55);
-    ElectronIDv2CFMVAReaderPt->AddVariable("EtaWidth",  &bdt_id_EtaWidth);
-    ElectronIDv2CFMVAReaderPt->AddVariable("PhiWidth",  &bdt_id_PhiWidth);
-    ElectronIDv2CFMVAReaderPt->AddVariable("PassConversionVeto",  &bdt_id_PassConversionVeto);
-    ElectronIDv2CFMVAReaderPt->AddVariable("IsGsfCtfScPixChargeConsistent",  &bdt_id_IsGsfCtfScPixChargeConsistent);
-    ElectronIDv2CFMVAReaderPt->AddVariable("IsGsfScPixChargeConsistent",  &bdt_id_IsGsfScPixChargeConsistent);
-    ElectronIDv2CFMVAReaderPt->AddVariable("IsGsfCtfChargeConsistent",  &bdt_id_IsGsfCtfChargeConsistent);
-    ElectronIDv2CFMVAReaderPt->AddVariable("InvEminusInvP", &bdt_id_InvEminusInvP);
-    ElectronIDv2CFMVAReaderPt->AddVariable("hcalPFClusterIso",  &bdt_id_hcalPFClusterIso);
-    ElectronIDv2CFMVAReaderPt->AddVariable("ecalPFClusterIso",  &bdt_id_ecalPFClusterIso);
-    ElectronIDv2CFMVAReaderPt->AddVariable("dr03TkSumPt",  &bdt_id_dr03TkSumPt);
-    ElectronIDv2CFMVAReaderPt->AddVariable("HoverE",  &bdt_id_HoverE);
-    ElectronIDv2CFMVAReaderPt->AddVariable("MissingHits",  &bdt_id_MissingHits);
-    ElectronIDv2CFMVAReaderPt->AddSpectator("w_id_tot", &bdt_id_w_id_tot);
-
+    if(iSetupAllBDT){
+      ElectronIDv2CFMVAReaderPt->AddVariable("Pt", &bdt_id_Pt);
+      ElectronIDv2CFMVAReaderPt->AddVariable("Eta", &bdt_id_Eta);
+      ElectronIDv2CFMVAReaderPt->AddVariable("Dxy",  &bdt_id_Dxy);
+      ElectronIDv2CFMVAReaderPt->AddVariable("DxySig",  &bdt_id_DxySig);
+      ElectronIDv2CFMVAReaderPt->AddVariable("Dz",  &bdt_id_Dz);
+      ElectronIDv2CFMVAReaderPt->AddVariable("DzSig",  &bdt_id_DzSig);
+      ElectronIDv2CFMVAReaderPt->AddVariable("IP3D", &bdt_id_IP3D);
+      ElectronIDv2CFMVAReaderPt->AddVariable("MVA",  &bdt_id_MVA);
+      ElectronIDv2CFMVAReaderPt->AddVariable("MVAIso",  &bdt_id_MVAIso);
+      ElectronIDv2CFMVAReaderPt->AddVariable("Full5x5_sigmaIetaIeta",  &bdt_id_Full5x5_sigmaIetaIeta);
+      ElectronIDv2CFMVAReaderPt->AddVariable("dPhiIn",  &bdt_id_dPhiIn);
+      ElectronIDv2CFMVAReaderPt->AddVariable("EoverP",  &bdt_id_EoverP);
+      ElectronIDv2CFMVAReaderPt->AddVariable("FBrem",  &bdt_id_FBrem);
+      ElectronIDv2CFMVAReaderPt->AddVariable("R9",  &bdt_id_R9);
+      ElectronIDv2CFMVAReaderPt->AddVariable("e55",  &bdt_id_e55);
+      ElectronIDv2CFMVAReaderPt->AddVariable("EtaWidth",  &bdt_id_EtaWidth);
+      ElectronIDv2CFMVAReaderPt->AddVariable("PhiWidth",  &bdt_id_PhiWidth);
+      ElectronIDv2CFMVAReaderPt->AddVariable("PassConversionVeto",  &bdt_id_PassConversionVeto);
+      ElectronIDv2CFMVAReaderPt->AddVariable("IsGsfCtfScPixChargeConsistent",  &bdt_id_IsGsfCtfScPixChargeConsistent);
+      ElectronIDv2CFMVAReaderPt->AddVariable("IsGsfScPixChargeConsistent",  &bdt_id_IsGsfScPixChargeConsistent);
+      ElectronIDv2CFMVAReaderPt->AddVariable("IsGsfCtfChargeConsistent",  &bdt_id_IsGsfCtfChargeConsistent);
+      ElectronIDv2CFMVAReaderPt->AddVariable("InvEminusInvP", &bdt_id_InvEminusInvP);
+      ElectronIDv2CFMVAReaderPt->AddVariable("hcalPFClusterIso",  &bdt_id_hcalPFClusterIso);
+      ElectronIDv2CFMVAReaderPt->AddVariable("ecalPFClusterIso",  &bdt_id_ecalPFClusterIso);
+      ElectronIDv2CFMVAReaderPt->AddVariable("dr03TkSumPt",  &bdt_id_dr03TkSumPt);
+      ElectronIDv2CFMVAReaderPt->AddVariable("HoverE",  &bdt_id_HoverE);
+      ElectronIDv2CFMVAReaderPt->AddVariable("MissingHits",  &bdt_id_MissingHits);
+      ElectronIDv2CFMVAReaderPt->AddSpectator("w_id_tot", &bdt_id_w_id_tot);
+    }
 
     ElectronIDv2ConvMVAReader->AddVariable("Pt", &bdt_id_Pt);
     ElectronIDv2ConvMVAReader->AddVariable("Eta", &bdt_id_Eta);
@@ -1288,34 +1481,36 @@ void AnalyzerCore::SetupIDMVAReaderElectron(bool  electron_v1, bool electron_v2p
     ElectronIDv2ConvMVAReader->AddVariable("IsGsfScPixChargeConsistent",  &bdt_id_IsGsfScPixChargeConsistent);
     ElectronIDv2ConvMVAReader->AddVariable("IsGsfCtfChargeConsistent",  &bdt_id_IsGsfCtfChargeConsistent);
     ElectronIDv2ConvMVAReader->AddSpectator("w_id_tot", &bdt_id_w_id_tot);
-
-    ElectronIDv3CFMVAReader->AddVariable("PtBinned", &bdt_id_PtBinned);
-    ElectronIDv3CFMVAReader->AddVariable("Eta", &bdt_id_Eta);
-    ElectronIDv3CFMVAReader->AddVariable("Dxy",  &bdt_id_Dxy);
-    ElectronIDv3CFMVAReader->AddVariable("DxySig",  &bdt_id_DxySig);
-    ElectronIDv3CFMVAReader->AddVariable("Dz",  &bdt_id_Dz);
-    ElectronIDv3CFMVAReader->AddVariable("DzSig",  &bdt_id_DzSig);
-    ElectronIDv3CFMVAReader->AddVariable("IP3D", &bdt_id_IP3D);
-    ElectronIDv3CFMVAReader->AddVariable("JetDiscCJ",&bdt_id_JetDiscCJ);
-    ElectronIDv3CFMVAReader->AddVariable("MVA",  &bdt_id_MVA);
-    ElectronIDv3CFMVAReader->AddVariable("Full5x5_sigmaIetaIeta",  &bdt_id_Full5x5_sigmaIetaIeta);
-    ElectronIDv3CFMVAReader->AddVariable("dPhiIn",  &bdt_id_dPhiIn);
-    ElectronIDv3CFMVAReader->AddVariable("EoverP",  &bdt_id_EoverP);
-    ElectronIDv3CFMVAReader->AddVariable("FBrem",  &bdt_id_FBrem);
-    ElectronIDv3CFMVAReader->AddVariable("R9",  &bdt_id_R9);
-    ElectronIDv3CFMVAReader->AddVariable("dr03TkSumPt",  &bdt_id_dr03TkSumPt);
-    ElectronIDv3CFMVAReader->AddVariable("e55",  &bdt_id_e55);
-    ElectronIDv3CFMVAReader->AddVariable("e2x5OverE5x5",  &bdt_id_e2x5OverE5x5);
-    ElectronIDv3CFMVAReader->AddVariable("EtaWidth",  &bdt_id_EtaWidth);
-    ElectronIDv3CFMVAReader->AddVariable("PhiWidth",  &bdt_id_PhiWidth);
-    ElectronIDv3CFMVAReader->AddVariable("ecalPFClusterIso",  &bdt_id_ecalPFClusterIso);
-    ElectronIDv3CFMVAReader->AddVariable("PassConversionVeto",  &bdt_id_PassConversionVeto);
-    ElectronIDv3CFMVAReader->AddVariable("IsGsfCtfScPixChargeConsistent",  &bdt_id_IsGsfCtfScPixChargeConsistent);
-    ElectronIDv3CFMVAReader->AddVariable("IsGsfScPixChargeConsistent",  &bdt_id_IsGsfScPixChargeConsistent);
-    ElectronIDv3CFMVAReader->AddVariable("IsGsfCtfChargeConsistent",  &bdt_id_IsGsfCtfChargeConsistent);
-    ElectronIDv3CFMVAReader->AddSpectator("w_id_tot", &bdt_id_w_id_tot);
+    
+    if(iSetupAllBDT){
+      ElectronIDv3CFMVAReader->AddVariable("PtBinned", &bdt_id_PtBinned);
+      ElectronIDv3CFMVAReader->AddVariable("Eta", &bdt_id_Eta);
+      ElectronIDv3CFMVAReader->AddVariable("Dxy",  &bdt_id_Dxy);
+      ElectronIDv3CFMVAReader->AddVariable("DxySig",  &bdt_id_DxySig);
+      ElectronIDv3CFMVAReader->AddVariable("Dz",  &bdt_id_Dz);
+      ElectronIDv3CFMVAReader->AddVariable("DzSig",  &bdt_id_DzSig);
+      ElectronIDv3CFMVAReader->AddVariable("IP3D", &bdt_id_IP3D);
+      ElectronIDv3CFMVAReader->AddVariable("JetDiscCJ",&bdt_id_JetDiscCJ);
+      ElectronIDv3CFMVAReader->AddVariable("MVA",  &bdt_id_MVA);
+      ElectronIDv3CFMVAReader->AddVariable("Full5x5_sigmaIetaIeta",  &bdt_id_Full5x5_sigmaIetaIeta);
+      ElectronIDv3CFMVAReader->AddVariable("dPhiIn",  &bdt_id_dPhiIn);
+      ElectronIDv3CFMVAReader->AddVariable("EoverP",  &bdt_id_EoverP);
+      ElectronIDv3CFMVAReader->AddVariable("FBrem",  &bdt_id_FBrem);
+      ElectronIDv3CFMVAReader->AddVariable("R9",  &bdt_id_R9);
+      ElectronIDv3CFMVAReader->AddVariable("dr03TkSumPt",  &bdt_id_dr03TkSumPt);
+      ElectronIDv3CFMVAReader->AddVariable("e55",  &bdt_id_e55);
+      ElectronIDv3CFMVAReader->AddVariable("e2x5OverE5x5",  &bdt_id_e2x5OverE5x5);
+      ElectronIDv3CFMVAReader->AddVariable("EtaWidth",  &bdt_id_EtaWidth);
+      ElectronIDv3CFMVAReader->AddVariable("PhiWidth",  &bdt_id_PhiWidth);
+      ElectronIDv3CFMVAReader->AddVariable("ecalPFClusterIso",  &bdt_id_ecalPFClusterIso);
+      ElectronIDv3CFMVAReader->AddVariable("PassConversionVeto",  &bdt_id_PassConversionVeto);
+      ElectronIDv3CFMVAReader->AddVariable("IsGsfCtfScPixChargeConsistent",  &bdt_id_IsGsfCtfScPixChargeConsistent);
+      ElectronIDv3CFMVAReader->AddVariable("IsGsfScPixChargeConsistent",  &bdt_id_IsGsfScPixChargeConsistent);
+      ElectronIDv3CFMVAReader->AddVariable("IsGsfCtfChargeConsistent",  &bdt_id_IsGsfCtfChargeConsistent);
+      ElectronIDv3CFMVAReader->AddSpectator("w_id_tot", &bdt_id_w_id_tot);
+    }
   }
-  
+
   TString AnalyzerPath=std::getenv("SKFlat_WD");
   /// Version 1 paths
   TString MVAPathFakev1 ="/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIElectronFake/Version1/"+GetYearString()+"/dataset/weights/";
@@ -1343,7 +1538,8 @@ void AnalyzerCore::SetupIDMVAReaderElectron(bool  electron_v1, bool electron_v2p
   /////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////
   
-  if(electron_v1){
+  if(electron_v1&&iSetupAllBDT){
+
     if(GetYear() == 2016) {
       ElectronIDFakeMVAReader->BookMVA("BDTGv1_Fake",  MVAPathFakev1+"BDTG_FakeSignalTypeI_EE_Signal_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" + xmlpf);
       ElectronIDConvMVAReader->BookMVA("BDTGv1_Conv",  MVAPathConvv1+"BDTG_ConvSignalConvTypeI_EE_SignalConv_2016_NTrees1500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_2_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"  + xmlpf);
@@ -1392,13 +1588,15 @@ void AnalyzerCore::SetupIDMVAReaderElectron(bool  electron_v1, bool electron_v2p
     ElectronIDv2CFMVAReader->BookMVA("BDTGv2_BB_CF",     MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
     ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF",     MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
     ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF",        MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_BB_CF",   MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_EC_CF",   MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_CF",      MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_BB_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_BB_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_EC_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_EC_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_CF",    MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-
+    
+    if(iSetupAllBDT){
+      ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_BB_CF",   MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_EC_CF",   MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2016_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_CF",      MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_BB_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_BB_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_EC_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_EC_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
+      ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_CF",    MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+    }
     // AUC              KS_signal   KS_bkg      File 
     // 0.991274785181: ['0.856', '0.127', 'BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT.root']
     // 0.971147417873: ['0.29',  '0.26',  'BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
@@ -1416,13 +1614,15 @@ void AnalyzerCore::SetupIDMVAReaderElectron(bool  electron_v1, bool electron_v2p
     ElectronIDv2CFMVAReader->BookMVA("BDTGv2_BB_CF",     MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
     ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF",     MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
     ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF",        MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_BB_CF",   MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_EC_CF",   MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_CF",      MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_BB_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_BB_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_EC_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_EC_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_CF",    MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
 
+    if(iSetupAllBDT){
+      ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_BB_CF",   MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_EC_CF",   MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2017_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_CF",      MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_BB_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_BB_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_EC_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_EC_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
+      ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_CF",    MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+    }
     // AUC              KS_signal   KS_bkg      File 
     // 0.98861219038:  ['0.624', '0.219', 'BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT.root']
     // 0.978985596446: ['0.329', '0.429', 'BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT.root']
@@ -1442,13 +1642,15 @@ void AnalyzerCore::SetupIDMVAReaderElectron(bool  electron_v1, bool electron_v2p
     ElectronIDv2CFMVAReader->BookMVA("BDTGv2_BB_CF",     MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
     ElectronIDv2CFMVAReader->BookMVA("BDTGv2_EC_CF",     MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
     ElectronIDv2CFMVAReader->BookMVA("BDTGv2_CF",        MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_BB_CF",   MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_EC_CF",   MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-    ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_CF",      MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_BB_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_BB_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_EC_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_EC_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
-    ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_CF",    MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
-    
+
+    if(iSetupAllBDT){
+      ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_BB_CF",   MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_EC_CF",   MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
+      ElectronIDv3CFMVAReader->BookMVA("BDTGv2p2_CF",      MVAPathCFv2b+ "V1_BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+      ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_BB_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_BB_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
+      ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_EC_CF", MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_EC_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT" +xmlpf);
+      ElectronIDv2CFMVAReaderPt->BookMVA("BDTGv2p1_CF",    MVAPathCFv2+ "BDTG_version3_CF_TypeI_EE_SignalCF_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT" +xmlpf);
+    }
     // AUC              KS_signal   KS_bkg      File
     // 0.987915231074: ['0.41',  '0.123', 'BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_BB_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
     // 0.978419806829: ['0.242', '0.123', 'BDTG_version3_CF_TypeI_EE_SignalCFPtBinned_EC_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
@@ -1466,18 +1668,23 @@ void AnalyzerCore::SetupIDMVAReaderElectron(bool  electron_v1, bool electron_v2p
   
   if(GetYear() == 2016) {
     ////// Version 3 training--> v2 variable
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_HF_Fake" ,MVAPathFakev2+"BDTG_version3_FakeBkg_HF_TypeI_EE_SignalElectronFake_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_LF_Fake" ,MVAPathFakev2+"BDTG_version3_FakeBkg_LF_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake"    ,MVAPathFakev2+"BDTG_version3_FakeBkg_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Top_Fake",MVAPathFakev2+"BDTG_version3_FakeBkgTop_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-    ////// Version 4 training--> v3 variable                                                                                                                                                                                                                                 
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_Fake"     ,MVAPathFakev3+"BDTG_version4_FakeBkg_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_Top_Fake" ,MVAPathFakev3+"BDTG_version4_FakeBkgTop_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_LF_Fake"  ,MVAPathFakev3+"BDTG_version4_FakeBkg_LF_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);/// --> Poor KS
+    if(iSetupAllBDT){
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_HF_Fake" ,MVAPathFakev2+"BDTG_version3_FakeBkg_HF_TypeI_EE_SignalElectronFake_2016_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_LF_Fake" ,MVAPathFakev2+"BDTG_version3_FakeBkg_LF_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake"    ,MVAPathFakev2+"BDTG_version3_FakeBkg_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Top_Fake",MVAPathFakev2+"BDTG_version3_FakeBkgTop_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
+      ////// Version 4 training--> v3 variable                                                                                                                                                                                                                                 
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_Fake"     ,MVAPathFakev3+"BDTG_version4_FakeBkg_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_Top_Fake" ,MVAPathFakev3+"BDTG_version4_FakeBkgTop_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_LF_Fake"  ,MVAPathFakev3+"BDTG_version4_FakeBkg_LF_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);/// --> Poor KS
+
+    }
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_HF_Fake"  ,MVAPathFakev3+"BDTG_version4_FakeBkg_HF_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_HFB_Fake" ,MVAPathFakev3+"BDTG_version4_FakeBkg_HFB_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_HFC_Fake" ,MVAPathFakev3+"BDTG_version4_FakeBkg_HFC_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-    ////// Version 5 training--> v4 variable                                                                                                                                                                                                                                
+
+      
+      ////// Version 5 training--> v4 variable                                                                                                                                                                                                                                
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_Fake"     ,MVAPathFakev4+"BDTG_version5_FakeBkg_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_Top_Fake" ,MVAPathFakev4+"BDTG_version5_FakeBkgTop_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_LF_Fake"  ,MVAPathFakev4+"BDTG_version5_FakeBkg_LF_TypeI_EE_SignalElectronFake_2016_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf); 
@@ -1515,18 +1722,24 @@ void AnalyzerCore::SetupIDMVAReaderElectron(bool  electron_v1, bool electron_v2p
 
   }
   if(GetYear() == 2017) {
-    ////// Version 3 training--> v2 variable                                                                                                                                                                                                                                 
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_HF_Fake"  ,MVAPathFakev2+"BDTG_version3_FakeBkg_HF_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_LF_Fake"  ,MVAPathFakev2+"BDTG_version3_FakeBkg_LF_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake"     ,MVAPathFakev2+"BDTG_version3_FakeBkg_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Top_Fake" ,MVAPathFakev2+"BDTG_version3_FakeBkgTop_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-    ////// Version 4 training--> v3 variable
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_Fake",    MVAPathFakev3+"BDTG_version4_FakeBkg_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf); // Poor KS
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_Top_Fake",MVAPathFakev3+"BDTG_version4_FakeBkgTop_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf); // Poor KS
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_LF_Fake", MVAPathFakev3+"BDTG_version4_FakeBkg_LF_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf); // Poor KS
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_HF_Fake", MVAPathFakev3+"BDTG_version4_FakeBkg_HF_TypeI_EE_SignalElectronFake_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_200_BDT"+xmlpf); 
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_HFB_Fake",MVAPathFakev3+"BDTG_version4_FakeBkg_HFB_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_200_BDT"+xmlpf);
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_HFC_Fake",MVAPathFakev3+"BDTG_version4_FakeBkg_HFC_TypeI_EE_SignalElectronFake_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_200_BDT"+xmlpf);
+    ////// Version 3 training--> v2 variable                                                                                                                                                                     
+    
+    if(iSetupAllBDT){
+      
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_HF_Fake"  ,MVAPathFakev2+"BDTG_version3_FakeBkg_HF_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_LF_Fake"  ,MVAPathFakev2+"BDTG_version3_FakeBkg_LF_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake"     ,MVAPathFakev2+"BDTG_version3_FakeBkg_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Top_Fake" ,MVAPathFakev2+"BDTG_version3_FakeBkgTop_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+      ////// Version 4 training--> v3 variable
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_Fake",    MVAPathFakev3+"BDTG_version4_FakeBkg_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf); // Poor KS
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_Top_Fake",MVAPathFakev3+"BDTG_version4_FakeBkgTop_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf); // Poor KS
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_LF_Fake", MVAPathFakev3+"BDTG_version4_FakeBkg_LF_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf); // Poor KS
+    }
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_HF_Fake", MVAPathFakev3+"BDTG_version4_FakeBkg_HF_TypeI_EE_SignalElectronFake_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_200_BDT"+xmlpf); 
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_HFB_Fake",MVAPathFakev3+"BDTG_version4_FakeBkg_HFB_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_200_BDT"+xmlpf);
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_HFC_Fake",MVAPathFakev3+"BDTG_version4_FakeBkg_HFC_TypeI_EE_SignalElectronFake_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_200_BDT"+xmlpf);
+
+    
     ////// Version 5 training--> v4 variable (HF same as v3/version4)
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_Fake",    MVAPathFakev4+"BDTG_version5_FakeBkg_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_Top_Fake",MVAPathFakev4+"BDTG_version5_FakeBkgTop_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
@@ -1534,7 +1747,7 @@ void AnalyzerCore::SetupIDMVAReaderElectron(bool  electron_v1, bool electron_v2p
     //  0.975586771441: ['0.223', '0.123', 'BDTG_version5_FakeBkg_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
     //  0.979394122213: ['0.577', '0.367', 'BDTG_version5_FakeBkgTop_TypeI_EE_SignalElectronFake_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT.root']
     //  0.980371549497: ['0.164', '0.111', 'BDTG_version5_FakeBkg_LF_TypeI_EE_SignalElectronFake_2017_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT.root']
-
+    
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_BB_Fake"  ,MVAPathFakev5a+"BDTG_version6_FakeBkg_TypeI_EE_SignalElectronFake_BB_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_Top_BB_Fake" ,MVAPathFakev5a+"BDTG_version6_FakeBkgTop_TypeI_EE_SignalElectronFake_BB_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_LF_BB_Fake"  ,MVAPathFakev5a+"BDTG_version6_FakeBkg_LF_TypeI_EE_SignalElectronFake_BB_2017_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
@@ -1566,18 +1779,21 @@ void AnalyzerCore::SetupIDMVAReaderElectron(bool  electron_v1, bool electron_v2p
 
   }
   if(GetYear() == 2018) {
-    ////// Version 3 training--> v2 variable                                                                                                                                                                                                                                 
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_HF_Fake",MVAPathFakev2+"BDTG_version3_FakeBkg_HF_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_LF_Fake",MVAPathFakev2+"BDTG_version3_FakeBkg_LF_TypeI_EE_SignalElectronFake_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake",MVAPathFakev2+"BDTG_version3_FakeBkg_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Top_Fake",MVAPathFakev2+"BDTG_version3_FakeBkgTop_TypeI_EE_SignalElectronFake_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-    ////// Version 4 training--> v3 variable                                                                                                                                                                                                                                 
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_Fake",MVAPathFakev3+"BDTG_version4_FakeBkg_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_Top_Fake",MVAPathFakev3+"BDTG_version4_FakeBkgTop_TypeI_EE_SignalElectronFake_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
-    ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_LF_Fake",MVAPathFakev3+"BDTG_version4_FakeBkg_LF_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+    ////// Version 3 training--> v2 variable                                                                                                                                                                         
+    if(iSetupAllBDT){
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_HF_Fake",MVAPathFakev2+"BDTG_version3_FakeBkg_HF_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_LF_Fake",MVAPathFakev2+"BDTG_version3_FakeBkg_LF_TypeI_EE_SignalElectronFake_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Fake",MVAPathFakev2+"BDTG_version3_FakeBkg_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv2_Top_Fake",MVAPathFakev2+"BDTG_version3_FakeBkgTop_TypeI_EE_SignalElectronFake_2018_NTrees500_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
+      ////// Version 4 training--> v3 variable                                                                                                                                                                                                                                 
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_Fake",MVAPathFakev3+"BDTG_version4_FakeBkg_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_Top_Fake",MVAPathFakev3+"BDTG_version4_FakeBkgTop_TypeI_EE_SignalElectronFake_2018_NTrees1000_NormMode_EqualNumEvents_MinNodeSize_5.0_MaxDepth_3_nCuts_300_Shrinkage_0.5_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
+      ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_LF_Fake",MVAPathFakev3+"BDTG_version4_FakeBkg_LF_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
+    }
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_HF_Fake",MVAPathFakev3+"BDTG_version4_FakeBkg_HF_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_HFB_Fake",MVAPathFakev3+"BDTG_version4_FakeBkg_HFB_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv3_HFC_Fake",MVAPathFakev3+"BDTG_version4_FakeBkg_HFC_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_3_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
+    
     ////// Version 5 training--> v4 variable                                                                                                                                                                                                                                 
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_Fake",MVAPathFakev4+"BDTG_version5_FakeBkg_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_5_nCuts_300_Shrinkage_0.05_BaggedFrac_0.8_Seed_100_BDT"+xmlpf);
     ElectronIDv2FakeMVAReader->BookMVA("BDTGv4_Top_Fake",MVAPathFakev4+"BDTG_version5_FakeBkgTop_TypeI_EE_SignalElectronFake_2018_NTrees2000_NormMode_EqualNumEvents_MinNodeSize_2.5_MaxDepth_4_nCuts_300_Shrinkage_0.05_BaggedFrac_0.5_Seed_100_BDT"+xmlpf);  
@@ -1654,6 +1870,7 @@ void AnalyzerCore::SetupIDMVAReaderElectron(bool  electron_v1, bool electron_v2p
 void AnalyzerCore::SetBDTIDVariablesMuon(Muon mu){
 
   bdt_id_MVA = mu.MVA();
+  bdt_id_Eta   = fabs(mu.Eta());
 
   if (JetLeptonPtRelLepAware(mu) >600) bdt_id_PtRel = 600;
   else bdt_id_PtRel=JetLeptonPtRelLepAware(mu);
@@ -1666,7 +1883,6 @@ void AnalyzerCore::SetBDTIDVariablesMuon(Muon mu){
   bdt_id_Pixel_hits  = float(mu.PixelHits());
   bdt_id_Tracker_layers = float(mu.TrackerLayers());
 
-  bdt_id_RelMVA    = mu.MVA()/mu.Pt();
   bdt_id_POGTight = mu.isPOGTight() ?  1.: 0.;
   bdt_id_POGMedium = mu.isPOGMedium() ?  1.: 0.;
   bdt_id_HNTightID = mu.PassID("HNTightV2") ?  1.: 0.;
@@ -1678,62 +1894,85 @@ void AnalyzerCore::SetBDTIDVariablesMuon(Muon mu){
 
 void AnalyzerCore::SetBDTIDVariablesElectron(Electron el){
 
-  bdt_id_MVA    = el.MVANoIsoResponse();
+  //// MVA Values  Response used as POG cut uses rrsponse not value
+  bdt_id_MVA       = el.MVANoIsoResponse();
   bdt_id_MVAIso    = el.MVAIsoResponse();
-  bdt_id_RelMVA    = el.MVANoIsoResponse()/el.Pt();
-  bdt_id_RelMVAIso    = el.MVAIsoResponse()/el.Pt();
-  bdt_id_MissingHits = el.NMissingHits();
-  bdt_id_Full5x5_sigmaIetaIeta  = el.Full5x5_sigmaIetaIeta(); 
-  bdt_id_dEtaSeed  = el.dEtaSeed();
-  if(bdt_id_dEtaSeed > 0.2) bdt_id_dEtaSeed = 0.2;
-  if(bdt_id_dEtaSeed < -0.2) bdt_id_dEtaSeed= -0.2;
-
-  bdt_id_dPhiIn  = el.dPhiIn();
-  if(bdt_id_dPhiIn > 0.6) bdt_id_dPhiIn = 0.6;
-  if(bdt_id_dPhiIn < -0.6) bdt_id_dPhiIn = -0.6;
   
-  bdt_id_dEtaIn  = el.dEtaIn();   
-  if(bdt_id_dEtaIn > 0.1) bdt_id_dEtaIn=  0.1;
-  if(bdt_id_dEtaIn < -0.1) bdt_id_dEtaIn=  -0.1;
+  bdt_id_MVARaw    = el.MVANoIso();
+  bdt_id_MVAIsoRaw = el.MVAIso();
+   
+  bdt_id_Eta   = fabs(el.scEta());
+
+  ///// https://github.com/cms-sw/cmssw/blob/CMSSW_10_6_25/RecoEgamma/ElectronIdentification/data/ElectronMVAEstimatorRun2Variables.txt
+
+  bdt_id_MissingHits           = el.NMissingHits();
+  bdt_id_Full5x5_sigmaIetaIeta = el.Full5x5_sigmaIetaIeta(); 
+
+  bdt_id_dEtaSeed          = fabs(el.dEtaSeed());
+  if(bdt_id_dEtaSeed > 0.2) bdt_id_dEtaSeed = 0.2;
+
+  bdt_id_dPhiIn  = fabs(el.dPhiIn());
+  if(bdt_id_dPhiIn > 0.6) bdt_id_dPhiIn = 0.6;
+  
+  bdt_id_dEtaIn  = fabs(el.dEtaIn());   
+  if(bdt_id_dEtaIn > 0.06) bdt_id_dEtaIn=  0.06;   /// 0.06
 
   bdt_id_EtaWidth = el.EtaWidth();
   bdt_id_PhiWidth = el.PhiWidth();
+  
   bdt_id_e2x5OverE5x5 = el.e2x5OverE5x5();
-  bdt_id_e1x5OverE5x5= el.e1x5OverE5x5();
-  bdt_id_e15= el.e15();
-  bdt_id_e25= el.e25();
+  bdt_id_e1x5OverE5x5= (el.e55()) !=0. ? 1.-(el.e15()/el.e55()) : -1. ;
+  if(bdt_id_e1x5OverE5x5 < -1) bdt_id_e1x5OverE5x5=-1;
+  if(bdt_id_e1x5OverE5x5 > 2) bdt_id_e1x5OverE5x5=2;
+
   bdt_id_e55= el.e55();
-  bdt_id_dr03EcalRecHitSumEt= el.dr03EcalRecHitSumEt()/el.UncorrPt();
-  bdt_id_dr03HcalDepth1TowerSumEt= el.dr03HcalDepth1TowerSumEt()/el.UncorrPt();
+
   bdt_id_dr03HcalTowerSumEt= el.dr03HcalTowerSumEt()/el.UncorrPt();
   bdt_id_dr03TkSumPt= el.dr03TkSumPt()/el.UncorrPt();
   bdt_id_R9= el.R9();
   if(bdt_id_R9 > 5) bdt_id_R9 = 5;
 
+  
+  bdt_id_psEoRraw= el.psEoverEraw();
+  if (bdt_id_psEoRraw > 1) bdt_id_psEoRraw=1;
+
   bdt_id_HoverE  = el.HoverE();
+
   if (el.TrkIso()/el.UncorrPt() > 10) bdt_id_TrkIso = 10;
   else bdt_id_TrkIso  = el.TrkIso()/el.UncorrPt();  
+
   if(isinf(el.InvEminusInvP())) bdt_id_InvEminusInvP = 0.;
   else bdt_id_InvEminusInvP = fabs(el.InvEminusInvP());                                                                         
   
   bdt_id_ecalPFClusterIso = el.ecalPFClusterIso()/el.UncorrPt();
   bdt_id_hcalPFClusterIso = el.hcalPFClusterIso()/el.UncorrPt();
+ 
   bdt_id_isEcalDriven = (el.isEcalDriven()) ? 1. : 0.;
-  bdt_id_EoverP = log(el.EOverP());
-  if(bdt_id_EoverP > 20) bdt_id_EoverP = 20;
-  if(bdt_id_EoverP < -20) bdt_id_EoverP = -20;
+  
+  if(el.EOverP() > 20) bdt_id_EoverP = log(20);
+  else bdt_id_EoverP = log(el.EOverP());  //// 20 then log?
 
   if (el.FBrem() < -1) bdt_id_FBrem = -1;
   else   bdt_id_FBrem = el.FBrem();
+
+  bdt_id_Rho=el.Rho();
   bdt_id_PassConversionVeto  = (el.PassConversionVeto()) ? 1. : 0.;
+
   bdt_id_IsGsfCtfScPixChargeConsistent  = (el.IsGsfCtfScPixChargeConsistent()) ? 1. : 0.;
   bdt_id_IsGsfScPixChargeConsistent  = (el.IsGsfScPixChargeConsistent()) ? 1. : 0.;
   bdt_id_IsGsfCtfChargeConsistent  = (el.IsGsfCtfChargeConsistent()) ? 1. : 0.;
 
   bdt_id_PtRatio=JetLeptonPtRatioLepAware(el);
+  bdt_id_PtRatioV2=JetLeptonPtRatioLepAwareV2(el);
+  bdt_id_PtRatioV3 = (el.IsBB()) ?  bdt_id_PtRatio : bdt_id_PtRatioV2;
 
   if (JetLeptonPtRelLepAware(el) > 600)bdt_id_PtRel = 600;
   else bdt_id_PtRel=JetLeptonPtRelLepAware(el);
+
+  if (JetLeptonPtRelLepAwareV2(el) > 600)bdt_id_PtRelV2 = 600;
+  else bdt_id_PtRelV2=JetLeptonPtRelLepAwareV2(el);
+
+  bdt_id_PtRelV3 = (el.IsBB()) ? bdt_id_PtRel : bdt_id_PtRelV2;
 
   bdt_id_POGTight = el.PassID("passPOGTight") ?  1.: 0.;
   bdt_id_POGMedium =el.PassID("passPOGMedium") ?  1.: 0.;
@@ -1779,7 +2018,7 @@ double AnalyzerCore::GetBDTScoreEl_EtaDependant(Electron el ,BkgType bkg, TStrin
   
   TString  MVATagStr = BDTTag;
   
-  if(fabs(el.Eta()) < 1.5)    MVATagStr += "_BB";
+  if(el.IsBB())    MVATagStr += "_BB";
   else  MVATagStr += "_EC";
   
   if (bkg == BkgType::CF)     MVATagStr += "_CF";
@@ -1788,9 +2027,12 @@ double AnalyzerCore::GetBDTScoreEl_EtaDependant(Electron el ,BkgType bkg, TStrin
   if (bkg == BkgType::Fake) MVATagStr += "_Fake";
 
   if (bkg == BkgType::CF){
-    if(MVATagStr.Contains("BDTGv2")){
-      if(MVATagStr.Contains("BDTGv2p1"))  return  ElectronIDv2CFMVAReaderPt->EvaluateMVA(MVATagStr);
-      if(MVATagStr.Contains("BDTGv2p2"))   return  ElectronIDv3CFMVAReader->EvaluateMVA(MVATagStr);
+    if(MVATagStr.Contains("BDTGv2_")){
+      ///// 2_ is added in fix for only using v2
+      if(iSetupAllBDT){
+	if(MVATagStr.Contains("BDTGv2p1"))  return  ElectronIDv2CFMVAReaderPt->EvaluateMVA(MVATagStr);
+	if(MVATagStr.Contains("BDTGv2p2"))   return  ElectronIDv3CFMVAReader->EvaluateMVA(MVATagStr);
+      }
       return  ElectronIDv2CFMVAReader->EvaluateMVA(MVATagStr);
     }
   }
@@ -1824,8 +2066,6 @@ double AnalyzerCore::GetBDTScoreElV1(Electron el ,BkgType bkg, TString BDTTag){
 
   bdt_id_MVA    = el.MVANoIsoResponseV1();
   bdt_id_MVAIso    = el.MVAIsoResponseV1();
-  bdt_id_RelMVA    = el.MVANoIsoResponseV1()/lep->Pt();
-  bdt_id_RelMVAIso    = el.MVAIsoResponseV1()/lep->Pt();
   bdt_id_MissingHits = el.NMissingHits();
   bdt_id_Full5x5_sigmaIetaIeta  = el.Full5x5_sigmaIetaIeta();  //sigmaIetaIeta  = el.sigmaIetaIeta();                                                                                                                                                
   bdt_id_dEtaSeed  = el.dEtaSeed();
@@ -1833,12 +2073,8 @@ double AnalyzerCore::GetBDTScoreElV1(Electron el ,BkgType bkg, TString BDTTag){
   bdt_id_EtaWidth = el.EtaWidth();
   bdt_id_PhiWidth = el.PhiWidth();
   bdt_id_e2x5OverE5x5 = el.e2x5OverE5x5();
-  bdt_id_e1x5OverE5x5= el.e1x5OverE5x5();
-  bdt_id_e15= el.e15();
-  bdt_id_e25= el.e25();
   bdt_id_e55= el.e55();
-  bdt_id_dr03EcalRecHitSumEt= el.dr03EcalRecHitSumEt()/el.UncorrPt();
-  bdt_id_dr03HcalDepth1TowerSumEt= el.dr03HcalDepth1TowerSumEt()/el.UncorrPt();
+
   bdt_id_dr03HcalTowerSumEt= el.dr03HcalTowerSumEt()/el.UncorrPt();
   bdt_id_dr03TkSumPt= el.dr03TkSumPt()/el.UncorrPt();
   bdt_id_R9= el.R9();
@@ -1846,9 +2082,13 @@ double AnalyzerCore::GetBDTScoreElV1(Electron el ,BkgType bkg, TString BDTTag){
   bdt_id_TrkIso  = el.TrkIso()/el.UncorrPt();  //InvEminusInvP = fabs(el.InvEminusInvP());                                                                                                                                                           
   bdt_id_ecalPFClusterIso = el.ecalPFClusterIso()/el.UncorrPt();
   bdt_id_hcalPFClusterIso = el.hcalPFClusterIso()/el.UncorrPt();
+
   bdt_id_isEcalDriven = el.isEcalDriven();
+
   bdt_id_EoverP = log(el.EOverP());
+
   bdt_id_FBrem = el.FBrem();
+
   bdt_id_PassConversionVeto  = (el.PassConversionVeto()) ? 1 : 0;
   bdt_id_IsGsfCtfScPixChargeConsistent  = (el.IsGsfCtfScPixChargeConsistent()) ? 1 : 0;
   bdt_id_IsGsfScPixChargeConsistent  = (el.IsGsfScPixChargeConsistent()) ? 1 : 0;
@@ -1881,7 +2121,7 @@ double AnalyzerCore::GetBDTScoreElV1(Electron el ,BkgType bkg, TString BDTTag){
     MVATagStr = BDTTag;
     MVATagStr=MVATagStr.ReplaceAll("v2","");
     
-    if(fabs(el.Eta()) < 1.5)    MVATagStr += "_BB";
+    if(el.IsBB())    MVATagStr += "_BB";
     else  MVATagStr += "_EC";
 
     if (bkg == BkgType::Fake) MVATagStr += "_Fake";
@@ -1893,19 +2133,20 @@ double AnalyzerCore::GetBDTScoreElV1(Electron el ,BkgType bkg, TString BDTTag){
     if (bkg == BkgType::Fake) MVATagStr += "_Fake";
     if (bkg == BkgType::Conv) MVATagStr += "_Conv";
     if (bkg == BkgType::CF){
-      if(fabs(el.Eta()) < 1.5)    MVATagStr += "_BB";
+      if(el.IsBB())   MVATagStr += "_BB";
       else     MVATagStr += "_EC";
       MVATagStr += "_CF";
     }
   }
 
-
-  if(MVATagStr.Contains("CF"))     return  ElectronIDCFMVAReader->EvaluateMVA(MVATagStr);
-  
-  if(MVATagStr.Contains("Conv"))   return  ElectronIDConvMVAReader->EvaluateMVA(MVATagStr);
-
-  return  ElectronIDFakeMVAReader->EvaluateMVA(MVATagStr);
-
+  if(iSetupAllBDT){
+    if(MVATagStr.Contains("CF"))     return  ElectronIDCFMVAReader->EvaluateMVA(MVATagStr);
+    
+    if(MVATagStr.Contains("Conv"))   return  ElectronIDConvMVAReader->EvaluateMVA(MVATagStr);
+    
+    return  ElectronIDFakeMVAReader->EvaluateMVA(MVATagStr);
+  }
+  return -999;
 }
 
 
@@ -1930,9 +2171,11 @@ double AnalyzerCore::GetBDTScoreEl(Electron el ,BkgType bkg, TString BDTTag){
     
 
     if (bkg == BkgType::CF){
-      if(MVATagStr.Contains("BDTGv2p1"))     return  ElectronIDv2CFMVAReaderPt->EvaluateMVA(MVATagStr);
-      if(MVATagStr.Contains("BDTGv2p2"))     return  ElectronIDv3CFMVAReader->EvaluateMVA(MVATagStr);
-      return  ElectronIDv2CFMVAReader->EvaluateMVA(MVATagStr);
+      if(iSetupAllBDT){
+	if(MVATagStr.Contains("BDTGv2p1"))     return  ElectronIDv2CFMVAReaderPt->EvaluateMVA(MVATagStr);
+	if(MVATagStr.Contains("BDTGv2p2"))     return  ElectronIDv3CFMVAReader->EvaluateMVA(MVATagStr);
+      }
+      if(MVATagStr.Contains("BDTGv2_"))        return  ElectronIDv2CFMVAReader->EvaluateMVA(MVATagStr);
     }
     if (bkg == BkgType::Fake) {
       TString MVATagStrTMP = MVATagStr;
@@ -2055,7 +2298,8 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
 
     el.SetR9(electron_r9->at(i));
     el.SetL1Et(electron_l1et->at(i));
-
+    el.SetpsEoverEraw(electron_scPreEnergy->at(i)/electron_scRawEnergy->at(i));
+    
     el.SetCutBasedIDVariables(
       electron_Full5x5_SigmaIEtaIEta->at(i),
       electron_dEtaInSeed->at(i),
@@ -2112,7 +2356,9 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
     if(fChain->GetBranch("electron_cj_flavour"))el.SetCloseJetFlavour(electron_cj_flavour->at(i));
     if(fChain->GetBranch("electron_ptrel")) el.SetJetPtRel(electron_ptrel->at(i));
     if(fChain->GetBranch("electron_ptratio")) el.SetJetPtRatio(electron_ptratio->at(i));
-    if(fChain->GetBranch("electron_cj_bjetdisc")) el.SetCloseJetBScore(electron_cj_bjetdisc->at(i));
+    if(fChain->GetBranch("electron_cj_bjetdisc"))    el.SetCloseJetBScore(electron_cj_bjetdisc->at(i));
+    if(fChain->GetBranch("electron_cj_cvsbjetdisc")) el.SetCloseJetCvsBScore(electron_cj_cvsbjetdisc->at(i));
+    if(fChain->GetBranch("electron_cj_cvsljetdisc")) el.SetCloseJetCvsLScore(electron_cj_cvsljetdisc->at(i));
     
     
     //////// MVA Branches
@@ -2159,19 +2405,19 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
 
     if(iSetupLeptonBDT){
 
-      if(!fChain->GetBranch("electron_mva_fake_v1"))  el.SetHNL_FakeLepMVAV1(GetBDTScoreElV1(el,AnalyzerCore::Fake,  "BDTGv1"));
+      //      if(!fChain->GetBranch("electron_mva_fake_v1"))  el.SetHNL_FakeLepMVAV1(GetBDTScoreElV1(el,AnalyzerCore::Fake,  "BDTGv1"));
       
-      if(!fChain->GetBranch("electron_mva_fake_v2"))  el.SetHNL_FakeLepMVAV2(GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv2"    ), 
-									     GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv2_HF" ),
-									     GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv2_LF" ),
-									     GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv2_Top"));
+      //if(!fChain->GetBranch("electron_mva_fake_v2"))  el.SetHNL_FakeLepMVAV2(GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv2"    ), 
+      //								     GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv2_HF" ),
+      //								     GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv2_LF" ),
+      //								     GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv2_Top"));
       
-      if(!fChain->GetBranch("electron_mva_fake_v3"))  el.SetHNL_FakeLepMVAV3(GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv3"      ), 
-									       GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv3_HF" ), 
-									       GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv3_HFB"), 
-									       GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv3_HFC"), 
-									       GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv3_LF" ),
-									       GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv3_Top"));
+      //if(!fChain->GetBranch("electron_mva_fake_v3"))  el.SetHNL_FakeLepMVAV3(GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv3"      ), 
+      //								       GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv3_HF" ), 
+      //								       GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv3_HFB"), 
+      //								       GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv3_HFC"), 
+      //								       GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv3_LF" ),
+      //								       GetBDTScoreEl(el, AnalyzerCore::Fake,  "BDTGv3_Top"));
       
       if(!fChain->GetBranch("electron_mva_fake_v4"))  el.SetHNL_FakeLepMVAV4(GetBDTScoreEl(el,  AnalyzerCore::Fake,  "BDTGv4" ), 
 									     GetBDTScoreEl(el,AnalyzerCore::Fake,  "BDTGv4_HF"), 
@@ -2190,11 +2436,11 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
       
 
 
-      if(!fChain->GetBranch("electron_mva_conv_v1")) el.SetHNL_ConvLepMVAV1(GetBDTScoreElV1(el,AnalyzerCore::Conv,  "BDTGv1"));
+      //if(!fChain->GetBranch("electron_mva_conv_v1")) el.SetHNL_ConvLepMVAV1(GetBDTScoreElV1(el,AnalyzerCore::Conv,  "BDTGv1"));
       if(!fChain->GetBranch("electron_mva_conv_v2")) el.SetHNL_ConvLepMVAV2(GetBDTScoreEl(el,AnalyzerCore::Conv,  "BDTGv2"));
       if(!fChain->GetBranch("electron_mva_conv_ed_v2")) el.SetHNL_ConvLepMVA_EtaDependantV2(GetBDTScoreEl_EtaDependant(el,AnalyzerCore::Conv,  "BDTGv2"));
       
-      if(!fChain->GetBranch("electron_mva_cf_v1"))     el.SetHNL_CFLepMVAV1(GetBDTScoreElV1(el,AnalyzerCore::CF,  "BDTGv1"));
+      //if(!fChain->GetBranch("electron_mva_cf_v1"))     el.SetHNL_CFLepMVAV1(GetBDTScoreElV1(el,AnalyzerCore::CF,  "BDTGv1"));
       if(!fChain->GetBranch("electron_mva_cf_v2"))     el.SetHNL_CFLepMVAV2(GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2"),
 									    GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2p1"),
 									    GetBDTScoreEl(el,AnalyzerCore::CF,  "BDTGv2p2"));
@@ -2248,10 +2494,13 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
       std::vector<Jet>    AK4_JetAllColl = All_Jets;
       
       float  JetDiscCJ = -999;
+      float  JetDiscCJ_CvsB = -999;
+      float  JetDiscCJ_CvsL = -999;
+
       float mindR1=999.;
       int IdxMatchJet=-1;
       int JetHadFlavour = -999;
-
+    
       for(unsigned int ij=0; ij<AK4_JetAllColl.size(); ij++){
 
 	float dR1=el.DeltaR(AK4_JetAllColl.at(ij));
@@ -2259,21 +2508,28 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
 	if(dR1<mindR1){ mindR1=dR1; IdxMatchJet=ij; }
       }
       if(IdxMatchJet!=-1) {
-	JetDiscCJ      = AK4_JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet);
+	JetDiscCJ        = AK4_JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet);
+        JetDiscCJ_CvsB   = AK4_JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet_CvsB);
+        JetDiscCJ_CvsL    = AK4_JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet_CvsL);
+
 	JetHadFlavour  = AK4_JetAllColl.at(IdxMatchJet).hadronFlavour();
       }
       else {
-	JetDiscCJ=1.5;
+        JetDiscCJ=0.1; //// These are low pt ; value chosen to match peak in prompt leptons                                                                                
+        JetDiscCJ_CvsB=0.4;
+        JetDiscCJ_CvsL=0.1;
 	JetHadFlavour = 0;
       }
 
       el.SetJetPtRel(JetLeptonPtRelLepAware(el));
       el.SetJetPtRatio(JetLeptonPtRatioLepAware(el));
       el.SetCloseJetBScore(JetDiscCJ);
+      el.SetCloseJetCvsBScore(JetDiscCJ_CvsB);
+      el.SetCloseJetCvsLScore(JetDiscCJ_CvsL);
       el.SetCloseJetFlavour(JetHadFlavour);
       
     }
-
+    
     if(!fChain->GetBranch("electron_lepton_type") ||  !fChain->GetBranch("electron_is_cf"))  {
       int lep_type = GetLeptonType_JH(el, All_Gens);
       el.SetLeptonType(lep_type);
@@ -2869,6 +3125,7 @@ std::vector<Jet> AnalyzerCore::GetAllJets(bool applySmear){
     if(!IsDATA){
       if(applySmear){
 	jet *= jet_smearedRes->at(i);
+	jet.SetIsSmeared(true);
       }
       jet.SetResShift( jet_smearedResUp->at(i)/jet_smearedRes->at(i), jet_smearedResDown->at(i)/jet_smearedRes->at(i) );
       jet.SetRes(jet_smearedRes->at(i));
@@ -3912,10 +4169,8 @@ double AnalyzerCore::GetMuonSFEventWeight(std::vector<Muon> muons,AnalyzerParame
       else if(param.syst_ == AnalyzerParameter::MuonISOSFDown) SystDir_MuonISOSF  = -1;
       
 
-
       double this_idsf   = mcCorr->MuonID_SF (param.Muon_ID_SF_Key,  this_eta, this_pt,SystDir_MuonIDSF);
       double this_isosf  = mcCorr->MuonISO_SF(param.Muon_ISO_SF_Key, this_eta, this_pt,SystDir_MuonISOSF);
-
 
       this_weight *= this_idsf*this_isosf;
       if(param.DEBUG) cout << "GetMuonSFEventWeight this_idsf=" << this_idsf << " this_isosf=" << this_isosf << " this_trigsf=" << this_trigsf << endl;
@@ -3925,9 +4180,8 @@ double AnalyzerCore::GetMuonSFEventWeight(std::vector<Muon> muons,AnalyzerParame
       double this_recosf = mcCorr->MuonReco_SF(param.Muon_RECO_SF_Key, this_eta, reco_pt,SystDir_MuonRecoSF);
 
       this_weight *= this_recosf;		      
-      FillWeightHist(param.Name+"/RecoMuWeight_"+param.Name,this_recosf); 
-      
 
+      FillWeightHist(param.Name+"/RecoMuWeight_"+param.Name,this_recosf); 
       FillWeightHist(param.Name+"/IDMuWeight_"+param.Name,this_idsf);
       FillWeightHist(param.Name+"/ISOMuWeight_"+param.Name,this_isosf);
       FillWeightHist(param.Name+"/TrigMuWeight_"+param.Name,this_trigsf);
@@ -4066,8 +4320,9 @@ double AnalyzerCore::GetElectronSFEventWeight(std::vector<Electron> electrons, A
 
     for (auto el: electrons){
 
-      double this_recosf  = mcCorr->ElectronReco_SF(el.scEta(),el.Pt(), SystDir_ElectronRecoSF);
-      double this_idsf    = mcCorr->ElectronID_SF(param.Electron_ID_SF_Key, el.scEta(), el.Pt(), SystDir_ElectronIDSF);
+      double pt = (el.Pt() < 15) ? 16 : el.Pt();
+      double this_recosf  = mcCorr->ElectronReco_SF(el.scEta(),pt, SystDir_ElectronRecoSF);
+      double this_idsf    = mcCorr->ElectronID_SF(param.Electron_ID_SF_Key, el.scEta(), pt, SystDir_ElectronIDSF);
 
       this_weight *= this_recosf*this_idsf;
       
@@ -4121,7 +4376,7 @@ double AnalyzerCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParameter
     
     double this_fr1 = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ? fakeEst->GetElectronFakeRate(_param.Electron_Tight_ID, fr_key1, fabs(leps[0]->Eta()), leps[0]->Pt()) : fakeEst->GetMuonFakeRate(_param.Muon_Tight_ID, fr_key1, fabs(leps[0]->Eta()), leps[0]->Pt()); 
     double this_pr1 = 1.;
-    if(apply_r) this_pr1 = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ? fakeEst->GetElectronPromptRate(_param.Electron_Tight_ID,pr_key1 , fabs(leps[0]->Eta()), leps[0]->Pt()) :fakeEst->GetMuonPromptRate(_param.Muon_Tight_ID, pr_key1 , fabs(leps[0]->Eta()), leps[0]->Pt()) ;
+    //    if(apply_r) this_pr1 = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ? fakeEst->GetElectronPromptRate(_param.Electron_Tight_ID,pr_key1 , fabs(leps[0]->Eta()), leps[0]->Pt()) :fakeEst->GetMuonPromptRate(_param.Muon_Tight_ID, pr_key1 , fabs(leps[0]->Eta()), leps[0]->Pt()) ;
     
     this_weight=  fakeEst->CalculateLepWeight(this_pr1, this_fr1, leps[0]->PassLepID() );
 
@@ -4146,8 +4401,8 @@ double AnalyzerCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParameter
     TString pr_key1 =  (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.Electron_PR_Key : _param.Muon_PR_Key;
     TString pr_key2 =  (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.Electron_PR_Key : _param.Muon_PR_Key;
 
-    double this_fr1 =  (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ? fakeEst->GetElectronFakeRate(_param.Electron_Tight_ID, fr_key1, fabs(leps[0]->Eta()), leps[0]->Pt()) : fakeEst->GetMuonFakeRate(_param.Muon_Tight_ID, fr_key1, fabs(leps[0]->Eta()), leps[0]->Pt()); 
-    double this_fr2 = (leps[1]->LeptonFlavour() == Lepton::ELECTRON) ? fakeEst->GetElectronFakeRate(_param.Electron_Tight_ID, fr_key2, fabs(leps[1]->Eta()), leps[1]->Pt()) : fakeEst->GetMuonFakeRate(_param.Muon_Tight_ID, fr_key2, fabs(leps[1]->Eta()), leps[1]->Pt()); 
+    double this_fr1 =  (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ? fakeEst->GetElectronFakeRate("HNTightV2", fr_key1, fabs(leps[0]->Eta()), leps[0]->Pt()) : fakeEst->GetMuonFakeRate("HNTightV2", fr_key1, fabs(leps[0]->Eta()), leps[0]->Pt()); 
+    double this_fr2 = (leps[1]->LeptonFlavour() == Lepton::ELECTRON) ? fakeEst->GetElectronFakeRate("HNTightV2", fr_key2, fabs(leps[1]->Eta()), leps[1]->Pt()) : fakeEst->GetMuonFakeRate("HNTightV2", fr_key2, fabs(leps[1]->Eta()), leps[1]->Pt()); 
 
     double this_pr1 = 1.;
     //if(apply_r) this_pr1 = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ? fakeEst->GetElectronPromptRate(_param.Electron_Tight_ID,pr_key1 , fabs(leps[0]->Eta()), leps[0]->Pt()) :fakeEst->GetMuonPromptRate(_param.Muon_Tight_ID, pr_key1 , fabs(leps[0]->Eta()), leps[0]->Pt()) ;
@@ -4180,7 +4435,7 @@ double AnalyzerCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParameter
 
       if( lep->PassLepID() ) continue;
       
-      this_fr =  (lep->LeptonFlavour() == Lepton::ELECTRON) ? fakeEst->GetElectronFakeRate(_param.Electron_Tight_ID, _param.Electron_FR_Key, fabs(lep->Eta()), lep->Pt()) : fakeEst->GetMuonFakeRate(_param.Muon_Tight_ID, _param.Muon_FR_Key, fabs(lep->Eta()), lep->Pt()); 
+      this_fr =  (lep->LeptonFlavour() == Lepton::ELECTRON) ? fakeEst->GetElectronFakeRate( "HNTightV2", _param.Electron_FR_Key, fabs(lep->Eta()), lep->Pt()) : fakeEst->GetMuonFakeRate("HNTightV2", _param.Muon_FR_Key, fabs(lep->Eta()), lep->Pt()); 
       this_weight *= -1.*this_fr/(1.-this_fr);
       FRs.push_back(this_fr);
       
@@ -4419,9 +4674,9 @@ void AnalyzerCore::SetupLeptonBDTSKFlat(){
   std::vector<Jet>      AK4_JetAllColl  = All_Jets;
 
   for(auto i: AllmuonColl){
-    vmuon_mva_fake_v1->push_back(GetBDTScoreMuon(i,AnalyzerCore::Fake,  "BDTGv1"));
-    vmuon_mva_fake_v2->push_back(GetBDTScoreMuon(i,AnalyzerCore::Fake,  "BDTGv2"));
-    vmuon_mva_fake_v3->push_back(GetBDTScoreMuon(i,AnalyzerCore::Fake,  "BDTGv3"));
+    vmuon_mva_fake_v1->push_back(-1.);//GetBDTScoreMuon(i,AnalyzerCore::Fake,  "BDTGv1"));
+    vmuon_mva_fake_v2->push_back(-1.);//GetBDTScoreMuon(i,AnalyzerCore::Fake,  "BDTGv2"));
+    vmuon_mva_fake_v3->push_back(-1.);//GetBDTScoreMuon(i,AnalyzerCore::Fake,  "BDTGv3"));
     vmuon_mva_fake_v4->push_back(GetBDTScoreMuon(i,AnalyzerCore::Fake,  "BDTGv4"));
     vmuon_mva_fake_ed_v4->push_back(GetBDTScoreMuon_EtaDependant(i,AnalyzerCore::Fake,  "BDTGv4"));
 
@@ -4429,6 +4684,9 @@ void AnalyzerCore::SetupLeptonBDTSKFlat(){
     vmuon_ptrel->push_back(JetLeptonPtRelLepAware(i));
 
     float  JetDiscCJ = -999;
+    float  JetDiscCJ_CvsB = -999;
+    float  JetDiscCJ_CvsL = -999;
+
     int JetFlavourCJ=-999;
     int IdxMatchJet=-1;
     float mindR1=999.;
@@ -4440,32 +4698,40 @@ void AnalyzerCore::SetupLeptonBDTSKFlat(){
     }
     if(IdxMatchJet!=-1)    {
       JetDiscCJ = AK4_JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet);
+      JetDiscCJ_CvsB   = AK4_JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet_CvsB);
+      JetDiscCJ_CvsL    = AK4_JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet_CvsL);
       JetFlavourCJ = AK4_JetAllColl.at(IdxMatchJet).hadronFlavour();
 
     }
     else {
-      JetDiscCJ=1.5;
+      JetDiscCJ=0.1; //// These are low pt ; value chosen to match peak in prompt leptons                                                                                
+      JetDiscCJ_CvsB=0.4;
+      JetDiscCJ_CvsL=0.1;
       JetFlavourCJ=0;
     }
     vmuon_cj_bjetdisc->push_back(JetDiscCJ);
+    vmuon_cj_cvsbjetdisc->push_back(JetDiscCJ_CvsB);
+    vmuon_cj_cvsljetdisc->push_back(JetDiscCJ_CvsL);
+
     vmuon_cj_flavour->push_back(JetFlavourCJ);
     vmuon_lepton_type->push_back(GetLeptonType_JH(i, All_Gens));
     vmuon_is_cf->push_back(IsCF(i, All_Gens));
   }
+
   for(auto i: AllelectronColl){
 
-    velectron_mva_fake_v1->push_back(GetBDTScoreElV1(i,AnalyzerCore::Fake,  "BDTGv1"));
-    velectron_mva_fake_v2->push_back(GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv2"));
-    velectron_mva_fakeHF_v2->push_back(GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv2_HF"));
-    velectron_mva_fakeLF_v2->push_back(GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv2_LF"));
-    velectron_mva_fakeTop_v2->push_back(GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv2_Top"));
+    velectron_mva_fake_v1->push_back(-1.);//GetBDTScoreElV1(i,AnalyzerCore::Fake,  "BDTGv1"));
+    velectron_mva_fake_v2->push_back(-1.);//GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv2"));
+    velectron_mva_fakeHF_v2->push_back(-1.);//GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv2_HF"));
+    velectron_mva_fakeLF_v2->push_back(-1.);//GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv2_LF"));
+    velectron_mva_fakeTop_v2->push_back(-1.);//GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv2_Top"));
 
-    velectron_mva_fake_v3->push_back(GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv3"));
-    velectron_mva_fakeHF_v3->push_back(GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv3_HF"));
-    velectron_mva_fakeHFB_v3->push_back(GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv3_HFB"));
-    velectron_mva_fakeHFC_v3->push_back(GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv3_HFC"));
-    velectron_mva_fakeLF_v3->push_back(GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv3_LF"));
-    velectron_mva_fakeTop_v3->push_back(GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv3_Top"));
+    velectron_mva_fake_v3->push_back(-1.);//GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv3"));
+    velectron_mva_fakeHF_v3->push_back(-1.);//GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv3_HF"));
+    velectron_mva_fakeHFB_v3->push_back(-1.);//GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv3_HFB"));
+    velectron_mva_fakeHFC_v3->push_back(-1.);//GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv3_HFC"));
+    velectron_mva_fakeLF_v3->push_back(-1.);//GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv3_LF"));
+    velectron_mva_fakeTop_v3->push_back(-1.);//GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv3_Top"));
 
     velectron_mva_fake_v4->push_back(GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv4"));
     velectron_mva_fakeHF_v4->push_back(GetBDTScoreEl(i,AnalyzerCore::Fake,  "BDTGv4_HF"));
@@ -4482,23 +4748,25 @@ void AnalyzerCore::SetupLeptonBDTSKFlat(){
     velectron_mva_fakeTop_ed_v4->push_back(GetBDTScoreEl_EtaDependant(i,AnalyzerCore::Fake,  "BDTGv4_Top"));
 
 
-    velectron_mva_conv_v1->push_back(GetBDTScoreElV1(i,AnalyzerCore::Conv,  "BDTGv1"));
+    velectron_mva_conv_v1->push_back(-1.);//GetBDTScoreElV1(i,AnalyzerCore::Conv,  "BDTGv1"));
     velectron_mva_conv_v2->push_back(GetBDTScoreEl(i,AnalyzerCore::Conv,  "BDTGv2"));
     velectron_mva_conv_ed_v2->push_back(GetBDTScoreEl_EtaDependant(i,AnalyzerCore::Conv,  "BDTGv2"));
 
-    velectron_mva_cf_v1->push_back(GetBDTScoreElV1(i,AnalyzerCore::CF,  "BDTGv1"));
+    velectron_mva_cf_v1->push_back(-1.);//GetBDTScoreElV1(i,AnalyzerCore::CF,  "BDTGv1"));
     velectron_mva_cf_v2->push_back(GetBDTScoreEl(i,AnalyzerCore::CF,  "BDTGv2"));
-    velectron_mva_cf_v2p1->push_back(GetBDTScoreEl(i,AnalyzerCore::CF,  "BDTGv2p1"));
-    velectron_mva_cf_v2p2->push_back(GetBDTScoreEl(i,AnalyzerCore::CF,  "BDTGv2p2"));
+    velectron_mva_cf_v2p1->push_back(-1.);//GetBDTScoreEl(i,AnalyzerCore::CF,  "BDTGv2p1"));
+    velectron_mva_cf_v2p2->push_back(-1.);//GetBDTScoreEl(i,AnalyzerCore::CF,  "BDTGv2p2"));
     velectron_mva_cf_ed_v2->push_back(GetBDTScoreEl_EtaDependant(i,AnalyzerCore::CF,  "BDTGv2"));
-    velectron_mva_cf_ed_v2p1->push_back(GetBDTScoreEl_EtaDependant(i,AnalyzerCore::CF,  "BDTGv2p1"));
-    velectron_mva_cf_ed_v2p2->push_back(GetBDTScoreEl_EtaDependant(i,AnalyzerCore::CF,  "BDTGv2p2"));
+    velectron_mva_cf_ed_v2p1->push_back(-1.);//GetBDTScoreEl_EtaDependant(i,AnalyzerCore::CF,  "BDTGv2p1"));
+    velectron_mva_cf_ed_v2p2->push_back(-1.);//GetBDTScoreEl_EtaDependant(i,AnalyzerCore::CF,  "BDTGv2p2"));
 
     velectron_ptratio->push_back(JetLeptonPtRatioLepAware(i));
     velectron_ptrel->push_back(JetLeptonPtRelLepAware(i));
     
     float  JetDiscCJ = -999;
     int  JetFlavourCJ = -999;
+    float  JetDiscCJ_CvsB = -999;
+    float  JetDiscCJ_CvsL = -999;
 
     int IdxMatchJet=-1;
     float mindR1=999.;
@@ -4510,14 +4778,21 @@ void AnalyzerCore::SetupLeptonBDTSKFlat(){
     }
     if(IdxMatchJet!=-1) {
       JetDiscCJ = AK4_JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet);
+      JetDiscCJ_CvsB   = AK4_JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet_CvsB);
+      JetDiscCJ_CvsL    = AK4_JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet_CvsL);
       JetFlavourCJ  = AK4_JetAllColl.at(IdxMatchJet).hadronFlavour();
 
     }
     else {
-      JetDiscCJ=1.5;
+
+      JetDiscCJ=0.1;
+      JetDiscCJ_CvsB=0.4;
+      JetDiscCJ_CvsL=0.1;
       JetFlavourCJ=0;
     }
     velectron_cj_bjetdisc->push_back(JetDiscCJ);
+    velectron_cj_cvsbjetdisc->push_back(JetDiscCJ_CvsB);
+    velectron_cj_cvsljetdisc->push_back(JetDiscCJ_CvsL);
     velectron_cj_flavour->push_back(JetFlavourCJ);
 
     velectron_lepton_type->push_back(GetLeptonType_JH(i, All_Gens));
@@ -4535,6 +4810,9 @@ void AnalyzerCore::ResetLeptonBDTSKFlat(){
   velectron_ptrel->clear();
   velectron_ptratio->clear();
   velectron_cj_bjetdisc->clear();
+  velectron_cj_cvsbjetdisc->clear();
+  velectron_cj_cvsljetdisc->clear();
+
   velectron_mva_cf_v1->clear();
   velectron_mva_cf_v2->clear();
   velectron_mva_cf_v2p1->clear();
@@ -4582,6 +4860,9 @@ void AnalyzerCore::ResetLeptonBDTSKFlat(){
   vmuon_ptrel->clear();
   vmuon_ptratio->clear();
   vmuon_cj_bjetdisc->clear();
+  vmuon_cj_cvsbjetdisc->clear();
+  vmuon_cj_cvsljetdisc->clear();
+
   vmuon_cj_flavour->clear();
   vmuon_lepton_type->clear();
   vmuon_is_cf->clear();
@@ -4594,6 +4875,8 @@ void AnalyzerCore::InitialiseLeptonBDTSKFlat(){
   velectron_ptratio = 0;
   velectron_ptrel  = 0;
   velectron_cj_bjetdisc = 0;
+  velectron_cj_cvsbjetdisc = 0;
+  velectron_cj_cvsljetdisc = 0;
   velectron_cj_flavour = 0;
   velectron_mva_cf_v1 = 0;
   velectron_mva_cf_v2 = 0;
@@ -4641,6 +4924,8 @@ void AnalyzerCore::InitialiseLeptonBDTSKFlat(){
   vmuon_ptratio = 0;
   vmuon_ptrel  = 0;
   vmuon_cj_bjetdisc = 0;
+  vmuon_cj_cvsbjetdisc = 0;
+  vmuon_cj_cvsljetdisc = 0;
   vmuon_cj_flavour = 0;
   vmuon_lepton_type=0;
   vmuon_is_cf=0;
@@ -4654,23 +4939,25 @@ void AnalyzerCore::SetupLeptonBDT(){
   
   TMVA::Tools::Instance();
   // Version 1 (BUGGY, still in use for cross check) 
-                                                                                                                                                                                
-  ElectronIDFakeMVAReader = new TMVA::Reader();
-  ElectronIDCFMVAReader = new TMVA::Reader();
-  ElectronIDConvMVAReader = new TMVA::Reader();
 
+  if(iSetupAllBDT){
+    MuonIDFakeMVAReader = new TMVA::Reader();                                                                                     
+    ElectronIDFakeMVAReader = new TMVA::Reader();
+    ElectronIDCFMVAReader = new TMVA::Reader();
+    ElectronIDConvMVAReader = new TMVA::Reader();
+    ElectronIDv2CFMVAReaderPt = new TMVA::Reader();                                                                                                                                                               
+    ElectronIDv3CFMVAReader = new TMVA::Reader();
+  }
+   
+  
   /// Version 2                                                                                                                                                               
 
   ElectronIDv2FakeMVAReader = new TMVA::Reader();    
-
   ElectronIDv2CFMVAReader   = new TMVA::Reader();
-  ElectronIDv2CFMVAReaderPt = new TMVA::Reader();
   ElectronIDv2ConvMVAReader = new TMVA::Reader();
 
   /// Version 3 (Full list of var)                   
                                                                                                                                                                                 
-  ElectronIDv3CFMVAReader = new TMVA::Reader();
-  MuonIDFakeMVAReader = new TMVA::Reader();
   MuonIDFakeNoPtMVAReader = new TMVA::Reader();
   
   return;
@@ -4719,6 +5006,9 @@ void AnalyzerCore::initializeAnalyzerTools(){
   cfEst->SetEra(GetEra());
   cfEst->ReadHistograms();
   
+  //  if(Analyzer.Contains("SkimTree")) SetupMVAVersion1 = true;
+  //  else SetupMVAVersion1=false;
+
 
   /*                                                                                                                                                                                                                                                                          
                                                                                                                                                                                                                                                                               
@@ -5409,12 +5699,39 @@ std::vector<Jet> AnalyzerCore::JetsAwayFromFatJet(const std::vector<Jet>& jets, 
 
 }
 
+Jet AnalyzerCore::GetCorrectedJetCloseToLepton(vector<Particle> leps, Jet jet){
+
+  //jet_LepAwareJECv2 = (raw_jet * L1 - lepton) * L2L3Res + lepton                                                                                           
+  Particle  rawJet =  jet * jet.JECfactor();
+  double l1corrFactor = jet.JEC_L1();
+
+  Particle  rawJetMinusLep = rawJet;
+  Particle Lepsp4;
+  for(auto ip : leps) {
+    Lepsp4 = Lepsp4+ip;
+    
+    rawJetMinusLep = rawJetMinusLep - ip* (1.0 / l1corrFactor);
+  }
+  Particle jetp4 = (rawJetMinusLep ) * (jet.Pt() / rawJet.Pt()) + Lepsp4;
+
+
+  //cout << "Corr Eta : " << jetp4.Eta() << " " << jet.Eta() << endl;                                                                                        
+  // cout << "Corr Phi : " << jetp4.Phi() << " " << jet.Phi() << endl;                                                                                       
+
+  Jet jet_corr = jet;
+
+  jet_corr.SetPtEtaPhiE(jetp4.Pt(), jetp4.Eta(), jetp4.Phi(),jetp4.E());
+
+  return jet_corr;
+}
+
+
 
 Jet AnalyzerCore::GetCorrectedJetCloseToLepton(Muon lep, Jet jet){
 
   //jet_LepAwareJECv2 = (raw_jet * L1 - lepton) * L2L3Res + lepton                                                        
 
-  Particle  rawJet = jet * (1./ jet.JEC_Full());
+  Particle  rawJet =  jet * jet.JECfactor();
 
   Particle  lepp4 = lep;
   double l1corrFactor = jet.JEC_L1();
@@ -5434,8 +5751,8 @@ Jet AnalyzerCore::GetCorrectedJetCloseToLepton(Muon lep, Jet jet){
 Jet AnalyzerCore::GetCorrectedJetCloseToLepton(Electron lep, Jet jet){
 
   //jet_LepAwareJECv2 = (raw_jet * L1 - lepton) * L2L3Res + lepton
-  
-  Particle  rawJet = jet * (1./ jet.JEC_Full());
+  Particle  rawJet =  jet * jet.JECfactor(); 
+
   Particle  lepp4 = lep;
   double l1corrFactor = jet.JEC_L1();
   Particle jetp4 = (rawJet - lepp4 * (1.0 / l1corrFactor)) * (jet.Pt() / rawJet.Pt()) + lepp4;
@@ -5450,7 +5767,8 @@ Jet AnalyzerCore::GetCorrectedJetCloseToLepton(Lepton lep, Jet jet){
 
   //jet_LepAwareJECv2 = (raw_jet * L1 - lepton) * L2L3Res + lepton                                                                                                                                                                                                      
 
-  Particle  rawJet = jet * (1./ jet.JEC_Full());
+  Particle  rawJet =  jet * jet.JECfactor();
+
   Particle  lepp4 = lep;
   double l1corrFactor = jet.JEC_L1();
   Particle jetp4 = (rawJet - lepp4 * (1.0 / l1corrFactor)) * (jet.Pt() / rawJet.Pt()) + lepp4;
@@ -5560,6 +5878,35 @@ double  AnalyzerCore::JetLeptonPtRelLepAware( Lepton lep){
 
 }
 
+
+double  AnalyzerCore::JetLeptonPtRelLepAwareV2( Lepton lep){
+
+  lep.SetPtEtaPhiE(lep.UncorrectedPt(),lep.Eta(), lep.Phi(), lep.E());
+
+  std::vector<Jet> jets = GetAllJets(false);
+
+  double mindR=0.4;
+
+  Jet closejet;
+  for(auto jet : jets){
+    if (lep.DeltaR(jet) < mindR) {
+      closejet = GetCorrectedJetCloseToLepton(lep,jet);
+      mindR = lep.DeltaR(jet);
+    }
+  }
+
+  if(mindR==0.4) return 0.;
+
+  TLorentzVector lepp4 = lep;
+  TLorentzVector jetp4 = closejet;
+
+  double PtRel = lepp4.Perp((closejet-lepp4).Vect()); // Default                                                                                             
+
+  return PtRel;
+
+}
+
+
 double  AnalyzerCore::JetLeptonPtRatioLepAware(Muon lep, bool CorrLep){
   if(!CorrLep)lep.SetPtEtaPhiE(lep.MiniAODPt(), lep.Eta(), lep.Phi(), lep.E());
   return JetLeptonPtRatioLepAware(Lepton(lep));
@@ -5596,6 +5943,122 @@ double  AnalyzerCore::JetLeptonPtRatioLepAware(Lepton lep){
   return std::min(lepp4.Pt() / closejet.Pt(),1.5); 
 
 }
+
+double  AnalyzerCore::JetLeptonPtRatioLepAwareV2(Lepton lep){
+
+  lep.SetPtEtaPhiE(lep.UncorrectedPt(),lep.Eta(), lep.Phi(), lep.E());
+  std::vector<Jet> jets = GetAllJets(false);
+
+  double  mindR=0.4;
+
+  Jet closejet;
+  for(auto jet : jets){
+    if (lep.DeltaR(jet) < mindR) {
+      closejet = GetCorrectedJetCloseToLepton(lep,jet);
+      mindR = lep.DeltaR(jet);
+    }
+  }
+
+  Particle lepp4 = lep;
+
+  if (mindR == 0.4)  return std::min(1./ (1. + lep.RelIso()), 1.5);
+
+  return std::min(lepp4.Pt() / closejet.Pt(),1.5);
+
+}
+
+
+
+double  AnalyzerCore::JetLeptonPtRatioLepAwareMuon(Lepton lep, bool smearjet, bool corrMu, bool uncorrLepE){
+
+  std::vector<Jet> jets = GetAllJets(smearjet);
+
+  if(uncorrLepE)     lep.SetPtEtaPhiE(lep.UncorrectedPt(),lep.Eta(), lep.Phi(), lep.E());
+
+  double  mindR=0.4;
+
+  Jet closejet;
+  Jet UncorJet;
+  for(auto jet : jets){
+    if(jet.Pt() < 10) continue;
+
+    if (lep.DeltaR(jet) < mindR) {
+      UncorJet=jet;
+      mindR = lep.DeltaR(jet);
+    }
+  }
+  
+  vector<Muon> LooseMuons = All_Muons;
+  vector<Particle> OverlapLeps = {lep};
+  if(corrMu){
+    for(auto imu : LooseMuons){
+      if(UncorJet.DeltaR(imu) < 0.4){
+	if (imu.PassID("POGLoose")) {
+	  OverlapLeps.push_back(imu);
+	}
+      }
+    }
+  }
+  
+  closejet = GetCorrectedJetCloseToLepton(OverlapLeps, UncorJet);
+
+  Particle lepp4 = lep;
+
+  if (mindR == 0.4)  return std::min(1./ (1. + lep.RelIso()), 1.5);
+
+  return std::min(lepp4.Pt() / closejet.Pt(),1.5);
+
+}
+
+
+double  AnalyzerCore::JetLeptonPtRelLepAwareMuon( Lepton lep, bool smearjet, bool corrMu, bool uncorrLepE){
+
+  std::vector<Jet> jets = GetAllJets(smearjet);
+
+  if(uncorrLepE)     lep.SetPtEtaPhiE(lep.UncorrectedPt(),lep.Eta(), lep.Phi(), lep.E());
+  
+  double mindR=0.4;
+
+  Jet closejet;
+  Jet UncorJet;
+
+  for(auto jet : jets){
+    if(jet.Pt() < 10) continue;
+
+    if (lep.DeltaR(jet) < mindR) {
+      UncorJet = jet;
+      mindR = lep.DeltaR(jet);
+    }
+  }
+
+  if(mindR==0.4) return 0.;
+
+  vector<Muon> LooseMuons = All_Muons;
+  vector<Particle> OverlapLeps = {lep};
+  if(corrMu){
+    for(auto imu : LooseMuons){
+      if(UncorJet.DeltaR(imu) < 0.4){
+        if (imu.PassID("POGLoose")) {
+          OverlapLeps.push_back(imu);
+        }
+      }
+    }
+  }
+  
+  
+  //  if(OverlapLeps.size() > 1)
+  closejet = GetCorrectedJetCloseToLepton(OverlapLeps, UncorJet);
+
+  TLorentzVector lepp4 = lep;
+  TLorentzVector jetp4 = closejet;
+  
+  
+  double PtRel = lepp4.Perp((jetp4-lepp4).Vect()); // Default                                                                                               
+  
+  return PtRel;
+
+}
+
 
 
 
@@ -6315,9 +6778,9 @@ bool AnalyzerCore::IsFromHadron(const Gen& me, const std::vector<Gen>& gens){
 }
 
 
-bool AnalyzerCore::ConversionSplitting(std::vector<Lepton *> leps){
+bool AnalyzerCore::ConversionSplitting(std::vector<Lepton *> leps, bool RunConvMode,  int nlep){
   
-
+  if(!RunConvMode) return true;
   if(IsData) return true;
   
   int nlep_pt20(0);
@@ -6328,12 +6791,12 @@ bool AnalyzerCore::ConversionSplitting(std::vector<Lepton *> leps){
   }
  
   if(MCSample.Contains("WGTo") ||MCSample.Contains("ZGTo")){
-    if(nlep_pt20 ==3) return true;
+    if(nlep_pt20 ==nlep) return true;
     else return false;
   }
   else if(MCSample.Contains("DYJet") || MCSample.Contains("WJet")) {
 
-    if(nlep_pt20 !=3) return true;
+    if(nlep_pt20 !=nlep) return true;
     else return false;
 
   }
@@ -6735,12 +7198,11 @@ TH3D* AnalyzerCore::GetHist3D(TString histname){
   
 }
 
-void AnalyzerCore::FillWeightHist(TString label, double _weight){
-
-  if(!label.Contains("Syst_"))
-    FillHist( "weights/"+ label , _weight ,1., 200, -5., 5,"ev weight");
-
-  return;
+double AnalyzerCore::FillWeightHist(TString label, double _weight){
+  
+  if(!label.Contains("Syst_"))   FillHist( "weights/"+ label , _weight ,1., 200, -5., 5,"ev weight");
+    
+  return _weight;
 }
 
 

@@ -9,21 +9,12 @@ nmax=400
 skim=' '
 declare  -a era_list=("2018" "2017"  "2016preVFP" "2016postVFP")
 
-if [[ $1 == "Ind" ]]; then
+if [[ $1 == "" ]]; then
 
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -i WZ_pythia  -n 500  --nmax 350           -e ${i}  --skim SkimTree_Dilepton  &
-        SKFlat.py -a $analyzer  -i WW_pythia  -n 500  --nmax 350           -e ${i}  --skim SkimTree_Dilepton  &
-        SKFlat.py -a $analyzer  -i ZZ_pythia  -n 500  --nmax 350           -e ${i}  --skim SkimTree_Dilepton  &
-        SKFlat.py -a $analyzer  -i WJets_MG  -n 500  --nmax 350           -e ${i}  --skim SkimTree_Dilepton  &
-        SKFlat.py -a $analyzer  -i SingleTop_tch_top_Incl  -n 500  --nmax 350           -e ${i}  --skim SkimTree_Dilepton  &
-        SKFlat.py -a $analyzer  -i SingleTop_tch_antitop_Incl    -n 500  --nmax 350           -e ${i}  --skim SkimTree_Dilepton  &
-        SKFlat.py -a $analyzer  -i TTLJ_powheg  -n 4000  --nmax 400           -e ${i}  --skim SkimTree_Dilepton  &
+        SKFlat.py -a $analyzer  -i DYJets10to50_MG  --nmax 350           -e ${i}  &
     done
-
-    SKFlat.py -a $analyzer  -i TTLL_powheg  -n 4000  --nmax 400    -e 2017  --skim SkimTree_Dilepton  &
-    SKFlat.py -a $analyzer  -i TTLL_powheg  -n 4000  --nmax 400    -e 2018  --skim SkimTree_Dilepton  &
 
 fi
 

@@ -3,6 +3,7 @@
 ClassImp(Lepton)
 
 Lepton::Lepton() : Particle() {
+
   j_dXY = -999.;
   j_dXYerr = -999.;
   j_dZ = -999.;
@@ -16,6 +17,8 @@ Lepton::Lepton() : Particle() {
   j_lep_jetptrel=-999.;
   j_lep_jetptratio=-999.;
   j_lep_jetbscore=-999.;
+  j_lep_jetcvsbscore=-999.;
+  j_lep_jetcvslscore=-999.;
   j_lep_jetflavour=-999;
   j_LeptonFlavour = NONE;
   j_MiniIso_ChHad = -999.;
@@ -152,7 +155,7 @@ bool Lepton::PassULMVA(double mva, double cut, TString s_mva) const {
     exit(ENODATA);
   }
 
-  //if(k_debug) cout << "PassULMVA " << s_mva << " " << mva << " " << cut <<  " ( mva < cut) = " << ( mva < cut)  <<endl;
+  //  cout << "PassULMVA " << s_mva << " " << mva << " " << cut <<  " ( mva < cut) = " << ( mva > cut)  <<endl;
   if ( mva < cut)  return false;
   return true;
 }
@@ -283,6 +286,17 @@ void Lepton::SetJetPtRatio(double ptr){
 
 
 void Lepton::SetCloseJetBScore(double bscore){
+
+  j_lep_jetbscore = bscore;
+}
+
+
+void Lepton::SetCloseJetCvsBScore(double bscore){
+  j_lep_jetbscore = bscore;
+}
+
+
+void Lepton::SetCloseJetCvsLScore(double bscore){
 
   j_lep_jetbscore = bscore;
 }

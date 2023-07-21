@@ -214,6 +214,8 @@ public :
    vector<float>   *electron_ptrel;
    vector<float>   *electron_ptratio;
    vector<float>   *electron_cj_bjetdisc;
+   vector<float>   *electron_cj_cvsbjetdisc;
+   vector<float>   *electron_cj_cvsljetdisc;
    vector<float>   *electron_cj_flavour;
    vector<float>   *electron_mva_cf_v1;
    vector<float>   *electron_mva_cf_v2;
@@ -353,6 +355,8 @@ public :
    vector<float>   *muon_ptrel;
    vector<float>   *muon_ptratio;
    vector<float>   *muon_cj_bjetdisc;
+   vector<float>   *muon_cj_cvsbjetdisc;
+   vector<float>   *muon_cj_cvsljetdisc;
    vector<float>   *muon_cj_flavour;
    vector<float>   *muon_mva_fake_v1;
    vector<float>   *muon_mva_fake_v2;
@@ -704,6 +708,8 @@ public :
    TBranch        *b_electron_ptrel;
    TBranch        *b_electron_ptratio;
    TBranch        *b_electron_cj_bjetdisc;
+   TBranch        *b_electron_cj_cvsbjetdisc;
+   TBranch        *b_electron_cj_cvsljetdisc;
    TBranch        *b_electron_cj_flavour;
    TBranch        *b_electron_mva_cf_v1;
    TBranch        *b_electron_mva_cf_v2;
@@ -835,6 +841,8 @@ public :
    TBranch        *b_muon_ptrel;
    TBranch        *b_muon_ptratio;
    TBranch        *b_muon_cj_bjetdisc;
+   TBranch        *b_muon_cj_cvsbjetdisc;
+   TBranch        *b_muon_cj_cvsljetdisc;
    TBranch        *b_muon_cj_flavour;
    TBranch        *b_muon_mva_fake_v1;
    TBranch        *b_muon_mva_fake_v2;

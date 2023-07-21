@@ -21,9 +21,38 @@ void HNL_SignalRegionPlotter::executeEvent(){
   }
   
   AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("MVAUL","_UL");
-  //AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("HNL","_UL");
-  RunULAnalysis(param_signal);
+  param_signal.FakeMethod = "MC";
 
+  //  RunULAnalysis(param_signal);
+
+  vector<TString> IDs = {  "HNL_ULID_2016",  "HNL_ULID_2017",      "HNL_ULID_2018",  "HNL_LID_2016",    "HNL_ULID_Run2",  "HNL_ULID_Run2v2", "HNTightV2"};
+
+  /*"HNL_ULID_OPT_POG1",
+    "HNL_ULID_OPT_POG2",
+    "HNL_ULID_OPT_POG3",
+    "HNL_ULID_OPT_POG4",
+    "HNL_ULID_Run2_OPT",
+    "HNL_ULID_2016_OPT",
+    "HNL_ULID_2017_OPT",
+    "HNL_ULID_2018_OPT",
+    "HNL_ULID_2016",
+    "HNL_ULID_2017",
+    "HNL_ULID_2018",
+    "HNL_ULID_Run2",
+    "HNL_LID_2016",
+    "HNL_ULID_Run2v2",
+    "HNTightV2"};*/
+  
+  TString param_signal_name = param_signal.Name;
+  
+  for (auto id: IDs){
+    param_signal.Electron_Tight_ID = id;
+    param_signal.Name = param_signal_name + id;
+    param_signal.DefName = param_signal_name + id;
+    RunULAnalysis(param_signal);
+  }
+
+  return;
   if(!IsData) RunSyst=true;
   if(RunSyst){
     TString param_signal_name = param_signal.Name;
@@ -69,9 +98,14 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
   // HL ID
   std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5); 
   std::vector<Muon>       MuonCollV     = GetMuons    (param.Muon_Veto_ID, 5., 2.4);
+  
 
   TString el_ID = (RunFake) ?  param.Electron_FR_ID : param.Electron_Tight_ID ;
   TString mu_ID = (RunFake) ?  param.Muon_FR_ID :  param.Muon_Tight_ID ;
+  if(param.FakeMethod == "MC"){
+    el_ID =param.Electron_Tight_ID;
+    mu_ID = param.Muon_Tight_ID;
+  }
 
   double Min_Muon_Pt     = (RunFake) ? 3. : 5.;
   double Min_Electron_Pt = (RunFake) ? 7. : 10.;
@@ -98,7 +132,7 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
   std::vector<Jet> JetCollLoose                   = GetHNLJets("Loose",param);
   std::vector<Jet> VBF_JetColl                    = GetHNLJets("VBFTight",param);
   std::vector<Jet> BJetColl                       = GetHNLJets("BJetM",param);
-  //  std::vector<Jet> BJetCollSR1                    = GetHNLJets("BJetT",param);
+
  
   Particle METv = GetvMET("PuppiT1xyULCorr",param); // returns MET with systematic correction; run this after all object selection done; NOTE that VBF jet is used here
 

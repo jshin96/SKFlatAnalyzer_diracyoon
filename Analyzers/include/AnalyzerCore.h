@@ -136,6 +136,7 @@ public:
   void InitializeIDTreeVars();
   void InitializeElectronIDTreeVars();
   void PrintBDTInput();
+  void PrintBDTVariables(Electron el,TString label);
 
   /// For adding var to Trees
   void SetupLeptonBDTSKFlat();
@@ -158,11 +159,13 @@ public:
   /// Var for ID BDTs
   Float_t bdt_id_Pt,        bdt_id_Eta,      bdt_id_PtBinned; //3
   Float_t bdt_id_PtRatio,   bdt_id_PtRel   , bdt_id_MassDrop; //3
-  Float_t bdt_id_CEMFracCJ, bdt_id_NEMFracCJ,bdt_id_CHFracCJ, bdt_id_NHFracCJ, bdt_id_MuFracCJ, bdt_id_JetDiscCJ; //6
-  Float_t bdt_id_Dxy,       bdt_id_Dz,       bdt_id_DxySig, bdt_id_DzSig, bdt_id_RelIso,bdt_id_IP3D,bdt_id_MVA,bdt_id_MVAIso,bdt_id_Chi2, bdt_id_Minireliso; //10
+  Float_t bdt_id_PtRatioV2,   bdt_id_PtRelV2;
+  Float_t bdt_id_PtRatioV3,   bdt_id_PtRelV3;
+  Float_t bdt_id_CEMFracCJ, bdt_id_NEMFracCJ,bdt_id_CHFracCJ, bdt_id_NHFracCJ, bdt_id_MuFracCJ, bdt_id_JetDiscCJ,bdt_id_JetDiscCJCvsB,bdt_id_JetDiscCJCvsL; //6
+  Float_t bdt_id_Dxy,       bdt_id_Dz,       bdt_id_DxySig, bdt_id_DzSig, bdt_id_RelIso,bdt_id_IP3D,bdt_id_MVA,bdt_id_MVAIso,bdt_id_MVARaw,bdt_id_MVAIsoRaw,bdt_id_Chi2, bdt_id_Minireliso; //10
   Float_t bdt_id_Full5x5_sigmaIetaIeta,bdt_id_dEtaSeed,bdt_id_dPhiIn,bdt_id_HoverE,bdt_id_Rho,bdt_id_TrkIso,bdt_id_InvEminusInvP,bdt_id_ecalPFClusterIso,bdt_id_hcalPFClusterIso; //9
   Float_t bdt_id_RelDxy,bdt_id_RelDz,bdt_id_RelIP3D,bdt_id_RelMVA,bdt_id_RelMVAIso,bdt_id_PileUp;//6
-  Float_t bdt_id_R9,bdt_id_dr03TkSumPt,bdt_id_dr03HcalTowerSumEt,bdt_id_dr03HcalDepth1TowerSumEt,bdt_id_dr03EcalRecHitSumEt, bdt_id_e2x5OverE5x5,bdt_id_e1x5OverE5x5;//7
+  Float_t bdt_id_R9,bdt_id_dr03TkSumPt,bdt_id_dr03HcalTowerSumEt,bdt_id_dr03HcalDepth1TowerSumEt,bdt_id_dr03EcalRecHitSumEt, bdt_id_e2x5OverE5x5,bdt_id_e1x5OverE5x5,bdt_id_psEoRraw;//7
   Float_t bdt_id_e15,bdt_id_e25,bdt_id_e55,bdt_id_EtaWidth,bdt_id_PhiWidth,bdt_id_dEtaIn, bdt_id_MiniIsoChHad,bdt_id_MiniIsoNHad,bdt_id_MiniIsoPhHad,bdt_id_IsoChHad,bdt_id_IsoNHad,bdt_id_IsoPhHad;//12
   Float_t bdt_id_RelMiniIsoCh,bdt_id_RelMiniIsoN,bdt_id_EoverP,bdt_id_FBrem;//4
   //Float_t fIsEcalDriven,Pixel_hits,  fValidhits,fMatched_stations,fTracker_layers,fMissingHits;//6
@@ -211,6 +214,8 @@ public:
   Jet GetCorrectedJetCloseToLepton(Lepton lep, Jet jet);
   Jet GetCorrectedJetCloseToLepton(Muon lep, Jet jet);
   Jet GetCorrectedJetCloseToLepton(Electron lep, Jet jet);
+  Jet GetCorrectedJetCloseToLepton(vector<Particle> leps, Jet jet);
+
 
   double  JetLeptonMassDropLepAware(  Muon lep, bool removeLep,bool ApplyCorr=false);
   double  JetLeptonMassDropLepAware(  Electron lep, bool removeLep,bool ApplyCorr=false);
@@ -218,16 +223,20 @@ public:
 
   double  JetLeptonPtRelLepAware(  Lepton lep, Jet jet);
   double  JetLeptonPtRelLepAware(  Lepton lep);
+  double  JetLeptonPtRelLepAwareV2(  Lepton lep);
   double  JetLeptonPtRelLepAware(  Electron lep);
   double  JetLeptonPtRelLepAware(  Muon lep,     bool CorrLep=false);
-
+  
+  double  JetLeptonPtRatioLepAwareMuon(Lepton lep, bool smearjet, bool corrMu, bool uncorrLepE);
+  double  JetLeptonPtRelLepAwareMuon( Lepton lep, bool smearjet, bool corrMu, bool uncorrLepE);
   double  JetLeptonPtRatioLepAware( Lepton lep, Jet jet);
   double  JetLeptonPtRatioLepAware( Lepton lep);
+  double  JetLeptonPtRatioLepAwareV2( Lepton lep);
   double  JetLeptonPtRatioLepAware( Muon lep, bool CorrLep=false);
   double  JetLeptonPtRatioLepAware( Electron lep);
 
 
-  bool ConversionSplitting(std::vector<Lepton *> leps);
+  bool ConversionSplitting(std::vector<Lepton *> leps, bool RunConvMode, int nlep);
   bool ConversionVeto(std::vector<Lepton *> leps,const std::vector<Gen>& gens);
   bool IsCF(Electron el, std::vector<Gen> gens);
   bool IsCF(Muon mu, std::vector<Gen> gens);
@@ -386,6 +395,8 @@ public:
   void PrintEvent(AnalyzerParameter param,TString selection,double w);
   void FillEventComparisonFile(AnalyzerParameter param, TString label,string time, double w);
 
+  void FillBDTHists(Electron el,TString cut, double w);
+
   //==== GenMatching
 
   vector<TString> GetGenList();
@@ -454,7 +465,7 @@ public:
   TH3D* GetHist3D(TString histname);
 
   // === Ev weights                                                                                                                              
-  void FillWeightHist(TString label, double _weight);
+  double FillWeightHist(TString label, double _weight);
 
   // === HIST settings/filling                        
 
@@ -539,6 +550,8 @@ public:
   int  GetFakeLepSrcType(const Lepton& Lep, vector<Jet>& JetColl);
 
   bool iSetupLeptonBDT;
+  bool iSetupAllBDT;
+  bool SetupMVAVersion1;
 
 
   /// Variables for filling MVA branches 
@@ -547,6 +560,8 @@ public:
   vector<float>* velectron_ptratio;
   vector<float>* velectron_ptrel;
   vector<float>* velectron_cj_bjetdisc;
+  vector<float>* velectron_cj_cvsbjetdisc;
+  vector<float>* velectron_cj_cvsljetdisc;
   vector<float>* velectron_cj_flavour;
 
   vector<float>* velectron_mva_fake_v1;
@@ -596,6 +611,8 @@ public:
   vector<float>* vmuon_ptrel;
   vector<float>* vmuon_ptratio;
   vector<float>* vmuon_cj_bjetdisc;
+  vector<float>* vmuon_cj_cvsbjetdisc;
+  vector<float>* vmuon_cj_cvsljetdisc;
   vector<float>* vmuon_cj_flavour;
 
   vector<int>*   vmuon_lepton_type;

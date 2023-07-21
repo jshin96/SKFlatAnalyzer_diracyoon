@@ -28,7 +28,7 @@ public:
   }
 
   inline bool IsPrompt() const {
-    if((j_LeptonType==1 || j_LeptonType==2)) return true;
+    if((j_LeptonType==1 || j_LeptonType==2 || j_LeptonType==3)) return true;
     else return false;
   }
 
@@ -46,6 +46,8 @@ public:
     else return false;
   }
 
+  inline bool LeptonIsCF() const {return j_LeptonIsCF;}
+
 
   enum Flavour{
     NONE, ELECTRON, MUON, TAU
@@ -54,6 +56,7 @@ public:
   enum EtaRegion{
     IB, OB, GAP, EC
   };
+
   inline EtaRegion etaRegion() const {
     double sceta = fabs(this->Eta());
     if( sceta < 0.8 ) return IB;
@@ -64,30 +67,43 @@ public:
   
   inline TString  etaRegionString() const {
     double sceta = fabs(this->Eta());
-    if( sceta < 0.8 ) return "IB";
-    else if( sceta < 1.479 ) return "OB";
-    else return "EC";
+    if( sceta < 0.8 ) return "EB1";
+    else if( sceta < 1.479 ) return "EB2";
+    else return "EE";
   }
 
 
-  // Use Eta binning from EXO17028
-  inline int Region() const {
-    double eta = fabs(this->Eta());
+  inline int Region(double eta) const {
     if( eta < 0.8 ) return 1;
     else if( eta < 1.479 ) return 2;
     else return 3;
   }
 
-  inline bool IsIB() const { return (Region() == 1); }
-  inline bool IsOB() const { return (Region() == 2); }
-  inline bool IsEC() const { return (Region() == 3); }
-  inline bool IsBB() const { return (Region() < 3); }
+  inline bool IsIB() const { return (Region(fabs(this->Eta())) == 1); }
+  inline bool IsOB() const { return (Region(fabs(this->Eta())) == 2); }
+  inline bool IsEC() const { return (Region(fabs(this->Eta())) == 3); }
+  inline bool IsBB() const { return (Region(fabs(this->Eta())) < 3); }
 
   //// HNL UL Funtions
   inline bool MaxPt() const { return (this->Pt() > 2000) ? 1999 : this->Pt(); }
-  inline double PtConeCorrected(double Corr, bool passMVA){
-    if (passMVA)  return this->Pt();
-    return ( j_lep_jetptratio ) * Corr;
+  inline double PtParton(double Corr, double MVACut){
+    
+    if(j_LeptonFlavour==MUON){
+      if (j_lep_mva > MVACut)  return this->Pt();
+      return ( this->Pt() /j_lep_jetptratio ) * Corr;
+    }
+    else if(j_LeptonFlavour==ELECTRON){
+      if(IsBB()){
+	if (j_lep_mva_hnl_fake_v4 > MVACut)  return this->Pt();
+	return ( this->Pt() /j_lep_jetptratio ) * Corr;
+      }
+      else{
+	if (j_lep_mva_hnl_fake_ed_v4 > MVACut)  return this->Pt();
+        return ( this->Pt() /j_lep_jetptratio ) * Corr;
+      }
+    }
+    
+    return -1;
   }
   
   /// TEMP Variables to test MVA Top 
@@ -117,7 +133,6 @@ public:
 
 
   void SetLepMVA(double mva);
-  inline double lep_mva() const {return j_lep_mva;}
   inline double LepMVA() const {return j_lep_mva;}
 
   //// BDT ID Functions
@@ -146,7 +161,7 @@ public:
 
     map<TString, double> _map;
     if(j_LeptonFlavour==ELECTRON){
-      _map["El_Fake_v1"] = j_lep_mva_hnl_fake_v1;
+      //_map["El_Fake_v1"] = j_lep_mva_hnl_fake_v1;
       _map["El_Fake_v2"] = j_lep_mva_hnl_fake_v2;
       _map["El_Fake_v2_HF"] = j_lep_mva_hnl_fake_v2_hf;
       _map["El_Fake_v2_LF"] = j_lep_mva_hnl_fake_v2_lf;
@@ -169,6 +184,7 @@ public:
       _map["El_ED_Fake_v4_HFC"] = j_lep_mva_hnl_fake_ed_v4_hfc;
       _map["El_ED_Fake_v4_LF"] = j_lep_mva_hnl_fake_ed_v4_lf;
       _map["El_ED_Fake_v4_Top"] = j_lep_mva_hnl_fake_ed_v4_top;
+
       _map["El_Conv_v1"] = j_lep_mva_hnl_conv_v1;
       _map["El_Conv_v2"] = j_lep_mva_hnl_conv_v2;
       _map["El_ED_Conv_v2"] = j_lep_mva_hnl_conv_ed_v2;
@@ -179,6 +195,7 @@ public:
       _map["El_ED_CF_v2"] = j_lep_mva_hnl_ed_cf_v2;
       _map["El_ED_CF_v2p1"] = j_lep_mva_hnl_ed_cf_v2p1;
       _map["El_ED_CF_v2p2"] = j_lep_mva_hnl_ed_cf_v2p2;
+
     }
     else{
       _map["Mu_LF_Fake_v1"] = j_lep_mva_hnl_fake_v1;
@@ -186,7 +203,7 @@ public:
       _map["Mu_LF_Fake_v3"] = j_lep_mva_hnl_fake_v3;
       _map["Mu_LF_Fake_v4"] = j_lep_mva_hnl_fake_v4;
       _map["Mu_ED_LF_Fake_v4"] = j_lep_mva_hnl_fake_ed_v4;
-      
+      _map["Mu_HF_Fake_POG"] = j_lep_mva;
     }
     return _map;
   }
@@ -221,11 +238,12 @@ public:
 
     }
     else{
-      if(vers=="v1")  return j_lep_mva_hnl_fake_v1;
-      else if(vers=="v2")  return j_lep_mva_hnl_fake_v2;
-      else if(vers=="v3")  return j_lep_mva_hnl_fake_v3;
-      else if(vers=="v4")  return j_lep_mva_hnl_fake_v4;
+      //if(vers=="v1")  return j_lep_mva_hnl_fake_v1;
+      //else if(vers=="v2")  return j_lep_mva_hnl_fake_v2;
+      //else if(vers=="v3")  return j_lep_mva_hnl_fake_v3;
+      if(vers=="v4")  return j_lep_mva_hnl_fake_v4;
       else if(vers=="EDv4")  return j_lep_mva_hnl_fake_ed_v4;
+      else if(vers=="HFTop") return j_lep_mva;
     }
     cout<<"[Lepton::HNL_MVA_Fake] no version set "<< vers<< endl;
     exit(ENODATA);
@@ -253,6 +271,17 @@ public:
 
     if(j_LeptonFlavour==ELECTRON){
       if(vers=="v1")return j_lep_mva_hnl_cf_v1;
+
+      if(vers=="v2")return j_lep_mva_hnl_cf_v2;
+      else if(vers=="v2p1")return j_lep_mva_hnl_cf_v2p1;
+      else if(vers=="v2p2")return j_lep_mva_hnl_cf_v2p2;
+
+      if(vers=="EDv2")return j_lep_mva_hnl_ed_cf_v2;
+      else if(vers=="EDv2p1")return j_lep_mva_hnl_ed_cf_v2p1;
+      else if(vers=="EDv2p2")return j_lep_mva_hnl_ed_cf_v2p2;
+
+      /*
+
       if(this->fEta() < 1.5) {
 	if(vers=="v2")return j_lep_mva_hnl_cf_v2;
 	else if(vers=="v2p1")return j_lep_mva_hnl_cf_v2p1;
@@ -263,6 +292,7 @@ public:
 	else if(vers=="v2p1")return j_lep_mva_hnl_ed_cf_v2p1;
 	else if(vers=="v2p2")return j_lep_mva_hnl_ed_cf_v2p2;
       }
+      */
     }
     cout<<"[Lepton::HNL_MVA_CF] " << vers << endl;
     exit(ENODATA);
@@ -274,14 +304,25 @@ public:
   void SetJetPtRel(double ptrel);
   void SetJetPtRatio(double ptr);
   void SetCloseJetBScore(double bjscore);
+  void SetCloseJetCvsBScore(double bjscore);
+  void SetCloseJetCvsLScore(double bjscore);
   void SetCloseJetFlavour(int flav);
+
   inline double CloseJet_Ptrel()   const {return j_lep_jetptrel;}
   inline double CloseJet_Ptratio() const {return j_lep_jetptratio;}
   inline double CloseJet_BScore()  const {return j_lep_jetbscore;}
+  inline double CloseJet_CvsBScore()  const {return j_lep_jetcvsbscore;}
+  inline double CloseJet_CvsLScore()  const {return j_lep_jetcvslscore;}
   inline int CloseJet_FlavourInt()  const {return j_lep_jetflavour;}
   inline TString CloseJet_Flavour()  const {
     if(j_lep_jetflavour == 5) return "HF_B";
     if(j_lep_jetflavour == 4) return "HF_C";
+    if(j_lep_jetflavour == 0) return "LF";
+    return "Pileup";
+  }
+
+  inline TString MotherJetFlavour()  const {
+    if(j_lep_jetflavour >= 4) return "HF";
     if(j_lep_jetflavour == 0) return "LF";
     return "Pileup";
   }
@@ -325,6 +366,13 @@ public:
 
   bool PassULMVA(double mva1, double cut, TString s_mva) const;
 
+  inline double GetPtSlopeCut(double MinPt, double MaxPt, double MinCut, double MaxCut) const{
+
+    double cutSlope  = (MaxCut-MinCut) / (MaxPt-MinPt);
+    double cutFinal = std::max( MinCut, std::min(MaxCut , MinCut + cutSlope*(this->Pt()-MinPt) ) );
+
+    return cutFinal;
+  }
 
   inline bool PassLepID()  const {return j_passID;}
   inline bool LepIDSet()  const {return j_IDSet;}
@@ -332,7 +380,6 @@ public:
   inline int LeptonGenType() const {return j_LeptonType;}
   void SetLeptonType(int t);
 
-  inline bool LeptonIsCF() const {return j_LeptonIsCF;}
   void SetLeptonIsCF(bool t);
 
   inline Flavour LeptonFlavour() const {return j_LeptonFlavour;}
@@ -418,7 +465,7 @@ private:
   double j_MiniIso_ChHad,j_MiniIso_NHad,j_MiniIso_PhHad;
   double j_Iso_ChHad,j_Iso_NHad,j_Iso_PhHad;
   double j_ptcone;
-  double j_lep_jetptrel,j_lep_jetptratio,j_lep_jetbscore;
+  double j_lep_jetptrel,j_lep_jetptratio,j_lep_jetbscore,j_lep_jetcvsbscore,j_lep_jetcvslscore;
   int j_lep_jetflavour;
 
   Flavour j_LeptonFlavour;

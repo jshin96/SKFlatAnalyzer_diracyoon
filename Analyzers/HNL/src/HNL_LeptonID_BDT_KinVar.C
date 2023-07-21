@@ -91,8 +91,11 @@ void HNL_LeptonID_BDT_KinVar::SetupTrees(TTree* tree_mm, TTree* tree_ee){
   tree_ee->Branch("POGMedium", &bdt_id_POGMedium, "POGMedium/F");
   tree_ee->Branch("HNTightID", &bdt_id_HNTightID, "HNTightID/F");
   tree_mm->Branch("PtRatio", &bdt_id_PtRatio, "PtRatio/F");         tree_ee->Branch("PtRatio", &bdt_id_PtRatio, "PtRatio/F");         
+  tree_mm->Branch("PtRatioV2", &bdt_id_PtRatioV2, "PtRatioV2/F");         tree_ee->Branch("PtRatioV2", &bdt_id_PtRatioV2, "PtRatioV2/F");         
+  tree_mm->Branch("PtRatioV3", &bdt_id_PtRatioV3, "PtRatioV3/F");         tree_ee->Branch("PtRatioV3", &bdt_id_PtRatioV3, "PtRatioV3/F");         
   tree_mm->Branch("PtRel", &bdt_id_PtRel, "PtRel/F");         tree_ee->Branch("PtRel", &bdt_id_PtRel, "PtRel/F");         
-  tree_mm->Branch("MassDrop", &bdt_id_MassDrop, "MassDrop/F");         tree_ee->Branch("MassDrop", &bdt_id_MassDrop, "MassDrop/F");         
+  tree_mm->Branch("PtRelV2", &bdt_id_PtRelV2, "PtRelV2/F");         tree_ee->Branch("PtRelV2", &bdt_id_PtRelV2, "PtRelV2/F");         
+  tree_mm->Branch("PtRelV3", &bdt_id_PtRelV3, "PtRelV3/F");         tree_ee->Branch("PtRelV3", &bdt_id_PtRelV3, "PtRelV3/F");         
 
   tree_mm->Branch("CEMFracCJ", &bdt_id_CEMFracCJ, "CEMFracCJ/F");   tree_ee->Branch("CEMFracCJ", &bdt_id_CEMFracCJ, "CEMFracCJ/F");   
   tree_mm->Branch("NEMFracCJ", &bdt_id_NEMFracCJ, "NEMFracCJ/F");   tree_ee->Branch("NEMFracCJ", &bdt_id_NEMFracCJ, "NEMFracCJ/F");   
@@ -100,6 +103,8 @@ void HNL_LeptonID_BDT_KinVar::SetupTrees(TTree* tree_mm, TTree* tree_ee){
   tree_mm->Branch("NHFracCJ", &bdt_id_NHFracCJ, "NHFracCJ/F");      tree_ee->Branch("NHFracCJ", &bdt_id_NHFracCJ, "NHFracCJ/F");      
   tree_mm->Branch("MuFracCJ", &bdt_id_MuFracCJ, "MuFracCJ/F");      tree_ee->Branch("MuFracCJ", &bdt_id_MuFracCJ, "MuFracCJ/F");      
   tree_mm->Branch("JetDiscCJ", &bdt_id_JetDiscCJ, "JetDiscCJ/F");   tree_ee->Branch("JetDiscCJ", &bdt_id_JetDiscCJ, "JetDiscCJ/F");   
+  tree_mm->Branch("JetDiscCJCvsB", &bdt_id_JetDiscCJCvsB, "JetDiscCJCvsB/F");   tree_ee->Branch("JetDiscCJCvsB", &bdt_id_JetDiscCJCvsB, "JetDiscCJCvsB/F");
+  tree_mm->Branch("JetDiscCJCvsL", &bdt_id_JetDiscCJCvsL, "JetDiscCJCvsL/F");   tree_ee->Branch("JetDiscCJCvsL", &bdt_id_JetDiscCJCvsL, "JetDiscCJCvsL/F");
 
 
   // Electron Specific variables
@@ -113,6 +118,7 @@ void HNL_LeptonID_BDT_KinVar::SetupTrees(TTree* tree_mm, TTree* tree_ee){
   tree_ee->Branch("isEcalDriven", &bdt_id_isEcalDriven, "isEcalDriven/F");
   tree_ee->Branch("EoverP", &bdt_id_EoverP, "EoverP/F");
   tree_ee->Branch("FBrem", &bdt_id_FBrem, "FBrem/F");
+  tree_ee->Branch("Rho", &bdt_id_Rho, "Rho/F");
   tree_ee->Branch("InvEminusInvP", &bdt_id_InvEminusInvP, "InvEminusInvP/F");
   tree_ee->Branch("PassConversionVeto", &bdt_id_PassConversionVeto, "PassConversionVeto/F");
   tree_ee->Branch("ecalPFClusterIso", &bdt_id_ecalPFClusterIso, "ecalPFClusterIso/F");

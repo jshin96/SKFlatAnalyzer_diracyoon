@@ -1343,9 +1343,9 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
   param.Electron_Veto_ID = "HNVeto";
   param.Tau_Veto_ID      = "JetVLElVLMuVL";
   /// Fakes
-  param.Muon_FR_Key  ="pt_eta_AwayJetPt40";
+  param.Muon_FR_Key  ="ptcone_eta_AwayJetPt40";
   param.Muon_PR_Key  ="ptcone_eta_central";
-  param.Electron_FR_Key  = "pt_eta_AwayJetPt40";
+  param.Electron_FR_Key  = "ptcone_eta_AwayJetPt40";
   param.Electron_PR_Key  ="ptcone_eta_central";
   /// Defaul Corrections                                                                                                                    
   param.Muon_ID_SF_Key = "NUM_TightID_DEN_TrackerMuons";
@@ -1377,7 +1377,7 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
   }
   else if (s_setup=="HNL"){
     param.FakeMethod = "DATA";
-    param.CFMethod         = "DATA";
+    param.CFMethod         = "MC"; ///////// -> TMP
     param.Muon_Tight_ID    = "HNTightV2";
     param.Muon_ID_SF_Key   = "TmpHNTightV2";
     param.Muon_FR_ID       = "HNLooseV1";
@@ -1668,27 +1668,14 @@ double HNL_LeptonCore::SetupWeight(Event ev, AnalyzerParameter param){
   else if(param.syst_ == AnalyzerParameter::PUDown) pileup_weight= GetPileUpWeight(nPileUp,-1);
   else pileup_weight= GetPileUpWeight(nPileUp,0);
   
-  double this_mc_weight = ev.GetTriggerLumi("Full") * MCweight(true, true) * pileup_weight * GetKFactor()*prefire_weight;
-  //if(MCSample.Contains("Type") && Analyzer == "HNL_SignalLeptonOpt") this_mc_weight = MCweight(true, false) * pileup_weight * prefire_weight;
-
-
-  FillWeightHist("PrefireWeight_" ,GetPrefireWeight(0));
-  FillWeightHist("MCWeight_" ,MCweight(true, true));
+  double this_mc_weight =   FillWeightHist(param.Name+"_PrefireWeight" ,prefire_weight);
+  this_mc_weight*=  FillWeightHist(param.Name+"_MCWeight",    MCweight(true, true));
+  this_mc_weight*=  FillWeightHist(param.Name+"_LumiWeight",  ev.GetTriggerLumi("Full"));
+  this_mc_weight*=  FillWeightHist(param.Name+"_PileupWeight",pileup_weight);
+  this_mc_weight*=  FillWeightHist(param.Name+"_KFactor",     GetKFactor());
+    
   FillWeightHist("MCFullWeight_" , this_mc_weight);
-  FillWeightHist("PileupWeight_" , GetPileUpWeight(nPileUp,0));
 
-  double w_topptrw(1.);
-  if(MCSample.Contains("TT") and MCSample.Contains("powheg")) {
-    w_topptrw = mcCorr->GetTopPtReweight(All_Gens); 
-    FillWeightHist("TopPtWeight_" , w_topptrw);
-  }
-  
-  //if(MCSample.Contains("DYJets")) {
-  //  double dyRW =   mcCorr->GetOfficialDYReweight(GetGens(),0);
-  //  FillWeightHist("DYReWeight_" , dyRW);
-  //  this_mc_weight= this_mc_weight*dyRW;
-  // }
-  
 
   return this_mc_weight;
   
@@ -2535,19 +2522,21 @@ std::vector<Jet> HNL_LeptonCore::GetHNLJets(TString JetType, AnalyzerParameter p
   /// BJET
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
   JetTagging::Parameters param_jetsT = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Tight, JetTagging::incl, JetTagging::mujets);
+  JetTagging::Parameters param_jetsL = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Loose, JetTagging::incl, JetTagging::mujets);
 
-  if(JetType=="BJetM" || "BJetT") {
+  if(JetType=="BJetM" || JetType== "BJetT" || JetType== "BJetL" ) {
     std::vector<Jet> BJetCollLoose                   = SelectAK4Jets(AK4_Loose,  20., 2.4, true,  0.4,0.8, "",   ElectronCollV,MuonCollV,  AK8_JetColl);
     if(JetType=="BJetM")          return SelectBJets(param, BJetCollLoose, param_jets);
     if(JetType=="BJetT")          return SelectBJets(param, BJetCollLoose, param_jetsT);
+    if(JetType=="BJetL")          return SelectBJets(param, BJetCollLoose, param_jetsL);
   }
-  if(JetType=="BJetMPtL" || "BJetTPtL") {
+  if(JetType=="BJetMPtL" || JetType== "BJetTPtL") {
     std::vector<Jet> BJetCollLoose                   = SelectAK4Jets(AK4_Loose,  10., 2.4, true,  0.4,0.8, "",   ElectronCollV,MuonCollV,  AK8_JetColl);
     if(JetType=="BJetMPtL")          return SelectBJets(param, BJetCollLoose, param_jets);
     if(JetType=="BJetTPtL")          return SelectBJets(param, BJetCollLoose, param_jetsT);
   }
 
-  if(JetType=="BJetMPtM" || "BJetTPtM") {
+  if(JetType=="BJetMPtM" || JetType=="BJetTPtM") {
     std::vector<Jet> BJetCollLoose                   = SelectAK4Jets(AK4_Loose,  15., 2.4, true,  0.4,0.8, "",   ElectronCollV,MuonCollV,  AK8_JetColl);
     if(JetType=="BJetMPtM")          return SelectBJets(param, BJetCollLoose, param_jets);
     if(JetType=="BJetTPtM")          return SelectBJets(param, BJetCollLoose, param_jetsT);
@@ -2555,7 +2544,7 @@ std::vector<Jet> HNL_LeptonCore::GetHNLJets(TString JetType, AnalyzerParameter p
 
 
 
-  if(JetType=="BJetM_NoJC" || "BJetT_NoJC") {
+  if(JetType=="BJetM_NoJC" || JetType== "BJetT_NoJC") {
     
     std::vector<FatJet> Empty_AK8Coll;  
     std::vector<Jet> BJetCollNoJCleaningLoose                   = SelectAK4Jets(AK4_Loose,  20., 2.4, true,  0.4,0.8, "",   ElectronCollV,MuonCollV,  Empty_AK8Coll);
@@ -2563,7 +2552,7 @@ std::vector<Jet> HNL_LeptonCore::GetHNLJets(TString JetType, AnalyzerParameter p
     if(JetType=="BJetT_NoJC")          return SelectBJets(param, BJetCollNoJCleaningLoose, param_jetsT);
   }
 
-  if(JetType=="BJetM_NoLC" || "BJetT_NoLC") {
+  if(JetType=="BJetM_NoLC" || JetType== "BJetT_NoLC") {
     std::vector<Jet> BJetCollNoLepClean              = SelectAK4Jets(AK4_Loose,  20., 2.4, false,  0.4,0.8, "",   ElectronCollV,MuonCollV,  AK8_JetColl);
     if(JetType=="BJetM_NoLC")     return SelectBJets(param, BJetCollNoLepClean, param_jets);
     if(JetType=="BJetT_NoLC")     return SelectBJets(param, BJetCollNoLepClean, param_jetsT);
@@ -3377,8 +3366,6 @@ vector<Electron> HNL_LeptonCore::GetLepCollByRunType(const vector<Electron>& ElC
     if(param.ConvMethod == "MC") Option+="NHConv";
     if(param.CFMethod == "MC")   Option+="CF";
   }
-  if(RunPromptTLRemoval) Option == "CFNHIntConv";
-
 
 
   //cout << "AnalyzerCore::GetLepCollByRunType Electron  Option = " << Option << endl;                                                                                                                                                                                                                     
@@ -4111,6 +4098,12 @@ void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, TString p
   
   if(verbose_level > 0) return;
 
+  //  for(auto ilep : leps) {
+  //  if(ilep->IsBB())FillLeptonKinematicPlots( region,plot_dir+"/BB", *ilep ,w);
+  //  else FillLeptonKinematicPlots( region,plot_dir+"/EC", *ilep ,w);
+  // }
+
+
 
   bool threelep = (leps.size()  == 3);
   bool fourlep  = (leps.size()  == 4);
@@ -4298,8 +4291,9 @@ void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, TString p
   double minDRLep2Tau=9999.;
   int nlep(0);
   for(auto i : leps){
-    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Leps_pt", i->Pt()  , w, 200, 0., 1000.,"1_{2} p_{T} GeV");
-    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Leps_eta",i->Eta()  , w, 30, -3., 3,"l_{1} #eta");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Leps_pt", i->Pt()  , w, 1000, 0., 1000.,"1_{2} p_{T} GeV");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Leps_et", i->Et()  , w, 1000, 0., 1000.,"1_{2} p_{T} GeV");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Leps_eta",i->Eta()  , w, 50, -2.5, 2.5,"l_{1} #eta");
     LT += i->Pt();
     
     
@@ -5051,25 +5045,20 @@ void HNL_LeptonCore::FillAllMuonPlots(TString label , TString cut,  std::vector<
     if (LepType >= 0) gen_label = to_string(LepType);
     else gen_label = "Minus_"+to_string(fabs(LepType));
 
-    if(Analyzer == "HNL_LeptonIDBDTStudies"){
-      if(GenTypeMatched(MatchGenDef(All_Gens,muons[i]))){
-	if(label.Contains("Fake")) FillMuonKinematicPlots("muon"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,muons[i]), cut, muons.at(i), w);
-      }
+    //if(Analyzer == "HNL_LeptonIDBDTStudies"){
+    //  if(GenTypeMatched(MatchGenDef(All_Gens,muons[i]))){/
+    //	if(label.Contains("Fake")) FillMuonKinematicPlots("muon"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,muons[i]), cut, muons.at(i), w);
+    // }
       
-      if(muons[i].HNL_MVA_Fake("v1") < -0.5) FillMuonKinematicPlots("muon_lowMVAv1_"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,muons[i]), cut, muons.at(i), w);
-      if(muons[i].HNL_MVA_Fake("v1") > 0.5) FillMuonKinematicPlots("muon_highMVAv1_"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);
-      if(muons[i].HNL_MVA_Fake("v2") < -0.5) FillMuonKinematicPlots("muon_lowMVAv2_"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,muons[i]), cut, muons.at(i), w);
-      if(muons[i].HNL_MVA_Fake("v2") > 0.5) FillMuonKinematicPlots("muon_highMVAv2_"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);
-      if(muons[i].HNL_MVA_Fake("v3") < -0.5) FillMuonKinematicPlots("muon_lowMVAv3_"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,muons[i]), cut, muons.at(i), w);
-      if(muons[i].HNL_MVA_Fake("v3") > 0.5) FillMuonKinematicPlots("muon_highMVAv3_"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);
-      if(muons[i].MVA() < -0.5) FillMuonKinematicPlots("muon_lowMVAHF_"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,muons[i]), cut, muons.at(i), w);
-      if(muons[i].MVA() > 0.5) FillMuonKinematicPlots("muon_highMVAHF_"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);
+    //if(muons[i].HNL_MVA_Fake("EDv4") < -0.5) FillMuonKinematicPlots("muon_lowMVAv4_"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,muons[i]), cut, muons.at(i), w);
+    //  if(muons[i].HNL_MVA_Fake("EDv4") > 0.5) FillMuonKinematicPlots("muon_highMVAv4_"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);
+    //  if(muons[i].MVA() < -0.5) FillMuonKinematicPlots("muon_lowMVAHF_"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,muons[i]), cut, muons.at(i), w);
+    //  if(muons[i].MVA() > 0.5) FillMuonKinematicPlots("muon_highMVAHF_"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);
 
-    }
-    FillMuonKinematicPlots("muon"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);
-
-    
-    
+    //}
+    //FillMuonKinematicPlots("muon"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);
+    FillMuonKinematicPlots("muon"+label, cut, muons.at(i), w);
+  
   }
 
   return;
@@ -5087,7 +5076,7 @@ void HNL_LeptonCore::FillLeptonKinematicPlots(TString label , TString cut,  Lept
   double maxDphi=-999;
   double PtRatioAwayJet(-999.);
   double Jet_Disc(-1);
- 
+
 
   for(unsigned int ij=0; ij<JetAllColl.size(); ij++){
 
@@ -5116,7 +5105,7 @@ void HNL_LeptonCore::FillLeptonKinematicPlots(TString label , TString cut,  Lept
 
   FillHist( cut+ "/Lepton_dXYSig_"+ label       , lep.LogdXYSig(), w, 100, -10,10);
   FillHist( cut+ "/Lepton_dZSig_"+ label        , lep.LogdZSig(),w, 100,-10,10);
-  FillHist( cut+ "/Lepton_SIP3D_"+ label        , lep.SIP3D(),w, 100,0,10);
+  FillHist( cut+ "/Lepton_SIP3D_"+ label        , lep.SIP3D(),w, 200,0,20);
   FillHist( cut+ "/Lepton_IP3D_"+ label        , lep.IP3D(),w, 100,0,1);
  
 
@@ -5138,16 +5127,8 @@ void HNL_LeptonCore::FillLeptonKinematicPlots(TString label , TString cut,  Lept
   
   // Isolation 
 
-  FillHist( cut+ "/Lepton_MiniReliso_"+label , lep.MiniRelIso() , w, 50, 0., 5., "R_{ISO} GeV");
-  FillHist( cut+ "/Lepton_MiniReliso_ch_"+label , lep.MiniRelIsoCharged() , w, 50, 0., 1., "R_{ISO} GeV");
-  FillHist( cut+ "/Lepton_MiniReliso_neu_"+label ,lep.MiniRelIsoNeutral() , w, 50, 0., 1., "R_{ISO} GeV");
-  FillHist( cut+ "/Lepton_Reliso_el_"+label , lep.RelIso() , w, 50, 0., 0.4, "R_{ISO} GeV");
-  FillHist( cut+ "/Lepton_MiniIsoChHad_"+label  , lep.MiniIsoChHad(), w , 100, 0., 20.);
-  FillHist( cut+ "/Lepton_MiniIsoNhHad_"+label  , lep.MiniIsoNHad(), w , 100, 0., 20.);
-  FillHist( cut+ "/Lepton_MiniIsoPhHad_"+label  , lep.MiniIsoPhHad(), w , 100, 0., 20.);
-  FillHist( cut+ "/Lepton_RelMiniIsoCh_"+label  , lep.MiniRelIsoCharged(), w , 100, 0., 5);
-  FillHist( cut+ "/Lepton_RelMiniIsoN_"+label  , lep.MiniRelIsoNeutral(), w , 100, 0., 10);
-
+  FillHist( cut+ "/Lepton_MiniReliso_"+label , lep.MiniRelIso() , w, 500, 0., 2., "R_{ISO} GeV");
+  FillHist( cut+ "/Lepton_Reliso_el_"+label , lep.RelIso() , w, 200, 0., 0.4, "R_{ISO} GeV");
 
 }
 
