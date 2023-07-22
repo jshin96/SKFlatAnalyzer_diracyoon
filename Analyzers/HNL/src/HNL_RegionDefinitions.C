@@ -341,20 +341,16 @@ bool  HNL_RegionDefinitions::PassPreselection(HNL_LeptonCore::Channel channel,HN
   if (!PassTriggerSelection(channel, ev, leps,"Dilep")) return false;
   
   w *= HNLZvtxSF(channel);
-
   
   FillEventCutflow(HNL_LeptonCore::ChannelDepTrigger, w, GetChannelString(channel) +"_Trigger", "ChannelCutFlow/"+param.DefName,param.WriteOutVerbose);
 
 
   if(run_Debug) cout << "HNL_RegionDefinitions::PassTriggerSelection " << GetChannelString(channel) <<  endl;
-
   
   if(!PassHEMVeto(channel, leps)) return false;
 
-
   // Make sure events contain 2 leps
   if (leps_veto.size() != 2) return false;
-
   
   // CUT ON MASS OF LL PAIR
 
@@ -1002,7 +998,8 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
   //cout << "----------------   RunAllControlRegions  [Veto ]----------------------------------------------------------------------------------------------------------------" << endl;
   std::vector<Lepton *> LepsV  = MakeLeptonPointerVector(muons_veto,electrons_veto,param);
 
-  
+  //if(!PassHEMVeto(channel, LepsV)) return false;
+
 
   ///  Select events based on NConv and if running Run_Conv
   FillHist("CR_BeforeConvCut", 1. , weight_ll, 2., 0.,  2.);
@@ -1112,12 +1109,13 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 	    TString ConvMVA = "";
 	    TString FakeMVA = "";
 	    if( FindHEMElectron (ilep)) FillBDTHists(ilep,"HEM",weight_channel);
-
+	    if( FindHEMElectron (ilep))  continue;
 
 	    if(ilep.IsBB() ){
 	      
 	      if(ilep.IsIB() ) FillBDTHists(ilep,"IB",weight_channel);
 	      else if(ilep.IsOB() ) FillBDTHists(ilep,"OB",weight_channel);
+
 	      if(ilep.Pt() < 15 ) FillBDTHists(ilep,"BB_Pt1",weight_channel);
 	      else if(ilep.Pt() < 20 ) FillBDTHists(ilep,"BB_Pt2",weight_channel);
 	      else if(ilep.Pt() < 50 )  FillBDTHists(ilep,"BB_Pt3",weight_channel);
@@ -1125,7 +1123,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 	      else FillBDTHists(ilep,"BB_Pt5",weight_channel);
 	    }
 	    else{
-	      if(ilep.Pt() < 15 ) FillBDTHists(ilep,"EC",weight_channel);
+	      FillBDTHists(ilep,"EC",weight_channel);
 	      if(ilep.Pt() < 15 ) FillBDTHists(ilep,"EC_Pt1",weight_channel);
 	      else if(ilep.Pt() < 20 ) FillBDTHists(ilep,"EC_Pt2",weight_channel);
 	      else if(ilep.Pt() < 50 ) FillBDTHists(ilep,"EC_Pt3",weight_channel);

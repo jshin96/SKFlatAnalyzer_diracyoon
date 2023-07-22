@@ -63,6 +63,9 @@ void HNL_LeptonIDBDTStudies::executeEvent(){
   
   for(auto ilep : ElectronCollProbe){
     TString  LepType = "";
+    if ( FindHEMElectron (ilep )) continue;
+    
+	
     if (ilep.IsConv())  LepType = "Conv";
     if (ilep.IsFake())  LepType = "Fake"+ilep.MotherJetFlavour();
     if (ilep.IsFake() && ilep.MotherJetFlavour() == "Pileup") continue;
@@ -72,8 +75,8 @@ void HNL_LeptonIDBDTStudies::executeEvent(){
     
     if(ilep.IsBB() ){
 
-      if(ilep.IsIB() ) FillBDTHists(ilep,"IB",weight);
-      else if(ilep.IsOB() ) FillBDTHists(ilep,"OB",weight);
+      if(ilep.IsIB() ) FillBDTHists(ilep,LepType+"/IB",weight);
+      else if(ilep.IsOB() ) FillBDTHists(ilep,LepType+"/OB",weight);
 
       if(ilep.Pt() < 15 ) FillBDTHists(ilep,LepType+"/BB_Pt1",weight);
       else if(ilep.Pt() < 20 ) FillBDTHists(ilep,LepType+"/BB_Pt2",weight);

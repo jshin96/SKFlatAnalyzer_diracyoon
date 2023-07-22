@@ -174,7 +174,7 @@ public:
   Float_t bdt_id_w_id_tot;
 
   
-  Float_t bdt_id_POGTight, bdt_id_POGMedium,bdt_id_HNTightID;
+  Float_t bdt_id_POGTight, bdt_id_POGMedium,bdt_id_HNTightID,bdt_id_POGMVA80ID,bdt_id_POGMVA90ID;
   Float_t bdt_id_isEcalDriven,bdt_id_Pixel_hits,  bdt_id_Validhits,bdt_id_Matched_stations,bdt_id_Tracker_layers,bdt_id_MissingHits;//6                                                                                                    
   Float_t bdt_id_PassConversionVeto,bdt_id_IsGsfCtfScPixChargeConsistent, bdt_id_IsGsfScPixChargeConsistent, bdt_id_IsGsfCtfChargeConsistent;//4                                                                                                                                                          
   

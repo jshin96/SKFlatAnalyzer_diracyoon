@@ -602,7 +602,8 @@ void AnalyzerCore::InitializeElectronIDTreeVars(){
   bdt_id_IsGsfCtfScPixChargeConsistent=-1;
   bdt_id_IsGsfScPixChargeConsistent=-1 ;
   bdt_id_IsGsfCtfChargeConsistent=-1;
-  
+
+
   return;
 }
 
@@ -650,15 +651,13 @@ void AnalyzerCore::InitializeIDTreeVars(){
   bdt_id_InvEminusInvP=-999.;  bdt_id_ecalPFClusterIso=-999.;  bdt_id_hcalPFClusterIso=-999.;  
   
   // IDs
-  bdt_id_POGTight=-999;  bdt_id_POGMedium = -999;  bdt_id_HNTightID = -999;  
+  bdt_id_POGTight=-999;  bdt_id_POGMedium = -999;  bdt_id_HNTightID = -999, bdt_id_POGMVA80ID=-999, bdt_id_POGMVA90ID=-999;  
 
   // COnv/CF
   bdt_id_isEcalDriven= -999;  bdt_id_EoverP=-999;  bdt_id_FBrem=-999;  bdt_id_PassConversionVeto=-999 ,bdt_id_Rho=-999;
   bdt_id_IsGsfCtfScPixChargeConsistent =-999;  bdt_id_IsGsfScPixChargeConsistent =-999;  bdt_id_IsGsfCtfChargeConsistent =-999;  bdt_id_R9=-999;
 
   bdt_id_psEoRraw= -999;
-
-  //fisEcalDriven= -999;    fPassConversionVeto=-999 ;fIsGsfCtfScPixChargeConsistent =-999;  fIsGsfScPixChargeConsistent =-999;  fIsGsfCtfChargeConsistent =-999;
 
   bdt_id_w_id_tot=1;
 
@@ -994,7 +993,7 @@ void AnalyzerCore::SetBDTIDVar(Lepton*  lep){
   else     if (lep->Pt() < 200.) bdt_id_PtBinned= 2;
   else bdt_id_PtBinned =3;
 
-  ///bdt_id_Eta   = fabs(lep->Eta());
+  bdt_id_Eta   = fabs(lep->Eta());
 
   /////// ISOLATION 
 
@@ -1870,7 +1869,6 @@ void AnalyzerCore::SetupIDMVAReaderElectron(bool  electron_v1, bool electron_v2p
 void AnalyzerCore::SetBDTIDVariablesMuon(Muon mu){
 
   bdt_id_MVA = mu.MVA();
-  bdt_id_Eta   = fabs(mu.Eta());
 
   if (JetLeptonPtRelLepAware(mu) >600) bdt_id_PtRel = 600;
   else bdt_id_PtRel=JetLeptonPtRelLepAware(mu);
@@ -1901,8 +1899,6 @@ void AnalyzerCore::SetBDTIDVariablesElectron(Electron el){
   bdt_id_MVARaw    = el.MVANoIso();
   bdt_id_MVAIsoRaw = el.MVAIso();
    
-  bdt_id_Eta   = fabs(el.scEta());
-
   ///// https://github.com/cms-sw/cmssw/blob/CMSSW_10_6_25/RecoEgamma/ElectronIdentification/data/ElectronMVAEstimatorRun2Variables.txt
 
   bdt_id_MissingHits           = el.NMissingHits();
@@ -1977,7 +1973,8 @@ void AnalyzerCore::SetBDTIDVariablesElectron(Electron el){
   bdt_id_POGTight = el.PassID("passPOGTight") ?  1.: 0.;
   bdt_id_POGMedium =el.PassID("passPOGMedium") ?  1.: 0.;
   bdt_id_HNTightID = el.PassID("HNTightV2") ?  1.: 0.;
-
+  bdt_id_POGMVA80ID = el.passMVAID_noIso_WP80() ? 1.: 0.;
+  bdt_id_POGMVA90ID = el.passMVAID_noIso_WP90() ? 1.: 0.;
   return;
 }
 

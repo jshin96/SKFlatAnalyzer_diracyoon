@@ -5,25 +5,32 @@ mcpath=${SKFlat_WD}/runJobs/HNL/${analyzer}/Bkg/
 njobs=300
 nmax=300
 
-declare  -a era_list=("2018" "2016postVFP" "2016preVFP" "2017")
+declare  -a era_list=("2017" "2018" "2016postVFP" "2016preVFP")
 
 #declare  -a era_list=("2016postVFP" "2016preVFP" "2018")
 
 if [[ $1 == "TT" ]]; then
 
-    declare  -a era_list=("2016postVFP")
-    nmax=2
+    nmax=400
 
     for i in "${era_list[@]}"
     do
-	SKFlat.py -a $analyzer  -i  WZ_pythia  -n 300  --nmax ${nmax}   -e ${i}  --userflags SeperateFake &
+	SKFlat.py -a $analyzer  -i  TTLJ_powheg  -n 600  --nmax ${nmax}   -e ${i}  --userflags SeperatePrompt,NoBJet &
     
     done
 fi
 
 
-
 if [[ $1 == "" ]]; then
+
+    nmax=350
+    for i in "${era_list[@]}"
+    do
+	SKFlat.py -a $analyzer  -l $sigpath/DYsample2.txt  -n 10  --nmax ${nmax}   -e ${i}  &
+    done
+fi
+
+if [[ $1 == "All" ]]; then
 
     nmax=350
     for i in "${era_list[@]}"

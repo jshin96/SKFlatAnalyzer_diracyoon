@@ -24,13 +24,12 @@ fi
 if [[ $1 == "All" ]]; then
 
     declare  -a era_list=("2018" "2016postVFP" "2016preVFP" "2017")
-
     for i in "${era_list[@]}"
     do
 	
-	SKFlat.py -a $analyzer  -l ${mcpath}/Fake.txt    -n 250  --nmax 400  -e ${i}  --skim SkimTree_FakeEventSkimBDT&
-	SKFlat.py -a $analyzer  -l ${mcpath}/CF.txt      -n 100  --nmax 400  -e ${i}  --skim SkimTree_CFEventSkim&
-	SKFlat.py -a $analyzer  -l ${mcpath}/Conv.txt    -n 100  --nmax 400  -e ${i}  --skim SkimTree_ConvEventSkim&
+	SKFlat.py -a $analyzer  -l ${mcpath}/Fake.txt    -n 250  --nmax 100  -e ${i}  --skim SkimTree_FakeEventSkimBDT
+	SKFlat.py -a $analyzer  -l ${mcpath}/CF.txt      -n 100  --nmax 100  -e ${i}  --skim SkimTree_CFEventSkim
+	SKFlat.py -a $analyzer  -l ${mcpath}/Conv.txt    -n 100  --nmax 100  -e ${i}  --skim SkimTree_ConvEventSkim
 	#SKFlat.py -a $analyzer  -l ${mcpath}/Sig.txt     -n 100  --nmax 400  -e ${i}  --skim SkimTree_HNMultiLepBDT
 	
     done

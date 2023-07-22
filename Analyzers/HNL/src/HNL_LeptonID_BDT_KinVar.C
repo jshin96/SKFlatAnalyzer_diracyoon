@@ -70,11 +70,10 @@ void HNL_LeptonID_BDT_KinVar::SetupTrees(TTree* tree_mm, TTree* tree_ee){
 
   tree_mm->Branch("MVA", &bdt_id_MVA, "MVA/F"); 
   tree_ee->Branch("MVA", &bdt_id_MVA, "MVA/F");
-  tree_mm->Branch("RelMVA", &bdt_id_RelMVA, "RelMVA/F");
-  tree_ee->Branch("RelMVA", &bdt_id_RelMVA, "RelMVA/F");
+  tree_ee->Branch("MVARaw", &bdt_id_MVARaw, "MVARaw/F");
 
   tree_ee->Branch("MVAIso", &bdt_id_MVAIso, "MVAIso/F");
-  tree_ee->Branch("RelMVAIso", &bdt_id_RelMVAIso, "RelMVAIso/F");
+  tree_ee->Branch("MVAIsoRaw", &bdt_id_MVAIsoRaw, "MVAIsoRaw/F");
 
   tree_mm->Branch("Chi2", &bdt_id_Chi2, "Chi2/F");  
   tree_mm->Branch("Validhits", &bdt_id_Validhits, "Validhits/F");  
@@ -90,6 +89,8 @@ void HNL_LeptonID_BDT_KinVar::SetupTrees(TTree* tree_mm, TTree* tree_ee){
   tree_ee->Branch("POGTight", &bdt_id_POGTight, "POGTight/F");
   tree_ee->Branch("POGMedium", &bdt_id_POGMedium, "POGMedium/F");
   tree_ee->Branch("HNTightID", &bdt_id_HNTightID, "HNTightID/F");
+  tree_ee->Branch("POGMVA80", &bdt_id_POGMVA80ID, "POGMVA80/F");
+  tree_ee->Branch("POGMVA90", &bdt_id_POGMVA90ID, "POGMVA90/F");
   tree_mm->Branch("PtRatio", &bdt_id_PtRatio, "PtRatio/F");         tree_ee->Branch("PtRatio", &bdt_id_PtRatio, "PtRatio/F");         
   tree_mm->Branch("PtRatioV2", &bdt_id_PtRatioV2, "PtRatioV2/F");         tree_ee->Branch("PtRatioV2", &bdt_id_PtRatioV2, "PtRatioV2/F");         
   tree_mm->Branch("PtRatioV3", &bdt_id_PtRatioV3, "PtRatioV3/F");         tree_ee->Branch("PtRatioV3", &bdt_id_PtRatioV3, "PtRatioV3/F");         
@@ -153,9 +154,10 @@ void HNL_LeptonID_BDT_KinVar::executeEvent(){
 
   if(MCSample.Contains("TTLJ") && SeperatePrompt) {
     double r = ((double) rand() / (RAND_MAX));
-    if(r > 0.12) return;
-  }
 
+    if(!HasFlag("NoBJet") && (r > 0.12)) return;
+  }
+  
   AnalyzerParameter param_bdt = HNL_LeptonCore::InitialiseHNLParameter("BDT", "");
   
   Event ev = GetEvent();
@@ -295,6 +297,11 @@ void HNL_LeptonID_BDT_KinVar::executeEvent(){
 
     if(weight < 0) continue;
 
+    if(HasFlag("NoBJet") && SeperatePrompt){
+      std::vector<Jet>    AK4_BJetColl                = GetHNLJets("BJetM",     param_bdt);
+      if(AK4_BJetColl.size() > 0) return;
+    }
+    
     MakeTreeSS2L(dilep_channel, LepsT,MuonCollTSkim,ElectronCollTSkim, AK4_JetAllColl,  weight, "");
 
   }

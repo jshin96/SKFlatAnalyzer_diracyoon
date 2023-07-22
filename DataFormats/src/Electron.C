@@ -3348,7 +3348,8 @@ bool Electron::Pass_HNVetoMVA() const{
 
   if(! (fabs(dXY())<0.2 && fabs(dZ())<0.5) ) return false;
 
-  if(! (RelIso()<0.6) ) return false;
+  if(! (MiniRelIso() < 0.4) ) return false; /// chnage to mini iso to be consistent with LooseMVA cut
+  ///  if(! (RelIso()<0.6) ) return false;
 
   return true;
 }

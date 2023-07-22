@@ -1067,7 +1067,8 @@ bool Muon::Pass_HNVeto2016() const {
   //  if(Pass_POGHighPtTight()) return true;
   if(!( isPOGLoose() )) return false;
   if(!( fabs(dXY())<0.2 && fabs(dZ())<0.5) ) return false;
-  if(!( RelIso()<0.6 ))  return false;
+  if(MiniRelIso() > 0.4) return false; /// chnage to be consistent with loose mva 
+  //if(!( RelIso()<0.6 ))  return false;
   if(!( Chi2()<50. )) return false;
   return true;
 }

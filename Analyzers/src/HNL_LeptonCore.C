@@ -1132,12 +1132,12 @@ vector<AnalyzerParameter::Syst> HNL_LeptonCore::GetSystList(TString SystType){
 bool HNL_LeptonCore::PassHEMVeto(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps){
 
   int nel_hem(0);
-  if (channel==EE){
-    if (DataEra=="2018"){
-      for(auto iel : leps){
-        if (iel->Eta() < -1.25){
-          if((iel->Phi() < -0.82) && (iel->Phi() > -1.62)) nel_hem++;
-        }
+  if (DataEra=="2018"){
+    for(auto ilep : leps){
+      if(ilep->IsMuon()) continue;
+      
+      if (ilep->Eta() < -1.25){
+          if((ilep->Phi() < -0.82) && (ilep->Phi() > -1.62)) nel_hem++;
       }
     }
   }
@@ -1340,7 +1340,7 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
   param.Electron_MaxEta = 2.5;
   /// Lepton IDs
   param.Muon_Veto_ID     = "HNVeto2016";
-  param.Electron_Veto_ID = "HNVeto";
+  param.Electron_Veto_ID = "HNVetoMVA";
   param.Tau_Veto_ID      = "JetVLElVLMuVL";
   /// Fakes
   param.Muon_FR_Key  ="ptcone_eta_AwayJetPt40";
@@ -2516,7 +2516,6 @@ std::vector<Jet> HNL_LeptonCore::GetHNLJets(TString JetType, AnalyzerParameter p
 
   if(JetType=="Loose")    return SelectAK4Jets(AK4_Loose,     15., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetColl);
   if(JetType=="Tight")    return SelectAK4Jets(AK4_Loose,     20., 2.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetColl);
-
   if(JetType=="VBFTight") return SelectAK4Jets(AK4_Loose,     30., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetColl);
 
   /// BJET
