@@ -7,12 +7,12 @@ nmax=200
 skim=' '
 declare  -a era_list=("2018" "2016postVFP" "2016preVFP" "2017")
 
-if [[ $1 == "TT" ]]; then
+if [[ $1 == "MC" ]]; then
     
     declare  -a era_list=("2017")
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -i TTLJ_powheg  -n 600  --nmax 200  -e ${i} --skim SkimTree_DileptonBDT 
+        SKFlat.py -a $analyzer  -l  $mcpath/MC.txt  -n 300  --nmax 3000  -e ${i} 
     done
 fi
 

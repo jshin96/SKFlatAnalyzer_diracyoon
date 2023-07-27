@@ -1,4 +1,4 @@
-void runIDBDT_HNtypeICF(TString Classifier ="BDTG" ,TString BkgType = "CF", TString era="2016",TString channel="EE",  int signal_mode=1, TString NTrees="800", TString NormMode="NumEvents", TString   MinNodeSize ="1.5", TString MaxDepth = "4", TString nCuts="300", TString BoostLearningRate="0.05", TString BaggedFrac="0.6", TString seed = "100",  int eta_mode= 0){
+void runIDBDT_HNtypeICF(TString Classifier ="BDTG" ,TString BkgType = "CF", TString era="2016",TString channel="EE",  int signal_mode=1, int var_mode = 0, TString NTrees="800", TString NormMode="NumEvents", TString   MinNodeSize ="1.5", TString MaxDepth = "4", TString nCuts="300", TString BoostLearningRate="0.05", TString BaggedFrac="0.6", TString seed = "100",  int eta_mode= 0){
   
   int nTermWidth=50;
   
@@ -8,7 +8,6 @@ void runIDBDT_HNtypeICF(TString Classifier ="BDTG" ,TString BkgType = "CF", TStr
   else   if(Classifier == "BDTG")cout << "** BDT GRADBOOST *** " <<endl;
   else return;
   
-
   cout << "-- Era = " << era << endl;
   cout << "-- Channel = " << channel << endl;
   cout << "-- Signal Mode [0=LowMass, 1=All..] = " << signal_mode << endl;
@@ -31,19 +30,18 @@ void runIDBDT_HNtypeICF(TString Classifier ="BDTG" ,TString BkgType = "CF", TStr
  
   TString  treeName = (channel == "MuMu")  ?  "Tree_mm" :  "Tree_ee";
 
-  TString signal="SignalCF";
-  if(signal_mode == -1) signal="SignalCF";
-  if(signal_mode == -2) signal="SignalCF_BB";
-  if(signal_mode == -3) signal="SignalCF_EC";
-  if(signal_mode == 1) signal="SignalCFPtBinned";
-  if(signal_mode == 2) signal="SignalCFPtBinned_BB";
-  if(signal_mode == 3) signal="SignalCFPtBinned_EC";
+  TString SigTag = "SignalCF";
+  if(var_mode == 1) SigTag = "SignalCF_MVA";
+  if(var_mode == 2) SigTag = "SignalCF_IP";
 
-
+  TString signal=SigTag;
+  if(signal_mode == 1) signal=SigTag+"PtBinned_BB";
+  if(signal_mode == 2) signal=SigTag+"PtBinned_EC";
+  
   cout << "signal File Name= " << signal << endl;
   for(int i=0; i < nTermWidth; i++)  cout << "-" ;   cout << endl;
 
-  TString JobTag = Classifier  +  "_version4_"+ BkgType + "_TypeI_"+channel+"_"+signal+"_"+era+"_NTrees"+NTrees+"_NormMode_"+NormMode+"_MinNodeSize_"+MinNodeSize+"_MaxDepth_"+MaxDepth+"_nCuts_"+nCuts+ClassTag +"_Seed_"+seed+"_BDT";
+  TString JobTag = Classifier  +  "_version7_"+ BkgType + "_TypeI_"+channel+"_"+signal+"_"+era+"_NTrees"+NTrees+"_NormMode_"+NormMode+"_MinNodeSize_"+MinNodeSize+"_MaxDepth_"+MaxDepth+"_nCuts_"+nCuts+ClassTag +"_Seed_"+seed+"_BDT";
 
   TMVA::gConfig().GetVariablePlotting().fNbins1D = 100; 
   TMVA::gConfig().GetVariablePlotting().fNbinsMVAoutput = 100;
@@ -66,17 +64,29 @@ void runIDBDT_HNtypeICF(TString Classifier ="BDTG" ,TString BkgType = "CF", TStr
 
   TMVA::DataLoader* data_loader = new TMVA::DataLoader("dataset");
   
-  if(signal_mode > 0)data_loader->AddVariable("PtBinned", "PtBinned", "units", 'F');
-  else  data_loader->AddVariable("Pt", "Pt", "units", 'F');
+  data_loader->AddVariable("PtBinned", "PtBinned", "units", 'F');
   data_loader->AddVariable("Eta", "Eta", "units", 'F');
-  data_loader->AddVariable("Dxy",  "Dxy", "units", 'F');
-  data_loader->AddVariable("DxySig",  "DxySig", "units", 'F');
-  data_loader->AddVariable("Dz",  "Dz", "units", 'F');   
-  data_loader->AddVariable("DzSig",  "DzSig", "units", 'F');   
-  data_loader->AddVariable("IP3D", "IP3D", "units", 'F');       
-  data_loader->AddVariable("MVA",  "MVA", "units", 'F');
-  data_loader->AddVariable("MVAIso",  "MVAIso", "units", 'F');
-  data_loader->AddVariable("Full5x5_sigmaIetaIeta",  "Full5x5_sigmaIetaIeta", "units", 'F');
+  data_loader->AddVariable("MiniIsoChHad", "MiniIsoChHad", "units", 'F');
+  data_loader->AddVariable("RelIso", "RelIso", "units", 'F');
+
+  if(era == "2016"){
+    data_loader->AddVariable("Dxy",  "Dxy", "units", 'F');
+    data_loader->AddVariable("Dz",  "Dz", "units", 'F');   
+    if(var_mode== 2)   data_loader->AddVariable("IP3D", "IP3D", "units", 'F');
+    
+  }
+  else{
+    data_loader->AddVariable("DxySig",  "DxySig", "units", 'F');
+    data_loader->AddVariable("DzSig",  "DzSig", "units", 'F');   
+    if(var_mode == 2){
+      data_loader->AddVariable("Dxy",  "Dxy", "units", 'F');
+      data_loader->AddVariable("Dz",  "Dz", "units", 'F');
+      data_loader->AddVariable("IP3D", "IP3D", "units", 'F');       
+    }
+  }
+  if(var_mode == 1) data_loader->AddVariable("MVA",  "MVA", "units", 'F');
+  else data_loader->AddVariable("MVARaw",  "MVARaw", "units", 'F');
+
   data_loader->AddVariable("dPhiIn",  "dPhiIn", "units", 'F');
   data_loader->AddVariable("EoverP",  "EoverP", "units", 'F');
   data_loader->AddVariable("FBrem",  "FBrem", "units", 'F');
@@ -89,13 +99,7 @@ void runIDBDT_HNtypeICF(TString Classifier ="BDTG" ,TString BkgType = "CF", TStr
   data_loader->AddVariable("IsGsfScPixChargeConsistent",  "IsGsfScPixChargeConsistent", "units", 'F');
   data_loader->AddVariable("IsGsfCtfChargeConsistent",  "IsGsfCtfChargeConsistent", "units", 'F');
   data_loader->AddVariable("InvEminusInvP", "InvEminusInvP", "units", 'F');
-  data_loader->AddVariable("hcalPFClusterIso",  "hcalPFClusterIso", "units", 'F');
-  data_loader->AddVariable("ecalPFClusterIso",  "ecalPFClusterIso", "units", 'F');
-  data_loader->AddVariable("dr03TkSumPt",  "dr03TkSumPt", "units", 'F');
-  data_loader->AddVariable("HoverE",  "HoverE", "units", 'F');                                                                
-  data_loader->AddVariable("MissingHits",  "MissingHits", "units", 'F');
   data_loader->AddSpectator("w_id_tot", "w_id_tot", "units", 'F');
-
 
   data_loader->AddSignalTree(tree_signal, 1.0);
   data_loader->AddBackgroundTree(tree_bkg, 1.0);
@@ -105,11 +109,11 @@ void runIDBDT_HNtypeICF(TString Classifier ="BDTG" ,TString BkgType = "CF", TStr
   TCut cut_s = "";
   TCut cut_b = "";
 
-  if(fabs(signal_mode)==2){
+  if(signal_mode ==1){
     cut_s = "Eta<1.5";
     cut_b = "Eta<1.5";
   }
-  if(fabs(signal_mode)==3){
+  if(signal_mode==2){
     cut_s = "Eta>1.5&&Eta<2.5";
     cut_b = "Eta>1.5&&Eta<2.5";
   }

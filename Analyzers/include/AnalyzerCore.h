@@ -540,7 +540,6 @@ public:
 
   bool iSetupLeptonBDT;
 
-
   /// Variables for filling MVA branches 
 
   float vSKWeight;

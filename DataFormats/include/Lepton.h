@@ -286,6 +286,12 @@ public:
     return "Pileup";
   }
 
+  inline TString MotherJetFlavour()  const {
+    if(j_lep_jetflavour >= 4) return "HF";
+    if(j_lep_jetflavour == 0) return "LF";
+    return "Pileup";
+  }
+
 
   void SetdZ(double dZ, double dZerr);
   inline double fdZ() const {return fabs(j_dZ);}
