@@ -2,7 +2,7 @@ void runIDBDT_HNtypeIElectronFake(TString Classifier ="BDTG" ,TString BkgType = 
   
   int nTermWidth=50;
   
-  TString version="version7";
+  TString version="version8";
 
   for(int i=0; i < nTermWidth; i++)  cout << "=" ;   cout << endl;
   cout << "Running runIDBDT_HNtypeI{"+BkgType+"}: [Setup Options]" << endl;
@@ -34,26 +34,19 @@ void runIDBDT_HNtypeIElectronFake(TString Classifier ="BDTG" ,TString BkgType = 
 
   TString  treeName = (channel == "MuMu")  ?  "Tree_mm" :  "Tree_ee";
 
-  TString signal="";
+
+
 
   const TString path = "/data6/Users/jalmond/2020/HL_SKFlatAnalyzer_ULv3/SKFlatAnalyzer/HNDiLeptonWorskspace/InputFiles/MergedFiles/Run2UltraLegacy_v3/HNL_LeptonID_BDT_KinVar/"+era+"/";
-  TString signame  =   path+"HNL_LeptonID_BDT_KinVar_HNLLMPrompt.root";    
+  TString signame  =   path+"HNL_LeptonID_BDT_KinVar_Prompt.root";    
 
-    //path+"HNL_LeptonID_BDT_KinVar_HNLPrompt.root";
-    //  if(signal_mode < 0) signame  =  path+"HNL_LeptonID_BDT_KinVar_HNLLMPrompt.root";
 
   TString SigTag="SignalElectronFake";
-  if(signal_mode < 0) SigTag="SignalElectronFake_LowMassSig";
+  if(var_mode==1) SigTag="SignalElectronFake_IP";
 
-  signal_mode = fabs(signal_mode);
-
-  if(var_mode == 1) SigTag = SigTag+"_MVA";
-  if(var_mode == 2) SigTag = SigTag+"_IP";
-
+  TString signal=SigTag;
   if(signal_mode == 1) signal=SigTag+"_BB";
   else if(signal_mode == 2) signal=SigTag+"_EC";
-  else return;
-
 
   cout << "signal File Name= " << signal << endl;
   for(int i=0; i < nTermWidth; i++)  cout << "-" ;   cout << endl;
@@ -61,8 +54,6 @@ void runIDBDT_HNtypeIElectronFake(TString Classifier ="BDTG" ,TString BkgType = 
   TString JobTag = Classifier +  "_"+version+"_"+ BkgType +"_TypeI_"+channel+"_"+signal+"_"+era+"_NTrees"+NTrees+"_NormMode_"+NormMode+"_MinNodeSize_"+MinNodeSize+"_MaxDepth_"+MaxDepth+"_nCuts_"+nCuts+ClassTag +"_Seed_"+seed+"_BDT";
 
   TMVA::gConfig().GetVariablePlotting().fNbins1D = 500; 
-
-
  
   
   TFile* fsin = TFile::Open(signame);
@@ -79,45 +70,37 @@ void runIDBDT_HNtypeIElectronFake(TString Classifier ="BDTG" ,TString BkgType = 
   TMVA::DataLoader* data_loader = new TMVA::DataLoader("dataset");
   // Kinematics
   
-  if(!signal.Contains("Pt")) data_loader->AddVariable("Pt", "Pt", "units", 'F');
+  data_loader->AddVariable("Pt", "Pt", "units", 'F');
   data_loader->AddVariable("Eta", "Eta", "units", 'F');
-  
   // Iso
   data_loader->AddVariable("MiniIsoChHad", "MiniIsoChHad", "units", 'F'); 
   data_loader->AddVariable("MiniIsoPhHad", "MiniIsoPhHad", "units", 'F');
   data_loader->AddVariable("MiniIsoNHad", "MiniIsoNHad", "units", 'F');  
+  data_loader->AddVariable("RelMiniIsoCh", "RelMiniIsoCh", "units", 'F');
+  data_loader->AddVariable("RelMiniIsoN", "RelMiniIsoN", "units", 'F');
   data_loader->AddVariable("RelIso", "RelIso", "units", 'F');  
   if(era == "2016"){
     data_loader->AddVariable("Dxy",  "Dxy", "units", 'F');
     data_loader->AddVariable("Dz",  "Dz", "units", 'F');   
-    if(var_mode==2)       data_loader->AddVariable("IP3D",  "IP3D", "units", 'F');
   }
   else{
     data_loader->AddVariable("DxySig",  "DxySig", "units", 'F');
-    data_loader->AddVariable("DzSig",  "DzSig", "units", 'F');
-    if(var_mode==2){
-      data_loader->AddVariable("Dxy",  "Dxy", "units", 'F');
-      data_loader->AddVariable("Dz",  "Dz", "units", 'F');
-      data_loader->AddVariable("IP3D",  "IP3D", "units", 'F');
-    }
+    if(var_mode==1)     data_loader->AddVariable("DzSig",  "DzSig", "units", 'F');
   }
+  if(var_mode==1) data_loader->AddVariable("IP3D", "IP3D", "units", 'F');
   data_loader->AddVariable("PtRatioV3",  "PtRatioV3", "units", 'F');
   data_loader->AddVariable("PtRelV2",  "PtRelV2", "units", 'F');
   data_loader->AddVariable("JetDiscCJ","JetDiscCJ","units", 'F');
   data_loader->AddVariable("JetDiscCJCvsB","JetDiscCJCvsB","units", 'F');
   data_loader->AddVariable("JetDiscCJCvsL","JetDiscCJCvsL","units", 'F');
-
-  if(var_mode == 1) data_loader->AddVariable("MVA",  "MVA", "units", 'F');
-  else data_loader->AddVariable("MVARaw",  "MVARaw", "units", 'F');
-  
-  data_loader->AddVariable("FBrem",  "FBrem", "units", 'F');
+  data_loader->AddVariable("MVA",  "MVA", "units", 'F');
+  data_loader->AddVariable("MVAIso",  "MVAIso", "units", 'F');
+  if(signal_mode != 2) data_loader->AddVariable("FBrem",  "FBrem", "units", 'F');
   data_loader->AddVariable("R9",  "R9", "units", 'F');
-  data_loader->AddVariable("PhiWidth",  "MVA", "units", 'F'); //// LF
-  data_loader->AddVariable("dEtaSeed",  "dEtaSeed", "units", 'F');
+  data_loader->AddVariable("PhiWidth",  "PhiWidth", "units", 'F'); //// LF
+  if(var_mode==1) data_loader->AddVariable("EoverP",  "EoverP", "units", 'F');
   data_loader->AddSpectator("w_id_tot", "w_id_tot", "units", 'F');          
-
   data_loader->AddSignalTree(tree_signal, 1.0);
-
   data_loader->AddBackgroundTree(tree_bkg, 1.0);
 
   data_loader->SetWeightExpression("w_id_tot");  
@@ -126,28 +109,12 @@ void runIDBDT_HNtypeIElectronFake(TString Classifier ="BDTG" ,TString BkgType = 
   TCut cut_s = "";
   TCut cut_b = "";
 
-  bool cut1 = (signal_mode==1);
   bool cut2 = (signal_mode==2);
-  bool cut3 = (signal_mode==3);
-  bool cut4 = (signal_mode==4);
 
-  if(cut1){
-    cut_s = "Eta<1.5";
-    cut_b = "Eta<1.5";
-  }
   if(cut2){
     cut_s = "Eta>1.5&&Eta<2.5";
     cut_b = "Eta>1.5&&Eta<2.5";
   }
-  if(cut3){
-    cut_s = "Eta<1.5&&Pt<30";
-    cut_b = "Eta<1.5&&Pt<30";
-  }
-  if(cut4){
-    cut_s = "Eta>1.5&&Eta<2.5&&Pt<30";
-    cut_b = "Eta>1.5&&Eta<2.5&&Pt<30";
-  }
-  
 
   int n_train_signal = tree_signal->GetEntries(cut_s)/2 ;
   int n_train_back = tree_bkg->GetEntries(cut_b)/2 ;

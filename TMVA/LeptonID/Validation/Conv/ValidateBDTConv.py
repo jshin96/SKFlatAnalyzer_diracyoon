@@ -60,14 +60,15 @@ import argparse
 parser = argparse.ArgumentParser(description='option')
 parser.add_argument('-b', dest='Bkg', default="Conv")
 parser.add_argument('-e', dest='Era', default="2017")
-parser.add_argument('-f', dest='Flag', default="NULL")
+parser.add_argument('-v', dest='Version', default="Version8")
+parser.add_argument('-f', dest='Flag', default="BDT")
 parser.add_argument('-c', dest='Classifier', default="BDTG")
 parser.add_argument('--All', action='store_true')
 
 args = parser.parse_args()
+version = args.Version
 
-
-BDTFile_Dir = "/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIConv/Version7/"+args.Era+"/"
+BDTFile_Dir = "/data6/Users/jalmond/BDTOutput/Run2UltraLegacy_v3/runIDBDT_HNtypeIConv/"+version+"/"+args.Era+"/"
 BDTFileList  = [f for f in listdir(BDTFile_Dir) if isfile(join(BDTFile_Dir,f))]
 
 

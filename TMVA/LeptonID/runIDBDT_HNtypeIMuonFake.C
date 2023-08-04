@@ -9,7 +9,7 @@ void runIDBDT_HNtypeIMuonFake(TString Classifier ="BDTG" ,TString BkgType = "Fak
   else   if(Classifier == "BDTG")cout << "** BDT GRADBOOST *** " <<endl;
   else return;
   
-  TString version="version6";
+  TString version="version8";
 
   cout << "-- Era = " << era << endl;
 
@@ -35,12 +35,8 @@ void runIDBDT_HNtypeIMuonFake(TString Classifier ="BDTG" ,TString BkgType = "Fak
   TString  treeName = (channel == "MuMu")  ?  "Tree_mm" :  "Tree_ee";
 
   TString signal="SignalMuonFake";
-  if(signal_mode==0) signal="SignalMuonFake_BB";
-  if(signal_mode==1) signal="SignalMuonFake_EC";
+  if(signal_mode==2) signal="SignalMuonFake_EC";
 
-  if(signal_mode==2) signal="SignalMuonFakeNoPtBB";
-  if(signal_mode==3) signal="SignalMuonFakeNoPtEC";
-  if(signal_mode==4) signal="SignalMuonFakeNoPt";
   cout << "signal File Name= " << signal << endl;
   for(int i=0; i < nTermWidth; i++)  cout << "-" ;   cout << endl;
 
@@ -69,37 +65,30 @@ void runIDBDT_HNtypeIMuonFake(TString Classifier ="BDTG" ,TString BkgType = "Fak
 
   TMVA::DataLoader* data_loader = new TMVA::DataLoader("dataset");
   // Kinematics
-  if(signal_mode< 2)data_loader->AddVariable("Pt", "Pt", "units", 'F');
+  data_loader->AddVariable("Pt", "Pt", "units", 'F');
   data_loader->AddVariable("Eta", "Eta", "units", 'F');
-
-  // Iso
   data_loader->AddVariable("MiniIsoChHad", "MiniIsoChHad", "units", 'F'); 
   data_loader->AddVariable("MiniIsoPhHad", "MiniIsoPhHad", "units", 'F');
   data_loader->AddVariable("MiniIsoNHad", "MiniIsoNHad", "units", 'F');  
   data_loader->AddVariable("RelMiniIsoCh", "RelMiniIsoCh", "units", 'F');
   data_loader->AddVariable("RelMiniIsoN", "RelMiniIsoN", "units", 'F');
- 
-  //data_loader->AddVariable("IsoChHad", "IsoChHad", "units", 'F'); 
+  data_loader->AddVariable("RelIso", "RelIso", "units", 'F');
   data_loader->AddVariable("Dxy",  "Dxy", "units", 'F');
   data_loader->AddVariable("DxySig",  "DxySig", "units", 'F');
   data_loader->AddVariable("Dz",  "Dz", "units", 'F');   
   data_loader->AddVariable("DzSig",  "DzSig", "units", 'F');   
   data_loader->AddVariable("RelIso", "RelIso", "units", 'F'); 
   data_loader->AddVariable("IP3D", "IP3D", "units", 'F');       
-  data_loader->AddVariable("PtRatio",  "PtRatio", "units", 'F');
-  data_loader->AddVariable("PtRel",  "PtRel", "units", 'F');
-  data_loader->AddVariable("NEMFracCJ","NEMFracCJ", "units", 'F');
-  data_loader->AddVariable("CHFracCJ","CHFracCJ", "units", 'F');
+  data_loader->AddVariable("PtRatioV3",  "PtRatioV3", "units", 'F');
+  data_loader->AddVariable("PtRelV2",  "PtRelV2", "units", 'F');
   data_loader->AddVariable("JetDiscCJ","JetDiscCJ","units", 'F');
-  data_loader->AddVariable("NHFracCJ","NHFracCJ","units", 'F'); 
-  data_loader->AddVariable("MuFracCJ","MuFracCJ","units", 'F');
+  data_loader->AddVariable("JetDiscCJCvsB","JetDiscCJCvsB","units", 'F');
+  data_loader->AddVariable("JetDiscCJCvsL","JetDiscCJCvsL","units", 'F');
   data_loader->AddVariable("MVA",  "MVA", "units", 'F');
+  data_loader->AddVariable("MVAIso",  "MVAIso", "units", 'F');
   data_loader->AddVariable("Chi2", "Chi2", "units", 'F');
   data_loader->AddVariable("Validhits", "Validhits", "units", 'F');
   data_loader->AddVariable("Matched_stations", "Matched_stations", "units", 'F');
-  //  data_loader->AddVariable("Minireliso",  "Minireliso", "units", 'F');
-    
-  
   data_loader->AddSpectator("w_id_tot", "w_id_tot", "units", 'F');          
 
   data_loader->AddSignalTree(tree_signal, 1.0);
@@ -112,23 +101,15 @@ void runIDBDT_HNtypeIMuonFake(TString Classifier ="BDTG" ,TString BkgType = "Fak
   TCut cut_s = "";
   TCut cut_b = "";
 
-  if(fabs(signal_mode)==0){
+  if(fabs(signal_mode)==1){
     cut_s = "Eta<1.5";
     cut_b = "Eta<1.5";
   }
-  if(fabs(signal_mode)==1){
+  if(fabs(signal_mode)==2){
     cut_s = "Eta>1.5&&Eta<2.5";
     cut_b = "Eta>1.5&&Eta<2.5";
   }
 
-  if(fabs(signal_mode)==2){
-    cut_s = "Eta<1.5";
-    cut_b = "Eta<1.5";
-  }
-  if(fabs(signal_mode)==3){
-    cut_s = "Eta>1.5&&Eta<2.5";
-    cut_b = "Eta>1.5&&Eta<2.5";
-  }
 
   int n_train_signal = tree_signal->GetEntries(cut_s)/2 ;
   int n_train_back = tree_bkg->GetEntries(cut_b)/2 ;
