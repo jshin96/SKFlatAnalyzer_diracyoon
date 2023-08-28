@@ -1,0 +1,26 @@
+imax 1   number of channels
+jmax *   number of backgrounds(*:auto)
+kmax *   number of nuissance parameters(*:auto)
+--------------------------------------------------------------------------------------
+bin                        Mu2El0
+observation                7
+--------------------------------------------------------------------------------------
+bin                        Mu2El0    Mu2El0    Mu2El0    Mu2El0    Mu2El0    Mu2El0
+process                    Signal    Fake      TTX       VV        Conv      Rare  
+process                    0         1         2         3         4         5     
+rate                       2.506e+00 5.428e+00 1.384e+00 3.567e-02 4.385e-01 3.258e-03
+--------------------------------------------------------------------------------------
+lumi_13TeV          lnN    1.016     -         1.016     1.016     1.016     1.016 
+CMS_pileup          lnN    1.009     -         1.014     1.170     1.114     1.095 
+CMS_prefire         lnN    1.009     -         1.008     1.008     1.014     1.015 
+CMS_reco_e          lnN    1.000     -         1.000     1.000     1.000     1.000 
+CMS_scale_j         lnN    1.016     -         1.030     1.182     1.001     1.196 
+CMS_res_j           lnN    1.007     -         1.011     1.290     1.096     1.044 
+CMS_scale_uncluster lnN    1.010     -         1.019     1.027     1.062     1.134 
+CMS_btag_light      lnN    1.002     -         1.002     1.100     1.000     1.066 
+CMS_btag_heavy      lnN    1.017     -         1.031     1.009     1.039     1.078 
+FakeRate            lnN    -         1.085     -         -         -         -     
+Stat_Sig            lnN    1.022     -         -         -         -         -     
+Stat_Fake           lnN    -         1.272     -         -         -         -     
+Stat_TTX            lnN    -         -         1.044     -         -         -     
+--------------------------------------------------------------------------------------

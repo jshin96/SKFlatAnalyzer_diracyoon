@@ -11,9 +11,8 @@ public:
   void executeEventFromParameter(AnalyzerParameter param);
   void executeEvent();
 
-  bool ElFR, MuFR, MeasFR, MeasPU, PrVal, METMTWCut, FkVal;
+  bool ElFR, MuFR, MeasFR, MeasPU, PrVal, METMTWCut;
   bool DblMu, DblEG, MuEG, SglMu, SglEl;
-  bool SS2l;
   bool SystRun, ConePtCut;
   vector<TString> TrigList_ElFR, TrigList_MuFR;
 

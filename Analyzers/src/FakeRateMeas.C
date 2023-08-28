@@ -3,7 +3,6 @@
 void FakeRateMeas::initializeAnalyzer(){
 
   ElFR=false, MuFR=false, MeasFR=false, MeasPU=false, PrVal=false, METMTWCut=false;
-  SS2l=false, FkVal=false,
   SystRun=false, ConePtCut=false; 
   for(unsigned int i=0; i<Userflags.size(); i++){
     if(Userflags.at(i).Contains("ElFR"))      ElFR      = true; 
@@ -12,7 +11,6 @@ void FakeRateMeas::initializeAnalyzer(){
     if(Userflags.at(i).Contains("MeasPU"))    MeasPU    = true; 
     if(Userflags.at(i).Contains("METMTWCut")) METMTWCut = true; 
     if(Userflags.at(i).Contains("PrVal"))     PrVal     = true; 
-    if(Userflags.at(i).Contains("FkVal"))     FkVal     = true; 
     if(Userflags.at(i).Contains("ConePtCut")) ConePtCut = true; 
     if(Userflags.at(i).Contains("SystRun"))   SystRun   = true; 
   }
@@ -74,7 +72,7 @@ void FakeRateMeas::executeEvent(){
   Event ev = GetEvent();
   float weight = 1., w_GenNorm=1., w_BR=1., w_PU=1.;
   if(!IsDATA){
-    w_GenNorm = ev.MCweight()*weight_norm_1invpb*GetKFactor()*ev.GetTriggerLumi("Full");
+    w_GenNorm = MCweight()*GetKFactor()*ev.GetTriggerLumi("Full");
     w_BR      = GetBRWeight();
     w_PU      = GetPileUpWeight(nPileUp, 0);
     weight *= w_GenNorm * w_BR * w_PU;
@@ -100,9 +98,8 @@ void FakeRateMeas::executeEvent(){
 
 
   TString IDSSLabel = "SS"; float PTminMu = MuFR && ConePtCut? 5.:10.; 
-  TString MuTID="TopHNT", MuLID="TopHNLLIsop6NoSIP";
-  //TString MuTID="TopHNT", MuLID="TopHNLLIsop6SIP5";
-  TString ElTID="TopHN17SST", ElLID="TopHNSSNM01LFixLMVAIsop4NoSIP_201"+GetEraShort(), ElVID="TopHNV";
+  TString MuTID="TopHNT", MuLID="TopHNL";
+  TString ElTID="TopHNSST", ElLID="TopHNSSL_"+GetEraShort(), ElVID="TopHNL_"+GetEraShort();
   vector<Muon>     muonTightColl     = SelectMuons(muonPreColl, MuTID, PTminMu, 2.4);
   vector<Electron> electronTightColl = SelectElectrons(electronPreColl, ElTID, 10., 2.5);
   vector<Muon>     muonLooseColl     = SelectMuons(muonPreColl, MuLID, PTminMu, 2.4);
@@ -113,11 +110,11 @@ void FakeRateMeas::executeEvent(){
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
   vector<Jet> jetPreColl = GetAllJets();
   sort(jetPreColl.begin(), jetPreColl.end(), PtComparing);
-  vector<Jet> jetColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tight", 25., 2.4, "LVeto");
+  vector<Jet> jetColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
   vector<Jet> bjetColl = SelBJets(jetColl, param_jets);
 
 
-  Particle vMET_T1xy = GetvMET("T1xyCorr");
+  Particle vMET_T1xy = GetvMET("PUPPIMETT1xyCorr");
 
   std::vector<Gen> truthColl;
 
@@ -167,9 +164,12 @@ void FakeRateMeas::executeEvent(){
 
  
   if(MuFR){
+    vector<TString> OptList, LIDList;
+    if(ConePtCut) OptList = {"TrigMu17", "TrigMu8", "TrigMu3"};
+    else          OptList = {"TrigMu17", "TrigMu8"};
+    LIDList = {"TopHNL", "TopHNLLIsop6", "TopHNLLIsop6SIP4", "TopHNLLIsop6SIP5", "TopHNLLIsop6SIP6", "TopHNLLIsop6SIP7", "TopHNLLIsop6SIP8", "TopHNLLIsop6NoSIP"};
+
     if(MeasPU){
-      vector<TString> OptList; 
-      OptList = {"TrigMu17", "TrigMu8", "TrigMu3"}; 
       for(unsigned int iOpt=0; iOpt<OptList.size(); iOpt++){
         TString Opt(OptList.at(iOpt));
         float sf_Tr = Opt.Contains("17")? sf_mu17:Opt.Contains("8")? sf_mu8: 1.;
@@ -178,7 +178,6 @@ void FakeRateMeas::executeEvent(){
       }
     }
     if(PrVal){
-      vector<TString> OptList = {"TrigMu17", "TrigMu8", "TrigMu3"};
       for(unsigned int iOpt=0; iOpt<OptList.size(); iOpt++){
         TString Opt(OptList.at(iOpt));
         float sf_Tr  = Opt.Contains("17")? sf_mu17:Opt.Contains("8")? sf_mu8: 1.;
@@ -188,14 +187,10 @@ void FakeRateMeas::executeEvent(){
       }
     }
     if(MeasFR){
-      vector<TString> OptList, LIDList;
-      if(ConePtCut) OptList = {"TrigMu17", "TrigMu8", "TrigMu3"};
-      else          OptList = {"TrigMu17", "TrigMu8"};
-      LIDList = {"TopHNLLIsop6", "TopHNLLIsop6SIP4", "TopHNLLIsop6SIP5", "TopHNLLIsop6SIP6", "TopHNLLIsop6SIP7", "TopHNLLIsop6SIP8", "TopHNLLIsop6NoSIP"};
       for(unsigned int iID=0; iID<LIDList.size(); iID++){
         TString TmpMuLID = LIDList.at(iID);
         vector<Muon> MuLColl = SelectMuons(muonPreColl, TmpMuLID, PTminMu, 2.4);
-        vector<Jet>  JetColl = SelectJets(jetPreColl, MuLColl, electronVetoColl, "tight", 25., 2.4, "LVeto");
+        vector<Jet>  JetColl = SelectJets(jetPreColl, MuLColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
         vector<Jet> BJetColl = SelBJets(JetColl, param_jets);
         for(unsigned int iOpt=0; iOpt<OptList.size(); iOpt++){
           TString Opt = OptList.at(iOpt);
@@ -237,8 +232,6 @@ void FakeRateMeas::executeEvent(){
       }
     }
     if(MeasFR){
-      //vector<TString> LIDList = {"TopHNSSNM01LFixLMVAIsop4NoSIP_"+GetEraShort()};  
-      vector<TString> LIDList = {"TopHNSSLDynLMVAIsop4NoSIP_"+GetEraShort(), "TopHNSSLFixLMVAIsop4NoSIP_"+GetEraShort(), "TopHNSSL_WP90Isop4"};  
       for(unsigned int iID=0; iID<LIDList.size(); iID++){
         TString ElLID = LIDList.at(iID);
         vector<Electron> ElLColl  = SelectElectrons(electronPreColl, ElLID, 10., 2.5);
@@ -258,21 +251,21 @@ void FakeRateMeas::executeEvent(){
     }
   }
   if(SystRun && ((!IsDATA) or MeasFR)){
-    vector<Jet> jet20Coll       = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tight", 20., 2.4, "LVeto");
-    vector<Jet> jetJESUpColl    = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tight", 25., 2.4, "LVetoSystJESUp");
-    vector<Jet> jetJESDownColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tight", 25., 2.4, "LVetoSystJESDown");
-    vector<Jet> jetJERUpColl    = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tight", 25., 2.4, "LVetoSystJERUp");
-    vector<Jet> jetJERDownColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tight", 25., 2.4, "LVetoSystJERDown");
+    vector<Jet> jet20Coll       = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 20., 2.4, "LVeto");
+    vector<Jet> jetJESUpColl    = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVetoSystJESUp");
+    vector<Jet> jetJESDownColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVetoSystJESDown");
+    vector<Jet> jetJERUpColl    = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVetoSystJERUp");
+    vector<Jet> jetJERDownColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVetoSystJERDown");
     vector<Jet> bjetJESUpColl   = SelBJets(jetJESUpColl, param_jets);
     vector<Jet> bjetJESDownColl = SelBJets(jetJESDownColl, param_jets);
     vector<Jet> bjetJERUpColl   = SelBJets(jetJERUpColl, param_jets);
     vector<Jet> bjetJERDownColl = SelBJets(jetJERDownColl, param_jets);
-    Particle vMET_T1xy_JESUp    = GetvMET("T1xyCorr", "SystUpJES");
-    Particle vMET_T1xy_JESDown  = GetvMET("T1xyCorr", "SystDownJES");
-    Particle vMET_T1xy_JERUp    = GetvMET("T1xyCorr", "SystUpJER");
-    Particle vMET_T1xy_JERDown  = GetvMET("T1xyCorr", "SystDownJER");
-    Particle vMET_T1xy_UnclUp   = GetvMET("T1xyCorr", "SystUpUncl");
-    Particle vMET_T1xy_UnclDown = GetvMET("T1xyCorr", "SystDownUncl");
+    Particle vMET_T1xy_JESUp    = GetvMET("PUPPIMETT1xyCorr", "SystUpJES");
+    Particle vMET_T1xy_JESDown  = GetvMET("PUPPIMETT1xyCorr", "SystDownJES");
+    Particle vMET_T1xy_JERUp    = GetvMET("PUPPIMETT1xyCorr", "SystUpJER");
+    Particle vMET_T1xy_JERDown  = GetvMET("PUPPIMETT1xyCorr", "SystDownJER");
+    Particle vMET_T1xy_UnclUp   = GetvMET("PUPPIMETT1xyCorr", "SystUpUncl");
+    Particle vMET_T1xy_UnclDown = GetvMET("PUPPIMETT1xyCorr", "SystDownUncl");
 
 
     float w_PUUp=1., w_PUDown=1., w_PrefireUp=1., w_PrefireDown=1.;
@@ -313,16 +306,17 @@ void FakeRateMeas::executeEvent(){
 
 
     if(MuFR){
+      vector<TString> OptList, LIDList;
+      if(ConePtCut) OptList = {"TrigMu17", "TrigMu8", "TrigMu3"};
+      else          OptList = {"TrigMu17", "TrigMu8"};
+      LIDList = {"TopHNL", "TopHNLLIsop6", "TopHNLLIsop6SIP4", "TopHNLLIsop6SIP5", "TopHNLLIsop6SIP6", "TopHNLLIsop6SIP7", "TopHNLLIsop6SIP8", "TopHNLLIsop6NoSIP"};
+
       if(MeasFR){
-        vector<TString> OptList, LIDList;
-        if(ConePtCut) OptList = {"TrigMu17", "TrigMu8", "TrigMu3"};
-        else          OptList = {"TrigMu17", "TrigMu8"};
-        LIDList = {"TopHNLLIsop6", "TopHNLLIsop6SIP4", "TopHNLLIsop6SIP5", "TopHNLLIsop6SIP6", "TopHNLLIsop6SIP7", "TopHNLLIsop6SIP8", "TopHNLLIsop6NoSIP"};
         for(unsigned int iID=0; iID<LIDList.size(); iID++){
           TString TmpMuLID = LIDList.at(iID);
           vector<Muon> MuLColl   = SelectMuons(muonPreColl, TmpMuLID, PTminMu, 2.4);
-          vector<Jet>  JetColl   = SelectJets(jetPreColl, MuLColl, electronVetoColl, "tight", 25., 2.4, "LVeto");
-          vector<Jet>  Jet20Coll = SelectJets(jetPreColl, MuLColl, electronVetoColl, "tight", 20., 2.4, "LVeto");
+          vector<Jet>  JetColl   = SelectJets(jetPreColl, MuLColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
+          vector<Jet>  Jet20Coll = SelectJets(jetPreColl, MuLColl, electronVetoColl, "tightLepVeto", 20., 2.4, "LVeto");
           vector<Jet>  BJetColl  = SelBJets(JetColl, param_jets);
           for(unsigned int iOpt=0; iOpt<OptList.size(); iOpt++){
             TString Opt = OptList.at(iOpt);
@@ -345,10 +339,6 @@ void FakeRateMeas::executeEvent(){
         }
       }
       if(PrVal){
-        vector<TString> OptList;
-        if(ConePtCut) OptList = {"TrigMu17", "TrigMu8", "TrigMu3"};
-        else          OptList = {"TrigMu17", "TrigMu8"};
-
         for(unsigned int iOpt=0; iOpt<OptList.size(); iOpt++){
           TString Opt = OptList.at(iOpt);
           float sf_Tr = Opt.Contains("17")? sf_mu17:Opt.Contains("8")? sf_mu8: 1.;
@@ -393,12 +383,12 @@ void FakeRateMeas::executeEvent(){
       }//End of PrVal
     }//End of MuFR
     if(ElFR){
+      vector<TString> OptList, LIDList; TString PtTag; 
+      if(ConePtCut){ PtTag="_Pt10"; OptList = {"TrigEl23", "TrigEl12", "TrigEl8"}; }
+      else         { PtTag="_Pt15"; OptList = {"TrigEl23", "TrigEl12"}; }
+      LIDList = {"TopHNSSL_"+GetEraShort(), "TopHNSSL_WP90Isop4", "TopHN17SSL"};  
+
       if(MeasFR){
-        vector<TString> OptList, LIDList; TString PtTag; 
-        if(ConePtCut){ PtTag="_Pt10"; OptList = {"TrigEl23", "TrigEl12", "TrigEl8"}; }
-        else         { PtTag="_Pt15"; OptList = {"TrigEl23", "TrigEl12"}; }
-        //LIDList = {"TopHNSSNM01LFixLMVAIsop4NoSIP_"+GetEraShort()};  
-        LIDList = {"TopHNSSLDynLMVAIsop4NoSIP_"+GetEraShort(), "TopHNSSLFixLMVAIsop4NoSIP_"+GetEraShort(), "TopHNSSL_WP90Isop4"};  
         for(unsigned int iID=0; iID<LIDList.size(); iID++){
           TString TmpElLID = LIDList.at(iID);
           vector<Electron> ElLColl  = SelectElectrons(electronPreColl, TmpElLID, 10., 2.5);
@@ -423,10 +413,6 @@ void FakeRateMeas::executeEvent(){
         }
       }
       if(PrVal){
-        vector<TString> OptList, LIDList; TString PtTag; 
-        if(ConePtCut){ PtTag="_Pt10"; OptList = {"TrigEl23", "TrigEl12", "TrigEl8"}; }
-        else         { PtTag="_Pt15"; OptList = {"TrigEl23", "TrigEl12"}; }
-
         for(unsigned int iOpt=0; iOpt<OptList.size(); iOpt++){
           TString Opt = OptList.at(iOpt);
           float sf_Tr  = Opt.Contains("23")? sf_el23:Opt.Contains("12")? sf_el12:1.;
@@ -941,35 +927,35 @@ float FakeRateMeas::GetResidualNormSF(TString Key, TString Era){
 
   float SF=1.;
   if(Era=="2016a"){
-    if     (Key.Contains("Mu17")) SF = 8.927e-03;
-    else if(Key.Contains("Mu8" )) SF = 4.204e-04;
-    else if(Key.Contains("Mu3" )) SF = 1.710e-04;
-    else if(Key.Contains("El23")) SF = 2.652e-03;
-    else if(Key.Contains("El12")) SF = 6.248e-04;
+    if     (Key.Contains("Mu17")) SF = 9.068e-03;
+    else if(Key.Contains("Mu8" )) SF = 4.373e-04;
+    else if(Key.Contains("Mu3" )) SF = 1.711e-04;
+    else if(Key.Contains("El23")) SF = 2.737e-03;
+    else if(Key.Contains("El12")) SF = 6.321e-04;
     else if(Key.Contains("El8" )) SF = 2.419e-04;
   }
   else if(Era=="2016b"){
-    if     (Key.Contains("Mu17")) SF = 1.571e-03;
-    else if(Key.Contains("Mu8" )) SF = 8.917e-05;
-    else if(Key.Contains("Mu3" )) SF = 1.219e-04;
-    else if(Key.Contains("El23")) SF = 5.725e-04;
-    else if(Key.Contains("El12")) SF = 2.508e-04;
+    if     (Key.Contains("Mu17")) SF = 1.461e-03;
+    else if(Key.Contains("Mu8" )) SF = 7.881e-05;
+    else if(Key.Contains("Mu3" )) SF = 1.221e-04;
+    else if(Key.Contains("El23")) SF = 5.722e-04;
+    else if(Key.Contains("El12")) SF = 2.561e-04;
     else if(Key.Contains("El8" )) SF = 1.977e-04;
   }
   else if(Era=="2017"){
-    if     (Key.Contains("Mu17")) SF = 1.628e-03;
-    else if(Key.Contains("Mu8" )) SF = 9.848e-05;
-    else if(Key.Contains("Mu3" )) SF = 1.370e-04;
-    else if(Key.Contains("El23")) SF = 1.016e-03;
-    else if(Key.Contains("El12")) SF = 7.294e-04;
+    if     (Key.Contains("Mu17")) SF = 1.544e-03;
+    else if(Key.Contains("Mu8" )) SF = 9.336e-05;
+    else if(Key.Contains("Mu3" )) SF = 1.369e-04;
+    else if(Key.Contains("El23")) SF = 1.001e-03;
+    else if(Key.Contains("El12")) SF = 7.211e-04;
     else if(Key.Contains("El8" )) SF = 1.247e-04;
   }
   else if(Era=="2018"){
-    if     (Key.Contains("Mu17")) SF = 7.688e-04;
-    else if(Key.Contains("Mu8" )) SF = 1.642e-04;
+    if     (Key.Contains("Mu17")) SF = 7.191e-04;
+    else if(Key.Contains("Mu8" )) SF = 1.526e-04;
     else if(Key.Contains("Mu3" )) SF = 9.699e-05;
-    else if(Key.Contains("El23")) SF = 5.940e-04;
-    else if(Key.Contains("El12")) SF = 6.949e-04;
+    else if(Key.Contains("El23")) SF = 5.888e-04;
+    else if(Key.Contains("El12")) SF = 6.874e-04;
     else if(Key.Contains("El8" )) SF = 1.190e-04;
   }
 

@@ -173,7 +173,7 @@ bool Electron::PassID(TString ID) const{
     if(!passMVAID_iso_WP90()) return false;
     if(!(RelIso()<0.06)) return false;
     if(!(fabs(dXY())<0.025 && fabs(dZ())<0.1)) return false; 
-    if(!(dXYerr()!=0. && fabs(dXY()/dXYerr())<4.)) return false;
+    if(! (SIP2D()<4.) ) return false;
     if(!PassConversionVeto()) return false;
     if(!Pass_CaloIdL_TrackIdL_IsoVL_HctoWA()) return false;
     if(!(fabs(Eta())<2.5)) return false;
@@ -186,7 +186,7 @@ bool Electron::PassID(TString ID) const{
     else if(fEta<2.5  ){ if(MVAIso()<-0.78) return false; }
     if(!(RelIso()<0.4)) return false;
     if(!(fabs(dXY())<0.025 && fabs(dZ())<0.1)) return false; 
-    if(!(dXYerr()!=0. && fabs(dXY()/dXYerr())<4.)) return false;
+    if(! (SIP2D()<4.) ) return false;
     if(!PassConversionVeto()) return false;
     if(!Pass_CaloIdL_TrackIdL_IsoVL_HctoWA()) return false;
     if(!(fabs(Eta())<2.5)) return false;
@@ -218,6 +218,131 @@ bool Electron::PassID(TString ID) const{
     if(!(fabs(Eta())<2.5)) return false;
     return true;
   }
+  //Use Checked
+  if(ID=="TopHN17T" or ID=="TopHNT"){
+    if(! passMVAID_noIso_WP90()          ) return false;
+    if(! (MiniRelIso()<0.1)              ) return false;
+    if(! (SIP3D()<4.)                    ) return false;
+    if(! (fabs(dZ())<0.1)                ) return false;
+    if(! Pass_CaloIdL_TrackIdL_IsoVL() ) return false;
+    if(! PassConversionVeto()            ) return false;
+    if(! (NMissingHits()<2)              ) return false;
+    if(! (fabs(Eta())<2.5)               ) return false;
+    return true;
+  }
+  if(ID=="TopHN17L" or ID=="TopHNL"){
+    if(! passMVAID_noIso_WPLoose()       ) return false;
+    if(! (MiniRelIso()<0.4)              ) return false;
+    if(! (SIP3D()<4.)                    ) return false;
+    if(! (fabs(dZ())<0.1)                ) return false;
+    if(! Pass_CaloIdL_TrackIdL_IsoVL()   ) return false;
+    if(! PassConversionVeto()            ) return false;
+    if(! (NMissingHits()<2)              ) return false;
+    if(! (fabs(Eta())<2.5)               ) return false;
+    return true;
+  }
+  if(ID=="TopHN17SST" or ID=="TopHNSST"){
+    if(! passMVAID_noIso_WP90()          ) return false;
+    if(! (MiniRelIso()<0.1)              ) return false;
+    if(! (SIP3D()<4)                     ) return false;
+    if(! (fabs(dZ())<0.1)                ) return false;
+    if(! Pass_CaloIdL_TrackIdL_IsoVL()   ) return false;
+    if(! PassConversionVeto()            ) return false;
+    if(! (NMissingHits()<2)              ) return false;
+    if(! (fabs(Eta())<2.5)               ) return false;
+    if(! IsGsfCtfScPixChargeConsistent() ) return false;
+    return true;
+  }
+  if(ID=="TopHNSSL_WP90Isop4"){
+    if(! passMVAID_noIso_WP90()          ) return false;
+    if(! (MiniRelIso()<0.4)              ) return false;
+    if(! (SIP3D()<4)                     ) return false;
+    if(! (fabs(dZ())<0.1)                ) return false;
+    if(! Pass_CaloIdL_TrackIdL_IsoVL()   ) return false;
+    if(! PassConversionVeto()            ) return false;
+    if(! (NMissingHits()<2)              ) return false;
+    if(! (fabs(Eta())<2.5)               ) return false;
+    if(! IsGsfCtfScPixChargeConsistent() ) return false;
+    return true;
+  }
+  if(ID=="TopHN17SSL"){
+    if(! passMVAID_noIso_WPLoose()       ) return false;
+    if(! (MiniRelIso()<0.4)              ) return false;
+    if(! (SIP3D()<4.)                    ) return false;
+    if(! (fabs(dZ())<0.1)                ) return false;
+    if(! Pass_CaloIdL_TrackIdL_IsoVL() ) return false;
+    if(! PassConversionVeto()            ) return false;
+    if(! (NMissingHits()<2)              ) return false;
+    if(! (fabs(Eta())<2.5)               ) return false;
+    if(! IsGsfCtfScPixChargeConsistent() ) return false;
+    return true;
+  }
+  if(ID.Contains("TopHNSSLFixLMVAIsop4NoSIP_201") or ID.Contains("TopHNSSL_201")){
+    if(! (MiniRelIso()<0.4)              ) return false;
+    if(! (fabs(dZ())<0.1)                ) return false;
+    if(! Pass_CaloIdL_TrackIdL_IsoVL()   ) return false;
+    if(! PassConversionVeto()            ) return false;
+    if(! (NMissingHits()<=1)             ) return false;
+    if(! (fabs(Eta())<2.5)               ) return false;
+    if(! IsGsfCtfScPixChargeConsistent() ) return false;
+    float MVACut=-1, fEta=fabs(Eta());
+    if     (ID.Contains("2016a")) MVACut=fEta<0.8? 0.96:fEta<1.5? 0.93:0.85;
+    else if(ID.Contains("2016b")) MVACut=fEta<0.8? 0.96:fEta<1.5? 0.93:0.85;
+    else if(ID.Contains("2017") ) MVACut=fEta<0.8? 0.94:fEta<1.5? 0.79:0.5;
+    else if(ID.Contains("2018") ) MVACut=fEta<0.8? 0.94:fEta<1.5? 0.79:0.5;
+
+    if(! (MVANoIso()>MVACut or passMVAID_noIso_WP90()) ) return false;
+    return true;
+  }
+  if(ID.Contains("TopHNL_201")){
+    if(! (MiniRelIso()<0.4)              ) return false;
+    if(! (fabs(dZ())<0.1)                ) return false;
+    if(! Pass_CaloIdL_TrackIdL_IsoVL()   ) return false;
+    if(! PassConversionVeto()            ) return false;
+    if(! (NMissingHits()<=1)             ) return false;
+    if(! (fabs(Eta())<2.5)               ) return false;
+    float MVACut=-1, fEta=fabs(Eta());
+    if     (ID.Contains("2016a")) MVACut=fEta<0.8? 0.96:fEta<1.5? 0.93:0.85;
+    else if(ID.Contains("2016b")) MVACut=fEta<0.8? 0.96:fEta<1.5? 0.93:0.85;
+    else if(ID.Contains("2017") ) MVACut=fEta<0.8? 0.94:fEta<1.5? 0.79:0.5;
+    else if(ID.Contains("2018") ) MVACut=fEta<0.8? 0.94:fEta<1.5? 0.79:0.5;
+
+    if(! (MVANoIso()>MVACut or passMVAID_noIso_WP90()) ) return false;
+    return true;
+  }
+  if(ID=="TopHNV"){
+    if(! (MVANoIso()  >-0.8 or passMVAID_noIso_WP90()) ) return false;
+    if(! (MiniRelIso()< 0.4 )          ) return false;
+    if(! (fabs(dZ())  < 0.1 )          ) return false;
+    if(! Pass_CaloIdL_TrackIdL_IsoVL() ) return false;
+    if(! PassConversionVeto()          ) return false;
+    if(! (NMissingHits()<2)            ) return false;
+    if(! (fabs(Eta())<2.5)             ) return false;
+    return true;
+  }
+  if(ID=="TopHNSS_Isop4NoSIPMVA"){
+    if(! (MiniRelIso()<0.4)              ) return false;
+    if(! (fabs(dZ())<0.1)                ) return false;
+    if(! Pass_CaloIdL_TrackIdL_IsoVL()   ) return false;
+    if(! PassConversionVeto()            ) return false;
+    if(! (NMissingHits()<=1)             ) return false;
+    if(! (fabs(Eta())<2.5)               ) return false;
+    if(! IsGsfCtfScPixChargeConsistent() ) return false;
+    return true;
+  }
+  if(ID=="TopHN_Isop4NoSIPMVA"){
+    if(! (MiniRelIso()<0.4)              ) return false;
+    if(! (fabs(dZ())<0.1)                ) return false;
+    if(! Pass_CaloIdL_TrackIdL_IsoVL()   ) return false;
+    if(! PassConversionVeto()            ) return false;
+    if(! (NMissingHits()<=1)             ) return false;
+    if(! (fabs(Eta())<2.5)               ) return false;
+    return true;
+  }
+
+  //End of usage checked
+
+/*
   if(ID=="TopHN_NoIsoMVA"){
     if(! (IP3Derr()!=0. && fabs(IP3D()/IP3Derr())<4.) ) return false;
     if(! (fabs(dZ())<0.1)                ) return false;
@@ -225,16 +350,6 @@ bool Electron::PassID(TString ID) const{
     if(! PassConversionVeto()            ) return false;
     if(! (NMissingHits()==0)             ) return false;
     if(! (fabs(Eta())<2.5)               ) return false;
-    return true;
-  }
-  if(ID=="TopHNV"){
-    if(! (MVANoIso()  >-0.8 )          ) return false;
-    if(! (MiniRelIso()< 0.4 )          ) return false;
-    if(! (fabs(dZ())  < 0.1 )          ) return false;
-    if(! Pass_CaloIdL_TrackIdL_IsoVL() ) return false;
-    if(! PassConversionVeto()          ) return false;
-    if(! (NMissingHits()<2)            ) return false;
-    if(! (fabs(Eta())<2.5)             ) return false;
     return true;
   }
   if(ID=="TopHNVSIP4"){
@@ -248,26 +363,7 @@ bool Electron::PassID(TString ID) const{
     if(! (fabs(Eta())<2.5)             ) return false;
     return true;
   }
-  if(ID.Contains("TopHNSSNM01LFixLMVAIsop4NoSIP_201")){
-    if(! (MiniRelIso()<0.4)              ) return false;
-    if(! (fabs(dZ())<0.1)                ) return false;
-    if(! Pass_CaloIdL_TrackIdL_IsoVL()   ) return false;
-    if(! PassConversionVeto()            ) return false;
-    if(! (NMissingHits()<=1)             ) return false;
-    if(! (fabs(Eta())<2.5)               ) return false;
-    if(! IsGsfCtfScPixChargeConsistent() ) return false;
-    float MVACut=-1, fEta=fabs(Eta());
-    if     (ID.Contains("2016a")) MVACut=fEta<0.8? 0.97:fEta<1.5? 0.93:0.85;
-    else if(ID.Contains("2016b")) MVACut=fEta<0.8? 0.97:fEta<1.5? 0.95:0.85;
-    else if(ID.Contains("2017") ) MVACut=fEta<0.8? 0.96:fEta<1.5? 0.83:0.5;
-    else if(ID.Contains("2018") ) MVACut=fEta<0.8? 0.96:fEta<1.5? 0.83:0.5;
-
-    if(! (MVANoIso()>MVACut) ) return false;
-    return true;
-  }
-
-
-  if(ID.Contains("TopHNSSLFixLMVAIsop4NoSIP_201")){
+  if(ID.Contains("TopHNSSNM0LFixLMVAIsop4NoSIP_201")){
     if(! (MiniRelIso()<0.4)              ) return false;
     if(! (fabs(dZ())<0.1)                ) return false;
     if(! Pass_CaloIdL_TrackIdL_IsoVL()   ) return false;
@@ -307,22 +403,12 @@ bool Electron::PassID(TString ID) const{
     if(! PassLooseMVA(ID, "PTCorrBase")  ) return false;
     return true;
   }
-  if(ID=="TopHNSS_Isop4NoSIPMVA"){
+  if(ID=="TopHNSSNM0_Isop4NoSIPMVA"){
     if(! (MiniRelIso()<0.4)              ) return false;
     if(! (fabs(dZ())<0.1)                ) return false;
     if(! Pass_CaloIdL_TrackIdL_IsoVL() ) return false;
     if(! PassConversionVeto()            ) return false;
     if(! (NMissingHits()==0)             ) return false;
-    if(! (fabs(Eta())<2.5)               ) return false;
-    if(! IsGsfCtfScPixChargeConsistent() ) return false;
-    return true;
-  }
-  if(ID=="TopHNSSNM01_Isop4NoSIPMVA"){
-    if(! (MiniRelIso()<0.4)              ) return false;
-    if(! (fabs(dZ())<0.1)                ) return false;
-    if(! Pass_CaloIdL_TrackIdL_IsoVL()   ) return false;
-    if(! PassConversionVeto()            ) return false;
-    if(! (NMissingHits()<=1)             ) return false;
     if(! (fabs(Eta())<2.5)               ) return false;
     if(! IsGsfCtfScPixChargeConsistent() ) return false;
     return true;
@@ -392,92 +478,10 @@ bool Electron::PassID(TString ID) const{
     if(! IsGsfCtfScPixChargeConsistent() ) return false;
     return true;
   }
-  if(ID=="TopHNSSL_WP90Isop4"){
-    if(! passMVAID_noIso_WP90()          ) return false;
-    if(! (MiniRelIso()<0.4)              ) return false;
-    if(! (IP3Derr()!=0. && fabs(IP3D()/IP3Derr())<4.) ) return false;
-    if(! (fabs(dZ())<0.1)                ) return false;
-    if(! Pass_CaloIdL_TrackIdL_IsoVL() ) return false;
-    if(! PassConversionVeto()            ) return false;
-    if(! (NMissingHits()==0)             ) return false;
-    if(! (fabs(Eta())<2.5)               ) return false;
-    if(! IsGsfCtfScPixChargeConsistent() ) return false;
-    return true;
-  }
 
 
 
 
-  if(ID=="TopHN17T"){
-    if(! passMVAID_noIso_WP90()          ) return false;
-    if(! (MiniRelIso()<0.1)              ) return false;
-    if(! (SIP3D()<4.)                    ) return false;
-    if(! (fabs(dZ())<0.1)                ) return false;
-    if(! Pass_CaloIdL_TrackIdL_IsoVL() ) return false;
-    if(! PassConversionVeto()            ) return false;
-    if(! (NMissingHits()<2)              ) return false;
-    if(! (fabs(Eta())<2.5)               ) return false;
-    return true;
-  }
-  if(ID=="TopHN17L"){
-    if(! passMVAID_noIso_WPLoose()       ) return false;
-    if(! (MiniRelIso()<0.4)              ) return false;
-    if(! (IP3Derr()!=0. && fabs(IP3D()/IP3Derr())<4.) ) return false;
-    if(! (fabs(dZ())<0.1)                ) return false;
-    if(! Pass_CaloIdL_TrackIdL_IsoVL() ) return false;
-    if(! PassConversionVeto()            ) return false;
-    if(! (NMissingHits()<2)              ) return false;
-    if(! (fabs(Eta())<2.5)               ) return false;
-    return true;
-  }
-  if(ID=="TopHN17SST"){
-    if(! passMVAID_noIso_WP90()          ) return false;
-    if(! (MiniRelIso()<0.1)              ) return false;
-    if(! (SIP3D()<4)                     ) return false;
-    if(! (fabs(dZ())<0.1)                ) return false;
-    if(! Pass_CaloIdL_TrackIdL_IsoVL()   ) return false;
-    if(! PassConversionVeto()            ) return false;
-    if(! (NMissingHits()<2)              ) return false;
-    if(! (fabs(Eta())<2.5)               ) return false;
-    if(! IsGsfCtfScPixChargeConsistent() ) return false;
-    return true;
-  }
-  if(ID=="TopHN17SSL_WP90Isop4"){
-    if(! passMVAID_noIso_WP90()          ) return false;
-    if(! (MiniRelIso()<0.4)              ) return false;
-    if(! (SIP3D()<4)                     ) return false;
-    if(! (fabs(dZ())<0.1)                ) return false;
-    if(! Pass_CaloIdL_TrackIdL_IsoVL()   ) return false;
-    if(! PassConversionVeto()            ) return false;
-    if(! (NMissingHits()<2)              ) return false;
-    if(! (fabs(Eta())<2.5)               ) return false;
-    if(! IsGsfCtfScPixChargeConsistent() ) return false;
-    return true;
-  }
-  if(ID=="TopHN17SST_NMiss0"){
-    if(! passMVAID_noIso_WP90()          ) return false;
-    if(! (MiniRelIso()<0.1)              ) return false;
-    if(! (IP3Derr()!=0. && fabs(IP3D()/IP3Derr())<4.) ) return false;
-    if(! (fabs(dZ())<0.1)                ) return false;
-    if(! Pass_CaloIdL_TrackIdL_IsoVL() ) return false;
-    if(! PassConversionVeto()            ) return false;
-    if(! (NMissingHits()==0)              ) return false;
-    if(! (fabs(Eta())<2.5)               ) return false;
-    if(! IsGsfCtfScPixChargeConsistent() ) return false;
-    return true;
-  }
-  if(ID=="TopHN17SSL"){
-    if(! passMVAID_noIso_WPLoose()       ) return false;
-    if(! (MiniRelIso()<0.4)              ) return false;
-    if(! (IP3Derr()!=0. && fabs(IP3D()/IP3Derr())<4.) ) return false;
-    if(! (fabs(dZ())<0.1)                ) return false;
-    if(! Pass_CaloIdL_TrackIdL_IsoVL() ) return false;
-    if(! PassConversionVeto()            ) return false;
-    if(! (NMissingHits()<2)              ) return false;
-    if(! (fabs(Eta())<2.5)               ) return false;
-    if(! IsGsfCtfScPixChargeConsistent() ) return false;
-    return true;
-  }
   if(ID=="TopHN17SSTNoIHLT"){
     if(! passMVAID_noIso_WP90()          ) return false;
     if(! (IP3Derr()!=0. && fabs(IP3D()/IP3Derr())<4.) ) return false;
@@ -488,6 +492,7 @@ bool Electron::PassID(TString ID) const{
     if(! IsGsfCtfScPixChargeConsistent() ) return false;
     return true;
   }
+
   if(ID=="TopHN17SSLNoIHLT"){
     if(! passMVAID_noIso_WPLoose()       ) return false;
     if(! (IP3Derr()!=0. && fabs(IP3D()/IP3Derr())<4.) ) return false;
@@ -596,7 +601,7 @@ bool Electron::PassID(TString ID) const{
     if(! IsGsfCtfScPixChargeConsistent() ) return false;
     return true;
   }
-
+*/
   cout << "[Electron::PassID] No id : " << ID << endl;
   exit(ENODATA);
 
@@ -781,18 +786,6 @@ bool Electron::Pass_SUSYLoose() const{
 bool Electron::Pass_TESTID() const{
   if(! passMVAID_noIso_WP90() ) return false;
   if(! (MiniRelIso()<0.1)     ) return false;
-  if(! (fabs(dXY())<0.025 && fabs(dZ())<0.1) ) return false;
-  if(! (dXYerr()>0. && fabs(dXY()/dXYerr())<4.) ) return false;
-  if(! (IP3Derr()>0. && fabs(IP3D()/IP3Derr())<4.) ) return false;
-  if(! PassConversionVeto() ) return false;
-  if(! Pass_CaloIdL_TrackIdL_IsoVL() ) return false;
-
-  return true;
-}
-
-
-bool Electron::Pass_TESTIDL() const{
-  if(! (MiniRelIso()<0.4)  ) return false;
   if(! (fabs(dXY())<0.025 && fabs(dZ())<0.1) ) return false;
   if(! (dXYerr()>0. && fabs(dXY()/dXYerr())<4.) ) return false;
   if(! (IP3Derr()>0. && fabs(IP3D()/IP3Derr())<4.) ) return false;

@@ -3,31 +3,18 @@
 ########################################################################
 #"runBkdMC" "runConv" "runFlip" "runFakeRD" "runSigMC" "runData"
 #declare -a List_runModes=("runBkdMC")
-#declare -a List_runModes=("runFakeCF" "runFlip")
+#declare -a List_runModes=("runBkdMC" "runSigMC")
 #declare -a List_runModes=("runData")
-#declare -a List_runModes=("runBkdMC" "runData")
-#declare -a List_runModes=("runSigMC")
-#declare -a List_runModes=("runFakeRD" "runFakeMC" "runFakeCv" "runConv" "runBkdMC" "runData")
-#declare -a List_runModes=("runFakeMC" "runFakeCv")
-#declare -a List_runModes=("runBkdMC" "runFakeRD" "runFakeMC" "runFakeCv" "runConv" "runData")
-#declare -a List_runModes=("runBkdMC" "runFakeRD" "runFakeMC" "runConv" "runFlip" "runData")
-#declare -a List_runModes=("runFlip")
-#declare -a List_runModes=("runBkdMC" "runFakeRD" "runConv" "runFlip" "runFakeCF" "runFakeCv" "runData")
-#declare -a List_runModes=("runFakeRD" "runFlip" "runFakeCF")
-
-#declare -a List_runModes=("runBkdMC" "runFakeRD" "runConv" "runFakeCv" "runData")
-#declare -a List_runModes=("runFakeRD" "runFakeCv" "runFakeMC")
-declare -a List_runModes=("runData" "runFakeRD")
-#declare -a List_runModes=("runFakeCv" "runFakeRD")
-#declare -a List_runModes=("runBkdMC" "runFakeRD" "runConv")
-#declare -a List_runModes=("runBkdMC" "runFakeRD")
+#declare -a List_runModes=("runFakeMC")
 #declare -a List_runModes=("runData" "runFakeRD")
-#declare -a List_runModes=("runBkdMC" "runData" "runFakeRD")
-#declare -a List_runModes=("runBkdMC" "runData" "runSigMC")
-
-#declare -a List_Year=("2016a" "2016b")
-#declare -a List_Year=("2018" "2016a" "2016b")
-declare -a List_Year=("2016a" "2016b")
+#Fake Only
+#declare -a List_runModes=("runFakeRD" "runFakeCv" "runFakeCF") #"runFakeMC"
+#SS2l
+#declare -a List_runModes=("runBkdMC" "runFakeRD" "runConv" "runFlip" "runFakeCF" "runFakeCv" "runData")
+#declare -a List_runModes=("runFlip" "runFakeCF")
+#TriLep
+declare -a List_runModes=("runBkdMC" "runFakeRD" "runConv" "runFakeCv" "runData" "runFakeMC")
+declare -a List_Year=("2018")
 #declare -a List_Year=("2017" "2018" "2016a" "2016b")
 
 ########################################################################
@@ -35,23 +22,25 @@ declare -a List_Year=("2016a" "2016b")
 
 AnalysisCode="ControlPlots"
 FinalState="TriLep" #"SS2l" #"SS2l" "OS2l" "TriLep"
-Skim="" #"SkimTree_SS2lOR3l"
-RunningMode="TriLep,FkCR3l,SystRun" #"SS2l,SB_SS2L,SystRun" 
+Skim="SkimTree_SS2lOR3l"
+RunningMode="TriLep,FkCR3l,SystRun"
+#"SS2l,SB_SS2L,SystRun" #"TriLep,FkCR3l,SystRun" #"SS2l,SB_SS2L,SystRun" 
 # SS2l OS2l TriLep # FkCR3l ConvCR CFlip SB_SS2L TopCR_OS2l
 # ConvSrcDep TopBSrc TrigClos
 
 NJobs=""
-NJobFactor=2
+NJobFactor=3
 Memory=""
-NJobMax="100"
+NJobMax="300"
 NEvtMax="50000"
 NSkipEvt=""
 ReductionFactor="" #"10"
 SpecificList=""
-SpecificDir="FkCR3l/VetoTest/SiglORDbl" #"TrigClos/TopHNTMu_TopHN17SSTEl/Test"
-#"SB_SS2L/MuFRVal/TopHNTMu_TopHN17SSTEl" #"SB_SS2L/TopHN17SST" #"TrigClos" #"CFlip" #"FkCR3l/ElFRVal/FixLMVAIsoIP" #"LowBDT/SB_SS2L/Iso6SIP5" #"SB_SS2L/Iso"
+SpecificDir="FkCR3l/TopHNTMu_TopHNSSTEl/FinSF" #"CFlip/TopHNTMu_TopHNSSTEl/FinSF" #"ConvCR/TopHNTMu_TopHNSSTEl"
+#"SB_SS2L/TopHNTMu_TopHNSSTEl"
 runDebug="False"
 ResubRun="False"
+
 
 # Options:
 # List_runModes   - run on RD, BkdMC, SigMC, 
@@ -78,6 +67,7 @@ ResubRun="False"
 
 ########################################################################
 
+if [[ ${Skim} == "" ]]; then NJobMax="100"; fi
 if [[ ! -e CommandHist.txt ]]; then touch CommandHist.txt; echo "Command History">> CommandHist.txt; echo >> CommandHist.txt; fi;
 date >> CommandHist.txt
 

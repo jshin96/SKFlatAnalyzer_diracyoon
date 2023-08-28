@@ -1,0 +1,12 @@
+imax 1   number of channels
+jmax *   number of backgrounds(*:auto)
+kmax *   number of nuissance parameters(*:auto)
+--------------------------------------------------------------------------------------
+bin                        Mu0El2
+observation                24
+--------------------------------------------------------------------------------------
+bin                        Mu0El2    Mu0El2    Mu0El2    Mu0El2    Mu0El2    Mu0El2    Mu0El2
+process                    Signal    Fake      Flip      TTX       VV        Conv      Rare  
+process                    0         1         2         3         4         5         6     
+rate                       6.128e+00 1.544e+01 7.340e-01 3.314e+00 1.931e-01 4.144e+00 2.526e-02
+--------------------------------------------------------------------------------------

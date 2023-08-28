@@ -2,24 +2,31 @@
 
 ########################################################################
 #"runBkdMC" "runConv" "runFlip" "runFake" "runSigMC" "runData"
-#declare -a List_runModes=("runBkdMC")
-#declare -a List_runModes=("runBkdMC" "runFakeRD" "runConv" "runFlip" "runFakeCF" "runFakeCv" "runData")
+#declare -a List_runModes=("runSigMC")
+#declare -a List_runModes=("runData")
+#declare -a List_runModes=("runBkdMC" "runSigMC")
+#declare -a List_runModes=("runSigMC" "runFakeRD" "runFlip" "runFakeCF" "runFakeCv")
+#declare -a List_runModes=("runFlip")
+#declare -a List_runModes=("runFakeCF" "runFakeCv")
+
+declare -a List_runModes=("runBkdMC" "runSigMC" "runFakeRD" "runConv" "runFlip" "runFakeCF" "runFakeCv" "runData")
 #declare -a List_runModes=("runBkdMC" "runFakeRD" "runConv" "runFakeCv" "runData")
-declare -a List_runModes=("runBkdMC" "runSigMC")
 
 #declare -a List_Year=("2017")
+#declare -a List_Year=("2016a" "2016b")
 declare -a List_Year=("2017" "2018" "2016a" "2016b")
 
 ########################################################################
 ## RUN PARAMETERS
 
-AnalysisCode="KinVarSearch" #"KinVarSearch" "KinVarPlot" 
+AnalysisCode="KinVarPlot" #"KinVarSearch" "KinVarPlot" 
 FinalState="SS2l" # TriLep TetraLep SS2l
 Skim="SkimTree_SS2lOR3l"
-RunningMode="SS2l"
+RunningMode="SS2l,DiscPlots,DiscTable,SystRun" #"SS2l,DiscPlots,DiscCNC,SystRun" #"SS2l,DiscPlots,SystRun"
+#RunningMode="SS2l,DiscPlots,DiscCutOpt,SystRun"
 #RunningMode="TetraLep,GlobFeas,SystRun" #"SS2l,SSMuMu" #MuMuMu / ElMuMu / TriLep / TetraLep / SS2l
 #KinVarSearch: # SS2l TriLep TetraLep  
-#KinVarPlot  : # SS2l TriLep TetraLep # VarPlots GlobFeas EffFlow # SystRun
+#KinVarPlot  : # SS2l TriLep TetraLep # DiscPlots VarPlots GlobFeas EffFlow GenMatchedDist DecCompCheck DiscCutOpt DiscTable DiscCNC TestPlot # SystRun
 
 NJobs=""
 NJobFactor=2
@@ -29,7 +36,8 @@ NEvtMax="50000"
 NSkipEvt=""
 ReductionFactor="" #"10"
 SpecificList=""
-SpecificDir="" #"SB_SS2L/TopHN17SST" #"TrigClos" #"CFlip" #"FkCR3l/ElFRVal/FixLMVAIsoIP" #"LowBDT/SB_SS2L/Iso6SIP5" #"SB_SS2L/Iso"
+SpecificDir="DiscPlots/FinSF/DiscTable" #"VarPlots/FinSF/FullEst" #"DiscPlots/FinSF/DiscCNC"
+#"V2_TopDecChains" #"SB_SS2L/TopHN17SST" #"TrigClos" #"CFlip" #"FkCR3l/ElFRVal/FixLMVAIsoIP" #"LowBDT/SB_SS2L/Iso6SIP5" #"SB_SS2L/Iso"
 runDebug="False"
 ResubRun="False"
 

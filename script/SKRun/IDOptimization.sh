@@ -14,20 +14,20 @@ declare -a List_Year=("2016a" "2016b" "2017" "2018")
 ## RUN PARAMETERS
 
 AnalysisCode="IDOptimization" 
-FinalState="El" #El Mu
-Skim="" #"SkimTree_SS2lOR3l"
-RunningMode="ElID,IDCutFlow"
-#"MuID,ElID" # IDVarDist IDCutFlow TrigCutCheck
+FinalState="Mu" #El Mu
+Skim="SkimTree_SS2lOR3l"
+RunningMode="MuID,SelEffCheck"
+#"MuID,ElID" # IDVarDist IDCutFlow TrigCutCheck SelEffCheck
 
 NJobs=""
 NJobFactor=5
 Memory=""
-NJobMax="100"
+NJobMax="200"
 NEvtMax="100000"
 NSkipEvt=""
 ReductionFactor="" #"10"
 SpecificList=""
-SpecificDir="IDCutFlow" #"TrigCutCheck" #"IDVarDist" #"IDCutFlow"
+SpecificDir="SelEffCheck/VetoWPOpt" #"TrigCutCheck" #"IDVarDist" #"IDCutFlow"
 runDebug="False"
 ResubRun="False"
 
@@ -126,6 +126,7 @@ do
       if [[ ${runMode} == "runFake"* ]]; then TmpRunningMode+=",FakeRun"; fi
       if [[ ${runMode} == "runFlip"  ]]; then TmpRunningMode+=",FlipRun"; TmpSkim=""; fi
       if [[ ${runMode} == "runConv" || ${runMode} == "runFakeCv" ]]; then TmpRunningMode+=",ConvRun"; fi
+      if [[ ${runMode} == "runSigMC" ]]; then TmpSkim=""; fi
   
       Option+=" -i ${SampleName}" 
       Option+=" -n ${NJobs}" 

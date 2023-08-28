@@ -1,13 +1,13 @@
 #!/bin/bash
 
 ########################################################################
-declare -a List_runModes=("runBkdMC")
+#declare -a List_runModes=("runBkdMC")
 #declare -a List_runModes=("runData")
-#declare -a List_runModes=("runBkdMC" "runData")
+declare -a List_runModes=("runBkdMC" "runData")
 #declare -a List_runModes=("runData" "runFake")
 #declare -a List_runModes=("runBkdMC" "runData" "runFake")
 
-#declare -a List_Year=("2018")
+#declare -a List_Year=("2017")
 #declare -a List_Year=("2016a")
 declare -a List_Year=("2016a" "2016b" "2017" "2018")
 #declare -a List_Year=("2017" "2018" "2016a" "2016b")
@@ -18,18 +18,18 @@ declare -a List_Year=("2016a" "2016b" "2017" "2018")
 AnalysisCode="MeasCFlipRate"
 FinalState="All2l"
 Skim="" #"SkimTree_SS2lOR3l"
-RunningMode="All2l,CFMCClos" #"All2l,CFMCClos" #"All2l,MCCFRate" #"All2l,MDists"
+RunningMode="All2l,MDists" #"All2l,CFMCClos" #"All2l,MCCFRate" #"All2l,MDists"
 # All2l, SS2l # CFMCClos MDists MCCFRate PTScale
 
 NJobs=""
-NJobFactor=2
+NJobFactor=3
 Memory=""
-NJobMax="100"
+NJobMax="300"
 NEvtMax="50000"
 NSkipEvt=""
 ReductionFactor="" #"10"
 SpecificList=""
-SpecificDir="CFMCClos/TopHN17SST" #"MCCFRate/TopHN17SST/EleOnly" #"CFMCClos" #"MCCFRate/TopHNSSTWP90Isop1/EleOnly" #"MDists/Iter4" 
+SpecificDir="MDists/TopHNSST_FinSF/Iter7" #"CFMCClos/TopHNSST" #"MDists/TopHNSST_FinSF/Iter1" #"CFMCClos" #"MDists/Iter4" 
 runDebug="False"
 ResubRun="False"
 

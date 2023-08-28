@@ -80,7 +80,6 @@ void AnalyzerCore::SetOutfilePath(TString outname){
 Event AnalyzerCore::GetEvent(){
 
   Event ev;
-  if(!IsDATA) ev.SetMCweight(gen_weight);
   ev.SetTrigger(*HLT_TriggerName);
   ev.SetMET(pfMET_Type1_pt,pfMET_Type1_phi);
   ev.SetnPV(nPV);
@@ -108,6 +107,7 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
     mu.SetMomentumScaleUpDown( muon_pt->at(i) * (rc+rc_err), muon_pt->at(i) * (rc-rc_err)  );
     mu.SetPtEtaPhiM(muon_pt->at(i)*rc, muon_eta->at(i), muon_phi->at(i), muon_mass->at(i));
 
+
     //==== TuneP
     //==== Apply scailing later with AnalyzerCore::UseTunePMuon()
     mu.SetTuneP4(muon_TuneP_pt->at(i), muon_TuneP_ptError->at(i), muon_TuneP_eta->at(i), muon_TuneP_phi->at(i), muon_TuneP_charge->at(i));
@@ -120,6 +120,7 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
     mu.SetTypeBit(muon_TypeBit->at(i));
     mu.SetIDBit(muon_IDBit->at(i));
     mu.SetisPOGHighPt(muon_ishighpt->at(i));
+    mu.SetPOGMediumHIP(muon_ismedium_hip->at(i),muon_ismedium_nohip->at(i));
     mu.SetChi2(muon_normchi->at(i));
     mu.SetIso(muon_PfChargedHadronIsoR04->at(i),muon_PfNeutralHadronIsoR04->at(i),muon_PfGammaIsoR04->at(i),muon_PFSumPUIsoR04->at(i),muon_trkiso->at(i));
     mu.SetTrackerLayers(muon_trackerLayers->at(i));
@@ -195,6 +196,7 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
     el.SetRho(Rho);
     el.SetIsGsfCtfScPixChargeConsistent(electron_isGsfCtfScPixChargeConsistent->at(i));
     el.SetR9(electron_r9->at(i));
+    el.SetL1Et(electron_l1et->at(i));
 
     el.SetCutBasedIDVariables(
       electron_Full5x5_SigmaIEtaIEta->at(i),
@@ -264,6 +266,54 @@ std::vector<Electron> AnalyzerCore::GetElectrons(TString id, double ptmin, doubl
   return out;
 
 }
+
+
+std::vector<Tau> AnalyzerCore::GetAllTaus(){
+
+  std::vector<Tau> out;
+  if(!tau_pt) return out;
+  for(unsigned int i=0; i<tau_pt->size(); i++){
+
+    Tau tau;
+    tau.SetCharge(tau_charge->at(i));
+    tau.SetPtEtaPhiM(tau_pt->at(i), tau_eta->at(i), tau_phi->at(i), tau_mass->at(i));
+    tau.SetDecayMode(tau_decaymode->at(i));
+    tau.SetdXY(tau_dxy->at(i),0.);
+    tau.SetdZ(tau_dz->at(i),0.);
+    tau.SetDecayModeNewDM(tau_idDecayModeNewDMs->at(i));
+    tau.SetIDBit(tau_IDBit->at(i));
+
+    out.push_back(tau);
+
+  }
+  return out;
+
+}
+
+
+
+std::vector<Tau> AnalyzerCore::GetTaus(TString id, double ptmin, double fetamax){
+
+  std::vector<Tau> taus = GetAllTaus();
+  std::vector<Tau> out;
+
+  for(unsigned int i=0; i<taus.size(); i++){
+    if(!( taus.at(i).Pt()>ptmin )){
+      continue;
+    }
+    if(!( fabs(taus.at(i).Eta())<fetamax )){
+      continue;
+    }
+    if(!( taus.at(i).PassID(id) )){
+      continue;
+    }
+    out.push_back( taus.at(i) );
+  }
+  return out;
+
+}
+
+
 
 std::vector<Lepton *> AnalyzerCore::MakeLeptonPointerVector(const std::vector<Muon>& muons, double TightIso, bool UseMini){
 
@@ -384,24 +434,21 @@ std::vector<Jet> AnalyzerCore::GetAllJets(){
     if(!IsDATA){
       jet *= jet_smearedRes->at(i);
       jet.SetResShift( jet_smearedResUp->at(i)/jet_smearedRes->at(i), jet_smearedResDown->at(i)/jet_smearedRes->at(i) );
+      jet.SetGenFlavours(jet_partonFlavour->at(i), jet_hadronFlavour->at(i));
+      jet.SetGenHFHadronMatcher(jet_GenHFHadronMatcher_flavour->at(i),jet_GenHFHadronMatcher_origin->at(i));
     }
+    jet.SetBJetNNCorrection(jet_bJetNN_corr->at(i),jet_bJetNN_res->at(i));
+    jet.SetCJetNNCorrection(jet_cJetNN_corr->at(i),jet_cJetNN_res->at(i));
     jet.SetCharge(jet_charge->at(i));
 
     jet.SetArea(jet_area->at(i));
-    jet.SetGenFlavours(jet_partonFlavour->at(i), jet_hadronFlavour->at(i));
     std::vector<double> tvs = {
-      jet_CSVv2->at(i),
       jet_DeepCSV->at(i),
-      jet_DeepCvsL->at(i),
-      jet_DeepCvsB->at(i),
-      jet_DeepFlavour_b->at(i),
-      jet_DeepFlavour_bb->at(i),
-      jet_DeepFlavour_lepb->at(i),
-      jet_DeepFlavour_c->at(i),
-      jet_DeepFlavour_uds->at(i),
-      jet_DeepFlavour_g->at(i),
-      jet_CvsL->at(i),
-      jet_CvsB->at(i),
+      jet_DeepCSV_CvsL->at(i),
+      jet_DeepCSV_CvsB->at(i),
+      jet_DeepJet->at(i),
+      jet_DeepJet_CvsL->at(i),
+      jet_DeepJet_CvsB->at(i),
     };
     jet.SetTaggerResults(tvs);
     jet.SetEnergyFractions(jet_chargedHadronEnergyFraction->at(i), jet_neutralHadronEnergyFraction->at(i), jet_neutralEmEnergyFraction->at(i), jet_chargedEmEnergyFraction->at(i), jet_muonEnergyFraction->at(i));
@@ -456,18 +503,20 @@ std::vector<FatJet> AnalyzerCore::GetAllFatJets(){
     jet.SetArea(fatjet_area->at(i));
     jet.SetGenFlavours(fatjet_partonFlavour->at(i), fatjet_hadronFlavour->at(i));
     std::vector<double> tvs = {
-      fatjet_CSVv2->at(i),
       fatjet_DeepCSV->at(i),
-      fatjet_DeepCvsL->at(i),
-      fatjet_DeepCvsB->at(i),
-      fatjet_DeepFlavour_b->at(i),
-      fatjet_DeepFlavour_bb->at(i),
-      fatjet_DeepFlavour_lepb->at(i),
-      fatjet_DeepFlavour_c->at(i),
-      fatjet_DeepFlavour_uds->at(i),
-      fatjet_DeepFlavour_g->at(i),
-      fatjet_CvsL->at(i),
-      fatjet_CvsB->at(i),
+      fatjet_DeepCSV_CvsL->at(i),
+      fatjet_DeepCSV_CvsB->at(i),
+      fatjet_particleNet_TvsQCD->at(i),
+      fatjet_particleNet_WvsQCD->at(i),
+      fatjet_particleNet_ZvsQCD->at(i),
+      fatjet_particleNet_HbbvsQCD->at(i),
+      fatjet_particleNet_HccvsQCD->at(i),
+      fatjet_particleNet_H4qvsQCD->at(i),
+      fatjet_particleNet_QCD->at(i),
+      fatjet_particleNetMD_Xbb->at(i),
+      fatjet_particleNetMD_Xcc->at(i),
+      fatjet_particleNetMD_Xqq->at(i),
+      fatjet_particleNetMD_QCD->at(i),
     };
     jet.SetTaggerResults(tvs);
     jet.SetEnergyFractions(fatjet_chargedHadronEnergyFraction->at(i), fatjet_neutralHadronEnergyFraction->at(i), fatjet_neutralEmEnergyFraction->at(i), fatjet_chargedEmEnergyFraction->at(i), fatjet_muonEnergyFraction->at(i));
@@ -692,6 +741,28 @@ std::vector<Electron> AnalyzerCore::SelectElectrons(const std::vector<Electron>&
       continue;
     }
     out.push_back(electrons.at(i));
+  }
+  return out;
+
+}
+
+
+std::vector<Tau> AnalyzerCore::SelectTaus(const std::vector<Tau>& taus, TString id, double ptmin, double fetamax){
+
+  std::vector<Tau> out;
+  for(unsigned int i=0; i<taus.size(); i++){
+    if(!( taus.at(i).Pt()>ptmin )){
+
+      continue;
+    }
+    if(!( fabs(taus.at(i).Eta())<fetamax )){
+
+      continue;
+    }
+    if(!( taus.at(i).PassID(id) )){
+      continue;
+    }
+    out.push_back( taus.at(i) );
   }
   return out;
 
@@ -933,6 +1004,29 @@ void AnalyzerCore::initializeAnalyzerTools(){
   cfEst->SetEra(GetEra());
   cfEst->ReadHistograms();
 
+}
+
+double AnalyzerCore::MCweight(bool usesign, bool norm_1invpb) const {
+  if(IsDATA) return 1.;
+  double weight=gen_weight;
+  //MiNNLO sample has some events with unphysically large weight
+  if(MCSample.Contains("DYJets")&&MCSample.Contains("MiNNLO")){
+    double maxweight=2358.0700*5.;
+    if(abs(weight)>maxweight){
+      weight=weight>0. ? maxweight : -1.0*maxweight;
+    }
+  }
+  
+  if(usesign){
+    if(weight>0) weight=1.0;
+    else if(weight<0) weight=-1.0;
+    else weight=0.0;
+  }
+  if(norm_1invpb){
+    if(usesign) weight*=xsec/sumSign;
+    else weight*=xsec/sumW;
+  }
+  return weight;
 }
 
 double AnalyzerCore::GetPrefireWeight(int sys){
@@ -2441,11 +2535,13 @@ float AnalyzerCore::GetBRWeight(){
     else if(MCSample.Contains("MN75") ){ BrN_ljj=5.28E-01; BrN_llv=2.52E-01; }
     else if(MCSample.Contains("MN85") ){ BrN_ljj=6.19E-01; BrN_llv=3.05E-01; }
     else if(MCSample.Contains("MN90") ){ BrN_ljj=6.34E-01; BrN_llv=3.15E-01; }
+    else if(MCSample.Contains("MN95") ){ BrN_ljj=6.15E-01; BrN_llv=3.11E-01; }
     else if(MCSample.Contains("MN100")){ BrN_ljj=5.80E-01; BrN_llv=2.99E-01; }
+    else if(MCSample.Contains("MN120")){ BrN_ljj=5.01E-01; BrN_llv=2.74E-01; }
 
     if     (MCSample.Contains("_2L_")        ){ weight=BrN_ljj*BrW_jj; }
-    else if(MCSample.Contains("_LepSMTop3L_")){ weight=BrN_ljj*BrW_lv; }
-    else if(MCSample.Contains("_HadSMTop3L_")){ weight=BrN_llv*BrW_jj; }
+    else if(MCSample.Contains("_LepSMTop_3L_")){ weight=BrN_ljj*BrW_lv; }
+    else if(MCSample.Contains("_HadSMTop_3L_")){ weight=BrN_llv*BrW_jj; }
     else if(MCSample.Contains("_4L_")        ){ weight=BrN_llv*BrW_lv; }
   }
 
@@ -3065,20 +3161,55 @@ float AnalyzerCore::GetvPz(Lepton& Lep, Particle& vMET, TString Option){
 }
 
 
+vector<Muon> AnalyzerCore::SelectMuons(vector<Muon>& MuColl, TString id, double ptmin, double fetamax, TString Option){
+
+  std::vector<Muon> out;
+  int SystDir=0;
+  bool DoSyst=Option.Contains("Syst"), SystEn=false;
+  if((!IsDATA) && DoSyst){
+    if     (Option.Contains("Up"))    SystDir =    1;
+    else if(Option.Contains("Down"))  SystDir =   -1;
+    if     (Option.Contains("En"))    SystEn  = true;
+  }
+  for(unsigned int im=0; im<MuColl.size(); im++){
+    Muon Mu(MuColl.at(im));
+    if(DoSyst){
+      if( SystEn ) Mu *= Mu.MomentumShift(SystDir)/Mu.Pt();
+    }
+    if(!( Mu.Pt()>ptmin )) continue;
+    if(!( fabs(Mu.Eta())<fetamax )) continue;
+    if(!( Mu.PassID(id) )) continue;
+ 
+    out.push_back(Mu);
+  }
+  if(DoSyst && SystEn) sort(out.begin(), out.end(), PtComparing);
+
+  return out;
+}
+
+
+
 vector<Electron> AnalyzerCore::SelectElectrons(vector<Electron>& ElColl, TString id, double ptmin, double fetamax, TString Option){
 
   std::vector<Electron> out;
-  int SystDir=0; bool SystCFPT1=false, SystCFPT2=false;
-  if((!IsDATA) && Option.Contains("Syst")){
+  int SystDir=0;
+  bool DoSyst=Option.Contains("Syst"), SystScl=false, SystRes=false, SystCFPT1=false, SystCFPT2=false;
+  if((!IsDATA) && DoSyst){
     if     (Option.Contains("Up"))    SystDir   =    1;
     else if(Option.Contains("Down"))  SystDir   =   -1;
-    if     (Option.Contains("CFPT1")) SystCFPT1 = true;
+    if     (Option.Contains("Scl"))   SystScl   = true;
+    else if(Option.Contains("Res"))   SystRes   = true;
+    else if(Option.Contains("CFPT1")) SystCFPT1 = true;
     else if(Option.Contains("CFPT2")) SystCFPT2 = true;
   }
   for(unsigned int ie=0; ie<ElColl.size(); ie++){
     Electron El(ElColl.at(ie));
-    if(SystCFPT1 && ie==0) El *= (1.+((double) SystDir)*0.04);
-    if(SystCFPT2 && ie==1) El *= (1.+((double) SystDir)*0.04);
+    if(DoSyst){
+      if     (      SystScl     ) El *= El.EnShift(SystDir); 
+      else if(      SystRes     ) El *= El.ResShift(SystDir);
+      else if(SystCFPT1 && ie==0) El *= (1.+((double) SystDir)*0.046);
+      else if(SystCFPT2 && ie==1) El *= (1.+((double) SystDir)*0.046);
+    }
     if(!( El.Pt()>ptmin )) continue;
     if(!( fabs(El.scEta())<fetamax )) continue;
     if(!( El.PassID(id) )) continue;
@@ -3129,9 +3260,11 @@ vector<Jet> AnalyzerCore::SelectJets(vector<Jet>& JetColl, vector<Muon>& MuColl,
 
 TLorentzVector AnalyzerCore::GetvMET(TString METType, TString Option){
 
-  bool IsType1   = METType.Contains("T1");
-  bool IsxyCorr  = METType.Contains("xyCorr");
-  bool ApplySyst = (!IsDATA) && Option.Contains("Syst");
+  bool IsPFMET    = METType.Contains("PFMET");
+  bool IsPUPPIMET = METType.Contains("PUPPIMET");
+  bool IsType1    = METType.Contains("T1");
+  bool IsxyCorr   = METType.Contains("xyCorr");
+  bool ApplySyst  = (!IsDATA) && Option.Contains("Syst");
   int IdxSyst = -1, SystDir = Option.Contains("Up")? 1:Option.Contains("Down")? -1:0;
   if(ApplySyst){
     if     (Option.Contains("JES")  && SystDir>0 ) IdxSyst=2;
@@ -3143,19 +3276,170 @@ TLorentzVector AnalyzerCore::GetvMET(TString METType, TString Option){
   }
   
   TLorentzVector vMET;
-  if(IsType1){
-    if( (!ApplySyst) or ( IdxSyst>=0 && (!isfinite(pfMET_Type1_PhiCor_pt_shifts->at(IdxSyst))) ) ){
-      if(IsxyCorr) vMET.SetPtEtaPhiM(pfMET_Type1_PhiCor_pt, 0., pfMET_Type1_PhiCor_phi, 0.); 
-      else         vMET.SetPtEtaPhiM(pfMET_Type1_pt, 0., pfMET_Type1_phi, 0.); 
+  if(IsPFMET){
+    if(IsType1){
+      if( (!ApplySyst) or ( IdxSyst>=0 && (!isfinite(pfMET_Type1_pt_shifts->at(IdxSyst))) ) ){
+        vMET.SetPtEtaPhiM(pfMET_Type1_pt, 0., pfMET_Type1_phi, 0.); 
+      }
+      else{
+        vMET.SetPtEtaPhiM(pfMET_Type1_pt_shifts->at(IdxSyst), 0., pfMET_Type1_phi_shifts->at(IdxSyst), 0.); 
+      }
     }
-    else{
-      if(IsxyCorr) vMET.SetPtEtaPhiM(pfMET_Type1_PhiCor_pt_shifts->at(IdxSyst), 0., pfMET_Type1_PhiCor_phi_shifts->at(IdxSyst), 0.); 
-      else         vMET.SetPtEtaPhiM(pfMET_Type1_pt_shifts->at(IdxSyst), 0., pfMET_Type1_phi_shifts->at(IdxSyst), 0.); 
+    if(IsxyCorr){ ApplyMETxyCorr(vMET, "PFMET"); }
+  }
+  else if(IsPUPPIMET){
+    if(IsType1){
+      if( (!ApplySyst) or ( IdxSyst>=0 && (!isfinite(PuppiMET_Type1_pt_shifts->at(IdxSyst))) ) ){
+        vMET.SetPtEtaPhiM(PuppiMET_Type1_pt, 0., PuppiMET_Type1_phi, 0.); 
+      }
+      else{
+        vMET.SetPtEtaPhiM(PuppiMET_Type1_pt_shifts->at(IdxSyst), 0., PuppiMET_Type1_phi_shifts->at(IdxSyst), 0.); 
+      }
     }
+    if(IsxyCorr){ ApplyMETxyCorr(vMET, "PUPPIMET"); }
   }
 
   return vMET;
 }
+
+
+void AnalyzerCore::ApplyMETxyCorr(TLorentzVector& vMET, TString Option){
+
+  double METxcorr(0.), METycorr(0.);
+  double METOrig = vMET.Pt(), METPhiOrig = vMET.Phi();
+  bool IsPFMET = Option.Contains("PFMET"), IsPUPPIMET = Option.Contains("PUPPIMET");  
+
+  int npv = min(nPV,100);
+  TString runera = TString::Itoa(DataYear,10);
+  if(IsDATA){ runera+= GetDataPeriod()+(GetEraShort()=="2016b" && GetDataPeriod()=="F"? "late":""); }
+  else      { runera+= "MC"; runera+=(GetEraShort()=="2016a"? "APV":GetEraShort()=="2016b"? "nonAPV":""); }
+  
+  if(IsPFMET){
+    if(DataYear==2017){
+      //UL2017
+      if     (runera=="2017B") METxcorr = -(-0.211161*npv +0.419333);
+      else if(runera=="2017B") METycorr = -(0.251789*npv +-1.28089);
+      else if(runera=="2017C") METxcorr = -(-0.185184*npv +-0.164009);
+      else if(runera=="2017C") METycorr = -(0.200941*npv +-0.56853);
+      else if(runera=="2017D") METxcorr = -(-0.201606*npv +0.426502);
+      else if(runera=="2017D") METycorr = -(0.188208*npv +-0.58313);
+      else if(runera=="2017E") METxcorr = -(-0.162472*npv +0.176329);
+      else if(runera=="2017E") METycorr = -(0.138076*npv +-0.250239);
+      else if(runera=="2017F") METxcorr = -(-0.210639*npv +0.72934);
+      else if(runera=="2017F") METycorr = -(0.198626*npv +1.028);
+      else if(runera=="2017MC") METxcorr = -(-0.300155*npv +1.90608);
+      else if(runera=="2017MC") METycorr = -(0.300213*npv +-2.02232);
+    }
+    else if(DataYear==2018){
+      //UL2018
+      if(runera=="2018A") METxcorr = -(0.263733*npv +-1.91115);
+      else if(runera=="2018A") METycorr = -(0.0431304*npv +-0.112043);
+      else if(runera=="2018B") METxcorr = -(0.400466*npv +-3.05914);
+      else if(runera=="2018B") METycorr = -(0.146125*npv +-0.533233);
+      else if(runera=="2018C") METxcorr = -(0.430911*npv +-1.42865);
+      else if(runera=="2018C") METycorr = -(0.0620083*npv +-1.46021);
+      else if(runera=="2018D") METxcorr = -(0.457327*npv +-1.56856);
+      else if(runera=="2018D") METycorr = -(0.0684071*npv +-0.928372);
+      else if(runera=="2018MC") METxcorr = -(0.183518*npv +0.546754);
+      else if(runera=="2018MC") METycorr = -(0.192263*npv +-0.42121);
+    }
+    else if(DataYear==2016){
+      //UL2016
+      if(runera=="2016B") METxcorr = -(-0.0214894*npv +-0.188255);
+      else if(runera=="2016B") METycorr = -(0.0876624*npv +0.812885);
+      else if(runera=="2016C") METxcorr = -(-0.032209*npv +0.067288);
+      else if(runera=="2016C") METycorr = -(0.113917*npv +0.743906);
+      else if(runera=="2016D") METxcorr = -(-0.0293663*npv +0.21106);
+      else if(runera=="2016D") METycorr = -(0.11331*npv +0.815787);
+      else if(runera=="2016E") METxcorr = -(-0.0132046*npv +0.20073);
+      else if(runera=="2016E") METycorr = -(0.134809*npv +0.679068);
+      else if(runera=="2016F") METxcorr = -(-0.0543566*npv +0.816597);
+      else if(runera=="2016F") METycorr = -(0.114225*npv +1.17266);
+      else if(runera=="2016Flate") METxcorr = -(0.134616*npv +-0.89965);
+      else if(runera=="2016Flate") METycorr = -(0.0397736*npv +1.0385);
+      else if(runera=="2016G") METxcorr = -(0.121809*npv +-0.584893);
+      else if(runera=="2016G") METycorr = -(0.0558974*npv +0.891234);
+      else if(runera=="2016H") METxcorr = -(0.0868828*npv +-0.703489);
+      else if(runera=="2016H") METycorr = -(0.0888774*npv +0.902632);
+      else if(runera=="2016MCnonAPV") METxcorr = -(-0.153497*npv +-0.231751);
+      else if(runera=="2016MCnonAPV") METycorr = -(0.00731978*npv +0.243323);
+      else if(runera=="2016MCAPV") METxcorr = -(-0.188743*npv +0.136539);
+      else if(runera=="2016MCAPV") METycorr = -(0.0127927*npv +0.117747);
+    }
+  }
+  else if(IsPUPPIMET){
+    if(DataYear==2017){
+      if     (runera=="2017B") METxcorr = -(-0.00382117*npv +-0.666228);
+      else if(runera=="2017B") METycorr = -(0.0109034*npv +0.172188);
+      else if(runera=="2017C") METxcorr = -(-0.00110699*npv +-0.747643);
+      else if(runera=="2017C") METycorr = -(-0.0012184*npv +0.303817);
+      else if(runera=="2017D") METxcorr = -(-0.00141442*npv +-0.721382);
+      else if(runera=="2017D") METycorr = -(-0.0011873*npv +0.21646);
+      else if(runera=="2017E") METxcorr = -(0.00593859*npv +-0.851999);
+      else if(runera=="2017E") METycorr = -(-0.00754254*npv +0.245956);
+      else if(runera=="2017F") METxcorr = -(0.00765682*npv +-0.945001);
+      else if(runera=="2017F") METycorr = -(-0.0154974*npv +0.804176);
+      else if(runera=="2017MC") METxcorr = -(-0.0102265*npv +-0.446416);
+      else if(runera=="2017MC") METycorr = -(0.0198663*npv +0.243182);
+    }
+    else if(DataYear==2018){
+      //UL2018Puppi
+      if(runera=="2018A") METxcorr = -(-0.0073377*npv +0.0250294);
+      else if(runera=="2018A") METycorr = -(-0.000406059*npv +0.0417346);
+      else if(runera=="2018B") METxcorr = -(0.00434261*npv +0.00892927);
+      else if(runera=="2018B") METycorr = -(0.00234695*npv +0.20381);
+      else if(runera=="2018C") METxcorr = -(0.00198311*npv +0.37026);
+      else if(runera=="2018C") METycorr = -(-0.016127*npv +0.402029);
+      else if(runera=="2018D") METxcorr = -(0.00220647*npv +0.378141);
+      else if(runera=="2018D") METycorr = -(-0.0160244*npv +0.471053);
+      else if(runera=="2018MC") METxcorr = -(-0.0214557*npv +0.969428);
+      else if(runera=="2018MC") METycorr = -(0.0167134*npv +0.199296);
+    }
+    else if(DataYear==2016){
+      //UL2016Puppi
+      if(runera=="2016B") METxcorr = -(-0.00109025*npv +-0.338093);
+      else if(runera=="2016B") METycorr = -(-0.00356058*npv +0.128407);
+      else if(runera=="2016C") METxcorr = -(-0.00271913*npv +-0.342268);
+      else if(runera=="2016C") METycorr = -(0.00187386*npv +0.104);
+      else if(runera=="2016D") METxcorr = -(-0.00254194*npv +-0.305264);
+      else if(runera=="2016D") METycorr = -(-0.00177408*npv +0.164639);
+      else if(runera=="2016E") METxcorr = -(-0.00358835*npv +-0.225435);
+      else if(runera=="2016E") METycorr = -(-0.000444268*npv +0.180479);
+      else if(runera=="2016F") METxcorr = -(0.0056759*npv +-0.454101);
+      else if(runera=="2016F") METycorr = -(-0.00962707*npv +0.35731);
+      else if(runera=="2016Flate") METxcorr = -(0.0234421*npv +-0.371298);
+      else if(runera=="2016Flate") METycorr = -(-0.00997438*npv +0.0809178);
+      else if(runera=="2016G") METxcorr = -(0.0182134*npv +-0.335786);
+      else if(runera=="2016G") METycorr = -(-0.0063338*npv +0.093349);
+      else if(runera=="2016H") METxcorr = -(0.015702*npv +-0.340832);
+      else if(runera=="2016H") METycorr = -(-0.00544957*npv +0.199093);
+      else if(runera=="2016MCnonAPV") METxcorr = -(-0.0058341*npv +-0.395049);
+      else if(runera=="2016MCnonAPV") METycorr = -(0.00971595*npv +-0.101288);
+      else if(runera=="2016MCAPV") METxcorr = -(-0.0060447*npv +-0.4183);
+      else if(runera=="2016MCAPV") METycorr = -(0.008331*npv +-0.0990046);
+    }
+  }
+  else{ cout<<"METxyshift setting wrong"<<endl; return; }
+
+
+  double CorrectedMET_x = METOrig *cos( METPhiOrig )+METxcorr;
+  double CorrectedMET_y = METOrig *sin( METPhiOrig )+METycorr;
+
+  double CorrectedMET = sqrt(CorrectedMET_x*CorrectedMET_x+CorrectedMET_y*CorrectedMET_y);
+  double CorrectedMETPhi;
+  if     (CorrectedMET_x==0 && CorrectedMET_y>0) CorrectedMETPhi = TMath::Pi();
+  else if(CorrectedMET_x==0 && CorrectedMET_y<0) CorrectedMETPhi = -TMath::Pi();
+  else if(CorrectedMET_x >0                    ) CorrectedMETPhi = TMath::ATan(CorrectedMET_y/CorrectedMET_x);
+  else if(CorrectedMET_x <0 && CorrectedMET_y>0) CorrectedMETPhi = TMath::ATan(CorrectedMET_y/CorrectedMET_x) + TMath::Pi();
+  else if(CorrectedMET_x <0 && CorrectedMET_y<0) CorrectedMETPhi = TMath::ATan(CorrectedMET_y/CorrectedMET_x) - TMath::Pi();
+  else CorrectedMETPhi =0;
+
+  vMET.SetPtEtaPhiM(CorrectedMET, 0., CorrectedMETPhi, 0.);
+
+  return;
+
+}
+
 
 
 int AnalyzerCore::GetFakeLepSrcType(Lepton& Lep, vector<Jet>& JetColl){
@@ -3178,3 +3462,34 @@ int AnalyzerCore::GetFakeLepSrcType(Lepton& Lep, vector<Jet>& JetColl){
 //1) Higher Priority to B. if there's multiple near jets, then b-jet has higher priority
 }
 
+void AnalyzerCore::FillHist(TString histname, double value, double weight, int n_bin, double x_min, double x_max, bool ApplyWVar, vector<pair<float,TString>>& SysWgtStrPairList){
+
+  if(ApplyWVar && SysWgtStrPairList.size()>0){
+    for(unsigned int iw=0; iw<SysWgtStrPairList.size(); iw++){
+      float   w_tmp   = SysWgtStrPairList.at(iw).first;
+      TString SystStr = SysWgtStrPairList.at(iw).second;
+      FillHist(histname+SystStr, value, w_tmp, n_bin, x_min, x_max);
+    }
+  }
+  else{
+    FillHist(histname, value, weight, n_bin, x_min, x_max);
+  }
+
+  return;
+}
+
+void AnalyzerCore::FillHist(TString histname, double value, double weight, int n_bin, double *xbins, bool ApplyWVar, vector<pair<float,TString>>& SysWgtStrPairList){
+
+  if(ApplyWVar && SysWgtStrPairList.size()>0){
+    for(unsigned int iw=0; iw<SysWgtStrPairList.size(); iw++){
+      float   w_tmp   = SysWgtStrPairList.at(iw).first;
+      TString SystStr = SysWgtStrPairList.at(iw).second;
+      FillHist(histname+SystStr, value, w_tmp, n_bin, xbins);
+    }
+  }
+  else{
+    FillHist(histname, value, weight, n_bin, xbins);
+  }
+
+  return;
+}

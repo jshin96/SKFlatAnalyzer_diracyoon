@@ -15,6 +15,7 @@
 #include "Lepton.h"
 #include "Muon.h"
 #include "Electron.h"
+#include "Tau.h"
 #include "Photon.h"
 #include "JetTaggingParameters.h"
 #include "Jet.h"
@@ -73,6 +74,9 @@ public:
   std::vector<Muon> GetAllMuons();
   std::vector<Muon> GetMuons(TString id, double ptmin, double fetamax);
 
+  std::vector<Tau> GetAllTaus();
+  std::vector<Tau> GetTaus(TString id, double ptmin, double fetamax);
+
   std::vector<Photon> GetAllPhotons();
   std::vector<Photon> GetPhotons(TString id, double ptmin, double fetamax);
 
@@ -99,6 +103,9 @@ public:
 
   std::vector<Muon> UseTunePMuon(const std::vector<Muon>& muons);
   std::vector<Muon> SelectMuons(const std::vector<Muon>& muons, TString id, double ptmin, double fetamax);
+
+  std::vector<Tau> SelectTaus(const std::vector<Tau>& taus, TString id, double ptmin, double fetamax);
+
 
   std::vector<Jet> SelectJets(const std::vector<Jet>& jets, TString id, double ptmin, double fetamax);
 
@@ -138,6 +145,9 @@ public:
   FakeBackgroundEstimator *fakeEst=NULL;
   CFBackgroundEstimator *cfEst=NULL;
   void initializeAnalyzerTools();
+
+  //==== MCweight
+  double MCweight(bool usesign=true, bool norm_1invpb=true) const;
 
   //==== Prefire
   double GetPrefireWeight(int sys);
@@ -260,7 +270,9 @@ public:
   TFile *outfile=NULL;
   void SetOutfilePath(TString outname);
 
+
   //Jihwan Bhyun Modification/////////////////////////
+  vector<Muon>     SelectMuons    (vector<Muon>&         muons, TString id, double ptmin, double fetamax, TString Option);
   vector<Electron> SelectElectrons(vector<Electron>& electrons, TString id, double ptmin, double fetamax, TString Option);
   vector<Jet> SelectJets(vector<Jet>& JetColl, vector<Muon>& MuColl, vector<Electron>& ElColl, TString id, double ptmin, double fetamax, TString Option="");
   vector<Jet> SelBJets    (vector<Jet>& jetColl, JetTagging::Parameters jtp);
@@ -274,6 +286,7 @@ public:
   vector<Jet>      SkimJetColl(vector<Jet>&     JetColl, vector<Gen>& TruthColl, TString Option="NoPr");
   bool             HasEWLepInJet(Jet Jet, std::vector<Gen>& TruthColl, TString Option="");
   TLorentzVector GetvMET(TString METType="T1xyCorr", TString Option="");
+  void           ApplyMETxyCorr(TLorentzVector& vMET, TString Option="");
   float GetvPz(Lepton& Lep, Particle& vMET, TString Option="");
   float GetMuonSF(std::vector<Muon>& muonColl, TString SFKey, TString Option="");
   float GetElectronSF(std::vector<Electron>& electronColl, TString SFKey, TString Option="");
@@ -303,6 +316,8 @@ public:
   int  GetPhotonType_JH(int PhotonIdx, std::vector<Gen>& TruthColl);
   int  GetFakeLepSrcType(Lepton& Lep, vector<Jet>& JetColl);
 
+  void FillHist(TString histname, double value, double weight, int n_bin, double x_min, double x_max, bool ApplyWVar, vector<pair<float,TString>>& SysWgtStrPairList);
+  void FillHist(TString histname, double value, double weight, int n_bin, double *xbins, bool ApplyWVar, vector<pair<float,TString>>& SysWgtStrPairList);
 };
 
 

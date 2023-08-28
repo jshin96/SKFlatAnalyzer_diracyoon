@@ -2,20 +2,20 @@
 
 ########################################################################
 #declare -a List_runModes=("runBkdMC")
-#declare -a List_runModes=("runData")
-declare -a List_runModes=("runBkdMC" "runData")
+declare -a List_runModes=("runData")
+#declare -a List_runModes=("runBkdMC" "runData")
 
-#declare -a List_Year=("2016a")
-#declare -a List_Year=("2018" "2017")
+declare -a List_Year=("2017")
 #declare -a List_Year=("2018" "2017" "2016a" "2016b")
-declare -a List_Year=("2016a" "2016b")
+#declare -a List_Year=("2016a" "2016b") #EE DZ
+#declare -a List_Year=("2018" "2017" "2016b") #EMu DZ
 ########################################################################
 ## RUN PARAMETERS
 
 AnalysisCode="MeasTrigEff" 
-FinalState="ElEl" # ElEl MuMu ElMu
+FinalState="ElMu" # ElEl MuMu ElMu
 Skim=""
-RunningMode="ElEl,DiElTrig_DZ"
+RunningMode="ElMu,EMuTrig_DZ"
 ## MuMu ElEl ElMu ## DiMuTrig_DZ DiElTrig_DZ EMuTrig_DZ ## EMuTrig_ElLeg EMuTrig_MuLeg  
 
 NJobs=""
@@ -26,7 +26,7 @@ NEvtMax="50000"
 NSkipEvt=""
 ReductionFactor="" #"10"
 SpecificList=""
-SpecificDir="DiElTrig_DZ/TopHN17SST" #"SFv1/TopHNSSTWP90Isop1" #"HNTopIDSS_preL/NewMCEff"
+SpecificDir="EMuTrig_DZ/TopHNT_TopHNSST" #"DiMuTrig_DZ/POGMIDTIso" #"DiElTrig_DZ/TopHNSST"
 runDebug="False"
 ResubRun="False"
 

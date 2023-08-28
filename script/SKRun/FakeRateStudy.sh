@@ -2,34 +2,37 @@
 
 ########################################################################
 #declare -a List_runModes=("runSigMC")
-declare -a List_runModes=("runBkdMC")
+#declare -a List_runModes=("runBkdMC")
 #declare -a List_runModes=("runData")
-#declare -a List_runModes=("runBkdMC" "runData")
+declare -a List_runModes=("runBkdMC" "runData")
 
-#declare -a List_Year=("2018")
+#declare -a List_Year=("2017")
 #declare -a List_Year=("2018" "2016a" "2016b")
 declare -a List_Year=("2017" "2018" "2016a" "2016b")
 
 ########################################################################
 ## RUN PARAMETERS
 
-AnalysisCode="MCFakeStudy" #"FakeRateMeas" # FakeRateMeas MCFakeStudy
-FinalState="El" #"Mu" "El"
-Skim="SkimTree_SS2lOR3l"
-RunningMode="ElFR,MCClosure" #"ElFR,MeasFR,ConePtCut,SystRun" #"ElFR,MeasFR,SystRun" #"ElFR,MCClosure" #"ElFR,MeasPU"
-#MCFakeStudy : # MuFR ElFR # LIDOpt MeasMCFR MCClosure # SpecTrig NoTrig
+AnalysisCode="FakeRateMeas" #"FakeRateMeas" # FakeRateMeas MCFakeStudy
+FinalState="Mu" # "Mu" #"Mu" "El"
+Skim="" #"SkimTree_SS2lOR3l"
+RunningMode="MuFR,MeasFR,SystRun" #"ElFR,MeasFR,ConePtCut,SystRun" #"ElFR,MeasFR,SystRun" #"ElFR,MCClosure" #"ElFR,MeasPU"
+#MCFakeStudy : # MuFR ElFR # LIDOpt MeasMCFR MCClosure CompCheck PTDiffCheck # SpecTrig NoTrig
 #FakeRateMeas: # MuFR ElFR # MeasPU PrVal MeasFR METMTWCut # SystRun ConePtCut  
 #MCFakeStudy: "MuFR,MeasMCFR" "MuFR,MCClosure" "ElFR,MeasMCFR", "ElFR,MCClosure" "ElFR,ElLIDOpt"
 #FakeRateMeas: #"MuFR,MeasPU" "ElFR,MeasPU" "MuFR,PrVal" "ElFR,PrVal" "MuFR,MeasFR", "ElFR,MeasFR" "MuFR,METMTWCut" "SystRun"
 
 NJobs=""
-NJobFactor=2 #2
+NJobFactor=4 #2
 Memory=""
-NJobMax="100"
+NJobMax="300"
 NEvtMax="100000"
 NSkipEvt=""
 SpecificList=""
-SpecificDir="MCClosure/TopHN17SST/Trig/FRErr" #"LIDOpt/SpecificWP/TopHN17SST/Pt15" #"MeasFR/Pt10" #"MeasFR/Pt15" #"MCClosure/Trig/ConeBasis" #"MeasPU" #"LIDOpt/SpecificWP/Pt15" #"MCClosure/SIPScan/Trig" #"MeasFR/Test/HNTIsop10_LIsop6SIP3To8NInf" #"MeasFR/Test/HNTIsop10_TopHNLLIsop6/PTParam" 
+SpecificDir="MeasFR/TopHNT_TopHNL"
+#/El/MeasFR/TopHNSST_TopHNSSL/
+#/Mu/MeasFR/TopHNT_TopHNL/
+#"MCClosure/TopHN17SST/Trig/FRErr" #"LIDOpt/SpecificWP/TopHN17SST/Pt15" #"MeasFR/Pt10" #"MeasFR/Pt15" #"MCClosure/Trig/ConeBasis" #"MeasPU" #"LIDOpt/SpecificWP/Pt15" #"MCClosure/SIPScan/Trig" #"MeasFR/Test/HNTIsop10_LIsop6SIP3To8NInf" #"MeasFR/Test/HNTIsop10_TopHNLLIsop6/PTParam" 
 ReductionFactor="" #"4" #"10"
 runDebug="False"
 ResubRun="False"

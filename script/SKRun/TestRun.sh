@@ -2,10 +2,10 @@
 
 ########################################################################
 #declare -a List_runModes=("runSigMC")
-declare -a List_runModes=("runBkdMC")
+#declare -a List_runModes=("runBkdMC")
 #declare -a List_runModes=("runBkdMC" "runSigMC")
 #declare -a List_runModes=("runData")
-#declare -a List_runModes=("runBkdMC" "runData")
+declare -a List_runModes=("runBkdMC" "runData")
 
 ########################################################################
 ## RUN PARAMETERS

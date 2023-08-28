@@ -36,7 +36,7 @@ void MeasTrigEff::initializeAnalyzer(){
     TrigList_ElMuDZ  = {"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
   }
   else if(DataYear==2017){
-    TrigList_SglMu = {"HLT_IsoMu27_v"}; TrigList_SglEl = {"HLT_Ele32_WPTight_Gsf_v", "HLT_Ele32_WPTight_Gsf_L1DoubleEG_v"};
+    TrigList_SglMu = {"HLT_IsoMu27_v"}; TrigList_SglEl = {"HLT_Ele32_WPTight_Gsf_L1DoubleEG_v"};
     TrigList_DblMu    = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v"};
     TrigList_DblMuDZ  = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v"};
     TrigList_DblMuDZM = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v"};
@@ -80,7 +80,7 @@ void MeasTrigEff::executeEvent(){
   Event ev = GetEvent();
   float weight=1., w_GenNorm=1., w_BR=1., w_PU=1.;
   if(!IsDATA){
-    w_GenNorm = ev.MCweight()*weight_norm_1invpb*GetKFactor()*ev.GetTriggerLumi("Full");
+    w_GenNorm = MCweight()*GetKFactor()*ev.GetTriggerLumi("Full");
     w_BR      = GetBRWeight();
     w_PU      = GetPileUpWeight(nPileUp, 0);
     weight *= w_GenNorm * w_BR * w_PU;
@@ -107,7 +107,7 @@ void MeasTrigEff::executeEvent(){
   //TString MuTID = "TopHNTIsop10NoIP", MuLID = "TopHNLLIsop6NoIP";
   //TString MuTID = "POGMIDTIso", MuLID = "POGMIDVVLIso";
   TString MuTID = "TopHNT", MuLID = "TopHNLLIsop6SIP5";
-  TString ElTID = "TopHN17SST", ElLID = "TopHNSSNM01LFixLMVAIsop4NoSIP_"+GetEraShort(), ElVID = "TopHNV";
+  TString ElTID = "TopHNSST", ElLID = "TopHNSSLFixLMVAIsop4NoSIP_"+GetEraShort(), ElVID = "TopHNV";
   float PTminEl = ElTID.Contains("SS")? 15.:10.;
   vector<Muon>     muonTightColl     = SelectMuons(muonPreColl, MuTID, 10., 2.4);
   vector<Electron> electronTightColl = SelectElectrons(electronPreColl, ElTID, PTminEl, 2.5);
@@ -255,7 +255,7 @@ void MeasTrigEff::MeasEffEMuTrig_MuLeg(vector<Muon>& MuTColl, vector<Muon>& MuLC
 
   if( !(ElTColl.size()==1 && MuTColl.size()==1) ) return;
   if( !(ElLColl.size()==1 && MuLColl.size()==1) ) return;
-  if( ElTColl.at(0).Pt()<(DataYear<2017? 29:32) ) return;
+  if( ElTColl.at(0).Pt()<(DataYear<2017? 30:35) ) return;
   if( MuTColl.at(0).Charge()==ElTColl.at(0).Charge() ) return;
   if( MuTColl.at(0).DeltaR(ElTColl.at(0))<0.4 ) return;
 
@@ -270,22 +270,15 @@ void MeasTrigEff::MeasEffEMuTrig_MuLeg(vector<Muon>& MuTColl, vector<Muon>& MuLC
   double PTMu   = MuTColl.at(0).Pt();
   double fEtaMu = fabs(MuTColl.at(0).Eta());
 
-  vector<TString> TrigListToMeas1={"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
-  vector<TString> TrigListToMeas2={"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v"};
-  bool PassLeg1=false, PassLeg2=false;
-  if(MCSample.Contains("Trig") or DataStream.Contains("Trig")){
-//    for(unsigned int it_obj=0; it_obj<HLTObject_eta->size(); it_obj++){
-//      float dR = sqrt(pow(MuTColl.at(0).Eta()-HLTObject_eta->at(it_obj),2)+pow(MuTColl.at(0).Phi()-HLTObject_phi->at(it_obj),2));
-//      if(dR>0.2) continue;
-//      if(HLTObject_FiredPaths->at(it_obj).find(TrigListToMeas1.at(0))!=string::npos ){ PassLeg1=true; }
-//      if(HLTObject_FiredPaths->at(it_obj).find(TrigListToMeas2.at(0))!=string::npos ){ PassLeg2=true; }
-//      if(PassLeg1 && PassLeg2) break;
-//    }
-  }
-  else{
-    PassLeg1=ev.PassTrigger(TrigListToMeas1); PassLeg2=ev.PassTrigger(TrigListToMeas2);
-  }
-
+  bool PassLeg1=false, PassLeg2=false, PassTagHLT = false;
+  for(unsigned int it=0; it<TrigList_SglEl.size(); it++){ if(ElTColl.at(0).PassPath(TrigList_SglEl.at(it))){ PassTagHLT=true; break; } }
+  TString TestFilter1 = GetEraShort()=="2016a"? "hltMu23TrkIsoVVLEle8CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered23":
+                                                "hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered23";
+  TString TestFilter2 = "hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered8";
+  PassLeg1 = MuTColl.at(0).PassFilter(TestFilter1), PassLeg2 = MuTColl.at(0).PassFilter(TestFilter2);
+  if(DataYear==2017) PassLeg2 = MuTColl.at(0).PassPath("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v");
+  //filter name different only in 17B in full Run-2, wasn't catched before processing, but checked eff(DZ)~1 in 17
+  if(!PassTagHLT) return;
 
   FillHist("NMu1_ALL_Pt_1D", PTMu, weight, NPtBinEdges1-1, PtBinEdges1);
   FillHist("NMu1_ALL_PtEta_2D", PTMu, fEtaMu, weight, NPtBinEdges1-1, PtBinEdges1, NfEtaBinEdges-1, fEtaBinEdges);
@@ -340,22 +333,13 @@ void MeasTrigEff::MeasEffEMuTrig_ElLeg(vector<Muon>& MuTColl, vector<Muon>& MuLC
   double PTEle   = ElTColl.at(0).Pt();
   double fEtaEle = fabs(ElTColl.at(0).Eta());
 
-  vector<TString> TrigListToMeas1={"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v"};
-  vector<TString> TrigListToMeas2={"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
-  bool PassLeg1=false, PassLeg2=false;
-  if(MCSample.Contains("Trig") or DataStream.Contains("Trig")){
-//    for(unsigned int it_obj=0; it_obj<HLTObject_eta->size(); it_obj++){
-//      float dR = sqrt(pow(ElTColl.at(0).Eta()-HLTObject_eta->at(it_obj),2)+pow(ElTColl.at(0).Phi()-HLTObject_phi->at(it_obj),2));
-//      if(dR>0.2) continue;
-//      if(HLTObject_FiredPaths->at(it_obj).find(TrigListToMeas1.at(0))!=string::npos ){ PassLeg1=true; }
-//      if(HLTObject_FiredPaths->at(it_obj).find(TrigListToMeas2.at(0))!=string::npos ){ PassLeg2=true; }
-//      if(PassLeg1 && PassLeg2) break;
-//    }
-  }
-  else{
-    PassLeg1=ev.PassTrigger(TrigListToMeas1); PassLeg2=ev.PassTrigger(TrigListToMeas2);
-  }
-
+  bool PassLeg1=false, PassLeg2=false, PassTagHLT = false;
+  for(unsigned int it=0; it<TrigList_SglMu.size(); it++){ if(MuTColl.at(0).PassPath(TrigList_SglMu.at(it))){ PassTagHLT=true; break; } }
+  TString TestFilter1 = "hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter";
+  TString TestFilter2 = GetEraShort()=="2016a"? "hltMu23TrkIsoVVLEle8CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter":
+                                                "hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter";
+  PassLeg1 = ElTColl.at(0).PassFilter(TestFilter1), PassLeg2 = ElTColl.at(0).PassFilter(TestFilter2);
+  if(!PassTagHLT) return;
 
   FillHist("NEle1_ALL_Pt_1D", PTEle, weight, NPtBinEdges1-1, PtBinEdges1);
   FillHist("NEle1_ALL_PtEta_2D", PTEle, fEtaEle, weight, NPtBinEdges1-1, PtBinEdges1, NfEtaBinEdges-1, fEtaBinEdges);
@@ -392,6 +376,7 @@ void MeasTrigEff::MeasEffEMuTrig_ElLeg(vector<Muon>& MuTColl, vector<Muon>& MuLC
 void MeasTrigEff::MeasEffEMuTrig_DZ(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Electron>& ElTColl, vector<Electron>& ElLColl,
                                     vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, Event& ev, float weight, TString Label)
 {
+  if(   GetEraShort()=="2016a"                  ) return;
   if( !(MuTColl.size()==1 && MuLColl.size()==1) ) return;
   if( !(ElTColl.size()==1 && ElLColl.size()==1) ) return;
   if( !(ElTColl.at(0).Pt()>15 && MuTColl.at(0).Pt()>10) ) return;
@@ -399,44 +384,36 @@ void MeasTrigEff::MeasEffEMuTrig_DZ(vector<Muon>& MuTColl, vector<Muon>& MuLColl
   if(  ElTColl.at(0).Charge() == MuTColl.at(0).Charge() ) return;
   if(  ElTColl.at(0).DeltaR(MuTColl.at(0))<0.4  ) return;
   
-  vector<TString> TrigListDen1    = {"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v"};
-  vector<TString> TrigListDen2    = {"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v"};
-  vector<TString> TrigListToMeas1 = {"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v"};
-  vector<TString> TrigListToMeas2 = {"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
-
-  bool IsCase1 = ElTColl.at(0).Pt()>25 && MuTColl.at(0).Pt()>10 && ev.PassTrigger(TrigListDen1);
-  bool IsCase2 = ElTColl.at(0).Pt()>15 && MuTColl.at(0).Pt()>25 && ev.PassTrigger(TrigListDen2);
-
-  int NMatchIsoFilt=0, NMatchDZFilt=0;
-  if(IsCase1){ NMatchIsoFilt=2; NMatchDZFilt=ev.PassTrigger(TrigListToMeas1)? 2:0;}
-  if(IsCase2){ NMatchIsoFilt=2; NMatchDZFilt=ev.PassTrigger(TrigListToMeas2)? 2:0;}
-
-  if(NMatchIsoFilt!=2) return;
-
-  if(IsCase1){
-    TString Label1=Label+"_HLT1";
-    FillHist("NEvt"     +Label1, 0., weight, 1, 0., 1.);
-    FillHist("NEvt_DZ1" +Label1, fabs(MuTColl.at(0).dZ()), weight, 20, 0., 0.1);
-    FillHist("NEvt_DZ2" +Label1, fabs(ElTColl.at(0).dZ()), weight, 20, 0., 0.1);
-    FillHist("NEvt_DZ12"+Label1, fabs(MuTColl.at(0).dZ()-ElTColl.at(0).dZ()), weight, 40, 0., 0.2);
-    if(NMatchDZFilt==2){
-      FillHist("NEvtTrig"     +Label1, 0., weight, 1, 0., 1.);
-      FillHist("NEvtTrig_DZ1" +Label1, fabs(MuTColl.at(0).dZ()), weight, 20, 0., 0.1);
-      FillHist("NEvtTrig_DZ2" +Label1, fabs(ElTColl.at(0).dZ()), weight, 20, 0., 0.1);
-      FillHist("NEvtTrig_DZ12"+Label1, fabs(MuTColl.at(0).dZ()-ElTColl.at(0).dZ()), weight, 40, 0., 0.2);
-    }
+  bool FireIsoEl1Mu2=false, FireIsoEl2Mu1=false, FireIsoAndDZEl1Mu2=false, FireIsoAndDZEl2Mu1=false;
+  TString IsoFilterEl1 = "hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter";
+  TString IsoFilterEl2 = "hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter"; 
+  TString IsoFilterMu1 = "hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered23";
+  TString IsoFilterMu2 = "hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered8";
+  TString PathEl1Mu2   = "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v"; 
+  TString PathEl2Mu1   = "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v"; 
+  TString DZPathEl1Mu2 = "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v"; 
+  TString DZPathEl2Mu1 = "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"; 
+  if(ev.PassTrigger(PathEl1Mu2) && ElTColl.at(0).Pt()>25 && MuTColl.at(0).Pt()>10){
+    if(ElTColl.at(0).PassFilter(IsoFilterEl1) && MuTColl.at(0).PassFilter(IsoFilterMu2)) FireIsoEl1Mu2=true;
+    if(FireIsoEl1Mu2 && ElTColl.at(0).PassPath(DZPathEl1Mu2) && MuTColl.at(0).PassPath(DZPathEl1Mu2)) FireIsoAndDZEl1Mu2=true;
   }
-  if(IsCase2){
-    TString Label2=Label+"_HLT2";
-    FillHist("NEvt"     +Label2, 0., weight, 1, 0., 1.);
-    FillHist("NEvt_DZ1" +Label2, fabs(MuTColl.at(0).dZ()), weight, 20, 0., 0.1);
-    FillHist("NEvt_DZ2" +Label2, fabs(ElTColl.at(0).dZ()), weight, 20, 0., 0.1);
-    FillHist("NEvt_DZ12"+Label2, fabs(MuTColl.at(0).dZ()-ElTColl.at(0).dZ()), weight, 40, 0., 0.2);
-    if(NMatchDZFilt==2){
-      FillHist("NEvtTrig"     +Label2, 0., weight, 1, 0., 1.);
-      FillHist("NEvtTrig_DZ1" +Label2, fabs(MuTColl.at(0).dZ()), weight, 20, 0., 0.1);
-      FillHist("NEvtTrig_DZ2" +Label2, fabs(ElTColl.at(0).dZ()), weight, 20, 0., 0.1);
-      FillHist("NEvtTrig_DZ12"+Label2, fabs(MuTColl.at(0).dZ()-ElTColl.at(0).dZ()), weight, 40, 0., 0.2);
+  if(ev.PassTrigger(PathEl2Mu1) && ElTColl.at(0).Pt()>15 && MuTColl.at(0).Pt()>25){
+    if(ElTColl.at(0).PassFilter(IsoFilterEl2) && MuTColl.at(0).PassFilter(IsoFilterMu1)) FireIsoEl2Mu1=true;
+    if(FireIsoEl2Mu1 && ElTColl.at(0).PassPath(DZPathEl2Mu1) && MuTColl.at(0).PassPath(DZPathEl2Mu1)) FireIsoAndDZEl2Mu1=true;
+  }
+
+  if(FireIsoEl1Mu2){
+    FillHist("NEvtIsoEl1Mu2"+Label, 0., weight, 1, 0., 1.);
+    if(FireIsoAndDZEl1Mu2){ FillHist("NEvtIsoEl1Mu2DZTrig"+Label, 0., weight, 1, 0., 1.); }
+  }
+  if(FireIsoEl2Mu1){
+    FillHist("NEvtIsoEl2Mu1"+Label, 0., weight, 1, 0., 1.);
+    if(FireIsoAndDZEl2Mu1){ FillHist("NEvtIsoEl2Mu1DZTrig"+Label, 0., weight, 1, 0., 1.); }
+  }
+  if(FireIsoEl1Mu2 or FireIsoEl2Mu1){
+    FillHist("NEvtIsoElMu"+Label, 0., weight, 1, 0., 1.);
+    if( (FireIsoEl1Mu2 && FireIsoAndDZEl1Mu2) or (FireIsoEl2Mu1 && FireIsoAndDZEl2Mu1) ){
+      FillHist("NEvtIsoElMuDZTrig"+Label, 0., weight, 1, 0., 1.);
     }
   }
 

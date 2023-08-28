@@ -13,7 +13,7 @@ public:
 
   bool SpecTrig, NoTrig;
   bool ElFR, MuFR;
-  bool LIDOpt, MeasMCFR, MCClosure;
+  bool LIDOpt, MeasMCFR, MCClosure, CompCheck, PTDiffCheck;
   bool SystRun;
   vector<TString> TrigList_ElFR, TrigList_MuFR, TrigList_DblMu, TrigList_DblEG, TrigList_MuEG;
   TString EraShort;
@@ -46,6 +46,11 @@ public:
   void CheckMCClosure(vector<Muon>& MuRawColl, vector<Electron>& ElRawColl, vector<Jet>& JetRawColl, 
                       Particle& vMET, Event& Ev, vector<Gen>& TruthColl, float weight, 
                       TString MuTID, TString MuLID, TString ElTID, TString ElLID, TString ElVID, TString Label, TString Option="");
+  void CheckFakeComposition(vector<Muon>& MuRawColl, vector<Electron>& ElRawColl, vector<Jet>& JetRawColl, Particle& vMET, Event& ev,
+                            TString MuTID, TString MuLID, TString ElTID, TString ElLID, TString ElVID, float weight, TString Label);
+  void CheckFakeTLDiff(vector<Muon>& MuRawColl, vector<Electron>& ElRawColl, vector<Jet>& JetRawColl, 
+                       Particle& vMET, Event& Ev, vector<Gen>& TruthColl, float weight, 
+                       TString MuTID, TString MuLID, TString ElTID, TString ElLID, TString ElVID, TString Label, TString Option="");
 
 
   float GetMCFakeRate(float VarX, float VarY, TString Key, int SystDir);
@@ -54,21 +59,27 @@ public:
   int   GetGenLepInfo(vector<Electron>& ElColl, vector<Muon>& MuColl, vector<Gen>& TruthColl);
   bool  PassLooseMVA(Electron& El, TString wp, TString Option="");
 
-  void  InitializeReader();
+  void  InitializeReader(TMVA::Reader* ThisReader, TString Option);
   void  InitializeTreeVars();
 
   Float_t Nj, Nb;
-  Float_t Ptl1, Ptl2, Ptj1, Ptj2, Ptj3, HT, MET2HT;
-  Float_t dRll, dRlj11, dRlj12, dRlj13, dRlj21, dRlj22, dRlj23;
-  Float_t MSSSF, MTvl1, MTvl2;
-  Float_t MllW_2jL, MllW_1jL, MllW1_H, Ml1W_2jL, Ml1W_1jL, Ml2W_2jL, Ml2W_1jL, Ml1W1_H, Ml2W1_H;
+  Float_t Ptl1, Ptl2, MET, HT;
+  Float_t dRll;
+  Float_t dRlj11, dRlj12, dRlj13, dRlj21, dRlj22, dRlj23;
+  Float_t MSSSF;
+  Float_t MTvl1, MTllv, Ml2j1W_BkdTop, Ml2W_BkdTop, MTbl1v_BkdTop;
+  Float_t MbllW_1jL, MllW_1jL, Ml1W_1jL, Ml2W_1jL;
+  Float_t MbllW_1jH, Ml1W_1jH, Ml2W_1jH;
+  Float_t MbllW_H, Ml1W_H, Ml2W_H; 
+
+  vector<JetTagging::Parameters> jtps;
 
   TFile* FRFile; 
   std::map< TString, TH2D* > maphist_FR;
 //  TGraph* gr_MVAL;
 
-  TMVA::Reader *MVAReader;
-  vector<TString> MNStrList;
+  TMVA::Reader *MVAReaderL, *MVAReaderH;
+  vector<TString> MNStrListL, MNStrListH;
   vector<Gen> truthColl; 
 
   MCFakeStudy();

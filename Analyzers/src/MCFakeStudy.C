@@ -3,22 +3,23 @@
 void MCFakeStudy::initializeAnalyzer(){
 
   ElFR=false, MuFR=false;
-  LIDOpt=false, MeasMCFR=false, MCClosure=false;
+  LIDOpt=false, MeasMCFR=false, MCClosure=false, CompCheck=false, PTDiffCheck=false;
   SystRun=false; 
   SpecTrig=false, NoTrig=false;
   for(unsigned int i=0; i<Userflags.size(); i++){
-    if(Userflags.at(i).Contains("ElFR"))       ElFR      = true; 
-    if(Userflags.at(i).Contains("MuFR"))       MuFR      = true; 
-    if(Userflags.at(i).Contains("LIDOpt"))     LIDOpt    = true;
-    if(Userflags.at(i).Contains("MeasMCFR"))   MeasMCFR  = true; 
-    if(Userflags.at(i).Contains("MCClosure"))  MCClosure = true; 
-    if(Userflags.at(i).Contains("NoTrig"))     NoTrig    = true; 
-    if(Userflags.at(i).Contains("SpecTrig"))   SpecTrig  = true; 
-    if(Userflags.at(i).Contains("SystRun"))    SystRun   = true; 
+    if(Userflags.at(i).Contains("ElFR"))        ElFR        = true; 
+    if(Userflags.at(i).Contains("MuFR"))        MuFR        = true; 
+    if(Userflags.at(i).Contains("LIDOpt"))      LIDOpt      = true;
+    if(Userflags.at(i).Contains("MeasMCFR"))    MeasMCFR    = true; 
+    if(Userflags.at(i).Contains("MCClosure"))   MCClosure   = true; 
+    if(Userflags.at(i).Contains("CompCheck"))   CompCheck   = true;
+    if(Userflags.at(i).Contains("PTDiffCheck")) PTDiffCheck = true;
+    if(Userflags.at(i).Contains("NoTrig"))      NoTrig      = true; 
+    if(Userflags.at(i).Contains("SpecTrig"))    SpecTrig    = true; 
+    if(Userflags.at(i).Contains("SystRun"))     SystRun     = true; 
   }
 
   EraShort = GetEraShort();
-
 
   TrigList_MuFR.push_back("HLT_Mu17_TrkIsoVVL_v");
   TrigList_MuFR.push_back("HLT_Mu8_TrkIsoVVL_v");
@@ -26,48 +27,32 @@ void MCFakeStudy::initializeAnalyzer(){
   TrigList_ElFR.push_back("HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30_v");
   TrigList_ElFR.push_back("HLT_Ele23_CaloIdL_TrackIdL_IsoVL_PFJet30_v");
 
-  if(DataYear==2016){
-    //HLT_Mu3_PFJet40_v
-    TrigList_DblMu.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v");
-    TrigList_DblMu.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v");
-    TrigList_DblMu.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");
-    TrigList_DblMu.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v");
-
-    TrigList_MuEG.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v");
-    TrigList_MuEG.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
-
-    TrigList_DblEG.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v");
+  if(EraShort=="2016a"){
+    TrigList_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v"};
+    TrigList_DblEG = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
   }
-  if(DataYear==2017){
-    TrigList_DblMu.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");
-    TrigList_DblMu.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v");
-    TrigList_DblMu.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v");
-
-    TrigList_MuEG.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v");
-    TrigList_MuEG.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
-
-    TrigList_DblEG.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v");
+  else if(EraShort=="2016b"){
+    TrigList_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v", "HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"};
+    TrigList_DblEG = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
   }
-  if(DataYear==2018){
-    TrigList_DblMu.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");
-    TrigList_DblMu.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v");
-
-    TrigList_MuEG.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v");
-    TrigList_MuEG.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
-
-    TrigList_DblEG.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v");
+  else if(DataYear==2017){
+    TrigList_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v", "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v"};
+    TrigList_DblEG = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v"};
+  }
+  else if(DataYear==2018){
+    TrigList_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v"};
+    TrigList_DblEG = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v"};
   }
 
   //Set up the tagger map only for the param settings to be used.
-  std::vector<JetTagging::Parameters> jtps;
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets) );
   mcCorr->SetJetTaggingParameters(jtps);
 
   TString AnalyzerPath=getenv("SKFlat_WD"), SKFlatV = getenv("SKFlatV");
-  TString FilePath="/data/"+SKFlatV+"/"+GetEra()+"/FakeRate/MCFR/ElFR/";
+  TString FilePath="/data/"+SKFlatV+"/"+GetEra()+"/FakeRate/MCFR/"+(MuFR? "MuFR/":ElFR? "ElFR/":"");
   FRFile  = new TFile(AnalyzerPath+FilePath+"FR_MC_"+GetEraShort()+".root");
 
-  InitializeReader();
+  if(MCClosure){ InitializeReader(MVAReaderL, "BelowMW"); InitializeReader(MVAReaderH, "AboveMW"); }
 }
 
 
@@ -77,15 +62,15 @@ void MCFakeStudy::executeEvent(){
   Event ev = GetEvent();
   float weight = 1.;
   if(!IsDATA){
-    weight*=ev.MCweight()*weight_norm_1invpb*GetKFactor()*ev.GetTriggerLumi("Full");
+    weight*=MCweight()*GetKFactor()*ev.GetTriggerLumi("Full");
     weight*=GetPileUpWeight(nPileUp, 0);
   }
   FillHist("CutFlow", 0., weight, 20, 0., 20.);
 
   bool PassTrig=false;
-  if     (MuFR && MCClosure){ PassTrig = ev.PassTrigger(TrigList_DblMu); }
-  else if(ElFR && MCClosure){ PassTrig = ev.PassTrigger(TrigList_DblEG); }
-  if(LIDOpt or MeasMCFR or NoTrig) PassTrig=true;
+  if     (MuFR && (MCClosure or PTDiffCheck)){ PassTrig = ev.PassTrigger(TrigList_DblMu); }
+  else if(ElFR && (MCClosure or PTDiffCheck)){ PassTrig = ev.PassTrigger(TrigList_DblEG); }
+  if(LIDOpt or MeasMCFR or NoTrig or CompCheck) PassTrig=true;
   if(!PassTrig) return;
   FillHist("CutFlow", 1., weight, 20, 0., 20.);
   if(!PassMETFilter()) return;
@@ -102,26 +87,24 @@ void MCFakeStudy::executeEvent(){
 
 
   TString IDSSLabel = "SS";
-  vector<Muon>     muonTightColl     = SelectMuons(muonPreColl, "TopHN17T", 10., 2.4);
-  vector<Electron> electronTightColl = SelectElectrons(electronPreColl, "TopHN17"+IDSSLabel+"T", 10., 2.5);
-  vector<Muon>     muonLooseColl     = SelectMuons(muonPreColl, "TopHN17L", 10., 2.4);
-  vector<Electron> electronLooseColl = SelectElectrons(electronPreColl, "TopHN17"+IDSSLabel+"L", 10., 2.5);
-  vector<Electron> electronVetoColl  = SelectElectrons(electronPreColl, "TopHN17L", 10., 2.5);
+  vector<Muon>     muonTightColl     ; //= SelectMuons(muonPreColl, "TopHNT", 10., 2.4);
+  vector<Electron> electronTightColl ; //= SelectElectrons(electronPreColl, "TopHN17"+IDSSLabel+"T", 10., 2.5);
+  vector<Muon>     muonLooseColl     ; //= SelectMuons(muonPreColl, "TopHNL", 10., 2.4);
+  vector<Electron> electronLooseColl ; //= SelectElectrons(electronPreColl, "TopHN17"+IDSSLabel+"L", 10., 2.5);
+  vector<Electron> electronVetoColl  ; //= SelectElectrons(electronPreColl, "TopHN17L", 10., 2.5);
 
 
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
   vector<Jet> jetPreColl = GetAllJets();
   sort(jetPreColl.begin(), jetPreColl.end(), PtComparing);
   vector<Jet> jetNoVetoColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "NoID", 10., 2.4, "");
-  vector<Jet> jetColl        = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tight", 25., 2.4, "LVeto");
   vector<Jet> bjetNoVetoColl = SelBJets(jetNoVetoColl, param_jets);
-  vector<Jet> bjetColl       = SelectJets(bjetColl, muonLooseColl, electronVetoColl, "tight", 25., 2.4, "LVeto");
 
 
-  Particle vMET = ev.GetMETVector();
-  Particle vMET_T1xy(pfMET_Type1_PhiCor_pt*TMath::Cos(pfMET_Type1_PhiCor_phi), pfMET_Type1_PhiCor_pt*TMath::Sin(pfMET_Type1_PhiCor_phi), 0., pfMET_Type1_PhiCor_pt);
+  Particle vMET      = GetvMET("PUPPIMETT1");
+  Particle vMET_T1xy = GetvMET("PUPPIMETT1xyCorr");
 
-  bool FillGenColl = MeasMCFR or MCClosure or LIDOpt;
+  bool FillGenColl = MeasMCFR or MCClosure or LIDOpt or CompCheck or PTDiffCheck;
   if(FillGenColl) truthColl = GetGens();
 
 
@@ -159,7 +142,7 @@ void MCFakeStudy::executeEvent(){
       vector<double> PtEdges={10., 15., 20., 25., 35., 50., 70., 100., 200.};
 
   
-      bool FullScanning=false, SpecificWP=false, CheckLepSrcComp=false, IP3DTest=true; //IDVarDist=false, CvCheck=false, IDPerfCheck=false;
+      bool FullScanning=false, SpecificWP=false, CheckLepSrcComp=false; //IDVarDist=false, CvCheck=false, IDPerfCheck=false;
       //RunTestRun(muonFakeLPreOptColl, JetCleanColl, weight, "TopHN17L_TkIso", "TopHN17T_TkIso", "_TopHN17TLHLT", "");
       if(FullScanning){
         //For Scanning with Fine Steps
@@ -171,18 +154,11 @@ void MCFakeStudy::executeEvent(){
           for(int it_var2=0; it_var2<(int) SIPCuts.size(); it_var2++){
             float Var1Cut = IsoCuts.at(it_var1), Var2Cut = SIPCuts.at(it_var2);
             ScanFakeRate(FakeMBColl, JetCleanColl, "iso", "sip", Var1Cut, Var2Cut, PtEdges, weight,
-                         "POGMHLT", "TopHNTIsop10", "_TopHNIsop10", "MBJetPtParam");
+                         "POGMHLT", "TopHNT", "_TopHN", "MBJetPtParam");
             ScanFakeRate(FakeMOColl, JetCleanColl, "iso", "sip", Var1Cut, Var2Cut, PtEdges, weight,
-                         "POGMHLT", "TopHNTIsop10", "_TopHNIsop10", "MOJetPtParam");
+                         "POGMHLT", "TopHNT", "_TopHN", "MOJetPtParam");
             ScanFakeRate(FakeMEColl , JetCleanColl, "iso", "sip", Var1Cut, Var2Cut, PtEdges, weight,
-                         "POGMHLT", "TopHNTIsop10", "_TopHNIsop10", "MEJetPtParam");
-
-            ScanFakeRate(FakeMBColl, JetCleanColl, "iso", "sip", Var1Cut, Var2Cut, PtEdges, weight,
-                         "POGMHLT", "TopHNTIsop15", "_TopHNIsop15", "MBJetPtParam");
-            ScanFakeRate(FakeMOColl, JetCleanColl, "iso", "sip", Var1Cut, Var2Cut, PtEdges, weight,
-                         "POGMHLT", "TopHNTIsop15", "_TopHNIsop15", "MOJetPtParam");
-            ScanFakeRate(FakeMEColl , JetCleanColl, "iso", "sip", Var1Cut, Var2Cut, PtEdges, weight,
-                         "POGMHLT", "TopHNTIsop15", "_TopHNIsop15", "MEJetPtParam");
+                         "POGMHLT", "TopHNT", "_TopHN", "MEJetPtParam");
           }
         }
       }
@@ -192,10 +168,6 @@ void MCFakeStudy::executeEvent(){
         MeasMCTtoLRatio(FakeMOColl, JetCleanColl, PtEdges, weight, "TopHNLForTIsop10_"+GetEraShort(), "TopHNTIsop10", "_TopHNTIsop10L", "MOConePt");
         MeasMCTtoLRatio(FakeMEColl, JetCleanColl, PtEdges, weight, "TopHNLForTIsop10_"+GetEraShort(), "TopHNTIsop10", "_TopHNTIsop10L", "MEConePt");
 
-        MeasMCTtoLRatio(FakeColl  , JetCleanColl, PtEdges, weight, "TopHNLForTIsop15_"+GetEraShort(), "TopHNTIsop15", "_TopHNTIsop15L", "AllConePt");
-        MeasMCTtoLRatio(FakeMBColl, JetCleanColl, PtEdges, weight, "TopHNLForTIsop15_"+GetEraShort(), "TopHNTIsop15", "_TopHNTIsop15L", "MBConePt");
-        MeasMCTtoLRatio(FakeMOColl, JetCleanColl, PtEdges, weight, "TopHNLForTIsop15_"+GetEraShort(), "TopHNTIsop15", "_TopHNTIsop15L", "MOConePt");
-        MeasMCTtoLRatio(FakeMEColl, JetCleanColl, PtEdges, weight, "TopHNLForTIsop15_"+GetEraShort(), "TopHNTIsop15", "_TopHNTIsop15L", "MEConePt");
       }
       if(CheckLepSrcComp){
         CheckSelectionEfficiency(muonPreColl, electronPreColl, jetNoVetoColl, bjetNoVetoColl, vMET, ev,
@@ -203,111 +175,106 @@ void MCFakeStudy::executeEvent(){
         CheckSelectionEfficiency(muonPreColl, electronPreColl, jetNoVetoColl, bjetNoVetoColl, vMET, ev,
                                  "TopHN17T_TkIso", "POGMHLT", "TopHNSST_WP90Isop1", "TopHNSSL_DynLMVAIsop4NoSIP_Pt10", weight, "_POGMHLT");
       }
-      if(IP3DTest){
-        for(unsigned int im=0; im<muonFakeLPreOptColl.size(); im++){
-          Muon* Mu = &muonFakeLPreOptColl.at(im);
-          float PT=Mu->Pt(), Eta=Mu->Eta(), fEta=fabs(Eta);
-          if(PT<10) continue;
-          int MuType = GetLeptonType_JH(*Mu, truthColl);
-          bool IsPrL = MuType>0 && MuType!=3, IsPrTaL = MuType==3, IsHFk = MuType<0 && MuType>-5;
-          double IPErr = Mu->IP3Derr();
-          TString TypeStr = IsPrL? "_PrL": IsPrTaL? "_PrTaL": IsHFk? "_HFk":"";
-          FillHist("MuType", MuType, weight, 20, -10., 10.);
-          FillHist("PTfEta_IP3DErr"+TypeStr, PT, fEta, IPErr*weight, 38, 10., 200., 24, 0., 2.4);
-          FillHist("PTfEta"+TypeStr, PT, fEta, weight, 38, 10., 200., 24, 0, 2.4);
-          FillHist("PT_IP3DErr"+TypeStr, PT, IPErr*weight, 245, 10., 500.);
-          FillHist("PT"+TypeStr, PT, weight, 245, 10., 500.);
-          FillHist("Eta_IP3DErr"+TypeStr, Eta, IPErr*weight, 48, -2.4, 2.4);
-          FillHist("Eta"+TypeStr, Eta, weight, 48, -2.4, 2.4);
-          if(Mu->IP3Derr()==0.) FillHist("CntNullIP3DErr"+TypeStr, 0.5, weight, 1, 0., 1.);
-          if(Mu->IP3Derr()==9999) FillHist("Cnt9999IP3DErr"+TypeStr, 0.5, weight, 1, 0., 1.);
-          if(Mu->IP3Derr()==9999 && Mu->IP3D()==9999) FillHist("Cnt9999IP3DErrWIP"+TypeStr, 0.5, weight, 1, 0., 1.);
-        }
-      }
     }
     if(MeasMCFR){
       vector<Jet> JetCleanColl = SkimJetColl(jetNoVetoColl, truthColl, "NoPrNoTau");
       EmulQCDFRMeas(muonPreColl, electronPreColl, JetCleanColl, vMET_T1xy, ev, truthColl, weight, 
-                    "TopHNTIsop10", "TopHNLLIsop6NoSIP", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_TopHNTIsop10_TopHNLLIsop6NoSIP_Trig", "MuFRTrig");
+                    "TopHNT", "TopHNLLIsop6NoSIP", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_TopHNT_TopHNLLIsop6NoSIP_Trig", "MuFRTrig");
       EmulQCDFRMeas(muonPreColl, electronPreColl, JetCleanColl, vMET_T1xy, ev, truthColl, weight, 
-                    "TopHNTIsop10", "TopHNLLIsop6SIP8", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_TopHNTIsop10_TopHNLLIsop6SIP8_Trig", "MuFRTrig");
+                    "TopHNT", "TopHNLLIsop6SIP8", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_TopHNT_TopHNLLIsop6SIP8_Trig", "MuFRTrig");
       EmulQCDFRMeas(muonPreColl, electronPreColl, JetCleanColl, vMET_T1xy, ev, truthColl, weight, 
-                    "TopHNTIsop10", "TopHNLLIsop6SIP6", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_TopHNTIsop10_TopHNLLIsop6SIP6_Trig", "MuFRTrig");
+                    "TopHNT", "TopHNLLIsop6SIP6", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_TopHNT_TopHNLLIsop6SIP6_Trig", "MuFRTrig");
       EmulQCDFRMeas(muonPreColl, electronPreColl, JetCleanColl, vMET_T1xy, ev, truthColl, weight, 
-                    "TopHNTIsop10", "TopHNLLIsop6SIP5", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_TopHNTIsop10_TopHNLLIsop6SIP5_Trig", "MuFRTrig");
+                    "TopHNT", "TopHNLLIsop6SIP5", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_TopHNT_TopHNLLIsop6SIP5_Trig", "MuFRTrig");
       EmulQCDFRMeas(muonPreColl, electronPreColl, JetCleanColl, vMET_T1xy, ev, truthColl, weight, 
-                    "TopHNTIsop10", "TopHNLLIsop6SIP4", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_TopHNTIsop10_TopHNLLIsop6SIP4_Trig", "MuFRTrig");
+                    "TopHNT", "TopHNLLIsop6SIP4", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_TopHNT_TopHNLLIsop6SIP4_Trig", "MuFRTrig");
       EmulQCDFRMeas(muonPreColl, electronPreColl, JetCleanColl, vMET_T1xy, ev, truthColl, weight, 
-                    "TopHNTIsop10", "TopHNLLIsop6", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_TopHNTIsop10_TopHNLLIsop6_Trig", "MuFRTrig");
+                    "TopHNT", "TopHNLLIsop6", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_TopHNT_TopHNLLIsop6_Trig", "MuFRTrig");
 
       EmulQCDFRMeas(muonPreColl, electronPreColl, JetCleanColl, vMET_T1xy, ev, truthColl, weight, 
-                    "TopHNTIsop10", "TopHNLLIsop6NoSIP", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_TopHNTIsop10_TopHNLLIsop6NoSIP_QCDMeasSel", "MuFRQCDMeasSel");
+                    "TopHNT", "TopHNLLIsop6NoSIP", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_TopHNT_TopHNLLIsop6NoSIP_QCDMeasSel", "MuFRQCDMeasSel");
       EmulQCDFRMeas(muonPreColl, electronPreColl, JetCleanColl, vMET_T1xy, ev, truthColl, weight, 
-                    "TopHNTIsop10", "TopHNLLIsop6SIP8", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_TopHNTIsop10_TopHNLLIsop6SIP8_QCDMeasSel", "MuFRQCDMeasSel");
+                    "TopHNT", "TopHNLLIsop6SIP8", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_TopHNT_TopHNLLIsop6SIP8_QCDMeasSel", "MuFRQCDMeasSel");
       EmulQCDFRMeas(muonPreColl, electronPreColl, JetCleanColl, vMET_T1xy, ev, truthColl, weight, 
-                    "TopHNTIsop10", "TopHNLLIsop6SIP6", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_TopHNTIsop10_TopHNLLIsop6SIP6_QCDMeasSel", "MuFRQCDMeasSel");
+                    "TopHNT", "TopHNLLIsop6SIP6", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_TopHNT_TopHNLLIsop6SIP6_QCDMeasSel", "MuFRQCDMeasSel");
       EmulQCDFRMeas(muonPreColl, electronPreColl, JetCleanColl, vMET_T1xy, ev, truthColl, weight, 
-                    "TopHNTIsop10", "TopHNLLIsop6SIP5", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_TopHNTIsop10_TopHNLLIsop6SIP5_QCDMeasSel", "MuFRQCDMeasSel");
+                    "TopHNT", "TopHNLLIsop6SIP5", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_TopHNT_TopHNLLIsop6SIP5_QCDMeasSel", "MuFRQCDMeasSel");
       EmulQCDFRMeas(muonPreColl, electronPreColl, JetCleanColl, vMET_T1xy, ev, truthColl, weight, 
-                    "TopHNTIsop10", "TopHNLLIsop6SIP4", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_TopHNTIsop10_TopHNLLIsop6SIP4_QCDMeasSel", "MuFRQCDMeasSel");
+                    "TopHNT", "TopHNLLIsop6SIP4", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_TopHNT_TopHNLLIsop6SIP4_QCDMeasSel", "MuFRQCDMeasSel");
       EmulQCDFRMeas(muonPreColl, electronPreColl, JetCleanColl, vMET_T1xy, ev, truthColl, weight, 
-                    "TopHNTIsop10", "TopHNLLIsop6", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_TopHNTIsop10_TopHNLLIsop6_QCDMeasSel", "MuFRQCDMeasSel");
-
-
+                    "TopHNT", "TopHNLLIsop6", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_TopHNT_TopHNLLIsop6_QCDMeasSel", "MuFRQCDMeasSel");
     }
     if(MCClosure){
-      vector<TString> VarList = {"", "FRUp", "FRDown"};
+      vector<TString> VarList = {""}; //{"", "FRUp", "FRDown"};
       for(unsigned int iVar=0; iVar<VarList.size(); iVar++){
         TString Var(VarList.at(iVar)), VarTag = Var!=""? "_"+Var:Var;
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-           "TopHNTIsop10", "TopHNLLIsop6NoSIP", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_FRTT_TopHNTIsop10_TopHNLLIsop6NoSIP"+VarTag, "Trig"+Var);
+           "TopHNT", "TopHNLLIsop6NoSIP", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRTT_TopHNT_TopHNLLIsop6NoSIP"+VarTag, "TrigConeBasis"+Var);
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-           "TopHNTIsop10", "TopHNLLIsop6NoSIP", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_FRQCD_TopHNTIsop10_TopHNLLIsop6NoSIP"+VarTag, "Trig"+Var);
+           "TopHNT", "TopHNLLIsop6NoSIP", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRQCD_TopHNT_TopHNLLIsop6NoSIP"+VarTag, "TrigConeBasis"+Var);
   
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-          "TopHNTIsop10", "TopHNLLIsop6SIP8", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_FRTT_TopHNTIsop10_TopHNLLIsop6SIP8"+VarTag, "Trig"+Var);
+          "TopHNT", "TopHNLLIsop6SIP8", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRTT_TopHNT_TopHNLLIsop6SIP8"+VarTag, "TrigConeBasis"+Var);
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-          "TopHNTIsop10", "TopHNLLIsop6SIP8", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_FRQCD_TopHNTIsop10_TopHNLLIsop6SIP8"+VarTag, "Trig"+Var);
+          "TopHNT", "TopHNLLIsop6SIP8", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRQCD_TopHNT_TopHNLLIsop6SIP8"+VarTag, "TrigConeBasis"+Var);
   
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-          "TopHNTIsop10", "TopHNLLIsop6SIP6", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_FRTT_TopHNTIsop10_TopHNLLIsop6SIP6"+VarTag, "Trig"+Var);
+          "TopHNT", "TopHNLLIsop6SIP6", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRTT_TopHNT_TopHNLLIsop6SIP6"+VarTag, "TrigConeBasis"+Var);
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-          "TopHNTIsop10", "TopHNLLIsop6SIP6", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_FRQCD_TopHNTIsop10_TopHNLLIsop6SIP6"+VarTag, "Trig"+Var);
+          "TopHNT", "TopHNLLIsop6SIP6", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRQCD_TopHNT_TopHNLLIsop6SIP6"+VarTag, "TrigConeBasis"+Var);
   
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-          "TopHNTIsop10", "TopHNLLIsop6SIP5", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_FRTT_TopHNTIsop10_TopHNLLIsop6SIP5"+VarTag, "Trig"+Var);
+          "TopHNT", "TopHNLLIsop6SIP5", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRTT_TopHNT_TopHNLLIsop6SIP5"+VarTag, "TrigConeBasis"+Var);
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-          "TopHNTIsop10", "TopHNLLIsop6SIP5", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_FRQCD_TopHNTIsop10_TopHNLLIsop6SIP5"+VarTag, "Trig"+Var);
+          "TopHNT", "TopHNLLIsop6SIP5", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRQCD_TopHNT_TopHNLLIsop6SIP5"+VarTag, "TrigConeBasis"+Var);
   
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-          "TopHNTIsop10", "TopHNLLIsop6SIP4", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_FRTT_TopHNTIsop10_TopHNLLIsop6SIP4"+VarTag, "Trig"+Var);
+          "TopHNT", "TopHNLLIsop6SIP4", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRTT_TopHNT_TopHNLLIsop6SIP4"+VarTag, "TrigConeBasis"+Var);
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-          "TopHNTIsop10", "TopHNLLIsop6SIP4", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_FRQCD_TopHNTIsop10_TopHNLLIsop6SIP4"+VarTag, "Trig"+Var);
+          "TopHNT", "TopHNLLIsop6SIP4", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRQCD_TopHNT_TopHNLLIsop6SIP4"+VarTag, "TrigConeBasis"+Var);
   
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-          "TopHNTIsop10", "TopHNLLIsop6", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_FRTT_TopHNTIsop10_TopHNLLIsop6"+VarTag, "Trig"+Var);
+          "TopHNT", "TopHNLLIsop6", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRTT_TopHNT_TopHNLLIsop6"+VarTag, "TrigConeBasis"+Var);
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-          "TopHNTIsop10", "TopHNLLIsop6", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_FRQCD_TopHNTIsop10_TopHNLLIsop6"+VarTag, "Trig"+Var);
+          "TopHNT", "TopHNLLIsop6", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRQCD_TopHNT_TopHNLLIsop6"+VarTag, "TrigConeBasis"+Var);
   
   
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-          "TopHNTIsop10", "TopHNLLIsop6NoSIP", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_FRQCD_TopHNTIsop10_TopHNLLIsop6NoSIP_MeasSel"+VarTag, "QCDMeasSel"+Var);
+          "TopHNT", "TopHNLLIsop6NoSIP", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRQCD_TopHNT_TopHNLLIsop6NoSIP_MeasSel"+VarTag, "QCDMeasSelConeBasis"+Var);
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-          "TopHNTIsop10", "TopHNLLIsop6SIP8", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_FRQCD_TopHNTIsop10_TopHNLLIsop6SIP8_MeasSel"+VarTag, "QCDMeasSel"+Var);
+          "TopHNT", "TopHNLLIsop6SIP8", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRQCD_TopHNT_TopHNLLIsop6SIP8_MeasSel"+VarTag, "QCDMeasSelConeBasis"+Var);
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-          "TopHNTIsop10", "TopHNLLIsop6SIP6", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_FRQCD_TopHNTIsop10_TopHNLLIsop6SIP6_MeasSel"+VarTag, "QCDMeasSel"+Var);
+          "TopHNT", "TopHNLLIsop6SIP6", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRQCD_TopHNT_TopHNLLIsop6SIP6_MeasSel"+VarTag, "QCDMeasSelConeBasis"+Var);
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-          "TopHNTIsop10", "TopHNLLIsop6SIP5", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_FRQCD_TopHNTIsop10_TopHNLLIsop6SIP5_MeasSel"+VarTag, "QCDMeasSel"+Var);
+          "TopHNT", "TopHNLLIsop6SIP5", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRQCD_TopHNT_TopHNLLIsop6SIP5_MeasSel"+VarTag, "QCDMeasSelConeBasis"+Var);
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-          "TopHNTIsop10", "TopHNLLIsop6SIP4", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_FRQCD_TopHNTIsop10_TopHNLLIsop6SIP4_MeasSel"+VarTag, "QCDMeasSel"+Var);
+          "TopHNT", "TopHNLLIsop6SIP4", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRQCD_TopHNT_TopHNLLIsop6SIP4_MeasSel"+VarTag, "QCDMeasSelConeBasis"+Var);
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-          "TopHNTIsop10", "TopHNLLIsop6", "TopHN17SST", "TopHN17SSL", "TopHN17L", "_FRQCD_TopHNTIsop10_TopHNLLIsop6_MeasSel"+VarTag, "QCDMeasSel"+Var);
+          "TopHNT", "TopHNLLIsop6", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRQCD_TopHNT_TopHNLLIsop6_MeasSel"+VarTag, "QCDMeasSelConeBasis"+Var);
       }
+    }
+    if(CompCheck){
+      if(MCSample.Contains("QCD")){
+        CheckFakeComposition(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, 
+                           "TopHNT", "TopHNLLIsop6SIP5", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNL_"+GetEraShort(), weight, "_MeasSel");
+        CheckFakeComposition(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, 
+                           "TopHNT", "TopHNLLIsop6SIP5", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNL_"+GetEraShort(), weight, "_MeasSelPOGT");
+      }
+      else{
+        CheckFakeComposition(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, 
+                           "TopHNT", "TopHNLLIsop6SIP5", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNL_"+GetEraShort(), weight, "_SRSel");
+        CheckFakeComposition(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, 
+                           "TopHNT", "TopHNLLIsop6SIP5", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNL_"+GetEraShort(), weight, "_SRSelPOGT");
+      }
+    }
+    if(PTDiffCheck){
+      CheckFakeTLDiff(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight,
+                      "TopHNT", "TopHNLLIsop6SIP5", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNL_"+GetEraShort(), "_FRQCD_TopHNT_TopHNLLIsop6SIP5_MeasSel", "QCDMeasSelConeBasis");
     }
   }
   if(ElFR){
     if(LIDOpt){
-      vector<Electron> electronFakeLPreOptColl = SelectElectrons(electronPreColl, "TopHNSSNM01_Isop4NoSIPMVA", 10., 2.5);
+      vector<Electron> electronFakeLPreOptColl = SelectElectrons(electronPreColl, "TopHNSS_Isop4NoSIPMVA", 10., 2.5);
       vector<Electron> FakeColl     = SkimLepColl(electronFakeLPreOptColl, truthColl, "HFake");
       vector<Electron> FakeB1Coll   = SkimLepColl(FakeColl, "B1");
       vector<Electron> FakeB2Coll   = SkimLepColl(FakeColl, "B2");
@@ -331,7 +298,8 @@ void MCFakeStudy::executeEvent(){
         CheckIDPerf(electronPreColl, JetCleanColl, weight, ElIDList, "_Ptlt25", "PtMax25");
       }
       if(CheckTau){
-        CheckSelectionEfficiency(muonLooseColl, electronFakeLPreOptColl, jetNoVetoColl, bjetNoVetoColl, vMET, ev,
+        vector<Muon> muonTmpLColl = SelectMuons(muonPreColl, "TopHNL", 10., 2.4);
+        CheckSelectionEfficiency(muonTmpLColl, electronFakeLPreOptColl, jetNoVetoColl, bjetNoVetoColl, vMET, ev,
                                  "TopHN17T", "TopHN17L", "TopHNSST_WP90Isop1", "TopHNSS_NoIsoMVA", weight, "_TopHNSSWP90Isop1_NoINoMva");
 
         vector<Electron> FakeTauhColl;
@@ -367,8 +335,8 @@ void MCFakeStudy::executeEvent(){
         //For Scanning with Fine Steps
         //vector<float> MVACuts={-0.9}; vector<float> IsoCuts={0.4};
         //vector<float> IsoCuts={-1., 0.1, 0.2, 0.4};
-        vector<float> IsoCuts={-1., 0.4};
-        //vector<float> MVACuts={-1., -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0., 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99, 0.999, 0.9999, 1.};
+        vector<float> IsoCuts={0.4};
+        //vector<float> MVACuts={-1., -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0., 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99, 0.999, 1.};
         vector<float> MVACuts={-0.7, -0.69, -0.68, -0.67, -0.66, -0.65, -0.64, -0.63, -0.62, -0.61,
                                -0.6, -0.59, -0.58, -0.57, -0.56, -0.55, -0.54, -0.53, -0.52, -0.51,
                                -0.5, -0.49, -0.48, -0.47, -0.46, -0.45, -0.44, -0.43, -0.42, -0.41,
@@ -395,15 +363,15 @@ void MCFakeStudy::executeEvent(){
           MeasMCTtoLRatio(FakeB2Coll, JetCleanColl, PtEdges, weight, "TopHN17SSL", "TopHN17SST", "_TopHN17SST_17L", "B2");
           MeasMCTtoLRatio(FakeEColl , JetCleanColl, PtEdges, weight, "TopHN17SSL", "TopHN17SST", "_TopHN17SST_17L", "E");
           //only iso projection
-          MeasMCTtoLRatio(FakeColl  , JetCleanColl, PtEdges, weight, "TopHN17SSL_WP90Isop4", "TopHN17SST", "_TopHN17SST_Isop4", "All");
-          MeasMCTtoLRatio(FakeB1Coll, JetCleanColl, PtEdges, weight, "TopHN17SSL_WP90Isop4", "TopHN17SST", "_TopHN17SST_Isop4", "B1");
-          MeasMCTtoLRatio(FakeB2Coll, JetCleanColl, PtEdges, weight, "TopHN17SSL_WP90Isop4", "TopHN17SST", "_TopHN17SST_Isop4", "B2");
-          MeasMCTtoLRatio(FakeEColl , JetCleanColl, PtEdges, weight, "TopHN17SSL_WP90Isop4", "TopHN17SST", "_TopHN17SST_Isop4", "E");
+          MeasMCTtoLRatio(FakeColl  , JetCleanColl, PtEdges, weight, "TopHNSSL_WP90Isop4", "TopHNSST", "_TopHNSST_Isop4", "All");
+          MeasMCTtoLRatio(FakeB1Coll, JetCleanColl, PtEdges, weight, "TopHNSSL_WP90Isop4", "TopHNSST", "_TopHNSST_Isop4", "B1");
+          MeasMCTtoLRatio(FakeB2Coll, JetCleanColl, PtEdges, weight, "TopHNSSL_WP90Isop4", "TopHNSST", "_TopHNSST_Isop4", "B2");
+          MeasMCTtoLRatio(FakeEColl , JetCleanColl, PtEdges, weight, "TopHNSSL_WP90Isop4", "TopHNSST", "_TopHNSST_Isop4", "E");
           //Fixed Loose MVA + LooseIso + LooseSIP
-          MeasMCTtoLRatio(FakeColl  , JetCleanColl, PtEdges, weight, "TopHNSSNM01LFixLMVAIsop4NoSIP_"+EraShort, "TopHN17SST", "_TopHN17SST_FixLMVAIsop4NoSIP", "All");
-          MeasMCTtoLRatio(FakeB1Coll, JetCleanColl, PtEdges, weight, "TopHNSSNM01LFixLMVAIsop4NoSIP_"+EraShort, "TopHN17SST", "_TopHN17SST_FixLMVAIsop4NoSIP", "B1");
-          MeasMCTtoLRatio(FakeB2Coll, JetCleanColl, PtEdges, weight, "TopHNSSNM01LFixLMVAIsop4NoSIP_"+EraShort, "TopHN17SST", "_TopHN17SST_FixLMVAIsop4NoSIP", "B2");
-          MeasMCTtoLRatio(FakeEColl , JetCleanColl, PtEdges, weight, "TopHNSSNM01LFixLMVAIsop4NoSIP_"+EraShort, "TopHN17SST", "_TopHN17SST_FixLMVAIsop4NoSIP", "E");
+          MeasMCTtoLRatio(FakeColl  , JetCleanColl, PtEdges, weight, "TopHNSSL_"+EraShort, "TopHNSST", "_TopHNSST_FixLMVAIsop4NoSIP", "All");
+          MeasMCTtoLRatio(FakeB1Coll, JetCleanColl, PtEdges, weight, "TopHNSSL_"+EraShort, "TopHNSST", "_TopHNSST_FixLMVAIsop4NoSIP", "B1");
+          MeasMCTtoLRatio(FakeB2Coll, JetCleanColl, PtEdges, weight, "TopHNSSL_"+EraShort, "TopHNSST", "_TopHNSST_FixLMVAIsop4NoSIP", "B2");
+          MeasMCTtoLRatio(FakeEColl , JetCleanColl, PtEdges, weight, "TopHNSSL_"+EraShort, "TopHNSST", "_TopHNSST_FixLMVAIsop4NoSIP", "E");
         }
 
         for(int it_var1=0; it_var1<(int) MVACuts.size() && !SpecificWP; it_var1++){
@@ -419,11 +387,11 @@ void MCFakeStudy::executeEvent(){
 //                         "TopHNSS_Isop4NoSIPMVA", "TopHNSSTWP90Isop1", "_TopHNSSWP90Isop1", "EConePt");
 
             ScanFakeRate(FakeB1Coll, JetCleanColl, "mva", "sip", Var1Cut, Var2Cut, PtEdges, weight,
-                         "TopHNSSNM01_Isop4NoSIPMVA", "TopHN17SST", "_TopHN17SST", "B1ConePt");
+                         "TopHNSS_Isop4NoSIPMVA", "TopHNSST", "_TopHNSST", "B1ConePt");
             ScanFakeRate(FakeB2Coll, JetCleanColl, "mva", "sip", Var1Cut, Var2Cut, PtEdges, weight,
-                         "TopHNSSNM01_Isop4NoSIPMVA", "TopHN17SST", "_TopHN17SST", "B2ConePt");
+                         "TopHNSS_Isop4NoSIPMVA", "TopHNSST", "_TopHNSST", "B2ConePt");
             ScanFakeRate(FakeEColl , JetCleanColl, "mva", "sip", Var1Cut, Var2Cut, PtEdges, weight,
-                         "TopHNSSNM01_Isop4NoSIPMVA", "TopHN17SST", "_TopHN17SST", "EConePt");
+                         "TopHNSS_Isop4NoSIPMVA", "TopHNSST", "_TopHNSST", "EConePt");
 
           }
         }
@@ -431,27 +399,321 @@ void MCFakeStudy::executeEvent(){
     }
     if(MeasMCFR){
       EmulQCDFRMeas(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-                    "TopHN17T", "TopHN17L", "TopHN17SST", "TopHNSSNM01LFixLMVAIsop4NoSIP_"+GetEraShort(), "TopHNV", "_TopHN17SST_TopHNSSNM01LFixLMVAIsop4NoSIP", "ElFR");
+                    "TopHNT", "TopHNL", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_TopHNSST_TopHNSSL", "ElFR");
       EmulQCDFRMeas(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-                    "TopHN17T", "TopHN17L", "TopHN17SST", "TopHNSSNM01LFixLMVAIsop4NoSIP_"+GetEraShort(), "TopHNV", "_TopHN17SST_TopHNSSNM01LFixLMVAIsop4NoSIP_Trig", "ElFRTrig");
+                    "TopHNT", "TopHNL", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_TopHNSST_TopHNSSL_Trig", "ElFRTrig");
       EmulQCDFRMeas(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-                    "TopHN17T", "TopHN17L", "TopHN17SST", "TopHNSSNM01LFixLMVAIsop4NoSIP_"+GetEraShort(), "TopHNV", "_TopHN17SST_TopHNSSNM01LFixLMVAIsop4NoSIP_QCDMeasSel", "ElFRQCDMeasSel");
+                    "TopHNT", "TopHNL", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_TopHNSST_TopHNSSL_QCDMeasSel", "ElFRQCDMeasSel");
     }
     if(MCClosure){
-      vector<TString> VarList = {"", "FRUp", "FRDown"};
+      vector<TString> VarList = {""}; //{"", "FRUp", "FRDown"};
       for(unsigned int iVar=0; iVar<VarList.size(); iVar++){
         TString Var(VarList.at(iVar)), VarTag = Var!=""? "_"+Var:Var;
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-                       "TopHN17T", "TopHN17L", "TopHN17SST", "TopHNSSNM01LFixLMVAIsop4NoSIP_"+GetEraShort(), "TopHNV", "_FRTT_TopHN17SST_TopHNSSNM01LFixLMVAIsop4NoSIP"+VarTag, "ConeBasis"+Var);
+                       "TopHNT", "TopHNLLIsop6SIP5", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRTT_TopHNSST_TopHNSSL"+VarTag, "ConeBasis"+Var);
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-                       "TopHN17T", "TopHN17L", "TopHN17SST", "TopHNSSNM01LFixLMVAIsop4NoSIP_"+GetEraShort(), "TopHNV", "_FRQCD_TopHN17SST_TopHNSSNM01LFixLMVAIsop4NoSIP"+VarTag, "ConeBasis"+Var);
+                       "TopHNT", "TopHNLLIsop6SIP5", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRQCD_TopHNSST_TopHNSSL"+VarTag, "ConeBasis"+Var);
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-                       "TopHN17T", "TopHN17L", "TopHN17SST", "TopHNSSNM01LFixLMVAIsop4NoSIP_"+GetEraShort(), "TopHNV", "_FRTT_TopHN17SST_TopHNSSNM01LFixLMVAIsop4NoSIP_Trig"+VarTag, "TrigConeBasis"+Var);
+                       "TopHNT", "TopHNLLIsop6SIP5", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRTT_TopHNSST_TopHNSSL_Trig"+VarTag, "TrigConeBasis"+Var);
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-                       "TopHN17T", "TopHN17L", "TopHN17SST", "TopHNSSNM01LFixLMVAIsop4NoSIP_"+GetEraShort(), "TopHNV", "_FRQCD_TopHN17SST_TopHNSSNM01LFixLMVAIsop4NoSIP_Trig"+VarTag, "TrigConeBasis"+Var);
+                       "TopHNT", "TopHNLLIsop6SIP5", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRQCD_TopHNSST_TopHNSSL_Trig"+VarTag, "TrigConeBasis"+Var);
         CheckMCClosure(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight, 
-                       "TopHN17T", "TopHN17L", "TopHN17SST", "TopHNSSNM01LFixLMVAIsop4NoSIP_"+GetEraShort(), "TopHNV", "_FRQCD_TopHN17SST_TopHNSSNM01LFixLMVAIsop4NoSIP_MeasSel"+VarTag, "QCDMeasSelConeBasis"+Var);
+                       "TopHNT", "TopHNLLIsop6SIP5", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNV", "_FRQCD_TopHNSST_TopHNSSL_MeasSel"+VarTag, "QCDMeasSelConeBasis"+Var);
       }
+    }
+    if(CompCheck){
+      if(MCSample.Contains("QCD")){
+        CheckFakeComposition(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, 
+                           "TopHNT", "TopHNLLIsop6SIP5", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNL_"+GetEraShort(), weight, "_MeasSel");
+      }
+      else{
+        CheckFakeComposition(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, 
+                           "TopHNT", "TopHNLLIsop6SIP5", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNL_"+GetEraShort(), weight, "_SRSel");
+      }
+    }
+    if(PTDiffCheck){
+      CheckFakeTLDiff(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight,
+                      "TopHNT", "TopHNL", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNL_"+GetEraShort(), "_FRQCD_TopHNSST_TopHNSSL_MeasSel", "QCDMeasSelConeBasis");
+    }
+  }
+
+}
+
+
+void MCFakeStudy::CheckFakeTLDiff(vector<Muon>& MuRawColl, vector<Electron>& ElRawColl, vector<Jet>& JetRawColl, 
+                                  Particle& vMET, Event& Ev, vector<Gen>& TruthColl, float weight, 
+                                  TString MuTID, TString MuLID, TString ElTID, TString ElLID, TString ElVID, TString Label, TString Option)
+{
+
+  InitializeTreeVars();
+  vector<Muon>     MuTColl  = SelectMuons    (MuRawColl, MuTID, 10., 2.4);
+  vector<Electron> ElTColl  = SelectElectrons(ElRawColl, ElTID, 15., 2.5);
+  vector<Muon>     MuLColl  = SelectMuons    (MuRawColl, MuLID, 10., 2.4);
+  vector<Electron> ElLColl  = SelectElectrons(ElRawColl, ElLID, 15., 2.5);
+  vector<Electron> ElVColl  = SelectElectrons(ElRawColl, ElVID, 10., 2.5);
+  vector<Jet>      JetColl  = SelectJets     (JetRawColl, MuLColl, ElVColl, "tightLepVeto", 25., 2.4, "LVeto");
+  JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
+  vector<Jet>      BJetColl = SelBJets       (JetColl, param_jets);
+
+  TString FRProc = Label.Contains("FRTT")? "TT_powheg":Label.Contains("FRQCD")? "QCD":"";
+  TString MeasSel = Option.Contains("MeasSel")? "_QCDMeasSel":""; 
+  TString TrigStr = Option.Contains("Trig")?    "_Trig":"";
+  TString MuLIDBase = MuLID, ElLIDBase= ElLID;
+  MuLIDBase.ReplaceAll("_2016a",""); MuLIDBase.ReplaceAll("_2016b",""); MuLIDBase.ReplaceAll("_2017",""); MuLIDBase.ReplaceAll("_2018","");
+  ElLIDBase.ReplaceAll("_2016a",""); ElLIDBase.ReplaceAll("_2016b",""); ElLIDBase.ReplaceAll("_2017",""); ElLIDBase.ReplaceAll("_2018","");
+  TString MuFRKey = "FR2D_"+FRProc+"_"+MuTID+"_"+MuLIDBase+MeasSel+TrigStr+"_All";
+  TString ElFRKey = "FR2D_"+FRProc+"_"+ElTID+"_"+ElLIDBase+MeasSel+TrigStr+"_All";
+  if(Label.Contains("Pt10")){
+    ElFRKey = "FR2D_"+FRProc+"_"+ElTID+"_"+ElLIDBase+"_Pt10"+MeasSel+TrigStr+"_All";
+  }
+  
+  bool ConeBasis = Option.Contains("ConeBasis");
+  //int NMuT=MuTColl.size(), NElT=ElTColl.size();
+  int NMuL=MuLColl.size(), NElL=ElLColl.size(), NElV=ElVColl.size();
+  vector<Muon> MuConeColl; vector<Electron> ElConeColl;
+  vector<Muon> MuNuConeColl; vector<Electron> ElNuConeColl;
+  if( NElL!=NElV ) return;
+  if( !((NMuL==2 && NElL==0) or (NMuL==0 && NElL==2)) ) return;
+  if(NMuL==2 && MuFR){
+    int aSumQ = abs(SumCharge(MuLColl));
+    if(aSumQ==0) return;
+    if(!(MuLColl.at(0).Pt()>20. && MuLColl.at(1).Pt()>10.)) return;
+    double Mll = (MuLColl.at(0)+MuLColl.at(1)).M();
+    if(Mll<4) return; 
+    if(!(BJetColl.size()>0 && JetColl.size()>2)) return;
+    if(!( (JetColl.size()-BJetColl.size())>0 )) return;
+    if(!IsDATA){
+      int GenLepInfo = GetGenLepInfo(ElLColl, MuLColl, TruthColl);
+      if(GenLepInfo<1000) return;
+    }
+
+    int SystDir = Option.Contains("FRUp")? 1: Option.Contains("FRDown")? -1: 0; 
+    float TightIso=0.1;
+    for(unsigned int im=0; im<MuLColl.size(); im++){
+      Muon TmpMu(MuLColl.at(im)), TmpMu2(MuLColl.at(im));
+      float RelIso = MuLColl.at(im).MiniRelIso();
+      float PTCorr = MuLColl.at(im).CalcPtCone(RelIso,TightIso), PT=MuLColl.at(im).Pt();
+      float dRCone = MuLColl.at(im).miniIsoDr();
+      if(ConeBasis && RelIso>TightIso) TmpMu *= PTCorr/PT;
+      MuConeColl.push_back(TmpMu);
+
+      Gen TmpGenNu;
+      for(unsigned int it=2; it<truthColl.size(); it++){
+        int PID = truthColl.at(it).PID(), aPID = abs(PID);
+        if(!(aPID==12 or aPID==14 or aPID==16)) continue;
+
+        int MIdx = FirstNonSelfMotherIdx(it,truthColl);
+        int MPID = MIdx>=0? truthColl.at(im).PID():0, aMPID = abs(MPID);
+        if(aMPID==24 or aMPID==23) continue;
+
+        if(truthColl.at(it).DeltaR(TmpMu)>dRCone) continue;
+        TmpGenNu.SetPxPyPzE(TmpGenNu.Px()+truthColl.at(it).Px(), TmpGenNu.Py()+truthColl.at(it).Py(), TmpGenNu.Pz()+truthColl.at(it).Pz(), TmpGenNu.E()+truthColl.at(it).E());
+      }
+      TmpMu2.SetPxPyPzE(TmpMu.Px()+TmpGenNu.Px(), TmpMu.Py()+TmpGenNu.Py(), TmpMu.Pz()+TmpGenNu.Pz(), TmpMu.E()+TmpGenNu.E());
+      MuNuConeColl.push_back(TmpMu2);
+    }
+
+
+    for(unsigned int im=0; im<MuLColl.size(); im++){
+      int LepType = GetLeptonType_JH(MuLColl.at(im), truthColl);
+      TString TypeStr("");
+      if     (LepType==3) TypeStr="_PrTa";
+      else if(LepType>0 ) TypeStr="_Pr";
+      else if(LepType<0 && LepType>-5) TypeStr="_Fk";
+      else if(LepType<-4) TypeStr="_Cv";
+
+      bool PassTID = MuLColl.at(im).PassID(MuTID);
+      TString IDStr("");
+      if(PassTID) IDStr="_TID";
+      else        IDStr="_LID";
+
+      float PTCorr = MuLColl.at(im).CalcPtCone(MuLColl.at(im).MiniRelIso(), TightIso);
+      if(MuFRKey.Contains("QCD") && PTCorr>50) PTCorr=49.;
+      float FR = GetMCFakeRate(PTCorr, fabs(MuLColl.at(im).Eta()), MuFRKey, SystDir);
+      float FRW = (!PassTID) && (FR!=1.)? FR/(1-FR):0.;
+
+      FillHist("PTMu"+TypeStr+IDStr+Label, MuLColl.at(im).Pt(), weight, 30, 0., 300);
+      FillHist("PTMuVisCorr"+TypeStr+IDStr+Label, MuConeColl.at(im).Pt(), weight, 30, 0., 300);
+      FillHist("PTMuVisNuCorr"+TypeStr+IDStr+Label, MuNuConeColl.at(im).Pt(), weight, 30, 0., 300);
+      FillHist("FrPTMu_PTMuVis"+TypeStr+IDStr+Label, MuLColl.at(im).Pt()/MuConeColl.at(im).Pt(), weight, 40, 0., 2.);
+      FillHist("FrPTMu_PTMuVisNu"+TypeStr+IDStr+Label, MuLColl.at(im).Pt()/MuNuConeColl.at(im).Pt(), weight, 40, 0., 2.);
+      FillHist("FrPTMuVis_PTMuVisNu"+TypeStr+IDStr+Label, MuConeColl.at(im).Pt()/MuNuConeColl.at(im).Pt(), weight, 40, 0., 2.);
+      if(!PassTID){
+        FillHist("PTMuFRCorr"+TypeStr+IDStr+Label, MuLColl.at(im).Pt(), weight*FRW, 30, 0., 300);
+        FillHist("PTMuVisFRCorr"+TypeStr+IDStr+Label, MuConeColl.at(im).Pt(), weight*FRW, 30, 0., 300);
+        FillHist("PTMuVisNuFRCorr"+TypeStr+IDStr+Label, MuNuConeColl.at(im).Pt(), weight*FRW, 30, 0., 300);
+        FillHist("FrPTMu_PTMuVis_FRCorr"+TypeStr+IDStr+Label, MuLColl.at(im).Pt()/MuConeColl.at(im).Pt(), weight*FRW, 40, 0., 2.);
+        FillHist("FrPTMu_PTMuVisNu_FRCorr"+TypeStr+IDStr+Label, MuLColl.at(im).Pt()/MuNuConeColl.at(im).Pt(), weight*FRW, 40, 0., 2.);
+        FillHist("FrPTMuVis_PTMuVisNu_FRCorr"+TypeStr+IDStr+Label, MuConeColl.at(im).Pt()/MuNuConeColl.at(im).Pt(), weight*FRW, 40, 0., 2.);
+      }
+    }
+  }
+  if(NElL==2 && ElFR){
+    int aSumQ = abs(SumCharge(ElLColl));
+    if(aSumQ==0) return;
+    if(!( ElLColl.at(0).Pt()>25 && ElLColl.at(1).Pt()>15 )) return;
+    if( BJetColl.size()==0 ) return;
+    if( JetColl.size()<3   ) return;
+    if( (JetColl.size()-BJetColl.size())==0 ) return;
+
+    if(!IsDATA){
+      int GenLepInfo = GetGenLepInfo(ElLColl, MuLColl, TruthColl);
+      if(GenLepInfo<1000) return;
+    }
+
+    int SystDir = Option.Contains("FRUp")? 1: Option.Contains("FRDown")? -1: 0; 
+    float TightIso=0.1;
+    for(unsigned int ie=0; ie<ElLColl.size() && ConeBasis; ie++){
+      Electron TmpEl(ElLColl.at(ie)), TmpEl2(ElLColl.at(ie));
+      float RelIso = ElLColl.at(ie).MiniRelIso();
+      float PTCorr = ElLColl.at(ie).CalcPtCone(RelIso,TightIso), PT=ElLColl.at(ie).Pt();
+      float dRCone = ElLColl.at(ie).miniIsoDr();
+      if(RelIso>TightIso) TmpEl *= PTCorr/PT;
+      ElConeColl.push_back(TmpEl);
+
+      Gen TmpGenNu;
+      for(unsigned int it=2; it<truthColl.size(); it++){
+        int PID = truthColl.at(it).PID(), aPID = abs(PID);
+        if(!(aPID==12 or aPID==14 or aPID==16)) continue;
+
+        int MIdx = FirstNonSelfMotherIdx(it,truthColl);
+        int MPID = MIdx>=0? truthColl.at(ie).PID():0, aMPID = abs(MPID);
+        if(aMPID==24 or aMPID==23) continue;
+
+        if(truthColl.at(it).DeltaR(TmpEl)>dRCone) continue;
+        TmpGenNu.SetPxPyPzE(TmpGenNu.Px()+truthColl.at(it).Px(), TmpGenNu.Py()+truthColl.at(it).Py(), TmpGenNu.Pz()+truthColl.at(it).Pz(), TmpGenNu.E()+truthColl.at(it).E());
+      }
+      TmpEl2.SetPxPyPzE(TmpEl.Px()+TmpGenNu.Px(), TmpEl.Py()+TmpGenNu.Py(), TmpEl.Pz()+TmpGenNu.Pz(), TmpEl.E()+TmpGenNu.E());
+      ElNuConeColl.push_back(TmpEl2);
+    }
+
+    if(!( fabs( (ElConeColl.at(0)+ElConeColl.at(1)).M()-91.2 )>10 )) return;
+
+
+    for(unsigned int ie=0; ie<ElLColl.size(); ie++){
+      int LepType = GetLeptonType_JH(ElLColl.at(ie), truthColl);
+      TString TypeStr("");
+      if     (LepType==3) TypeStr="_PrTa";
+      else if(LepType>0 ) TypeStr="_Pr";
+      else if(LepType<0 && LepType>-5) TypeStr="_Fk";
+      else if(LepType<-4) TypeStr="_Cv";
+
+      bool PassTID = ElLColl.at(ie).PassID(ElTID);
+      TString IDStr("");
+      if(PassTID) IDStr="_TID";
+      else        IDStr="_LID";
+
+      float PTCorr = ElLColl.at(ie).CalcPtCone(ElLColl.at(ie).MiniRelIso(), TightIso);
+      if(ElFRKey.Contains("QCD") && PTCorr>50) PTCorr=49.;
+      float FR = GetMCFakeRate(PTCorr, fabs(ElLColl.at(ie).Eta()), ElFRKey, SystDir);
+      float FRW = (!PassTID) && (FR!=1.)? FR/(1-FR):0.;
+
+      FillHist("PTEl"+TypeStr+IDStr+Label, ElLColl.at(ie).Pt(), weight, 30, 0., 300);
+      FillHist("PTElVisCorr"+TypeStr+IDStr+Label, ElConeColl.at(ie).Pt(), weight, 30, 0., 300);
+      FillHist("PTElVisNuCorr"+TypeStr+IDStr+Label, ElNuConeColl.at(ie).Pt(), weight, 30, 0., 300);
+      FillHist("FrPTEl_PTElVis"+TypeStr+IDStr+Label, ElLColl.at(ie).Pt()/ElConeColl.at(ie).Pt(), weight, 40, 0., 2.);
+      FillHist("FrPTEl_PTElVisNu"+TypeStr+IDStr+Label, ElLColl.at(ie).Pt()/ElNuConeColl.at(ie).Pt(), weight, 40, 0., 2.);
+      FillHist("FrPTElVis_PTElVisNu"+TypeStr+IDStr+Label, ElConeColl.at(ie).Pt()/ElNuConeColl.at(ie).Pt(), weight, 40, 0., 2.);
+      if(!PassTID){
+        FillHist("PTElFRCorr"+TypeStr+IDStr+Label, ElLColl.at(ie).Pt(), weight*FRW, 30, 0., 300);
+        FillHist("PTElVisFRCorr"+TypeStr+IDStr+Label, ElConeColl.at(ie).Pt(), weight*FRW, 30, 0., 300);
+        FillHist("PTElVisNuFRCorr"+TypeStr+IDStr+Label, ElNuConeColl.at(ie).Pt(), weight*FRW, 30, 0., 300);
+        FillHist("FrPTEl_PTElVis_FRCorr"+TypeStr+IDStr+Label, ElLColl.at(ie).Pt()/ElConeColl.at(ie).Pt(), weight*FRW, 40, 0., 2.);
+        FillHist("FrPTEl_PTElVisNu_FRCorr"+TypeStr+IDStr+Label, ElLColl.at(ie).Pt()/ElNuConeColl.at(ie).Pt(), weight*FRW, 40, 0., 2.);
+        FillHist("FrPTElVis_PTElVisNu_FRCorr"+TypeStr+IDStr+Label, ElConeColl.at(ie).Pt()/ElNuConeColl.at(ie).Pt(), weight*FRW, 40, 0., 2.);
+      }
+    }
+  }
+
+}
+
+
+
+void MCFakeStudy::CheckFakeComposition(vector<Muon>& MuRawColl, vector<Electron>& ElRawColl, vector<Jet>& JetRawColl, Particle& vMET, Event& ev,
+                                       TString MuTID, TString MuLID, TString ElTID, TString ElLID, TString ElVID, float weight, TString Label)
+{
+  bool SelQCD = Label.Contains("MeasSel"), SelSR = Label.Contains("SRSel"), ApplyPOGT = Label.Contains("POGT");
+  bool IsSRSB = false, IsSR = false;
+  vector<Muon>     MuTColl  = SelectMuons    (MuRawColl, MuTID, 10., 2.4);
+  vector<Muon>     MuLColl  = SelectMuons    (MuRawColl, MuLID, 10., 2.4);
+  vector<Electron> ElTColl  = SelectElectrons(ElRawColl, ElTID, 15., 2.5);
+  vector<Electron> ElLColl  = SelectElectrons(ElRawColl, ElLID, 15., 2.5);
+  vector<Electron> ElVColl  = SelectElectrons(ElRawColl, ElVID, 10., 2.5);
+
+  vector<Jet>  JetVetoColl  = SelectJets(JetRawColl, MuLColl, ElVColl, "tightLepVeto", 25., 2.4, "LVeto");
+  JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
+  vector<Jet>  BJetVetoColl = SelBJets  (JetVetoColl, param_jets);
+
+  if(SelQCD){
+    bool PassFRMeas_Mu17=false, PassFRMeas_Mu8=false; bool PassFRMeas_El23=false, PassFRMeas_El12=false;
+    TString MinPtElStr=ElTID.Contains("SS")? "_Pt15":"_Pt10";
+    PassFRMeas_Mu17 = PassFRMeasSel(MuTColl, MuLColl, ElTColl, ElLColl, ElVColl, JetVetoColl, BJetVetoColl, vMET, ev, "TrigMu17");
+    PassFRMeas_Mu8  = PassFRMeasSel(MuTColl, MuLColl, ElTColl, ElLColl, ElVColl, JetVetoColl, BJetVetoColl, vMET, ev, "TrigMu8");
+    PassFRMeas_El23 = PassFRMeasSel(MuTColl, MuLColl, ElTColl, ElLColl, ElVColl, JetVetoColl, BJetVetoColl, vMET, ev, "TrigEl23"+MinPtElStr);
+    PassFRMeas_El12 = PassFRMeasSel(MuTColl, MuLColl, ElTColl, ElLColl, ElVColl, JetVetoColl, BJetVetoColl, vMET, ev, "TrigEl12"+MinPtElStr);
+    if(!(PassFRMeas_Mu17 or PassFRMeas_Mu8 or PassFRMeas_El23 or PassFRMeas_El12)) return;
+  }
+  if(SelSR){
+    int NMuT=MuTColl.size(), NMuL=MuLColl.size(), NMuV=MuLColl.size(), NElT=ElTColl.size(), NElL=ElLColl.size(), NElV=ElVColl.size();
+    int NJet=JetVetoColl.size(), NBJet=BJetVetoColl.size(), NLJet=NJet-NBJet; 
+    int Qtot = SumCharge(MuLColl, ElLColl);
+    if( !( (NMuL==2 && NElL==0) or (NMuL==0 && NElL==2) ) ) return;
+    if( !( NMuL==NMuV && NElL==NElV ) ) return;
+    if( abs(Qtot)!=2 ) return;
+    if(NMuL==2){
+      if( !ev.PassTrigger(TrigList_DblMu) ) return;
+      if( !(MuLColl.at(0).Pt()>20 && MuLColl.at(1).Pt()>10) ) return;
+      if( (MuLColl.at(0)+MuLColl.at(1)).M()<4 ) return;
+    }
+    if(NElL==2){
+      if( !ev.PassTrigger(TrigList_DblEG) ) return;
+      if( !(ElLColl.at(0).Pt()>25 && ElLColl.at(1).Pt()>15) ) return;
+      if( fabs( (ElLColl.at(0)+ElLColl.at(1)).M()-91.2 )<10 ) return;
+    }
+    if( !(NJet>=3 && NBJet>=1 && NLJet>=1) ) return;
+    if( NMuT==2 or NElT==2 ) IsSR = true;
+    IsSRSB = !IsSR;
+    if(IsSR  ) Label+="_SR";
+    if(IsSRSB) Label+="_SRSB";
+  }
+
+  for(unsigned int im=0; im<MuLColl.size() && MuFR; im++){
+    Muon* Mu = &MuLColl.at(im);
+    bool PassTID = Mu->PassID(MuTID);
+    bool PassPOG = ApplyPOGT? Mu->PassID("POGTight"):true;
+    int  SrcType = GetFakeLepSrcType(*Mu, JetRawColl);
+    int  LepType = GetLeptonType_JH(*Mu,truthColl);
+    float fEta   = fabs(Mu->Eta());
+    if(ApplyPOGT && !PassPOG  ) continue;
+    if(LepType>0 or LepType<-4) continue;
+    TString EtaReg = fEta<0.9? "Reg1":fEta<1.6? "Reg2":"Reg3";
+
+    vector<TString> TagList = {Label, EtaReg+Label};
+    if(PassTID){ TagList.push_back("_TID"+Label); TagList.push_back("_TID"+EtaReg+Label); }
+    for(unsigned itag=0; itag<TagList.size(); itag++){
+      TString Tag(TagList.at(itag));
+      FillHist("FakeLepType_Mu"+Tag+Label, LepType, weight, 5, -4., 1.);
+      FillHist("FakeSrcType_Mu"+Tag+Label, SrcType, weight, 5, -1., 4.);
+      FillHist("FakeLepTSrcT_Mu"+Tag+Label, LepType, SrcType, weight, 5, -4., 1., 5, -1., 4.);
+    }
+  }
+
+  for(unsigned int ie=0; ie<ElLColl.size() && ElFR; ie++){
+    Electron* El = &ElLColl.at(ie);
+    bool PassTID = El->PassID(ElTID);
+    int  SrcType = GetFakeLepSrcType(*El, JetRawColl);
+    int  LepType = GetLeptonType_JH(*El,truthColl);
+    float fEta   = fabs(El->Eta());
+    if(LepType>0 or LepType<-4) continue;
+    TString EtaReg = fEta<0.8? "Reg1":fEta<1.5? "Reg2":"Reg3";
+
+    vector<TString> TagList = {Label, EtaReg+Label};
+    if(PassTID){ TagList.push_back("_TID"+Label); TagList.push_back("_TID"+EtaReg+Label); }
+    for(unsigned itag=0; itag<TagList.size(); itag++){
+      TString Tag(TagList.at(itag));
+      FillHist("FakeLepType_El"+Tag+Label, LepType, weight, 5, -4., 1.);
+      FillHist("FakeSrcType_El"+Tag+Label, SrcType, weight, 5, -1., 4.);
+      FillHist("FakeLepTSrcT_El"+Tag+Label, LepType, SrcType, weight, 5, -4., 1., 5, -1., 4.);
     }
   }
 
@@ -805,7 +1067,7 @@ void MCFakeStudy::MeasMCTtoLRatio(vector<Muon>& FakePreColl, vector<Jet>& JetCol
   if     (TightID.Contains("Isop10")) TightIso=0.1;
   else if(TightID.Contains("Isop15")) TightIso=0.15;
   else if(TightID.Contains("Isop08")) TightIso=0.08;
-  else if(TightID.Contains("TopHN17")) TightIso=0.1;
+  else if(TightID.Contains("TopHN")) TightIso=0.1;
   else   { printf("no matched iso wp.\n"); return; }
 
   float PTMin=10.;
@@ -846,7 +1108,7 @@ void MCFakeStudy::MeasMCTtoLRatio(vector<Electron>& FakePreColl, vector<Jet>& Je
   float TightIso=0.;
   if     (TightID.Contains("Isop1"))  TightIso=0.1;
   else if(TightID.Contains("Isop08")) TightIso=0.08;
-  else if(TightID.Contains("TopHN17")) TightIso=0.1;
+  else if(TightID.Contains("TopHN")) TightIso=0.1;
   else   { printf("no matched iso wp.\n"); return; }
 
   float PTMin=10.;
@@ -901,7 +1163,7 @@ void MCFakeStudy::ScanFakeRate(vector<Muon>& FakePreColl, vector<Jet>& JetColl, 
   float TightIso=0.;
   if     (TightID.Contains("Isop10"))  TightIso=0.1;
   else if(TightID.Contains("Isop15"))  TightIso=0.15;
-  else if(TightID.Contains("TopHN17"))  TightIso=0.1;
+  else if(TightID.Contains("TopHN"))  TightIso=0.1;
   else   { printf("no matched iso wp.\n"); return; }
 
   float PTMin=10.;
@@ -960,7 +1222,7 @@ void MCFakeStudy::ScanFakeRate(vector<Electron>& FakePreColl, vector<Jet>& JetCo
 
   float TightIso=0.;
   if     (TightID.Contains("Isop1"))  TightIso=0.1;
-  else if(TightID.Contains("TopHN17"))  TightIso=0.1;
+  else if(TightID.Contains("TopHN"))  TightIso=0.1;
   else   { printf("no matched iso wp.\n"); return; }
 
   float PTMin=10.;
@@ -991,7 +1253,7 @@ void MCFakeStudy::ScanFakeRate(vector<Electron>& FakePreColl, vector<Jet>& JetCo
       else{                        
         if(TightID.Contains("WP90")) PassVar1 = FakeColl.at(i).passMVAID_noIso_WP90();
         if(TightID.Contains("WP80")) PassVar1 = FakeColl.at(i).passMVAID_noIso_WP80();
-        if(TightID.Contains("TopHN17")) PassVar1 = FakeColl.at(i).passMVAID_noIso_WP90();
+        if(TightID.Contains("TopHNSST")) PassVar1 = FakeColl.at(i).passMVAID_noIso_WP90();
       }
     }
     if( !(PassVar1 && PassVar2) ) continue;
@@ -1301,8 +1563,9 @@ void MCFakeStudy::CheckMCClosure(vector<Muon>& MuRawColl, vector<Electron>& ElRa
   }
   
   bool ConeBasis = Option.Contains("ConeBasis"), DoGenMatchW = Option.Contains("GenM");
-  bool DrawMPhyObj = false, DrawMVA = true;
+  bool DrawMVA = true;
   int NMuT=MuTColl.size(), NMuL=MuLColl.size(), NElT=ElTColl.size(), NElL=ElLColl.size(), NElV=ElVColl.size();
+  vector<Muon> MuConeColl; vector<Electron> ElConeColl;
   if( NElL!=NElV ) return;
   if( !((NMuL==2 && NElL==0) or (NMuL==0 && NElL==2)) ) return;
   if(NMuL==2 && MuFR){
@@ -1310,7 +1573,9 @@ void MCFakeStudy::CheckMCClosure(vector<Muon>& MuRawColl, vector<Electron>& ElRa
     if(aSumQ==0) return;
     if(!(MuLColl.at(0).Pt()>20. && MuLColl.at(1).Pt()>10.)) return;
     double Mll = (MuLColl.at(0)+MuLColl.at(1)).M();
-    if(DataYear>2016 && Mll<4) return; 
+    if(Mll<4) return; 
+    if(!(BJetColl.size()>0 && JetColl.size()>2)) return;
+    if(!( (JetColl.size()-BJetColl.size())>0 )) return;
     if(!IsDATA){
       int GenLepInfo = GetGenLepInfo(ElLColl, MuLColl, TruthColl);
       if(GenLepInfo<1000) return;
@@ -1324,100 +1589,131 @@ void MCFakeStudy::CheckMCClosure(vector<Muon>& MuRawColl, vector<Electron>& ElRa
 
     float TightIso=0.1;
     for(unsigned int im=0; im<MuLColl.size(); im++){
-      float  RelIso = MuLColl.at(im).MiniRelIso();
-      float  PTCorr = MuLColl.at(im).CalcPtCone(RelIso,TightIso), PT=MuLColl.at(im).Pt();
-      if(ConeBasis){ if(RelIso>TightIso) MuLColl.at(im)*=PTCorr/PT; }
+      Muon TmpMu(MuLColl.at(im));
+      float RelIso = MuLColl.at(im).MiniRelIso();
+      float PTCorr = MuLColl.at(im).CalcPtCone(RelIso,TightIso), PT=MuLColl.at(im).Pt();
+      if(ConeBasis && RelIso>TightIso) TmpMu *= PTCorr/PT;
+      MuConeColl.push_back(TmpMu);
     }
 
-    float Etal1=MuLColl.at(0).Eta(), Etal2=MuLColl.at(1).Eta();
-    Nj = JetColl.size(), Nb = BJetColl.size(), Ptl1 = MuLColl.at(0).Pt(), Ptl2 = MuLColl.at(1).Pt();
-    dRll    = MuLColl.at(0).DeltaR(MuLColl.at(1));
-    MSSSF   = (MuLColl.at(0)+MuLColl.at(1)).M();
-    MTvl1   = MT(MuLColl.at(0),vMET), MTvl2   = MT(MuLColl.at(1),vMET);
-    HT      = 0.; for(unsigned int ij=0; ij<JetColl.size(); ij++){ HT+=JetColl.at(ij).Pt(); }
-    MET2HT  = pow(vMET.Pt(),2.)/HT;
-    if(!(Ptl1>20 && Ptl2>10)) return;
-    //if(!(PTCorr2>20)) return;
+    vector<Jet> BCandColl = BJetColl.size()>1? BJetColl:JetColl;
+    vector<Jet> NonBJetColl = SelLightJets(JetColl, jtps.at(0));
 
-    vector<TString> SelTagList={"_LAcc"};
-    if(BJetColl.size()>0 && JetColl.size()>2){
-      SelTagList.push_back("_LAccBJ");
-      if(DrawMPhyObj or DrawMVA){
-        Ptj1 = JetColl.at(0).Pt(), Ptj2 = JetColl.at(1).Pt(), Ptj3 = JetColl.at(2).Pt();
-        dRlj11 = MuLColl.at(0).DeltaR(JetColl.at(0));   dRlj21 = MuLColl.at(1).DeltaR(JetColl.at(0));
-        dRlj12 = MuLColl.at(0).DeltaR(JetColl.at(1));   dRlj22 = MuLColl.at(1).DeltaR(JetColl.at(1));
-        dRlj13 = MuLColl.at(0).DeltaR(JetColl.at(2));   dRlj23 = MuLColl.at(1).DeltaR(JetColl.at(2));
+    Nj      = JetColl.size();
+    Nb      = min((Float_t) BJetColl.size(),(Float_t) 2.);
+    Ptl1    = MuConeColl.at(0).Pt();
+    Ptl2    = MuConeColl.at(1).Pt();
+    MET     = vMET.Pt();
+    dRll    = MuConeColl.at(0).DeltaR(MuConeColl.at(1));
+    dRlj11  = MuConeColl.at(0).DeltaR(JetColl.at(0));
+    dRlj12  = MuConeColl.at(0).DeltaR(JetColl.at(1));
+    dRlj13  = MuConeColl.at(0).DeltaR(JetColl.at(2));
+    dRlj21  = MuConeColl.at(1).DeltaR(JetColl.at(0));
+    dRlj22  = MuConeColl.at(1).DeltaR(JetColl.at(1));
+    dRlj23  = MuConeColl.at(1).DeltaR(JetColl.at(2));
+    MSSSF   = (MuConeColl.at(0)+MuConeColl.at(1)).M();
+    MTvl1   = MT(MuConeColl.at(0),vMET);
+    MTllv   = MT(MuConeColl.at(0)+MuConeColl.at(1), vMET);
 
-        int Idxj1W_2jL=-1, Idxj2W_2jL=-1; float bestmlljj=-1;
-        int Idxj1W_1jL=-1; float bestmllj=-1;
-        int Idxj1W1_H=-1, Idxj2W1_H=-1; float bestmjj1=-1;
-        for(unsigned int itj1=0; itj1<JetColl.size(); itj1++){
-          if(bestmllj<0){ Idxj1W_1jL=itj1; bestmllj=(MuLColl.at(0)+MuLColl.at(1)).M(); }
-          else{
-            float tmpmljj = (MuLColl.at(0)+MuLColl.at(1)+JetColl.at(itj1)).M();
-            if(fabs(tmpmljj-80.4)<fabs(bestmllj-80.4)){ bestmllj=tmpmljj; Idxj1W_1jL=itj1; }
-          }
-          for(unsigned int itj2=itj1+1; itj2<JetColl.size(); itj2++){
-            if(bestmlljj<0){ Idxj1W_2jL=itj1; Idxj2W_2jL=itj2; bestmlljj=(MuLColl.at(0)+MuLColl.at(1)+JetColl.at(itj1)+JetColl.at(itj2)).M(); }
-            else{
-              float tmpmlljj = (MuLColl.at(0)+MuLColl.at(1)+JetColl.at(itj1)+JetColl.at(itj2)).M();
-              if(fabs(tmpmlljj-80.4)<fabs(bestmlljj-80.4)){ bestmlljj=tmpmlljj; Idxj1W_2jL=itj1, Idxj2W_2jL=itj2; }
-            }
-            if(bestmjj1<0){ Idxj1W1_H=itj1, Idxj2W1_H=itj2; bestmjj1=(JetColl.at(itj1)+JetColl.at(itj2)).M(); }
-            else{
-              float tmpmjj = (JetColl.at(itj1)+JetColl.at(itj2)).M();
-              if(fabs(tmpmjj-80.4)<fabs(bestmjj1-80.4)){ bestmjj1=tmpmjj; Idxj1W1_H=itj1, Idxj2W1_H=itj2; }
-            }
-          }
-        }
-        MllW_2jL = bestmlljj;
-        MllW_1jL = bestmllj;
-        MllW1_H  = (MuLColl.at(0)+MuLColl.at(1)+JetColl.at(Idxj1W1_H)+JetColl.at(Idxj2W1_H)).M();
-        Ml1W_2jL = (MuLColl.at(0)+JetColl.at(Idxj1W_2jL)+JetColl.at(Idxj2W_2jL)).M();
-        Ml1W_1jL = (MuLColl.at(0)+JetColl.at(Idxj1W_1jL)).M();
-        Ml2W_2jL = (MuLColl.at(1)+JetColl.at(Idxj1W_2jL)+JetColl.at(Idxj2W_2jL)).M();
-        Ml2W_1jL = (MuLColl.at(1)+JetColl.at(Idxj1W_1jL)).M();
-        Ml1W1_H  = (MuLColl.at(0)+JetColl.at(Idxj1W1_H)+JetColl.at(Idxj2W1_H)).M();
-        Ml2W1_H  = (MuLColl.at(1)+JetColl.at(Idxj1W1_H)+JetColl.at(Idxj2W1_H)).M();
-      }
-    }//End of LAccBJ
+    //Vars requiring complex algo.
+    HT      = 0;  for(unsigned int itj=0; itj<JetColl.size(); itj++){ HT+=JetColl.at(itj).Pt(); }
 
-    for(unsigned int it=0; it<SelTagList.size(); it++){
-      FillHist("NEvt"+SelTagList.at(it)+Label, 0., weight, 1, 0., 1.);
-      FillHist("Nj"+SelTagList.at(it)+Label, Nj, weight, 10, 0., 10.);
-      FillHist("Nb"+SelTagList.at(it)+Label, Nb, weight, 5, 0., 5.);
-      FillHist("PTl1"+SelTagList.at(it)+Label, Ptl1, weight, 25, 0., 250.);
-      FillHist("PTl2"+SelTagList.at(it)+Label, Ptl2, weight, 20, 0., 100.);
-      FillHist("Etal1"+SelTagList.at(it)+Label, Etal1, weight, 20, -5., 5.);
-      FillHist("Etal2"+SelTagList.at(it)+Label, Etal2, weight, 20, -5., 5.);
-      FillHist("dRll"+SelTagList.at(it)+Label,  dRll, weight, 25, 0., 5.);
-      FillHist("MSSSF"+SelTagList.at(it)+Label, MSSSF, weight, 25, 0., 250.);
-      FillHist("MET2HT"+SelTagList.at(it)+Label, MET2HT, weight, 20, 0., 100.);
-      if(DrawMPhyObj && (Nj>2)){
-        FillHist("MllW_2jL"+SelTagList.at(it)+Label, MllW_2jL, weight, 25, 0., 500.);
-        FillHist("MllW_1jL"+SelTagList.at(it)+Label, MllW_1jL, weight, 25, 0., 250.);
-        FillHist("MllW1_H"+SelTagList.at(it)+Label, MllW1_H, weight, 24, 0., 600.);
-        FillHist("Ml1W_2jL"+SelTagList.at(it)+Label, Ml1W_2jL, weight, 25, 0., 500.);
-        FillHist("Ml1W_1jL"+SelTagList.at(it)+Label, Ml1W_1jL, weight, 25, 0., 500.);
-        FillHist("Ml2W_2jL"+SelTagList.at(it)+Label, Ml2W_2jL, weight, 40, 0., 400.);
-        FillHist("Ml2W_1jL"+SelTagList.at(it)+Label, Ml2W_1jL, weight, 30, 0., 300.);
-        FillHist("Ml1W1_H"+SelTagList.at(it)+Label, Ml1W1_H, weight, 30, 0., 600.);
-        FillHist("Ml2W1_H"+SelTagList.at(it)+Label, Ml2W1_H, weight, 40, 0., 400.);
+
+    int Idxj1W=-1, Idxj2W=-1; float bestmjjW=-1;
+    for(unsigned int ij1=0; ij1<NonBJetColl.size(); ij1++){
+    for(unsigned int ij2=ij1+1; ij2<NonBJetColl.size(); ij2++){
+      float mjj = (NonBJetColl.at(ij1)+NonBJetColl.at(ij2)).M();
+      if(bestmjjW<0){ bestmjjW = mjj; Idxj1W=ij1, Idxj2W=ij2; }
+      else{ if(fabs(mjj-80.4)<fabs(bestmjjW-80.4)){ bestmjjW = mjj; Idxj1W=ij1, Idxj2W=ij2; } }
+    }} 
+    Ml2j1W_BkdTop = (MuConeColl.at(1)+NonBJetColl.at(0)).M();
+    Ml2W_BkdTop   = bestmjjW<0? Ml2j1W_BkdTop:(MuConeColl.at(1)+NonBJetColl.at(Idxj1W)+NonBJetColl.at(Idxj2W)).M();
+    MTbl1v_BkdTop = MT(BJetColl.at(0)+MuConeColl.at(0),vMET);
+
+   
+    int Idxj1W_1jL=-1, Idxbt_1jL=-1; float BestSumDelta_L=-1; 
+    for(unsigned int ib=0; ib<BCandColl.size(); ib++){
+    for(unsigned int inb=0; inb<NonBJetColl.size(); inb++){
+      if(BCandColl.at(ib).DeltaR(NonBJetColl.at(inb))<0.1) continue;
+      float mllj = (MuConeColl.at(0)+MuConeColl.at(1)+NonBJetColl.at(inb)).M();
+      float mbllj = (MuConeColl.at(0)+MuConeColl.at(1)+NonBJetColl.at(inb)+BCandColl.at(ib)).M();
+      float SumDelta = fabs(mbllj-160)+fabs(mllj-75);
+      if(BestSumDelta_L<0){ BestSumDelta_L=SumDelta; Idxj1W_1jL=inb; Idxbt_1jL=ib;}
+      else{  
+        if(SumDelta<BestSumDelta_L){ BestSumDelta_L=SumDelta; Idxj1W_1jL=inb; Idxbt_1jL=ib;}
       }
-      if(DrawMVA && (Nj>2)){
-        for(unsigned int im=0; im<MNStrList.size(); im++){
-          TString MVATagStr_Mu = "BDTG_MN"+MNStrList.at(im)+"_Mu";
-          float MVAvalue_Mu = MVAReader->EvaluateMVA(MVATagStr_Mu);
-          FillHist("BDTG_Mu_MN"+MNStrList.at(im)+SelTagList.at(it)+Label, MVAvalue_Mu, weight, 40, -1., 1.);
-        }
+    }}
+    MbllW_1jL = (MuConeColl.at(0)+MuConeColl.at(1)+NonBJetColl.at(Idxj1W_1jL)+BCandColl.at(Idxbt_1jL)).M();
+    MllW_1jL  = (MuConeColl.at(0)+MuConeColl.at(1)+NonBJetColl.at(Idxj1W_1jL)).M();
+    Ml1W_1jL  = (MuConeColl.at(0)+NonBJetColl.at(Idxj1W_1jL)).M();
+    Ml2W_1jL  = (MuConeColl.at(1)+NonBJetColl.at(Idxj1W_1jL)).M();
+
+
+    int Idxj1W_1jH=-1, Idxbt_1jH=-1; float BestDeltambllj=-1;
+    for(unsigned int ib=0; ib<BCandColl.size(); ib++){
+    for(unsigned int inb=0; inb<NonBJetColl.size(); inb++){
+      if(BCandColl.at(ib).DeltaR(NonBJetColl.at(inb))<0.1) continue;
+      float mbllj = (MuConeColl.at(0)+MuConeColl.at(1)+NonBJetColl.at(inb)+BCandColl.at(ib)).M();
+      float Deltambllj = fabs(mbllj-130);
+      if(BestDeltambllj<0){ BestDeltambllj = Deltambllj; Idxj1W_1jH=inb; Idxbt_1jH=ib;}
+      else{  
+        if(Deltambllj<BestDeltambllj){ BestDeltambllj = Deltambllj; Idxj1W_1jH=inb; Idxbt_1jH=ib;}
       }
-    }//End of SelTag Runs
+    }}
+    MbllW_1jH = (MuConeColl.at(0)+MuConeColl.at(1)+NonBJetColl.at(Idxj1W_1jH)+BCandColl.at(Idxbt_1jH)).M();
+    Ml1W_1jH  = (MuConeColl.at(0)+NonBJetColl.at(Idxj1W_1jH)).M();
+    Ml2W_1jH  = (MuConeColl.at(1)+NonBJetColl.at(Idxj1W_1jH)).M();
+
+
+    int Idxj1W_H=-1, Idxj2W_H=-1, Idxbt_H=-1; float BestSumDelta_H=-1; 
+    for(unsigned int ib=0; ib<BCandColl.size(); ib++){
+    for(unsigned int inb1=0; inb1<NonBJetColl.size(); inb1++){
+    for(unsigned int inb2=inb1+1; inb2<NonBJetColl.size(); inb2++){
+      if(BCandColl.at(ib).DeltaR(NonBJetColl.at(inb1))<0.1) continue;
+      if(BCandColl.at(ib).DeltaR(NonBJetColl.at(inb2))<0.1) continue;
+      float mjj    = (NonBJetColl.at(inb1)+NonBJetColl.at(inb2)).M();
+      float mblljj = (MuConeColl.at(0)+MuConeColl.at(1)+NonBJetColl.at(inb1)+NonBJetColl.at(inb2)+BCandColl.at(ib)).M();
+      float SumDelta = fabs(mblljj-172.5)+fabs(mjj-80.4);
+      if(BestSumDelta_H<0){ BestSumDelta_H=SumDelta; Idxj1W_H=inb1; Idxj2W_H=inb2; Idxbt_H=ib;}
+      else{  
+        if(SumDelta<BestSumDelta_H){ BestSumDelta_H=SumDelta; Idxj1W_H=inb1; Idxj2W_H=inb2; Idxbt_H=ib;}
+      }
+    }}}
+    MbllW_H = BestSumDelta_H<0? -1.:(MuConeColl.at(0)+MuConeColl.at(1)+NonBJetColl.at(Idxj1W_H)+NonBJetColl.at(Idxj2W_H)+BCandColl.at(Idxbt_H)).M();
+    Ml1W_H  = BestSumDelta_H<0? -1.:(MuConeColl.at(0)+NonBJetColl.at(Idxj1W_H)+NonBJetColl.at(Idxj2W_H)).M();
+    Ml2W_H  = BestSumDelta_H<0? -1.:(MuConeColl.at(1)+NonBJetColl.at(Idxj1W_H)+NonBJetColl.at(Idxj2W_H)).M();
+
+
+    FillHist("NEvt"+Label, 0., weight, 1, 0., 1.);
+    FillHist("Nj"+Label, Nj, weight, 10, 0., 10.);
+    FillHist("Nb"+Label, Nb, weight, 5, 0., 5.);
+    FillHist("PTl1"+Label, Ptl1, weight, 25, 0., 250.);
+    FillHist("PTl2"+Label, Ptl2, weight, 20, 0., 100.);
+    FillHist("Etal1"+Label, MuConeColl.at(0).Eta(), weight, 20, -5., 5.);
+    FillHist("Etal2"+Label, MuConeColl.at(1).Eta(), weight, 20, -5., 5.);
+    FillHist("dRll"+Label,  dRll, weight, 25, 0., 5.);
+    FillHist("MSSSF"+Label, MSSSF, weight, 25, 0., 250.);
+    FillHist("MET"+Label, MET, weight, 20, 0., 100.);
+    if(DrawMVA){
+      for(unsigned int im=0; im<MNStrListL.size(); im++){
+        TString MVATagStr_Mu = "BDTG_MN"+MNStrListL.at(im)+"_Mu";
+        float MVAvalue_Mu = MVAReaderL->EvaluateMVA(MVATagStr_Mu);
+        FillHist("BDTG_Mu_MN"+MNStrListL.at(im)+Label, MVAvalue_Mu, weight, 40, -1., 1.);
+      }
+      for(unsigned int im=0; im<MNStrListH.size() && NonBJetColl.size()>1; im++){
+        TString MVATagStr_Mu = "BDTG_MN"+MNStrListH.at(im)+"_Mu";
+        float MVAvalue_Mu = MVAReaderH->EvaluateMVA(MVATagStr_Mu);
+        FillHist("BDTG_Mu_MN"+MNStrListH.at(im)+Label, MVAvalue_Mu, weight, 40, -1., 1.);
+      }
+    }
   }
   if(NElL==2 && ElFR){
     int aSumQ = abs(SumCharge(ElLColl));
     if(aSumQ==0) return;
-    if(!(ElLColl.at(0).Pt()>25 && ElLColl.at(1).Pt()>15)) return;
-    //if(!(ElLColl.at(0).Pt()>23 && ElLColl.at(1).Pt()>12)) return;
+    if(!( ElLColl.at(0).Pt()>25 && ElLColl.at(1).Pt()>15 )) return;
+    if( BJetColl.size()==0 ) return;
+    if( JetColl.size()<3   ) return;
+    if( (JetColl.size()-BJetColl.size())==0 ) return;
 
     if(!IsDATA){
       int GenLepInfo = GetGenLepInfo(ElLColl, MuLColl, TruthColl);
@@ -1433,97 +1729,125 @@ void MCFakeStudy::CheckMCClosure(vector<Muon>& MuRawColl, vector<Electron>& ElRa
 
     float TightIso=0.1;
     for(unsigned int ie=0; ie<ElLColl.size() && ConeBasis; ie++){
-      float  RelIso = ElLColl.at(ie).MiniRelIso();
-      float  PTCorr = ElLColl.at(ie).CalcPtCone(RelIso,TightIso), PT=ElLColl.at(ie).Pt();
-      if(RelIso>TightIso) ElLColl.at(ie)*=PTCorr/PT;
+      Electron TmpEl(ElLColl.at(ie));
+      float RelIso = ElLColl.at(ie).MiniRelIso();
+      float PTCorr = ElLColl.at(ie).CalcPtCone(RelIso,TightIso), PT=ElLColl.at(ie).Pt();
+      if(RelIso>TightIso) TmpEl *= PTCorr/PT;
+      ElConeColl.push_back(TmpEl);
     }
 
-    float Etal1=ElLColl.at(0).Eta(), Etal2=ElLColl.at(1).Eta();
-    Nj = JetColl.size(), Nb = BJetColl.size(), Ptl1 = ElLColl.at(0).Pt(), Ptl2 = ElLColl.at(1).Pt();
-    dRll    = ElLColl.at(0).DeltaR(ElLColl.at(1));
-    MSSSF   = (ElLColl.at(0)+ElLColl.at(1)).M();
-    MTvl1   = MT(ElLColl.at(0),vMET), MTvl2   = MT(ElLColl.at(1),vMET);
-    HT      = 0.; for(unsigned int ij=0; ij<JetColl.size(); ij++){ HT+=JetColl.at(ij).Pt(); }
-    MET2HT  = pow(vMET.Pt(),2.)/HT;
-    if(!(Ptl1>25 && Ptl2>15)) return;
-    //if(!(Ptl2>20)) return;
+    if(!( fabs( (ElConeColl.at(0)+ElConeColl.at(1)).M()-91.2 )>10 )) return;
 
-    double Mll = (ElLColl.at(0)+ElLColl.at(1)).M();
-    if(fabs(Mll-91.2)<10.) return;
 
-    vector<TString> SelTagList={"_LAcc"};
-    if(BJetColl.size()>0 && JetColl.size()>2){
-      SelTagList.push_back("_LAccBJ");
-      if(DrawMPhyObj or DrawMVA){
-        Ptj1 = JetColl.at(0).Pt(), Ptj2 = JetColl.at(1).Pt(), Ptj3 = JetColl.at(2).Pt();
-        dRlj11 = ElLColl.at(0).DeltaR(JetColl.at(0));   dRlj21 = ElLColl.at(1).DeltaR(JetColl.at(0));
-        dRlj12 = ElLColl.at(0).DeltaR(JetColl.at(1));   dRlj22 = ElLColl.at(1).DeltaR(JetColl.at(1));
-        dRlj13 = ElLColl.at(0).DeltaR(JetColl.at(2));   dRlj23 = ElLColl.at(1).DeltaR(JetColl.at(2));
+    vector<Jet> BCandColl = BJetColl.size()>1? BJetColl:JetColl;
+    vector<Jet> NonBJetColl = SelLightJets(JetColl, jtps.at(0));
 
-        int Idxj1W_2jL=-1, Idxj2W_2jL=-1; float bestmlljj=-1;
-        int Idxj1W_1jL=-1; float bestmllj=-1;
-        int Idxj1W1_H=-1, Idxj2W1_H=-1; float bestmjj1=-1;
-        for(unsigned int itj1=0; itj1<JetColl.size(); itj1++){
-          if(bestmllj<0){ Idxj1W_1jL=itj1; bestmllj=(ElLColl.at(0)+ElLColl.at(1)).M(); }
-          else{
-            float tmpmljj = (ElLColl.at(0)+ElLColl.at(1)+JetColl.at(itj1)).M();
-            if(fabs(tmpmljj-80.4)<fabs(bestmllj-80.4)){ bestmllj=tmpmljj; Idxj1W_1jL=itj1; }
-          }
-          for(unsigned int itj2=itj1+1; itj2<JetColl.size(); itj2++){
-            if(bestmlljj<0){ Idxj1W_2jL=itj1; Idxj2W_2jL=itj2; bestmlljj=(ElLColl.at(0)+ElLColl.at(1)+JetColl.at(itj1)+JetColl.at(itj2)).M(); }
-            else{
-              float tmpmlljj = (ElLColl.at(0)+ElLColl.at(1)+JetColl.at(itj1)+JetColl.at(itj2)).M();
-              if(fabs(tmpmlljj-80.4)<fabs(bestmlljj-80.4)){ bestmlljj=tmpmlljj; Idxj1W_2jL=itj1, Idxj2W_2jL=itj2; }
-            }
-            if(bestmjj1<0){ Idxj1W1_H=itj1, Idxj2W1_H=itj2; bestmjj1=(JetColl.at(itj1)+JetColl.at(itj2)).M(); }
-            else{
-              float tmpmjj = (JetColl.at(itj1)+JetColl.at(itj2)).M();
-              if(fabs(tmpmjj-80.4)<fabs(bestmjj1-80.4)){ bestmjj1=tmpmjj; Idxj1W1_H=itj1, Idxj2W1_H=itj2; }
-            }
-          }
-        }
-        MllW_2jL = bestmlljj;
-        MllW_1jL = bestmllj;
-        MllW1_H  = (ElLColl.at(0)+ElLColl.at(1)+JetColl.at(Idxj1W1_H)+JetColl.at(Idxj2W1_H)).M();
-        Ml1W_2jL = (ElLColl.at(0)+JetColl.at(Idxj1W_2jL)+JetColl.at(Idxj2W_2jL)).M();
-        Ml1W_1jL = (ElLColl.at(0)+JetColl.at(Idxj1W_1jL)).M();
-        Ml2W_2jL = (ElLColl.at(1)+JetColl.at(Idxj1W_2jL)+JetColl.at(Idxj2W_2jL)).M();
-        Ml2W_1jL = (ElLColl.at(1)+JetColl.at(Idxj1W_1jL)).M();
-        Ml1W1_H  = (ElLColl.at(0)+JetColl.at(Idxj1W1_H)+JetColl.at(Idxj2W1_H)).M();
-        Ml2W1_H  = (ElLColl.at(1)+JetColl.at(Idxj1W1_H)+JetColl.at(Idxj2W1_H)).M();
+    Nj      = JetColl.size();
+    Nb      = min((Float_t) BJetColl.size(),(Float_t) 2.);
+    Ptl1    = ElConeColl.at(0).Pt();
+    Ptl2    = ElConeColl.at(1).Pt();
+    MET     = vMET.Pt();
+    dRll    = ElConeColl.at(0).DeltaR(ElConeColl.at(1));
+    dRlj11  = ElConeColl.at(0).DeltaR(JetColl.at(0));
+    dRlj12  = ElConeColl.at(0).DeltaR(JetColl.at(1));
+    dRlj13  = ElConeColl.at(0).DeltaR(JetColl.at(2));
+    dRlj21  = ElConeColl.at(1).DeltaR(JetColl.at(0));
+    dRlj22  = ElConeColl.at(1).DeltaR(JetColl.at(1));
+    dRlj23  = ElConeColl.at(1).DeltaR(JetColl.at(2));
+    MSSSF   = (ElConeColl.at(0)+ElConeColl.at(1)).M();
+    MTvl1   = MT(ElConeColl.at(0),vMET);
+    MTllv   = MT(ElConeColl.at(0)+ElConeColl.at(1), vMET);
+
+    //Vars requiring complex algo.
+    HT      = 0;  for(unsigned int itj=0; itj<JetColl.size(); itj++){ HT+=JetColl.at(itj).Pt(); }
+
+    int Idxj1W=-1, Idxj2W=-1; float bestmjjW=-1;
+    for(unsigned int ij1=0; ij1<NonBJetColl.size(); ij1++){
+    for(unsigned int ij2=ij1+1; ij2<NonBJetColl.size(); ij2++){
+      float mjj = (NonBJetColl.at(ij1)+NonBJetColl.at(ij2)).M();
+      if(bestmjjW<0){ bestmjjW = mjj; Idxj1W=ij1, Idxj2W=ij2; }
+      else{ if(fabs(mjj-80.4)<fabs(bestmjjW-80.4)){ bestmjjW = mjj; Idxj1W=ij1, Idxj2W=ij2; } }
+    }} 
+    Ml2j1W_BkdTop = (ElConeColl.at(1)+NonBJetColl.at(0)).M();
+    Ml2W_BkdTop   = bestmjjW<0? -1.:(ElConeColl.at(1)+NonBJetColl.at(Idxj1W)+NonBJetColl.at(Idxj2W)).M();
+    MTbl1v_BkdTop = MT(BJetColl.at(0)+ElConeColl.at(0),vMET);
+   
+
+    int Idxj1W_1jL=-1, Idxbt_1jL=-1; float BestSumDelta_L=-1; 
+    for(unsigned int ib=0; ib<BCandColl.size(); ib++){
+    for(unsigned int inb=0; inb<NonBJetColl.size(); inb++){
+      if(BCandColl.at(ib).DeltaR(NonBJetColl.at(inb))<0.1) continue;
+      float mllj = (ElConeColl.at(0)+ElConeColl.at(1)+NonBJetColl.at(inb)).M();
+      float mbllj = (ElConeColl.at(0)+ElConeColl.at(1)+NonBJetColl.at(inb)+BCandColl.at(ib)).M();
+      float SumDelta = fabs(mbllj-160)+fabs(mllj-75);
+      if(BestSumDelta_L<0){ BestSumDelta_L=SumDelta; Idxj1W_1jL=inb; Idxbt_1jL=ib;}
+      else{  
+        if(SumDelta<BestSumDelta_L){ BestSumDelta_L=SumDelta; Idxj1W_1jL=inb; Idxbt_1jL=ib;}
       }
-    }//End of LAccBJ
+    }}
+    MbllW_1jL = (ElConeColl.at(0)+ElConeColl.at(1)+NonBJetColl.at(Idxj1W_1jL)+BCandColl.at(Idxbt_1jL)).M();
+    MllW_1jL  = (ElConeColl.at(0)+ElConeColl.at(1)+NonBJetColl.at(Idxj1W_1jL)).M();
+    Ml1W_1jL  = (ElConeColl.at(0)+NonBJetColl.at(Idxj1W_1jL)).M();
+    Ml2W_1jL  = (ElConeColl.at(1)+NonBJetColl.at(Idxj1W_1jL)).M();
 
-    for(unsigned int it=0; it<SelTagList.size(); it++){
-      FillHist("NEvt"+SelTagList.at(it)+Label, 0., weight, 1, 0., 1.);
-      FillHist("Nj"+SelTagList.at(it)+Label, Nj, weight, 10, 0., 10.);
-      FillHist("Nb"+SelTagList.at(it)+Label, Nb, weight, 5, 0., 5.);
-      FillHist("PTl1"+SelTagList.at(it)+Label, Ptl1, weight, 25, 0., 250.);
-      FillHist("PTl2"+SelTagList.at(it)+Label, Ptl2, weight, 20, 0., 100.);
-      FillHist("Etal1"+SelTagList.at(it)+Label, Etal1, weight, 20, -5., 5.);
-      FillHist("Etal2"+SelTagList.at(it)+Label, Etal2, weight, 20, -5., 5.);
-      FillHist("dRll"+SelTagList.at(it)+Label,  dRll, weight, 25, 0., 5.);
-      FillHist("MSSSF"+SelTagList.at(it)+Label, MSSSF, weight, 25, 0., 250.);
-      FillHist("MET2HT"+SelTagList.at(it)+Label, MET2HT, weight, 20, 0., 100.);
-      if(DrawMPhyObj && (Nj>2)){
-        FillHist("MllW_2jL"+SelTagList.at(it)+Label, MllW_2jL, weight, 25, 0., 500.);
-        FillHist("MllW_1jL"+SelTagList.at(it)+Label, MllW_1jL, weight, 25, 0., 250.);
-        FillHist("MllW1_H"+SelTagList.at(it)+Label, MllW1_H, weight, 24, 0., 600.);
-        FillHist("Ml1W_2jL"+SelTagList.at(it)+Label, Ml1W_2jL, weight, 25, 0., 500.);
-        FillHist("Ml1W_1jL"+SelTagList.at(it)+Label, Ml1W_1jL, weight, 25, 0., 500.);
-        FillHist("Ml2W_2jL"+SelTagList.at(it)+Label, Ml2W_2jL, weight, 40, 0., 400.);
-        FillHist("Ml2W_1jL"+SelTagList.at(it)+Label, Ml2W_1jL, weight, 30, 0., 300.);
-        FillHist("Ml1W1_H"+SelTagList.at(it)+Label, Ml1W1_H, weight, 30, 0., 600.);
-        FillHist("Ml2W1_H"+SelTagList.at(it)+Label, Ml2W1_H, weight, 40, 0., 400.);
+
+    int Idxj1W_1jH=-1, Idxbt_1jH=-1; float BestDeltambllj=-1;
+    for(unsigned int ib=0; ib<BCandColl.size(); ib++){
+    for(unsigned int inb=0; inb<NonBJetColl.size(); inb++){
+      if(BCandColl.at(ib).DeltaR(NonBJetColl.at(inb))<0.1) continue;
+      float mbllj = (ElConeColl.at(0)+ElConeColl.at(1)+NonBJetColl.at(inb)+BCandColl.at(ib)).M();
+      float Deltambllj = fabs(mbllj-130);
+      if(BestDeltambllj<0){ BestDeltambllj = Deltambllj; Idxj1W_1jH=inb; Idxbt_1jH=ib;}
+      else{  
+        if(Deltambllj<BestDeltambllj){ BestDeltambllj = Deltambllj; Idxj1W_1jH=inb; Idxbt_1jH=ib;}
       }
-      if(DrawMVA && (Nj>2)){
-        for(unsigned int ie=0; ie<MNStrList.size(); ie++){
-          TString MVATagStr_El = "BDTG_MN"+MNStrList.at(ie)+"_El";
-          float MVAvalue_El = MVAReader->EvaluateMVA(MVATagStr_El);
-          FillHist("BDTG_El_MN"+MNStrList.at(ie)+SelTagList.at(it)+Label, MVAvalue_El, weight, 40, -1., 1.);
-        }
+    }}
+    MbllW_1jH = (ElConeColl.at(0)+ElConeColl.at(1)+NonBJetColl.at(Idxj1W_1jH)+BCandColl.at(Idxbt_1jH)).M();
+    Ml1W_1jH  = (ElConeColl.at(0)+NonBJetColl.at(Idxj1W_1jH)).M();
+    Ml2W_1jH  = (ElConeColl.at(1)+NonBJetColl.at(Idxj1W_1jH)).M();
+
+
+    int Idxj1W_H=-1, Idxj2W_H=-1, Idxbt_H=-1; float BestSumDelta_H=-1; 
+    for(unsigned int ib=0; ib<BCandColl.size(); ib++){
+    for(unsigned int inb1=0; inb1<NonBJetColl.size(); inb1++){
+    for(unsigned int inb2=inb1+1; inb2<NonBJetColl.size(); inb2++){
+      if(BCandColl.at(ib).DeltaR(NonBJetColl.at(inb1))<0.1) continue;
+      if(BCandColl.at(ib).DeltaR(NonBJetColl.at(inb2))<0.1) continue;
+      float mjj    = (NonBJetColl.at(inb1)+NonBJetColl.at(inb2)).M();
+      float mblljj = (ElConeColl.at(0)+ElConeColl.at(1)+NonBJetColl.at(inb1)+NonBJetColl.at(inb2)+BCandColl.at(ib)).M();
+      float SumDelta = fabs(mblljj-172.5)+fabs(mjj-80.4);
+      if(BestSumDelta_H<0){ BestSumDelta_H=SumDelta; Idxj1W_H=inb1; Idxj2W_H=inb2; Idxbt_H=ib;}
+      else{  
+        if(SumDelta<BestSumDelta_H){ BestSumDelta_H=SumDelta; Idxj1W_H=inb1; Idxj2W_H=inb2; Idxbt_H=ib;}
       }
-    }//End of SelTag Runs
+    }}}
+    MbllW_H = BestSumDelta_H<0? -1.:(ElConeColl.at(0)+ElConeColl.at(1)+NonBJetColl.at(Idxj1W_H)+NonBJetColl.at(Idxj2W_H)+BCandColl.at(Idxbt_H)).M();
+    Ml1W_H  = BestSumDelta_H<0? -1.:(ElConeColl.at(0)+NonBJetColl.at(Idxj1W_H)+NonBJetColl.at(Idxj2W_H)).M();
+    Ml2W_H  = BestSumDelta_H<0? -1.:(ElConeColl.at(1)+NonBJetColl.at(Idxj1W_H)+NonBJetColl.at(Idxj2W_H)).M();
+
+
+    FillHist("NEvt"+Label, 0., weight, 1, 0., 1.);
+    FillHist("Nj"+Label, Nj, weight, 10, 0., 10.);
+    FillHist("Nb"+Label, Nb, weight, 5, 0., 5.);
+    FillHist("PTl1"+Label, Ptl1, weight, 25, 0., 250.);
+    FillHist("PTl2"+Label, Ptl2, weight, 20, 0., 100.);
+    FillHist("Etal1"+Label, ElConeColl.at(0).Eta(), weight, 20, -5., 5.);
+    FillHist("Etal2"+Label, ElConeColl.at(1).Eta(), weight, 20, -5., 5.);
+    FillHist("dRll"+Label,  dRll, weight, 25, 0., 5.);
+    FillHist("MSSSF"+Label, MSSSF, weight, 25, 0., 250.);
+    FillHist("MET"+Label, MET, weight, 20, 0., 100.);
+    if(DrawMVA){
+      for(unsigned int ie=0; ie<MNStrListL.size(); ie++){
+        TString MVATagStr_El = "BDTG_MN"+MNStrListL.at(ie)+"_El";
+        float MVAvalue_El = MVAReaderL->EvaluateMVA(MVATagStr_El);
+        FillHist("BDTG_El_MN"+MNStrListL.at(ie)+Label, MVAvalue_El, weight, 40, -1., 1.);
+      }
+      for(unsigned int ie=0; ie<MNStrListH.size() && NonBJetColl.size()>1; ie++){
+        TString MVATagStr_El = "BDTG_MN"+MNStrListH.at(ie)+"_El";
+        float MVAvalue_El = MVAReaderH->EvaluateMVA(MVATagStr_El);
+        FillHist("BDTG_El_MN"+MNStrListH.at(ie)+Label, MVAvalue_El, weight, 40, -1., 1.);
+      }
+    }
   }
 
 }
@@ -1541,13 +1865,14 @@ void MCFakeStudy::executeEventFromParameter(AnalyzerParameter param){
 MCFakeStudy::MCFakeStudy(){
 
   TMVA::Tools::Instance();
-  MVAReader = new TMVA::Reader();
+  MVAReaderL = new TMVA::Reader();
+  MVAReaderH = new TMVA::Reader();
+
 }
 
 MCFakeStudy::~MCFakeStudy(){
 
-  delete MVAReader;
-  delete FRFile;
+  delete FRFile;  delete MVAReaderL;  delete MVAReaderH;
   for(std::map< TString, TH2D* >::iterator mapit = maphist_FR.begin(); mapit!=maphist_FR.end(); mapit++){
     delete mapit->second;
   }
@@ -1969,59 +2294,72 @@ int MCFakeStudy::GetGenLepInfo(vector<Electron>& ElColl, vector<Muon>& MuColl, v
 }
 
 
-void MCFakeStudy::InitializeReader(){
+void MCFakeStudy::InitializeReader(TMVA::Reader* ThisReader, TString Option){
 
-  MVAReader->AddVariable("Nj"      , &Nj      );
-  MVAReader->AddVariable("Nb"      , &Nb      );
-  MVAReader->AddVariable("Ptl1"    , &Ptl1    );
-  MVAReader->AddVariable("Ptl2"    , &Ptl2    );
-  MVAReader->AddVariable("Ptj1"    , &Ptj1    );
-  MVAReader->AddVariable("Ptj2"    , &Ptj2    );
-  MVAReader->AddVariable("Ptj3"    , &Ptj3    );
-  MVAReader->AddVariable("HT"      , &HT      );
-  MVAReader->AddVariable("MET2HT"  , &MET2HT  );
-  MVAReader->AddVariable("dRll"    , &dRll    );
-  MVAReader->AddVariable("dRlj11"  , &dRlj11  );
-  MVAReader->AddVariable("dRlj12"  , &dRlj12  );
-  MVAReader->AddVariable("dRlj13"  , &dRlj13  );
-  MVAReader->AddVariable("dRlj21"  , &dRlj21  );
-  MVAReader->AddVariable("dRlj22"  , &dRlj22  );
-  MVAReader->AddVariable("dRlj23"  , &dRlj23  );
-  MVAReader->AddVariable("MSSSF"   , &MSSSF   );
-  MVAReader->AddVariable("MTvl1"   , &MTvl1   );
-  MVAReader->AddVariable("MTvl2"   , &MTvl2   );
-  MVAReader->AddVariable("MllW_2jL", &MllW_2jL);
-  MVAReader->AddVariable("MllW_1jL", &MllW_1jL);
-  MVAReader->AddVariable("Ml1W_2jL", &Ml1W_2jL);
-  MVAReader->AddVariable("Ml1W_1jL", &Ml1W_1jL);
-  MVAReader->AddVariable("Ml2W_2jL", &Ml2W_2jL);
-  MVAReader->AddVariable("Ml2W_1jL", &Ml2W_1jL);
-  MVAReader->AddVariable("MllW1_H" , &MllW1_H );
-  MVAReader->AddVariable("Ml1W1_H" , &Ml1W1_H );
-  MVAReader->AddVariable("Ml2W1_H" , &Ml2W1_H );
+  bool IsBelowMW=true;
+  if     (Option.Contains("AboveMW")) IsBelowMW=false;
+  else if(Option.Contains("BelowMW")) IsBelowMW=true;
 
-  TString AnalyzerPath=getenv("SKFlat_WD"), SKFlatV = getenv("SKFlatV");
-  TString MVAPath="/data/"+SKFlatV+"/"+GetEra()+"/MVAClassifier/";
-  MNStrList = {"20", "50", "75", "100"};
-  for(unsigned int im=0; im<MNStrList.size() && MCClosure; im++){
+  ThisReader->AddVariable("Nj",    &Nj);
+  ThisReader->AddVariable("Nb",    &Nb);
+  ThisReader->AddVariable("Ptl1",  &Ptl1);
+  ThisReader->AddVariable("Ptl2",  &Ptl2);
+  ThisReader->AddVariable("MET",   &MET);
+  ThisReader->AddVariable("HT",    &HT);
+  ThisReader->AddVariable("dRll",  &dRll);
+  ThisReader->AddVariable("dRlj11",&dRlj11);
+  ThisReader->AddVariable("dRlj12",&dRlj12);
+  ThisReader->AddVariable("dRlj13",&dRlj13);
+  ThisReader->AddVariable("dRlj21",&dRlj21);
+  ThisReader->AddVariable("dRlj22",&dRlj22);
+  ThisReader->AddVariable("dRlj23",&dRlj23);
+  ThisReader->AddVariable("MSSSF", &MSSSF);
+  if(IsBelowMW){
+    ThisReader->AddVariable("MbllW_1jL", &MbllW_1jL);
+    ThisReader->AddVariable("MllW_1jL",  &MllW_1jL);
+    ThisReader->AddVariable("Ml1W_1jL",  &Ml1W_1jL);
+    ThisReader->AddVariable("Ml2W_1jL",  &Ml2W_1jL);
+  }
+  else{
+    ThisReader->AddVariable("MbllW_1jH", &MbllW_1jH);
+    ThisReader->AddVariable("Ml1W_1jH",  &Ml1W_1jH);
+    ThisReader->AddVariable("Ml2W_1jH",  &Ml2W_1jH);
+    ThisReader->AddVariable("MbllW_H",     &MbllW_H);
+    ThisReader->AddVariable("Ml1W_H",      &Ml1W_H);
+    ThisReader->AddVariable("Ml2W_H",      &Ml2W_H);
+    ThisReader->AddVariable("Ml2W_BkdTop", &Ml2W_BkdTop);
+  }
+  ThisReader->AddVariable("MTvl1", &MTvl1);
+  ThisReader->AddVariable("MTbl1v_BkdTop", &MTbl1v_BkdTop);
+  ThisReader->AddVariable("Ml2j1W_BkdTop", &Ml2j1W_BkdTop);
+
+  TString AnalyzerPath=std::getenv("SKFlat_WD"), MVAPath="/data/Run2UltraLegacy_v3/FullRun2/MVAClassifier/";
+  vector<TString> MNStrList;
+  if(IsBelowMW){ MNStrListL = {"20", "50", "75"}; MNStrList = MNStrListL; }
+  else         { MNStrListH = {"85", "100"};      MNStrList = MNStrListH; }
+
+  for(unsigned int im=0; im<MNStrList.size(); im++){
     TString FileName_Mu="TMVAClassification_MN"+MNStrList.at(im)+"_Mu_BDTG.weights.xml"; 
     TString FileName_El="TMVAClassification_MN"+MNStrList.at(im)+"_El_BDTG.weights.xml"; 
     TString MVATagStr_Mu = "BDTG_MN"+MNStrList.at(im)+"_Mu";
     TString MVATagStr_El = "BDTG_MN"+MNStrList.at(im)+"_El";
-    MVAReader->BookMVA(MVATagStr_Mu, AnalyzerPath+MVAPath+FileName_Mu);
-    MVAReader->BookMVA(MVATagStr_El, AnalyzerPath+MVAPath+FileName_El);
+    ThisReader->BookMVA(MVATagStr_Mu, AnalyzerPath+MVAPath+FileName_Mu);
+    ThisReader->BookMVA(MVATagStr_El, AnalyzerPath+MVAPath+FileName_El);
   }
+
 
 }
 
 
 void MCFakeStudy::InitializeTreeVars(){
 
-  Nj=-1, Nb=-1;
-  Ptl1=-1, Ptl2=-1, Ptj1=-1, Ptj2=-1, Ptj3=-1, HT=-1, MET2HT=-1;
+  Nj=-1, Nb=-1, Ptl1=-1, Ptl2=-1, MET=-1, HT=-1;
   dRll=-1, dRlj11=-1, dRlj12=-1, dRlj13=-1, dRlj21=-1, dRlj22=-1, dRlj23=-1;
-  MSSSF=-1, MTvl1=-1, MTvl2=-1;
-  MllW_2jL=-1, MllW_1jL=-1, MllW1_H=-1, Ml1W_2jL=-1, Ml1W_1jL=-1, Ml2W_2jL=-1, Ml2W_1jL=-1, Ml1W1_H=-1, Ml2W1_H=-1;
+  MSSSF=-1;
+  MTvl1=-1, MTllv=-1, Ml2j1W_BkdTop=-1, Ml2W_BkdTop=-1, MTbl1v_BkdTop=-1;
+  MbllW_1jL=-1, MllW_1jL=-1, Ml1W_1jL=-1, Ml2W_1jL=-1;
+  MbllW_1jH=-1, Ml1W_1jH=-1, Ml2W_1jH=-1;
+  MbllW_H=-1, Ml1W_H=-1, Ml2W_H=-1; 
 
 }
 

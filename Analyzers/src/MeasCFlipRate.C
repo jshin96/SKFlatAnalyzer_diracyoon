@@ -41,7 +41,7 @@ void MeasCFlipRate::initializeAnalyzer(){
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets) );
   mcCorr->SetJetTaggingParameters(jtps);
 
-  TString SKOutPath=getenv("SKFlatOutputDir"), SKFlatV=getenv("SKFlatV"), SpecDir="TopHN17SST/EleOnly/";
+  TString SKOutPath=getenv("SKFlatOutputDir"), SKFlatV=getenv("SKFlatV"), SpecDir="TopHNSST/EleOnly/";
   TString FileDir = SKOutPath+"/"+SKFlatV+"/MeasCFlipRate/"+GetEraShort()+"/All2l/MCCFRate/"+SpecDir+"BkdMC/";
   f_CFR_DY = new TFile(FileDir+"MeasCFlipRate_DYJetsToEE_MiNNLO.root");
   //f_CFR_TT = new TFile(FileDir+"MeasCFlipRate_TTLL_powheg.root");
@@ -56,7 +56,7 @@ void MeasCFlipRate::executeEvent(){
   Event ev = GetEvent();
   float weight = 1., w_GenNorm=1., w_BR=1., w_PU=1.;
   if(!IsDATA){
-    w_GenNorm = ev.MCweight()*weight_norm_1invpb*GetKFactor()*ev.GetTriggerLumi("Full");
+    w_GenNorm = MCweight()*GetKFactor()*ev.GetTriggerLumi("Full");
     w_BR      = GetBRWeight();
     w_PU      = GetPileUpWeight(nPileUp, 0);
     weight *= w_GenNorm * w_BR * w_PU;
@@ -87,9 +87,8 @@ void MeasCFlipRate::executeEvent(){
 
 
   TString IDSSLabel = "SS", TLabel = FakeRun? "L":"T";
-  TString MuTID = "TopHNT", MuLID = "TopHNLLIsop6SIP5";
-  TString ElTID = "TopHN17SST", ElLID = "TopHNSSNM01LFixLMVAIsop4NoSIP_"+GetEraShort(), ElVID = "TopHNV";
-  //TString ElTID = "TopHNSSTWP90Isop1", ElLID = "TopHNSSL_FixLMVAIsop4NoSIP_"+GetEraShort(), ElVID = "TopHNV";
+  TString MuTID = "TopHNT", MuLID = "TopHNL";
+  TString ElTID = "TopHNSST", ElLID = "TopHNSSL_"+GetEraShort(), ElVID = ElLID;
   float PTminEl = ElTID.Contains("SS")? 15.:10.;
   vector<Muon>     muonTightColl     = SelectMuons(muonPreColl, MuTID, 10., 2.4);
   vector<Electron> electronTightColl = SelectElectrons(electronPreColl, ElTID, PTminEl, 2.5);
@@ -102,14 +101,14 @@ void MeasCFlipRate::executeEvent(){
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
   vector<Jet> jetPreColl = GetAllJets();
   sort(jetPreColl.begin(), jetPreColl.end(), PtComparing);
-  vector<Jet> jetColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tight", 25., 2.4, "LVeto");
+  vector<Jet> jetColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
   vector<Jet> bjetColl = SelBJets(jetColl, param_jets);
 
 
-  Particle vMET = ev.GetMETVector();
-  Particle vMET_xyCorr(pfMET_Type1_PhiCor_pt*TMath::Cos(pfMET_Type1_PhiCor_phi), pfMET_Type1_PhiCor_pt*TMath::Sin(pfMET_Type1_PhiCor_phi), 0., pfMET_Type1_PhiCor_pt);
-  //Particle vMET_T1xy = GetvMET("T1xyCorr");
-
+  //Particle vMET = ev.GetMETVector();
+  //Particle vMET_xyCorr(pfMET_Type1_PhiCor_pt*TMath::Cos(pfMET_Type1_PhiCor_phi), pfMET_Type1_PhiCor_pt*TMath::Sin(pfMET_Type1_PhiCor_phi), 0., pfMET_Type1_PhiCor_pt);
+  Particle vMET        = GetvMET("PUPPIMETT1");
+  Particle vMET_xyCorr = GetvMET("PUPPIMETT1xyCorr");
 
   bool FillGenColl = MDists or MCCFRate or CFMCClos or PTScale;
   if(FillGenColl) truthColl = GetGens();
@@ -128,17 +127,13 @@ void MeasCFlipRate::executeEvent(){
     sf_ElReco = GetElectronSF(electronTightColl, "", "Reco");
     sf_ElID   = GetElectronSF(electronTightColl, ElTID, "ID");
     sf_BTag   = mcCorr->GetBTaggingReweight_1a(jetColl, param_jets);
-    TString SFKey_Trig_All = muonTightColl.size()==2? "DiMuIso_HNTopID":electronTightColl.size()==2? "DiElIso_HNTopID17SS":""; 
+    TString SFKey_Trig_All = muonTightColl.size()==2? "DiMuIso_HNTopID":electronTightColl.size()==2? "DiElIso_HNTopIDSS":""; 
     sf_Trig   = SFKey_Trig_All!=""? mcCorr->GetTriggerSF(electronTightColl, muonTightColl, SFKey_Trig_All, ""):1.;
     //sf_Trig   = SS2l or OS2l? mcCorr->GetTriggerSF(electronTightColl, muonTightColl, SFKey_Trig_All, ""):1.;
     w_Prefire = GetPrefireWeight(0);
     //cout<<" w_PU:"<<w_PU<<" w_Prefire:"<<w_Prefire<<" sf_Trig:"<<sf_Trig<<endl;
     //cout<<"sf_MuTk"<<sf_MuTk<<" sf_MuID:"<<sf_MuID<<" sf_MuIso:"<<sf_MuIso<<" sf_ElReco:"<<sf_ElReco<<" sf_ElID:"<<sf_ElID<<" sf_BTag:"<<sf_BTag<<endl;
   }
-  //if(IsDATA && FakeRun && EventCand){
-  //  w_FR      = CalcTestFakeWeight(muonLooseColl, electronLooseColl,
-  //                "TopHN17T", "TopHN17L", "TopHN17"+IDSSLabel+"T", "TopHN17"+IDSSLabel+"L", bjetColl.size(), 0);
-  //}
   weight *= w_TopPtRW * w_Prefire * sf_Trig * w_FR;
   weight *= sf_MuTk * sf_MuID * sf_MuIso * sf_ElReco * sf_ElID * sf_BTag;
 
@@ -181,7 +176,7 @@ void MeasCFlipRate::GetMassDists(vector<Muon>& MuTColl, vector<Muon>& MuLColl, v
 
   int IdxFlipped=-1;
   float CFSF1=1., CFSF2=1.;
-  vector<TString> IterStrList = {"_It1", "_It2", "_It3", "_It4", "_It5", "_It6"};//{"_It1", "_It2", "_It3", "_It4", "_It5"};
+  vector<TString> IterStrList = {"_It1", "_It2", "_It3", "_It4", "_It5", "_It6"}; //{"_It1", "_It2", "_It3", "_It4", "_It5", "_It6"};
   if( (!IsDATA) ){
     int NFk=0, NFlip=0, NCv=0;
     for(unsigned int ie=0; ie<ElTColl.size(); ie++){
@@ -477,17 +472,18 @@ float MeasCFlipRate::GetCFRSF(Electron& El, TString Tag, TString Option){
       BinIndex2 = ieta+1;
   }
 
+
   float SF=1., MCEff=1., DataEff=1., ReturnVal=1.;
   if(Tag.Contains("App2Bin1_")){
     int Idx = BinIndex1;
     if(GetEraShort()=="2016a"){
-      if(Tag.EndsWith("It1")) SF = Idx==1? 0.77495:Idx==2? 0.775205:Idx==3? 0.758091:Idx==4? 0.752694:Idx==5? 0.77715:Idx==6? 0.786827:1.;
-      if(Tag.EndsWith("It2")) SF = Idx==1? 1.00756:Idx==2? 1.00356:Idx==3? 0.992936:Idx==4? 0.994374:Idx==5? 0.999492:Idx==6? 1.00594:1.;
-      if(Tag.EndsWith("It3")) SF = Idx==1? 1.00765:Idx==2? 1.00322:Idx==3? 0.99588:Idx==4? 0.998397:Idx==5? 0.999499:Idx==6? 1.00204:1.;
-      if(Tag.EndsWith("It4")) SF = Idx==1? 1.00688:Idx==2? 1.00243:Idx==3? 0.9969:Idx==4? 0.999579:Idx==5? 0.999746:Idx==6? 1.00072:1.;
-      if(Tag.EndsWith("It5")) SF = Idx==1? 1.00594:Idx==2? 1.00168:Idx==3? 0.997389:Idx==4? 0.999767:Idx==5? 0.999859:Idx==6? 1.00019:1.;
-      if(Tag.EndsWith("It6")) SF = Idx==1? 1.00521:Idx==2? 1.00113:Idx==3? 0.997762:Idx==4? 0.999928:Idx==5? 0.999921:Idx==6? 1.00002:1.;
-      if(Tag.EndsWith("It7")) SF = Idx==1? 1.00452:Idx==2? 1.00074:Idx==3? 0.998069:Idx==4? 1.00007:Idx==5? 0.999953:Idx==6? 0.999958:1.;
+      if(Tag.EndsWith("It1")) SF = Idx==1? 0.7763:Idx==2? 0.776021:Idx==3? 0.745748:Idx==4? 0.749913:Idx==5? 0.777415:Idx==6? 0.782312:1.;
+      if(Tag.EndsWith("It2")) SF = Idx==1? 1.01195:Idx==2? 1.00527:Idx==3? 0.994333:Idx==4? 0.994527:Idx==5? 0.999886:Idx==6? 1.00454:1.;
+      if(Tag.EndsWith("It3")) SF = Idx==1? 1.01125:Idx==2? 1.00407:Idx==3? 0.996186:Idx==4? 0.998612:Idx==5? 0.999565:Idx==6? 1.00152:1.;
+      if(Tag.EndsWith("It4")) SF = Idx==1? 1.00978:Idx==2? 1.00289:Idx==3? 0.996665:Idx==4? 0.999627:Idx==5? 0.999735:Idx==6? 1.00046:1.;
+      if(Tag.EndsWith("It5")) SF = Idx==1? 1.00843:Idx==2? 1.00195:Idx==3? 0.986327:Idx==4? 0.999861:Idx==5? 0.999849:Idx==6? 1.0001:1.;
+      if(Tag.EndsWith("It6")) SF = Idx==1? 1.00767:Idx==2? 1.00146:Idx==3? 0.99029:Idx==4? 1.00005:Idx==5? 0.999972:Idx==6? 1.00001:1.;
+      if(Tag.EndsWith("It7")) SF = Idx==1? 1.00686:Idx==2? 1.00099:Idx==3? 0.9929:Idx==4? 1.00013:Idx==5? 0.999967:Idx==6? 0.999954:1.;
       if(Tag.EndsWith("Fin")){
         SF = Idx==1? 0.770188:Idx==2? 0.813516:Idx==3? 0.771032:Idx==4? 0.712556:Idx==5? 0.75322:Idx==6? 0.791322:1.;
         DataEff = Idx==1? 0.000125861:Idx==2? 0.00015171:Idx==3? 0.000169858:Idx==4? 0.00207889:Idx==5? 0.00255606:Idx==6? 0.00337988:1.;
@@ -495,13 +491,13 @@ float MeasCFlipRate::GetCFRSF(Electron& El, TString Tag, TString Option){
       }
     }
     else if(GetEraShort()=="2016b"){
-      if(Tag.EndsWith("It1")) SF = Idx==1? 0.818033:Idx==2? 0.837151:Idx==3? 0.893969:Idx==4? 0.815647:Idx==5? 0.860114:Idx==6? 0.834439:1.;
-      if(Tag.EndsWith("It2")) SF = Idx==1? 0.979981:Idx==2? 0.992167:Idx==3? 1.04504:Idx==4? 0.995765:Idx==5? 1.00272:Idx==6? 0.996853:1.;
-      if(Tag.EndsWith("It3")) SF = Idx==1? 0.982292:Idx==2? 0.994066:Idx==3? 1.03653:Idx==4? 0.999193:Idx==5? 1.00055:Idx==6? 0.999249:1.;
-      if(Tag.EndsWith("It4")) SF = Idx==1? 0.986558:Idx==2? 0.995596:Idx==3? 1.02437:Idx==4? 0.999513:Idx==5? 1.00015:Idx==6? 1.00003:1.;
-      if(Tag.EndsWith("It5")) SF = Idx==1? 0.984405:Idx==2? 0.996829:Idx==3? 1.01647:Idx==4? 0.999615:Idx==5? 1.00008:Idx==6? 1.00013:1.;
-      if(Tag.EndsWith("It6")) SF = Idx==1? 0.985893:Idx==2? 0.99785:Idx==3? 1.01143:Idx==4? 0.999717:Idx==5? 1.00007:Idx==6? 1.0003:1.;
-      if(Tag.EndsWith("It7")) SF = Idx==1? 0.987349:Idx==2? 0.998539:Idx==3? 1.00809:Idx==4? 0.999784:Idx==5? 1.00005:Idx==6? 0.996812:1.;
+      if(Tag.EndsWith("It1")) SF = Idx==1? 0.819695:Idx==2? 0.830703:Idx==3? 0.89013:Idx==4? 0.808581:Idx==5? 0.859135:Idx==6? 0.833188:1.;
+      if(Tag.EndsWith("It2")) SF = Idx==1? 0.985335:Idx==2? 0.989235:Idx==3? 1.05053:Idx==4? 0.994737:Idx==5? 1.00287:Idx==6? 0.997352:1.;
+      if(Tag.EndsWith("It3")) SF = Idx==1? 0.987021:Idx==2? 0.991971:Idx==3? 1.0349:Idx==4? 0.998961:Idx==5? 1.00047:Idx==6? 0.999396:1.;
+      if(Tag.EndsWith("It4")) SF = Idx==1? 0.987809:Idx==2? 0.99422:Idx==3? 1.0235:Idx==4? 0.999501:Idx==5? 1.00025:Idx==6? 1.00001:1.;
+      if(Tag.EndsWith("It5")) SF = Idx==1? 0.988673:Idx==2? 0.995937:Idx==3? 1.0159:Idx==4? 0.99964:Idx==5? 1.00011:Idx==6? 1.00017:1.;
+      if(Tag.EndsWith("It6")) SF = Idx==1? 0.989613:Idx==2? 0.997157:Idx==3? 1.01091:Idx==4? 0.99971:Idx==5? 1.00007:Idx==6? 1.00021:1.;
+      if(Tag.EndsWith("It7")) SF = Idx==1? 0.994707:Idx==2? 0.998119:Idx==3? 1.00754:Idx==4? 0.999844:Idx==5? 1.00002:Idx==6? 1.00027:1.;
       if(Tag.EndsWith("Fin")){
         SF = Idx==1? 0.748377:Idx==2? 0.822857:Idx==3? 0.983595:Idx==4? 0.79469:Idx==5? 0.869773:Idx==6? 0.829995:1.;
         DataEff = Idx==1? 0.000123377:Idx==2? 0.000145494:Idx==3? 0.000211887:Idx==4? 0.00224042:Idx==5? 0.00276965:Idx==6? 0.00328515:1.;
@@ -509,13 +505,13 @@ float MeasCFlipRate::GetCFRSF(Electron& El, TString Tag, TString Option){
       }
     }
     else if(DataYear==2017){
-      if(Tag.EndsWith("It1")) SF = Idx==1? 1.29366:Idx==2? 1.32983:Idx==3? 1.40887:Idx==4? 1.31882:Idx==5? 1.29863:Idx==6? 1.25866:1.;
-      if(Tag.EndsWith("It2")) SF = Idx==1? 0.997267:Idx==2? 1.0122:Idx==3? 1.04933:Idx==4? 1.00507:Idx==5? 1.00072:Idx==6? 0.989626:1.;
-      if(Tag.EndsWith("It3")) SF = Idx==1? 0.990007:Idx==2? 1.00606:Idx==3? 1.02891:Idx==4? 1.00126:Idx==5? 1.00052:Idx==6? 0.99627:1.;
-      if(Tag.EndsWith("It4")) SF = Idx==1? 0.989777:Idx==2? 1.00325:Idx==3? 1.01785:Idx==4? 1.0002:Idx==5? 0.998032:Idx==6? 0.998676:1.;
-      if(Tag.EndsWith("It5")) SF = Idx==1? 0.990909:Idx==2? 1.00268:Idx==3? 1.01167:Idx==4? 0.999847:Idx==5? 1.00176:Idx==6? 0.999975:1.;
-      if(Tag.EndsWith("It6")) SF = Idx==1? 0.99101:Idx==2? 1.00102:Idx==3? 1.00737:Idx==4? 0.997952:Idx==5? 1.00016:Idx==6? 0.999693:1.;
-      if(Tag.EndsWith("It7")) SF = Idx==1? 0.992491:Idx==2? 1.00104:Idx==3? 1.00558:Idx==4? 0.999882:Idx==5? 0.999968:Idx==6? 1.00008:1.;
+      if(Tag.EndsWith("It1")) SF = Idx==1? 1.32142:Idx==2? 1.34492:Idx==3? 1.42387:Idx==4? 1.31041:Idx==5? 1.31226:Idx==6? 1.26195:1.;
+      if(Tag.EndsWith("It2")) SF = Idx==1? 1.00956:Idx==2? 1.01603:Idx==3? 1.05415:Idx==4? 1.00353:Idx==5? 1.00166:Idx==6? 0.988908:1.;
+      if(Tag.EndsWith("It3")) SF = Idx==1? 0.984839:Idx==2? 1.00808:Idx==3? 1.03086:Idx==4? 1.001:Idx==5? 1.0002:Idx==6? 0.995879:1.;
+      if(Tag.EndsWith("It4")) SF = Idx==1? 1.00649:Idx==2? 1.00473:Idx==3? 1.01903:Idx==4? 1.0002:Idx==5? 0.999993:Idx==6? 0.998663:1.;
+      if(Tag.EndsWith("It5")) SF = Idx==1? 1.00476:Idx==2? 1.00252:Idx==3? 1.01066:Idx==4? 0.999814:Idx==5? 0.999869:Idx==6? 0.999454:1.;
+      if(Tag.EndsWith("It6")) SF = Idx==1? 1.00506:Idx==2? 1.00138:Idx==3? 1.00606:Idx==4? 0.999815:Idx==5? 0.999949:Idx==6? 0.999808:1.;
+      if(Tag.EndsWith("It7")) SF = Idx==1? 1.00305:Idx==2? 1.00071:Idx==3? 1.00345:Idx==4? 0.999854:Idx==5? 0.999919:Idx==6? 0.9999:1.;
       if(Tag.EndsWith("Fin")){
         SF = Idx==1? 1.2696:Idx==2? 1.36965:Idx==3? 1.52389:Idx==4? 1.37131:Idx==5? 1.31699:Idx==6? 1.2204:1.;
         DataEff = Idx==1? 6.65722e-05:Idx==2? 8.34845e-05:Idx==3? 0.000117936:Idx==4? 0.00133884:Idx==5? 0.00140659:Idx==6? 0.00173507:1.;
@@ -523,13 +519,13 @@ float MeasCFlipRate::GetCFRSF(Electron& El, TString Tag, TString Option){
       }
     }
     else if(DataYear==2018){
-      if(Tag.EndsWith("It1")) SF = Idx==1? 1.31093:Idx==2? 1.29566:Idx==3? 1.36132:Idx==4? 1.29502:Idx==5? 1.25594:Idx==6? 1.3031:1.;
-      if(Tag.EndsWith("It2")) SF = Idx==1? 1.01604:Idx==2? 1.01109:Idx==3? 1.0361:Idx==4? 0.998637:Idx==5? 0.996768:Idx==6? 1.00689:1.;
-      if(Tag.EndsWith("It3")) SF = Idx==1? 1.01226:Idx==2? 1.00753:Idx==3? 1.0214:Idx==4? 0.998198:Idx==5? 0.998837:Idx==6? 1.00231:1.;
-      if(Tag.EndsWith("It4")) SF = Idx==1? 1.01008:Idx==2? 1.0052:Idx==3? 1.01265:Idx==4? 0.998962:Idx==5? 0.99945:Idx==6? 1.00081:1.;
-      if(Tag.EndsWith("It5")) SF = Idx==1? 1.00842:Idx==2? 1.00305:Idx==3? 1.0072:Idx==4? 0.99944:Idx==5? 0.999697:Idx==6? 1.00028:1.;
-      if(Tag.EndsWith("It6")) SF = Idx==1? 1.00718:Idx==2? 1.00204:Idx==3? 1.00388:Idx==4? 0.99969:Idx==5? 0.999824:Idx==6? 1.00008:1.;
-      if(Tag.EndsWith("It7")) SF = Idx==1? 1.00615:Idx==2? 1.00146:Idx==3? 1.00187:Idx==4? 0.999761:Idx==5? 0.999894:Idx==6? 1.00001:1.;
+      if(Tag.EndsWith("It1")) SF = Idx==1? 1.30513:Idx==2? 1.29827:Idx==3? 1.35588:Idx==4? 1.2905:Idx==5? 1.25325:Idx==6? 1.30075:1.;
+      if(Tag.EndsWith("It2")) SF = Idx==1? 1.01481:Idx==2? 1.0144:Idx==3? 1.03505:Idx==4? 0.998348:Idx==5? 0.996626:Idx==6? 1.00704:1.;
+      if(Tag.EndsWith("It3")) SF = Idx==1? 1.01082:Idx==2? 1.01016:Idx==3? 1.02064:Idx==4? 0.998116:Idx==5? 0.99875:Idx==6? 1.00239:1.;
+      if(Tag.EndsWith("It4")) SF = Idx==1? 1.00923:Idx==2? 1.00686:Idx==3? 1.01222:Idx==4? 0.998952:Idx==5? 0.999389:Idx==6? 1.00087:1.;
+      if(Tag.EndsWith("It5")) SF = Idx==1? 1.00772:Idx==2? 1.00461:Idx==3? 1.00687:Idx==4? 0.999426:Idx==5? 0.999645:Idx==6? 1.00033:1.;
+      if(Tag.EndsWith("It6")) SF = Idx==1? 1.00651:Idx==2? 1.00291:Idx==3? 1.00368:Idx==4? 0.999666:Idx==5? 0.999781:Idx==6? 1.0001:1.;
+      if(Tag.EndsWith("It7")) SF = Idx==1? 1.00533:Idx==2? 1.00187:Idx==3? 1.00168:Idx==4? 0.999836:Idx==5? 0.999868:Idx==6? 1.00003:1.;
       if(Tag.EndsWith("Fin")){
         SF = Idx==1? 1.46065:Idx==2? 1.36472:Idx==3? 1.38385:Idx==4? 1.30511:Idx==5? 1.27019:Idx==6? 1.36434:1.;
         DataEff = Idx==1? 8.256e-05:Idx==2? 8.34791e-05:Idx==3? 0.000107939:Idx==4? 0.00125831:Idx==5? 0.00139244:Idx==6? 0.00190927:1.;
@@ -540,13 +536,13 @@ float MeasCFlipRate::GetCFRSF(Electron& El, TString Tag, TString Option){
   else if(Tag.Contains("App2Bin2_")){
     int Idx = BinIndex2;
     if(GetEraShort()=="2016a"){
-      if(Tag.EndsWith("It1")) SF = Idx==1? 0.753814:Idx==2? 0.796558:Idx==3? 0.740574:Idx==4? 0.820686:1.;
-      if(Tag.EndsWith("It2")) SF = Idx==1? 0.973783:Idx==2? 1.01581:Idx==3? 0.984973:Idx==4? 1.01521:1.;
-      if(Tag.EndsWith("It3")) SF = Idx==1? 0.975237:Idx==2? 1.01008:Idx==3? 0.995066:Idx==4? 1.00406:1.;
-      if(Tag.EndsWith("It4")) SF = Idx==1? 0.976296:Idx==2? 1.00656:Idx==3? 0.998373:Idx==4? 1.00106:1.;
-      if(Tag.EndsWith("It5")) SF = Idx==1? 0.977278:Idx==2? 1.0043:Idx==3? 0.999437:Idx==4? 1.00025:1.;
-      if(Tag.EndsWith("It6")) SF = Idx==1? 0.978342:Idx==2? 1.00286:Idx==3? 0.999794:Idx==4? 1.00006:1.;
-      if(Tag.EndsWith("It7")) SF = Idx==1? 0.979474:Idx==2? 1.00195:Idx==3? 0.998881:Idx==4? 1.00003:1.;
+      if(Tag.EndsWith("It1")) SF = Idx==1? 0.752408:Idx==2? 0.798351:Idx==3? 0.737382:Idx==4? 0.820081:1.;
+      if(Tag.EndsWith("It2")) SF = Idx==1? 0.973737:Idx==2? 1.0189:Idx==3? 0.984259:Idx==4? 1.01569:1.;
+      if(Tag.EndsWith("It3")) SF = Idx==1? 0.979696:Idx==2? 1.01198:Idx==3? 0.99476:Idx==4? 1.0041:1.;
+      if(Tag.EndsWith("It4")) SF = Idx==1? 0.97916:Idx==2? 1.00769:Idx==3? 0.998227:Idx==4? 1.00105:1.;
+      if(Tag.EndsWith("It5")) SF = Idx==1? 0.979838:Idx==2? 1.00496:Idx==3? 0.999371:Idx==4? 1.00024:1.;
+      if(Tag.EndsWith("It6")) SF = Idx==1? 0.977198:Idx==2? 1.00324:Idx==3? 0.999746:Idx==4? 1.00013:1.;
+      if(Tag.EndsWith("It7")) SF = Idx==1? 0.981714:Idx==2? 1.00218:Idx==3? 0.999888:Idx==4? 1.00002:1.;
       if(Tag.EndsWith("Fin")){
         SF = Idx==1? 0.655387:Idx==2? 0.842453:Idx==3? 0.714889:Idx==4? 0.804131:1.;
         DataEff = Idx==1? 2.6199e-05:Idx==2? 0.000344799:Idx==3? 0.00230424:Idx==4? 0.00288139:1.;
@@ -554,13 +550,13 @@ float MeasCFlipRate::GetCFRSF(Electron& El, TString Tag, TString Option){
       }
     }
     else if(GetEraShort()=="2016b"){
-      if(Tag.EndsWith("It1")) SF = Idx==1? 0.818923:Idx==2? 0.856212:Idx==3? 0.844416:Idx==4? 0.847731:1.;
-      if(Tag.EndsWith("It2")) SF = Idx==1? 0.969178:Idx==2? 1.00781:Idx==3? 0.999317:Idx==4? 1.00037:1.;
-      if(Tag.EndsWith("It3")) SF = Idx==1? 0.970797:Idx==2? 1.00527:Idx==3? 0.999768:Idx==4? 0.999999:1.;
-      if(Tag.EndsWith("It4")) SF = Idx==1? 0.969269:Idx==2? 1.00367:Idx==3? 0.999924:Idx==4? 0.999917:1.;
-      if(Tag.EndsWith("It5")) SF = Idx==1? 0.974147:Idx==2? 1.00273:Idx==3? 1.00029:Idx==4? 0.999939:1.;
-      if(Tag.EndsWith("It6")) SF = Idx==1? 0.97568:Idx==2? 1.00194:Idx==3? 0.999763:Idx==4? 0.999942:1.;
-      if(Tag.EndsWith("It7")) SF = Idx==1? 0.977375:Idx==2? 1.00163:Idx==3? 0.999993:Idx==4? 1.00002:1.;
+      if(Tag.EndsWith("It1")) SF = Idx==1? 0.817223:Idx==2? 0.854388:Idx==3? 0.842534:Idx==4? 0.840254:1.;
+      if(Tag.EndsWith("It2")) SF = Idx==1? 0.962671:Idx==2? 1.00945:Idx==3? 1.00003:Idx==4? 0.999153:1.;
+      if(Tag.EndsWith("It3")) SF = Idx==1? 0.972905:Idx==2? 1.00638:Idx==3? 0.999969:Idx==4? 0.999638:1.;
+      if(Tag.EndsWith("It4")) SF = Idx==1? 0.973814:Idx==2? 1.00423:Idx==3? 0.999952:Idx==4? 0.99984:1.;
+      if(Tag.EndsWith("It5")) SF = Idx==1? 0.975342:Idx==2? 1.00302:Idx==3? 0.999978:Idx==4? 0.999906:1.;
+      if(Tag.EndsWith("It6")) SF = Idx==1? 0.977174:Idx==2? 1.00217:Idx==3? 1:Idx==4? 0.999943:1.;
+      if(Tag.EndsWith("It7")) SF = Idx==1? 0.978538:Idx==2? 1.00161:Idx==3? 1.00001:Idx==4? 0.999965:1.;
       if(Tag.EndsWith("Fin")){
         SF = Idx==1? 0.619954:Idx==2? 0.896209:Idx==3? 0.843693:Idx==4? 0.846716:1.;
         DataEff = Idx==1? 2.77502e-05:Idx==2? 0.000355046:Idx==3? 0.0026395:Idx==4? 0.00274673:1.;
@@ -568,13 +564,13 @@ float MeasCFlipRate::GetCFRSF(Electron& El, TString Tag, TString Option){
       }
     }
     else if(DataYear==2017){
-      if(Tag.EndsWith("It1")) SF = Idx==1? 1.31881:Idx==2? 1.32457:Idx==3? 1.34604:Idx==4? 1.27878:1.;
-      if(Tag.EndsWith("It2")) SF = Idx==1? 1.00062:Idx==2? 1.00761:Idx==3? 1.00967:Idx==4? 0.99411:1.;
-      if(Tag.EndsWith("It3")) SF = Idx==1? 0.997311:Idx==2? 1.00411:Idx==3? 1.00275:Idx==4? 0.998152:1.;
-      if(Tag.EndsWith("It4")) SF = Idx==1? 0.996479:Idx==2? 1.00249:Idx==3? 1.0008:Idx==4? 0.999401:1.;
-      if(Tag.EndsWith("It5")) SF = Idx==1? 0.996398:Idx==2? 1.00171:Idx==3? 1.00021:Idx==4? 0.999824:1.;
-      if(Tag.EndsWith("It6")) SF = Idx==1? 0.99655:Idx==2? 1.0011:Idx==3? 1.00004:Idx==4? 0.999934:1.;
-      if(Tag.EndsWith("It7")) SF = Idx==1? 0.996804:Idx==2? 1.00077:Idx==3? 1.00001:Idx==4? 0.999975:1.;
+      if(Tag.EndsWith("It1")) SF = Idx==1? 1.35418:Idx==2? 1.33295:Idx==3? 1.33841:Idx==4? 1.26717:1.;
+      if(Tag.EndsWith("It2")) SF = Idx==1? 1.02801:Idx==2? 1.00707:Idx==3? 1.00964:Idx==4? 0.991703:1.;
+      if(Tag.EndsWith("It3")) SF = Idx==1? 1.02165:Idx==2? 1.00379:Idx==3? 1.00301:Idx==4? 0.999398:1.;
+      if(Tag.EndsWith("It4")) SF = Idx==1? 1.01704:Idx==2? 1.0012:Idx==3? 1.00046:Idx==4? 0.999473:1.;
+      if(Tag.EndsWith("It5")) SF = Idx==1? 1.01455:Idx==2? 1.00864:Idx==3? 1.00004:Idx==4? 0.999775:1.;
+      if(Tag.EndsWith("It6")) SF = Idx==1? 1.0113:Idx==2? 1.00506:Idx==3? 0.999713:Idx==4? 0.999801:1.;
+      if(Tag.EndsWith("It7")) SF = Idx==1? 1.00922:Idx==2? 1.00302:Idx==3? 0.999747:Idx==4? 0.99987:1.;
       if(Tag.EndsWith("Fin")){
         SF = Idx==1? 1.24704:Idx==2? 1.36859:Idx==3? 1.36859:Idx==4? 1.28726:1.;
         DataEff = Idx==1? 2.57751e-05:Idx==2? 0.000171696:Idx==3? 0.00117306:Idx==4? 0.00186744:1.;
@@ -582,13 +578,13 @@ float MeasCFlipRate::GetCFRSF(Electron& El, TString Tag, TString Option){
       }
     }
     else if(DataYear==2018){
-      if(Tag.EndsWith("It1")) SF = Idx==1? 1.29348:Idx==2? 1.31616:Idx==3? 1.31356:Idx==4? 1.23827:1.;
-      if(Tag.EndsWith("It2")) SF = Idx==1? 1.00632:Idx==2? 1.02206:Idx==3? 1.0114:Idx==4? 0.993165:1.;
-      if(Tag.EndsWith("It3")) SF = Idx==1? 1.00015:Idx==2? 1.01288:Idx==3? 1.00313:Idx==4? 0.997619:1.;
-      if(Tag.EndsWith("It4")) SF = Idx==1? 0.997689:Idx==2? 1.00795:Idx==3? 1.00079:Idx==4? 0.999147:1.;
-      if(Tag.EndsWith("It5")) SF = Idx==1? 0.996791:Idx==2? 1.00506:Idx==3? 1.00013:Idx==4? 0.999666:1.;
-      if(Tag.EndsWith("It6")) SF = Idx==1? 0.996343:Idx==2? 1.00328:Idx==3? 0.999957:Idx==4? 0.999854:1.;
-      if(Tag.EndsWith("It7")) SF = Idx==1? 0.996171:Idx==2? 1.00216:Idx==3? 0.999949:Idx==4? 0.999931:1.;
+      if(Tag.EndsWith("It1")) SF = Idx==1? 1.29972:Idx==2? 1.31553:Idx==3? 1.3093:Idx==4? 1.23683:1.;
+      if(Tag.EndsWith("It2")) SF = Idx==1? 1.01264:Idx==2? 1.0231:Idx==3? 1.01095:Idx==4? 0.993349:1.;
+      if(Tag.EndsWith("It3")) SF = Idx==1? 1.00567:Idx==2? 1.01349:Idx==3? 1.00297:Idx==4? 0.997659:1.;
+      if(Tag.EndsWith("It4")) SF = Idx==1? 1.00297:Idx==2? 1.00829:Idx==3? 1.00073:Idx==4? 0.999143:1.;
+      if(Tag.EndsWith("It5")) SF = Idx==1? 1.00124:Idx==2? 1.00515:Idx==3? 1.00009:Idx==4? 0.99965:1.;
+      if(Tag.EndsWith("It6")) SF = Idx==1? 1.00021:Idx==2? 1.00326:Idx==3? 0.999938:Idx==4? 0.999842:1.;
+      if(Tag.EndsWith("It7")) SF = Idx==1? 0.999776:Idx==2? 1.00212:Idx==3? 0.999926:Idx==4? 0.999921:1.;
       if(Tag.EndsWith("Fin")){
         SF = Idx==1? 1.37469:Idx==2? 1.39657:Idx==3? 1.35169:Idx==4? 1.24908:1.;
         DataEff = Idx==1? 2.57045e-05:Idx==2? 0.000183513:Idx==3? 0.00114237:Idx==4? 0.00183787:1.;

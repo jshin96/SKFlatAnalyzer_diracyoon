@@ -1,0 +1,30 @@
+imax 1   number of channels
+jmax *   number of backgrounds(*:auto)
+kmax *   number of nuissance parameters(*:auto)
+--------------------------------------------------------------------------------------
+bin                        Mu0El2
+observation                20
+--------------------------------------------------------------------------------------
+bin                        Mu0El2    Mu0El2    Mu0El2    Mu0El2    Mu0El2    Mu0El2    Mu0El2
+process                    Signal    Fake      Flip      TTX       VV        Conv      Rare  
+process                    0         1         2         3         4         5         6     
+rate                       4.220e+00 1.126e+01 1.039e+00 3.498e+00 1.967e-01 3.960e+00 2.138e-02
+--------------------------------------------------------------------------------------
+lumi_13TeV          lnN    1.016     -         1.016     1.016     1.016     1.016     1.016 
+CMS_pileup          lnN    1.016     -         -         1.015     1.058     1.022     1.009 
+CMS_prefire         lnN    1.006     -         -         1.006     1.017     1.006     1.006 
+CMS_reco_e          lnN    1.014     -         -         1.013     1.016     1.014     1.014 
+CMS_scale_j         lnN    1.014     -         -         1.012     1.452     1.039     4.396 
+CMS_res_j           lnN    1.018     -         -         1.019     1.197     1.071     4.368 
+CMS_scale_uncluster lnN    1.007     -         -         1.006     1.432     1.022     4.413 
+CMS_btag_light      lnN    1.002     -         -         1.003     1.129     1.007     1.046 
+CMS_btag_heavy      lnN    1.030     -         -         1.039     1.005     1.040     1.053 
+FakeRate            lnN    -         1.166     -         -         -         -         -     
+CFRate              lnN    -         -         1.062     -         -         -         -     
+CMS_scale_CFe       lnN    -         -         1.022     -         -         -         -     
+Stat_Sig            lnN    1.010     -         -         -         -         -         -     
+Stat_Fake           lnN    -         1.180     -         -         -         -         -     
+Stat_TTX            lnN    -         -         -         1.027     -         -         -     
+Stat_Flip           lnN    -         -         1.108     -         -         -         -     
+Stat_Conv           lnN    -         -         -         -         -         1.094     -     
+--------------------------------------------------------------------------------------

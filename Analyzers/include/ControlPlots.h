@@ -14,10 +14,13 @@ public:
   bool OS2l, SS2l, TriLep, TetraLep, TopCR_OS2l, TopBSrc, SB_SS2L, SB_OS2L, CFlip, ConvCR, FkCR3l; 
   bool ConvSrcDep, TrigClos, TypeFRCheck;
   bool DblMu, DblEG, MuEG, SglEl;
-  bool FakeRun, ConvRun, FlipRun, SystRun;
+  bool FakeRun, ConvRun, FlipRun, SystRun, HEMCheck;
   vector<TString> TrigList_DblMu, TrigList_DblEG, TrigList_MuEG, TrigList_SglEl;
 
 
+  void CheckCR4l(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,
+                 vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
+                 vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, Event& Ev, float weight, TString Label);
   void CheckTrigMCClos(vector<Muon>& MuTColl, vector<Muon>& MuVColl, vector<Electron>& ElTColl, vector<Electron>& ElVColl,
                        vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, Event& Ev, float weight, TString Label);
   void CheckFkCR3l(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,
@@ -61,6 +64,9 @@ public:
   float GetConvSF(TString ElTID, int SystDir);
   float GetFlipCorrPT(Electron& El, TString Tag, TString Option="");
   int   GetGenLepInfo(vector<Electron>& ElColl, vector<Muon>& MuColl, TString Option="");
+  void  DoSystRun(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,
+                  vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
+                  vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, Event& Ev, float weight, TString Label);
 
 
   void InitializeTreeVars();
@@ -79,6 +85,7 @@ public:
 
   TFile* FRFile_El; TFile* FRFile_Mu; TFile* CFRFile; 
   std::map< TString, TH2D* > maphist_FR;
+  std::vector<std::pair<float,TString>> SysWgtStrPairList;
 
   TMVA::Reader *MVAReader;
   vector<TString> MNStrList;

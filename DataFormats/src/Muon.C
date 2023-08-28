@@ -35,6 +35,11 @@ void Muon::SetisPOGHighPt(bool b){
   j_isPOGHighPt = b;
 }
 
+void Muon::SetPOGMediumHIP(bool ismedium_hip, bool ismedium_nohip){
+  j_ismedium_hip = ismedium_hip;
+  j_ismedium_nohip = ismedium_nohip;
+}
+
 void Muon::SetIso(double ch04, double nh04, double ph04, double pu04, double trkiso){
   j_PFCH04 = ch04;
   j_PFNH04 = nh04;
@@ -108,14 +113,13 @@ bool Muon::PassID(TString ID) const {
   if(ID=="POGMIDVVLIso") return isPOGMedium() && RelIso()<0.4;
   if(ID=="POGTIDTIso") return isPOGTight() && RelIso()<0.15;
   if(ID=="POGTIDVVLIso") return isPOGTight() && RelIso()<0.4;
+  if(ID=="POGIDMPrIsoM" ) return isPOGMedium() && fabs(dXY())<0.02 && fabs(dZ())<0.1 && RelIso()<0.2;
+  if(ID=="POGIDMPrIsoVL") return isPOGMedium() && fabs(dXY())<0.02 && fabs(dZ())<0.1 && RelIso()<0.4;
+
   if(ID=="POGTightWithTightIso") return Pass_POGTightWithTightIso();
   if(ID=="POGHighPtWithLooseTrkIso") return Pass_POGHighPtWithLooseTrkIso();
   //==== Customized
-  if(ID=="NoID") return true;
-  if(ID=="TESTT") return Pass_TESTID();
-  if(ID=="TESTL") return Pass_TESTIDL();
-  if(ID=="TEST2T") return Pass_TESTID2();
-  if(ID=="TEST2L") return Pass_TESTID2L();
+  if(ID=="NoID" or ID=="NOCUT") return true;
   if(ID=="POGMHLT"){
     if( !isPOGMedium()       ) return false;
     if( !(TrkIso()/Pt()<0.4) ) return false;
@@ -127,48 +131,30 @@ bool Muon::PassID(TString ID) const {
     if(!(RelIso()<0.2)) return false;
     if(!(fabs(dXY())<0.01 && fabs(dZ())<0.05)) return false;
     if(!(fabs(Chi2())<4)) return false;
-    if(!(dXYerr()!=0. && fabs(dXY()/dXYerr())<4.) ) return false;
+    if(!(SIP2D()<4.) ) return false;
     return true;
   }
   if(ID=="HctoWA16L"){
     if(!isPOGTight()) return false;
     if(!(RelIso()<0.6)) return false;
     if(!(fabs(dXY())<0.2 && fabs(dZ())<0.1)) return false;
-    if(!(dXYerr()!=0. && fabs(dXY()/dXYerr())<4.) ) return false;
+    if(!(SIP2D()<4.) ) return false;
     return true;
   }
-  if(ID=="TopHN17TNoI"){
-    if(! isPOGMedium()        ) return false;
-    if(! (fabs(dZ())<0.1)  ) return false;
-    if(! (IP3Derr()!=0. && fabs(IP3D()/IP3Derr())<4.) ) return false;
-    return true;
-  }
-  if(ID=="TopHN17LNoI"){
-    if(! isPOGMedium()        ) return false;
-    if(! (fabs(dZ())<0.1)  ) return false;
-    if(! (IP3Derr()!=0. && fabs(IP3D()/IP3Derr())<4.) ) return false;
-    return true;
-  }
-
-
-  if(ID=="TopHNTIsop10" or ID=="TopHNT"){
+  if(ID=="TopHNT"){
     if(! isPOGMedium()        ) return false;
     if(! (MiniRelIso()<0.1)) return false;
     if(! (TrkIso()/Pt()<0.4) ) return false;
     if(! (fabs(dZ())<0.1)  ) return false;
-    if(! (IP3Derr()!=0. && fabs(IP3D()/IP3Derr())<3.) ) return false;
+    if(! (SIP3D()<3.) ) return false;
     return true;
   }
-  if(ID=="TopHNTIsop10NoIP"){
-    if(! isPOGMedium()        ) return false;
-    if(! (MiniRelIso()<0.1)) return false;
-    if(! (TrkIso()/Pt()<0.4) ) return false;
-    return true;
-  }
-  if(ID=="TopHNLLIsop6NoIP"){
+  if(ID=="TopHNL"){
     if(! isPOGMedium()       ) return false;
     if(! (MiniRelIso()<0.6)  ) return false;
     if(! (TrkIso()/Pt()<0.4) ) return false;
+    if(! (SIP3D()<5)         ) return false; 
+    if(! (fabs(dZ())<0.1)    ) return false;
     return true;
   }
   if(ID=="TopHNLLIsop6NoSIP"){
@@ -204,17 +190,9 @@ bool Muon::PassID(TString ID) const {
     if(! (MiniRelIso()<0.6)  ) return false;
     if(! (TrkIso()/Pt()<0.4) ) return false;
     if(! (fabs(dZ())<0.1)    ) return false;
-    //if( ID.Contains("SIP5") ){ if(! (SIP3D()<5) ) return false; }
     return true;
   }
-  if(ID.Contains("TopHNLForTIsop15_201")){
-    if(! isPOGMedium()       ) return false;
-    if(! (MiniRelIso()<0.6)  ) return false;
-    if(! (TrkIso()/Pt()<0.4) ) return false;
-    if(! (fabs(dZ())<0.1)    ) return false;
-    if(! Pass_SIPFakeLoose(ID, "PTCorrBase")) return false;
-    return true;
-  }
+
   if(ID.Contains("TopHNLForTIsop10_201")){
     if(! isPOGMedium()       ) return false;
     if(! (MiniRelIso()<0.6)  ) return false;
@@ -225,77 +203,20 @@ bool Muon::PassID(TString ID) const {
   }
 
 
-
-
-  if(ID=="TopHN17T"){
-    if(! isPOGMedium()        ) return false;
-    if(! (MiniRelIso()<0.1)) return false;
-    if(! (fabs(dZ())<0.1)  ) return false;
-    if(! (IP3Derr()!=0. && fabs(IP3D()/IP3Derr())<4.) ) return false;
-    return true;
-  }
-  if(ID=="TopHN17L"){
-    if(! isPOGMedium()        ) return false;
-    if(! (MiniRelIso()<0.4)) return false;
-    if(! (fabs(dZ())<0.1)  ) return false;
-    if(! (IP3Derr()!=0. && fabs(IP3D()/IP3Derr())<4.) ) return false;
-    return true;
-  }
-  if(ID=="TopHN17T_TkIso"){
-    if(! isPOGMedium()         ) return false;
-    if(! (MiniRelIso()<0.1) ) return false;
-    if(! (TrkIso()/Pt()<0.4)) return false;
-    if(! (fabs(dZ())<0.1)  ) return false;
-    if(! (IP3Derr()!=0. && fabs(IP3D()/IP3Derr())<4.) ) return false;
-    return true;
-  }
-  if(ID=="TopHN17L_TkIso"){
-    if(! isPOGMedium()         ) return false;
-    if(! (MiniRelIso()<0.4) ) return false;
-    if(! (TrkIso()/Pt()<0.4)) return false;
-    if(! (fabs(dZ())<0.1)  ) return false;
-    if(! (IP3Derr()!=0. && fabs(IP3D()/IP3Derr())<4.) ) return false;
-    return true;
-  }
-  if(ID=="POGMIPIsoT"){
-    if(! isPOGMedium()         ) return false;
-    if(! (RelIso()<0.15) ) return false;
-    if(! (fabs(dZ())<0.1)  ) return false;
-    if(! (IP3Derr()!=0. && fabs(IP3D()/IP3Derr())<4.) ) return false;
-    return true;
-  }
-  if(ID=="POGMIPIsoM"){
-    if(! isPOGMedium()         ) return false;
-    if(! (RelIso()<0.2) ) return false;
-    if(! (fabs(dZ())<0.1)  ) return false;
-    if(! (IP3Derr()!=0. && fabs(IP3D()/IP3Derr())<4.) ) return false;
-    return true;
-  }
-  if(ID=="POGMIPIsoVVL"){
-    if(! isPOGMedium()         ) return false;
-    if(! (RelIso()<0.4) ) return false;
-    if(! (fabs(dZ())<0.1)  ) return false;
-    if(! (IP3Derr()!=0. && fabs(IP3D()/IP3Derr())<4.) ) return false;
-    return true;
-  }
-
-
-  //==== No cut
-  if(ID=="NOCUT") return true;
-  if(ID=="POGIDMPrIsoM" ) return isPOGMedium() && fabs(dXY())<0.02 && fabs(dZ())<0.1 && RelIso()<0.2;
-  if(ID=="POGIDMPrIsoVL") return isPOGMedium() && fabs(dXY())<0.02 && fabs(dZ())<0.1 && RelIso()<0.4;
-
   cout << "[Muon::PassID] No id : " << ID << endl;
   exit(ENODATA);
 
   return false;
-
 }
+
+
 bool Muon::Pass_POGTightWithTightIso() const {
   if(!( isPOGTight() )) return false;
   if(!( RelIso()<0.15 ))  return false;
   return true;
 }
+
+
 bool Muon::Pass_POGHighPtWithLooseTrkIso() const {
   if(!( isPOGHighPt() )) return false;
   if(!( TrkIso()/TuneP4().Pt()<0.1 )) return false;
@@ -313,37 +234,6 @@ bool Muon::Pass_TESTID() const {
 
   return true;
 }
-
-bool Muon::Pass_TESTIDL() const {
-  if(! isPOGMedium() ) return false;
-  if(! (RelIso()<0.4) ) return false;
-  if(! (fabs(dXY())<0.01 && fabs(dZ())<0.1) ) return false;
-  if(! (dXYerr()!=0. && fabs(dXY()/dXYerr())<4.) ) return false;
-  if(! (IP3Derr()!=0. && fabs(IP3D()/IP3Derr())<4.) ) return false;
-
-  return true;
-}
-
-bool Muon::Pass_TESTID2() const {
-  if(! isPOGTight() ) return false;
-  if(! (MiniRelIso()<0.1) ) return false;
-  if(! (fabs(dXY())<0.01 && fabs(dZ())<0.1) ) return false;
-  if(! (dXYerr()>0. && fabs(dXY()/dXYerr())<4.) ) return false;
-  if(! (IP3Derr()>0. && fabs(IP3D()/IP3Derr())<4.) ) return false;
-
-  return true;
-}
-
-bool Muon::Pass_TESTID2L() const {
-  if(! isPOGTight() ) return false;
-  if(! (MiniRelIso()<0.4) ) return false;
-  if(! (fabs(dXY())<0.01 && fabs(dZ())<0.1) ) return false;
-  if(! (dXYerr()>0. && fabs(dXY()/dXYerr())<4.) ) return false;
-  if(! (IP3Derr()>0. && fabs(IP3D()/IP3Derr())<4.) ) return false;
-
-  return true;
-}
-
 
 bool Muon::Pass_SIPFakeLoose(TString wp, TString Option) const {
 
@@ -446,8 +336,6 @@ bool Muon::Pass_SIPFakeLoose(TString wp, TString Option) const {
   bool ReturnVal = SIP3D()<SIPCut; 
   return ReturnVal;
 }
-
-
 
 
 void Muon::SetTrackerLayers(int n){

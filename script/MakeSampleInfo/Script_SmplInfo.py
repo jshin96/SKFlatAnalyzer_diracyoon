@@ -8,7 +8,8 @@ if not "SKFlat_WD" in os.environ:
 
 #[PD(Or PrivateMC dir name), alias, xsec(fb)]
 #Arr_Year = ["2017"]
-Arr_Year = ["2016a", "2016b", "2017", "2018"]
+Arr_Year = ["2016a"]
+#Arr_Year = ["2016a", "2016b", "2017", "2018"]
 
 VerProc=os.getenv('SKFlatV')
 WorkingPath=os.getenv('SKFlat_WD')
@@ -52,15 +53,16 @@ for Year in Arr_Year:
     os.system("touch "+Path_SmplPath)
     os.system("find "+SamplePath+InputDirName+" -name *root >> "+Path_SmplPath)
     os.system("touch "+Path_Smplinfo)
-    os.system("echo \"# alias PD xsec nmc sumw\" >> "+Path_Smplinfo)
+    os.system("echo \"# alias PD xsec nmc sumsign sumw\" >> "+Path_Smplinfo)
     if NumberProd:
       CntFile = os.getenv('SKFlatOutputDir')+'/'+VerProc+'/GetEffLumi/'+Year+'/'+DataType+'/GetEffLumi_'+Alias+'.root'
       if not path.exists(CntFile):
         print("[Error] Skip due to absence of count file: "+CntFile); continue;
       CountInfo = subprocess.check_output("root -l -b -q \""+CalcCodePath+"LumiWCalc.C(\\\""+CntFile+"\\\")\"", shell=True);
       Nevent = CountInfo.split()[2]
-      SumW   = CountInfo.split()[3]
-      os.system("echo \""+Alias+"\t"+InputDirName+"\t"+str(Xsec)+"\t"+Nevent+"\t"+SumW+"\" >> "+Path_Smplinfo)
+      SumSgn = CountInfo.split()[3]
+      SumW   = CountInfo.split()[4]
+      os.system("echo \""+Alias+"\t"+InputDirName+"\t"+str(Xsec)+"\t"+Nevent+"\t"+SumSgn+"\t"+SumW+"\" >> "+Path_Smplinfo)
   
     if Verbose:
       print("Processed "+Alias+" ("+VerProc+", "+YearLong+", "+DataType+").")

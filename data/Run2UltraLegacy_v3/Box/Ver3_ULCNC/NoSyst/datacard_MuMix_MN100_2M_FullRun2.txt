@@ -1,0 +1,12 @@
+imax 1   number of channels
+jmax *   number of backgrounds(*:auto)
+kmax *   number of nuissance parameters(*:auto)
+--------------------------------------------------------------------------------------
+bin                        Mu2El0
+observation                57
+--------------------------------------------------------------------------------------
+bin                        Mu2El0    Mu2El0    Mu2El0    Mu2El0    Mu2El0    Mu2El0
+process                    Signal    Fake      TTX       VV        Conv      Rare  
+process                    0         1         2         3         4         5     
+rate                       2.042e+01 4.338e+01 1.103e+01 4.116e-01 1.975e+00 1.922e-01
+--------------------------------------------------------------------------------------

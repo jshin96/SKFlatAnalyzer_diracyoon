@@ -89,7 +89,7 @@ do
       Option=" -a ${AnalysisCode}"
   
       SampleName=$( python GetJobConfig.py ${List} ${it_s} | cut -d ' ' -f1 )  
-      NJobs=20
+      NJobs=100
       #NJobs=$( python GetJobConfig.py ${List} ${it_s} | cut -d ' ' -f2 )
       DataPeriod="ALL"
       if [[ ${runMode} == "runData" || ${runMode} == "runFake" ]]; then DataPeriod=$( python GetJobConfig.py ${List} ${it_s} | cut -d ' ' -f3 ); fi
@@ -97,7 +97,7 @@ do
       if [[ ${NJobs} -gt 0 ]]; then :; 
       elif [[ ${NJobs} == "-" ]]; then NJobs=20; 
       else echo "NJob Config invalid for ${SampleName} in ${CategoryLabel} mode"; continue; fi
-      if [[ ( ${runDebug} == "False" ) && ( -z ${ReductionFactor} ) ]]; then (( NJobs *= 2 )); fi
+      #if [[ ( ${runDebug} == "False" ) && ( -z ${ReductionFactor} ) ]]; then (( NJobs *= 2 )); fi
   
       Option+=" -i ${SampleName}" 
       Option+=" -n ${NJobs}" 

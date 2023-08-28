@@ -5,28 +5,29 @@
 #declare -a List_runModes=("runData")
 declare -a List_runModes=("runBkdMC" "runData")
 
-#declare -a List_Year=("2018")
-declare -a List_Year=("2018" "2017" "2016a" "2016b")
+declare -a List_Year=("2018")
+#declare -a List_Year=("2018" "2017" "2016a" "2016b")
 #declare -a List_Year=("2018" "2016b")
-##declare -a List_Year=("2017" "2016a")
+#declare -a List_Year=("2016b" "2016a")
 ########################################################################
 ## RUN PARAMETERS
 
 AnalysisCode="DiLepValid" 
-FinalState="ElEl" #MuMu / ElEl / ElMu
+FinalState="SF2L" #MuMu / ElEl / ElMu / SF2L
 Skim="" #"SkimTree_Dilepton"
-RunningMode="ElEl,DiLTrig"
-##MuMu ElEl ElMu ## SglLTrig DiLTrig ## HEMCheck ## SystRun
+RunningMode="SF2L,DiLTrig,DiLBJet,SystRun,HEMCheck" #"SF2L,DiLTrig,DiLBJet,SystRun"
+#"SF2L,DiLTrig,DiLBJet"
+##MuMu ElEl ElMu SF2L DiLIncl DiLBJet ## SglLTrig DiLTrig ## HEMCheck ## SystRun
 
 NJobs=""
-NJobFactor=2
+NJobFactor=3
 Memory=""
-NJobMax="100"
+NJobMax="300"
 NEvtMax="50000"
 NSkipEvt=""
 ReductionFactor="" #"10"
 SpecificList=""
-SpecificDir="TopHN17SST" #"TopHNTIsoSF_POGIDSF" #"MiNNLO/TopHNSSTWP90Isop1_NoL1Et" #"SFv1/TopHNSSTWP90Isop1" #"HNTopIDSS_preL/NewMCEff"
+SpecificDir="TopHNT_TopHNSST/DiLBJet/FinSF/HEMExcl" #"TopHNT/DiLIncl/FinSF/HEMExcl" #"TopHNT/DiLBJet/FinSF" #"TopHNSST/DiLBJet/FinSF" #"DiLBJet/TopHNT_TopHNSST_NewBTag"
 runDebug="False"
 ResubRun="False"
 

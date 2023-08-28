@@ -335,8 +335,7 @@ void ExampleRun::executeEventFromParameter(AnalyzerParameter param){
 
   //==== method 1a)
   //==== multiply "btagWeight" to the event weight
-  double btagWeight_M = mcCorr->GetBTaggingReweight_1a(jets, jtp_DeepJet_Tight);
-  printf("bsf:%.2e\n", btagWeight_M);
+  //double btagWeight = mcCorr->GetBTaggingReweight_1a(jets, jtp_DeepCSV_Medium);
 
   //==== method 2a)
   for(unsigned int ij = 0 ; ij < jets.size(); ij++){
@@ -373,14 +372,11 @@ void ExampleRun::executeEventFromParameter(AnalyzerParameter param){
   //==== If MC
   if(!IsDATA){
 
-    //==== weight_norm_1invpb is set to be event weight normalized to 1 pb-1
-    //==== So, you have to multiply trigger luminosity
+    //==== MCweight is normalized to 1 pb-1.
+    weight *= MCweight();
+
     //==== you can pass trigger names to ev.GetTriggerLumi(), but if you are using unprescaled trigger, simply pass "Full"
-
-    weight *= weight_norm_1invpb*ev.GetTriggerLumi("Full");
-
-    //==== MCweight is +1 or -1. Should be multiplied if you are using e.g., aMC@NLO NLO samples
-    weight *= ev.MCweight();
+    weight *= ev.GetTriggerLumi("Full");
 
     //==== L1Prefire reweight
     weight *= weight_Prefire;

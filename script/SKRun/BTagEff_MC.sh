@@ -8,14 +8,14 @@ declare -a List_Year=("2016a" "2016b" "2017" "2018")
 ## RUN PARAMETERS
 
 AnalysisCode="MeasureJetTaggingEfficiency" #"BTagEff_MC" 
-FinalState="LJ_LL" #DiMuon / DiElectron / ElectronMuon
+FinalState="LJ_LL_PURW_NoNorm" #DiMuon / DiElectron / ElectronMuon
 Skim=""
 #Year="2016"
 RunningMode="" #MuMu / ElEl / ElMu / TrigEffMeas
 
 NJobs=""
 Memory=""
-NJobMax="80"
+NJobMax="100"
 NEvtMax="100000"
 NSkipEvt=""
 ReductionFactor="" #"10"
@@ -93,7 +93,7 @@ do
       if [[ ${NJobs} -gt 0 ]]; then :; 
       elif [[ ${NJobs} == "-" ]]; then NJobs=20; 
       else echo "NJob Config invalid for ${SampleName} in ${CategoryLabel} mode"; continue; fi
-      if [[ ( ${runDebug} == "False" ) && ( -z ${ReductionFactor} ) ]]; then (( NJobs *= 2 )); fi
+      if [[ ( ${runDebug} == "False" ) && ( -z ${ReductionFactor} ) ]]; then (( NJobs *= 5 )); fi
   
       Option+=" -i ${SampleName}" 
       Option+=" -n ${NJobs}" 

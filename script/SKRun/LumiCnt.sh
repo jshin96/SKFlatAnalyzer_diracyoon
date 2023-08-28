@@ -2,8 +2,8 @@
 
 ########################################################################
 declare -a List_runModes=("runMC")
-declare -a List_Year=("2017")
-#declare -a List_Year=("2016a" "2016b" "2017" "2018")
+#declare -a List_Year=("2016a")
+declare -a List_Year=("2016a" "2016b" "2017" "2018")
 #declare -a List_Year=("2016a" "2016b")
 
 ########################################################################
@@ -15,7 +15,7 @@ RunningMode=""
 
 NJobs=""
 Memory=""
-NJobMax="80"
+NJobMax="200"
 NEvtMax="100000"
 NSkipEvt=""
 ReductionFactor="" #"10"

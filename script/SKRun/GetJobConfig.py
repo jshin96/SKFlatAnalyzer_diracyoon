@@ -1,13 +1,17 @@
 import os, sys
 
 List_MC_Test = [
-  ["tHq", 3], ["tZq", 1],
-  #["ttWToLNu", 2], ["ttZToLLNuNu", 4], ["ttHToNonbb", 2], ["tZq", 1], ["tHq", 3],
+  #["tHq", 3], ["tZq", 1],
+  #["ttWToLNu", 2], ["ttZToLLNuNu", 4], ["ttHToNonbb", 2],
+  #["DYJets10to50_MG", 13],
+  ["TTLL_powheg", 25],
+  ["DYJets", 25],
 ]
 
 
 List_MC_Pr1l = [
-  ["WJets_MG", 13], ["WJets_amcatnlo", 13], ["DYJets", 21], ["DYJets10to50_MG", 13],
+  #["WJets_MG", 13],
+  ["WJets_amcatnlo", 13], ["DYJets", 21], ["DYJets10to50_MG", 13],
   ["TTLJ_powheg", 20], ["TTLL_powheg", 20],
   ["SingleTop_tW_antitop_NoFullyHad", 2], ["SingleTop_tW_top_NoFullyHad", 2],
   ["SingleTop_sch_Lep", 5], ["SingleTop_tch_antitop_Incl", 10], ["SingleTop_tch_top_Incl", 10],
@@ -34,13 +38,13 @@ List_MC_Pr4l = [
 ]
 
 List_MC_Cv2l = [
-  ["DYJets", 25], ["ZGToLLG_01J", 5], ["WGToLNuG", 5], ["TTG", 2], ["TG", 1], 
-  #["DYJets", 25], ["WJets_amcatnlo", 13], ["TTLJ_powheg", 25], ["TTLL_powheg", 13], 
-  #["SingleTop_tW_antitop_NoFullyHad", 2], ["SingleTop_tW_top_NoFullyHad", 2], ["SingleTop_sch_Lep", 5], ["SingleTop_tch_antitop_Incl", 10], ["SingleTop_tch_top_Incl", 10],
+  #["DYJets", 25], ["ZGToLLG", 5], ["WGToLNuG", 5], ["TTG", 2], ["TG", 1], #["ZGToLLG", 5], ["WGToLNuG", 5], ["TTG", 2], ["TG", 1], 
+  ["DYJets10to50_MG", 13], ["DYJets", 25], ["WJets_amcatnlo", 13], ["TTLJ_powheg", 25], ["TTLL_powheg", 13], 
+  ["SingleTop_tW_antitop_NoFullyHad", 2], ["SingleTop_tW_top_NoFullyHad", 2], ["SingleTop_sch_Lep", 5], ["SingleTop_tch_antitop_Incl", 10], ["SingleTop_tch_top_Incl", 10],
 ]
 
 List_MC_Cv3l = [
-  ["ZGToLLG_01J", 5], ["TTG", 2], ["DYJets", 25], 
+  ["ZGToLLG", 5], ["TTG", 2], ["DYJets", 25], 
 ]
 
 List_MC_Fk2l = [
@@ -67,20 +71,74 @@ List_MC_TT = [["TTLJ_powheg", 20], ["TTLL_powheg", 20]]
 List_MC_QCD = [["QCD_Pt_15to30", 5], ["QCD_Pt_30to50", 5], ["QCD_Pt_50to80", 5], ["QCD_Pt_80to120", 5], ["QCD_Pt_120to170", 5], ["QCD_Pt_170to300", 5], ["QCD_Pt_300to470", 5], ["QCD_Pt_470to600", 5], ["QCD_Pt_600to800", 5], ["QCD_Pt_800to1000", 5], ["QCD_Pt_1000to1400", 5], ["QCD_Pt_1400to1800", 5], ["QCD_Pt_1800to2400", 5], ["QCD_Pt_2400to3200", 5], ["QCD_Pt_3200toInf", 5]]
 
 
+List_MC_QCD_MuFilt = [
+ ["QCD_Pt-15To20_MuEnriched", 5],  ["QCD_Pt-20To30_MuEnriched", 5],  ["QCD_Pt-30To50_MuEnriched", 5],  ["QCD_Pt-50To80_MuEnriched", 5],  ["QCD_Pt-80To120_MuEnriched" , 5],  ["QCD_Pt-120To170_MuEnriched", 5],  ["QCD_Pt-170To300_MuEnriched", 5],  ["QCD_Pt-300To470_MuEnriched", 5],  ["QCD_Pt-470To600_MuEnriched", 5],  ["QCD_Pt-600To800_MuEnriched", 5],  ["QCD_Pt-800To1000_MuEnriched" , 5],  ["QCD_Pt-1000_MuEnriched", 5],
+]
+
+List_MC_QCD_EMFilt = [
+ ["QCD_Pt-20to30_EMEnriched", 5],  ["QCD_Pt-30to50_EMEnriched", 5],  ["QCD_Pt-50to80_EMEnriched", 5],  ["QCD_Pt-80to120_EMEnriched" , 5],  ["QCD_Pt-120to170_EMEnriched", 5],  ["QCD_Pt-170to300_EMEnriched", 5],  ["QCD_Pt-300toInf_EMEnriched", 5],
+ ["QCD_Pt_20to30_bcToE", 5],  ["QCD_Pt_30to80_bcToE", 5],  ["QCD_Pt_80to170_bcToE", 5],  ["QCD_Pt_170to250_bcToE", 5],  ["QCD_Pt_250toInf_bcToE", 5],
+]
+
+List_MC_QCD_Filt = List_MC_QCD_MuFilt + List_MC_QCD_EMFilt
+
+
+
+List_MC_ttVH = [
+  ["ttWToLNu", 2], ["ttZToLLNuNu", 4], ["ttHToNonbb", 2], ["tZq", 1]
+]
+
+
+
 ##SIGNAL
+List_HNTop_2L_El_Pivot = [["TT_HeavyN-El_2L_MN20", 1], ["TT_HeavyN-El_2L_MN50", 1], ["TT_HeavyN-El_2L_MN75", 1], ["TT_HeavyN-El_2L_MN85", 1], ["TT_HeavyN-El_2L_MN100", 1]]
+
+List_HNTop_2L_Mu_Pivot = [["TT_HeavyN-Mu_2L_MN20", 1], ["TT_HeavyN-Mu_2L_MN50", 1], ["TT_HeavyN-Mu_2L_MN75", 1], ["TT_HeavyN-Mu_2L_MN85", 1], ["TT_HeavyN-Mu_2L_MN100", 1]]
+
+List_HNTop_2L_El_Else = [["TT_HeavyN-El_2L_MN30", 1], ["TT_HeavyN-El_2L_MN40", 1], ["TT_HeavyN-El_2L_MN60", 1], ["TT_HeavyN-El_2L_MN70", 1], ["TT_HeavyN-El_2L_MN95", 1],]
+
+List_HNTop_2L_Mu_Else = [["TT_HeavyN-Mu_2L_MN30", 1], ["TT_HeavyN-Mu_2L_MN40", 1], ["TT_HeavyN-Mu_2L_MN60", 1], ["TT_HeavyN-Mu_2L_MN70", 1], ["TT_HeavyN-Mu_2L_MN95", 1],]
+
+
 List_HNTop_El_Pivot = [
   ["TT_HeavyN-El_2L_MN20", 1], ["TT_HeavyN-El_HadSMTop_3L_MN20", 1], ["TT_HeavyN-El_LepSMTop_3L_MN20", 1], ["TT_HeavyN-El_4L_MN20", 1],
   ["TT_HeavyN-El_2L_MN50", 1], ["TT_HeavyN-El_HadSMTop_3L_MN50", 1], ["TT_HeavyN-El_LepSMTop_3L_MN50", 1], ["TT_HeavyN-El_4L_MN50", 1],
   ["TT_HeavyN-El_2L_MN75", 1], ["TT_HeavyN-El_HadSMTop_3L_MN75", 1], ["TT_HeavyN-El_LepSMTop_3L_MN75", 1], ["TT_HeavyN-El_4L_MN75", 1],
+  ["TT_HeavyN-El_2L_MN85", 1], ["TT_HeavyN-El_4L_MN85", 1], ["TT_HeavyN-El_HadSMTop_3L_MN85", 1], ["TT_HeavyN-El_LepSMTop_3L_MN85", 1],
+  ["TT_HeavyN-El_2L_MN100", 1], ["TT_HeavyN-El_4L_MN100", 1], ["TT_HeavyN-El_HadSMTop_3L_MN100", 1], ["TT_HeavyN-El_LepSMTop_3L_MN100", 1],
 ]
 
 List_HNTop_Mu_Pivot = [
   ["TT_HeavyN-Mu_2L_MN20", 1], ["TT_HeavyN-Mu_HadSMTop_3L_MN20", 1], ["TT_HeavyN-Mu_LepSMTop_3L_MN20", 1], ["TT_HeavyN-Mu_4L_MN20", 1],
   ["TT_HeavyN-Mu_2L_MN50", 1], ["TT_HeavyN-Mu_HadSMTop_3L_MN50", 1], ["TT_HeavyN-Mu_LepSMTop_3L_MN50", 1], ["TT_HeavyN-Mu_4L_MN50", 1],
   ["TT_HeavyN-Mu_2L_MN75", 1], ["TT_HeavyN-Mu_HadSMTop_3L_MN75", 1], ["TT_HeavyN-Mu_LepSMTop_3L_MN75", 1], ["TT_HeavyN-Mu_4L_MN75", 1],
+  ["TT_HeavyN-Mu_2L_MN85", 1], ["TT_HeavyN-Mu_4L_MN85", 1], ["TT_HeavyN-Mu_HadSMTop_3L_MN85", 1], ["TT_HeavyN-Mu_LepSMTop_3L_MN85", 1],
+  ["TT_HeavyN-Mu_2L_MN100", 1], ["TT_HeavyN-Mu_4L_MN100", 1], ["TT_HeavyN-Mu_HadSMTop_3L_MN100", 1], ["TT_HeavyN-Mu_LepSMTop_3L_MN100", 1],
 ]
 
-List_HNTop_Pivot = List_HNTop_El_Pivot+List_HNTop_Mu_Pivot
+List_HNTop_El_Else = [
+  ["TT_HeavyN-El_2L_MN30", 1], ["TT_HeavyN-El_4L_MN30", 1], ["TT_HeavyN-El_HadSMTop_3L_MN30", 1], ["TT_HeavyN-El_LepSMTop_3L_MN30", 1],
+  ["TT_HeavyN-El_2L_MN40", 1], ["TT_HeavyN-El_4L_MN40", 1], ["TT_HeavyN-El_HadSMTop_3L_MN40", 1], ["TT_HeavyN-El_LepSMTop_3L_MN40", 1],
+  ["TT_HeavyN-El_2L_MN60", 1], ["TT_HeavyN-El_4L_MN60", 1], ["TT_HeavyN-El_HadSMTop_3L_MN60", 1], ["TT_HeavyN-El_LepSMTop_3L_MN60", 1],
+  ["TT_HeavyN-El_2L_MN70", 1], ["TT_HeavyN-El_4L_MN70", 1], ["TT_HeavyN-El_HadSMTop_3L_MN70", 1], ["TT_HeavyN-El_LepSMTop_3L_MN70", 1],
+  ["TT_HeavyN-El_2L_MN95", 1], ["TT_HeavyN-El_4L_MN95", 1], ["TT_HeavyN-El_HadSMTop_3L_MN95", 1], ["TT_HeavyN-El_LepSMTop_3L_MN95", 1],
+]
+
+List_HNTop_Mu_Else = [
+  ["TT_HeavyN-Mu_2L_MN30", 1], ["TT_HeavyN-Mu_4L_MN30", 1], ["TT_HeavyN-Mu_HadSMTop_3L_MN30", 1], ["TT_HeavyN-Mu_LepSMTop_3L_MN30", 1],
+  ["TT_HeavyN-Mu_2L_MN40", 1], ["TT_HeavyN-Mu_4L_MN40", 1], ["TT_HeavyN-Mu_HadSMTop_3L_MN40", 1], ["TT_HeavyN-Mu_LepSMTop_3L_MN40", 1],
+  ["TT_HeavyN-Mu_2L_MN60", 1], ["TT_HeavyN-Mu_4L_MN60", 1], ["TT_HeavyN-Mu_HadSMTop_3L_MN60", 1], ["TT_HeavyN-Mu_LepSMTop_3L_MN60", 1],
+  ["TT_HeavyN-Mu_2L_MN70", 1], ["TT_HeavyN-Mu_4L_MN70", 1], ["TT_HeavyN-Mu_HadSMTop_3L_MN70", 1], ["TT_HeavyN-Mu_LepSMTop_3L_MN70", 1],
+  ["TT_HeavyN-Mu_2L_MN95", 1], ["TT_HeavyN-Mu_4L_MN95", 1], ["TT_HeavyN-Mu_HadSMTop_3L_MN95", 1], ["TT_HeavyN-Mu_LepSMTop_3L_MN95", 1],
+]
+
+List_HNTop_2L_Pivot = List_HNTop_2L_El_Pivot + List_HNTop_2L_Mu_Pivot
+List_HNTop_2L_Else  = List_HNTop_2L_El_Else  + List_HNTop_2L_Mu_Else
+List_HNTop_2L_All   = List_HNTop_2L_Pivot    + List_HNTop_2L_Else
+List_HNTop_Pivot = List_HNTop_El_Pivot + List_HNTop_Mu_Pivot
+List_HNTop_Else  = List_HNTop_El_Else  + List_HNTop_Mu_Else
+List_HNTop_All   = List_HNTop_Pivot    + List_HNTop_Else
+
 
 
 ##DATA
@@ -130,11 +188,18 @@ List_Data_DiEl_2018 = List_Data_DblEG_2018
 
 
 ##ANALYZER DEPENDENT
-List_Lumi_2017 = [["TT_HeavyN-El_2L_MN50", 1]]
+#List_Lumi_2017 = List_HNTop_Pivot #[["TT_HeavyN-El_2L_MN50", 1]]
+List_Lumi_2017 = List_HNTop_All
 
-List_SkimTree_SS2lOR3l_BkdMC = [["DYJets10to50_MG", 1]]
+#List_Lumi_2017 = List_HNTop_Pivot
 
-#List_SkimTree_SS2lOR3l_BkdMC = List_MC_PrSS2l + List_MC_Cv2l
+
+List_MC_DYMiNNLO = [["DYJetsToMuMu_MiNNLO", 20], ["DYJetsToEE_MiNNLO", 20]] 
+
+List_SkimTree_SS2lOR3l_BkdMC = [["DYJetsToMuMu_MiNNLO", 25]]
+
+#List_SkimTree_SS2lOR3l_BkdMC = [["WZ_pythia", 2], ["WW_pythia", 2], ["ZZ_pythia", 2],]
+#List_SkimTree_SS2lOR3l_BkdMC = List_MC_PrSS2l + List_MC_Cv2l + List_HNTop_Pivot
 
 
 ########################################################################################
@@ -183,7 +248,7 @@ List_HNTopFeas_BkdMC_2017 = [
   #["DYJets", 25], ["TTLL_powheg", 13],
   ["ZZTo4L_powheg", 3], ["GluGluHToZZTo4L", 2], ["VBF_HToZZTo4L", 1], ["ttHToNonbb", 2], ["VHToNonbb", 1], ["ttZToLLNuNu", 4], ["WWZ", 1], ["WZZ", 1], ["ZZZ", 1],
   ["WZTo3LNu_powheg", 1], ["ttWToLNu", 2], ["WWW", 1], #Only Trilep  
-  ["ZGToLLG_01J", 5], ["TTG", 2],
+  ["ZGToLLG", 5], ["TTG", 2],
   #["WJets_MG", 7], ["TTLJ_powheg", 7], #Only SS2l
   #["WGToLNuG", 5], ["TG", 1], ["WpWp_EWK", 1], ["WpWp_QCD", 1],#SS2l
 ]
@@ -193,7 +258,7 @@ List_HNTopFeas_BkdMC_2018 = [
   ["ZZTo4L_powheg", 20], ["GluGluHToZZTo4L", 2], ["VBF_HToZZTo4L", 1], ["ttHToNonbb", 2], ["ttZToLLNuNu", 4], ["WWZ", 1], ["WZZ", 1], ["ZZZ", 1],
   ["WZTo3LNu_powheg", 1], ["ttWToLNu", 2], ["WWW", 1], #Only Trilep  
   ["WJets_MG", 13], ["TTLJ_powheg", 25], #Only SS2l
-  ["WGToLNuG", 5], ["ZGToLLG_01J", 5], ["TTG", 2], ["TG", 1], ["VHToNonbb", 1], ["WpWp_EWK", 1], ["WpWp_QCD", 1],
+  ["WGToLNuG", 5], ["ZGToLLG", 5], ["TTG", 2], ["TG", 1], ["VHToNonbb", 1], ["WpWp_EWK", 1], ["WpWp_QCD", 1],
 ]
 
 
@@ -244,11 +309,11 @@ List_GenMatchingValid_BkdMC_2016 = [
 ]
 
 List_GenMatchingValid_BkdMC_2017 = [
-  ["ZGToLLG_01J", 5], ["TTLJ_powheg", 7],
+  ["ZGToLLG", 5], ["TTLJ_powheg", 7],
 ]
 
 List_GenMatchingValid_BkdMC_2018 = [
-  ["ZGToLLG_01J", 5], ["TTLJ_powheg", 25],
+  ["ZGToLLG", 5], ["TTLJ_powheg", 25],
 ]
 
 List_GenMatchingValid_SigMC_2017 = [
@@ -262,7 +327,7 @@ List_IDOptimization_BkdMC_2016 = [
 ]
 
 List_IDOptimization_BkdMC_2017 = [
-#  ["ZGToLLG_01J", 5],
+#  ["ZGToLLG", 5],
   ["TTLL_powheg", 13], ["TTLJ_powheg", 15],
 #  ["TTLL_powheg_TrigInfo", 13], ["TTLJ_powheg_TrigInfo", 15],
 #  ["DYJets", 25], ["WJets_MG", 7],
@@ -289,19 +354,26 @@ List_MeasTrigEff_Data_2017_ElMu = [
 List_Debug_SigMC_2016 = [["TestFiltered_TTToHcToWA_AToMuMu_MHc160_MA75", 1]]
 List_Debug_BkdMC_2016a = [["DYJets", 1]]
 List_Debug_BkdMC_2016b = [["TTLJ_powheg", 1]]
-List_Debug_Data_2016 = [["MuonEG", 1, "B_ver2"]]
+List_Debug_Data_2016a = [["DoubleMuon", 1, "B_ver2"]]
 List_Debug_SigMC_2017 = [
-  ["TT_HeavyN-El_2L_MN20", 1],
-  ["TT_HeavyN-Mu_2L_MN20", 1],
+  #["TT_HeavyN-El_2L_MN20", 1],
+  #["TT_HeavyN-Mu_2L_MN20", 1],
+  ["TT_HeavyN-Mu_LepSMTop_3L_MN100", 1],
+  ["TT_HeavyN-Mu_HadSMTop_3L_MN100", 1],
+  ["TT_HeavyN-Mu_4L_MN100", 1],
 ]
 #List_Debug_BkdMC_2017 = [["ttHToNonbb", 1]]
-#List_Debug_BkdMC_2017 = [["ZGToLLG_01J", 1]]
+#List_Debug_BkdMC_2017 = [["ZGToLLG", 1]]
 #List_Debug_BkdMC_2017 = [["WZTo3LNu_amcatnlo", 1]]
-List_Debug_BkdMC_2017 = [["TTLJ_powheg", 1]]
+#List_Debug_BkdMC_2017 = [["DYJets", 1]]
+List_Debug_BkdMC_2017 = [["TTLL_powheg", 1], ["DYJets", 1]]
+#List_Debug_BkdMC_2017 = [["ZZTo4L_powheg", 1], ["GluGluHToZZTo4L", 1],]
+
 #List_Debug_BkdMC_2017 = [["ttWToLNu", 1]]
-#List_Debug_BkdMC_2017 = [["WGToLNuG_01J", 1]]
+#List_Debug_BkdMC_2017 = [["WGToLNuG", 1]]
 List_Debug_Data_2017 = [["DoubleEG", 1, "B"]]
-List_Debug_Flip_2017 = [["DoubleEG", 1, "B"]]
+List_Debug_Flip_2017 = [["TTLL_powheg", 1], ["DYJets", 1]]
+>>>>>>> Run2UltraLegacy
 #List_Debug_Data_2017 = [["DoubleMuon", 1, "B"]]
 List_Debug_SigMC_2018 = [["TestFiltered_TTToHcToWA_AToMuMu_MHc160_MA75", 1]]
 List_Debug_BkdMC_2018 = [["DYJets", 10]]
@@ -322,21 +394,25 @@ Dict_JobConfig = {
  "SkimTree_SS2lOR3l_BkdMC_2016b"        : List_SkimTree_SS2lOR3l_BkdMC,
  "SkimTree_SS2lOR3l_BkdMC_2017"         : List_SkimTree_SS2lOR3l_BkdMC,
  "SkimTree_SS2lOR3l_BkdMC_2018"         : List_SkimTree_SS2lOR3l_BkdMC,
- "SkimTree_SS2lOR3l_Data_2016a_SS2lOR3l": List_Data_2LPD_2016a,
- "SkimTree_SS2lOR3l_Data_2016b_SS2lOR3l": List_Data_2LPD_2016b,
- "SkimTree_SS2lOR3l_Data_2017_SS2lOR3l" : List_Data_2LPD_2017,
- "SkimTree_SS2lOR3l_Data_2018_SS2lOR3l" : List_Data_2LPD_2018,
+ "SkimTree_SS2lOR3l_Data_2016a_SS2lOR3l": List_Data_2LPD_2016a+List_Data_1LPD_2016a,
+ "SkimTree_SS2lOR3l_Data_2016b_SS2lOR3l": List_Data_2LPD_2016b+List_Data_1LPD_2016b,
+ "SkimTree_SS2lOR3l_Data_2017_SS2lOR3l" : List_Data_2LPD_2017+ List_Data_1LPD_2017,
+ "SkimTree_SS2lOR3l_Data_2018_SS2lOR3l" : List_Data_2LPD_2018+ List_Data_1LPD_2018,
  "DiLepValid_Data_2016a_ElEl" : List_Data_DblEG_2016a,
  "DiLepValid_Data_2016a_MuMu" : List_Data_DblMu_2016a,
+ "DiLepValid_Data_2016a_SF2L" : List_Data_DblMu_2016a+List_Data_DblEG_2016a,
  "DiLepValid_Data_2016a_ElMu" : List_Data_MuEG_2016a,
  "DiLepValid_Data_2016b_ElEl" : List_Data_DblEG_2016b,
  "DiLepValid_Data_2016b_MuMu" : List_Data_DblMu_2016b,
+ "DiLepValid_Data_2016b_SF2L" : List_Data_DblMu_2016b+List_Data_DblEG_2016b,
  "DiLepValid_Data_2016b_ElMu" : List_Data_MuEG_2016b,
  "DiLepValid_Data_2017_ElEl"  : List_Data_DblEG_2017,
  "DiLepValid_Data_2017_MuMu"  : List_Data_DblMu_2017,
+ "DiLepValid_Data_2017_SF2L"  : List_Data_DblMu_2017+List_Data_DblEG_2017,
  "DiLepValid_Data_2017_ElMu"  : List_Data_MuEG_2017,
  "DiLepValid_Data_2018_ElEl"  : List_Data_DblEG_2018,
  "DiLepValid_Data_2018_MuMu"  : List_Data_DblMu_2018,
+ "DiLepValid_Data_2018_SF2L"  : List_Data_DblMu_2018+List_Data_DblEG_2018,
  "DiLepValid_Data_2018_ElMu"  : List_Data_MuEG_2018,
  "DiLepValid_BkdMC_2016a"     : List_MC_PrOS2l,
  "DiLepValid_BkdMC_2016b"     : List_MC_PrOS2l,
@@ -346,14 +422,14 @@ Dict_JobConfig = {
  "IDOptimization_BkdMC_2016b": List_MC_TT,#TT
  "IDOptimization_BkdMC_2017" : List_MC_TT,#TT
  "IDOptimization_BkdMC_2018" : List_MC_TT,#TT
- "IDOptimization_SigMC_2016a" : List_HNTop_El_Pivot,
- "IDOptimization_SigMC_2016b" : List_HNTop_El_Pivot,
- "IDOptimization_SigMC_2017"  : List_HNTop_El_Pivot,
- "IDOptimization_SigMC_2018"  : List_HNTop_El_Pivot,
- "MCFakeStudy_BkdMC_2016a": List_MC_TT,#List_MC_QCD,
- "MCFakeStudy_BkdMC_2016b": List_MC_TT,#List_MC_QCD,
- "MCFakeStudy_BkdMC_2017" : List_MC_TT,#List_MC_QCD, #Fk2l Cv2l QCD PrSS2l QCD
- "MCFakeStudy_BkdMC_2018" : List_MC_TT,#List_MC_QCD,
+ "IDOptimization_SigMC_2016a" : List_HNTop_Mu_Pivot,
+ "IDOptimization_SigMC_2016b" : List_HNTop_Mu_Pivot,
+ "IDOptimization_SigMC_2017"  : List_HNTop_Mu_Pivot,
+ "IDOptimization_SigMC_2018"  : List_HNTop_Mu_Pivot,
+ "MCFakeStudy_BkdMC_2016a": List_MC_TT,#List_MC_QCD_MuFilt,
+ "MCFakeStudy_BkdMC_2016b": List_MC_TT,#List_MC_QCD_MuFilt,
+ "MCFakeStudy_BkdMC_2017" : List_MC_TT,#List_MC_QCD_MuFilt, #Fk2l Cv2l QCD PrSS2l QCD
+ "MCFakeStudy_BkdMC_2018" : List_MC_TT,#List_MC_QCD_MuFilt,
  "MCFakeStudy_SigMC_2016a" : List_HNTop_Mu_Pivot,
  "MCFakeStudy_SigMC_2016b" : List_HNTop_Mu_Pivot,
  "MCFakeStudy_SigMC_2017"  : List_HNTop_Mu_Pivot,
@@ -367,79 +443,123 @@ Dict_JobConfig = {
  "FakeRateMeas_Data_2016b_El": List_Data_DblEG_2016b,
  "FakeRateMeas_Data_2016b_Mu": List_Data_DblMu_2016b,
  "FakeRateMeas_Data_2017_El" : List_Data_SglEl_2017,
- "FakeRateMeas_Data_2017_Mu" : List_Data_DblMu_2017+List_Data_SglMu_2017,
+ "FakeRateMeas_Data_2017_Mu" : List_Data_DblMu_2017,#List_Data_SglMu_2017,
  "FakeRateMeas_Data_2018_El" : List_Data_DblEG_2018,
- "FakeRateMeas_Data_2018_Mu" : List_Data_DblMu_2018+List_Data_SglMu_2018,
- "ControlPlots_Flip_2016a"       : List_MC_PrOS2l,
- "ControlPlots_Conv_2016a"       : List_MC_Cv2l,
- "ControlPlots_BkdMC_2016a"      : List_MC_PrSS2l, # PrSS2l TrigClos
- "ControlPlots_SigMC_2016a"      : List_HNTop_Pivot,
- "ControlPlots_Data_2016a_OS2l"  : List_Data_SF2L_2016a, #2LPD
- "ControlPlots_Data_2016a_SS2l"  : List_Data_DblEG_2016a, #SF2L
- "ControlPlots_Data_2016a_TriLep": List_Data_SglEl_2016a, #2LPD
- "ControlPlots_Flip_2016b"       : List_MC_PrOS2l,
- "ControlPlots_Conv_2016b"       : List_MC_Cv2l,
- "ControlPlots_BkdMC_2016b"      : List_MC_PrSS2l,# PrSS2l TrigClos
- "ControlPlots_SigMC_2016b"      : List_HNTop_Pivot,
- "ControlPlots_Data_2016b_OS2l"  : List_Data_SF2L_2016b, #2LPD
- "ControlPlots_Data_2016b_SS2l"  : List_Data_DblEG_2016b, #SF2L
- "ControlPlots_Data_2016b_TriLep": List_Data_SglEl_2016b, #2LPD
- "ControlPlots_Flip_2017"       : List_MC_PrOS2l,
- "ControlPlots_Conv_2017"       : List_MC_Cv2l,
- "ControlPlots_BkdMC_2017"      : List_MC_PrSS2l,# PrSS2l TrigClos
- "ControlPlots_SigMC_2017"      : List_HNTop_Pivot,
- "ControlPlots_Data_2017_OS2l"  : List_Data_SF2L_2017, #2LPD
- "ControlPlots_Data_2017_SS2l"  : List_Data_DblEG_2017, #SF2L
- "ControlPlots_Data_2017_TriLep": List_Data_SglEl_2017, #2LPD
- "ControlPlots_Flip_2018"       : List_MC_PrOS2l,
- "ControlPlots_Conv_2018"       : List_MC_Cv2l,
- "ControlPlots_BkdMC_2018"      : List_MC_PrSS2l,# PrSS2l TrigClos
- "ControlPlots_SigMC_2018"      : List_HNTop_Pivot,
- "ControlPlots_Data_2018_OS2l"  : List_Data_SF2L_2018, #2LPD
- "ControlPlots_Data_2018_SS2l"  : List_Data_DblEG_2018, #SF2L
- "ControlPlots_Data_2018_TriLep": List_Data_SglEl_2018, #2LPD
+ "FakeRateMeas_Data_2018_Mu" : List_Data_DblMu_2018,#List_Data_SglMu_2018,
+ "ControlPlots_Flip_2016a"         : List_MC_PrOS2l,
+ "ControlPlots_Conv_2016a"         : List_MC_Cv2l,
+ "ControlPlots_BkdMC_2016a"        : List_MC_PrSS2l, # PrSS2l TrigClos
+ "ControlPlots_SigMC_2016a"        : List_HNTop_Pivot,
+ "ControlPlots_Data_2016a_OS2l"    : List_Data_DblEG_2016a, #2LPD
+ "ControlPlots_Data_2016a_SS2l"    : List_Data_SF2L_2016a, #SF2L
+ "ControlPlots_Data_2016a_TriLep"  : List_Data_SF2L_2016a, #2LPD
+ "ControlPlots_Data_2016a_TetraLep": List_Data_2LPD_2016a, #2LPD
+ "ControlPlots_Flip_2016b"         : List_MC_PrOS2l,
+ "ControlPlots_Conv_2016b"         : List_MC_Cv2l,
+ "ControlPlots_BkdMC_2016b"        : List_MC_PrSS2l,# PrSS2l TrigClos
+ "ControlPlots_SigMC_2016b"        : List_HNTop_Pivot,
+ "ControlPlots_Data_2016b_OS2l"    : List_Data_DblEG_2016b, #2LPD
+ "ControlPlots_Data_2016b_SS2l"    : List_Data_SF2L_2016b, #SF2L
+ "ControlPlots_Data_2016b_TriLep"  : List_Data_SF2L_2016b, #2LPD
+ "ControlPlots_Data_2016b_TetraLep": List_Data_2LPD_2016b, #2LPD
+ "ControlPlots_Flip_2017"         : List_MC_PrOS2l,
+ "ControlPlots_Conv_2017"         : List_MC_Cv2l,
+ "ControlPlots_BkdMC_2017"        : List_MC_PrSS2l,# PrSS2l TrigClos
+ "ControlPlots_SigMC_2017"        : List_HNTop_Pivot,
+ "ControlPlots_Data_2017_OS2l"    : List_Data_DblEG_2017, #2LPD
+ "ControlPlots_Data_2017_SS2l"    : List_Data_SF2L_2017, #SF2L
+ "ControlPlots_Data_2017_TriLep"  : List_Data_SF2L_2017, #2LPD
+ "ControlPlots_Data_2017_TetraLep": List_Data_2LPD_2017, #2LPD
+ "ControlPlots_Flip_2018"         : List_MC_PrOS2l,
+ "ControlPlots_Conv_2018"         : List_MC_Cv2l,
+ "ControlPlots_BkdMC_2018"        : List_MC_PrSS2l,# PrSS2l TrigClos
+ "ControlPlots_SigMC_2018"        : List_HNTop_Pivot,
+ "ControlPlots_Data_2018_OS2l"    : List_Data_DblEG_2018, #2LPD
+ "ControlPlots_Data_2018_SS2l"    : List_Data_SF2L_2018, #SF2L
+ "ControlPlots_Data_2018_TriLep"  : List_Data_SF2L_2018, #2LPD
+ "ControlPlots_Data_2018_TetraLep": List_Data_2LPD_2018, #2LPD
  "MeasTrigEff_Data_2016a_ElMuSE" : List_Data_SglEl_2016a,
  "MeasTrigEff_Data_2016a_ElMuSM" : List_Data_SglMu_2016a,
  "MeasTrigEff_Data_2016a_ElMuEM" : List_Data_MuEG_2016a,
  "MeasTrigEff_Data_2016a_MuMuMM" : List_Data_DblMu_2016a,
- "MeasTrigEff_Data_2016a_ElElEE" : List_Data_DblMu_2016a,
+ "MeasTrigEff_Data_2016a_ElElEE" : List_Data_DblEG_2016a,
  "MeasTrigEff_Data_2016b_ElMuSE" : List_Data_SglEl_2016b,
  "MeasTrigEff_Data_2016b_ElMuSM" : List_Data_SglMu_2016b,
  "MeasTrigEff_Data_2016b_ElMuEM" : List_Data_MuEG_2016b,
  "MeasTrigEff_Data_2016b_MuMuMM" : List_Data_DblMu_2016b,
- "MeasTrigEff_Data_2016b_ElElEE" : List_Data_DblMu_2016b,
+ "MeasTrigEff_Data_2016b_ElElEE" : List_Data_DblEG_2016b,
  "MeasTrigEff_Data_2017_ElMuSE" : List_Data_SglEl_2017,
  "MeasTrigEff_Data_2017_ElMuSM" : List_Data_SglMu_2017,
  "MeasTrigEff_Data_2017_ElMuEM" : List_Data_MuEG_2017,
  "MeasTrigEff_Data_2017_MuMuMM" : List_Data_DblMu_2017,
- "MeasTrigEff_Data_2017_ElElEE" : List_Data_DblMu_2017,
+ "MeasTrigEff_Data_2017_ElElEE" : List_Data_DblEG_2017,
  "MeasTrigEff_Data_2018_ElMuSE" : List_Data_SglEl_2018,
  "MeasTrigEff_Data_2018_ElMuSM" : List_Data_SglMu_2018,
  "MeasTrigEff_Data_2018_ElMuEM" : List_Data_MuEG_2018,
  "MeasTrigEff_Data_2018_MuMuMM" : List_Data_DblMu_2018,
- "MeasTrigEff_Data_2018_ElElEE" : List_Data_DblMu_2018,
+ "MeasTrigEff_Data_2018_ElElEE" : List_Data_DblEG_2018,
  "MeasTrigEff_BkdMC_2016a"      : List_MC_TrigEff,
  "MeasTrigEff_BkdMC_2016b"      : List_MC_TrigEff,
  "MeasTrigEff_BkdMC_2017"       : List_MC_TrigEff,
  "MeasTrigEff_BkdMC_2018"       : List_MC_TrigEff,
- "MeasCFlipRate_BkdMC_2016a"      : List_MC_CF2l, #CF2l CFMeas
- "MeasCFlipRate_BkdMC_2016b"      : List_MC_CF2l,
- "MeasCFlipRate_BkdMC_2017"       : List_MC_CF2l,
- "MeasCFlipRate_BkdMC_2018"       : List_MC_CF2l,
+ "MeasCFlipRate_BkdMC_2016a"      : List_MC_CFMeas, #CF2l CFMeas
+ "MeasCFlipRate_BkdMC_2016b"      : List_MC_CFMeas,
+ "MeasCFlipRate_BkdMC_2017"       : List_MC_CFMeas,
+ "MeasCFlipRate_BkdMC_2018"       : List_MC_CFMeas,
  "MeasCFlipRate_Data_2016a_All2l" : List_Data_DiEl_2016a,
  "MeasCFlipRate_Data_2016b_All2l" : List_Data_DiEl_2016b,
  "MeasCFlipRate_Data_2017_All2l"  : List_Data_DiEl_2017,
  "MeasCFlipRate_Data_2018_All2l"  : List_Data_DiEl_2018,
- "KinVarSearch_BkdMC_2016a"     : List_MC_TT,
+ "KinVarSearch_BkdMC_2016a"     : List_MC_TT+List_MC_ttVH,
  "KinVarSearch_SigMC_2016a"     : List_HNTop_Pivot,
- "KinVarSearch_BkdMC_2016b"     : List_MC_TT,
+ "KinVarSearch_BkdMC_2016b"     : List_MC_TT+List_MC_ttVH,
  "KinVarSearch_SigMC_2016b"     : List_HNTop_Pivot,
- "KinVarSearch_BkdMC_2017"      : List_MC_TT,
+ "KinVarSearch_BkdMC_2017"      : List_MC_TT+List_MC_ttVH,
  "KinVarSearch_SigMC_2017"      : List_HNTop_Pivot,
- "KinVarSearch_BkdMC_2018"      : List_MC_TT,
+ "KinVarSearch_BkdMC_2018"      : List_MC_TT+List_MC_ttVH,
  "KinVarSearch_SigMC_2018"      : List_HNTop_Pivot,
-
+ "KinVarPlot_Flip_2016a"         : List_MC_PrOS2l,
+ "KinVarPlot_Conv_2016a"         : List_MC_Cv2l,
+ "KinVarPlot_BkdMC_2016a"        : List_MC_PrSS2l,#+List_MC_Cv2l, # PrSS2l TrigClos
+ "KinVarPlot_SigMC_2016a"        : List_HNTop_Pivot,
+ "KinVarPlot_Data_2016a_OS2l"    : List_Data_DblEG_2016a, #2LPD
+ "KinVarPlot_Data_2016a_SS2l"    : List_Data_SF2L_2016a, #SF2L
+ "KinVarPlot_Data_2016a_TriLep"  : List_Data_2LPD_2016a, #2LPD
+ "KinVarPlot_Data_2016a_TetraLep": List_Data_2LPD_2016a, #2LPD
+ "KinVarPlot_Flip_2016b"         : List_MC_PrOS2l,
+ "KinVarPlot_Conv_2016b"         : List_MC_Cv2l,
+ "KinVarPlot_BkdMC_2016b"        : List_MC_PrSS2l,#+List_MC_Cv2l,# PrSS2l TrigClos
+ "KinVarPlot_SigMC_2016b"        : List_HNTop_Pivot,
+ "KinVarPlot_Data_2016b_OS2l"    : List_Data_DblEG_2016b, #2LPD
+ "KinVarPlot_Data_2016b_SS2l"    : List_Data_SF2L_2016b, #SF2L
+ "KinVarPlot_Data_2016b_TriLep"  : List_Data_2LPD_2016b, #2LPD
+ "KinVarPlot_Data_2016b_TetraLep": List_Data_2LPD_2016b, #2LPD
+ "KinVarPlot_Flip_2017"         : List_MC_PrOS2l,
+ "KinVarPlot_Conv_2017"         : List_MC_Cv2l,
+ "KinVarPlot_BkdMC_2017"        : List_MC_PrSS2l,#+List_MC_Cv2l,# PrSS2l TrigClos
+ "KinVarPlot_SigMC_2017"        : List_HNTop_Pivot,
+ "KinVarPlot_Data_2017_OS2l"    : List_Data_DblEG_2017, #2LPD
+ "KinVarPlot_Data_2017_SS2l"    : List_Data_SF2L_2017, #SF2L
+ "KinVarPlot_Data_2017_TriLep"  : List_Data_2LPD_2017, #2LPD
+ "KinVarPlot_Data_2017_TetraLep": List_Data_2LPD_2017, #2LPD
+ "KinVarPlot_Flip_2018"         : List_MC_PrOS2l,
+ "KinVarPlot_Conv_2018"         : List_MC_Cv2l,
+ "KinVarPlot_BkdMC_2018"        : List_MC_PrSS2l,#+List_MC_Cv2l,# PrSS2l TrigClos
+ "KinVarPlot_SigMC_2018"        : List_HNTop_Pivot,
+ "KinVarPlot_Data_2018_OS2l"    : List_Data_DblEG_2018, #2LPD
+ "KinVarPlot_Data_2018_SS2l"    : List_Data_SF2L_2018, #SF2L
+ "KinVarPlot_Data_2018_TriLep"  : List_Data_2LPD_2018, #2LPD
+ "KinVarPlot_Data_2018_TetraLep": List_Data_2LPD_2018, #2LPD
+ "GenSigStudy_BkdMC_2016a" : List_MC_TT, 
+ "GenSigStudy_BkdMC_2016b" : List_MC_TT,
+ "GenSigStudy_BkdMC_2017"  : List_MC_TT,
+ "GenSigStudy_BkdMC_2018"  : List_MC_TT,
+ "GenSigStudy_SigMC_2016a" : List_HNTop_2L_Pivot, # HNTop_2L_Pivot HNTop_Pivot,
+ "GenSigStudy_SigMC_2016b" : List_HNTop_2L_Pivot,
+ "GenSigStudy_SigMC_2017"  : List_HNTop_2L_Pivot,
+ "GenSigStudy_SigMC_2018"  : List_HNTop_2L_Pivot,
  "Debug_BkdMC_2016a" : List_Debug_BkdMC_2016a,
+ "Debug_Data_2016a"  : List_Debug_Data_2016a,
  "Debug_BkdMC_2016b" : List_Debug_BkdMC_2016b,
  "Debug_SigMC_2017"  : List_Debug_SigMC_2017,
  "Debug_BkdMC_2017"  : List_Debug_BkdMC_2017,
@@ -475,18 +595,6 @@ Dict_JobConfig = {
 # "ControlPlots_Data_2017_TriLep": List_Data_2LPD_2017,
 # "GenSystStudy_BkdMC_2017": List_MC_TT_2017,
 # "GenSystStudy_SigMC_2017": List_HNTopV3_SigMC_2017,
-# #"KinVarPlot_BkdMC_2017": List_MC_TT_2017,
-# #"KinVarPlot_BkdMC_2017": List_MC_Fk2l_2017,
-# "KinVarPlot_Conv_2017": List_MC_Cv2l_2017,
-# "KinVarPlot_BkdMC_2017": List_MC_PrSS2l_2017,
-# #"KinVarPlot_Conv_2017": List_MC_Cv3l_2017,
-# #"KinVarPlot_BkdMC_2017": List_MC_Pr3l_2017,
-# #"KinVarPlot_BkdMC_2017": List_MC_Pr4l_2017,
-# "KinVarPlot_SigMC_2017": List_HNTopV2_SigMC_2017,
-# "KinVarPlot_Data_2017_SS2l": List_Data_SF2L_2017,
-# "KinVarPlot_Data_2017_TriLep": List_Data_2LPD_2017,
-# "KinVarPlot_Data_2017_TetraLep": List_Data_2LPD_2017,
-# "KinVarPlot_Flip_2017_SS2l": List_Data_DiEl_2017,
 # "HNTopFeas_BkdMC_2016": List_HNTopFeas_BkdMC_2016,
 # "HNTopFeas_BkdMC_2017": List_HNTopFeas_BkdMC_2017,
 # "HNTopFeas_BkdMC_2018": List_HNTopFeas_BkdMC_2018,

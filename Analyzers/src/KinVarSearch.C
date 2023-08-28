@@ -40,7 +40,6 @@ void KinVarSearch::initializeAnalyzer(){
 
 
   //Set up the tagger map only for the param settings to be used.
-  vector<JetTagging::Parameters> jtps;
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets) );
   mcCorr->SetJetTaggingParameters(jtps);
 
@@ -54,12 +53,7 @@ void KinVarSearch::initializeAnalyzer(){
   tree_mm->Branch("Ptj3", &Ptj3, "Ptj3/F");             tree_ee->Branch("Ptj3", &Ptj3, "Ptj3/F");
   tree_mm->Branch("MET", &MET, "MET/F");                tree_ee->Branch("MET", &MET, "MET/F");
   tree_mm->Branch("HT", &HT, "HT/F");                   tree_ee->Branch("HT", &HT, "HT/F");
-  tree_mm->Branch("MET2HT", &MET2HT, "MET2HT/F");       tree_ee->Branch("MET2HT", &MET2HT, "MET2HT/F");
-  tree_mm->Branch("dEtall", &dEtall, "dEtall/F");       tree_ee->Branch("dEtall", &dEtall, "dEtall/F");
   tree_mm->Branch("dRll", &dRll, "dRll/F");             tree_ee->Branch("dRll", &dRll, "dRll/F");
-  tree_mm->Branch("dRjj12", &dRjj12, "dRjj12/F");       tree_ee->Branch("dRjj12", &dRjj12, "dRjj12/F");
-  tree_mm->Branch("dRjj23", &dRjj23, "dRjj23/F");       tree_ee->Branch("dRjj23", &dRjj23, "dRjj23/F");
-  tree_mm->Branch("dRjj13", &dRjj13, "dRjj13/F");       tree_ee->Branch("dRjj13", &dRjj13, "dRjj13/F");
   tree_mm->Branch("dRlj11", &dRlj11, "dRlj11/F");       tree_ee->Branch("dRlj11", &dRlj11, "dRlj11/F");
   tree_mm->Branch("dRlj12", &dRlj12, "dRlj12/F");       tree_ee->Branch("dRlj12", &dRlj12, "dRlj12/F");
   tree_mm->Branch("dRlj13", &dRlj13, "dRlj13/F");       tree_ee->Branch("dRlj13", &dRlj13, "dRlj13/F");
@@ -68,64 +62,29 @@ void KinVarSearch::initializeAnalyzer(){
   tree_mm->Branch("dRlj23", &dRlj23, "dRlj23/F");       tree_ee->Branch("dRlj23", &dRlj23, "dRlj23/F");
   tree_mm->Branch("dRlb11", &dRlb11, "dRlb11/F");       tree_ee->Branch("dRlb11", &dRlb11, "dRlb11/F");
   tree_mm->Branch("dRlb21", &dRlb21, "dRlb21/F");       tree_ee->Branch("dRlb21", &dRlb21, "dRlb21/F");
+  tree_mm->Branch("dRlnb11", &dRlnb11, "dRlnb11/F");    tree_ee->Branch("dRlnb11", &dRlnb11, "dRlnb11/F");
+  tree_mm->Branch("dRlnb21", &dRlnb21, "dRlnb21/F");    tree_ee->Branch("dRlnb21", &dRlnb21, "dRlnb21/F");
   tree_mm->Branch("MSSSF", &MSSSF, "MSSSF/F");          tree_ee->Branch("MSSSF", &MSSSF, "MSSSF/F");
-  tree_mm->Branch("Mbl11", &Mbl11, "Mbl11/F");          tree_ee->Branch("Mbl11", &Mbl11, "Mbl11/F");
-  tree_mm->Branch("Mbl12", &Mbl12, "Mbl12/F");          tree_ee->Branch("Mbl12", &Mbl12, "Mbl12/F");
-  tree_mm->Branch("Mbl21", &Mbl21, "Mbl21/F");          tree_ee->Branch("Mbl21", &Mbl21, "Mbl21/F");
-  tree_mm->Branch("Mbl22", &Mbl22, "Mbl22/F");          tree_ee->Branch("Mbl22", &Mbl22, "Mbl22/F");
-  tree_mm->Branch("Mlj11", &Mlj11, "Mlj11/F");          tree_ee->Branch("Mlj11", &Mlj11, "Mlj11/F");
-  tree_mm->Branch("Mlj12", &Mlj12, "Mlj12/F");          tree_ee->Branch("Mlj12", &Mlj12, "Mlj12/F");
-  tree_mm->Branch("Mlj13", &Mlj13, "Mlj13/F");          tree_ee->Branch("Mlj13", &Mlj13, "Mlj13/F");
-  tree_mm->Branch("Mlj21", &Mlj21, "Mlj21/F");          tree_ee->Branch("Mlj21", &Mlj21, "Mlj21/F");
-  tree_mm->Branch("Mlj22", &Mlj22, "Mlj22/F");          tree_ee->Branch("Mlj22", &Mlj22, "Mlj22/F");
-  tree_mm->Branch("Mlj23", &Mlj23, "Mlj23/F");          tree_ee->Branch("Mlj23", &Mlj23, "Mlj23/F");
   tree_mm->Branch("MTvl1", &MTvl1, "MTvl1/F");          tree_ee->Branch("MTvl1", &MTvl1, "MTvl1/F");
-  tree_mm->Branch("MTvl2", &MTvl2, "MTvl2/F");          tree_ee->Branch("MTvl2", &MTvl2, "MTvl2/F");
-  tree_mm->Branch("Mllj1", &Mllj1, "Mllj1/F");          tree_ee->Branch("Mllj1", &Mllj1, "Mllj1/F");
-  tree_mm->Branch("Mllj2", &Mllj2, "Mllj2/F");          tree_ee->Branch("Mllj2", &Mllj2, "Mllj2/F");
-  tree_mm->Branch("Mllj3", &Mllj3, "Mllj3/F");          tree_ee->Branch("Mllj3", &Mllj3, "Mllj3/F");
-  tree_mm->Branch("Mllj4", &Mllj4, "Mllj4/F");          tree_ee->Branch("Mllj4", &Mllj4, "Mllj4/F");
-  tree_mm->Branch("Mllb1", &Mllb1, "Mllb1/F");          tree_ee->Branch("Mllb1", &Mllb1, "Mllb1/F");
-  tree_mm->Branch("Mllb2", &Mllb2, "Mllb2/F");          tree_ee->Branch("Mllb2", &Mllb2, "Mllb2/F");
-  tree_mm->Branch("Mlljj12", &Mlljj12, "Mlljj12/F");    tree_ee->Branch("Mlljj12", &Mlljj12, "Mlljj12/F");
-  tree_mm->Branch("Mlljj13", &Mlljj13, "Mlljj13/F");    tree_ee->Branch("Mlljj13", &Mlljj13, "Mlljj13/F");
-  tree_mm->Branch("Mlljj14", &Mlljj14, "Mlljj14/F");    tree_ee->Branch("Mlljj14", &Mlljj14, "Mlljj14/F");
-  tree_mm->Branch("Mlljj23", &Mlljj23, "Mlljj23/F");    tree_ee->Branch("Mlljj23", &Mlljj23, "Mlljj23/F");
-  tree_mm->Branch("Mlljj24", &Mlljj24, "Mlljj24/F");    tree_ee->Branch("Mlljj24", &Mlljj24, "Mlljj24/F");
-  tree_mm->Branch("Mlljj34", &Mlljj34, "Mlljj34/F");    tree_ee->Branch("Mlljj34", &Mlljj34, "Mlljj34/F");
-  tree_mm->Branch("Mljj112", &Mljj112, "Mljj112/F");    tree_ee->Branch("Mljj112", &Mljj112, "Mljj112/F");
-  tree_mm->Branch("Mljj113", &Mljj113, "Mljj113/F");    tree_ee->Branch("Mljj113", &Mljj113, "Mljj113/F");
-  tree_mm->Branch("Mljj114", &Mljj114, "Mljj114/F");    tree_ee->Branch("Mljj114", &Mljj114, "Mljj114/F");
-  tree_mm->Branch("Mljj123", &Mljj123, "Mljj123/F");    tree_ee->Branch("Mljj123", &Mljj123, "Mljj123/F");
-  tree_mm->Branch("Mljj124", &Mljj124, "Mljj124/F");    tree_ee->Branch("Mljj124", &Mljj124, "Mljj124/F");
-  tree_mm->Branch("Mljj134", &Mljj134, "Mljj134/F");    tree_ee->Branch("Mljj134", &Mljj134, "Mljj134/F");
-  tree_mm->Branch("Mljj212", &Mljj212, "Mljj212/F");    tree_ee->Branch("Mljj212", &Mljj212, "Mljj212/F");
-  tree_mm->Branch("Mljj213", &Mljj213, "Mljj213/F");    tree_ee->Branch("Mljj213", &Mljj213, "Mljj213/F");
-  tree_mm->Branch("Mljj214", &Mljj214, "Mljj214/F");    tree_ee->Branch("Mljj214", &Mljj214, "Mljj214/F");
-  tree_mm->Branch("Mljj223", &Mljj223, "Mljj223/F");    tree_ee->Branch("Mljj223", &Mljj223, "Mljj223/F");
-  tree_mm->Branch("Mljj224", &Mljj224, "Mljj224/F");    tree_ee->Branch("Mljj224", &Mljj224, "Mljj224/F");
-  tree_mm->Branch("Mljj234", &Mljj234, "Mljj234/F");    tree_ee->Branch("Mljj234", &Mljj234, "Mljj234/F");
-  tree_mm->Branch("Mjj12", &Mjj12, "Mjj12/F");          tree_ee->Branch("Mjj12", &Mjj12, "Mjj12/F");
-  tree_mm->Branch("Mjj13", &Mjj13, "Mjj13/F");          tree_ee->Branch("Mjj13", &Mjj13, "Mjj13/F");
-  tree_mm->Branch("Mjj14", &Mjj14, "Mjj14/F");          tree_ee->Branch("Mjj14", &Mjj14, "Mjj14/F");
-  tree_mm->Branch("Mjj23", &Mjj23, "Mjj23/F");          tree_ee->Branch("Mjj23", &Mjj23, "Mjj23/F");
-  tree_mm->Branch("Mjj24", &Mjj24, "Mjj24/F");          tree_ee->Branch("Mjj24", &Mjj24, "Mjj24/F");
-  tree_mm->Branch("Mjj34", &Mjj34, "Mjj34/F");          tree_ee->Branch("Mjj34", &Mjj34, "Mjj34/F");
-  tree_mm->Branch("MjjW1", &MjjW1, "MjjW1/F");          tree_ee->Branch("MjjW1", &MjjW1, "MjjW1/F");
-  tree_mm->Branch("MjjW2", &MjjW2, "MjjW2/F");          tree_ee->Branch("MjjW2", &MjjW2, "MjjW2/F");
-  tree_mm->Branch("MllW_2jL", &MllW_2jL, "MllW_2jL/F"); tree_ee->Branch("MllW_2jL", &MllW_2jL, "MllW_2jL/F");
-  tree_mm->Branch("MllW_1jL", &MllW_1jL, "MllW_1jL/F"); tree_ee->Branch("MllW_1jL", &MllW_1jL, "MllW_1jL/F");
-  tree_mm->Branch("MllW1_H", &MllW1_H, "MllW1_H/F");    tree_ee->Branch("MllW1_H", &MllW1_H, "MllW1_H/F");
-  tree_mm->Branch("MllW2_H", &MllW2_H, "MllW2_H/F");    tree_ee->Branch("MllW2_H", &MllW2_H, "MllW2_H/F");
-  tree_mm->Branch("Ml1W_2jL", &Ml1W_2jL, "Ml1W_2jL/F"); tree_ee->Branch("Ml1W_2jL", &Ml1W_2jL, "Ml1W_2jL/F");
-  tree_mm->Branch("Ml1W_1jL", &Ml1W_1jL, "Ml1W_1jL/F"); tree_ee->Branch("Ml1W_1jL", &Ml1W_1jL, "Ml1W_1jL/F");
-  tree_mm->Branch("Ml2W_2jL", &Ml2W_2jL, "Ml2W_2jL/F"); tree_ee->Branch("Ml2W_2jL", &Ml2W_2jL, "Ml2W_2jL/F");
-  tree_mm->Branch("Ml2W_1jL", &Ml2W_1jL, "Ml2W_1jL/F"); tree_ee->Branch("Ml2W_1jL", &Ml2W_1jL, "Ml2W_1jL/F");
-  tree_mm->Branch("Ml1W1_H", &Ml1W1_H, "Ml1W1_H/F");    tree_ee->Branch("Ml1W1_H", &Ml1W1_H, "Ml1W1_H/F");
-  tree_mm->Branch("Ml1W2_H", &Ml1W2_H, "Ml1W2_H/F");    tree_ee->Branch("Ml1W2_H", &Ml1W2_H, "Ml1W2_H/F");
-  tree_mm->Branch("Ml2W1_H", &Ml2W1_H, "Ml2W1_H/F");    tree_ee->Branch("Ml2W1_H", &Ml2W1_H, "Ml2W1_H/F");
-  tree_mm->Branch("Ml2W2_H", &Ml2W2_H, "Ml2W2_H/F");    tree_ee->Branch("Ml2W2_H", &Ml2W2_H, "Ml2W2_H/F");
-  tree_mm->Branch("w_tot", &w_tot, "w_tot/F");          tree_ee->Branch("w_tot", &w_tot, "w_tot/F");
+  tree_mm->Branch("MTllv", &MTllv, "MTllv/F");          tree_ee->Branch("MTllv", &MTllv, "MTllv/F");
+  tree_mm->Branch("Ml2j1W_BkdTop", &Ml2j1W_BkdTop, "Ml2j1W_BkdTop/F");  tree_ee->Branch("Ml2j1W_BkdTop", &Ml2j1W_BkdTop, "Ml2j1W_BkdTop/F");
+  tree_mm->Branch("Ml2W_BkdTop", &Ml2W_BkdTop, "Ml2W_BkdTop/F");        tree_ee->Branch("Ml2W_BkdTop", &Ml2W_BkdTop, "Ml2W_BkdTop/F");
+  tree_mm->Branch("MTbl1v_BkdTop", &MTbl1v_BkdTop, "MTbl1v_BkdTop/F");  tree_ee->Branch("MTbl1v_BkdTop", &MTbl1v_BkdTop, "MTbl1v_BkdTop/F");
+  tree_mm->Branch("Ml1v_BkdTop", &Ml1v_BkdTop, "Ml1v_BkdTop/F");        tree_ee->Branch("Ml1v_BkdTop", &Ml1v_BkdTop, "Ml1v_BkdTop/F");
+  tree_mm->Branch("Mbl1v_BkdTop", &Mbl1v_BkdTop, "Mbl1v_BkdTop/F");     tree_ee->Branch("Mbl1v_BkdTop", &Mbl1v_BkdTop, "Mbl1v_BkdTop/F");
+  tree_mm->Branch("MbllW_1jL", &MbllW_1jL, "MbllW_1jL/F"); tree_ee->Branch("MbllW_1jL", &MbllW_1jL, "MbllW_1jL/F");
+  tree_mm->Branch("MllW_1jL", &MllW_1jL, "MllW_1jL/F");    tree_ee->Branch("MllW_1jL", &MllW_1jL, "MllW_1jL/F");
+  tree_mm->Branch("Ml1W_1jL", &Ml1W_1jL, "Ml1W_1jL/F");    tree_ee->Branch("Ml1W_1jL", &Ml1W_1jL, "Ml1W_1jL/F");
+  tree_mm->Branch("Ml2W_1jL", &Ml2W_1jL, "Ml2W_1jL/F");    tree_ee->Branch("Ml2W_1jL", &Ml2W_1jL, "Ml2W_1jL/F");
+  tree_mm->Branch("MbllW_1jH", &MbllW_1jH, "MbllW_1jH/F"); tree_ee->Branch("MbllW_1jH", &MbllW_1jH, "MbllW_1jH/F");
+  tree_mm->Branch("MllW_1jH", &MllW_1jH, "MllW_1jH/F");    tree_ee->Branch("MllW_1jH", &MllW_1jH, "MllW_1jH/F");
+  tree_mm->Branch("Ml1W_1jH", &Ml1W_1jH, "Ml1W_1jH/F");    tree_ee->Branch("Ml1W_1jH", &Ml1W_1jH, "Ml1W_1jH/F");
+  tree_mm->Branch("Ml2W_1jH", &Ml2W_1jH, "Ml2W_1jH/F");    tree_ee->Branch("Ml2W_1jH", &Ml2W_1jH, "Ml2W_1jH/F");
+  tree_mm->Branch("MbllW_H", &MbllW_H, "MbllW_H/F");       tree_ee->Branch("MbllW_H", &MbllW_H, "MbllW_H/F");
+  tree_mm->Branch("Ml1W_H", &Ml1W_H, "Ml1W_H/F");          tree_ee->Branch("Ml1W_H", &Ml1W_H, "Ml1W_H/F");
+  tree_mm->Branch("Ml2W_H", &Ml2W_H, "Ml2W_H/F");          tree_ee->Branch("Ml2W_H", &Ml2W_H, "Ml2W_H/F");
+  tree_mm->Branch("w_tot", &w_tot, "w_tot/F");             tree_ee->Branch("w_tot", &w_tot, "w_tot/F");
+
 
   outfile->cd();
 
@@ -138,7 +97,7 @@ void KinVarSearch::executeEvent(){
   Event ev = GetEvent();
   float weight = 1., w_GenNorm=1., w_BR=1., w_PU=1.;
   if(!IsDATA){
-    w_GenNorm = ev.MCweight()*weight_norm_1invpb*GetKFactor()*ev.GetTriggerLumi("Full");
+    w_GenNorm = MCweight()*ev.GetTriggerLumi("Full");
     w_BR      = GetBRWeight();
     w_PU      = GetPileUpWeight(nPileUp, 0);
     weight *= w_GenNorm * w_BR * w_PU;
@@ -183,8 +142,8 @@ void KinVarSearch::executeEvent(){
 
 
   TString IDSSLabel = SS2l? "SS":"";
-  TString MuTID = "TopHNT", MuLID = "TopHNLLIsop6SIP5", MuVID=MuLID;
-  TString ElTID = "TopHN17SST", ElLID = "TopHNSSNM01LFixLMVAIsop4NoSIP_"+GetEraShort(), ElVID = "TopHNV";  
+  TString MuTID = "TopHNT", MuLID = "TopHNL", MuVID=MuLID;
+  TString ElTID = "TopHNSST", ElLID = "TopHNSSL_"+GetEraShort(), ElVID = "TopHNL_"+GetEraShort();  
   vector<Muon>     muonTightColl     = SelectMuons(muonPreColl, MuTID, 10., 2.4);
   vector<Electron> electronTightColl = SelectElectrons(electronPreColl, ElTID, 15., 2.5);
   vector<Muon>     muonLooseColl     = SelectMuons(muonPreColl, MuLID, 10., 2.4);
@@ -194,13 +153,13 @@ void KinVarSearch::executeEvent(){
 
 
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
-  vector<Jet> jetNoVetoColl  = GetJets("tight", 25., 2.4);
+  vector<Jet> jetNoVetoColl  = GetJets("tightLepVeto", 25., 2.4);
   sort(jetNoVetoColl.begin(), jetNoVetoColl.end(), PtComparing);
   vector<Jet> bjetNoVetoColl = SelBJets(jetNoVetoColl, param_jets);
   vector<Jet> jetColl  = JetsVetoLeptonInside(jetNoVetoColl, electronVetoColl, muonVetoColl, 0.4);
   vector<Jet> bjetColl = SelBJets(jetColl, param_jets);
 
-  Particle vMET_T1xy = GetvMET("T1xyCorr");
+  Particle vMET_T1xy = GetvMET("PUPPIMETT1xyCorr");
 
 
   bool EventCand = false;
@@ -217,7 +176,7 @@ void KinVarSearch::executeEvent(){
     sf_BTag   = mcCorr->GetBTaggingReweight_1a(jetColl, param_jets);
     //ElKey: DiElIso_HNTopID17SS DiElIso_HNTopIDSS  //MuKey: DiMuIso_HNTopID
     int NEl = electronTightColl.size(), NMu = muonTightColl.size();
-    TString TrSFKey = NMu>1? "DiMuIso_HNTopID":NEl>1? "DiElIso_HNTopID17SS":"";
+    TString TrSFKey = NMu>1? "DiMuIso_HNTopID":NEl>1? "DiElIso_HNTopIDSS":"";
     bool ApplyTrSF = TrSFKey!="" && (SS2l or TriLep);
     sf_Trig   = ApplyTrSF? mcCorr->GetTriggerSF(electronTightColl, muonTightColl, TrSFKey, ""):1.;
     w_Prefire = GetPrefireWeight(0);
@@ -227,8 +186,6 @@ void KinVarSearch::executeEvent(){
 
  
   if(SS2l){
-    //AnalyzeSSDiLepton(muonTightColl, muonLooseColl, muonVetoColl, electronTightColl, electronLooseColl, electronVetoColl,
-    //                  jetColl, bjetColl, vMET_T1xy, weight, "");
     MakeTreeSS2L(muonTightColl, muonLooseColl, muonVetoColl, electronTightColl, electronLooseColl, electronVetoColl,
                  jetColl, bjetColl, vMET_T1xy, weight, "");
   }
@@ -251,22 +208,21 @@ void KinVarSearch::MakeTreeSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, ve
     if(Mll<4) return; 
     if(BJetColl.size()<1) return;
     if(JetColl.size() <3) return;
+    if((JetColl.size()-BJetColl.size())==0) return;
+
+    vector<Jet> BCandColl = BJetColl.size()>1? BJetColl:JetColl;
+    vector<Jet> NonBJetColl = SelLightJets(JetColl, jtps.at(0));
+
     InitializeTreeVars();
     Nj      = JetColl.size();
-    Nb      = BJetColl.size();
+    Nb      = min((Int_t) BJetColl.size(), (Int_t) 2);
     Ptl1    = MuTColl.at(0).Pt();
     Ptl2    = MuTColl.at(1).Pt();
     Ptj1    = JetColl.at(0).Pt();
     Ptj2    = JetColl.at(1).Pt();
     Ptj3    = JetColl.at(2).Pt();
-    Ptb1    = BJetColl.at(0).Pt();
-    Ptb2    = BJetColl.size()<2? -1.:BJetColl.at(1).Pt();
     MET     = vMET.Pt();
-    dEtall  = abs(MuTColl.at(0).Eta()-MuTColl.at(1).Eta());
     dRll    = MuTColl.at(0).DeltaR(MuTColl.at(1));
-    dRjj12  = JetColl.at(0).DeltaR(JetColl.at(1));
-    dRjj23  = JetColl.at(1).DeltaR(JetColl.at(2));
-    dRjj13  = JetColl.at(0).DeltaR(JetColl.at(2));
     dRlj11  = MuTColl.at(0).DeltaR(JetColl.at(0));
     dRlj12  = MuTColl.at(0).DeltaR(JetColl.at(1));
     dRlj13  = MuTColl.at(0).DeltaR(JetColl.at(2));
@@ -275,101 +231,89 @@ void KinVarSearch::MakeTreeSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, ve
     dRlj23  = MuTColl.at(1).DeltaR(JetColl.at(2));
     dRlb11  = MuTColl.at(0).DeltaR(BJetColl.at(0));
     dRlb21  = MuTColl.at(1).DeltaR(BJetColl.at(0));
+    dRlnb11 = MuTColl.at(0).DeltaR(NonBJetColl.at(0));
+    dRlnb21 = MuTColl.at(1).DeltaR(NonBJetColl.at(0));
     MSSSF   = (MuTColl.at(0)+MuTColl.at(1)).M();
-    Mbl11   = (MuTColl.at(0)+BJetColl.at(0)).M();
-    Mbl12   = (MuTColl.at(1)+BJetColl.at(0)).M();
-    Mbl21   = BJetColl.size()<2? -1.:(MuTColl.at(0)+BJetColl.at(1)).M();
-    Mbl22   = BJetColl.size()<2? -1.:(MuTColl.at(1)+BJetColl.at(1)).M();
-    Mlj11   = (MuTColl.at(0)+JetColl.at(0)).M();
-    Mlj12   = (MuTColl.at(0)+JetColl.at(1)).M();
-    Mlj13   = (MuTColl.at(0)+JetColl.at(2)).M();
-    Mlj21   = (MuTColl.at(1)+JetColl.at(0)).M();
-    Mlj22   = (MuTColl.at(1)+JetColl.at(1)).M();
-    Mlj23   = (MuTColl.at(1)+JetColl.at(2)).M();
     MTvl1   = MT(MuTColl.at(0),vMET);
-    MTvl2   = MT(MuTColl.at(1),vMET);
-    Mllj1   = (MuTColl.at(0)+MuTColl.at(1)+JetColl.at(0)).M();
-    Mllj2   = (MuTColl.at(0)+MuTColl.at(1)+JetColl.at(1)).M();
-    Mllj3   = (MuTColl.at(0)+MuTColl.at(1)+JetColl.at(2)).M();
-    Mllj4   = JetColl.size()<4? -1.:(MuTColl.at(0)+MuTColl.at(1)+JetColl.at(3)).M();
-    Mllb1   = (MuTColl.at(0)+MuTColl.at(1)+BJetColl.at(0)).M();
-    Mllb2   = BJetColl.size()<2? -1.:(MuTColl.at(0)+MuTColl.at(1)+BJetColl.at(1)).M();
-    Mlljj12 = (MuTColl.at(0)+MuTColl.at(1)+JetColl.at(0)+JetColl.at(1)).M();
-    Mlljj13 = (MuTColl.at(0)+MuTColl.at(1)+JetColl.at(0)+JetColl.at(2)).M();
-    Mlljj14 = JetColl.size()<4? -1.:(MuTColl.at(0)+MuTColl.at(1)+JetColl.at(0)+JetColl.at(3)).M();
-    Mlljj23 = (MuTColl.at(0)+MuTColl.at(1)+JetColl.at(1)+JetColl.at(2)).M();
-    Mlljj24 = JetColl.size()<4? -1.:(MuTColl.at(0)+MuTColl.at(1)+JetColl.at(1)+JetColl.at(3)).M();
-    Mlljj34 = JetColl.size()<4? -1.:(MuTColl.at(0)+MuTColl.at(1)+JetColl.at(2)+JetColl.at(3)).M();
-    Mljj112 = (MuTColl.at(0)+JetColl.at(0)+JetColl.at(1)).M();
-    Mljj113 = (MuTColl.at(0)+JetColl.at(0)+JetColl.at(2)).M();
-    Mljj114 = JetColl.size()<4? -1.:(MuTColl.at(0)+JetColl.at(0)+JetColl.at(3)).M();
-    Mljj123 = (MuTColl.at(0)+JetColl.at(1)+JetColl.at(2)).M();
-    Mljj124 = JetColl.size()<4? -1.:(MuTColl.at(0)+JetColl.at(1)+JetColl.at(3)).M();
-    Mljj134 = JetColl.size()<4? -1.:(MuTColl.at(0)+JetColl.at(2)+JetColl.at(3)).M();
-    Mljj212 = (MuTColl.at(1)+JetColl.at(0)+JetColl.at(1)).M();
-    Mljj213 = (MuTColl.at(1)+JetColl.at(0)+JetColl.at(2)).M();
-    Mljj214 = JetColl.size()<4? -1.:(MuTColl.at(1)+JetColl.at(0)+JetColl.at(3)).M();
-    Mljj223 = (MuTColl.at(1)+JetColl.at(1)+JetColl.at(2)).M();
-    Mljj224 = JetColl.size()<4? -1.:(MuTColl.at(1)+JetColl.at(1)+JetColl.at(3)).M();
-    Mljj234 = JetColl.size()<4? -1.:(MuTColl.at(1)+JetColl.at(2)+JetColl.at(3)).M();
-    Mjj12   = (JetColl.at(0)+JetColl.at(1)).M();
-    Mjj13   = (JetColl.at(0)+JetColl.at(2)).M();
-    Mjj14   = JetColl.size()<4? -1.:(JetColl.at(0)+JetColl.at(3)).M();
-    Mjj23   = (JetColl.at(1)+JetColl.at(2)).M();
-    Mjj24   = JetColl.size()<4? -1.:(JetColl.at(1)+JetColl.at(3)).M();
-    Mjj34   = JetColl.size()<4? -1.:(JetColl.at(2)+JetColl.at(3)).M();
+    MTllv   = MT(MuTColl.at(0)+MuTColl.at(1), vMET);
 
     //Vars requiring complex algo.
-    HT      = 0;
-      for(unsigned int itj=0; itj<JetColl.size(); itj++){ HT+=JetColl.at(itj).Pt(); }
-    MET2HT  = pow(MET,2.)/HT;
-    int Idxj1W_2jL=-1, Idxj2W_2jL=-1; float bestmlljj=-1;
-    int Idxj1W_1jL=-1; float bestmllj=-1;
-    int Idxj1W1_H=-1, Idxj2W1_H=-1, Idxj1W2_H=-1, Idxj2W2_H=-1; float bestmjj1=-1, bestmjj2=-1;
-    for(unsigned int itj1=0; itj1<JetColl.size(); itj1++){
-      if(bestmllj<0){ Idxj1W_1jL=itj1; bestmllj=(MuTColl.at(0)+MuTColl.at(1)).M(); }
-      else{
-        float tmpmljj = (MuTColl.at(0)+MuTColl.at(1)+JetColl.at(itj1)).M();
-        if(fabs(tmpmljj-80.4)<fabs(bestmllj-80.4)){ bestmllj=tmpmljj; Idxj1W_1jL=itj1; }
+    HT      = 0;  for(unsigned int itj=0; itj<JetColl.size(); itj++){ HT+=JetColl.at(itj).Pt(); }
+
+
+    int Idxj1W=-1, Idxj2W=-1; float bestmjjW=-1;
+    for(unsigned int ij1=0; ij1<NonBJetColl.size(); ij1++){
+    for(unsigned int ij2=ij1+1; ij2<NonBJetColl.size(); ij2++){
+      float mjj = (NonBJetColl.at(ij1)+NonBJetColl.at(ij2)).M();
+      if(bestmjjW<0){ bestmjjW = mjj; Idxj1W=ij1, Idxj2W=ij2; }
+      else{ if(fabs(mjj-80.4)<fabs(bestmjjW-80.4)){ bestmjjW = mjj; Idxj1W=ij1, Idxj2W=ij2; } }
+    }} 
+    Ml2j1W_BkdTop = (MuTColl.at(1)+NonBJetColl.at(0)).M();
+    Ml2W_BkdTop   = bestmjjW<0? Ml2j1W_BkdTop:(MuTColl.at(1)+NonBJetColl.at(Idxj1W)+NonBJetColl.at(Idxj2W)).M();
+    MTbl1v_BkdTop = MT(BJetColl.at(0)+MuTColl.at(0),vMET);
+    float Pzv1 = GetvPz(MuTColl.at(0), vMET, "+"); Particle vMET1; vMET1.SetXYZM(vMET.X(), vMET.Y(), Pzv1, 0);
+    float Pzv2 = GetvPz(MuTColl.at(0), vMET, "-"); Particle vMET2; vMET2.SetXYZM(vMET.X(), vMET.Y(), Pzv2, 0);
+    float Mblv1 = (BJetColl.at(0)+MuTColl.at(0)+vMET1).M(), Mblv2 = (BJetColl.at(0)+MuTColl.at(1)+vMET2).M();
+    Particle vMET_CondMWt = fabs(Mblv1-172.5)<fabs(Mblv2-172.5)? vMET1:vMET2;
+    Ml1v_BkdTop  = (MuTColl.at(0)+vMET_CondMWt).M();
+    Mbl1v_BkdTop = (BJetColl.at(0)+MuTColl.at(0)+vMET_CondMWt).M();
+
+   
+    int Idxj1W_1jL=-1, Idxbt_1jL=-1; float BestSumDelta_L=-1; 
+    for(unsigned int ib=0; ib<BCandColl.size(); ib++){
+    for(unsigned int inb=0; inb<NonBJetColl.size(); inb++){
+      if(BCandColl.at(ib).DeltaR(NonBJetColl.at(inb))<0.1) continue;
+      float mllj = (MuTColl.at(0)+MuTColl.at(1)+NonBJetColl.at(inb)).M();
+      float mbllj = (MuTColl.at(0)+MuTColl.at(1)+NonBJetColl.at(inb)+BCandColl.at(ib)).M();
+      float SumDelta = fabs(mbllj-160)+fabs(mllj-75);
+      if(BestSumDelta_L<0){ BestSumDelta_L=SumDelta; Idxj1W_1jL=inb; Idxbt_1jL=ib;}
+      else{  
+        if(SumDelta<BestSumDelta_L){ BestSumDelta_L=SumDelta; Idxj1W_1jL=inb; Idxbt_1jL=ib;}
       }
-      for(unsigned int itj2=itj1+1; itj2<JetColl.size(); itj2++){
-        if(bestmlljj<0){ Idxj1W_2jL=itj1; Idxj2W_2jL=itj2; bestmlljj=(MuTColl.at(0)+MuTColl.at(1)+JetColl.at(itj1)+JetColl.at(itj2)).M(); }
-        else{
-          float tmpmlljj = (MuTColl.at(0)+MuTColl.at(1)+JetColl.at(itj1)+JetColl.at(itj2)).M();
-          if(fabs(tmpmlljj-80.4)<fabs(bestmlljj-80.4)){ bestmlljj=tmpmlljj; Idxj1W_2jL=itj1, Idxj2W_2jL=itj2; }
-        }
-        if(bestmjj1<0){ Idxj1W1_H=itj1, Idxj2W1_H=itj2; bestmjj1=(JetColl.at(itj1)+JetColl.at(itj2)).M(); }
-        else{
-          float tmpmjj = (JetColl.at(itj1)+JetColl.at(itj2)).M();
-          if(fabs(tmpmjj-80.4)<fabs(bestmjj1-80.4)){ bestmjj1=tmpmjj; Idxj1W1_H=itj1, Idxj2W1_H=itj2; }
-        }
+    }}
+    MbllW_1jL = (MuTColl.at(0)+MuTColl.at(1)+NonBJetColl.at(Idxj1W_1jL)+BCandColl.at(Idxbt_1jL)).M();
+    MllW_1jL  = (MuTColl.at(0)+MuTColl.at(1)+NonBJetColl.at(Idxj1W_1jL)).M();
+    Ml1W_1jL  = (MuTColl.at(0)+NonBJetColl.at(Idxj1W_1jL)).M();
+    Ml2W_1jL  = (MuTColl.at(1)+NonBJetColl.at(Idxj1W_1jL)).M();
+
+
+    int Idxj1W_1jH=-1, Idxbt_1jH=-1; float BestDeltambllj=-1;
+    for(unsigned int ib=0; ib<BCandColl.size(); ib++){
+    for(unsigned int inb=0; inb<NonBJetColl.size(); inb++){
+      if(BCandColl.at(ib).DeltaR(NonBJetColl.at(inb))<0.1) continue;
+      float mbllj = (MuTColl.at(0)+MuTColl.at(1)+NonBJetColl.at(inb)+BCandColl.at(ib)).M();
+      float Deltambllj = fabs(mbllj-130);
+      if(BestDeltambllj<0){ BestDeltambllj = Deltambllj; Idxj1W_1jH=inb; Idxbt_1jH=ib;}
+      else{  
+        if(Deltambllj<BestDeltambllj){ BestDeltambllj = Deltambllj; Idxj1W_1jH=inb; Idxbt_1jH=ib;}
       }
-    }
-    for(unsigned int itj1=0; itj1<JetColl.size(); itj1++){
-      for(unsigned int itj2=itj1+1; itj2<JetColl.size(); itj2++){
-        if((int) itj1==Idxj1W1_H or (int) itj1==Idxj2W1_H or (int) itj2==Idxj1W1_H or (int) itj2==Idxj2W1_H) continue;
-        if(bestmjj2<0){ Idxj1W2_H=itj1, Idxj2W2_H=itj2; bestmjj2=(JetColl.at(itj1)+JetColl.at(itj2)).M(); }
-        else{
-          float tmpmjj = (JetColl.at(itj1)+JetColl.at(itj2)).M();
-          if(fabs(tmpmjj-80.4)<fabs(bestmjj2-80.4)){ bestmjj2=tmpmjj; Idxj1W2_H=itj1, Idxj2W2_H=itj2; }
-        }
+    }}
+    MbllW_1jH = (MuTColl.at(0)+MuTColl.at(1)+NonBJetColl.at(Idxj1W_1jH)+BCandColl.at(Idxbt_1jH)).M();
+    MllW_1jH  = (MuTColl.at(0)+MuTColl.at(1)+NonBJetColl.at(Idxj1W_1jH)).M();
+    Ml1W_1jH  = (MuTColl.at(0)+NonBJetColl.at(Idxj1W_1jH)).M();
+    Ml2W_1jH  = (MuTColl.at(1)+NonBJetColl.at(Idxj1W_1jH)).M();
+
+
+    int Idxj1W_H=-1, Idxj2W_H=-1, Idxbt_H=-1; float BestSumDelta_H=-1; 
+    for(unsigned int ib=0; ib<BCandColl.size(); ib++){
+    for(unsigned int inb1=0; inb1<NonBJetColl.size(); inb1++){
+    for(unsigned int inb2=inb1+1; inb2<NonBJetColl.size(); inb2++){
+      if(BCandColl.at(ib).DeltaR(NonBJetColl.at(inb1))<0.1) continue;
+      if(BCandColl.at(ib).DeltaR(NonBJetColl.at(inb2))<0.1) continue;
+      float mjj    = (NonBJetColl.at(inb1)+NonBJetColl.at(inb2)).M();
+      float mblljj = (MuTColl.at(0)+MuTColl.at(1)+NonBJetColl.at(inb1)+NonBJetColl.at(inb2)+BCandColl.at(ib)).M();
+      float SumDelta = fabs(mblljj-172.5)+fabs(mjj-80.4);
+      if(BestSumDelta_H<0){ BestSumDelta_H=SumDelta; Idxj1W_H=inb1; Idxj2W_H=inb2; Idxbt_H=ib;}
+      else{  
+        if(SumDelta<BestSumDelta_H){ BestSumDelta_H=SumDelta; Idxj1W_H=inb1; Idxj2W_H=inb2; Idxbt_H=ib;}
       }
-    }
-    MllW_2jL = bestmlljj;
-    MllW_1jL = bestmllj;
-    MllW1_H  = (MuTColl.at(0)+MuTColl.at(1)+JetColl.at(Idxj1W1_H)+JetColl.at(Idxj2W1_H)).M();
-    MllW2_H  = bestmjj2<0? -1.:(MuTColl.at(0)+MuTColl.at(1)+JetColl.at(Idxj1W2_H)+JetColl.at(Idxj2W2_H)).M();
-    MjjW1    = bestmjj1;
-    MjjW2    = bestmjj2;
-    Ml1W_2jL = (MuTColl.at(0)+JetColl.at(Idxj1W_2jL)+JetColl.at(Idxj2W_2jL)).M();
-    Ml1W_1jL = (MuTColl.at(0)+JetColl.at(Idxj1W_1jL)).M();
-    Ml2W_2jL = (MuTColl.at(1)+JetColl.at(Idxj1W_2jL)+JetColl.at(Idxj2W_2jL)).M();
-    Ml2W_1jL = (MuTColl.at(1)+JetColl.at(Idxj1W_1jL)).M();
-    Ml1W1_H  = (MuTColl.at(0)+JetColl.at(Idxj1W1_H)+JetColl.at(Idxj2W1_H)).M();
-    Ml1W2_H  = bestmjj2<0? -1.:(MuTColl.at(0)+JetColl.at(Idxj1W2_H)+JetColl.at(Idxj2W2_H)).M();
-    Ml2W1_H  = (MuTColl.at(1)+JetColl.at(Idxj1W1_H)+JetColl.at(Idxj2W1_H)).M();
-    Ml2W2_H  = bestmjj2<0? -1.:(MuTColl.at(1)+JetColl.at(Idxj1W2_H)+JetColl.at(Idxj2W2_H)).M();
+    }}}
+    MbllW_H = BestSumDelta_H<0? -1.:(MuTColl.at(0)+MuTColl.at(1)+NonBJetColl.at(Idxj1W_H)+NonBJetColl.at(Idxj2W_H)+BCandColl.at(Idxbt_H)).M();
+    Ml1W_H  = BestSumDelta_H<0? -1.:(MuTColl.at(0)+NonBJetColl.at(Idxj1W_H)+NonBJetColl.at(Idxj2W_H)).M();
+    Ml2W_H  = BestSumDelta_H<0? -1.:(MuTColl.at(1)+NonBJetColl.at(Idxj1W_H)+NonBJetColl.at(Idxj2W_H)).M();
+
     w_tot    = !IsDATA? weight:-1.;
+
     tree_mm->Fill();
   }
   if(NElT==2){
@@ -379,22 +323,21 @@ void KinVarSearch::MakeTreeSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, ve
     if(BJetColl.size()<1) return;
     if(JetColl.size() <3) return;
     if(fabs(Mll-91.2)<10.) return;
+    if((JetColl.size()-BJetColl.size())==0) return;
+
+    vector<Jet> BCandColl = BJetColl.size()>1? BJetColl:JetColl;
+    vector<Jet> NonBJetColl = SelLightJets(JetColl, jtps.at(0));
+
     InitializeTreeVars();
     Nj      = JetColl.size();
-    Nb      = BJetColl.size();
+    Nb      = min((Int_t) BJetColl.size(), (Int_t) 2);
     Ptl1    = ElTColl.at(0).Pt();
     Ptl2    = ElTColl.at(1).Pt();
     Ptj1    = JetColl.at(0).Pt();
     Ptj2    = JetColl.at(1).Pt();
     Ptj3    = JetColl.at(2).Pt();
-    Ptb1    = BJetColl.at(0).Pt();
-    Ptb2    = BJetColl.size()<2? -1.:BJetColl.at(1).Pt();
     MET     = vMET.Pt();
-    dEtall  = abs(ElTColl.at(0).Eta()-ElTColl.at(1).Eta());
     dRll    = ElTColl.at(0).DeltaR(ElTColl.at(1));
-    dRjj12  = JetColl.at(0).DeltaR(JetColl.at(1));
-    dRjj23  = JetColl.at(1).DeltaR(JetColl.at(2));
-    dRjj13  = JetColl.at(0).DeltaR(JetColl.at(2));
     dRlj11  = ElTColl.at(0).DeltaR(JetColl.at(0));
     dRlj12  = ElTColl.at(0).DeltaR(JetColl.at(1));
     dRlj13  = ElTColl.at(0).DeltaR(JetColl.at(2));
@@ -403,102 +346,91 @@ void KinVarSearch::MakeTreeSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, ve
     dRlj23  = ElTColl.at(1).DeltaR(JetColl.at(2));
     dRlb11  = ElTColl.at(0).DeltaR(BJetColl.at(0));
     dRlb21  = ElTColl.at(1).DeltaR(BJetColl.at(0));
+    dRlnb11 = ElTColl.at(0).DeltaR(NonBJetColl.at(0));
+    dRlnb21 = ElTColl.at(1).DeltaR(NonBJetColl.at(0));
     MSSSF   = (ElTColl.at(0)+ElTColl.at(1)).M();
-    Mbl11   = (ElTColl.at(0)+BJetColl.at(0)).M();
-    Mbl12   = (ElTColl.at(1)+BJetColl.at(0)).M();
-    Mbl21   = BJetColl.size()<2? -1.:(ElTColl.at(0)+BJetColl.at(1)).M();
-    Mbl22   = BJetColl.size()<2? -1.:(ElTColl.at(1)+BJetColl.at(1)).M();
-    Mlj11   = (ElTColl.at(0)+JetColl.at(0)).M();
-    Mlj12   = (ElTColl.at(0)+JetColl.at(1)).M();
-    Mlj13   = (ElTColl.at(0)+JetColl.at(2)).M();
-    Mlj21   = (ElTColl.at(1)+JetColl.at(0)).M();
-    Mlj22   = (ElTColl.at(1)+JetColl.at(1)).M();
-    Mlj23   = (ElTColl.at(1)+JetColl.at(2)).M();
     MTvl1   = MT(ElTColl.at(0),vMET);
-    MTvl2   = MT(ElTColl.at(1),vMET);
-    Mllj1   = (ElTColl.at(0)+ElTColl.at(1)+JetColl.at(0)).M();
-    Mllj2   = (ElTColl.at(0)+ElTColl.at(1)+JetColl.at(1)).M();
-    Mllj3   = (ElTColl.at(0)+ElTColl.at(1)+JetColl.at(2)).M();
-    Mllj4   = JetColl.size()<4? -1.:(ElTColl.at(0)+ElTColl.at(1)+JetColl.at(3)).M();
-    Mllb1   = (ElTColl.at(0)+ElTColl.at(1)+BJetColl.at(0)).M();
-    Mllb2   = BJetColl.size()<2? -1.:(ElTColl.at(0)+ElTColl.at(1)+BJetColl.at(1)).M();
-    Mlljj12 = (ElTColl.at(0)+ElTColl.at(1)+JetColl.at(0)+JetColl.at(1)).M();
-    Mlljj13 = (ElTColl.at(0)+ElTColl.at(1)+JetColl.at(0)+JetColl.at(2)).M();
-    Mlljj14 = JetColl.size()<4? -1.:(ElTColl.at(0)+ElTColl.at(1)+JetColl.at(0)+JetColl.at(3)).M();
-    Mlljj23 = (ElTColl.at(0)+ElTColl.at(1)+JetColl.at(1)+JetColl.at(2)).M();
-    Mlljj24 = JetColl.size()<4? -1.:(ElTColl.at(0)+ElTColl.at(1)+JetColl.at(1)+JetColl.at(3)).M();
-    Mlljj34 = JetColl.size()<4? -1.:(ElTColl.at(0)+ElTColl.at(1)+JetColl.at(2)+JetColl.at(3)).M();
-    Mljj112 = (ElTColl.at(0)+JetColl.at(0)+JetColl.at(1)).M();
-    Mljj113 = (ElTColl.at(0)+JetColl.at(0)+JetColl.at(2)).M();
-    Mljj114 = JetColl.size()<4? -1.:(ElTColl.at(0)+JetColl.at(0)+JetColl.at(3)).M();
-    Mljj123 = (ElTColl.at(0)+JetColl.at(1)+JetColl.at(2)).M();
-    Mljj124 = JetColl.size()<4? -1.:(ElTColl.at(0)+JetColl.at(1)+JetColl.at(3)).M();
-    Mljj134 = JetColl.size()<4? -1.:(ElTColl.at(0)+JetColl.at(2)+JetColl.at(3)).M();
-    Mljj212 = (ElTColl.at(1)+JetColl.at(0)+JetColl.at(1)).M();
-    Mljj213 = (ElTColl.at(1)+JetColl.at(0)+JetColl.at(2)).M();
-    Mljj214 = JetColl.size()<4? -1.:(ElTColl.at(1)+JetColl.at(0)+JetColl.at(3)).M();
-    Mljj223 = (ElTColl.at(1)+JetColl.at(1)+JetColl.at(2)).M();
-    Mljj224 = JetColl.size()<4? -1.:(ElTColl.at(1)+JetColl.at(1)+JetColl.at(3)).M();
-    Mljj234 = JetColl.size()<4? -1.:(ElTColl.at(1)+JetColl.at(2)+JetColl.at(3)).M();
-    Mjj12   = (JetColl.at(0)+JetColl.at(1)).M();
-    Mjj13   = (JetColl.at(0)+JetColl.at(2)).M();
-    Mjj14   = JetColl.size()<4? -1.:(JetColl.at(0)+JetColl.at(3)).M();
-    Mjj23   = (JetColl.at(1)+JetColl.at(2)).M();
-    Mjj24   = JetColl.size()<4? -1.:(JetColl.at(1)+JetColl.at(3)).M();
-    Mjj34   = JetColl.size()<4? -1.:(JetColl.at(2)+JetColl.at(3)).M();
+    MTllv   = MT(ElTColl.at(0)+ElTColl.at(1), vMET);
 
     //Vars requiring complex algo.
-    HT      = 0;
-      for(unsigned int itj=0; itj<JetColl.size(); itj++){ HT+=JetColl.at(itj).Pt(); }
-    MET2HT  = pow(MET,2.)/HT;
-    int Idxj1W_2jL=-1, Idxj2W_2jL=-1; float bestmlljj=-1;
-    int Idxj1W_1jL=-1; float bestmllj=-1;
-    int Idxj1W1_H=-1, Idxj2W1_H=-1, Idxj1W2_H=-1, Idxj2W2_H=-1; float bestmjj1=-1, bestmjj2=-1;
-    for(unsigned int itj1=0; itj1<JetColl.size(); itj1++){
-      if(bestmllj<0){ Idxj1W_1jL=itj1; bestmllj=(ElTColl.at(0)+ElTColl.at(1)).M(); }
-      else{
-        float tmpmljj = (ElTColl.at(0)+ElTColl.at(1)+JetColl.at(itj1)).M();
-        if(fabs(tmpmljj-80.4)<fabs(bestmllj-80.4)){ bestmllj=tmpmljj; Idxj1W_1jL=itj1; }
+    HT      = 0;  for(unsigned int itj=0; itj<JetColl.size(); itj++){ HT+=JetColl.at(itj).Pt(); }
+
+
+    int Idxj1W=-1, Idxj2W=-1; float bestmjjW=-1;
+    for(unsigned int ij1=0; ij1<NonBJetColl.size(); ij1++){
+    for(unsigned int ij2=ij1+1; ij2<NonBJetColl.size(); ij2++){
+      float mjj = (NonBJetColl.at(ij1)+NonBJetColl.at(ij2)).M();
+      if(bestmjjW<0){ bestmjjW = mjj; Idxj1W=ij1, Idxj2W=ij2; }
+      else{ if(fabs(mjj-80.4)<fabs(bestmjjW-80.4)){ bestmjjW = mjj; Idxj1W=ij1, Idxj2W=ij2; } }
+    }} 
+    Ml2j1W_BkdTop = (ElTColl.at(1)+NonBJetColl.at(0)).M();
+    Ml2W_BkdTop   = bestmjjW<0? -1.:(ElTColl.at(1)+NonBJetColl.at(Idxj1W)+NonBJetColl.at(Idxj2W)).M();
+    MTbl1v_BkdTop = MT(BJetColl.at(0)+ElTColl.at(0),vMET);
+    float Pzv1 = GetvPz(ElTColl.at(0), vMET, "+"); Particle vMET1; vMET1.SetXYZM(vMET.X(), vMET.Y(), Pzv1, 0);
+    float Pzv2 = GetvPz(ElTColl.at(0), vMET, "-"); Particle vMET2; vMET2.SetXYZM(vMET.X(), vMET.Y(), Pzv2, 0);
+    float Mblv1 = (BJetColl.at(0)+ElTColl.at(0)+vMET1).M(), Mblv2 = (BJetColl.at(0)+ElTColl.at(1)+vMET2).M();
+    Particle vMET_CondMWt = fabs(Mblv1-172.5)<fabs(Mblv2-172.5)? vMET1:vMET2;
+    Ml1v_BkdTop  = (ElTColl.at(0)+vMET_CondMWt).M();
+    Mbl1v_BkdTop = (BJetColl.at(0)+ElTColl.at(0)+vMET_CondMWt).M();
+
+   
+    int Idxj1W_1jL=-1, Idxbt_1jL=-1; float BestSumDelta_L=-1; 
+    for(unsigned int ib=0; ib<BCandColl.size(); ib++){
+    for(unsigned int inb=0; inb<NonBJetColl.size(); inb++){
+      if(BCandColl.at(ib).DeltaR(NonBJetColl.at(inb))<0.1) continue;
+      float mllj = (ElTColl.at(0)+ElTColl.at(1)+NonBJetColl.at(inb)).M();
+      float mbllj = (ElTColl.at(0)+ElTColl.at(1)+NonBJetColl.at(inb)+BCandColl.at(ib)).M();
+      float SumDelta = fabs(mbllj-160)+fabs(mllj-75);
+      if(BestSumDelta_L<0){ BestSumDelta_L=SumDelta; Idxj1W_1jL=inb; Idxbt_1jL=ib;}
+      else{  
+        if(SumDelta<BestSumDelta_L){ BestSumDelta_L=SumDelta; Idxj1W_1jL=inb; Idxbt_1jL=ib;}
       }
-      for(unsigned int itj2=itj1+1; itj2<JetColl.size(); itj2++){
-        if(bestmlljj<0){ Idxj1W_2jL=itj1; Idxj2W_2jL=itj2; bestmlljj=(ElTColl.at(0)+ElTColl.at(1)+JetColl.at(itj1)+JetColl.at(itj2)).M(); }
-        else{
-          float tmpmlljj = (ElTColl.at(0)+ElTColl.at(1)+JetColl.at(itj1)+JetColl.at(itj2)).M();
-          if(fabs(tmpmlljj-80.4)<fabs(bestmlljj-80.4)){ bestmlljj=tmpmlljj; Idxj1W_2jL=itj1, Idxj2W_2jL=itj2; }
-        }
-        if(bestmjj1<0){ Idxj1W1_H=itj1, Idxj2W1_H=itj2; bestmjj1=(JetColl.at(itj1)+JetColl.at(itj2)).M(); }
-        else{
-          float tmpmjj = (JetColl.at(itj1)+JetColl.at(itj2)).M();
-          if(fabs(tmpmjj-80.4)<fabs(bestmjj1-80.4)){ bestmjj1=tmpmjj; Idxj1W1_H=itj1, Idxj2W1_H=itj2; }
-        }
+    }}
+    MbllW_1jL = (ElTColl.at(0)+ElTColl.at(1)+NonBJetColl.at(Idxj1W_1jL)+BCandColl.at(Idxbt_1jL)).M();
+    MllW_1jL  = (ElTColl.at(0)+ElTColl.at(1)+NonBJetColl.at(Idxj1W_1jL)).M();
+    Ml1W_1jL  = (ElTColl.at(0)+NonBJetColl.at(Idxj1W_1jL)).M();
+    Ml2W_1jL  = (ElTColl.at(1)+NonBJetColl.at(Idxj1W_1jL)).M();
+
+
+    int Idxj1W_1jH=-1, Idxbt_1jH=-1; float BestDeltambllj=-1;
+    for(unsigned int ib=0; ib<BCandColl.size(); ib++){
+    for(unsigned int inb=0; inb<NonBJetColl.size(); inb++){
+      if(BCandColl.at(ib).DeltaR(NonBJetColl.at(inb))<0.1) continue;
+      float mbllj = (ElTColl.at(0)+ElTColl.at(1)+NonBJetColl.at(inb)+BCandColl.at(ib)).M();
+      float Deltambllj = fabs(mbllj-130);
+      if(BestDeltambllj<0){ BestDeltambllj = Deltambllj; Idxj1W_1jH=inb; Idxbt_1jH=ib;}
+      else{  
+        if(Deltambllj<BestDeltambllj){ BestDeltambllj = Deltambllj; Idxj1W_1jH=inb; Idxbt_1jH=ib;}
       }
-    }
-    for(unsigned int itj1=0; itj1<JetColl.size(); itj1++){
-      for(unsigned int itj2=itj1+1; itj2<JetColl.size(); itj2++){
-        if((int) itj1==Idxj1W1_H or (int) itj1==Idxj2W1_H or (int) itj2==Idxj1W1_H or (int) itj2==Idxj2W1_H) continue;
-        if(bestmjj2<0){ Idxj1W2_H=itj1, Idxj2W2_H=itj2; bestmjj2=(JetColl.at(itj1)+JetColl.at(itj2)).M(); }
-        else{
-          float tmpmjj = (JetColl.at(itj1)+JetColl.at(itj2)).M();
-          if(fabs(tmpmjj-80.4)<fabs(bestmjj2-80.4)){ bestmjj2=tmpmjj; Idxj1W2_H=itj1, Idxj2W2_H=itj2; }
-        }
+    }}
+    MbllW_1jH = (ElTColl.at(0)+ElTColl.at(1)+NonBJetColl.at(Idxj1W_1jH)+BCandColl.at(Idxbt_1jH)).M();
+    MllW_1jH  = (ElTColl.at(0)+ElTColl.at(1)+NonBJetColl.at(Idxj1W_1jH)).M();
+    Ml1W_1jH  = (ElTColl.at(0)+NonBJetColl.at(Idxj1W_1jH)).M();
+    Ml2W_1jH  = (ElTColl.at(1)+NonBJetColl.at(Idxj1W_1jH)).M();
+
+
+    int Idxj1W_H=-1, Idxj2W_H=-1, Idxbt_H=-1; float BestSumDelta_H=-1; 
+    for(unsigned int ib=0; ib<BCandColl.size(); ib++){
+    for(unsigned int inb1=0; inb1<NonBJetColl.size(); inb1++){
+    for(unsigned int inb2=inb1+1; inb2<NonBJetColl.size(); inb2++){
+      if(BCandColl.at(ib).DeltaR(NonBJetColl.at(inb1))<0.1) continue;
+      if(BCandColl.at(ib).DeltaR(NonBJetColl.at(inb2))<0.1) continue;
+      float mjj    = (NonBJetColl.at(inb1)+NonBJetColl.at(inb2)).M();
+      float mblljj = (ElTColl.at(0)+ElTColl.at(1)+NonBJetColl.at(inb1)+NonBJetColl.at(inb2)+BCandColl.at(ib)).M();
+      float SumDelta = fabs(mblljj-172.5)+fabs(mjj-80.4);
+      if(BestSumDelta_H<0){ BestSumDelta_H=SumDelta; Idxj1W_H=inb1; Idxj2W_H=inb2; Idxbt_H=ib;}
+      else{  
+        if(SumDelta<BestSumDelta_H){ BestSumDelta_H=SumDelta; Idxj1W_H=inb1; Idxj2W_H=inb2; Idxbt_H=ib;}
       }
-    }
-    MllW_2jL = bestmlljj;
-    MllW_1jL = bestmllj;
-    MllW1_H  = (ElTColl.at(0)+ElTColl.at(1)+JetColl.at(Idxj1W1_H)+JetColl.at(Idxj2W1_H)).M();
-    MllW2_H  = bestmjj2<0? -1.:(ElTColl.at(0)+ElTColl.at(1)+JetColl.at(Idxj1W2_H)+JetColl.at(Idxj2W2_H)).M();
-    MjjW1    = bestmjj1;
-    MjjW2    = bestmjj2;
-    Ml1W_2jL = (ElTColl.at(0)+JetColl.at(Idxj1W_2jL)+JetColl.at(Idxj2W_2jL)).M();
-    Ml1W_1jL = (ElTColl.at(0)+JetColl.at(Idxj1W_1jL)).M();
-    Ml2W_2jL = (ElTColl.at(1)+JetColl.at(Idxj1W_2jL)+JetColl.at(Idxj2W_2jL)).M();
-    Ml2W_1jL = (ElTColl.at(1)+JetColl.at(Idxj1W_1jL)).M();
-    Ml1W1_H  = (ElTColl.at(0)+JetColl.at(Idxj1W1_H)+JetColl.at(Idxj2W1_H)).M();
-    Ml1W2_H  = bestmjj2<0? -1.:(ElTColl.at(0)+JetColl.at(Idxj1W2_H)+JetColl.at(Idxj2W2_H)).M();
-    Ml2W1_H  = (ElTColl.at(1)+JetColl.at(Idxj1W1_H)+JetColl.at(Idxj2W1_H)).M();
-    Ml2W2_H  = bestmjj2<0? -1.:(ElTColl.at(1)+JetColl.at(Idxj1W2_H)+JetColl.at(Idxj2W2_H)).M();
+    }}}
+    MbllW_H = BestSumDelta_H<0? -1.:(ElTColl.at(0)+ElTColl.at(1)+NonBJetColl.at(Idxj1W_H)+NonBJetColl.at(Idxj2W_H)+BCandColl.at(Idxbt_H)).M();
+    Ml1W_H  = BestSumDelta_H<0? -1.:(ElTColl.at(0)+NonBJetColl.at(Idxj1W_H)+NonBJetColl.at(Idxj2W_H)).M();
+    Ml2W_H  = BestSumDelta_H<0? -1.:(ElTColl.at(1)+NonBJetColl.at(Idxj1W_H)+NonBJetColl.at(Idxj2W_H)).M();
+
     w_tot    = !IsDATA? weight:-1.;
+
     tree_ee->Fill();
+
   }
 
 }
@@ -512,18 +444,15 @@ void KinVarSearch::executeEventFromParameter(AnalyzerParameter param){
 void KinVarSearch::InitializeTreeVars(){
 
   Nj=-1, Nb=-1;
-  Ptl1=-1, Ptl2=-1, Ptj1=-1, Ptj2=-1, Ptj3=-1, Ptb1=-1, Ptb2=-1, MET=-1, HT=-1, MET2HT=-1;
-  dEtall=-1, dRll=-1, dRjj12=-1, dRjj23=-1, dRjj13=-1;
+  Ptl1=-1, Ptl2=-1, Ptj1=-1, Ptj2=-1, Ptj3=-1, MET=-1, HT=-1;
+  dRll=-1;
   dRlj11=-1, dRlj12=-1, dRlj13=-1, dRlj21=-1, dRlj22=-1, dRlj23=-1;
-  dRlb11=-1, dRlb21=-1;
-  MSSSF=-1, Mbl11=-1, Mbl12=-1, Mbl21=-1, Mbl22=-1, Mlj11=-1, Mlj12=-1, Mlj13=-1, Mlj21=-1, Mlj22=-1, Mlj23=-1;
-  MTvl1=-1, MTvl2=-1, Mllj1=-1, Mllj2=-1, Mllj3=-1, Mllj4=-1, Mllb1=-1, Mllb2=-1;
-  Mlljj12=-1, Mlljj13=-1, Mlljj14=-1, Mlljj23=-1, Mlljj24=-1, Mlljj34=-1;
-  Mljj112=-1, Mljj113=-1, Mljj114=-1, Mljj123=-1, Mljj124=-1, Mljj134=-1;
-  Mljj212=-1, Mljj213=-1, Mljj214=-1, Mljj223=-1, Mljj224=-1, Mljj234=-1;
-  Mjj12=-1, Mjj13=-1, Mjj14=-1, Mjj23=-1, Mjj24=-1, Mjj34=-1;
-  MllW_2jL=-1, MllW_1jL=-1, MllW1_H=-1, MllW2_H=-1, MjjW1=-1, MjjW2=-1;
-  Ml1W_2jL=-1, Ml1W_1jL=-1, Ml2W_2jL=-1, Ml2W_1jL=-1, Ml1W1_H=-1, Ml1W2_H=-1, Ml2W1_H=-1, Ml2W2_H=-1;
+  dRlb11=-1, dRlb21=-1, dRlnb11=-1, dRlnb21=-1;
+  MSSSF=-1;
+  MTvl1=-1, MTllv=-1, Ml2j1W_BkdTop=-1, Ml2W_BkdTop=-1, MTbl1v_BkdTop=-1, Ml1v_BkdTop=-1, Mbl1v_BkdTop=-1;
+  MbllW_1jL=-1, MllW_1jL=-1, Ml1W_1jL=-1, Ml2W_1jL=-1;
+  MbllW_1jH=-1, MllW_1jH=-1, Ml1W_1jH=-1, Ml2W_1jH=-1;
+  MbllW_H=-1, Ml1W_H=-1, Ml2W_H=-1; 
   w_tot=-1;
 
 }

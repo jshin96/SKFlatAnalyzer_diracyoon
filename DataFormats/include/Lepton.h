@@ -33,7 +33,7 @@ public:
   inline double MiniRelIso() const {return j_MiniRelIso;}
 
   enum Flavour{
-    NONE, ELECTRON, MUON
+    NONE, ELECTRON, MUON, TAU
   };
   inline Flavour LeptonFlavour() const {return j_LeptonFlavour;}
   void SetLeptonFlavour(Flavour f);

@@ -7,19 +7,25 @@ if not "SKFlat_WD" in os.environ:
 
 #[PD(Or PrivateMC dir name), alias, xsec(fb)]
 Arr_MCSample = [
-  "DYJets10to50_MG",
+  "DYJetsToMuMu_MiNNLO", "DYJetsToEE_MiNNLO",
+#  "DYJets10to50_MG",
+#  "WW_pythia", "WZ_pythia", "ZZ_pythia"
 #  "WJets_MG",
-#  "WZTo3LNu_amcatnlo", "ZZTo4L_powheg", "ttWToLNu", "ttZToLLNuNu", "ttHToNonbb", "tZq", "tHq",
+#  "WZTo3LNu_amcatnlo", "ZZTo4L_powheg", "ttWToLNu", "ttZToLLNuNu", "ttHToNonbb", "tZq",
 #  "GluGluHToZZTo4L", "VBF_HToZZTo4L", "VHToNonbb", "WWW", "WWZ", "WZZ", "ZZZ",
-#  "ZGToLLG_01J", "WGToLNuG", "TTG", "TG",
+#  "ZGToLLG", "WGToLNuG", "TTG", "TG",
 #  "WJets_amcatnlo", "DYJets", "TTLJ_powheg", "TTLL_powheg", 
 #  "SingleTop_tW_antitop_NoFullyHad", "SingleTop_tW_top_NoFullyHad", "SingleTop_sch_Lep", "SingleTop_tch_antitop_Incl", "SingleTop_tch_top_Incl",
+#"WAJJToLNuAJJ_EWK_private", "WGJJToLNuGJJ_EWK_private", "WpWpJJ_EWK_private", "WpWpJJ_QCD_private", "WGJJToLNu", "WZJJToLNu", 
 ]
 Arr_Stream = [
-  "DoubleMuon", "MuonEG", "DoubleEG",
+  #"DoubleMuon", "MuonEG", "DoubleEG", "SingleElectron", "SingleMuon", #1617
+  "DoubleMuon", "MuonEG", "EGamma", "SingleMuon", #18
 ]
 
-Arr_Year   = ["2016a", "2016b", "2017", "2018"]
+Arr_Year   = ["2016a", "2016b", "2017", "2018"] #MC
+#Arr_Year   = ["2016a", "2016b", "2017"]         #DATA1617
+#Arr_Year   = ["2018"]                           #DATA18
 Arr_Era16a = ["B_ver2", "C", "D", "E", "F"]
 Arr_Era16b = ["F", "G", "H"]
 Arr_Era17  = ["B", "C", "D", "E", "F"]

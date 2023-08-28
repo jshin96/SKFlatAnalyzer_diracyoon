@@ -5,7 +5,7 @@ void ControlPlots::initializeAnalyzer(){
   TriLep=false, TetraLep=false, SS2l=false, OS2l=false;
   TopBSrc=false, SB_SS2L=false, SB_OS2L=false, CFlip=false, ConvCR=false, FkCR3l=false;
   ConvSrcDep=false, TrigClos=false, TypeFRCheck=false;
-  FakeRun=false, ConvRun=false, FlipRun=false, SystRun=false; 
+  FakeRun=false, ConvRun=false, FlipRun=false, SystRun=false, HEMCheck=false; 
   for(unsigned int i=0; i<Userflags.size(); i++){
     if(Userflags.at(i).Contains("SS2l"))        SS2l        = true;
     if(Userflags.at(i).Contains("TriLep"))      TriLep      = true;
@@ -24,6 +24,7 @@ void ControlPlots::initializeAnalyzer(){
     if(Userflags.at(i).Contains("ConvRun"))     ConvRun     = true; 
     if(Userflags.at(i).Contains("FlipRun"))     FlipRun     = true; 
     if(Userflags.at(i).Contains("SystRun"))     SystRun     = true; 
+    if(Userflags.at(i).Contains("HEMCheck"))    HEMCheck    = true; 
   }
   if(FlipRun && !FakeRun) OS2l=true;
 
@@ -39,24 +40,40 @@ void ControlPlots::initializeAnalyzer(){
     TrigList_DblEG = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
     TrigList_SglEl = {"HLT_Ele27_WPTight_Gsf_v"};
     TrigList_MuEG  = {"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v", "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v"};
+    //with 3l-trigs
+    //TrigList_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v", "HLT_TripleMu_10_5_5_DZ_v", "HLT_TripleMu_12_10_5_v"};
+    //TrigList_DblEG = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v"};
+    //TrigList_MuEG  = {"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v", "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v", "HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ_v", "HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v", "HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v"};
   }
   else if(GetEraShort()=="2016b"){
     TrigList_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v", "HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"};
     TrigList_DblEG = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
     TrigList_SglEl = {"HLT_Ele27_WPTight_Gsf_v"};
     TrigList_MuEG  = {"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
+    //with 3l-trigs
+    //TrigList_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v", "HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v", "HLT_TripleMu_10_5_5_DZ_v", "HLT_TripleMu_12_10_5_v"};
+    //TrigList_DblEG = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v"};
+    //TrigList_MuEG  = {"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ_v", "HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v", "HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v"};
   }
   else if(DataYear==2017){
     TrigList_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v", "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v"};
     TrigList_DblEG = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v"};
     TrigList_SglEl = {"HLT_Ele32_WPTight_Gsf_v", "HLT_Ele32_WPTight_Gsf_L1DoubleEG_v"};
     TrigList_MuEG = {"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v"};
+    //with 3l-trigs
+    //TrigList_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v", "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v", "HLT_TripleMu_10_5_5_DZ_v", "HLT_TripleMu_12_10_5_v"};
+    //TrigList_DblEG = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v", "HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v"};
+    //TrigList_MuEG = {"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ_v", "HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v", "HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v"};
   }
   else if(DataYear==2018){
     TrigList_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v"};
     TrigList_DblEG = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v"};
     TrigList_SglEl = {"HLT_Ele32_WPTight_Gsf_v"};
     TrigList_MuEG = {"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v"};
+    //with 3l-trigs
+    //TrigList_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v", "HLT_TripleMu_10_5_5_DZ_v", "HLT_TripleMu_12_10_5_v"};
+    //TrigList_DblEG = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v", "HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v"};
+    //TrigList_MuEG  = {"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ_v", "HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v", "HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v"};
   }
 
 
@@ -86,7 +103,7 @@ void ControlPlots::executeEvent(){
   Event ev = GetEvent();
   float weight = 1., w_GenNorm=1., w_BR=1., w_PU=1.;
   if(!IsDATA){
-    w_GenNorm = ev.MCweight()*weight_norm_1invpb*GetKFactor()*ev.GetTriggerLumi("Full");
+    w_GenNorm = MCweight()*GetKFactor()*ev.GetTriggerLumi("Full");
     w_BR      = GetBRWeight();
     w_PU      = GetPileUpWeight(nPileUp, 0);
     weight *= w_GenNorm * w_BR * w_PU;
@@ -95,13 +112,18 @@ void ControlPlots::executeEvent(){
 
   bool PassTrig=false;
   if(TetraLep or TriLep){
-    if(!IsDATA) PassTrig = ev.PassTrigger(TrigList_DblMu) or ev.PassTrigger(TrigList_DblEG);
+    if(!IsDATA){
+      //1PD for 1FS
+      PassTrig = ev.PassTrigger(TrigList_DblMu) or ev.PassTrigger(TrigList_DblEG);
+      //Trig Soup
+      //PassTrig = ev.PassTrigger(TrigList_DblMu) or ev.PassTrigger(TrigList_DblEG) or ev.PassTrigger(TrigList_MuEG);
+    }
     else{
       //1PD for 1FS
       if     (DblMu) PassTrig = ev.PassTrigger(TrigList_DblMu);
       else if(DblEG) PassTrig = ev.PassTrigger(TrigList_DblEG);
       else if(MuEG)  PassTrig = ev.PassTrigger(TrigList_MuEG);
-      else if(SglEl) PassTrig = !ev.PassTrigger(TrigList_DblEG) and ev.PassTrigger(TrigList_SglEl);
+      //else if(SglEl) PassTrig = !ev.PassTrigger(TrigList_DblEG) and ev.PassTrigger(TrigList_SglEl);
       //TrigSoup
       //if     (MuEG)  PassTrig = ev.PassTrigger(TrigList_MuEG);
       //else if(DblMu) PassTrig = (!ev.PassTrigger(TrigList_MuEG)) and ev.PassTrigger(TrigList_DblMu);
@@ -109,11 +131,11 @@ void ControlPlots::executeEvent(){
     }
   }
   else if(SS2l or OS2l){
-    if(!IsDATA) PassTrig = ev.PassTrigger(TrigList_DblMu) or ev.PassTrigger(TrigList_DblEG) or ev.PassTrigger(TrigList_MuEG);
+    if(!IsDATA) PassTrig = ev.PassTrigger(TrigList_DblMu) or ev.PassTrigger(TrigList_DblEG);
     else{
       if     (DblMu) PassTrig = ev.PassTrigger(TrigList_DblMu);
       else if(DblEG) PassTrig = ev.PassTrigger(TrigList_DblEG);
-      else if(MuEG)  PassTrig = ev.PassTrigger(TrigList_MuEG);
+      //else if(MuEG)  PassTrig = ev.PassTrigger(TrigList_MuEG);
     }
   }
   if(TrigClos or TypeFRCheck) PassTrig=true;
@@ -123,8 +145,10 @@ void ControlPlots::executeEvent(){
   FillHist("CutFlow", 2., weight, 20, 0., 20.);
 
   bool PreCutPass=false;
-  vector<Muon>     muonPreColl     = GetMuons("NOCUT", 5., 2.4);
-  vector<Electron> electronPreColl = GetElectrons("NOCUT", 5., 2.5);
+  TString PreCutIDMu = (SB_SS2L or SB_OS2L or CFlip or ConvCR or FkCR3l)? "TopHNL":"NOCUT";
+  TString PreCutIDEl = (SB_SS2L or SB_OS2L or CFlip or ConvCR or FkCR3l)? "TopHN_Isop4NoSIPMVA":"NOCUT";
+  vector<Muon>     muonPreColl     = GetMuons(PreCutIDMu, 5., 2.4);
+  vector<Electron> electronPreColl = GetElectrons(PreCutIDEl, 5., 2.5);
   sort(muonPreColl.begin(), muonPreColl.end(), PtComparing);
   sort(electronPreColl.begin(), electronPreColl.end(), PtComparing);
   if(TriLep and (muonPreColl.size()+electronPreColl.size())>2 ) PreCutPass=true;
@@ -141,10 +165,8 @@ void ControlPlots::executeEvent(){
 
 
   TString IDSSLabel = "SS";
-  //TString MuTID = "TopHNT", MuLID = "TopHNLLIsop6SIP5", MuVID="TopHNV";
-  TString MuTID = "TopHNT", MuLID = "TopHNLLIsop6SIP5", MuVID=MuLID;
-  TString ElTID = "TopHN17SST", ElLID = "TopHNSSNM01LFixLMVAIsop4NoSIP_"+GetEraShort(), ElVID = "TopHNV";  
-  //TString ElTID = "TopHN17SST", ElLID = "TopHNSSNM01LFixLMVAIsop4NoSIP_"+GetEraShort(), ElVID = ElLID;  
+  TString MuTID = "TopHNT", MuLID = "TopHNL", MuVID=MuLID;
+  TString ElTID = "TopHNSST", ElLID = "TopHNSSL_"+GetEraShort(), ElVID = "TopHNL_"+GetEraShort();  
   vector<Muon>     muonTightColl     = SelectMuons    (muonPreColl    , FakeRun? MuLID:MuTID, 10., 2.4);
   vector<Electron> electronTightColl = SelectElectrons(electronPreColl, FakeRun? ElLID:ElTID, 15., 2.5);
   vector<Muon>     muonLooseColl     = SelectMuons    (muonPreColl    , MuLID, 10., 2.4);
@@ -156,11 +178,11 @@ void ControlPlots::executeEvent(){
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
   vector<Jet> jetPreColl = GetAllJets();
   sort(jetPreColl.begin(), jetPreColl.end(), PtComparing);
-  vector<Jet> jetColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tight", 25., 2.4, "LVeto");
+  vector<Jet> jetColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
   vector<Jet> bjetColl = SelBJets(jetColl, param_jets);
 
+  Particle vMET_T1xy = GetvMET("PUPPIMETT1xyCorr");
 
-  Particle vMET_T1xy = GetvMET("T1xyCorr");
 
   bool FillGenColl=!IsDATA && (ConvRun or FakeRun or FlipRun or TypeFRCheck);
   if(FillGenColl) truthColl=GetGens(); 
@@ -172,32 +194,36 @@ void ControlPlots::executeEvent(){
   if(TetraLep){ EventCand = (muonLooseColl.size()+electronLooseColl.size())>3; }
   if(TypeFRCheck) EventCand=true;
 
-  float w_TopPtRW = 1., w_Prefire = 1., sf_Trig = 1., w_FR=1.;
-  float sf_MuTk = 1., sf_MuID = 1., sf_MuIso = 1., sf_ElReco = 1., sf_ElID = 1., sf_BTag = 1.;
+  float w_TopPtRW = 1., w_Pref = 1., sf_Tr = 1., w_FR=1.;
+  float sf_MuTk = 1., sf_mID = 1., sf_MuIso = 1., sf_eReco = 1., sf_eID = 1., sf_B = 1.;
   float w_CF = 1., w_CV = 1.;
   if((!IsDATA) and EventCand){
     //if(MCSample.Contains("TT") and MCSample.Contains("powheg")) truthColl = GetGens();
     //w_TopPtRW = mcCorr->GetTopPtReweight(truthColl);
-    sf_MuID   = GetMuonSF(muonTightColl, MuTID, "ID");
-    sf_ElReco = GetElectronSF(electronLooseColl, "", "Reco");
-    sf_ElID   = GetElectronSF(electronTightColl, ElTID, "ID");
-    sf_BTag   = mcCorr->GetBTaggingReweight_1a(jetColl, param_jets);
-    //ElKey: DiElIso_HNTopID17SS DiElIso_HNTopIDSS  //MuKey: DiMuIso_HNTopID
+    sf_mID   = GetMuonSF(muonTightColl, MuTID, "ID");
+    sf_eReco = GetElectronSF(electronLooseColl, "", "Reco");
+    sf_eID   = GetElectronSF(electronTightColl, ElTID, "ID");
+    sf_B   = mcCorr->GetBTaggingReweight_1a(jetColl, param_jets);
     int NEl = electronTightColl.size(), NMu = muonTightColl.size();
-    TString TrSFKey = NMu>1? "DiMuIso_HNTopID":NEl>1? "DiElIso_HNTopID17SS":"";
+    TString TrSFKey = "";
+    if     ( (OS2l or SS2l) && NMu>1 ) TrSFKey="DiMuIso_HNTopID";
+    else if( (OS2l or SS2l) && NEl>1 ) TrSFKey="DiElIso_HNTopIDSS";
+    else if( TriLep && NMu>=2   ) TrSFKey="DiMuIso_HNTopID";
+    else if( TriLep && NEl>=2   ) TrSFKey="DiElIso_HNTopIDSS";
+    //else if( TriLep && (NMu+NEl)>2   ) TrSFKey="TrigSoup2L_HNTopIDSS";
     bool ApplyTrSF = TrSFKey!="" && (SS2l or OS2l or TriLep) && (!TrigClos);
-    sf_Trig   = ApplyTrSF? mcCorr->GetTriggerSF(electronTightColl, muonTightColl, TrSFKey, ""):1.;
-    w_Prefire = GetPrefireWeight(0);
+    sf_Tr   = ApplyTrSF? mcCorr->GetTriggerSF(electronTightColl, muonTightColl, TrSFKey, ""):1.;
+    w_Pref = GetPrefireWeight(0);
     if(FlipRun && !FakeRun) w_CF = GetCFRWeight(electronTightColl, "");
     //if(     ConvRun       ) w_CV = GetConvSF(ElTID, 0); 
   }
   if(FakeRun && EventCand){
     w_FR = GetDataFakeWeight(muonLooseColl, electronLooseColl, MuTID, ElTID, "FR_cent_"+MuTID+"_"+MuLID, "FR_cent_"+ElTID+"_"+ElLID+"_Pt15", "");
   }
-  weight *= w_TopPtRW * w_Prefire * sf_Trig; 
-  weight *= sf_MuTk * sf_MuID * sf_MuIso * sf_ElReco * sf_ElID * sf_BTag * w_CV * w_CF * w_FR;
-  //cout<<" w_PU:"<<w_PU<<" w_Prefire:"<<w_Prefire<<" sf_Trig:"<<sf_Trig<<endl;
-  //cout<<" sfIDMu:"<<sf_MuID<<" sfIsoMu:"<<sf_MuIso<<" sfRecEl:"<<sf_ElReco<<" sfIDEl:"<<sf_ElID<<" sfBTag:"<<sf_BTag<<endl;
+  weight *= w_TopPtRW * w_Pref * sf_Tr; 
+  weight *= sf_MuTk * sf_mID * sf_MuIso * sf_eReco * sf_eID * sf_B * w_CV * w_CF * w_FR;
+  //cout<<" w_PU:"<<w_PU<<" w_Pref:"<<w_Pref<<" sf_Tr:"<<sf_Tr<<endl;
+  //cout<<" sfIDMu:"<<sf_mID<<" sfIsoMu:"<<sf_MuIso<<" sfRecEl:"<<sf_eReco<<" sfIDEl:"<<sf_eID<<" sfBTag:"<<sf_B<<endl;
 
   if(TrigClos){
     CheckTrigMCClos(muonTightColl, muonVetoColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET_T1xy, ev, weight, "");
@@ -263,50 +289,111 @@ void ControlPlots::executeEvent(){
                   jetColl, bjetColl, vMET_T1xy, ev, weight, "");
     }
   }
+  if(TetraLep){
+    CheckCR4l(muonTightColl, muonLooseColl, muonVetoColl, electronTightColl, electronLooseColl, electronVetoColl,
+              jetColl, bjetColl, vMET_T1xy, ev, weight, "");
+  }
   if( SystRun && ((!IsDATA && !(FakeRun)) or (IsDATA && FakeRun)) ){
-    vector<Electron> ElCFPT1UpTColl = SelectElectrons(electronPreColl, FakeRun? ElLID:ElTID, 15., 2.5, "SystCFPT1Up");
-    vector<Electron> ElCFPT1UpLColl = SelectElectrons(electronPreColl, ElLID, 15., 2.5, "SystCFPT1Up");
-    vector<Electron> ElCFPT2UpTColl = SelectElectrons(electronPreColl, FakeRun? ElLID:ElTID, 15., 2.5, "SystCFPT2Up");
-    vector<Electron> ElCFPT2UpLColl = SelectElectrons(electronPreColl, ElLID, 15., 2.5, "SystCFPT2Up");
-    vector<Electron> ElCFPT1DownTColl = SelectElectrons(electronPreColl, FakeRun? ElLID:ElTID, 15., 2.5, "SystCFPT1Down");
-    vector<Electron> ElCFPT1DownLColl = SelectElectrons(electronPreColl, ElLID, 15., 2.5, "SystCFPT1Down");
-    vector<Electron> ElCFPT2DownTColl = SelectElectrons(electronPreColl, FakeRun? ElLID:ElTID, 15., 2.5, "SystCFPT2Down");
-    vector<Electron> ElCFPT2DownLColl = SelectElectrons(electronPreColl, ElLID, 15., 2.5, "SystCFPT2Down");
-    vector<Jet> jetJESUpColl    = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tight", 25., 2.4, "LVetoSystJESUp");
-    vector<Jet> jetJESDownColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tight", 25., 2.4, "LVetoSystJESDown");
-    vector<Jet> jetJERUpColl    = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tight", 25., 2.4, "LVetoSystJERUp");
-    vector<Jet> jetJERDownColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tight", 25., 2.4, "LVetoSystJERDown");
-    vector<Jet> bjetJESUpColl   = SelBJets(jetJESUpColl, param_jets);
-    vector<Jet> bjetJESDownColl = SelBJets(jetJESDownColl, param_jets);
-    vector<Jet> bjetJERUpColl   = SelBJets(jetJERUpColl, param_jets);
-    vector<Jet> bjetJERDownColl = SelBJets(jetJERDownColl, param_jets);
-    Particle vMET_T1xy_JESUp    = GetvMET("T1xyCorr", "SystUpJES");
-    Particle vMET_T1xy_JESDown  = GetvMET("T1xyCorr", "SystDownJES");
-    Particle vMET_T1xy_JERUp    = GetvMET("T1xyCorr", "SystUpJER");
-    Particle vMET_T1xy_JERDown  = GetvMET("T1xyCorr", "SystDownJER");
-    Particle vMET_T1xy_UnclUp   = GetvMET("T1xyCorr", "SystUpUncl");
-    Particle vMET_T1xy_UnclDown = GetvMET("T1xyCorr", "SystDownUncl");
+    vector<Muon>     MuEnUpTColl, MuEnUpLColl, MuEnDownTColl, MuEnDownLColl;
+    vector<Electron> ElSclUpTColl, ElSclUpLColl, ElSclDownTColl, ElSclDownLColl;
+    vector<Electron> ElResUpTColl, ElResUpLColl, ElResDownTColl, ElResDownLColl;
+    vector<Electron> ElCFPT1UpTColl, ElCFPT1UpLColl, ElCFPT2UpTColl, ElCFPT2UpLColl;
+    vector<Electron> ElCFPT1DownTColl, ElCFPT1DownLColl, ElCFPT2DownTColl, ElCFPT2DownLColl;
+    vector<Jet>      jetJESUpColl, jetJESDownColl, jetJERUpColl, jetJERDownColl;
+    vector<Jet>      bjetJESUpColl, bjetJESDownColl, bjetJERUpColl, bjetJERDownColl;
+    Particle         vMET_T1xy_JESUp, vMET_T1xy_JESDown, vMET_T1xy_JERUp, vMET_T1xy_JERDown, vMET_T1xy_UnclUp, vMET_T1xy_UnclDown;
+    if(!IsDATA){
+      MuEnUpTColl    = SelectMuons(muonPreColl, FakeRun? MuLID:MuTID, 10., 2.4, "SystEnUp");
+      MuEnUpLColl    = SelectMuons(muonPreColl, MuLID, 10., 2.4, "SystEnUp");
+      MuEnDownTColl  = SelectMuons(muonPreColl, FakeRun? MuLID:MuTID, 10., 2.4, "SystEnDown");
+      MuEnDownLColl  = SelectMuons(muonPreColl, MuLID, 10., 2.4, "SystEnDown");
+      ElSclUpTColl   = SelectElectrons(electronPreColl, FakeRun? ElLID:ElTID, 15., 2.5, "SystSclUp");
+      ElSclUpLColl   = SelectElectrons(electronPreColl, ElLID, 15., 2.5, "SystSclUp");
+      ElSclDownTColl = SelectElectrons(electronPreColl, FakeRun? ElLID:ElTID, 15., 2.5, "SystSclDown");
+      ElSclDownLColl = SelectElectrons(electronPreColl, ElLID, 15., 2.5, "SystSclDown");
+      ElResUpTColl   = SelectElectrons(electronPreColl, FakeRun? ElLID:ElTID, 15., 2.5, "SystResUp");
+      ElResUpLColl   = SelectElectrons(electronPreColl, ElLID, 15., 2.5, "SystResUp");
+      ElResDownTColl = SelectElectrons(electronPreColl, FakeRun? ElLID:ElTID, 15., 2.5, "SystResDown");
+      ElResDownLColl = SelectElectrons(electronPreColl, ElLID, 15., 2.5, "SystResDown");
+      if(FlipRun){
+        ElCFPT1UpTColl   = SelectElectrons(electronPreColl, FakeRun? ElLID:ElTID, 15., 2.5, "SystCFPT1Up");
+        ElCFPT1UpLColl   = SelectElectrons(electronPreColl, ElLID, 15., 2.5, "SystCFPT1Up");
+        ElCFPT2UpTColl   = SelectElectrons(electronPreColl, FakeRun? ElLID:ElTID, 15., 2.5, "SystCFPT2Up");
+        ElCFPT2UpLColl   = SelectElectrons(electronPreColl, ElLID, 15., 2.5, "SystCFPT2Up");
+        ElCFPT1DownTColl = SelectElectrons(electronPreColl, FakeRun? ElLID:ElTID, 15., 2.5, "SystCFPT1Down");
+        ElCFPT1DownLColl = SelectElectrons(electronPreColl, ElLID, 15., 2.5, "SystCFPT1Down");
+        ElCFPT2DownTColl = SelectElectrons(electronPreColl, FakeRun? ElLID:ElTID, 15., 2.5, "SystCFPT2Down");
+        ElCFPT2DownLColl = SelectElectrons(electronPreColl, ElLID, 15., 2.5, "SystCFPT2Down");
+      }
+      jetJESUpColl    = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVetoSystJESUp");
+      jetJESDownColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVetoSystJESDown");
+      jetJERUpColl    = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVetoSystJERUp");
+      jetJERDownColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVetoSystJERDown");
+      bjetJESUpColl   = SelBJets(jetJESUpColl, param_jets);
+      bjetJESDownColl = SelBJets(jetJESDownColl, param_jets);
+      bjetJERUpColl   = SelBJets(jetJERUpColl, param_jets);
+      bjetJERDownColl = SelBJets(jetJERDownColl, param_jets);
+      vMET_T1xy_JESUp    = GetvMET("PUPPIMETT1xyCorr", "SystUpJES");
+      vMET_T1xy_JESDown  = GetvMET("PUPPIMETT1xyCorr", "SystDownJES");
+      vMET_T1xy_JERUp    = GetvMET("PUPPIMETT1xyCorr", "SystUpJER");
+      vMET_T1xy_JERDown  = GetvMET("PUPPIMETT1xyCorr", "SystDownJER");
+      vMET_T1xy_UnclUp   = GetvMET("PUPPIMETT1xyCorr", "SystUpUncl");
+      vMET_T1xy_UnclDown = GetvMET("PUPPIMETT1xyCorr", "SystDownUncl");
+    }
 
-    float w_PUUp=1., w_PUDown=1., w_PrefireUp=1., w_PrefireDown=1.;
-    float w_FRUp=1., w_FRDown=1., w_CFUp=1., w_CFDown=1., w_FrCF1=0., w_FrCF2=0.;
-    float sf_ElRecoUp=1., sf_ElRecoDown=1.;
-    float sf_BTag_JESUp=1., sf_BTag_JESDown=1., sf_BTag_JERUp=1., sf_BTag_JERDown=1.;
-    float sf_BTag_LTagUp=1., sf_BTag_LTagDown=1., sf_BTag_HTagUp=1., sf_BTag_HTagDown=1.;
+    float w_PUUp=1., w_PUDown=1., w_PrefUp=1., w_PrefDown=1.;
+    float w_FRUp=1., w_FRDown=1.;
+    float w_CFUp=1., w_CFDown=1., w_FrCF1=0., w_FrCF2=0., w_CF_ElSclUp=1., w_CF_ElSclDown=1., w_CF_ElResUp=1., w_CF_ElResDown=1.;
+    float sf_mIDUp=1., sf_mIDDown=1., sf_mID_MuEnUp=1., sf_mID_MuEnDown=1.;
+    float sf_eIDUp=1., sf_eIDDown=1., sf_eID_ElSclUp=1., sf_eID_ElSclDown=1., sf_eID_ElResUp=1., sf_eID_ElResDown=1.;
+    float sf_eRecoUp=1., sf_eRecoDown=1., sf_eReco_ElSclUp=1., sf_eReco_ElSclDown=1., sf_eReco_ElResUp=1., sf_eReco_ElResDown=1.;
+    float sf_B_JESUp=1., sf_B_JESDown=1., sf_B_JERUp=1., sf_B_JERDown=1.;
+    float sf_B_LTagUp=1., sf_B_LTagDown=1., sf_B_HTagUp=1., sf_B_HTagDown=1.;
+    float sf_Tr_ElSclUp=1., sf_Tr_ElSclDown=1., sf_Tr_ElResUp=1., sf_Tr_ElResDown=1., sf_Tr_MuEnUp=1., sf_Tr_MuEnDown=1.;
+    float sf_TrUp = sf_Tr*1.01, sf_TrDown = sf_Tr*0.99;
     if(!IsDATA && EventCand){
-      w_PrefireUp   = GetPrefireWeight(1), w_PrefireDown = GetPrefireWeight(-1);
-      w_PUUp        = GetPileUpWeight(nPileUp, 1);
-      w_PUDown      = GetPileUpWeight(nPileUp,-1);
-      sf_ElRecoUp   = GetElectronSF(electronTightColl, "", "RecoSystUp");
-      sf_ElRecoDown = GetElectronSF(electronTightColl, "", "RecoSystDown");
-      sf_BTag_JESUp    = mcCorr->GetBTaggingReweight_1a(jetJESUpColl, param_jets);
-      sf_BTag_JESDown  = mcCorr->GetBTaggingReweight_1a(jetJESDownColl, param_jets);
-      sf_BTag_JERUp    = mcCorr->GetBTaggingReweight_1a(jetJERUpColl, param_jets);
-      sf_BTag_JERDown  = mcCorr->GetBTaggingReweight_1a(jetJERDownColl, param_jets);
-      sf_BTag_LTagUp   = mcCorr->GetBTaggingReweight_1a(jetColl, param_jets, "SystUpLTag");
-      sf_BTag_LTagDown = mcCorr->GetBTaggingReweight_1a(jetColl, param_jets, "SystDownLTag");
-      sf_BTag_HTagUp   = mcCorr->GetBTaggingReweight_1a(jetColl, param_jets, "SystUpHTag");
-      sf_BTag_HTagDown = mcCorr->GetBTaggingReweight_1a(jetColl, param_jets, "SystDownHTag");
+      w_PrefUp   = GetPrefireWeight(1), w_PrefDown = GetPrefireWeight(-1);
+      w_PUUp     = GetPileUpWeight(nPileUp, 1);
+      w_PUDown   = GetPileUpWeight(nPileUp,-1);
+
+      sf_eRecoUp   = GetElectronSF(electronTightColl, "", "RecoSystUp");
+      sf_eRecoDown = GetElectronSF(electronTightColl, "", "RecoSystDown");
+      sf_eReco_ElSclUp   = GetElectronSF(ElSclUpTColl, "", "Reco");
+      sf_eReco_ElSclDown = GetElectronSF(ElSclDownTColl, "", "Reco");
+      sf_eReco_ElResUp   = GetElectronSF(ElResUpTColl, "", "Reco");
+      sf_eReco_ElResDown = GetElectronSF(ElResDownTColl, "", "Reco");
+      sf_eIDUp         = GetElectronSF(electronTightColl, ElTID, "IDSystUp");
+      sf_eIDDown       = GetElectronSF(electronTightColl, ElTID, "IDSystDown");
+      sf_eID_ElSclUp   = GetElectronSF(ElSclUpTColl, ElTID, "ID");
+      sf_eID_ElSclDown = GetElectronSF(ElSclDownTColl, ElTID, "ID");
+      sf_eID_ElResUp   = GetElectronSF(ElResUpTColl, ElTID, "ID");
+      sf_eID_ElResDown = GetElectronSF(ElResDownTColl, ElTID, "ID");
+      sf_mIDUp         = GetMuonSF(muonTightColl, MuTID, "IDSystUp");
+      sf_mIDDown       = GetMuonSF(muonTightColl, MuTID, "IDSystDown");
+      sf_mID_MuEnUp    = GetMuonSF(MuEnUpTColl, MuTID, "ID");
+      sf_mID_MuEnDown  = GetMuonSF(MuEnDownTColl, MuTID, "ID");
+
+      sf_B_JESUp    = mcCorr->GetBTaggingReweight_1a(jetJESUpColl, param_jets);
+      sf_B_JESDown  = mcCorr->GetBTaggingReweight_1a(jetJESDownColl, param_jets);
+      sf_B_JERUp    = mcCorr->GetBTaggingReweight_1a(jetJERUpColl, param_jets);
+      sf_B_JERDown  = mcCorr->GetBTaggingReweight_1a(jetJERDownColl, param_jets);
+      sf_B_LTagUp   = mcCorr->GetBTaggingReweight_1a(jetColl, param_jets, "SystUpLTag");
+      sf_B_LTagDown = mcCorr->GetBTaggingReweight_1a(jetColl, param_jets, "SystDownLTag");
+      sf_B_HTagUp   = mcCorr->GetBTaggingReweight_1a(jetColl, param_jets, "SystUpHTag");
+      sf_B_HTagDown = mcCorr->GetBTaggingReweight_1a(jetColl, param_jets, "SystDownHTag");
+
+      sf_Tr_MuEnUp    = MuEnUpTColl.size()>1?    mcCorr->GetTriggerSF(electronTightColl, MuEnUpTColl, "DiMuIso_HNTopID", ""):1.;
+      sf_Tr_MuEnDown  = MuEnDownTColl.size()>1?  mcCorr->GetTriggerSF(electronTightColl, MuEnDownTColl, "DiMuIso_HNTopID", ""):1.;
+      sf_Tr_ElSclUp   = ElSclUpTColl.size()>1?   mcCorr->GetTriggerSF(ElSclUpTColl, muonTightColl, "DiElIso_HNTopIDSS", ""):1.;
+      sf_Tr_ElSclDown = ElSclDownTColl.size()>1? mcCorr->GetTriggerSF(ElSclDownTColl, muonTightColl, "DiElIso_HNTopIDSS", ""):1.;
+      sf_Tr_ElResUp   = ElResUpTColl.size()>1?   mcCorr->GetTriggerSF(ElResUpTColl, muonTightColl, "DiElIso_HNTopIDSS", ""):1.;
+      sf_Tr_ElResDown = ElResDownTColl.size()>1? mcCorr->GetTriggerSF(ElResDownTColl, muonTightColl, "DiElIso_HNTopIDSS", ""):1.;
+
       if(FlipRun && !FakeRun){
+        w_CF_ElSclUp   = GetCFRWeight(ElSclUpTColl, "");
+        w_CF_ElSclDown = GetCFRWeight(ElSclDownTColl, "");
+        w_CF_ElResUp   = GetCFRWeight(ElResUpTColl, "");
+        w_CF_ElResDown = GetCFRWeight(ElResDownTColl, "");
         w_CFUp   = GetCFRWeight(electronTightColl, "SystUp");
         w_CFDown = GetCFRWeight(electronTightColl, "SystDown");
         for(unsigned int ie=0; ie<electronTightColl.size(); ie++){
@@ -323,278 +410,163 @@ void ControlPlots::executeEvent(){
       w_FRDown = GetDataFakeWeight(muonLooseColl, electronLooseColl, MuTID, ElTID, "FR_cent_"+MuTID+"_"+MuLID, "FR_cent_"+ElTID+"_"+ElLID+"_Pt15", "SystDownTot");
     }
 
-    float w_base = w_GenNorm * w_BR * w_TopPtRW * sf_MuTk * sf_MuID * sf_MuIso * sf_ElID * sf_Trig * w_CV;
-    float weight_PUUp        = w_base * w_PUUp   * w_Prefire     * w_CF     * w_FR     * sf_ElReco     * sf_BTag;
-    float weight_PUDown      = w_base * w_PUDown * w_Prefire     * w_CF     * w_FR     * sf_ElReco     * sf_BTag;
-    float weight_PrefireUp   = w_base * w_PU     * w_PrefireUp   * w_CF     * w_FR     * sf_ElReco     * sf_BTag;
-    float weight_PrefireDown = w_base * w_PU     * w_PrefireDown * w_CF     * w_FR     * sf_ElReco     * sf_BTag;
-    float weight_CFUp        = w_base * w_PU     * w_Prefire     * w_CFUp   * w_FR     * sf_ElReco     * sf_BTag;
-    float weight_CFDown      = w_base * w_PU     * w_Prefire     * w_CFDown * w_FR     * sf_ElReco     * sf_BTag;
-    float weight_FRUp        = w_base * w_PU     * w_Prefire     * w_CF     * w_FRUp   * sf_ElReco     * sf_BTag;
-    float weight_FRDown      = w_base * w_PU     * w_Prefire     * w_CF     * w_FRDown * sf_ElReco     * sf_BTag;
-    float weight_ElRecoUp    = w_base * w_PU     * w_Prefire     * w_CF     * w_FR     * sf_ElRecoUp   * sf_BTag;
-    float weight_ElRecoDown  = w_base * w_PU     * w_Prefire     * w_CF     * w_FR     * sf_ElRecoDown * sf_BTag;
-    float weight_JESUp       = w_base * w_PU     * w_Prefire     * w_CF     * w_FR     * sf_ElReco     * sf_BTag_JESUp;
-    float weight_JESDown     = w_base * w_PU     * w_Prefire     * w_CF     * w_FR     * sf_ElReco     * sf_BTag_JESDown;
-    float weight_JERUp       = w_base * w_PU     * w_Prefire     * w_CF     * w_FR     * sf_ElReco     * sf_BTag_JERUp;
-    float weight_JERDown     = w_base * w_PU     * w_Prefire     * w_CF     * w_FR     * sf_ElReco     * sf_BTag_JERDown;
-    float weight_LTagUp      = w_base * w_PU     * w_Prefire     * w_CF     * w_FR     * sf_ElReco     * sf_BTag_LTagUp;
-    float weight_LTagDown    = w_base * w_PU     * w_Prefire     * w_CF     * w_FR     * sf_ElReco     * sf_BTag_LTagDown;
-    float weight_HTagUp      = w_base * w_PU     * w_Prefire     * w_CF     * w_FR     * sf_ElReco     * sf_BTag_HTagUp;
-    float weight_HTagDown    = w_base * w_PU     * w_Prefire     * w_CF     * w_FR     * sf_ElReco     * sf_BTag_HTagDown;
+    float w_base = w_GenNorm * w_BR * w_TopPtRW * sf_MuTk * w_CV;
+    float weight_PUUp      = w_base* w_PUUp  * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
+    float weight_PUDown    = w_base* w_PUDown* w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
+    float weight_PrefUp    = w_base* w_PU    * w_PrefUp  * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
+    float weight_PrefDown  = w_base* w_PU    * w_PrefDown* w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
+    float weight_MuEnUp    = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID_MuEnUp  * sf_eReco          * sf_eID          * sf_Tr_MuEnUp   * sf_B;
+    float weight_MuEnDown  = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID_MuEnDown* sf_eReco          * sf_eID          * sf_Tr_MuEnDown * sf_B;
+    float weight_MuIDUp    = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mIDUp       * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
+    float weight_MuIDDown  = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mIDDown     * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
+    float weight_ElRecoUp  = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eRecoUp        * sf_eID          * sf_Tr          * sf_B;
+    float weight_ElRecoDown= w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eRecoDown      * sf_eID          * sf_Tr          * sf_B;
+    float weight_ElIDUp    = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eIDUp        * sf_Tr          * sf_B;
+    float weight_ElIDDown  = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eIDDown      * sf_Tr          * sf_B;
+    float weight_ElSclUp   = w_base* w_PU    * w_Pref    * w_FR    * w_CF_ElSclUp  * sf_mID   * sf_eReco_ElSclUp  * sf_eID_ElSclUp  * sf_Tr_ElSclUp  * sf_B;
+    float weight_ElSclDown = w_base* w_PU    * w_Pref    * w_FR    * w_CF_ElSclDown* sf_mID   * sf_eReco_ElSclDown* sf_eID_ElSclDown* sf_Tr_ElSclDown* sf_B;
+    float weight_ElResUp   = w_base* w_PU    * w_Pref    * w_FR    * w_CF_ElResUp  * sf_mID   * sf_eReco_ElResUp  * sf_eID_ElResUp  * sf_Tr_ElResUp  * sf_B;
+    float weight_ElResDown = w_base* w_PU    * w_Pref    * w_FR    * w_CF_ElResDown* sf_mID   * sf_eReco_ElResDown* sf_eID_ElResDown* sf_Tr_ElResDown* sf_B;
+    float weight_JESUp     = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JESUp;
+    float weight_JESDown   = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JESDown;
+    float weight_JERUp     = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JERUp;
+    float weight_JERDown   = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JERDown;
+    float weight_LTagUp    = w_base* w_PU    * w_Pref    * w_CF    * w_FR    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_LTagUp;
+    float weight_LTagDown  = w_base* w_PU    * w_Pref    * w_CF    * w_FR    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_LTagDown;
+    float weight_HTagUp    = w_base* w_PU    * w_Pref    * w_CF    * w_FR    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_HTagUp;
+    float weight_HTagDown  = w_base* w_PU    * w_Pref    * w_CF    * w_FR    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_HTagDown;
+    float weight_CFUp      = w_base* w_PU    * w_Pref    * w_FR    * w_CFUp  * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
+    float weight_CFDown    = w_base* w_PU    * w_Pref    * w_FR    * w_CFDown* sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
+    float weight_FRUp      = w_base* w_PU    * w_Pref    * w_FRUp  * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
+    float weight_FRDown    = w_base* w_PU    * w_Pref    * w_FRDown* w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
+    float weight_TrUp      = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_TrUp        * sf_B;
+    float weight_TrDown    = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_TrDown      * sf_B;
 
-    if(SB_SS2L){
-      if(!IsDATA && !FakeRun && !FlipRun){
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_PUUp, "_SystUp_PU");
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_PUDown, "_SystDown_PU");
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_PrefireUp, "_SystUp_Pref");
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_PrefireDown, "_SystDown_Pref");
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_ElRecoUp, "_SystUp_ElReco");
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_ElRecoDown, "_SystDown_ElReco");
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetJESUpColl, bjetJESUpColl, vMET_T1xy_JESUp, weight_JESUp, "_SystUp_JES");
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetJESDownColl, bjetJESDownColl, vMET_T1xy_JESDown, weight_JESDown, "_SystDown_JES");
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetJERUpColl, bjetJERUpColl, vMET_T1xy_JERUp, weight_JERUp, "_SystUp_JER");
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetJERDownColl, bjetJERDownColl, vMET_T1xy_JERDown, weight_JERDown, "_SystDown_JER");
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy_UnclUp, weight, "_SystUp_Uncl");
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy_UnclDown, weight, "_SystDown_Uncl");
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_LTagUp, "_SystUp_LTag");
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_LTagDown, "_SystDown_LTag");
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_HTagUp, "_SystUp_HTag");
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_HTagDown, "_SystDown_HTag");
-      }
-      else if(!IsDATA && FlipRun){
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_CFUp, "_SystUp_CF");
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_CFDown, "_SystDown_CF");
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, ElCFPT1UpTColl, ElCFPT1UpLColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight*w_FrCF1, "_SystUp_CFPT");
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, ElCFPT1DownTColl, ElCFPT1DownLColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight*w_FrCF1, "_SystDown_CFPT");
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, ElCFPT2UpTColl, ElCFPT2UpLColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight*w_FrCF2, "_SystUp_CFPT");
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, ElCFPT2DownTColl, ElCFPT2DownLColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight*w_FrCF2, "_SystDown_CFPT");
-      }
-      else if(FakeRun){
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_FRUp, "_SystUp_FR");
-        MakePlotSS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_FRDown, "_SystDown_FR");
-      }
-    }
-    if(OS2l && SB_OS2L){
-      if(!IsDATA && !FakeRun){
-        PlotTop2LCR_OS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_PUUp, "_SystUp_PU");
-        PlotTop2LCR_OS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_PUDown, "_SystDown_PU");
-        PlotTop2LCR_OS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_PrefireUp, "_SystUp_Pref");
-        PlotTop2LCR_OS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_PrefireDown, "_SystDown_Pref");
-        PlotTop2LCR_OS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_ElRecoUp, "_SystUp_ElReco");
-        PlotTop2LCR_OS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_ElRecoDown, "_SystDown_ElReco");
-        PlotTop2LCR_OS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetJESUpColl, bjetJESUpColl, vMET_T1xy_JESUp, weight_JESUp, "_SystUp_JES");
-        PlotTop2LCR_OS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetJESDownColl, bjetJESDownColl, vMET_T1xy_JESDown, weight_JESDown, "_SystDown_JES");
-        PlotTop2LCR_OS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetJERUpColl, bjetJERUpColl, vMET_T1xy_JERUp, weight_JERUp, "_SystUp_JER");
-        PlotTop2LCR_OS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetJERDownColl, bjetJERDownColl, vMET_T1xy_JERDown, weight_JERDown, "_SystDown_JER");
-        PlotTop2LCR_OS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy_UnclUp, weight, "_SystUp_Uncl");
-        PlotTop2LCR_OS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy_UnclDown, weight, "_SystDown_Uncl");
-        PlotTop2LCR_OS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_LTagUp, "_SystUp_LTag");
-        PlotTop2LCR_OS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_LTagDown, "_SystDown_LTag");
-        PlotTop2LCR_OS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_HTagUp, "_SystUp_HTag");
-        PlotTop2LCR_OS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                     jetColl, bjetColl, vMET_T1xy, weight_HTagDown, "_SystDown_HTag");
-      }
-      else if(FakeRun){
-          PlotTop2LCR_OS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                       jetColl, bjetColl, vMET_T1xy, weight_FRUp, "_SystUp_FR");
-          PlotTop2LCR_OS2L(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                       jetColl, bjetColl, vMET_T1xy, weight_FRDown, "_SystDown_FR");
-      }
-    }
 
-    if(FkCR3l){
-      if(!IsDATA && !FakeRun){
-        CheckFkCR3l(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy, ev, weight_PUUp, "_SystUp_PU");
-        CheckFkCR3l(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy, ev, weight_PUDown, "_SystDown_PU");
-        CheckFkCR3l(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy, ev, weight_PrefireUp, "_SystUp_Pref");
-        CheckFkCR3l(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy, ev, weight_PrefireDown, "_SystDown_Pref");
-        CheckFkCR3l(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy, ev, weight_ElRecoUp, "_SystUp_ElReco");
-        CheckFkCR3l(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy, ev, weight_ElRecoDown, "_SystDown_ElReco");
-        CheckFkCR3l(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetJESUpColl, bjetJESUpColl, vMET_T1xy_JESUp, ev, weight_JESUp, "_SystUp_JES");
-        CheckFkCR3l(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetJESDownColl, bjetJESDownColl, vMET_T1xy_JESDown, ev, weight_JESDown, "_SystDown_JES");
-        CheckFkCR3l(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetJERUpColl, bjetJERUpColl, vMET_T1xy_JERUp, ev, weight_JERUp, "_SystUp_JER");
-        CheckFkCR3l(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetJERDownColl, bjetJERDownColl, vMET_T1xy_JERDown, ev, weight_JERDown, "_SystDown_JER");
-        CheckFkCR3l(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy_UnclUp, ev, weight, "_SystUp_Uncl");
-        CheckFkCR3l(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy_UnclDown, ev, weight, "_SystDown_Uncl");
-        CheckFkCR3l(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy, ev, weight_LTagUp, "_SystUp_LTag");
-        CheckFkCR3l(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy, ev, weight_LTagDown, "_SystDown_LTag");
-        CheckFkCR3l(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy, ev, weight_HTagUp, "_SystUp_HTag");
-        CheckFkCR3l(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy, ev, weight_HTagDown, "_SystDown_HTag");
+    if(!IsDATA && !FakeRun){
+      SysWgtStrPairList.clear();//safe-guard, in-case there was usage before this and uncleared
+      SysWgtStrPairList.push_back( make_pair(weight_PUUp      , "_SystUp_PU"      ) );
+      SysWgtStrPairList.push_back( make_pair(weight_PUDown    , "_SystDown_PU"    ) );
+      SysWgtStrPairList.push_back( make_pair(weight_PrefUp    , "_SystUp_Pref"    ) );
+      SysWgtStrPairList.push_back( make_pair(weight_PrefDown  , "_SystDown_Pref"  ) );
+      SysWgtStrPairList.push_back( make_pair(weight_ElRecoUp  , "_SystUp_ElReco"  ) );
+      SysWgtStrPairList.push_back( make_pair(weight_ElRecoDown, "_SystDown_ElReco") );
+      SysWgtStrPairList.push_back( make_pair(weight_ElIDUp    , "_SystUp_ElID"    ) );
+      SysWgtStrPairList.push_back( make_pair(weight_ElIDDown  , "_SystDown_ElID"  ) );
+      SysWgtStrPairList.push_back( make_pair(weight_MuIDUp    , "_SystUp_MuID"    ) );
+      SysWgtStrPairList.push_back( make_pair(weight_MuIDDown  , "_SystDown_MuID"  ) );
+      SysWgtStrPairList.push_back( make_pair(weight_TrUp      , "_SystUp_Tr"      ) );
+      SysWgtStrPairList.push_back( make_pair(weight_TrDown    , "_SystDown_Tr"    ) );
+      SysWgtStrPairList.push_back( make_pair(weight_LTagUp    , "_SystUp_LTag"    ) );
+      SysWgtStrPairList.push_back( make_pair(weight_LTagDown  , "_SystDown_LTag"  ) );
+      SysWgtStrPairList.push_back( make_pair(weight_HTagUp    , "_SystUp_HTag"    ) );
+      SysWgtStrPairList.push_back( make_pair(weight_HTagDown  , "_SystDown_HTag"  ) );
+      if(FlipRun && !FakeRun){
+        SysWgtStrPairList.push_back( make_pair(weight_CFUp  , "_SystUp_CF"  ) );
+        SysWgtStrPairList.push_back( make_pair(weight_CFDown, "_SystDown_CF") );
       }
-      else if(FakeRun){
-          CheckFkCR3l(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                      jetColl, bjetColl, vMET_T1xy, ev, weight_FRUp, "_SystUp_FR");
-          CheckFkCR3l(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                      jetColl, bjetColl, vMET_T1xy, ev, weight_FRDown, "_SystDown_FR");
-      }
-    }
-    if(ConvCR){
-      if(!IsDATA && !FakeRun){
-        CheckConvCR(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy, ev, weight_PUUp, "_SystUp_PU");
-        CheckConvCR(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy, ev, weight_PUDown, "_SystDown_PU");
-        CheckConvCR(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy, ev, weight_PrefireUp, "_SystUp_Pref");
-        CheckConvCR(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy, ev, weight_PrefireDown, "_SystDown_Pref");
-        CheckConvCR(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy, ev, weight_ElRecoUp, "_SystUp_ElReco");
-        CheckConvCR(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy, ev, weight_ElRecoDown, "_SystDown_ElReco");
-        CheckConvCR(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetJESUpColl, bjetJESUpColl, vMET_T1xy_JESUp, ev, weight_JESUp, "_SystUp_JES");
-        CheckConvCR(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetJESDownColl, bjetJESDownColl, vMET_T1xy_JESDown, ev, weight_JESDown, "_SystDown_JES");
-        CheckConvCR(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetJERUpColl, bjetJERUpColl, vMET_T1xy_JERUp, ev, weight_JERUp, "_SystUp_JER");
-        CheckConvCR(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetJERDownColl, bjetJERDownColl, vMET_T1xy_JERDown, ev, weight_JERDown, "_SystDown_JER");
-        CheckConvCR(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy_UnclUp, ev, weight, "_SystUp_Uncl");
-        CheckConvCR(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy_UnclDown, ev, weight, "_SystDown_Uncl");
-        CheckConvCR(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy, ev, weight_LTagUp, "_SystUp_LTag");
-        CheckConvCR(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy, ev, weight_LTagDown, "_SystDown_LTag");
-        CheckConvCR(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy, ev, weight_HTagUp, "_SystUp_HTag");
-        CheckConvCR(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                    jetColl, bjetColl, vMET_T1xy, ev, weight_HTagDown, "_SystDown_HTag");
-      }
-      else if(FakeRun){
-          CheckConvCR(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                      jetColl, bjetColl, vMET_T1xy, ev, weight_FRUp, "_SystUp_FR");
-          CheckConvCR(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                      jetColl, bjetColl, vMET_T1xy, ev, weight_FRDown, "_SystDown_FR");
+      DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, ElSclUpTColl, ElSclUpLColl, electronVetoColl,
+                jetColl, bjetColl, vMET_T1xy, ev, weight_ElSclUp, "_SystUp_ElScl");
+      DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, ElSclDownTColl, ElSclDownLColl, electronVetoColl,
+                jetColl, bjetColl, vMET_T1xy, ev, weight_ElSclDown, "_SystDown_ElScl");
+      DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, ElResUpTColl, ElResUpLColl, electronVetoColl,
+                jetColl, bjetColl, vMET_T1xy, ev, weight_ElResUp, "_SystUp_ElRes");
+      DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, ElResDownTColl, ElResDownLColl, electronVetoColl,
+                jetColl, bjetColl, vMET_T1xy, ev, weight_ElResDown, "_SystDown_ElRes");
+      DoSystRun(MuEnUpTColl, MuEnUpLColl, MuEnUpLColl, electronTightColl, electronLooseColl, electronVetoColl,
+                jetColl, bjetColl, vMET_T1xy, ev, weight_MuEnUp, "_SystUp_MuEn");
+      DoSystRun(MuEnDownTColl, MuEnDownLColl, MuEnDownLColl, electronTightColl, electronLooseColl, electronVetoColl,
+                jetColl, bjetColl, vMET_T1xy, ev, weight_MuEnDown, "_SystDown_MuEn");
+      DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
+                jetJESUpColl, bjetJESUpColl, vMET_T1xy_JESUp, ev, weight_JESUp, "_SystUp_JES");
+      DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
+                jetJESDownColl, bjetJESDownColl, vMET_T1xy_JESDown, ev, weight_JESDown, "_SystDown_JES");
+      DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
+                jetJERUpColl, bjetJERUpColl, vMET_T1xy_JERUp, ev, weight_JERUp, "_SystUp_JER");
+      DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
+                jetJERDownColl, bjetJERDownColl, vMET_T1xy_JERDown, ev, weight_JERDown, "_SystDown_JER");
+      DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
+                jetColl, bjetColl, vMET_T1xy_UnclUp, ev, weight, "_SystUp_Uncl");
+      DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
+                jetColl, bjetColl, vMET_T1xy_UnclDown, ev, weight, "_SystDown_Uncl");
+      if(FlipRun && !FakeRun){
+        DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, ElCFPT1UpTColl, ElCFPT1UpLColl, electronVetoColl,
+                  jetColl, bjetColl, vMET_T1xy, ev, weight*w_FrCF1, "_SystUp_CFPT");
+        DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, ElCFPT1DownTColl, ElCFPT1DownLColl, electronVetoColl,
+                  jetColl, bjetColl, vMET_T1xy, ev, weight*w_FrCF1, "_SystDown_CFPT");
+        DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, ElCFPT2UpTColl, ElCFPT2UpLColl, electronVetoColl,
+                  jetColl, bjetColl, vMET_T1xy, ev, weight*w_FrCF2, "_SystUp_CFPT");
+        DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, ElCFPT2DownTColl, ElCFPT2DownLColl, electronVetoColl,
+                  jetColl, bjetColl, vMET_T1xy, ev, weight*w_FrCF2, "_SystDown_CFPT");
       }
     }
-    if(CFlip){
-      if(!IsDATA && !FakeRun && !FlipRun){
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                        jetColl, bjetColl, vMET_T1xy, weight_PUUp, "_SystUp_PU");
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                        jetColl, bjetColl, vMET_T1xy, weight_PUDown, "_SystDown_PU");
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                        jetColl, bjetColl, vMET_T1xy, weight_PrefireUp, "_SystUp_Pref");
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                        jetColl, bjetColl, vMET_T1xy, weight_PrefireDown, "_SystDown_Pref");
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                        jetColl, bjetColl, vMET_T1xy, weight_ElRecoUp, "_SystUp_ElReco");
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                        jetColl, bjetColl, vMET_T1xy, weight_ElRecoDown, "_SystDown_ElReco");
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                        jetJESUpColl, bjetJESUpColl, vMET_T1xy_JESUp, weight_JESUp, "_SystUp_JES");
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                        jetJESDownColl, bjetJESDownColl, vMET_T1xy_JESDown, weight_JESDown, "_SystDown_JES");
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                        jetJERUpColl, bjetJERUpColl, vMET_T1xy_JERUp, weight_JERUp, "_SystUp_JER");
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                        jetJERDownColl, bjetJERDownColl, vMET_T1xy_JERDown, weight_JERDown, "_SystDown_JER");
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                        jetColl, bjetColl, vMET_T1xy_UnclUp, weight, "_SystUp_Uncl");
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                        jetColl, bjetColl, vMET_T1xy_UnclDown, weight, "_SystDown_Uncl");
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                        jetColl, bjetColl, vMET_T1xy, weight_LTagUp, "_SystUp_LTag");
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                        jetColl, bjetColl, vMET_T1xy, weight_LTagDown, "_SystDown_LTag");
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                        jetColl, bjetColl, vMET_T1xy, weight_HTagUp, "_SystUp_HTag");
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                        jetColl, bjetColl, vMET_T1xy, weight_HTagDown, "_SystDown_HTag");
-      }
-      else if(!IsDATA && FlipRun){
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                        jetColl, bjetColl, vMET_T1xy, weight_CFUp, "_SystUp_CF");
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                        jetColl, bjetColl, vMET_T1xy, weight_CFDown, "_SystDown_CF");
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, ElCFPT1DownTColl, ElCFPT1DownLColl, electronVetoColl,
-                        jetColl, bjetColl, vMET_T1xy, weight*w_FrCF1, "_SystUp_CFPT");
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, ElCFPT1DownTColl, ElCFPT1DownLColl, electronVetoColl,
-                        jetColl, bjetColl, vMET_T1xy, weight*w_FrCF1, "_SystDown_CFPT");
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, ElCFPT2DownTColl, ElCFPT2DownLColl, electronVetoColl,
-                        jetColl, bjetColl, vMET_T1xy, weight*w_FrCF2, "_SystUp_CFPT");
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, ElCFPT2DownTColl, ElCFPT2DownLColl, electronVetoColl,
-                        jetColl, bjetColl, vMET_T1xy, weight*w_FrCF2, "_SystDown_CFPT");
-      }
-      else if(FakeRun){
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                        jetColl, bjetColl, vMET_T1xy, weight_FRUp, "_SystUp_FR");
-        CheckChargeFlip(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                        jetColl, bjetColl, vMET_T1xy, weight_FRDown, "_SystDown_FR");
-      }
+    else if(FakeRun){
+      SysWgtStrPairList.push_back( make_pair(weight_FRUp  , "_SystUp_FR"  ) );
+      SysWgtStrPairList.push_back( make_pair(weight_FRDown, "_SystDown_FR") );
     }
-  }
+    if(SysWgtStrPairList.size()>0){
+      DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
+                jetColl, bjetColl, vMET_T1xy, ev, weight, "SystWgtVar");
+      SysWgtStrPairList.clear();
+    }
+  }//End of SystRun
 }
+
+
+
+void ControlPlots::DoSystRun(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,
+                             vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
+                             vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, Event& Ev, float weight, TString Label)
+{
+
+  if(SB_SS2L){
+    MakePlotSS2L(MuTColl, MuLColl, MuLColl, ElTColl, ElLColl, ElVColl, JetColl, BJetColl, vMET, weight, Label);
+  }
+  else if(SB_OS2L){
+    PlotTop2LCR_OS2L(MuTColl, MuLColl, MuLColl, ElTColl, ElLColl, ElVColl, JetColl, BJetColl, vMET, weight, Label);
+  }
+  else if(CFlip){
+    CheckChargeFlip(MuTColl, MuLColl, MuLColl, ElTColl, ElLColl, ElVColl, JetColl, BJetColl, vMET, weight, Label);
+  }
+  else if(FkCR3l){
+    CheckFkCR3l(MuTColl, MuLColl, MuLColl, ElTColl, ElLColl, ElVColl, JetColl, BJetColl, vMET, Ev, weight, Label);
+  }
+  else if(ConvCR){
+    CheckConvCR(MuTColl, MuLColl, MuVColl, ElTColl, ElLColl, ElVColl, JetColl, BJetColl, vMET, Ev, weight, Label);
+  }
+  else{ cout<<"no corresponding cycle!"<<endl; exit(ENODATA); }
+
+  return;
+}
+
 
 
 void ControlPlots::CheckTrigMCClos(vector<Muon>& MuTColl, vector<Muon>& MuVColl, vector<Electron>& ElTColl, vector<Electron>& ElVColl,
                                    vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, Event& Ev, float weight, TString Label)
 {
   int NMuT=MuTColl.size(), NElT=ElTColl.size(), NMuV=MuVColl.size(), NElV=ElVColl.size();
+  bool ApplyCut_dRllp3=false;
   if( !(NMuT==NMuV && NElT==NElV) ) return;
+  if(ApplyCut_dRllp3){
+    for(unsigned int im1=0; im1<MuTColl.size(); im1++){
+    for(unsigned int im2=im1+1; im2<MuTColl.size(); im2++){
+      if( MuTColl.at(im1).DeltaR(MuTColl.at(im2)) < 0.3 ) return;
+    }}
+    for(unsigned int ie1=0; ie1<ElTColl.size(); ie1++){
+    for(unsigned int ie2=ie1+1; ie2<ElTColl.size(); ie2++){
+      if( ElTColl.at(ie1).DeltaR(ElTColl.at(ie2)) < 0.3 ) return;
+    }}
+    for(unsigned int ie=0; ie<ElTColl.size(); ie++){
+    for(unsigned int im=ie+1; im<MuTColl.size(); im++){
+      if( ElTColl.at(ie).DeltaR(MuTColl.at(im)) < 0.3 ) return;
+    }}
+  }
   if(NMuT==2 && NElT==0){
-    if( abs(SumCharge(MuTColl))!=0 ) return;
     bool Acc_2MTr = MuTColl.at(0).Pt()>20 && MuTColl.at(1).Pt()>10 && (MuTColl.at(0)+MuTColl.at(1)).M()>4;
     if(!Acc_2MTr) return;
+    bool IsSigMC = MCSample.Contains("HeavyN"); int NQTot = abs(SumCharge(MuTColl));
+    if( (IsSigMC && NQTot==0) or (!IsSigMC && NQTot!=0) ) return;
+    if( IsSigMC ){ if(!(JetColl.size()>2 && BJetColl.size()>0)) return; }
     float Eff_2MTr_MC = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "DiMuIso_HNTopID", false, "");
     float Eff_2MTr_RD = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "DiMuIso_HNTopID", true, "");
     FillHist("NCnt_2MTr_2M"+Label, 0., weight, 1, 0., 1.);
@@ -603,15 +575,28 @@ void ControlPlots::CheckTrigMCClos(vector<Muon>& MuTColl, vector<Muon>& MuVColl,
     if(Ev.PassTrigger(TrigList_DblMu)) FillHist("NTrCnt_MCObs_2MTr_2M"+Label, 0., weight, 1, 0., 1.);
   }
   if(NElT==2 && NMuT==0){
-    if( abs(SumCharge(ElTColl))!=0 ) return;
     bool Acc_2ETr = ElTColl.at(0).Pt()>25 && ElTColl.at(1).Pt()>15;
     if(!Acc_2ETr) return;
-    float Eff_2ETr_MC = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "DiElIso_HNTopID17SS", false, "");
-    float Eff_2ETr_RD = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "DiElIso_HNTopID17SS", true, "");
+    bool IsSigMC = MCSample.Contains("HeavyN"); int NQTot = abs(SumCharge(ElTColl));
+    if( (IsSigMC && NQTot==0) or (!IsSigMC && NQTot!=0) ) return;
+    if( IsSigMC ){ if(!(JetColl.size()>2 && BJetColl.size()>0 && fabs((ElTColl.at(0)+ElTColl.at(1)).M()-91.2)>10)) return; }
+    float Eff_2ETr_MC = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "DiElIso_HNTopIDSS", false, "");
+    float Eff_2ETr_RD = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "DiElIso_HNTopIDSS", true, "");
     FillHist("NCnt_2ETr_2E"+Label, 0., weight, 1, 0., 1.);
     FillHist("NTrCnt_MCExp_2ETr_2E"+Label, 0., weight*Eff_2ETr_MC, 1, 0., 1.);
     FillHist("NTrCnt_RDExp_2ETr_2E"+Label, 0., weight*Eff_2ETr_RD, 1, 0., 1.);
     if(Ev.PassTrigger(TrigList_DblEG)) FillHist("NTrCnt_MCObs_2ETr_2E"+Label, 0., weight, 1, 0., 1.);
+  }
+  if(NElT==1 && NMuT==1){
+    if( ElTColl.at(0).Charge()==MuTColl.at(0).Charge() ) return;
+    bool Acc_EMTr = (ElTColl.at(0).Pt()>25 or MuTColl.at(0).Pt()>25) && (ElTColl.at(0).Pt()>15 && MuTColl.at(0).Pt()>10);
+    if(!Acc_EMTr) return;
+    float Eff_EMTr_MC = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "EMuIso_HNTopIDSS", false, "");
+    float Eff_EMTr_RD = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "EMuIso_HNTopIDSS", true, "");
+    FillHist("NCnt_EMTr_1E1M"+Label, 0., weight, 1, 0., 1.);
+    FillHist("NTrCnt_MCExp_EMTr_1E1M"+Label, 0., weight*Eff_EMTr_MC, 1, 0., 1.);
+    FillHist("NTrCnt_RDExp_EMTr_1E1M"+Label, 0., weight*Eff_EMTr_RD, 1, 0., 1.);
+    if(Ev.PassTrigger(TrigList_MuEG)) FillHist("NTrCnt_MCObs_EMTr_1E1M"+Label, 0., weight, 1, 0., 1.);
   }
   if(NElT==1 && NMuT==2){
     if( abs(SumCharge(MuTColl))!=0 ) return;
@@ -619,9 +604,9 @@ void ControlPlots::CheckTrigMCClos(vector<Muon>& MuTColl, vector<Muon>& MuVColl,
     bool Acc_EMTr = (ElTColl.at(0).Pt()>25 or MuTColl.at(0).Pt()>25) && (ElTColl.at(0).Pt()>15 && MuTColl.at(1).Pt()>10);
     bool Acc_SoupTr = Acc_2MTr or Acc_EMTr;
     if(!Acc_SoupTr) return;
-    if(Acc_EMTr && false){
-      float Eff_EMTr_MC = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "EMuIso_HNTopID17SS", false, "");
-      float Eff_EMTr_RD = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "EMuIso_HNTopID17SS", true, "");
+    if(Acc_EMTr){
+      float Eff_EMTr_MC = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "EMuIso_HNTopIDSS", false, "");
+      float Eff_EMTr_RD = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "EMuIso_HNTopIDSS", true, "");
       FillHist("NCnt_EMTr_1E2M"+Label, 0., weight, 1, 0., 1.);
       FillHist("NTrCnt_MCExp_EMTr_1E2M"+Label, 0., weight*Eff_EMTr_MC, 1, 0., 1.);
       FillHist("NTrCnt_RDExp_EMTr_1E2M"+Label, 0., weight*Eff_EMTr_RD, 1, 0., 1.);
@@ -635,13 +620,13 @@ void ControlPlots::CheckTrigMCClos(vector<Muon>& MuTColl, vector<Muon>& MuVColl,
       FillHist("NTrCnt_RDExp_2MTr_1E2M"+Label, 0., weight*Eff_2MTr_RD, 1, 0., 1.);
       if(Ev.PassTrigger(TrigList_DblMu)) FillHist("NTrCnt_MCObs_2MTr_1E2M"+Label, 0., weight, 1, 0., 1.);
     }
-    if(Acc_SoupTr && false){
-      float Eff_SoupTr_MC = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "TrigSoup2L_HNTopID17SS", false, "");
-      float Eff_SoupTr_RD = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "TrigSoup2L_HNTopID17SS", true, "");
+    if(Acc_SoupTr){
+      float Eff_SoupTr_MC = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "TrigSoup2L_HNTopIDSS", false, "");
+      float Eff_SoupTr_RD = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "TrigSoup2L_HNTopIDSS", true, "");
       FillHist("NCnt_SoupTr_1E2M"+Label, 0., weight, 1, 0., 1.);
       FillHist("NTrCnt_MCExp_SoupTr_1E2M"+Label, 0., weight*Eff_SoupTr_MC, 1, 0., 1.);
       FillHist("NTrCnt_RDExp_SoupTr_1E2M"+Label, 0., weight*Eff_SoupTr_RD, 1, 0., 1.);
-      if(Ev.PassTrigger(TrigList_DblEG) or Ev.PassTrigger(TrigList_MuEG)){
+      if(Ev.PassTrigger(TrigList_DblMu) or Ev.PassTrigger(TrigList_MuEG)){
         FillHist("NTrCnt_MCObs_SoupTr_1E2M"+Label, 0., weight, 1, 0., 1.);
       }
     }
@@ -652,25 +637,25 @@ void ControlPlots::CheckTrigMCClos(vector<Muon>& MuTColl, vector<Muon>& MuVColl,
     bool Acc_EMTr = (ElTColl.at(0).Pt()>25 or MuTColl.at(0).Pt()>25) && (ElTColl.at(1).Pt()>15 && MuTColl.at(0).Pt()>10);
     bool Acc_SoupTr = Acc_2ETr or Acc_EMTr;
     if(!Acc_SoupTr) return;
-    if(Acc_EMTr && false){
-      float Eff_EMTr_MC = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "EMuIso_HNTopID17SS", false, "");
-      float Eff_EMTr_RD = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "EMuIso_HNTopID17SS", true, "");
+    if(Acc_EMTr){
+      float Eff_EMTr_MC = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "EMuIso_HNTopIDSS", false, "");
+      float Eff_EMTr_RD = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "EMuIso_HNTopIDSS", true, "");
       FillHist("NCnt_EMTr_2E1M"+Label, 0., weight, 1, 0., 1.);
       FillHist("NTrCnt_MCExp_EMTr_2E1M"+Label, 0., weight*Eff_EMTr_MC, 1, 0., 1.);
       FillHist("NTrCnt_RDExp_EMTr_2E1M"+Label, 0., weight*Eff_EMTr_RD, 1, 0., 1.);
       if(Ev.PassTrigger(TrigList_MuEG)) FillHist("NTrCnt_MCObs_EMTr_2E1M"+Label, 0., weight, 1, 0., 1.);
     } 
     if(Acc_2ETr){
-      float Eff_2ETr_MC = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "DiElIso_HNTopID17SS", false, "");
-      float Eff_2ETr_RD = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "DiElIso_HNTopID17SS", true, "");
+      float Eff_2ETr_MC = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "DiElIso_HNTopIDSS", false, "");
+      float Eff_2ETr_RD = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "DiElIso_HNTopIDSS", true, "");
       FillHist("NCnt_2ETr_2E1M"+Label, 0., weight, 1, 0., 1.);
       FillHist("NTrCnt_MCExp_2ETr_2E1M"+Label, 0., weight*Eff_2ETr_MC, 1, 0., 1.);
       FillHist("NTrCnt_RDExp_2ETr_2E1M"+Label, 0., weight*Eff_2ETr_RD, 1, 0., 1.);
       if(Ev.PassTrigger(TrigList_DblEG)) FillHist("NTrCnt_MCObs_2ETr_2E1M"+Label, 0., weight, 1, 0., 1.);
     }
-    if(Acc_SoupTr && false){
-      float Eff_SoupTr_MC = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "TrigSoup2L_HNTopID17SS", false, "");
-      float Eff_SoupTr_RD = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "TrigSoup2L_HNTopID17SS", true, "");
+    if(Acc_SoupTr){
+      float Eff_SoupTr_MC = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "TrigSoup2L_HNTopIDSS", false, "");
+      float Eff_SoupTr_RD = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "TrigSoup2L_HNTopIDSS", true, "");
       FillHist("NCnt_SoupTr_2E1M"+Label, 0., weight, 1, 0., 1.);
       FillHist("NTrCnt_MCExp_SoupTr_2E1M"+Label, 0., weight*Eff_SoupTr_MC, 1, 0., 1.);
       FillHist("NTrCnt_RDExp_SoupTr_2E1M"+Label, 0., weight*Eff_SoupTr_RD, 1, 0., 1.);
@@ -682,8 +667,8 @@ void ControlPlots::CheckTrigMCClos(vector<Muon>& MuTColl, vector<Muon>& MuVColl,
   if(NElT==3){
     if( !(ElTColl.at(0).Pt()>25 && ElTColl.at(2).Pt()>15) ) return;
     if( abs(SumCharge(ElTColl))!=1 ) return;
-    float Eff_Tr_MC = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "DiElIso_HNTopID17SS", false, "");
-    float Eff_Tr_RD = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "DiElIso_HNTopID17SS", true, "");
+    float Eff_Tr_MC = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "DiElIso_HNTopIDSS", false, "");
+    float Eff_Tr_RD = mcCorr->TriggerEfficiency(ElTColl, MuTColl, "DiElIso_HNTopIDSS", true, "");
     FillHist("NCnt_2ETr_3E"+Label, 0., weight, 1, 0., 1.);
     FillHist("NTrCnt_MCExp_2ETr_3E"+Label, 0., weight*Eff_Tr_MC, 1, 0., 1.);
     FillHist("NTrCnt_RDExp_2ETr_3E"+Label, 0., weight*Eff_Tr_RD, 1, 0., 1.);
@@ -713,27 +698,15 @@ void ControlPlots::CheckChargeFlip(vector<Muon>& MuTColl, vector<Muon>& MuLColl,
 {
   int NMuT=MuTColl.size(), NElT=ElTColl.size(), NMuL=MuLColl.size(), NElL=ElLColl.size(), NMuV=MuVColl.size(), NElV=ElVColl.size();
   float MCCFSF = 1.;
+  bool ApplyWVar = Label.Contains("SystWgtVar");
+  if( ApplyWVar ) Label.ReplaceAll("SystWgtVar","");
   if( FakeRun      and weight==0.  ) return; 
-  if( !( (NMuT==2 and NElT==0) or (NElT==2 and NMuT==0) ) ) return;
+  if( !( (NElT==2  and NMuT==0)  ) ) return;
   if( !(NMuT==NMuL and NElT==NElL) ) return;
   if( !(NMuT==NMuV and NElT==NElV) ) return;
-  if(NMuT==2){
-    Label="_2M"+Label;
-    if(MuTColl.at(0).Charge()!=MuTColl.at(1).Charge()) return;
-    if(!(MuTColl.at(0).Pt()>20 && MuTColl.at(1).Pt()>10)) return;
-    float Mll = (MuTColl.at(0)+MuTColl.at(1)).M();
-    if(DataYear>2016 && Mll<4) return; 
-    if(!IsDATA){
-      int GenLepInfo = GetGenLepInfo(ElTColl, MuTColl);
-      if(ConvRun && GenLepInfo>=100) return;
-      if(FlipRun && (GenLepInfo>999 or GenLepInfo<100)) return;
-    }
-  }
-  else if(NElT==2){
+  if(NElT==2){
     Label="_2E"+Label;
-    int aSumQ = abs(SumCharge(ElLColl));
-    //if(aSumQ==0) return;
-    //if(FlipRun            ){ if(aSumQ!=0) return; }
+    int aSumQ = abs(SumCharge(ElTColl));
     if(FlipRun && !FakeRun){ if(aSumQ!=0) return; }
     else                   { if(aSumQ==0) return; }
     if(!(ElTColl.at(0).Pt()>25 && ElTColl.at(1).Pt()>15)) return;
@@ -749,24 +722,34 @@ void ControlPlots::CheckChargeFlip(vector<Muon>& MuTColl, vector<Muon>& MuLColl,
   }
   float newweight = weight*MCCFSF;
 
+  vector<Electron> ElConeColl; vector<Muon> MuConeColl;
+  if(FakeRun){
+    for(unsigned int ie=0; ie<ElTColl.size(); ie++){ 
+      Electron TmpEl(ElTColl.at(ie));
+      float RelIso = ElTColl.at(ie).MiniRelIso();
+      float PTCorr = ElTColl.at(ie).CalcPtCone(RelIso,0.1), PT=ElTColl.at(ie).Pt();
+      if(RelIso>0.1) TmpEl *= PTCorr/PT;
+      ElConeColl.push_back(TmpEl);
+    }
+    for(unsigned int im=0; im<MuTColl.size(); im++){ 
+      Muon TmpMu(MuTColl.at(im));
+      float RelIso = MuTColl.at(im).MiniRelIso();
+      float PTCorr = MuTColl.at(im).CalcPtCone(RelIso,0.1), PT=MuTColl.at(im).Pt();
+      if(RelIso>0.1) TmpMu *= PTCorr/PT;
+      MuConeColl.push_back(TmpMu);
+    }
+  }
+  else{ ElConeColl = ElTColl; MuConeColl = MuTColl; }
+
+
   int Nj=JetColl.size(), Nb=BJetColl.size();
-  //FillHist("h2D_Nj_Nb"+Label, Nj, Nb, newweight, 10, 0., 10., 5, 0., 5.);
-   
   float Mll=-1., PTl1=-1, Etal1=999., PTl2=-1., Etal2=-1., MTW=-1., MET=-1.;
   bool IsOnZ=false, IsBJOrtho=false;
-  if(NMuT==2){
-    Mll   = (MuTColl.at(0)+MuTColl.at(1)).M();
-    PTl1  = MuTColl.at(0).Pt();  Etal1 = MuTColl.at(0).Eta();
-    PTl2  = MuTColl.at(1).Pt();  Etal2 = MuTColl.at(1).Eta();
-    MTW   = MT(MuTColl.at(0), vMET);
-  }
-  else if(NElT==2){
-    Mll   = (ElTColl.at(0)+ElTColl.at(1)).M();
-    PTl1  = ElTColl.at(0).Pt();  Etal1 = ElTColl.at(0).Eta();
-    PTl2  = ElTColl.at(1).Pt();  Etal2 = ElTColl.at(1).Eta();
-    MTW   = MT(ElTColl.at(0), vMET);
-  }
-  MET = vMET.Pt();
+  Mll   = (ElConeColl.at(0)+ElConeColl.at(1)).M();
+  PTl1  = ElConeColl.at(0).Pt();  Etal1 = ElConeColl.at(0).Eta();
+  PTl2  = ElConeColl.at(1).Pt();  Etal2 = ElConeColl.at(1).Eta();
+  MTW   = MT(ElConeColl.at(0), vMET);
+  MET   = vMET.Pt();
   IsOnZ = fabs(Mll-91.2)<15.; IsBJOrtho = Nb==0 && Nj<3;
   TString EtaStr = fabs(Etal1)<1.5 && fabs(Etal2)<1.5? "_BB": fabs(Etal1)>1.5 && fabs(Etal2)>1.5? "_EE":"_EB";
   //TString EtaStr = fabs(Etal1)<1.5? "_E1B":"_E1E";
@@ -774,25 +757,152 @@ void ControlPlots::CheckChargeFlip(vector<Muon>& MuTColl, vector<Muon>& MuLColl,
   vector<TString> EtaTagList = {"", EtaStr};
   vector<TString> SelTagList;
   if(   IsBJOrtho    ) SelTagList.push_back("_0Blt3J"); 
-  if( Nb==0 && Nj<1  ) SelTagList.push_back("_0Blt1J");
-  if( IsOnZ && Nb==0 ) SelTagList.push_back("_OnZ0B");
   if(     IsOnZ      ) SelTagList.push_back("_OnZ");
-  
 
   for(unsigned int it=0; it<SelTagList.size(); it++){
   for(unsigned int iEta=0; iEta<EtaTagList.size(); iEta++){
     TString SelTag(SelTagList.at(it)), EtaTag(EtaTagList.at(iEta));
-    FillHist("NCount"+SelTag+EtaTag+Label, 0., newweight, 1, 0., 1.);
-    FillHist("Mll"+SelTag+EtaTag+Label, Mll, newweight, 20, 0., 200.);
-    FillHist("MllnearZ"+SelTag+EtaTag+Label, Mll, newweight, 30, 60., 120.);
-    FillHist("PTl1"+SelTag+EtaTag+Label, PTl1, newweight, 30, 0., 300.);
-    FillHist("PTl2"+SelTag+EtaTag+Label, PTl2, newweight, 20, 0., 200.);
-    FillHist("Etal1"+SelTag+EtaTag+Label, Etal1, newweight, 20, -5., 5.);
-    FillHist("Etal2"+SelTag+EtaTag+Label, Etal2, newweight, 20, -5., 5.);
-    FillHist("MET"+SelTag+EtaTag+Label, MET, newweight, 20, 0., 200.);
-    FillHist("MTW"+SelTag+EtaTag+Label, MTW, newweight, 20, 0., 200.);
+    FillHist("NCount"+SelTag+EtaTag+Label, 0., newweight, 1, 0., 1., ApplyWVar, SysWgtStrPairList);
+    FillHist("Mll"+SelTag+EtaTag+Label, Mll, newweight, 20, 0., 200., ApplyWVar, SysWgtStrPairList);
+    FillHist("MllnearZ"+SelTag+EtaTag+Label, Mll, newweight, 30, 60., 120., ApplyWVar, SysWgtStrPairList);
+    FillHist("PTl1"+SelTag+EtaTag+Label, PTl1, newweight, 30, 0., 300., ApplyWVar, SysWgtStrPairList);
+    FillHist("PTl2"+SelTag+EtaTag+Label, PTl2, newweight, 20, 0., 200., ApplyWVar, SysWgtStrPairList);
+    FillHist("Etal1"+SelTag+EtaTag+Label, Etal1, newweight, 20, -5., 5., ApplyWVar, SysWgtStrPairList);
+    FillHist("Etal2"+SelTag+EtaTag+Label, Etal2, newweight, 20, -5., 5., ApplyWVar, SysWgtStrPairList);
+    FillHist("MET"+SelTag+EtaTag+Label, MET, newweight, 20, 0., 200., ApplyWVar, SysWgtStrPairList);
+    FillHist("MTW"+SelTag+EtaTag+Label, MTW, newweight, 20, 0., 200., ApplyWVar, SysWgtStrPairList);
   }}
+
 }
+
+
+void ControlPlots::CheckCR4l(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,
+                             vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
+                             vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, Event& Ev, float weight, TString Label)
+{
+  int NMuT=MuTColl.size(), NElT=ElTColl.size(), NMuL=MuLColl.size(), NElL=ElLColl.size(), NMuV=MuVColl.size(), NElV=ElVColl.size();
+  int NLepT=NMuT+NElT;
+  if( FakeRun      and weight==0.  ) return;
+  if( !(NMuT==NMuL and NElT==NElL) ) return;
+  if( !(NMuT==NMuV and NElT==NElV) ) return;
+  if( NLepT!=4 or NElT==1 or NMuT==1 ) return;
+  bool PassTrAcc=false, PassTrAcc_MM=false, PassTrAcc_EE=false, PassTrAcc_EM=false;
+  if( NMuT>1 && MuTColl.at(0).Pt()>20 && MuTColl.at(1).Pt()>10 ) PassTrAcc_MM=true;
+  if( NElT>1 && ElTColl.at(0).Pt()>25 && ElTColl.at(1).Pt()>15 ) PassTrAcc_EE=true;
+  if( NElT>0 && NMuT>0 && ElTColl.at(0).Pt()>25 && MuTColl.at(0).Pt()>10 ) PassTrAcc_EM=true;
+  if( NElT>0 && NMuT>0 && ElTColl.at(0).Pt()>15 && MuTColl.at(0).Pt()>25 ) PassTrAcc_EM=true;
+  if(PassTrAcc_MM){
+    for(unsigned int im1=0; im1<MuTColl.size(); im1++){
+    for(unsigned int im2=im1+1; im2<MuTColl.size(); im2++){
+      if((MuTColl.at(im1)+MuTColl.at(im2)).M()<4){ PassTrAcc_MM=false; break; }
+    }}
+  }
+  PassTrAcc = PassTrAcc_MM or PassTrAcc_EE or PassTrAcc_EM;
+  if(!PassTrAcc) return;
+  int Qtot_Mu = SumCharge(MuTColl), Qtot_El = SumCharge(ElTColl), Qtot_Lep = Qtot_Mu+Qtot_El;
+  if( abs(Qtot_Lep)!=0 ) return;
+  if( NMuT==2 && Qtot_Mu!=0 ) return;
+  if( NElT==2 && Qtot_El!=0 ) return;
+
+  vector<Electron> ElConeColl; vector<Muon> MuConeColl;
+  if(FakeRun){
+    for(unsigned int ie=0; ie<ElTColl.size(); ie++){ 
+      Electron TmpEl(ElTColl.at(ie));
+      float RelIso = ElTColl.at(ie).MiniRelIso();
+      float PTCorr = ElTColl.at(ie).CalcPtCone(RelIso,0.1), PT=ElTColl.at(ie).Pt();
+      if(RelIso>0.1) TmpEl *= PTCorr/PT;
+      ElConeColl.push_back(TmpEl);
+    }
+    for(unsigned int im=0; im<MuTColl.size(); im++){ 
+      Muon TmpMu(MuTColl.at(im));
+      float RelIso = MuTColl.at(im).MiniRelIso();
+      float PTCorr = MuTColl.at(im).CalcPtCone(RelIso,0.1), PT=MuTColl.at(im).Pt();
+      if(RelIso>0.1) TmpMu *= PTCorr/PT;
+      MuConeColl.push_back(TmpMu);
+    }
+  }
+  else{ ElConeColl = ElTColl; MuConeColl = MuTColl; }
+
+  float PTl1=0., PTl2=0., PTl3=0., PTl4=0., Etal1=-999., Etal2=-999., Etal3=-999., Etal4=-999.;
+  float M4l=-999.;
+  TString FinStStr("");
+  if(NMuT==2 && NElT==2){
+    if( !( (PassTrAcc_MM && Ev.PassTrigger(TrigList_DblMu))
+        or (PassTrAcc_EM && Ev.PassTrigger(TrigList_MuEG)) 
+        or (PassTrAcc_EE && Ev.PassTrigger(TrigList_DblEG)) ) ) return;
+    FinStStr = "_2E2M";
+    PTl1    = MuConeColl.at(0).Pt() , PTl2  = MuConeColl.at(1).Pt();
+    Etal1   = MuConeColl.at(0).Eta(), Etal2 = MuConeColl.at(1).Eta();
+    PTl3    = ElConeColl.at(0).Pt() , PTl4  = ElConeColl.at(1).Pt();
+    Etal3   = ElConeColl.at(0).Eta(), Etal4 = ElConeColl.at(1).Eta();
+    M4l     = (MuConeColl.at(0)+MuConeColl.at(1)+ElConeColl.at(0)+ElConeColl.at(1)).M();
+  }
+  else if(NElT==4){
+    if( !(PassTrAcc_EE && Ev.PassTrigger(TrigList_DblEG)) ) return; 
+    FinStStr = "_4M";
+    PTl1    = ElConeColl.at(0).Pt() , PTl2  = ElConeColl.at(1).Pt();
+    Etal1   = ElConeColl.at(0).Eta(), Etal2 = ElConeColl.at(1).Eta();
+    PTl3    = ElConeColl.at(2).Pt() , PTl4  = ElConeColl.at(3).Pt();
+    Etal3   = ElConeColl.at(2).Eta(), Etal4 = ElConeColl.at(3).Eta();
+    M4l     = (ElConeColl.at(0)+ElConeColl.at(1)+ElConeColl.at(2)+ElConeColl.at(3)).M();
+  }
+  else if(NMuT==4){
+    if( !(PassTrAcc_MM && Ev.PassTrigger(TrigList_DblMu)) ) return;
+    FinStStr = "_4E";
+    PTl1    = MuConeColl.at(0).Pt() , PTl2  = MuConeColl.at(1).Pt();
+    Etal1   = MuConeColl.at(0).Eta(), Etal2 = MuConeColl.at(1).Eta();
+    PTl3    = MuConeColl.at(2).Pt() , PTl4  = MuConeColl.at(3).Pt();
+    Etal3   = MuConeColl.at(2).Eta(), Etal4 = MuConeColl.at(3).Eta();
+    M4l     = (MuConeColl.at(0)+MuConeColl.at(1)+MuConeColl.at(2)+MuConeColl.at(3)).M();
+  }
+  else return;
+
+  bool PassQCDVeto=true;
+  for(unsigned int im1=0; im1<MuConeColl.size() && PassQCDVeto; im1++){
+    for(unsigned int im2=im1+1; im2<MuConeColl.size() && PassQCDVeto; im2++){
+      if(MuConeColl.at(im1).Charge()==MuConeColl.at(im2).Charge()) continue;
+      float Mll = (MuConeColl.at(im1)+MuConeColl.at(im2)).M();
+      if(Mll<12){ PassQCDVeto=false; }
+  }}
+  for(unsigned int ie1=0; ie1<ElConeColl.size() && PassQCDVeto; ie1++){
+    for(unsigned int ie2=ie1+1; ie2<ElConeColl.size() && PassQCDVeto; ie2++){
+      if(ElConeColl.at(ie1).Charge()==ElConeColl.at(ie2).Charge()) continue;
+      float Mll = (ElConeColl.at(ie1)+ElConeColl.at(ie2)).M();
+      if(Mll<12){ PassQCDVeto=false; }
+  }}
+  if(!PassQCDVeto) return;
+
+  TString MinPtStr("");
+  bool MinPt10 = PTl1>10 && PTl2>10 && PTl3>10 && PTl4>10;
+
+  if(!IsDATA){
+    int GenLepInfo = GetGenLepInfo(ElTColl, MuTColl);
+    if(ConvRun && GenLepInfo>=1000) return;
+  }
+
+  vector<TString> LabelList;
+  LabelList.push_back("_4l_MinPt5"+Label);
+  LabelList.push_back(FinStStr+"_MinPt5"+Label);
+  if(MinPt10){
+    LabelList.push_back("_4l_MinPt10"+Label);
+    LabelList.push_back(FinStStr+"_MinPt10"+Label);
+  }
+
+  for(unsigned il=0; il<LabelList.size(); il++){
+    TString FinLabel = LabelList.at(il);
+    FillHist("M4l"  +FinLabel, M4l , weight, 250, 0., 500.);
+    FillHist("PTl1" +FinLabel, PTl1, weight, 40, 0., 200.);
+    FillHist("PTl2" +FinLabel, PTl2, weight, 40, 0., 200.);
+    FillHist("PTl3" +FinLabel, PTl3, weight, 40, 0., 200.);
+    FillHist("PTl4" +FinLabel, PTl4, weight, 40, 0., 200.);
+    FillHist("Etal1"+FinLabel, Etal1, weight, 20, -5., 5.);
+    FillHist("Etal2"+FinLabel, Etal2, weight, 20, -5., 5.);
+    FillHist("Etal3"+FinLabel, Etal3, weight, 20, -5., 5.);
+    FillHist("Etal4"+FinLabel, Etal4, weight, 20, -5., 5.);
+  }
+
+}
+
 
 
 void ControlPlots::CheckFkCR3l(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,
@@ -801,6 +911,8 @@ void ControlPlots::CheckFkCR3l(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vec
 {
   int NMuT=MuTColl.size(), NElT=ElTColl.size(), NMuL=MuLColl.size(), NElL=ElLColl.size(), NMuV=MuVColl.size(), NElV=ElVColl.size();
   int NLepT=NMuT+NElT;
+  bool ApplyWVar = Label.Contains("SystWgtVar");
+  if( ApplyWVar ) Label.ReplaceAll("SystWgtVar","");
   if( FakeRun      and weight==0.  ) return;
   if( !(NMuT==NMuL and NElT==NElL) ) return;
   if( !(NMuT==NMuV and NElT==NElV) ) return;
@@ -824,6 +936,23 @@ void ControlPlots::CheckFkCR3l(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vec
   if( NElT==2 && Qtot_El!=0 ) return;
   if( BJetColl.size()>0 ) return;
 
+  if(HEMCheck){
+    bool IsHEMReg=false;
+    for(unsigned int im=0; im<MuTColl.size() && !IsHEMReg; im++){
+      if(!IsHEMReg){ IsHEMReg=IsHEMIssueReg(MuTColl.at(im)); } else break; 
+    }
+    for(unsigned int ie=0; ie<ElTColl.size() && !IsHEMReg; ie++){
+      if(!IsHEMReg){ IsHEMReg=IsHEMIssueReg(ElTColl.at(ie)); } else break; 
+    }
+    //for(unsigned int ib=0; ib<BJetColl.size() && !IsHEMReg; ib++){
+    //  if(!IsHEMReg){ IsHEMReg=IsHEMIssueReg(BJetColl.at(ib)); } else break; 
+    //}
+    //for(unsigned int ij=0; ij<JetColl.size() && !IsHEMReg; ij++){
+    //  if(!IsHEMReg && ij<2){ IsHEMReg=IsHEMIssueReg(JetColl.at(ij)); } else break;
+    //}   
+    if(IsHEMReg) return;
+  }
+
   vector<Electron> ElConeColl; vector<Muon> MuConeColl;
   if(FakeRun){
     for(unsigned int ie=0; ie<ElTColl.size(); ie++){ 
@@ -846,8 +975,11 @@ void ControlPlots::CheckFkCR3l(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vec
   float PTl1_Z=0., PTl2_Z=0., PTl_Fk=0., Etal1_Z=0., Etal2_Z=0., Etal_Fk=0.;
   float MOSSF_Z=0., MTW=0., MOSSF1=0., MOSSF2=0., M3l=0.;
   float dRZFk=-1, dEtaZFk=-1;
+  bool  IsFkHEMReg=false;
   if(NMuT==2 && NElT==1){
-    if( !(PassTrAcc_MM && Ev.PassTrigger(TrigList_DblMu)) ) return;
+    if( !( PassTrAcc_MM && Ev.PassTrigger(TrigList_DblMu) ) ) return; //TrSF2L
+    //if( !( (PassTrAcc_MM && Ev.PassTrigger(TrigList_DblMu))
+    //    or (PassTrAcc_EM && Ev.PassTrigger(TrigList_MuEG)) ) ) return; //TrSoup
     Label     = "_2M1E"+Label;
     PTl1_Z    = MuConeColl.at(0).Pt() , PTl2_Z  = MuConeColl.at(1).Pt();
     Etal1_Z   = MuConeColl.at(0).Eta(), Etal2_Z = MuConeColl.at(1).Eta();
@@ -856,9 +988,13 @@ void ControlPlots::CheckFkCR3l(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vec
     M3l       = (MuConeColl.at(0)+MuConeColl.at(1)+ElConeColl.at(0)).M();
     dRZFk     = ElConeColl.at(0).DeltaR(MuConeColl.at(0)+MuConeColl.at(1));
     dEtaZFk   = fabs(ElConeColl.at(0).Eta()-(MuConeColl.at(0)+MuConeColl.at(1)).Eta());
+    IsFkHEMReg= IsHEMIssueReg(ElConeColl.at(0));
+    if(DataYear==2018) IsFkHEMReg= IsHEMIssueReg(ElConeColl.at(0));
   }
   else if(NMuT==1 && NElT==2){
-    if( !(PassTrAcc_EE && Ev.PassTrigger(TrigList_DblEG)) ) return;
+    if( !( PassTrAcc_EE && Ev.PassTrigger(TrigList_DblEG) ) ) return; //TrSF2L
+    //if( !( (PassTrAcc_EE && Ev.PassTrigger(TrigList_DblEG))
+    //    or (PassTrAcc_EM && Ev.PassTrigger(TrigList_MuEG)) ) ) return; //TrSoup
     Label     = "_1M2E"+Label;
     PTl1_Z    = ElConeColl.at(0).Pt() , PTl2_Z  = ElConeColl.at(1).Pt();
     Etal1_Z   = ElConeColl.at(0).Eta(), Etal2_Z = ElConeColl.at(1).Eta();
@@ -867,6 +1003,8 @@ void ControlPlots::CheckFkCR3l(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vec
     M3l       = (ElConeColl.at(0)+ElConeColl.at(1)+MuConeColl.at(0)).M();
     dRZFk     = MuConeColl.at(0).DeltaR(ElConeColl.at(0)+ElConeColl.at(1));
     dEtaZFk   = fabs(MuConeColl.at(0).Eta()-(ElConeColl.at(0)+ElConeColl.at(1)).Eta());
+    IsFkHEMReg= IsHEMIssueReg(MuConeColl.at(0));
+    if(DataYear==2018) IsFkHEMReg= IsHEMIssueReg(MuConeColl.at(0));
   }
   else if(NMuT==3){
     if( !(PassTrAcc_MM && Ev.PassTrigger(TrigList_DblMu)) ) return;
@@ -894,10 +1032,11 @@ void ControlPlots::CheckFkCR3l(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vec
     M3l       = (MuConeColl.at(0)+MuConeColl.at(1)+MuConeColl.at(2)).M();
     dRZFk     = MuConeColl.at(IdxL_Fk).DeltaR(MuConeColl.at(IdxL1_Z)+MuConeColl.at(IdxL2_Z));
     dEtaZFk   = fabs(MuConeColl.at(IdxL_Fk).Eta()-(MuConeColl.at(IdxL1_Z)+MuConeColl.at(IdxL2_Z)).Eta());
+    IsFkHEMReg= IsHEMIssueReg(MuConeColl.at(IdxL_Fk));
+    if(DataYear==2018) IsFkHEMReg= IsHEMIssueReg(MuConeColl.at(IdxL_Fk));
   }
   else if(NElT==3){
-    if( !PassTrAcc_EE ) return;
-    //if( !(PassTrAcc_EE && Ev.PassTrigger(TrigList_DblEG)) ) return;
+    if( !(PassTrAcc_EE && Ev.PassTrigger(TrigList_DblEG)) ) return;
     Label = "_0M3E"+Label;
     int IdxOS  = TriElChargeIndex(ElConeColl, "OS");
     int IdxSS1 = TriElChargeIndex(ElConeColl, "SS1");
@@ -922,6 +1061,8 @@ void ControlPlots::CheckFkCR3l(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vec
     M3l       = (ElConeColl.at(0)+ElConeColl.at(1)+ElConeColl.at(2)).M();
     dRZFk     = ElConeColl.at(IdxL_Fk).DeltaR(ElConeColl.at(IdxL1_Z)+ElConeColl.at(IdxL2_Z));
     dEtaZFk   = fabs(ElConeColl.at(IdxL_Fk).Eta()-(ElConeColl.at(IdxL1_Z)+ElConeColl.at(IdxL2_Z)).Eta());
+    IsFkHEMReg= IsHEMIssueReg(ElConeColl.at(IdxL_Fk));
+    if(DataYear==2018) IsFkHEMReg= IsHEMIssueReg(ElConeColl.at(IdxL_Fk));
   }
   else return;
 
@@ -942,43 +1083,31 @@ void ControlPlots::CheckFkCR3l(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vec
     //else if(MCSample.Contains("DYJets") && NPt15==3) return;
   }
 
+  //Label = "_3l"+Label;
+  vector<TString> SelTagList = {"_3l"};
+  if(OnZ) SelTagList.push_back("_3lOnZ");
 
-  Label = "_3l"+Label;
-  FillHist("M3l"+Label, M3l, weight, 50, 0., 500.);
-  FillHist("MOSSF1"+Label, MOSSF1, weight, 40, 0., 200.);
-  FillHist("MOSSF2"+Label, MOSSF2, weight, 40, 0., 200.);
-  FillHist("PTl1_Z"+Label, PTl1_Z, weight, 40, 0., 200.);
-  FillHist("PTl2_Z"+Label, PTl2_Z, weight, 40, 0., 200.);
-  FillHist("PTl_Fk"+Label, PTl_Fk, weight, 40, 0., 200.);
-  FillHist("Etal1_Z"+Label, Etal1_Z, weight, 20, -5., 5.);
-  FillHist("Etal2_Z"+Label, Etal2_Z, weight, 20, -5., 5.);
-  FillHist("Etal_Fk"+Label, Etal_Fk, weight, 20, -5., 5.);
-  FillHist("MOSSF_Z"+Label, MOSSF_Z, weight, 30, 60., 120.);
-  FillHist("Nj"+Label, JetColl.size(), weight, 10, 0., 10.);
-  FillHist("Nb"+Label, BJetColl.size(), weight, 5, 0., 5.);
-  FillHist("MET"+Label, vMET.Pt(), weight, 20, 0., 200.);
-  FillHist("MTW"+Label, MTW, weight, 20, 0., 200.); 
-  FillHist("dRZFk"+Label, dRZFk, weight, 25, 0., 5.);
-  FillHist("dEtaZFk"+Label, dEtaZFk, weight, 25, 0., 5.);
-  if(OnZ){
-    Label.ReplaceAll("_3l","_3lOnZ");
-    FillHist("M3l"+Label, M3l, weight, 50, 0., 500.);
-    FillHist("MOSSF1"+Label, MOSSF1, weight, 40, 0., 200.);
-    FillHist("MOSSF2"+Label, MOSSF2, weight, 40, 0., 200.);
-    FillHist("PTl1_Z"+Label, PTl1_Z, weight, 40, 0., 200.);
-    FillHist("PTl2_Z"+Label, PTl2_Z, weight, 40, 0., 200.);
-    FillHist("PTl_Fk"+Label, PTl_Fk, weight, 40, 0., 200.);
-    FillHist("Etal1_Z"+Label, Etal1_Z, weight, 20, -5., 5.);
-    FillHist("Etal2_Z"+Label, Etal2_Z, weight, 20, -5., 5.);
-    FillHist("Etal_Fk"+Label, Etal_Fk, weight, 20, -5., 5.);
-    FillHist("MOSSF_Z"+Label, MOSSF_Z, weight, 30, 60., 120.);
-    FillHist("Nj"+Label, JetColl.size(), weight, 10, 0., 10.);
-    FillHist("Nb"+Label, BJetColl.size(), weight, 5, 0., 5.);
-    FillHist("MET"+Label, vMET.Pt(), weight, 20, 0., 200.);
-    FillHist("MTW"+Label, MTW, weight, 20, 0., 200.); 
-    FillHist("dRZFk"+Label, dRZFk, weight, 25, 0., 5.);
-    FillHist("dEtaZFk"+Label, dEtaZFk, weight, 25, 0., 5.);
+  for(unsigned int iSel=0; iSel<SelTagList.size(); iSel++){
+    TString SelTag(SelTagList.at(iSel));
+    FillHist("M3l"+SelTag+Label, M3l, weight, 50, 0., 500., ApplyWVar, SysWgtStrPairList);
+    FillHist("MOSSF1"+SelTag+Label, MOSSF1, weight, 40, 0., 200., ApplyWVar, SysWgtStrPairList);
+    FillHist("MOSSF2"+SelTag+Label, MOSSF2, weight, 40, 0., 200., ApplyWVar, SysWgtStrPairList);
+    FillHist("PTl1_Z"+SelTag+Label, PTl1_Z, weight, 40, 0., 200., ApplyWVar, SysWgtStrPairList);
+    FillHist("PTl2_Z"+SelTag+Label, PTl2_Z, weight, 40, 0., 200., ApplyWVar, SysWgtStrPairList);
+    FillHist("PTl_Fk"+SelTag+Label, PTl_Fk, weight, 40, 0., 200., ApplyWVar, SysWgtStrPairList);
+    FillHist("Etal1_Z"+SelTag+Label, Etal1_Z, weight, 20, -5., 5., ApplyWVar, SysWgtStrPairList);
+    FillHist("Etal2_Z"+SelTag+Label, Etal2_Z, weight, 20, -5., 5., ApplyWVar, SysWgtStrPairList);
+    FillHist("Etal_Fk"+SelTag+Label, Etal_Fk, weight, 20, -5., 5., ApplyWVar, SysWgtStrPairList);
+    FillHist("MOSSF_Z"+SelTag+Label, MOSSF_Z, weight, 30, 60., 120., ApplyWVar, SysWgtStrPairList);
+    FillHist("Nj"+SelTag+Label, JetColl.size(), weight, 10, 0., 10., ApplyWVar, SysWgtStrPairList);
+    FillHist("Nb"+SelTag+Label, BJetColl.size(), weight, 5, 0., 5., ApplyWVar, SysWgtStrPairList);
+    FillHist("MET"+SelTag+Label, vMET.Pt(), weight, 20, 0., 200., ApplyWVar, SysWgtStrPairList);
+    FillHist("MTW"+SelTag+Label, MTW, weight, 20, 0., 200., ApplyWVar, SysWgtStrPairList); 
+    FillHist("dRZFk"+SelTag+Label, dRZFk, weight, 25, 0., 5., ApplyWVar, SysWgtStrPairList);
+    FillHist("dEtaZFk"+SelTag+Label, dEtaZFk, weight, 25, 0., 5., ApplyWVar, SysWgtStrPairList);
+    if(IsFkHEMReg) FillHist("NCntHEMFk"+SelTag+Label, 0., weight, 1, 0., 1., ApplyWVar, SysWgtStrPairList);
   }
+
 
 }
 
@@ -1074,139 +1203,171 @@ void ControlPlots::CheckConvCR(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vec
 {
   int NMuT=MuTColl.size(), NElT=ElTColl.size(), NMuL=MuLColl.size(), NElL=ElLColl.size(), NMuV=MuVColl.size(), NElV=ElVColl.size();
   int NLepT=NMuT+NElT;
+  bool ApplyWVar = Label.Contains("SystWgtVar");
+  if( ApplyWVar ) Label.ReplaceAll("SystWgtVar","");
   if( FakeRun      and weight==0.  ) return; 
   if( !(NMuT==NMuL and NElT==NElL) ) return;
   if( !(NMuT==NMuV and NElT==NElV) ) return;
   if( NLepT!=3 ) return;
   bool PassTrAcc=false, PassTrAcc_MM=false, PassTrAcc_EE=false, PassTrAcc_EM=false;
-  if( NMuT>1 && MuLColl.at(0).Pt()>20 && MuLColl.at(1).Pt()>10 ) PassTrAcc_MM=true;
-  if( NElT>1 && ElLColl.at(0).Pt()>25 && ElLColl.at(1).Pt()>15 ) PassTrAcc_EE=true;
-  if( NElT>0 && NMuT>0 && ElLColl.at(0).Pt()>25 && MuLColl.at(0).Pt()>10 ) PassTrAcc_EM=true;
-  if( NElT>0 && NMuT>0 && ElLColl.at(0).Pt()>15 && MuLColl.at(0).Pt()>25 ) PassTrAcc_EM=true;
+  if( NMuT>1 && MuTColl.at(0).Pt()>20 && MuTColl.at(1).Pt()>10 ) PassTrAcc_MM=true;
+  if( NElT>1 && ElTColl.at(0).Pt()>25 && ElTColl.at(1).Pt()>15 ) PassTrAcc_EE=true;
+  if( NElT>0 && NMuT>0 && ElTColl.at(0).Pt()>25 && MuTColl.at(0).Pt()>10 ) PassTrAcc_EM=true;
+  if( NElT>0 && NMuT>0 && ElTColl.at(0).Pt()>15 && MuTColl.at(0).Pt()>25 ) PassTrAcc_EM=true;
+  if(PassTrAcc_MM){
+    for(unsigned int im1=0; im1<MuTColl.size(); im1++){
+    for(unsigned int im2=im1+1; im2<MuTColl.size(); im2++){
+      if((MuTColl.at(im1)+MuTColl.at(im2)).M()<4){ PassTrAcc_MM=false; break; }
+    }}
+  }
   PassTrAcc = PassTrAcc_MM or PassTrAcc_EE or PassTrAcc_EM;
   if(!PassTrAcc) return;
-  int Qtot_Mu = SumCharge(MuLColl), Qtot_El = SumCharge(ElLColl), Qtot_Lep = Qtot_Mu+Qtot_El;
+  int Qtot_Mu = SumCharge(MuTColl), Qtot_El = SumCharge(ElTColl), Qtot_Lep = Qtot_Mu+Qtot_El;
   if( abs(Qtot_Lep)!=1 ) return;
   if( NMuT==2 && Qtot_Mu!=0 ) return;
   if( NElT==2 && Qtot_El!=0 ) return;
   if( BJetColl.size()>0 ) return;
 
-  //int NJet = JetColl.size();
+  vector<Electron> ElConeColl; vector<Muon> MuConeColl;
+  if(FakeRun){
+    for(unsigned int ie=0; ie<ElTColl.size(); ie++){ 
+      Electron TmpEl(ElTColl.at(ie));
+      float RelIso = ElTColl.at(ie).MiniRelIso();
+      float PTCorr = ElTColl.at(ie).CalcPtCone(RelIso,0.1), PT=ElTColl.at(ie).Pt();
+      if(RelIso>0.1) TmpEl *= PTCorr/PT;
+      ElConeColl.push_back(TmpEl);
+    }
+    for(unsigned int im=0; im<MuTColl.size(); im++){ 
+      Muon TmpMu(MuTColl.at(im));
+      float RelIso = MuTColl.at(im).MiniRelIso();
+      float PTCorr = MuTColl.at(im).CalcPtCone(RelIso,0.1), PT=MuTColl.at(im).Pt();
+      if(RelIso>0.1) TmpMu *= PTCorr/PT;
+      MuConeColl.push_back(TmpMu);
+    }
+  }
+  else{ ElConeColl = ElTColl; MuConeColl = MuTColl; }
+
+
   float PTl1_Z=0., PTl2_Z=0., PTl_Cv=0., Etal1_Z=0., Etal2_Z=0., Etal_Cv=0.;
   float MTW=0., MOSSF1=0., MOSSF2=0., M3l=0.;
+  TString FinSt("");
   if(NMuT==2 && NElT==1){
-    if( !(PassTrAcc_MM && Ev.PassTrigger(TrigList_DblMu)) ) return;
-    Label   = "_2M1E"+Label;
-    PTl1_Z  = MuTColl.at(0).Pt() , PTl2_Z  = MuTColl.at(1).Pt();
-    Etal1_Z = MuTColl.at(0).Eta(), Etal2_Z = MuTColl.at(1).Eta();
-    PTl_Cv  = ElTColl.at(0).Pt() , Etal_Cv = ElTColl.at(0).Eta();
-    MOSSF1  = (MuTColl.at(0)+MuTColl.at(1)).M(), MTW = MT(ElTColl.at(0), vMET);
-    M3l     = (MuTColl.at(0)+MuTColl.at(1)+ElTColl.at(0)).M();
+    if( !(PassTrAcc_MM && Ev.PassTrigger(TrigList_DblMu)) ) return; //TrSF2L
+    //if( !( (PassTrAcc_MM && Ev.PassTrigger(TrigList_DblMu))
+    //    or (PassTrAcc_EM && Ev.PassTrigger(TrigList_MuEG)) ) ) return; //TrSoup
+    FinSt   = "_2M1E";
+    PTl1_Z  = MuConeColl.at(0).Pt() , PTl2_Z  = MuConeColl.at(1).Pt();
+    Etal1_Z = MuConeColl.at(0).Eta(), Etal2_Z = MuConeColl.at(1).Eta();
+    PTl_Cv  = ElConeColl.at(0).Pt() , Etal_Cv = ElConeColl.at(0).Eta();
+    MOSSF1  = (MuConeColl.at(0)+MuConeColl.at(1)).M(), MTW = MT(ElConeColl.at(0), vMET);
+    M3l     = (MuConeColl.at(0)+MuConeColl.at(1)+ElConeColl.at(0)).M();
   }
   else if(NMuT==1 && NElT==2){
-    if( !(PassTrAcc_EE && Ev.PassTrigger(TrigList_DblEG)) ) return;
-    Label   = "_1M2E"+Label;
-    PTl1_Z  = ElTColl.at(0).Pt() , PTl2_Z  = ElTColl.at(1).Pt();
-    Etal1_Z = ElTColl.at(0).Eta(), Etal2_Z = ElTColl.at(1).Eta();
-    PTl_Cv  = MuTColl.at(0).Pt() , Etal_Cv = MuTColl.at(0).Eta();
-    MOSSF1  = (ElTColl.at(0)+ElTColl.at(1)).M(), MTW = MT(MuTColl.at(0), vMET);
-    M3l     = (ElTColl.at(0)+ElTColl.at(1)+MuTColl.at(0)).M();
+    if( !(PassTrAcc_EE && Ev.PassTrigger(TrigList_DblEG)) ) return; //TrSF2L
+    //if( !( (PassTrAcc_EE && Ev.PassTrigger(TrigList_DblEG))
+    //    or (PassTrAcc_EM && Ev.PassTrigger(TrigList_MuEG)) ) ) return; //TrSoup
+    FinSt   = "_1M2E";
+    PTl1_Z  = ElConeColl.at(0).Pt() , PTl2_Z  = ElConeColl.at(1).Pt();
+    Etal1_Z = ElConeColl.at(0).Eta(), Etal2_Z = ElConeColl.at(1).Eta();
+    PTl_Cv  = MuConeColl.at(0).Pt() , Etal_Cv = MuConeColl.at(0).Eta();
+    MOSSF1  = (ElConeColl.at(0)+ElConeColl.at(1)).M(), MTW = MT(MuConeColl.at(0), vMET);
+    M3l     = (ElConeColl.at(0)+ElConeColl.at(1)+MuConeColl.at(0)).M();
   }
   else if(NMuT==3 && NElT==0){
     if( !(PassTrAcc_MM && Ev.PassTrigger(TrigList_DblMu)) ) return;
-    Label   = "_3M0E"+Label;
-    int IdxOS  = TriMuChargeIndex(MuTColl, "OS");
-    int IdxSS1 = TriMuChargeIndex(MuTColl, "SS1");
-    int IdxSS2 = TriMuChargeIndex(MuTColl, "SS2");
-    MOSSF1 = (MuTColl.at(IdxOS)+MuTColl.at(IdxSS1)).M();
-    MOSSF2 = (MuTColl.at(IdxOS)+MuTColl.at(IdxSS2)).M();
+    FinSt   = "_3M0E";
+    int IdxOS  = TriMuChargeIndex(MuConeColl, "OS");
+    int IdxSS1 = TriMuChargeIndex(MuConeColl, "SS1");
+    int IdxSS2 = TriMuChargeIndex(MuConeColl, "SS2");
+    MOSSF1 = (MuConeColl.at(IdxOS)+MuConeColl.at(IdxSS1)).M();
+    MOSSF2 = (MuConeColl.at(IdxOS)+MuConeColl.at(IdxSS2)).M();
     int IdxL1_Z=-1, IdxL2_Z=-1, IdxL_Cv=-1;
     if(fabs(MOSSF1-91.2)<fabs(MOSSF2-91.2)){
-      IdxL1_Z = MuTColl.at(IdxOS).Pt()>MuTColl.at(IdxSS1).Pt()? IdxOS:IdxSS1;
-      IdxL2_Z = MuTColl.at(IdxOS).Pt()>MuTColl.at(IdxSS1).Pt()? IdxSS1:IdxOS;
+      IdxL1_Z = MuConeColl.at(IdxOS).Pt()>MuConeColl.at(IdxSS1).Pt()? IdxOS:IdxSS1;
+      IdxL2_Z = MuConeColl.at(IdxOS).Pt()>MuConeColl.at(IdxSS1).Pt()? IdxSS1:IdxOS;
       IdxL_Cv = IdxSS2;
     }
     else{
-      IdxL1_Z = MuTColl.at(IdxOS).Pt()>MuTColl.at(IdxSS2).Pt()? IdxOS:IdxSS2;
-      IdxL2_Z = MuTColl.at(IdxOS).Pt()>MuTColl.at(IdxSS2).Pt()? IdxSS2:IdxOS;
+      IdxL1_Z = MuConeColl.at(IdxOS).Pt()>MuConeColl.at(IdxSS2).Pt()? IdxOS:IdxSS2;
+      IdxL2_Z = MuConeColl.at(IdxOS).Pt()>MuConeColl.at(IdxSS2).Pt()? IdxSS2:IdxOS;
       IdxL_Cv = IdxSS1;
     }
-    PTl1_Z  = MuTColl.at(IdxL1_Z).Pt() , PTl2_Z = MuTColl.at(IdxL2_Z).Pt();
-    Etal1_Z = MuTColl.at(IdxL1_Z).Eta(), Etal2_Z = MuTColl.at(IdxL2_Z).Eta();
-    PTl_Cv  = MuTColl.at(IdxL_Cv).Pt() , Etal_Cv = MuTColl.at(IdxL_Cv).Eta();
-    MTW     = MT(MuTColl.at(IdxL_Cv), vMET);
-    M3l     = (MuTColl.at(0)+MuTColl.at(1)+MuTColl.at(2)).M();
+    PTl1_Z  = MuConeColl.at(IdxL1_Z).Pt() , PTl2_Z = MuConeColl.at(IdxL2_Z).Pt();
+    Etal1_Z = MuConeColl.at(IdxL1_Z).Eta(), Etal2_Z = MuConeColl.at(IdxL2_Z).Eta();
+    PTl_Cv  = MuConeColl.at(IdxL_Cv).Pt() , Etal_Cv = MuConeColl.at(IdxL_Cv).Eta();
+    MTW     = MT(MuConeColl.at(IdxL_Cv), vMET);
+    M3l     = (MuConeColl.at(0)+MuConeColl.at(1)+MuConeColl.at(2)).M();
   }
   else if(NMuT==0 && NElT==3){
     if( !(PassTrAcc_EE && Ev.PassTrigger(TrigList_DblEG)) ) return;
-    Label   = "_0M3E"+Label;
-    int IdxOS  = TriElChargeIndex(ElTColl, "OS");
-    int IdxSS1 = TriElChargeIndex(ElTColl, "SS1");
-    int IdxSS2 = TriElChargeIndex(ElTColl, "SS2");
-    MOSSF1 = (ElTColl.at(IdxOS)+ElTColl.at(IdxSS1)).M();
-    MOSSF2 = (ElTColl.at(IdxOS)+ElTColl.at(IdxSS2)).M();
+    FinSt   = "_0M3E";
+    int IdxOS  = TriElChargeIndex(ElConeColl, "OS");
+    int IdxSS1 = TriElChargeIndex(ElConeColl, "SS1");
+    int IdxSS2 = TriElChargeIndex(ElConeColl, "SS2");
+    MOSSF1 = (ElConeColl.at(IdxOS)+ElConeColl.at(IdxSS1)).M();
+    MOSSF2 = (ElConeColl.at(IdxOS)+ElConeColl.at(IdxSS2)).M();
     int IdxL1_Z=-1, IdxL2_Z=-1, IdxL_Cv=-1;
     if(fabs(MOSSF1-91.2)<fabs(MOSSF2-91.2)){
-      IdxL1_Z = ElTColl.at(IdxOS).Pt()>ElTColl.at(IdxSS1).Pt()? IdxOS:IdxSS1;
-      IdxL2_Z = ElTColl.at(IdxOS).Pt()>ElTColl.at(IdxSS1).Pt()? IdxSS1:IdxOS;
+      IdxL1_Z = ElConeColl.at(IdxOS).Pt()>ElConeColl.at(IdxSS1).Pt()? IdxOS:IdxSS1;
+      IdxL2_Z = ElConeColl.at(IdxOS).Pt()>ElConeColl.at(IdxSS1).Pt()? IdxSS1:IdxOS;
       IdxL_Cv = IdxSS2;
     }
     else{
-      IdxL1_Z = ElTColl.at(IdxOS).Pt()>ElTColl.at(IdxSS2).Pt()? IdxOS:IdxSS2;
-      IdxL2_Z = ElTColl.at(IdxOS).Pt()>ElTColl.at(IdxSS2).Pt()? IdxSS2:IdxOS;
+      IdxL1_Z = ElConeColl.at(IdxOS).Pt()>ElConeColl.at(IdxSS2).Pt()? IdxOS:IdxSS2;
+      IdxL2_Z = ElConeColl.at(IdxOS).Pt()>ElConeColl.at(IdxSS2).Pt()? IdxSS2:IdxOS;
       IdxL_Cv = IdxSS1;
     }
-    PTl1_Z  = ElTColl.at(IdxL1_Z).Pt() , PTl2_Z = ElTColl.at(IdxL2_Z).Pt();
-    Etal1_Z = ElTColl.at(IdxL1_Z).Eta(), Etal2_Z = ElTColl.at(IdxL2_Z).Eta();
-    PTl_Cv  = ElTColl.at(IdxL_Cv).Pt() , Etal_Cv = ElTColl.at(IdxL_Cv).Eta();
-    MTW     = MT(ElTColl.at(IdxL_Cv), vMET);
-    M3l     = (ElTColl.at(0)+ElTColl.at(1)+ElTColl.at(2)).M();
+    PTl1_Z  = ElConeColl.at(IdxL1_Z).Pt() , PTl2_Z = ElConeColl.at(IdxL2_Z).Pt();
+    Etal1_Z = ElConeColl.at(IdxL1_Z).Eta(), Etal2_Z = ElConeColl.at(IdxL2_Z).Eta();
+    PTl_Cv  = ElConeColl.at(IdxL_Cv).Pt() , Etal_Cv = ElConeColl.at(IdxL_Cv).Eta();
+    MTW     = MT(ElConeColl.at(IdxL_Cv), vMET);
+    M3l     = (ElConeColl.at(0)+ElConeColl.at(1)+ElConeColl.at(2)).M();
   }
+  else return;
 
   if( MOSSF1<12 or ((NMuT>2 or NElT>2) and MOSSF2<12) ) return;
   if( fabs(MOSSF1-91.2)<10 or fabs(MOSSF2-91.2)<10    ) return;
   if( fabs(M3l-91.2)>10. ) return;
 
+  
   if(!IsDATA){
-    int GenLepInfo = GetGenLepInfo(ElTColl, MuTColl);
+    int GenLepInfo = GetGenLepInfo(ElConeColl, MuConeColl);
     if(ConvRun && GenLepInfo>=1000 ) return;
     //if(ConvRun && GenLepInfo>=100 ) return;
+    int NCv = GenLepInfo%100/10;
+    if(!Label.Contains("Syst")) FillHist("NCv"+FinSt+Label, NCv, weight, 3, 0., 3.);   
   }
   int NPt20=0;
-  for(unsigned int im=0; im<MuLColl.size(); im++){
-    if(MuLColl.at(im).Pt()>15) NPt20++;
-  }
-  for(unsigned int ie=0; ie<ElLColl.size(); ie++){
-    if(ElLColl.at(ie).Pt()>15) NPt20++;
-  }
+  for(unsigned int im=0; im<MuConeColl.size(); im++){ if(MuConeColl.at(im).Pt()>15) NPt20++; }
+  for(unsigned int ie=0; ie<ElConeColl.size(); ie++){ if(ElConeColl.at(ie).Pt()>15) NPt20++; }
   if(MCSample.Contains("ZG") && NPt20!=3) return;
 
-  vector<TString> SelTagList={"_ZGSel"};
-  if(!IsDATA && MCSample.Contains("ZG")){
-    if(NPt20==3) SelTagList.push_back("_ZGSel20");
-  }
-  else if(!IsDATA && MCSample.Contains("DY")){
-    if(NPt20!=3) SelTagList.push_back("_ZGSel20");
-  }
-  else{ SelTagList.push_back("_ZGSel20"); }
+  vector<TString> FinStTagList={FinSt};
+  if     (FinSt=="_0M3E" or FinSt=="_2M1E") FinStTagList.push_back("_CvEl");
+  else if(FinSt=="_3M0E" or FinSt=="_1M2E") FinStTagList.push_back("_CvMu");
+  vector<TString> SelTagList  ={"_ZGSel"};
+  //if(!IsDATA && MCSample.Contains("ZG")){ if(NPt20==3) SelTagList.push_back("_ZGSel20"); }
+  //else if(!IsDATA && MCSample.Contains("DY")){if(NPt20!=3) SelTagList.push_back("_ZGSel20"); }
+  //else{ SelTagList.push_back("_ZGSel20"); }
 
+  for(unsigned int iSt=0; iSt<FinStTagList.size(); iSt++){
   for(unsigned int iSel=0; iSel<SelTagList.size(); iSel++){
-    TString SelTag(SelTagList.at(iSel));
-    FillHist("NCount"+SelTag+Label, 0., weight, 1, 0., 1.);
-    FillHist("M3l"+SelTag+Label, M3l, weight, 30, 60., 120.);
-    FillHist("MOSSF1"+SelTag+Label, MOSSF1, weight, 15, 0., 150.);
-    FillHist("MOSSF2"+SelTag+Label, MOSSF2, weight, 15, 0., 150.);
-    FillHist("PTl1_Z"+SelTag+Label, PTl1_Z, weight, 24, 0., 120.);
-    FillHist("PTl2_Z"+SelTag+Label, PTl2_Z, weight, 16, 0., 80.);
-    FillHist("PTl_Cv"+SelTag+Label, PTl_Cv, weight, 16, 0., 80.);
-    FillHist("Etal1_Z"+SelTag+Label, Etal1_Z, weight, 20, -5., 5.);
-    FillHist("Etal2_Z"+SelTag+Label, Etal2_Z, weight, 20, -5., 5.);
-    FillHist("Etal_Cv"+SelTag+Label, Etal_Cv, weight, 20, -5., 5.);
-    FillHist("Nj"+SelTag+Label, JetColl.size(), weight, 10, 0., 10.);
-    FillHist("Nb"+SelTag+Label, BJetColl.size(), weight, 5, 0., 5.);
-    FillHist("MET"+SelTag+Label, vMET.Pt(), weight, 20, 0., 200.);
-    FillHist("MTW"+SelTag+Label, MTW, weight, 20, 0., 200.); 
-  }
+    TString FinStTag(FinStTagList.at(iSt)), SelTag(SelTagList.at(iSel));
+    FillHist("NCount"+SelTag+FinStTag+Label, 0., weight, 1, 0., 1., ApplyWVar, SysWgtStrPairList);
+    FillHist("M3l"+SelTag+FinStTag+Label, M3l, weight, 30, 60., 120., ApplyWVar, SysWgtStrPairList);
+    FillHist("MOSSF1"+SelTag+FinStTag+Label, MOSSF1, weight, 15, 0., 150., ApplyWVar, SysWgtStrPairList);
+    FillHist("MOSSF2"+SelTag+FinStTag+Label, MOSSF2, weight, 15, 0., 150., ApplyWVar, SysWgtStrPairList);
+    FillHist("PTl1_Z"+SelTag+FinStTag+Label, PTl1_Z, weight, 24, 0., 120., ApplyWVar, SysWgtStrPairList);
+    FillHist("PTl2_Z"+SelTag+FinStTag+Label, PTl2_Z, weight, 16, 0., 80., ApplyWVar, SysWgtStrPairList);
+    FillHist("PTl_Cv"+SelTag+FinStTag+Label, PTl_Cv, weight, 16, 0., 80., ApplyWVar, SysWgtStrPairList);
+    FillHist("Etal1_Z"+SelTag+FinStTag+Label, Etal1_Z, weight, 20, -5., 5., ApplyWVar, SysWgtStrPairList);
+    FillHist("Etal2_Z"+SelTag+FinStTag+Label, Etal2_Z, weight, 20, -5., 5., ApplyWVar, SysWgtStrPairList);
+    FillHist("Etal_Cv"+SelTag+FinStTag+Label, Etal_Cv, weight, 20, -5., 5., ApplyWVar, SysWgtStrPairList);
+    FillHist("Nj"+SelTag+FinStTag+Label, JetColl.size(), weight, 10, 0., 10., ApplyWVar, SysWgtStrPairList);
+    FillHist("Nb"+SelTag+FinStTag+Label, BJetColl.size(), weight, 5, 0., 5., ApplyWVar, SysWgtStrPairList);
+    FillHist("MET"+SelTag+FinStTag+Label, vMET.Pt(), weight, 20, 0., 200., ApplyWVar, SysWgtStrPairList);
+    FillHist("MTW"+SelTag+FinStTag+Label, MTW, weight, 20, 0., 200., ApplyWVar, SysWgtStrPairList); 
+  }}
 
 }
 
@@ -1500,44 +1661,49 @@ void ControlPlots::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, ve
   if( !(NMuL==NMuV and NElL==NElV) ) return;
   if( FakeRun      and weight==0.  ) return; 
   if(NMuL==2){
-    if(MuLColl.at(0).Charge()!=MuLColl.at(1).Charge()) return;
-    if(!(MuLColl.at(0).Pt()>20 && MuLColl.at(1).Pt()>10)) return;
-    float Mll = (MuLColl.at(0)+MuLColl.at(1)).M();
+    if(MuTColl.at(0).Charge()!=MuTColl.at(1).Charge()) return;
+    if(!(MuTColl.at(0).Pt()>20 && MuTColl.at(1).Pt()>10)) return;
+    float Mll = (MuTColl.at(0)+MuTColl.at(1)).M();
     if(Mll<4) return; 
     if(!IsDATA){
       int GenLepInfo = GetGenLepInfo(ElTColl, MuTColl);
       if(ConvRun && GenLepInfo>=100) return;
       if(FlipRun && (GenLepInfo>999 or GenLepInfo<100)) return;
     }
-
     if(BJetColl.size()<1) return;
       FillHist("NJPreCut"+Label+"_2M", JetColl.size(), weight, 10, 0., 10.);
     if(JetColl.size() <3) return;
 
     if(FakeRun){
-      MuConeColl=MuTColl;
+      for(unsigned int ie=0; ie<ElTColl.size(); ie++){ 
+        Electron TmpEl(ElTColl.at(ie));
+        float RelIso = ElTColl.at(ie).MiniRelIso();
+        float PTCorr = ElTColl.at(ie).CalcPtCone(RelIso,0.1), PT=ElTColl.at(ie).Pt();
+        if(RelIso>0.1) TmpEl *= PTCorr/PT;
+        ElConeColl.push_back(TmpEl);
+      }
       for(unsigned int im=0; im<MuTColl.size(); im++){ 
-        float TightIso = 0.1;
+        Muon TmpMu(MuTColl.at(im));
         float RelIso = MuTColl.at(im).MiniRelIso();
-        float PTCorr = MuTColl.at(im).CalcPtCone(RelIso,TightIso), PT=MuTColl.at(im).Pt();
-        if(RelIso>TightIso) MuConeColl.at(im)*=PTCorr/PT;
+        float PTCorr = MuTColl.at(im).CalcPtCone(RelIso,0.1), PT=MuTColl.at(im).Pt();
+        if(RelIso>0.1) TmpMu *= PTCorr/PT;
+        MuConeColl.push_back(TmpMu);
       }
     }
+    else{ ElConeColl = ElTColl; MuConeColl = MuTColl; }
 
     InitializeTreeVars();
-    if(!FakeRun) SetVarSS2L(MuTColl, MuLColl, MuVColl, ElTColl, ElLColl, ElVColl, JetColl, BJetColl, vMET, weight, "");
-    else         SetVarSS2L(MuConeColl, MuLColl, MuVColl, ElConeColl, ElLColl, ElVColl, JetColl, BJetColl, vMET, weight, "");
+    SetVarSS2L(MuConeColl, MuLColl, MuVColl, ElConeColl, ElLColl, ElVColl, JetColl, BJetColl, vMET, weight, "");
 
-    //if((!FakeRun) && Mll<80) return;
-    //if(  FakeRun  && (MuConeColl.at(0)+MuConeColl.at(1)).M()<80) return;
+    //if( (MuConeColl.at(0)+MuConeColl.at(1)).M()<80 ) return;
     if(MVAReader->EvaluateMVA("BDTG_MN50_Mu")>0) return;
     PlotParametersSS(Label+"_2M");
   }
   if(NElL==2){
-    int aSumQ = abs(SumCharge(ElLColl)); float MCCFSF=1.;
+    int aSumQ = abs(SumCharge(ElTColl)); float MCCFSF=1.;
     if(FlipRun && !FakeRun){ if(aSumQ!=0) return; }
     else                   { if(aSumQ==0) return; }
-    if(!(ElLColl.at(0).Pt()>25 && ElLColl.at(1).Pt()>15)) return;
+    if(!(ElTColl.at(0).Pt()>25 && ElTColl.at(1).Pt()>15)) return;
     if(!IsDATA){
       int GenLepInfo = GetGenLepInfo(ElTColl, MuTColl);
       if(ConvRun && GenLepInfo>=100) return;
@@ -1554,19 +1720,30 @@ void ControlPlots::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, ve
     if(JetColl.size() <3) return;
 
     if(FakeRun){
-      ElConeColl=ElTColl;
       for(unsigned int ie=0; ie<ElTColl.size(); ie++){ 
+        Electron TmpEl(ElTColl.at(ie));
         float RelIso = ElTColl.at(ie).MiniRelIso();
         float PTCorr = ElTColl.at(ie).CalcPtCone(RelIso,0.1), PT=ElTColl.at(ie).Pt();
-        if(RelIso>0.1) ElConeColl.at(ie)*=PTCorr/PT;
+        if(RelIso>0.1) TmpEl *= PTCorr/PT;
+        ElConeColl.push_back(TmpEl);
+      }
+      for(unsigned int im=0; im<MuTColl.size(); im++){ 
+        Muon TmpMu(MuTColl.at(im));
+        float RelIso = MuTColl.at(im).MiniRelIso();
+        float PTCorr = MuTColl.at(im).CalcPtCone(RelIso,0.1), PT=MuTColl.at(im).Pt();
+        if(RelIso>0.1) TmpMu *= PTCorr/PT;
+        MuConeColl.push_back(TmpMu);
       }
     }
-    //if((!FakeRun) && (ElLColl.at(0)+ElLColl.at(1)).M()<101.2) return;
+    else{ ElConeColl = ElTColl; MuConeColl = MuTColl; }
+
+    if( fabs( (ElConeColl.at(0)+ElConeColl.at(1)).M()-91.2 )<10 ) return; 
+
+    //if((!FakeRun) && (ElTColl.at(0)+ElTColl.at(1)).M()<101.2) return;
     //if(  FakeRun  && (ElConeColl.at(0)+ElConeColl.at(1)).M()<101.2) return;
 
     InitializeTreeVars();
-    if(!FakeRun) SetVarSS2L(MuTColl, MuLColl, MuVColl, ElTColl, ElLColl, ElVColl, JetColl, BJetColl, vMET, newweight, "");
-    else         SetVarSS2L(MuConeColl, MuLColl, MuVColl, ElConeColl, ElLColl, ElVColl, JetColl, BJetColl, vMET, newweight, "");
+    SetVarSS2L(MuConeColl, MuLColl, MuVColl, ElConeColl, ElLColl, ElVColl, JetColl, BJetColl, vMET, newweight, "");
 
     if(MVAReader->EvaluateMVA("BDTG_MN50_El")>0) return;
     PlotParametersSS(Label+"_2E");
@@ -1844,7 +2021,7 @@ float ControlPlots::GetConvSF(TString ElTID, int SystDir){
     else if(Era=="2017" ){ SF = 1.040*(1.+((float) SystDir)*0.16); }
     else if(Era=="2018" ){ SF = 1.122*(1.+((float) SystDir)*0.16); }
   }
-  else if(ElTID=="TopHN17SST"){
+  else if(ElTID=="TopHNSST"){
     if     (Era=="2016a"){ SF = 0.938*(1.+((float) SystDir)*0.2 ); }
     else if(Era=="2016b"){ SF = 0.861*(1.+((float) SystDir)*0.21); }
     else if(Era=="2017" ){ SF = 1.019*(1.+((float) SystDir)*0.18); }
@@ -2100,6 +2277,7 @@ ControlPlots::~ControlPlots(){
     delete mapit->second;
   }
   maphist_FR.clear();
+  SysWgtStrPairList.clear();
 
 }
 
@@ -2262,7 +2440,7 @@ void ControlPlots::InitializeReader(){
   MVAReader->AddVariable("Ml1W1_H" , &Ml1W1_H );
   MVAReader->AddVariable("Ml2W1_H" , &Ml2W1_H );
 
-  TString AnalyzerPath=std::getenv("SKFlat_WD"), MVAPath="/data/Run2UltraLegacy_v2/2017/MVAClassifier/";
+  TString AnalyzerPath=std::getenv("SKFlat_WD"), MVAPath="/data/Run2UltraLegacy_v3/2017/MVAClassifier/";
   //TString AnalyzerPath=std::getenv("SKFlat_WD"), MVAPath="/data/Run2UltraLegacy_v2/"+TString::Itoa(DataYear,10)+"/MVAClassifier/";
   MNStrList = {"20", "50", "75", "100"};
   for(unsigned int im=0; im<MNStrList.size(); im++){
