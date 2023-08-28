@@ -20,6 +20,8 @@ public:
   void SetIP3D(double IP3D, double IP3Derr);
   inline double IP3D() const {return j_IP3D;}
   inline double IP3Derr() const {return j_IP3Derr;}
+  inline double SIP2D() const { return (j_dXYerr!=0? fabs(j_dXY/j_dXYerr):-1); }
+  inline double SIP3D() const { return (j_IP3Derr!=0? fabs(j_IP3D/j_IP3Derr):-1); }
 
   //==== AbsIso will be set in Muon/Electron,
   //==== and use SetRelIso to save calculated RelIso

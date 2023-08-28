@@ -107,25 +107,114 @@ bool Muon::PassID(TString ID) const {
   if(ID=="POGHighPt") return isPOGHighPt();
   if(ID=="POGMedium") return isPOGMedium();
   if(ID=="POGLoose") return isPOGLoose();
+  if(ID=="POGMIDTIso") return isPOGMedium() && RelIso()<0.15;
+  if(ID=="POGMIDVVLIso") return isPOGMedium() && RelIso()<0.4;
+  if(ID=="POGTIDTIso") return isPOGTight() && RelIso()<0.15;
+  if(ID=="POGTIDVVLIso") return isPOGTight() && RelIso()<0.4;
+  if(ID=="POGIDMPrIsoM" ) return isPOGMedium() && fabs(dXY())<0.02 && fabs(dZ())<0.1 && RelIso()<0.2;
+  if(ID=="POGIDMPrIsoVL") return isPOGMedium() && fabs(dXY())<0.02 && fabs(dZ())<0.1 && RelIso()<0.4;
+
   if(ID=="POGTightWithTightIso") return Pass_POGTightWithTightIso();
   if(ID=="POGHighPtWithLooseTrkIso") return Pass_POGHighPtWithLooseTrkIso();
   //==== Customized
-  if(ID=="TEST") return Pass_TESTID();
+  if(ID=="NoID" or ID=="NOCUT") return true;
+  if(ID=="POGMHLT"){
+    if( !isPOGMedium()       ) return false;
+    if( !(TrkIso()/Pt()<0.4) ) return false;
+    if( !(fabs(dZ())<0.1)    ) return false;
+    return true;
+  }
+  if(ID=="HctoWA16T"){
+    if(!isPOGTight()) return false;
+    if(!(RelIso()<0.2)) return false;
+    if(!(fabs(dXY())<0.01 && fabs(dZ())<0.05)) return false;
+    if(!(fabs(Chi2())<4)) return false;
+    if(!(SIP2D()<4.) ) return false;
+    return true;
+  }
+  if(ID=="HctoWA16L"){
+    if(!isPOGTight()) return false;
+    if(!(RelIso()<0.6)) return false;
+    if(!(fabs(dXY())<0.2 && fabs(dZ())<0.1)) return false;
+    if(!(SIP2D()<4.) ) return false;
+    return true;
+  }
+  if(ID=="TopHNT"){
+    if(! isPOGMedium()        ) return false;
+    if(! (MiniRelIso()<0.1)) return false;
+    if(! (TrkIso()/Pt()<0.4) ) return false;
+    if(! (fabs(dZ())<0.1)  ) return false;
+    if(! (SIP3D()<3.) ) return false;
+    return true;
+  }
+  if(ID=="TopHNL"){
+    if(! isPOGMedium()       ) return false;
+    if(! (MiniRelIso()<0.6)  ) return false;
+    if(! (TrkIso()/Pt()<0.4) ) return false;
+    if(! (SIP3D()<5)         ) return false; 
+    if(! (fabs(dZ())<0.1)    ) return false;
+    return true;
+  }
+  if(ID=="TopHNLLIsop6NoSIP"){
+    if(! isPOGMedium()       ) return false;
+    if(! (MiniRelIso()<0.6)  ) return false;
+    if(! (TrkIso()/Pt()<0.4) ) return false;
+    if(! (fabs(dZ())<0.1)    ) return false;
+    return true;
+  }
+  if(ID=="TopHNLLIsop6"){
+    if(! isPOGMedium()       ) return false;
+    if(! (MiniRelIso()<0.6)  ) return false;
+    if(! (TrkIso()/Pt()<0.4) ) return false;
+    if(! (fabs(dZ())<0.1)    ) return false;
+    if(! (SIP3D()<3)         ) return false;
+    return true;
+  }
+  if(ID.BeginsWith("TopHNLLIsop6SIP")){
+    if(! isPOGMedium()       ) return false;
+    if(! (MiniRelIso()<0.6)  ) return false;
+    if(! (TrkIso()/Pt()<0.4) ) return false;
+    if(! (fabs(dZ())<0.1)    ) return false;
+    if     ( ID.Contains("SIP4") ){ if(! (SIP3D()<4) ) return false; }
+    else if( ID.Contains("SIP5") ){ if(! (SIP3D()<5) ) return false; }
+    else if( ID.Contains("SIP6") ){ if(! (SIP3D()<6) ) return false; }
+    else if( ID.Contains("SIP7") ){ if(! (SIP3D()<7) ) return false; }
+    else if( ID.Contains("SIP8") ){ if(! (SIP3D()<8) ) return false; }
+    else { printf("No Matching SIP!\n"); return false; }
+    return true;
+  }
+  if(ID.BeginsWith("TopHNV")){
+    if(! isPOGMedium()       ) return false;
+    if(! (MiniRelIso()<0.6)  ) return false;
+    if(! (TrkIso()/Pt()<0.4) ) return false;
+    if(! (fabs(dZ())<0.1)    ) return false;
+    return true;
+  }
 
-  //==== No cut
-  if(ID=="NOCUT") return true;
+  if(ID.Contains("TopHNLForTIsop10_201")){
+    if(! isPOGMedium()       ) return false;
+    if(! (MiniRelIso()<0.6)  ) return false;
+    if(! (TrkIso()/Pt()<0.4) ) return false;
+    if(! (fabs(dZ())<0.1)    ) return false;
+    if(! Pass_SIPFakeLoose(ID, "PTCorrBase")) return false;
+    return true;
+  }
+
 
   cout << "[Electron::PassID] No id : " << ID << endl;
   exit(ENODATA);
 
   return false;
-
 }
+
+
 bool Muon::Pass_POGTightWithTightIso() const {
   if(!( isPOGTight() )) return false;
   if(!( RelIso()<0.15 ))  return false;
   return true;
 }
+
+
 bool Muon::Pass_POGHighPtWithLooseTrkIso() const {
   if(!( isPOGHighPt() )) return false;
   if(!( TrkIso()/TuneP4().Pt()<0.1 )) return false;
@@ -137,6 +226,109 @@ bool Muon::Pass_POGHighPtWithLooseTrkIso() const {
 bool Muon::Pass_TESTID() const {
   return true;
 }
+
+bool Muon::Pass_SIPFakeLoose(TString wp, TString Option) const {
+
+  vector<float> PTEdges, SIPCuts, PTCenters;
+  float fEta = fabs(Eta()), PT=Pt(), PTCorr = PT;
+  bool IsEB1=fEta<0.9, IsEB2=(!IsEB1) && fEta<1.6;
+  bool PTBase=false, PTCorrBase=false, NoInt=false;
+  if(Option.Contains("PTCorrBase")) PTCorrBase=true;
+  else PTBase=true;
+  if(Option.Contains("NoInt")) NoInt=true;
+  float SIPCut = 1;
+
+  if(wp=="TopHNLForTIsop15_2016a"){
+    PTCorr  = ((Lepton*) this)->CalcPtCone(MiniRelIso(),0.15);
+    PTEdges =                {10,  15,   20,   25,  35,   50,   70,   100};
+    PTCenters =              { 12.5, 17.5, 22.5,   30, 42.5,   60,   85};
+    if     (IsEB1) SIPCuts = {   20,   20,   20,    7,    3,    3,    3};
+    else if(IsEB2) SIPCuts = {   20,   20,   20,   10,    4,    3,    3};
+    else           SIPCuts = {   20,   20,   12,    5,    3,    3,    3};
+  }
+  else if(wp=="TopHNLForTIsop15_2016b"){
+    PTCorr  = ((Lepton*) this)->CalcPtCone(MiniRelIso(),0.15);
+    PTEdges =                {10,  15,   20,   25,  35,   50,   70,   100};
+    PTCenters =              { 12.5, 17.5, 22.5,   30, 42.5,   60,   85};
+    if     (IsEB1) SIPCuts = {   20,   20,   20,    7,    3,    3,    3};
+    else if(IsEB2) SIPCuts = {   20,   20,   20,   10,    4,    3,    3};
+    else           SIPCuts = {   16,   16,    8,    5,    3,    3,    3};
+  }
+  else if(wp=="TopHNLForTIsop15_2017"){
+    PTCorr  = ((Lepton*) this)->CalcPtCone(MiniRelIso(),0.15);
+    PTEdges =                {10,  15,   20,   25,  35,   50,   70,   100};
+    PTCenters =              { 12.5, 17.5, 22.5,   30, 42.5,   60,   85};
+    if     (IsEB1) SIPCuts = {   20,   20,   20,   10,    3,    3,    3};
+    else if(IsEB2) SIPCuts = {   20,   20,   20,   16,    6,    3,    3};
+    else           SIPCuts = {   16,   16,   16,   10,    7,    5,    3};
+  }
+  else if(wp=="TopHNLForTIsop15_2018"){
+    PTCorr  = ((Lepton*) this)->CalcPtCone(MiniRelIso(),0.15);
+    PTEdges =                {10,  15,   20,   25,  35,   50,   70,   100};
+    PTCenters =              { 12.5, 17.5, 22.5,   30, 42.5,   60,   85};
+    if     (IsEB1) SIPCuts = {   20,   20,   20,   10,    3,    3,    3};
+    else if(IsEB2) SIPCuts = {   20,   20,   20,   12,    5,    3,    3};
+    else           SIPCuts = {   18,   18,   14,    7,    5,    3,    3};
+  }
+  else if(wp=="TopHNLForTIsop10_2016a"){
+    PTCorr  = ((Lepton*) this)->CalcPtCone(MiniRelIso(),0.1);
+    PTEdges =                {10,  15,   20,   25,  35,   50,   70,   100};
+    PTCenters =              { 12.5, 17.5, 22.5,   30, 42.5,   60,   85};
+    if     (IsEB1) SIPCuts = {   20,   20,   20,    5,    3,    3,    3};
+    else if(IsEB2) SIPCuts = {   20,   20,   20,    8,    3,    3,    3};
+    else           SIPCuts = {   20,   20,   12,    5,    3,    3,    3};
+  }
+  else if(wp=="TopHNLForTIsop10_2016b"){
+    PTCorr  = ((Lepton*) this)->CalcPtCone(MiniRelIso(),0.10);
+    PTEdges =                {10,  15,   20,   25,  35,   50,   70,   100};
+    PTCenters =              { 12.5, 17.5, 22.5,   30, 42.5,   60,   85};
+    if     (IsEB1) SIPCuts = {   20,   20,   20,    7,    3,    3,    3};
+    else if(IsEB2) SIPCuts = {   20,   20,   20,   10,    3,    3,    3};
+    else           SIPCuts = {   20,   20,   10,    5,    3,    3,    3};
+  }
+  else if(wp=="TopHNLForTIsop10_2017"){
+    PTCorr  = ((Lepton*) this)->CalcPtCone(MiniRelIso(),0.10);
+    PTEdges =                {10,  15,   20,   25,  35,   50,   70,   100};
+    PTCenters =              { 12.5, 17.5, 22.5,   30, 42.5,   60,   85};
+    if     (IsEB1) SIPCuts = {   20,   20,   20,    7,    3,    3,    3};
+    else if(IsEB2) SIPCuts = {   20,   20,   20,   10,    3,    3,    3};
+    else           SIPCuts = {   20,   20,   20,    8,    6,    3,    3};
+  }
+  else if(wp=="TopHNLForTIsop10_2018"){
+    PTCorr  = ((Lepton*) this)->CalcPtCone(MiniRelIso(),0.10);
+    PTEdges =                {10,  15,   20,   25,  35,   50,   70,   100};
+    PTCenters =              { 12.5, 17.5, 22.5,   30, 42.5,   60,   85};
+    if     (IsEB1) SIPCuts = {   20,   20,   20,    7,    3,    3,    3};
+    else if(IsEB2) SIPCuts = {   20,   20,   20,   10,    3,    3,    3};
+    else           SIPCuts = {   20,   20,   14,    8,    4,    3,    3};
+  }
+  else { printf("[Muon::PassLooseSIP] No id : %s\n", wp.Data()); exit(ENODATA); }
+  if(PTCenters.size()!=SIPCuts.size()){ printf("N(PTCenter)!=N(SIPCuts)\n"); exit(ENODATA); }
+
+  int Nbins=SIPCuts.size();
+  float PTnow = PTBase? PT:PTCorrBase? PTCorr: PT;
+  if     (PTnow<PTCenters.at(0)      ){ SIPCut = SIPCuts.at(0); }
+  else if(PTnow>PTCenters.at(Nbins-1)){ SIPCut = SIPCuts.at(Nbins-1); }
+  else{
+    for(unsigned int ipt=0; ipt<PTCenters.size()-1 && (!NoInt); ipt++){
+      if( !(PTnow>=PTCenters.at(ipt) && PTnow<PTCenters.at(ipt+1)) ) continue;
+      float PT1  = PTCenters.at(ipt), PT2 = PTCenters.at(ipt+1);
+      float SIP1 = SIPCuts.at(ipt), SIP2 = SIPCuts.at(ipt+1);
+      SIPCut = SIP1 + (PTnow-PT1)/(PT2-PT1)*(SIP2-SIP1);
+      break;
+    }
+    for(unsigned int ipt=0; ipt<PTEdges.size()-1 && NoInt; ipt++){
+      if( !(PTnow>=PTEdges.at(ipt) && PTnow<PTEdges.at(ipt+1)) ) continue;
+      float ThisSIP = SIPCuts.at(ipt);
+      SIPCut = ThisSIP;
+      break;
+    }
+  }
+
+  bool ReturnVal = SIP3D()<SIPCut; 
+  return ReturnVal;
+}
+
 
 void Muon::SetTrackerLayers(int n){
   j_trackerLayers = n;

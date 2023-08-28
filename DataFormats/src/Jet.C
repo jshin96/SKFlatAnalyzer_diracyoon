@@ -99,8 +99,9 @@ void Jet::SetTightLepVetoJetID(double b){
 
 bool Jet::PassID(TString ID) const {
 
-  if(ID=="tight") return Pass_tightJetID();
-  if(ID=="tightLepVeto") return Pass_tightLepVetoJetID();
+  if     (ID=="tight"       ) return Pass_tightJetID();
+  else if(ID=="tightLepVeto") return Pass_tightLepVetoJetID();
+  else if(ID=="NoID"        ) return true;
 
   cout << "[Jet::PassID] No id : " << ID << endl;
   exit(ENODATA);
@@ -123,3 +124,15 @@ double Jet::GetTaggerResult(JetTagging::Tagger tg) const {
   }
 }
 
+double Jet::GetIDVariable(TString VarName){
+
+  if(VarName=="CHEF") return j_chargedHadronEnergyFraction;
+  else if(VarName=="NHEF") return j_neutralHadronEnergyFraction;
+  else if(VarName=="CEMEF") return j_chargedEmEnergyFraction;
+  else if(VarName=="NEMEF") return j_neutralEmEnergyFraction;
+  else if(VarName=="MuEF") return j_muonEnergyFraction;
+  else if(VarName=="CMult") return j_chargedMultiplicity;
+  else if(VarName=="NMult") return j_neutralMultiplicity;
+  else return -1;
+
+}

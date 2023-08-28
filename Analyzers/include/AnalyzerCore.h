@@ -30,6 +30,10 @@
 #include "GEScaleSyst.h"
 #include "PDFReweight.h"
 
+#include "TMVA/Tools.h"
+#include "TMVA/Reader.h"
+#include "TMVA/MethodCuts.h"
+
 #define M_Z 91.1876
 #define M_W 80.379
 
@@ -266,6 +270,54 @@ public:
   TFile *outfile=NULL;
   void SetOutfilePath(TString outname);
 
+
+  //Jihwan Bhyun Modification/////////////////////////
+  vector<Muon>     SelectMuons    (vector<Muon>&         muons, TString id, double ptmin, double fetamax, TString Option);
+  vector<Electron> SelectElectrons(vector<Electron>& electrons, TString id, double ptmin, double fetamax, TString Option);
+  vector<Jet> SelectJets(vector<Jet>& JetColl, vector<Muon>& MuColl, vector<Electron>& ElColl, TString id, double ptmin, double fetamax, TString Option="");
+  vector<Jet> SelBJets    (vector<Jet>& jetColl, JetTagging::Parameters jtp);
+  vector<Jet> SelLightJets(vector<Jet>& jetColl, JetTagging::Parameters jtp);
+  vector<int> GetSFBJetIdx(vector<Jet>& jetColl, JetTagging::Parameters jtp);
+  vector<int> GetSFLJetIdx(vector<Jet>& jetColl, JetTagging::Parameters jtp);
+  vector<Electron> SkimLepColl(vector<Electron>& ElColl, vector<Gen>& TruthColl, TString Option="Prompt");
+  vector<Muon>     SkimLepColl(vector<Muon>&     MuColl, vector<Gen>& TruthColl, TString Option="Prompt");
+  vector<Electron> SkimLepColl(vector<Electron>& ElColl, TString Option="B1B2E", float PTmin=10.);
+  vector<Muon>     SkimLepColl(vector<Muon>&     MuColl, TString Option="MBMOME", float PTmin=10.);
+  vector<Jet>      SkimJetColl(vector<Jet>&     JetColl, vector<Gen>& TruthColl, TString Option="NoPr");
+  bool             HasEWLepInJet(Jet Jet, std::vector<Gen>& TruthColl, TString Option="");
+  TLorentzVector GetvMET(TString METType="T1xyCorr", TString Option="");
+  void           ApplyMETxyCorr(TLorentzVector& vMET, TString Option="");
+  float GetvPz(Lepton& Lep, Particle& vMET, TString Option="");
+  float GetMuonSF(std::vector<Muon>& muonColl, TString SFKey, TString Option="");
+  float GetElectronSF(std::vector<Electron>& electronColl, TString SFKey, TString Option="");
+  float GetKFactor();
+  float GetBRWeight();
+  float GetGenFilterEffCorr();
+  bool  IsHEMIssueRun();
+  bool  IsHEMIssueReg(Particle& Particle);
+  bool  IsHEMCRReg(Particle& Particle, TString Option);
+  int   SumCharge(vector<Muon>& MuColl, vector<Electron>& ElColl);
+  int   SumCharge(vector<Muon>& MuColl);
+  int   SumCharge(vector<Electron>& ElColl);
+  int   TriMuChargeIndex(vector<Muon>& MuonColl, TString charge);
+  int   TriElChargeIndex(vector<Electron>& ElectronColl, TString charge);
+  TString GetDataPeriod();
+
+  int  GenMatchedIdx(Lepton& Lep, std::vector<Gen>& truthColl);
+  int  GetNearPhotonIdx(Lepton& Lep, std::vector<Gen>& TruthColl);
+  int  FirstNonSelfMotherIdx(int TruthIdx, std::vector<Gen>& TruthColl);
+  int  LastSelfMotherIdx(int TruthIdx,std::vector<Gen>& TruthColl);
+  bool HasHadronicAncestor(int TruthIdx, std::vector<Gen>& TruthColl);
+  bool IsFinalPhotonSt23(std::vector<Gen>& TruthColl);
+  int  GetPrElType_InSameSCRange(int TruthIdx, std::vector<Gen>& TruthColl, TString Option="");
+  int  GetPartonType_JH(int TruthIdx, std::vector<Gen>& TruthColl);
+  int  GetLeptonType_JH(int TruthIdx, std::vector<Gen>& TruthColl);
+  int  GetLeptonType_JH(Lepton& Lep, std::vector<Gen>& TruthColl);
+  int  GetPhotonType_JH(int PhotonIdx, std::vector<Gen>& TruthColl);
+  int  GetFakeLepSrcType(Lepton& Lep, vector<Jet>& JetColl);
+
+  void FillHist(TString histname, double value, double weight, int n_bin, double x_min, double x_max, bool ApplyWVar, vector<pair<float,TString>>& SysWgtStrPairList);
+  void FillHist(TString histname, double value, double weight, int n_bin, double *xbins, bool ApplyWVar, vector<pair<float,TString>>& SysWgtStrPairList);
 };
 
 

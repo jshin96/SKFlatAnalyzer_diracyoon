@@ -65,6 +65,7 @@ void MeasureJetTaggingEfficiency::executeEvent(){
   float w_Gen  = MCweight();
   float w_Norm = ev.GetTriggerLumi("Full");
   float w_PU   = GetPileUpWeight(nPileUp, 0);
+  w_Gen=1., w_Norm=1.;
   weight *= w_Gen*w_Norm*w_PU; 
   //tagging performance depends on PU, so it is better reweight to proper PU profile
 

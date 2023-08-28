@@ -17,5 +17,25 @@
 #pragma link C++ class SkimTree_HighPt1LJets+;
 #pragma link C++ class MeasureJetTaggingEfficiency+;
 #pragma link C++ class SkimTree_Dilepton+;
+//my codes begin
+//#pragma link C++ class NewAnalyzer+;
+#pragma link C++ class DiLepValid+;
+#pragma link C++ class MeasTrigEff+;
+#pragma link C++ class IDOptimization+;
+#pragma link C++ class MCFakeStudy+;
+#pragma link C++ class FakeRateMeas+;
+#pragma link C++ class ControlPlots+;
+#pragma link C++ class MeasCFlipRate+;
+#pragma link C++ class KinVarSearch+;
+#pragma link C++ class KinVarPlot+;
+//#pragma link C++ class HNTopFeas+;
+//#pragma link C++ class SkimRateCheck+;
+//#pragma link C++ class TrigCheck+;
+//#pragma link C++ class GenMatchingValid+;
+//#pragma link C++ class TestRun+;
+//#pragma link C++ class GenSystStudy+;
+#pragma link C++ class GenSigStudy+;
+//my codes end
+
 
 #endif

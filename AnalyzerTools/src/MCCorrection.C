@@ -250,17 +250,16 @@ double MCCorrection::MuonID_SF(TString ID, double eta, double pt, int sys){
   double value = 1.;
   double error = 0.;
 
-  if(DataYear!=2016){
-    eta = fabs(eta);
-  }
+  eta = fabs(eta);
 
-  if(ID=="NUM_TightID_DEN_genTracks" || ID=="NUM_HighPtID_DEN_genTracks"){
-    //==== boundaries
-    if(pt<20.) pt = 20.;
-    if(pt>=120.) pt = 119.;
-    if(eta>=2.4) eta = 2.39;
-    if(eta<-2.4) eta = -2.4;
+  //==== boundaries
+  double ptmin=10.1, ptmax=199., etamin=0.01, etamax=2.39;
+  if(ID=="NUM_TightID_DEN_genTracks" || ID=="NUM_HighPtID_DEN_genTracks" || ID=="NUM_MediumID_DEN_TrackerMuons"){
+    ptmin = 15.1, ptmax = 119., etamin = 0.01, etamax = 2.39;
   }
+  else if(ID.Contains("HNTop")){ ptmin=10.1, ptmax=199., etamin=0.01, etamax=2.39; }
+  pt = min(max(pt,ptmin),ptmax); eta = min(max(eta,etamin),etamax);
+
 
   TH2F *this_hist = map_hist_Muon["ID_SF_"+ID];
   if(!this_hist){
@@ -271,15 +270,7 @@ double MCCorrection::MuonID_SF(TString ID, double eta, double pt, int sys){
     }
   }
 
-  int this_bin(-999);
-
-  if(DataYear==2016){
-    this_bin = this_hist->FindBin(eta,pt);
-  }
-  else{
-    this_bin = this_hist->FindBin(pt,eta);
-  }
-
+  int this_bin = this_hist->FindBin(eta,pt);
   value = this_hist->GetBinContent(this_bin);
   error = this_hist->GetBinError(this_bin);
 
@@ -294,21 +285,19 @@ double MCCorrection::MuonISO_SF(TString ID, double eta, double pt, int sys){
   if(ID=="Default") return 1.;
 
   //cout << "[MCCorrection::MuonISO_SF] eta = " << eta << ", pt = " << pt << endl;
-
   double value = 1.;
   double error = 0.;
 
-  if(DataYear!=2016){
-    eta = fabs(eta);
-  }
+  eta = fabs(eta);
 
+
+  double ptmin=10.1, ptmax=199., etamin=0.01, etamax=2.39;
   if(ID=="NUM_TightRelIso_DEN_TightIDandIPCut" || ID=="NUM_LooseRelTkIso_DEN_HighPtIDandIPCut"){
-    //==== boundaries
-    if(pt<20.) pt = 20.;
-    if(pt>=120.) pt = 119.;
-    if(eta>=2.4) eta = 2.39;
-    if(eta<-2.4) eta = -2.4;
+    ptmin = 15.1; ptmax = 119.; etamin = 0.01; etamax = 2.39;
   }
+  else if(ID.Contains("HNTop")){ ptmin=10.1, ptmax=199., etamin=0.01, etamax=2.39; }
+  pt = min(max(pt,ptmin),ptmax); eta = min(max(eta,etamin),etamax);
+
 
   TH2F *this_hist = map_hist_Muon["ISO_SF_"+ID];
   if(!this_hist){
@@ -319,15 +308,7 @@ double MCCorrection::MuonISO_SF(TString ID, double eta, double pt, int sys){
     }
   }
 
-  int this_bin(-999);
-
-  if(DataYear==2016){
-    this_bin = this_hist->FindBin(eta,pt);
-  }
-  else{
-    this_bin = this_hist->FindBin(pt,eta);
-  }
-
+  int this_bin = this_hist->FindBin(eta,pt);
   value = this_hist->GetBinContent(this_bin);
   error = this_hist->GetBinError(this_bin);
 
@@ -500,6 +481,7 @@ double MCCorrection::ElectronID_SF(TString ID, double sceta, double pt, int sys)
   if(sceta>=2.5) sceta = 2.49;
   if(sceta<-2.5) sceta = -2.5;
 
+  if( ID.Contains("TopHNSST") ){ pt = max(pt,(double) 15.1); pt = min(pt,(double) 199.); }
   if( ID.Contains("HEEP") ){
 
     //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaRunIIRecommendations#HEEPV7_0
@@ -812,6 +794,7 @@ double MCCorrection::GetTopPtReweight(const std::vector<Gen>& gens){
   //==== ref: https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting2017
   //==== Only top quarks in SM ttbar events must be reweighted, 
   //==== not single tops or tops from BSM production mechanisms.
+  //TODO: last copy should be used.
   if(!MCSample.Contains("TT") || !MCSample.Contains("powheg")){
     return 1.;
   }
@@ -1185,7 +1168,8 @@ void MCCorrection::SetupMCJetTagEff(){
     else if(hnum.Contains("_C_")) hden="Jet_"+DataEra+"_eff_C_denom";
     else hden="Jet_"+DataEra+"_eff_Light_denom";
 
-    this_hist->Divide(this_hist,map_hist_mcjet[hden],1.,1.,"b");
+    this_hist->Divide(this_hist,map_hist_mcjet[hden],1.,1.);
+    //this_hist->Divide(this_hist,map_hist_mcjet[hden],1.,1.,"b");
     map_hist_mcjet[hnum]=this_hist;
     this_hist->SetDirectory(0);
     cout<<"[MCCorrection::SetupMCJetTagEff] setting "<<hnum<<endl;
@@ -1223,14 +1207,14 @@ double MCCorrection::GetMCJetTagEff(JetTagging::Tagger tagger, JetTagging::WP wp
   return out;
 }
 
-double MCCorrection::GetBTaggingReweight_1a(const vector<Jet>& jets, JetTagging::Parameters jtp, string Syst){
+double MCCorrection::GetBTaggingReweight_1a(const vector<Jet>& jets, JetTagging::Parameters jtp, TString SystStr){
 //Syst. usage ex.: "SystUpHTag"(all component variation for heavy flav(b,c).), 
 //                 "SystUpHTagCorr"(variation of heavy flav(b,c) sf only for yearly correlated components)
 //change H->L for light flav., Up->Down for downward variation, Corr->UnCorr for yearly independent components
  
+
   if(IsDATA) return 1.;
 
-  TString SystStr(Syst);
   double Prob_MC(1.), Prob_DATA(1.), SF(1.);
   bool Syst_HTag=false, Syst_LTag=false; int SystDir=0, CorrType=0;
   string SystKey;
