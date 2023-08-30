@@ -30,10 +30,15 @@ void HNL_LeptonFakeStudy::executeEvent(){
   if(!PassMETFilter()) return;
 
   
-  std::vector<Electron> loose_electrons     = GetElectrons( param,"HNL_ULID_FO_2017" , 10, 2.5,false) ;
-  std::vector<Muon>     loose_muons         = GetMuons    ( param,"MVALoose", 5, 2.4, false);
+  
+  std::vector<Electron> loose_electrons     = GetElectrons( param,"HNLooseV4" , 10, 2.5,false) ;
+  std::vector<Muon>     loose_muons         = GetMuons    ( param,"HNLooseV1", 5, 2.4, false);
   
   std::vector<Jet> jets_tmp     = GetJets   ( param, "tight", 30., 2.7);
+
+  std::vector<Lepton *> leps = MakeLeptonPointerVector(loose_electrons);
+
+  Particle METv = GetvMET("PuppiT1xyULCorr");
 
   std::vector<Jet> jets; 
   for(unsigned int ijet =0; ijet < jets_tmp.size(); ijet++){
@@ -48,11 +53,42 @@ void HNL_LeptonFakeStudy::executeEvent(){
     if(jetok) jets.push_back(jets_tmp[ijet]);
   }
 
-  std::vector<Lepton *> leps = MakeLeptonPointerVector(loose_electrons);
 
-  Particle METv = GetvMET("PuppiT1xyULCorr");
-  
   bool useevent40 = UseEvent(leps , jets, 40.,  METv, weight);
+
+  /*
+  bool UnkiStudy=true;
+  if(UnkiStudy){
+
+    ////// check 1 mu / 2 mu events 
+    ////// 1 muon events use SL trigger prescaled
+    ////// 2 muon use 1 prescaled SL trigger
+    ////// select back to back jets (b/non b) 
+
+    if(useevent40){
+      
+      float prescale_trigger = GetPrescale(leps);
+      if(prescale_trigger == 0.) return;
+      event_weight*=prescale_trigger;
+
+      for(int ilep = 0 ; ilep < 2; ilep++)  {
+
+	TString L_prefix = "Fake_Loose"+tag;
+	TString T_prefix = "Fake_Tight"+tag;
+	TString prefix = (ilep==0) ? L_prefix : T_prefix;
+	
+	float lep_pt = ->Pt();
+
+	FillHist((prefix + "_pt").Data(),     lep_pt, weight_pt*prescale_lep, nbin_pt, ptbins, "p_{T} (GeV)");
+	FillHist((prefix + "_eta").Data(),    lep_eta, weight_pt*prescale_lep , nbin_eta, etabins,"#eta");
+
+      }
+    }
+    return;
+  }
+
+
+  */
 
   vector<TString> lables = GetGenList();
 

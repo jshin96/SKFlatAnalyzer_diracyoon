@@ -73,16 +73,16 @@ fi
 
 if [[ $1 == "XG" ]]; then
     
-    declare  -a era_list=("2016postVFP")
+    declare  -a era_list=("2017")
 
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -i WGToLNuG   -n  10  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLep --userflags RunConv &
-	SKFlat.py -a $analyzer  -i ZGToLLG   -n  10  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLep --userflags RunConv &
-	SKFlat.py -a $analyzer  -i WGToLNuG   -n  10  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLep  &
-        SKFlat.py -a $analyzer  -i ZGToLLG   -n  10  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLep &
-	SKFlat.py -a $analyzer  -i DYJets   -n  10  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLep --userflags RunConv &
-        SKFlat.py -a $analyzer  -i DYJets   -n  10  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLep &
+        SKFlat.py -a $analyzer  -i WGToLNuG   -n  50  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT --userflags RunConv &
+	#SKFlat.py -a $analyzer  -i ZGToLLG   -n  10  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLep --userflags RunConv &
+	#SKFlat.py -a $analyzer  -i WGToLNuG   -n  10  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLep  &
+        #SKFlat.py -a $analyzer  -i ZGToLLG   -n  10  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLep &
+	#SKFlat.py -a $analyzer  -i DYJets   -n  10  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLep --userflags RunConv &
+        #SKFlat.py -a $analyzer  -i DYJets   -n  10  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLep &
 
     done
 
@@ -92,7 +92,7 @@ fi
 if [[ $1 == "MVA" ]]; then
 
     declare  -a era_list=("2016postVFP" "2016preVFP" "2018"  "2017")
-
+    
     for i in "${era_list[@]}"
     do
 	SKFlat.py -a $analyzer  -l $datapath/${i}_SingleLepton_E.txt  -n 200  --nmax 400   -e ${i}  --skim SkimTree_DileptonBDT  &

@@ -35,17 +35,7 @@ Lepton::Lepton() : Particle() {
   j_passID = false;
   j_IDSet= false;
 
-  j_lep_mva_hnl_fake_v1=-999;
-  j_lep_mva_hnl_fake_v2=-999;
-  j_lep_mva_hnl_fake_v2_hf=-999;
-  j_lep_mva_hnl_fake_v2_lf=-999;
-  j_lep_mva_hnl_fake_v2_top=-999;
-  j_lep_mva_hnl_fake_v3=-999;
-  j_lep_mva_hnl_fake_v3_hf=-999;
-  j_lep_mva_hnl_fake_v3_hfb=-999;
-  j_lep_mva_hnl_fake_v3_hfc=-999;
-  j_lep_mva_hnl_fake_v3_lf=-999;
-  j_lep_mva_hnl_fake_v3_top=-999;
+  j_lep_map_mva_hnl.clear();
   j_lep_mva_hnl_fake_v4=-999;
   j_lep_mva_hnl_fake_v4_hf=-999;
   j_lep_mva_hnl_fake_v4_hfb=-999;
@@ -60,20 +50,29 @@ Lepton::Lepton() : Particle() {
   j_lep_mva_hnl_fake_ed_v4_lf=-999;
   j_lep_mva_hnl_fake_ed_v4_top=-999;
 
+  j_lep_mva_hnl_fake_ed_v5=-999;
+  j_lep_mva_hnl_fake_v5_hfb=-999;
+  j_lep_mva_hnl_fake_v5_hfc=-999;
+  j_lep_mva_hnl_fake_v5_lf=-999;
+
+  j_lep_mva_hnl_fake_LFvsHF_v5=-999;
+  j_lep_mva_hnl_fake_BvsC_v5=-999;
+  j_lep_mva_hnl_fake_QCD_LFvsHF_v5=-999;
+  j_lep_mva_hnl_fake_QCD_BvsC_v5=-999;
+  j_lep_mva_hnl_fake_LF1_v5=-999;
+  j_lep_mva_hnl_fake_LF2_v5=-999;
+  j_lep_mva_hnl_fake_LF3_v5=-999;
+
   
-  j_lep_mva_hnl_conv_v1=-999;
-  j_lep_mva_hnl_conv_v2=-999;
-  j_lep_mva_hnl_conv_ed_v2=-999;
+  j_lep_mva_hnl_conv_v4=-999;
+  j_lep_mva_hnl_conv_ed_v4=-999;
+  j_lep_mva_hnl_conv_ed_v5=-999;
 
-  j_lep_mva_hnl_cf_v1=-999;
-  j_lep_mva_hnl_cf_v2=-999;
-  j_lep_mva_hnl_cf_v2p1=-999;
-  j_lep_mva_hnl_cf_v2p2=-999;
+  j_lep_mva_hnl_cf_v4=-999;
+  j_lep_mva_hnl_ed_cf_v4=-999;
 
-  j_lep_mva_hnl_ed_cf_v2=-999;
-  j_lep_mva_hnl_ed_cf_v2p1=-999;
-  j_lep_mva_hnl_ed_cf_v2p2=-999;
-
+  j_lep_mva_hnl_ed_cf_v5=-999;
+  j_lep_mva_hnl_ed_cf_v5Pt=-999;
 
 }
 
@@ -161,29 +160,6 @@ bool Lepton::PassULMVA(double mva, double cut, TString s_mva) const {
 }
 
 
-void Lepton::SetHNL_FakeLepMVAV1(double mvafake){
-  j_lep_mva_hnl_fake_v1=mvafake;
-}
-
-void Lepton::SetHNL_FakeLepMVAV2(double mvafake,double mvafake_hf, double mvafake_lf, double mvafake_top){
-
-  j_lep_mva_hnl_fake_v2=mvafake;
-  j_lep_mva_hnl_fake_v2_hf=mvafake_hf;
-  j_lep_mva_hnl_fake_v2_lf=mvafake_lf;
-  j_lep_mva_hnl_fake_v2_top=mvafake_top;
-
-}
-
-void Lepton::SetHNL_FakeLepMVAV3(double mvafake,double mvafake_hf, double mvafake_hfb,double mvafake_hfc, double mvafake_lf, double mvafake_top){
-
-  j_lep_mva_hnl_fake_v3=mvafake;
-  j_lep_mva_hnl_fake_v3_hf=mvafake_hf;
-  j_lep_mva_hnl_fake_v3_hfb=mvafake_hfb;
-  j_lep_mva_hnl_fake_v3_hfc=mvafake_hfc;
-  j_lep_mva_hnl_fake_v3_lf=mvafake_lf;
-  j_lep_mva_hnl_fake_v3_top=mvafake_top;
-
-}
 
 
 
@@ -209,18 +185,16 @@ void Lepton::SetHNL_FakeLepMVA_EtaDependantV4(double mvafake,double mvafake_hf, 
 
 }
 
+void Lepton::SetHNL_FakeLepMVA_EtaDependantV5(double mvafake,  double mvafake_hfb,double mvafake_hfc, double mvafake_lf){
 
-void Lepton::SetHNL_FakeLepMVAMuonV1(double mvafake){
-  j_lep_mva_hnl_fake_v1=mvafake;
+  j_lep_mva_hnl_fake_ed_v5=mvafake;
+  j_lep_mva_hnl_fake_v5_hfb=mvafake_hfb;
+  j_lep_mva_hnl_fake_v5_hfc=mvafake_hfc;
+  j_lep_mva_hnl_fake_v5_lf=mvafake_lf;
+
 }
 
-void Lepton::SetHNL_FakeLepMVAMuonV2(double mvafake){
-  j_lep_mva_hnl_fake_v2=mvafake;
-}
 
-void Lepton::SetHNL_FakeLepMVAMuonV3(double mvafake){
-  j_lep_mva_hnl_fake_v3=mvafake;
-}
 
 void Lepton::SetHNL_FakeLepMVAMuonV4(double mvafake){
   j_lep_mva_hnl_fake_v4=mvafake;
@@ -230,39 +204,46 @@ void Lepton::SetHNL_FakeLepMVAMuon_EtaDependantV4(double mvafake){
   j_lep_mva_hnl_fake_ed_v4=mvafake;
 }
 
+void Lepton::SetHNL_FakeFlavourLepMVA_V5(double mvafake1,double mvafake2, double mvafake3,double mvafake4, double mvafake5,double mvafake6,double mvafake7){
 
-
-
-
-void Lepton::SetHNL_ConvLepMVAV1( double mvaconv){
-  j_lep_mva_hnl_conv_v1=mvaconv;
-}
-
-void Lepton::SetHNL_ConvLepMVAV2( double mvaconv){
-  j_lep_mva_hnl_conv_v2=mvaconv;
-}
-
-void Lepton::SetHNL_ConvLepMVA_EtaDependantV2( double mvaconv){
-  j_lep_mva_hnl_conv_ed_v2=mvaconv;
-}
-
-
-void Lepton::SetHNL_CFLepMVAV1( double mvacf){
-  j_lep_mva_hnl_cf_v1=mvacf;
-}
-
-
-void Lepton::SetHNL_CFLepMVAV2(double mvacfv2, double mvacfv2p1,double mvacfv2p2) {
-  j_lep_mva_hnl_cf_v2=mvacfv2;
-  j_lep_mva_hnl_cf_v2p1=mvacfv2p1;
-  j_lep_mva_hnl_cf_v2p2=mvacfv2p2;
+  j_lep_mva_hnl_fake_LFvsHF_v5=mvafake1;
+  j_lep_mva_hnl_fake_BvsC_v5=mvafake2;
+  j_lep_mva_hnl_fake_QCD_LFvsHF_v5=mvafake3;
+  j_lep_mva_hnl_fake_QCD_BvsC_v5=mvafake4;
+  j_lep_mva_hnl_fake_LF1_v5=mvafake5;
+  j_lep_mva_hnl_fake_LF2_v5=mvafake6;
+  j_lep_mva_hnl_fake_LF3_v5=mvafake7;
 
 }
 
-void Lepton::SetHNL_CFLepMVA_EtaDependantV2(double mvacfv2, double mvacfv2p1,double mvacfv2p2) {
-  j_lep_mva_hnl_ed_cf_v2=mvacfv2;
-  j_lep_mva_hnl_ed_cf_v2p1=mvacfv2p1;
-  j_lep_mva_hnl_ed_cf_v2p2=mvacfv2p2;
+
+
+
+void Lepton::SetHNL_ConvLepMVAV4( double mvaconv){
+  j_lep_mva_hnl_conv_v4=mvaconv;
+}
+
+void Lepton::SetHNL_ConvLepMVA_EtaDependantV4( double mvaconv){
+  j_lep_mva_hnl_conv_ed_v4=mvaconv;
+}
+void Lepton::SetHNL_ConvLepMVA_EtaDependantV5( double mvaconv){
+
+  j_lep_mva_hnl_conv_ed_v5=mvaconv;
+
+}
+
+void Lepton::SetHNL_CFLepMVAV4(double mvacfv4) {
+  j_lep_mva_hnl_cf_v4=mvacfv4;
+}
+
+void Lepton::SetHNL_CFLepMVA_EtaDependantV4(double mvacfv4){
+  j_lep_mva_hnl_ed_cf_v4=mvacfv4;
+
+}
+
+void Lepton::SetHNL_CFLepMVA_EtaDependantV5(double mvacfv5, double mvacfv5_pt) {
+  j_lep_mva_hnl_ed_cf_v5=mvacfv5;
+  j_lep_mva_hnl_ed_cf_v5Pt=mvacfv5_pt;
 }
 
 

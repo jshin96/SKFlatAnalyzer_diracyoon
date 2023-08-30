@@ -59,6 +59,7 @@ public:
     Fake=0,
     Conv=1,
     CF=2,
+    FakeRate=3,
   };
 
 
@@ -119,16 +120,18 @@ public:
 
 
 
-  TMVA::Reader *MuonIDFakeMVAReader;
-  TMVA::Reader *MuonIDFakeNoPtMVAReader;
-  TMVA::Reader *ElectronIDFakeMVAReader;
-  TMVA::Reader *ElectronIDCFMVAReader;
-  TMVA::Reader *ElectronIDConvMVAReader;
-  TMVA::Reader *ElectronIDv2FakeMVAReader;
-  TMVA::Reader *ElectronIDv2ConvMVAReader;
-  TMVA::Reader *ElectronIDv2CFMVAReader;
-  TMVA::Reader *ElectronIDv2CFMVAReaderPt;
-  TMVA::Reader *ElectronIDv3CFMVAReader;
+  TMVA::Reader *MuonIDv5_FakeMVAReader;
+  TMVA::Reader *MuonIDv4_FakeMVAReader;
+
+  TMVA::Reader *ElectronIDv4_FakeMVAReader;
+  TMVA::Reader *ElectronIDv4_ConvMVAReader;
+  TMVA::Reader *ElectronIDv4_CFMVAReader;
+
+  ///////////// Version5 
+  TMVA::Reader *ElectronIDv5_MVAReader;
+  TMVA::Reader *ElectronIDv5_CFMVAReader;
+  TMVA::Reader *ElectronIDv5_FakeMVAReader;
+
 
   bool PtOrderObj;
 
@@ -143,21 +146,37 @@ public:
   void ResetLeptonBDTSKFlat();
   void InitialiseLeptonBDTSKFlat();
 
+  void SetupLeptonBDTSKFlatV5();
+  void ResetLeptonBDTSKFlatV5();
+  //  void InitialiseLeptonBDTSKFlatV5();
+
+
   /// Use in analysis 
-  void SetupLeptonBDT();
-  void SetBDTIDVar(Lepton*  lep);
+  void SetupLeptonBDT( bool version4, bool version5);
+  void SetupLeptonBDTv4();
+  void SetupLeptonBDTv5();
+
+
   void SetBDTIDVarV1(Lepton*  lep);
+  void SetBDTIDVarOLD(Lepton*  lep);
+  void SetBDTIDVar(Lepton*  lep);
+
+  void SetBDTIDVariablesElectronOLD(Electron el);
   void SetBDTIDVariablesElectron(Electron el);
+
   void SetBDTIDVariablesMuon(Muon mu);
   void SetupIDMVAReaderMuon();
-  void SetupIDMVAReaderElectron(bool v1, bool v2);
-  void SetupIDMVAReaderDefault();
+  void SetupIDMVAReaderElectron();
+  void SetupIDMVAReaderElectronUpdate();
+
+  /////// MASTER FUNCTION
+  void SetupIDMVAReaderDefault(bool v4=false, bool v5=false);
 
   void CompareBDT(TString var1, double a, double b,  int ilep );
 
 
   /// Var for ID BDTs
-  Float_t bdt_id_Pt,        bdt_id_Eta,      bdt_id_PtBinned; //3
+  Float_t bdt_id_Pt,        bdt_id_Eta,      bdt_id_PtBinned,bdt_id_PtBinned2,bdt_id_Fake_Type,bdt_id_Fake_Flavour; //3
   Float_t bdt_id_PtRatio,   bdt_id_PtRel   , bdt_id_MassDrop; //3
   Float_t bdt_id_PtRatioV2,   bdt_id_PtRelV2;
   Float_t bdt_id_PtRatioV3,   bdt_id_PtRelV3;
@@ -395,7 +414,8 @@ public:
   void PrintEvent(AnalyzerParameter param,TString selection,double w);
   void FillEventComparisonFile(AnalyzerParameter param, TString label,string time, double w);
 
-  void FillBDTHists(Electron el,TString cut, double w);
+  void FillBDTHists(Electron el,TString cut, double w, bool SplitFakes=false);
+  void FillBDTHists(Muon mu,TString cut, double w,bool SplitFakes=false);
 
   //==== GenMatching
 
@@ -408,7 +428,7 @@ public:
   bool GenTypeMatched(TString gen_string);
   TString MatchGenPID(int PID, vector<Gen> gens, Gen gen);
 
-  TString MatchGenDef(std::vector<Gen>& gens,const Lepton& Lep);
+  TString MatchGenDef(std::vector<Gen>& gens,const Lepton& Lep,bool DEBUG=false);
   static Gen GetGenMatchedLepton(const Lepton& lep, const std::vector<Gen>& gens);
   static Gen GetGenMatchedPhoton(const Lepton& lep, const std::vector<Gen>& gens);
   static vector<int> TrackGenSelfHistory(const Gen& me, const std::vector<Gen>& gens);
@@ -482,6 +502,13 @@ public:
                 double weight,
                 int n_binx, double *xbins,
                 int n_biny, double *ybins);
+
+  void FillHist(TString histname,
+                double value_x, double value_y,
+                double weight,
+		int n_binx, double *xbins,
+		int n_biny, double y_min, double y_max);
+
   void FillHist(TString histname,
 		double value_x, double value_y, double value_z,
 		double weight,
@@ -549,32 +576,21 @@ public:
   int  GetPhotonType_JH(int PhotonIdx, std::vector<Gen>& TruthColl);
   int  GetFakeLepSrcType(const Lepton& Lep, vector<Jet>& JetColl);
 
-  bool iSetupLeptonBDT;
-  bool iSetupAllBDT;
-  bool SetupMVAVersion1;
-
+  bool iSetupLeptonBDTv4;
+  bool iSetupLeptonBDTv5;
+ 
 
   /// Variables for filling MVA branches 
 
   float vSKWeight;
-  vector<float>* velectron_ptratio;
-  vector<float>* velectron_ptrel;
-  vector<float>* velectron_cj_bjetdisc;
-  vector<float>* velectron_cj_cvsbjetdisc;
-  vector<float>* velectron_cj_cvsljetdisc;
-  vector<float>* velectron_cj_flavour;
+  //// v2 values for making V5 BDTSkims
+  vector<float>* velectron_v2_ptratio;
+  vector<float>* velectron_v2_ptrel;
+  vector<float>* velectron_v2_cj_bjetdisc;
+  vector<float>* velectron_v2_cj_cvsbjetdisc;
+  vector<float>* velectron_v2_cj_cvsljetdisc;
+  vector<float>* velectron_v2_cj_flavour;
 
-  vector<float>* velectron_mva_fake_v1;
-  vector<float>* velectron_mva_fake_v2;
-  vector<float>* velectron_mva_fakeHF_v2;
-  vector<float>* velectron_mva_fakeLF_v2;
-  vector<float>* velectron_mva_fakeTop_v2;
-  vector<float>* velectron_mva_fake_v3;
-  vector<float>* velectron_mva_fakeHF_v3;
-  vector<float>* velectron_mva_fakeHFB_v3;
-  vector<float>* velectron_mva_fakeHFC_v3;
-  vector<float>* velectron_mva_fakeLF_v3;
-  vector<float>* velectron_mva_fakeTop_v3;
   vector<float>* velectron_mva_fake_v4;
   vector<float>* velectron_mva_fakeHF_v4;
   vector<float>* velectron_mva_fakeHFB_v4;
@@ -587,38 +603,48 @@ public:
   vector<float>* velectron_mva_fakeHFC_ed_v4;
   vector<float>* velectron_mva_fakeLF_ed_v4;
   vector<float>* velectron_mva_fakeTop_ed_v4;
-
- 
-  vector<float>* velectron_mva_conv_v1;
   vector<float>* velectron_mva_conv_v2;
   vector<float>* velectron_mva_conv_ed_v2;
-
-  vector<float>* velectron_mva_cf_v1;
   vector<float>* velectron_mva_cf_v2;
-  vector<float>* velectron_mva_cf_v2p1;
-  vector<float>* velectron_mva_cf_v2p2;
   vector<float>* velectron_mva_cf_ed_v2;
-  vector<float>* velectron_mva_cf_ed_v2p1;
-  vector<float>* velectron_mva_cf_ed_v2p2;
 
-
-
-  vector<float>* vmuon_mva_fake_v1;
-  vector<float>* vmuon_mva_fake_v2;
-  vector<float>* vmuon_mva_fake_v3;
+  ///// MVA V5
+  vector<float>* velectron_mva_cf_ed_v5;
+  vector<float>* velectron_mva_cf_ed_v5pt;
+  vector<float>* velectron_mva_conv_ed_v5;
+  vector<float>* velectron_mva_fake_ed_v5;
+  vector<float>* velectron_mva_fakeHFB_v5;
+  vector<float>* velectron_mva_fakeHFC_v5;
+  vector<float>* velectron_mva_fakeLF_v5;
+  vector<float>* velectron_mva_fake_LFvsHF_v5;
+  vector<float>* velectron_mva_fake_QCD_LFvsHF_v5;
+  vector<float>* velectron_mva_fake_HFBvsHFC_v5;
+  vector<float>* velectron_mva_fake_QCD_HFBvsHFC_v5;
+  vector<float>* velectron_mva_fake_LF1_v5;
+  vector<float>* velectron_mva_fake_LF2_v5;
+  vector<float>* velectron_mva_fake_LF3_v5;
+  ///// MUON
   vector<float>* vmuon_mva_fake_v4;
   vector<float>* vmuon_mva_fake_ed_v4;
-  vector<float>* vmuon_ptrel;
-  vector<float>* vmuon_ptratio;
-  vector<float>* vmuon_cj_bjetdisc;
-  vector<float>* vmuon_cj_cvsbjetdisc;
-  vector<float>* vmuon_cj_cvsljetdisc;
-  vector<float>* vmuon_cj_flavour;
+  ///// MVA V5                                                                                                                                                                                                                                                                                                                
+  vector<float>* vmuon_mva_fake_LFvsHF_v5;
+  vector<float>* vmuon_mva_fake_QCD_LFvsHF_v5;
+  vector<float>* vmuon_mva_fake_HFBvsHFC_v5;
+  vector<float>* vmuon_mva_fake_QCD_HFBvsHFC_v5;
+  vector<float>* vmuon_mva_fake_LF1_v5;
+  vector<float>* vmuon_mva_fake_LF2_v5;
+  vector<float>* vmuon_mva_fake_LF3_v5;
 
-  vector<int>*   vmuon_lepton_type;
-  vector<int>*   velectron_lepton_type;
-  vector<bool>*  velectron_is_cf;
-  vector<bool>*  vmuon_is_cf;
+  vector<float>* vmuon_v2_ptrel;
+  vector<float>* vmuon_v2_ptratio;
+  vector<float>* vmuon_v2_cj_bjetdisc;
+  vector<float>* vmuon_v2_cj_cvsbjetdisc;
+  vector<float>* vmuon_v2_cj_cvsljetdisc;
+  vector<float>* vmuon_v2_cj_flavour;
+  vector<int>*   vmuon_v2_lepton_type;
+  vector<int>*   velectron_v2_lepton_type;
+  vector<bool>*  velectron_v2_is_cf;
+  vector<bool>*  vmuon_v2_is_cf;
 
   vector<Jet>      All_Jets;
   vector<FatJet>   All_FatJets;

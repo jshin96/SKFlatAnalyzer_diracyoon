@@ -2479,130 +2479,234 @@ int  Electron::PassIDTight(TString ID) const{
     return 1;
   }
 
-  
+  if(ID == "HNL_ULID_ConvUpdate" ){
 
+    if(!PassMVABaseLine()) return 0;
+    double mva_value = HNL_MVA_Conv("EDv5");
+    if( IsIB()){
+      double cutCategory =  0.6881 - exp(- this->Pt() / 16.18) * 6.735;
+      double mva_cut =  (this->Pt() < 30) ?  -0.366516 : cutCategory;
+      if(mva_value  < mva_cut) return 0;
+    }
+    else if( IsOB()){
+      double cutCategory =  0.36 - exp(- this->Pt() / 17.5) * 5.6;
+      double mva_cut =  (this->Pt() < 30) ?  -0.648517 : cutCategory;
+      if(mva_value  < mva_cut) return 0;
+    }
+    else{
+      double cutCategory =  0.3 - exp(- this->Pt() / 20.6) * 4.3;
+      double mva_cut =  (this->Pt() < 30) ?  -0.702307 : cutCategory;
+      if(mva_value  < mva_cut) return 0;
+    }
+    return 1;
+    
+    //IB -0.366516
+    //OB -0.648517
+    //EC -0.702307
+
+  }
+
+  if(ID == "HNL_ULID_ConvUpdateMulti" ){                                                                                                                                                                                                                                                                                   
+    if(!PassMVABaseLine()) return 0;                                                                                                                                                                                                                                                                                       
+    double mva_value = HNL_MVA_Conv("EDv5");                                                                                                                                                                                                                                                                               
+    if(mva_value < -0.7) return 0;                                                                                                                                                                                                                                                                                        
+    double mva_value2 = HNL_MVA_Fake("EDv5");
+    if(mva_value2 < 0.2) return 0;
+
+    double mva_value3 = HNL_MVA_CF("EDv5");
+    if(mva_value3 < 0.4) return 0;
+
+    
+    return 1;                                                                                                                                                                                                                                                                                                              
+  }                                              
+
+
+  if(ID == "HNL_ULID_ConvUpdateFlat_L" ){
+    if(!PassMVABaseLine()) return 0;
+    double mva_value = HNL_MVA_Conv("EDv5");
+    if(mva_value < -0.7) return 0;
+    return 1;
+  }
+
+  if(ID == "HNL_ULID_ConvUpdateFlat_M" ){
+    if(!PassMVABaseLine()) return 0;
+    double mva_value = HNL_MVA_Conv("EDv5");
+    if(mva_value < -0.3) return 0;
+    return 1;
+  }
+
+
+  if(ID == "HNL_ULID_ConvUpdateFlat_T" ){
+    if(!PassMVABaseLine()) return 0;
+    double mva_value = HNL_MVA_Conv("EDv5");
+    if(mva_value < 0.) return 0;
+    return 1;
+  }
+
+  if(ID == "HNL_ULID_FakeUpdateFlat_L" ){
+    if(!PassMVABaseLine()) return 0;
+    double mva_value = HNL_MVA_Fake("EDv5");
+    if(mva_value < 0.2) return 0;
+    return 1;
+  }
+  
+  if(ID == "HNL_ULID_FakeUpdateFlat_M" ){
+    if(!PassMVABaseLine()) return 0;
+    double mva_value = HNL_MVA_Fake("EDv5");
+    if(mva_value < 0.4) return 0;
+    return 1;
+  }
+
+
+  if(ID == "HNL_ULID_CFUpdateFlat_L" ){
+    if(!PassMVABaseLine()) return 0;
+    double mva_value = HNL_MVA_CF("EDv5");
+    if(mva_value < 0.4) return 0;
+    return 1;
+  }
+
+  if(ID == "HNL_ULID_CFUpdateFlat_M" ){
+    if(!PassMVABaseLine()) return 0;
+    double mva_value = HNL_MVA_CF("EDv5");
+    if(mva_value < 0.6) return 0;
+    return 1;
+  }
+  if(ID == "HNL_ULID_CFUpdateFlat2_M" ){
+    if(!PassMVABaseLine()) return 0;
+    double mva_value = HNL_MVA_CF("EDv5Pt");
+    if(mva_value < 0.6) return 0;
+    return 1;
+  }
+
+  
   if(ID == "HNL_ULID_Run2" ){
 
     if(!PassMVABaseLine()) return 0;
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),        0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
-      if(!PassULMVA(HNL_MVA_Fake("v4"),      0.25,         "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.15,     "j_lep_mva_hnl_fake_v4")) return 0;
-      //      if(!PassULMVA(HNL_MVA_Conv("v2"),      GetPtSlopeCut(10,60,-0.5,0.),     "j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv5"),        0.65,  "j_lep_mva_hnl_cf_v5"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv5"),      -0.7,  "j_lep_mva_hnl_fake_v5")) return 0;
+      if(!PassULMVA(HNL_MVA_Fake("EDv5"),      0.2,   "j_lep_mva_hnl_fake_v5")) return 0;
+
     }
     else{
-      //      if(!PassULMVA(HNL_MVA_Conv("EDv2"),    GetPtSlopeCut(10,60,-0.5,0.) , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),      0.65, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
-      if(!PassULMVA(HNL_MVA_Fake("EDv4"),    0.35,"j_lep_mva_hnl_fake_ed_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"), 0.15,     "j_lep_mva_hnl_fake_v4")) return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv5"),      0.65, "j_lep_mva_hnl_cf_v5"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv5"),    -0.7, "j_lep_mva_hnl_fake_v5")) return 0;
+      if(!PassULMVA(HNL_MVA_Fake("EDv5"),    0.2,  "j_lep_mva_hnl_fake_v5")) return 0;
     }
     return 1;
   }
   
-  if(ID == "HNL_ULID_Run2NoCF" ){
+  if(ID == "HNL_ULID_Run2v1" ){
 
     if(!PassMVABaseLine()) return 0;
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_Fake("v4"),      0.25,         "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.15,     "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"),      GetPtSlopeCut(10,60,-0.5,0.),     "j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv5"),        0.65,  "j_lep_mva_hnl_cf_v5"))   return 0;
+
     }
     else{
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"),    GetPtSlopeCut(10,60,-0.5,0.) , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-      if(!PassULMVA(HNL_MVA_Fake("EDv4"),    0.35,"j_lep_mva_hnl_fake_ed_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"), 0.15,     "j_lep_mva_hnl_fake_v4")) return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv5"),      0.65, "j_lep_mva_hnl_cf_v5"))   return 0;
     }
     return 1;
-  }
-
-  if(ID == "HNL_ULID_Run2NoConv" ){
-
-    if(!PassMVABaseLine()) return 0;
-    if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),        0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
-      if(!PassULMVA(HNL_MVA_Fake("v4"),      0.25,         "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.15,     "j_lep_mva_hnl_fake_v4")) return 0;
-    }
-    else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),      0.65, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
-      if(!PassULMVA(HNL_MVA_Fake("EDv4"),    0.35,"j_lep_mva_hnl_fake_ed_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"), 0.15,     "j_lep_mva_hnl_fake_v4")) return 0;
-    }
-    return 1;
-  }
-
-  if(ID == "HNL_ULID_Run2NoFake" ){
-
-    if(!PassMVABaseLine()) return 0;
-    if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),        0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"),      GetPtSlopeCut(10,60,-0.5,0.),     "j_lep_mva_hnl_conv_v2")) return 0;
-    }
-    else{
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"),    GetPtSlopeCut(10,60,-0.5,0.) , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),      0.65, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
-    }
-    return 1;
-  }
-
-  
-
+  }  
 
   if(ID == "HNL_ULID_Run2v2" ){
 
     if(!PassMVABaseLine()) return 0;
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
-      if(!PassULMVA(HNL_MVA_Fake("v4"), 0.35,         "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), 0.,     "j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv5"),      -0.7,  "j_lep_mva_hnl_fake_v5")) return 0;
+
     }
     else{
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), -0.2 , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.65, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
-      if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.4,"j_lep_mva_hnl_fake_ed_v4")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv5"),    -0.7, "j_lep_mva_hnl_fake_v5")) return 0;
     }
     return 1;
   }
 
   if(ID == "HNL_ULID_Run2v3" ){
-    
+
     if(!PassMVABaseLine()) return 0;
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
-      if(!PassULMVA(HNL_MVA_Fake("v4"), 0.25,         "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), -0.45,     "j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Fake("EDv5"),      0.2,   "j_lep_mva_hnl_fake_v5")) return 0;
+
     }
     else{
-      if(!(passMVAID_noIso_WP80())) return false;
-      if(! (PassConversionVeto()) ) return false;
-      if(! (Pass_TriggerEmulation()))return false;
-      if(! (RelIso()<0.08) ) return false;
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
-
-      if( fabs(scEta())<= 1.479 ){
-	if( !(fabs(dXY()) < 0.05 && fabs(dZ())< 0.1 && fabs(IP3D()/IP3Derr()) < 4.)) return false;
-      }
-      else   if( !(fabs(dXY()) < 0.1 && fabs(dZ())< 0.2 && fabs(IP3D()/IP3Derr()) < 4.)) return false;
+      if(!PassULMVA(HNL_MVA_Fake("EDv5"),    0.2,  "j_lep_mva_hnl_fake_v5")) return 0;
     }
     return 1;
   }
 
-  if(ID == "HNL_ULID_Run2v4" ){
+  if(ID == "HNL_ULID_Run2IP" ){
 
     if(!PassMVABaseLine()) return 0;
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),        0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
-      if(!PassULMVA(HNL_MVA_Fake("v4"),      0.25,         "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!passMVAID_noIso_WP90HN()) return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv5"),        0.65,  "j_lep_mva_hnl_cf_v5"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv5"),      -0.7,  "j_lep_mva_hnl_fake_v5")) return 0;
+      if(!PassULMVA(HNL_MVA_Fake("EDv5"),      0.2,   "j_lep_mva_hnl_fake_v5")) return 0;
+
     }
     else{
-      if(!passMVAID_noIso_WP80HN()) return 0;
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),      0.65, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
-      if(!PassULMVA(HNL_MVA_Fake("EDv4"),    0.3,"j_lep_mva_hnl_fake_ed_v4")) return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv5"),      0.65, "j_lep_mva_hnl_cf_v5"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv5"),    -0.7, "j_lep_mva_hnl_fake_v5")) return 0;
+      if(!PassULMVA(HNL_MVA_Fake("EDv5"),    0.2,  "j_lep_mva_hnl_fake_v5")) return 0;
     }
     return 1;
-
   }
+
+
+  if(ID == "HNL_ULID_Run2IPv0" ){
+
+    if(!PassMVABaseLine()) return 0;
+    if( IsBB()){
+      if(!PassULMVA(HNL_MVA_CF("EDv5Pt"),        0.65,  "j_lep_mva_hnl_cf_v5"))   return 0;
+
+    }
+    else{
+      if(!PassULMVA(HNL_MVA_CF("EDv5Pt"),      0.65, "j_lep_mva_hnl_cf_v5"))   return 0;
+    }
+    return 1;
+  }
+
+
+  if(ID == "HNL_ULID_Run2IPv1" ){
+
+    if(!PassMVABaseLine()) return 0;
+    if( IsBB()){
+      if(!PassULMVA(HNL_MVA_CF("EDv5"),        0.65,  "j_lep_mva_hnl_cf_v5"))   return 0;
+
+    }
+    else{
+      if(!PassULMVA(HNL_MVA_CF("EDv5"),      0.65, "j_lep_mva_hnl_cf_v5"))   return 0;
+    }
+    return 1;
+  }
+
+  if(ID == "HNL_ULID_Run2IPv2" ){
+
+    if(!PassMVABaseLine()) return 0;
+    if( IsBB()){
+      if(!PassULMVA(HNL_MVA_Conv("EDv5"),      -0.7,  "j_lep_mva_hnl_fake_v5")) return 0;
+    }
+    else{
+      if(!PassULMVA(HNL_MVA_Conv("EDv5"),    -0.7, "j_lep_mva_hnl_fake_v5")) return 0;
+    }
+    return 1;
+  }
+
+  if(ID == "HNL_ULID_Run2IPv3" ){
+
+    if(!PassMVABaseLine()) return 0;
+    if( IsBB()){
+      if(!PassULMVA(HNL_MVA_Fake("EDv5"),      0.2,   "j_lep_mva_hnl_fake_v5")) return 0;
+
+    }
+    else{
+      if(!PassULMVA(HNL_MVA_Fake("EDv5"),    0.2,  "j_lep_mva_hnl_fake_v5")) return 0;
+    }
+    return 1;
+  }
+
+
+
 
   if(ID == "HNL_ULID_2016" ){
     if(!PassMVABaseLine()) return 0;

@@ -1111,19 +1111,47 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 	    if( FindHEMElectron (ilep)) FillBDTHists(ilep,"HEM",weight_channel);
 	    if( FindHEMElectron (ilep))  continue;
 
+	    if(ilep.Pt() < 30 ){
+	      if(ilep.fEta() < 1.) FillBDTHists(ilep,"Pt1_Eta1",weight_channel);
+	      else if(ilep.fEta() < 1.44) FillBDTHists(ilep,"Pt1_Eta2",weight_channel);
+	      else if(ilep.fEta() > 1.56 && ilep.fEta() < 2.) FillBDTHists(ilep,"Pt1_Eta3",weight_channel);
+	      else if(ilep.fEta() < 2.) FillBDTHists(ilep,"Pt1_Eta4",weight_channel);
+	      else FillBDTHists(ilep,"Pt1_Eta5",weight_channel);
+	    }
+	    else  if(ilep.Pt() < 150 ){
+	      if(ilep.fEta() < 1.) FillBDTHists(ilep,"Pt2_Eta1",weight_channel);
+              else if(ilep.fEta() < 1.44) FillBDTHists(ilep,"Pt2_Eta2",weight_channel);
+              else if(ilep.fEta() > 1.56 && ilep.fEta() < 2.) FillBDTHists(ilep,"Pt2_Eta3",weight_channel);
+              else if(ilep.fEta() < 2.) FillBDTHists(ilep,"Pt2_Eta4",weight_channel);
+              else FillBDTHists(ilep,"Pt2_Eta5",weight_channel);
+	    }
+	    else  {
+              if(ilep.fEta() < 1.) FillBDTHists(ilep,"Pt3_Eta1",weight_channel);
+              else if(ilep.fEta() < 1.44) FillBDTHists(ilep,"Pt3_Eta2",weight_channel);
+              else if(ilep.fEta() > 1.56 && ilep.fEta() < 2.) FillBDTHists(ilep,"Pt3_Eta3",weight_channel);
+              else if(ilep.fEta() < 2.) FillBDTHists(ilep,"Pt3_Eta4",weight_channel);
+              else FillBDTHists(ilep,"Pt3_Eta5",weight_channel);
+            }
+	    
+	    
+	    
 	    if(ilep.IsBB() ){
 	      
 	      if(ilep.IsIB() ) FillBDTHists(ilep,"IB",weight_channel);
 	      else if(ilep.IsOB() ) FillBDTHists(ilep,"OB",weight_channel);
-
+	      
 	      if(ilep.Pt() < 15 ) FillBDTHists(ilep,"BB_Pt1",weight_channel);
 	      else if(ilep.Pt() < 20 ) FillBDTHists(ilep,"BB_Pt2",weight_channel);
 	      else if(ilep.Pt() < 50 )  FillBDTHists(ilep,"BB_Pt3",weight_channel);
 	      else if(ilep.Pt() < 200 )  FillBDTHists(ilep,"BB_Pt4",weight_channel);
 	      else FillBDTHists(ilep,"BB_Pt5",weight_channel);
+	      
 	    }
 	    else{
 	      FillBDTHists(ilep,"EC",weight_channel);
+	      if(ilep.fEta() < 2.)   FillBDTHists(ilep,"EC1",weight_channel);
+	      else  FillBDTHists(ilep,"EC2",weight_channel);
+
 	      if(ilep.Pt() < 15 ) FillBDTHists(ilep,"EC_Pt1",weight_channel);
 	      else if(ilep.Pt() < 20 ) FillBDTHists(ilep,"EC_Pt2",weight_channel);
 	      else if(ilep.Pt() < 50 ) FillBDTHists(ilep,"EC_Pt3",weight_channel);

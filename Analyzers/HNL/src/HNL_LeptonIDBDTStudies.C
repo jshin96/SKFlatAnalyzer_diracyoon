@@ -5,7 +5,8 @@ void HNL_LeptonIDBDTStudies::initializeAnalyzer(){
   // All default settings like trigger/ PD/ BJet are decalred in HNL_LeptonCore::initializeAnalyzer to make them consistent for all HNL codes
 
   HNL_LeptonCore::initializeAnalyzer();
-  SetupIDMVAReaderDefault(); /// Not needed for BDT skim                                                                                                                    
+  if(HasFlag("NewBDT")) SetupIDMVAReaderDefault(false,true);  //set v3 true
+  if(HasFlag("SSBreakdown")) SetupIDMVAReaderDefault(false,true); 
 
 }
 
@@ -26,9 +27,9 @@ void HNL_LeptonIDBDTStudies::executeEvent(){
   if(MCSample.Contains("Type")) {
     weight = 1;
   }
-  else if(MCSample.Contains("DYJets")) weight *= 0.5;
-  else if(MCSample.Contains("WJets")) weight *= 0.5;
-  else if(MCSample.Contains("WGToLNuG")) weight *= 0.5;
+  //  else if(MCSample.Contains("DYJets")) weight *= 0.5;
+  //else if(MCSample.Contains("WJets")) weight *= 0.5;
+  //else if(MCSample.Contains("WGToLNuG")) weight *= 0.5;
 
   if(MCSample.Contains("WJets")){
     if (weight < 0) return;
@@ -49,6 +50,12 @@ void HNL_LeptonIDBDTStudies::executeEvent(){
   std::vector<Jet> BJetColl  = GetHNLJets("BJetM", param);
   bool HasBjet = (BJetColl.size() > 0);
 
+  if(HasFlag("SSBreakdown")){
+    
+    CheckSSFakeBreakDown(param,EE, ElectronCollProbe, MuonCollProbe, weight);
+    CheckSSFakeBreakDown(param,MuMu, ElectronCollProbe, MuonCollProbe, weight);
+    return;
+  }
 
   //////////////////////////  //////////////////////////  //////////////////////////  //////////////////////////
   //////////////////////////  //////////////////////////  //////////////////////////  //////////////////////////
@@ -58,127 +65,74 @@ void HNL_LeptonIDBDTStudies::executeEvent(){
   //////////////////////////  //////////////////////////  //////////////////////////  //////////////////////////
   //////////////////////////  //////////////////////////  //////////////////////////  //////////////////////////
   
-  std::vector<Lepton *> LeptonCollProbe      = MakeLeptonPointerVector(ElectronCollProbe);  
+  std::vector<Lepton *> LeptonCollProbe      = MakeLeptonPointerVector(MuonCollProbe,ElectronCollProbe);  
   if(LeptonCollProbe.size() == 0) return;
   
-  for(auto ilep : ElectronCollProbe){
-    TString  LepType = "";
-    if ( FindHEMElectron (ilep )) continue;
+  if(HasFlag("NewBDT")){
+
+    for(auto ilep : ElectronCollProbe){
+      TString  LepType = "";
+      if ( FindHEMElectron (ilep )) continue;
+      
+      if (ilep.IsConv())  LepType = "Conv";
+      if (ilep.IsFake())  LepType = "Fake"+ilep.CloseJet_Flavour();
+      if (ilep.IsFake() && ilep.CloseJet_Flavour() == "Pileup") continue;
+      if (ilep.LeptonIsCF())  LepType = "CF";
+      else if (ilep.IsPrompt()) LepType = "Prompt";
+      if(ilep.IsEWtau()) continue;
+      if (LepType == "") continue;
+     
+      
+      if(ilep.Pt() < 30 ){
+	if(ilep.fEta() < 1.) FillBDTHists(ilep,LepType+"/Pt1_Eta1",weight);
+	else if(ilep.fEta() < 1.44) FillBDTHists(ilep,LepType+"/Pt1_Eta2",weight);
+	else if(ilep.fEta() > 1.56 && ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt1_Eta3",weight);
+	else if(ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt1_Eta4",weight);
+	else FillBDTHists(ilep,LepType+"/Pt1_Eta5",weight);
+      }   
+      else{
+	if(ilep.fEta() < 1.) FillBDTHists(ilep,LepType+"/Pt2_Eta1",weight);
+	else if(ilep.fEta() < 1.44) FillBDTHists(ilep,LepType+"/Pt2_Eta2",weight);
+	else if(ilep.fEta() > 1.56 && ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt2_Eta3",weight);
+	else if(ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt2_Eta4",weight);
+	else FillBDTHists(ilep,LepType+"/Pt2_Eta5",weight);
+      }
+    }
+  }
+  
+  
+  for(auto ilep : MuonCollProbe){
     
-	
+    TString  LepType = "";
     if (ilep.IsConv())  LepType = "Conv";
-    if (ilep.IsFake())  LepType = "Fake"+ilep.MotherJetFlavour();
-    if (ilep.IsFake() && ilep.MotherJetFlavour() == "Pileup") continue;
+    if (ilep.IsFake())  LepType = "Fake"+ilep.CloseJet_Flavour();
+    if (ilep.IsFake() && ilep.CloseJet_Flavour() == "Pileup") continue;
     if (ilep.LeptonIsCF())  LepType = "CF";
     else if (ilep.IsPrompt()) LepType = "Prompt";
+    if(ilep.IsEWtau()) continue;
     if (LepType == "") continue;
-    
-    if(ilep.IsBB() ){
 
-      if(ilep.IsIB() ) FillBDTHists(ilep,LepType+"/IB",weight);
-      else if(ilep.IsOB() ) FillBDTHists(ilep,LepType+"/OB",weight);
 
-      if(ilep.Pt() < 15 ) FillBDTHists(ilep,LepType+"/BB_Pt1",weight);
-      else if(ilep.Pt() < 20 ) FillBDTHists(ilep,LepType+"/BB_Pt2",weight);
-      else if(ilep.Pt() < 50 )  FillBDTHists(ilep,LepType+"/BB_Pt3",weight);
-      else if(ilep.Pt() < 200 )  FillBDTHists(ilep,LepType+"/BB_Pt4",weight);
-      else FillBDTHists(ilep,LepType+"/BB_Pt5",weight);
-    }
-    else{
-      FillBDTHists(ilep,LepType+"/EC",weight);
+    FillBDTHists(ilep,LepType+"/Muon",weight);
 
-      if(ilep.Pt() < 15 ) FillBDTHists(ilep,LepType+"/EC_Pt1",weight);
-      else if(ilep.Pt() < 20 ) FillBDTHists(ilep,LepType+"/EC_Pt2",weight);
-      else if(ilep.Pt() < 50 ) FillBDTHists(ilep,LepType+"/EC_Pt3",weight);
-      else if(ilep.Pt() < 200 ) FillBDTHists(ilep,LepType+"/EC_Pt4",weight);
-      else FillBDTHists(ilep,LepType+"/EC_Pt5",weight);
-    }
+  }
+  for(auto ilep : ElectronCollProbe){
+
+    TString  LepType = "";
+    if (ilep.IsConv())  LepType = "Conv";
+    if (ilep.IsFake())  LepType = "Fake"+ilep.CloseJet_Flavour();
+    if (ilep.IsFake() && ilep.CloseJet_Flavour() == "Pileup") continue;
+    if (ilep.LeptonIsCF())  LepType = "CF";
+    else if (ilep.IsPrompt()) LepType = "Prompt";
+    if(ilep.IsEWtau()) continue;
+    if (LepType == "") continue;
+
+
+    FillBDTHists(ilep,LepType+"/Electron",weight);
+
   }
 
   return;
-
-  bool SSMM = SameCharge(MuonCollProbe) && (ElectronCollProbe.size()==0) && PassTriggerSelection(MuMu, ev, LeptonCollProbe,"Dilep");
-  bool SSEE = SameCharge(ElectronCollProbe) && (MuonCollProbe.size()==0) && PassTriggerSelection(EE, ev, LeptonCollProbe,"Dilep");
-  
-  double SSWeight = weight;
-
-  if(MCSample.Contains("WJet")){ 
-    
-    if(LeptonCollProbe.size() > 1) return;
-    
-    if(LeptonCollProbe[0]->IsElectron()){
-      if(LeptonCollProbe[0]->MotherJetFlavour() == "LF"){
-	
-	SSEE=true;
-	if( (MatchGenDef(All_Gens, *LeptonCollProbe[0]) == "pi0ph") ||
-	    (MatchGenDef(All_Gens, *LeptonCollProbe[0]) == "pi0") ||
-	    (MatchGenDef(All_Gens, *LeptonCollProbe[0]) == "Pi0") ||
-	    (MatchGenDef(All_Gens, *LeptonCollProbe[0]) == "ph") ||
-	    (MatchGenDef(All_Gens, *LeptonCollProbe[0]) == "q") ||
-	    (MatchGenDef(All_Gens, *LeptonCollProbe[0]) == "g") ||
-	    (MatchGenDef(All_Gens, *LeptonCollProbe[0]) == "LightMeson") ||
-	    (MatchGenDef(All_Gens, *LeptonCollProbe[0]) == "proton")) {
-	  SSWeight=weight*0.1;
-	}
-	else SSEE=false;
-      }
-      else SSEE=false;
-    }
-    else{
-
-      if(LeptonCollProbe[0]->MotherJetFlavour() == "LF"){
-	
-        SSMM=true;
-        if( (MatchGenDef(All_Gens, *LeptonCollProbe[0]) == "q") ||
-            (MatchGenDef(All_Gens, *LeptonCollProbe[0]) == "g")){
-          SSWeight=weight*0.1;
-        } 
-        else SSMM=false;
-      }
-      else SSMM=false;
-    }
-  }
-  
-  
-  if(SSMM) FillHist("Counter/NSS_MM", 1  , SSWeight, 3, 0., 3);
-  if(SSEE) FillHist("Counter/NSS_EE", 1  , SSWeight, 3, 0., 3);
-  FillHist("Counter/N_E", ElectronCollProbe.size()  , weight, 5, 0., 5);
-  FillHist("Counter/N_Mu", MuonCollProbe.size()  , weight, 5, 0., 5);
-  
-  if(SSMM){
-    int EventType(0);
-    if(MuonCollProbe[0].IsPrompt() && MuonCollProbe[1].IsPrompt())  EventType=1;
-    else     if(MuonCollProbe[0].IsPrompt() && MuonCollProbe[1].IsFake())  EventType=2;
-    else     if(MuonCollProbe[1].IsPrompt() && MuonCollProbe[0].IsFake())  EventType=2;
-    else     if(MuonCollProbe[0].IsPrompt() && MuonCollProbe[1].IsConv())  EventType=3;
-    else     if(MuonCollProbe[1].IsPrompt() && MuonCollProbe[0].IsConv())  EventType=3;
-    else     if(MuonCollProbe[0].IsFake() && MuonCollProbe[1].IsConv())  EventType=4;
-    else     if(MuonCollProbe[1].IsFake() && MuonCollProbe[0].IsConv())  EventType=4;
-    else     if(MuonCollProbe[0].IsFake() && MuonCollProbe[1].IsFake())  EventType=5;
-    else     if(MuonCollProbe[0].IsConv() && MuonCollProbe[1].IsConv())  EventType=6;
-    
-    FillHist("Counter/SSMuon_Breakdown",  EventType , SSWeight, 10, 0, 10 );
-  }
-  if(SSEE){
-    int EventType(0);
-    if(ElectronCollProbe[0].IsPrompt() && ElectronCollProbe[1].IsPrompt())  EventType=0;
-    else     if(ElectronCollProbe[0].IsPrompt() && ElectronCollProbe[1].IsFake())  EventType=1;
-    else     if(ElectronCollProbe[1].IsPrompt() && ElectronCollProbe[0].IsFake())  EventType=1;
-    else     if(ElectronCollProbe[0].IsPrompt() && ElectronCollProbe[1].IsConv())  EventType=2;
-    else     if(ElectronCollProbe[1].IsPrompt() && ElectronCollProbe[0].IsConv())  EventType=2;
-    else     if(ElectronCollProbe[0].IsFake() && ElectronCollProbe[1].IsConv())  EventType=3;
-    else     if(ElectronCollProbe[1].IsFake() && ElectronCollProbe[0].IsConv())  EventType=3;
-    else     if(ElectronCollProbe[0].IsFake() && ElectronCollProbe[1].IsFake())  EventType=4;
-    else     if(ElectronCollProbe[0].IsConv() && ElectronCollProbe[1].IsConv())  EventType=5;
-    else     if(ElectronCollProbe[0].LeptonIsCF() && ElectronCollProbe[1].LeptonIsCF())      EventType=6;
-    else     if(ElectronCollProbe[0].IsPrompt() && ElectronCollProbe[1].LeptonIsCF())      EventType=7;
-    else     if(ElectronCollProbe[1].IsPrompt() && ElectronCollProbe[0].LeptonIsCF())      EventType=7;
-    else     if(ElectronCollProbe[0].IsFake() && ElectronCollProbe[1].LeptonIsCF())      EventType=8;
-    else     if(ElectronCollProbe[1].IsFake() && ElectronCollProbe[0].LeptonIsCF())      EventType=8;
-    else     if(ElectronCollProbe[0].IsConv() && ElectronCollProbe[1].LeptonIsCF())      EventType=9;
-    else     if(ElectronCollProbe[1].IsConv() && ElectronCollProbe[0].LeptonIsCF())      EventType=9;
-    FillHist("Counter/SSElectron_Breakdown",  EventType , SSWeight, 10, 0, 10 );
-  }
 
   for(auto ilep : LeptonCollProbe){
 
@@ -203,12 +157,11 @@ void HNL_LeptonIDBDTStudies::executeEvent(){
     }
     
     vector<TString>   Tags = {tag+etabin+"/MVA_",
-	    tag+etabin+ilep->MotherJetFlavour()+"/MVA_",
-	    tag+ptbin+etabin+"/MVA_",
-    };
-
+			      tag+etabin+ilep->CloseJet_Flavour()+"/MVA_",
+			      tag+ptbin+etabin+"/MVA_"};
+    
     for(auto i  : Tags){
-
+      
       if(i.Contains("Pileup")) continue;
       if(i.Contains("IsEWtau")) continue;
       if(i.Contains("IsCF") && !i.Contains("IsPrompt")) continue;
@@ -217,15 +170,12 @@ void HNL_LeptonIDBDTStudies::executeEvent(){
       
       if(i.Contains("IsFake") && HasBjet) continue;
       map<TString, double> mapBDT = ilep->MAPBDT();
-      for(auto imap : mapBDT )  FillHist("BDTVariables/"+ ilep->GetFlavour()+ "/"+ i+"_"+imap.first, imap.second  , weight, 200, -1., 1);
+      for(auto imap : mapBDT )  FillHist("BDTVariable/"+ ilep->GetFlavour()+ "/"+ i+"_"+imap.first, imap.second  , weight, 200, -1., 1);
       
-      if(SSMM||SSEE) {
-	for(auto imap : mapBDT )FillHist("SSBDTVariables/"+ ilep->GetFlavour()+ "/"+ i+"_"+imap.first, imap.second  , SSWeight, 200, -1., 1);
-
-      }
     }
   }
-  
+  return;
+
   for(auto imuon : MuonCollProbe){
     
     TString tag= imuon.LepGenTypeString();
@@ -285,10 +235,6 @@ void HNL_LeptonIDBDTStudies::executeEvent(){
 	}
 
 	if(imuon.PassID(ID))       FillHist("TightID/"+ imuon.GetFlavour()+ "/"+ i+"_"+ID, 1  , weight, 2, 0, 2);
-	if(SSMM) {
-	  FillHist("SSTightID/"+ imuon.GetFlavour()+ "/"+ i+"_"+ID, 0  , SSWeight, 2, 0, 2);
-	  if(imuon.PassID(ID))       FillHist("SSTightID/"+ imuon.GetFlavour()+ "/"+ i+"_"+ID, 1  , SSWeight, 2, 0, 2);
-	}
       }
     }
   }
@@ -359,12 +305,6 @@ void HNL_LeptonIDBDTStudies::executeEvent(){
 	if(iel.IsEC() && iel.HNL_MVA_CF("EDv2") >0.3 &&  iel.PassID("HNL_ULID_Conv_"+GetYearString())) FillHist("BDTVariablesConvCFEC1/"+ iel.GetFlavour()+ "/"+ i+"_"+imap.first, imap.second  , weight, 200, -1., 1);
 	if(iel.IsEC() && iel.HNL_MVA_CF("EDv2") >0.5 &&  iel.PassID("HNL_ULID_Conv_"+GetYearString())) FillHist("BDTVariablesConvCFEC2/"+ iel.GetFlavour()+ "/"+ i+"_"+imap.first, imap.second  , weight, 200, -1., 1);
 	
-	if(SSEE) {
-	  if(iel.IsBB() && iel.HNL_MVA_Fake("EDv4") > .2) FillHist("SSBDTVariablesNPBB1/"+ iel.GetFlavour()+ "/"+ i+"_"+imap.first, imap.second  , SSWeight, 200, -1., 1);
-	  if(iel.IsBB() && iel.HNL_MVA_Conv("v2") > -0.7 && iel.HNL_MVA_Fake("EDv4") > 0.2) FillHist("SSBDTVariablesNPBB2/"+ iel.GetFlavour()+ "/"+ i+"_"+imap.first, imap.second  , SSWeight, 200, -1., 1);
-	  if(iel.IsEC() && iel.HNL_MVA_Fake("EDv4") > 0.2) FillHist("SSBDTVariablesNPEC1/"+ iel.GetFlavour()+ "/"+ i+"_"+imap.first, imap.second  , SSWeight, 200, -1., 1);
-	  if(iel.IsEC() && iel.HNL_MVA_Fake("EDv4") > 0.2 && iel.HNL_MVA_Conv("EDv2") > -0.7 ) FillHist("SSBDTVariablesNPEC2/"+ iel.GetFlavour()+ "/"+ i+"_"+imap.first, imap.second  , SSWeight, 200, -1., 1);
-	}
       }
       
 
@@ -384,22 +324,14 @@ void HNL_LeptonIDBDTStudies::executeEvent(){
 	  if(iel.PassID(ID))       FillHist("IDEff/"+iel.GetFlavour()+"Ptbinned_"+i+ "_"+ID , PtLep,   weight, nbin_pt, ptbins,"");
 	}
         if(iel.PassID(ID))       FillHist("TightID/"+ iel.GetFlavour()+ "/"+ i+"_"+ID, 1  , weight, 2, 0, 2);
-        if(SSEE) {
-          FillHist("SSTightID/"+ iel.GetFlavour()+ "/"+ i+"_"+ID, 0  , SSWeight, 2, 0, 2);
-          if(iel.PassID(ID))       FillHist("SSTightID/"+ iel.GetFlavour()+ "/"+ i+"_"+ID, 1  , SSWeight, 2, 0, 2);
-        }
+
       } // IDs
     } // Tags
   }
   
   
 
-  
-  return;  
-  CheckSSFakeBreakDown(param,EE, ElectronCollProbe, MuonCollProbe, weight);
-  CheckSSFakeBreakDown(param,MuMu, ElectronCollProbe, MuonCollProbe, weight);
-  
-
+ 
 
   HNL_LeptonCore::Channel dilep_channel= EE;
   if(MuonCollProbe.size() > 0) return;
@@ -801,6 +733,7 @@ void HNL_LeptonIDBDTStudies::CheckSSFakeBreakDown(AnalyzerParameter param,HNL_Le
   std::vector<Lepton *> LeptonColl      = MakeLeptonPointerVector(MuonColl, ElectronColl);
 
   vector<TString> lables = GetGenList();
+  std::vector<Jet>      JetColl     = GetHNLJets("Tight", param);
 
   if(dilep_channel==EE){
 
@@ -814,9 +747,28 @@ void HNL_LeptonIDBDTStudies::CheckSSFakeBreakDown(AnalyzerParameter param,HNL_Le
     for(auto iel : ElectronCollFake) {
       
       TString lep_fake_tag=MatchGenDef(All_Gens, iel); 
+
+
+      vector<TString>  Types = {"q","pi+","g","pi0","ph"};
+
+      if (std::find(Types.begin(), Types.end(), lep_fake_tag) != Types.end()){
+	
+        cout << "Types  Reco " << iel.MotherJetFlavour() << " pt = " << iel.Pt() << " eta = " << iel.Eta() << " phi = " << iel.Phi() <<  endl;
+        cout << "CloseJet_Flavour = " << iel.CloseJet_Flavour() << endl;
+        cout <<"lep_fake_tag = " << lep_fake_tag << " missing "<< endl;
+
+        PrintMatchedGen(All_Gens, iel);
+
+	map<TString, double> mapbdt = iel.MAPBDT();
+	for(auto i : mapbdt) cout << i.first << " " << i.second << endl;
+
+      }
+
+
+
       if (std::find(lables.begin(), lables.end(), lep_fake_tag) == lables.end()){
 
-        cout << "Reco " << iel.GetFlavour() << " pt = " << iel.Pt() << " eta = " << iel.Eta() << " phi = " << iel.Phi() << endl;                                        
+        cout << "El Reco " << iel.MotherJetFlavour() << " pt = " << iel.Pt() << " eta = " << iel.Eta() << " phi = " << iel.Phi() << endl;                                        
         cout << "CloseJet_Flavour = " << iel.CloseJet_Flavour() << endl;                                                                             
 	
 	cout << "lep_fake_tag = " << lep_fake_tag << " missing "<< endl;
@@ -827,38 +779,131 @@ void HNL_LeptonIDBDTStudies::CheckSSFakeBreakDown(AnalyzerParameter param,HNL_Le
 	if(iel.CloseJet_FlavourInt()==0) FillEventCutflowAll("Electron", "LF_Fake_type", weight_ll, lables,lep_fake_tag);
 	if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("Electron", "HFC_Fake_type", weight_ll, lables,lep_fake_tag);
 	if(iel.CloseJet_FlavourInt()==5) FillEventCutflowAll("Electron", "HFB_Fake_type", weight_ll, lables,lep_fake_tag);
-	
-        if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("Electron", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+	if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("Electron", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
         if(iel.CloseJet_FlavourInt()==5) FillEventCutflowAll("Electron", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
 
-	if(SameCharge(LeptonColl)){
-	  
-	  if(iel.CloseJet_FlavourInt()==0) FillEventCutflowAll("SSElectron", "LF_Fake_type", weight_ll, lables,lep_fake_tag);
-	  
-	  if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSElectron", "HFC_Fake_type", weight_ll, lables,lep_fake_tag);	  
-	  if(iel.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSElectron", "HFB_Fake_type", weight_ll, lables,lep_fake_tag);
-	  if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSElectron", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
-          if(iel.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSElectron", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+       	
+	if(ElectronCollFake.size()==1){
 
+	  bool useevent=false;
+	  for(auto ijet : JetColl) {
+	    float dphi =fabs(TVector2::Phi_mpi_pi(ElectronCollFake[0].Phi()- ijet.Phi()));
+	    if(dphi > 2.5 && ijet.Pt() > 30) useevent=true;
+	  }
+	  if(useevent) {
+
+	    FillBDTHists(iel, "FakeCR_El_Fake_"+iel.MotherJetFlavour()+"_"+lep_fake_tag,weight_ll);
+
+	    map<TString, double> mapbdt = iel.MAPBDT();
+            for(auto i : mapbdt){
+              if(!i.first.Contains("Fake_v4")) continue;
+              if(i.first.Contains("LF")) continue;
+              if(i.first.Contains("HF")) continue;
+	      FillHist( "ElectronCR/"+iel.MotherJetFlavour()+"/"+i.first+"_"+channel_string+"_"+lep_fake_tag  , i.second, weight_ll, 100, -1., 1., "MVA");
+	      if(ElectronCollFake[0].IsBB() && ElectronCollFake[0].Pt() < 20)      FillHist( "ElectronCR/"+iel.MotherJetFlavour()+"/BB_Pt1_"+i.first+"_"+channel_string+"_"+lep_fake_tag  , i.second, weight_ll, 100, -1., 1., "MVA");
+	      else if(ElectronCollFake[0].IsBB() && ElectronCollFake[0].Pt() < 30)      FillHist( "ElectronCR/"+iel.MotherJetFlavour()+"/BB_Pt2_"+i.first+"_"+channel_string+"_"+lep_fake_tag  , i.second, weight_ll, 100, -1., 1., "MVA");
+	      else if(ElectronCollFake[0].IsBB() && ElectronCollFake[0].Pt() < 50)      FillHist( "ElectronCR/"+iel.MotherJetFlavour()+"/BB_Pt3_"+i.first+"_"+channel_string+"_"+lep_fake_tag  , i.second, weight_ll, 100, -1., 1., "MVA");
+	      else  FillHist( "ElectronCR/"+iel.MotherJetFlavour()+"/BB_Pt4_"+i.first+"_"+channel_string+"_"+lep_fake_tag  , i.second, weight_ll, 100, -1., 1., "MVA");
+
+              if(ElectronCollFake[0].IsEC() && ElectronCollFake[0].Pt() < 20)      FillHist( "ElectronCR/"+iel.MotherJetFlavour()+"/EC_Pt1_"+i.first+"_"+channel_string+"_"+lep_fake_tag  , i.second, weight_ll, 100, -1., 1., "MVA");
+              else if(ElectronCollFake[0].IsEC() && ElectronCollFake[0].Pt() < 30)      FillHist( "ElectronCR/"+iel.MotherJetFlavour()+"/EC_Pt2_"+i.first+"_"+channel_string+"_"+lep_fake_tag  , i.second, weight_ll, 100, -1., 1., "MVA");
+              else if(ElectronCollFake[0].IsEC() && ElectronCollFake[0].Pt() < 50)      FillHist( "ElectronCR/"+iel.MotherJetFlavour()+"/EC_Pt3_"+i.first+"_"+channel_string+"_"+lep_fake_tag  , i.second, weight_ll, 100, -1., 1., "MVA");
+	      else FillHist( "ElectronCR/"+iel.MotherJetFlavour()+"/EC_Pt4_"+i.first+"_"+channel_string+"_"+lep_fake_tag  , i.second, weight_ll, 100, -1., 1., "MVA");
+
+            }
+	    if(iel.CloseJet_FlavourInt()==0) FillEventCutflowAll("CRElectron", "LF_Fake_type", weight_ll, lables,lep_fake_tag);
+	    if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("CRElectron", "HFC_Fake_type", weight_ll, lables,lep_fake_tag);
+	    if(iel.CloseJet_FlavourInt()==5) FillEventCutflowAll("CRElectron", "HFB_Fake_type", weight_ll, lables,lep_fake_tag);
+	    if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("CRElectron", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+	    if(iel.CloseJet_FlavourInt()==5) FillEventCutflowAll("CRElectron", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+
+	  }
+	}
+	
+	if(LeptonColl.size()==2){
+	  if(SameCharge(LeptonColl)){
+	    
+	    FillBDTHists(iel, "SSEl_Fake/"+iel.MotherJetFlavour()+"/"+lep_fake_tag,weight_ll);
+	    
+	    if(iel.CloseJet_FlavourInt()==0) FillEventCutflowAll("SSElectron", "LF_Fake_type", weight_ll, lables,lep_fake_tag);
+	    if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSElectron", "HFC_Fake_type", weight_ll, lables,lep_fake_tag);	  
+	    if(iel.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSElectron", "HFB_Fake_type", weight_ll, lables,lep_fake_tag);
+	    if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSElectron", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+	    if(iel.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSElectron", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+	    if(JetColl.size() == 0){
+	      if(iel.CloseJet_FlavourInt()==0) FillEventCutflowAll("SSElectron_0j", "LF_Fake_type", weight_ll, lables,lep_fake_tag);
+	      if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSElectron_0j", "HFC_Fake_type", weight_ll, lables,lep_fake_tag);
+	      if(iel.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSElectron_0j", "HFB_Fake_type", weight_ll, lables,lep_fake_tag);
+	      if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSElectron_0j", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+	      if(iel.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSElectron_0j", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+	    }
+	    else     if(JetColl.size() == 1){
+	      if(iel.CloseJet_FlavourInt()==0) FillEventCutflowAll("SSElectron_1j", "LF_Fake_type", weight_ll, lables,lep_fake_tag);
+	      if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSElectron_1j", "HFC_Fake_type", weight_ll, lables,lep_fake_tag);
+	      if(iel.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSElectron_1j", "HFB_Fake_type", weight_ll, lables,lep_fake_tag);
+	      if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSElectron_1j", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+	      if(iel.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSElectron_1j", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+	    }
+	    else{
+	      if(iel.CloseJet_FlavourInt()==0) FillEventCutflowAll("SSElectron_2j", "LF_Fake_type", weight_ll, lables,lep_fake_tag);
+	      if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSElectron_2j", "HFC_Fake_type", weight_ll, lables,lep_fake_tag);
+	      if(iel.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSElectron_2j", "HFB_Fake_type", weight_ll, lables,lep_fake_tag);
+	      if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSElectron_2j", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+	      if(iel.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSElectron_2j", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+	      
+	    }
+	  }
+	  else{
+	    if(iel.CloseJet_FlavourInt()==0) FillEventCutflowAll("OSElectron", "LF_Fake_type", weight_ll, lables,lep_fake_tag);
+            if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("OSElectron", "HFC_Fake_type", weight_ll, lables,lep_fake_tag);
+            if(iel.CloseJet_FlavourInt()==5) FillEventCutflowAll("OSElectron", "HFB_Fake_type", weight_ll, lables,lep_fake_tag);
+            if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("OSElectron", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+            if(iel.CloseJet_FlavourInt()==5) FillEventCutflowAll("OSElectron", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+            if(JetColl.size() == 0){
+              if(iel.CloseJet_FlavourInt()==0) FillEventCutflowAll("OSElectron_0j", "LF_Fake_type", weight_ll, lables,lep_fake_tag);
+              if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("OSElectron_0j", "HFC_Fake_type", weight_ll, lables,lep_fake_tag);
+              if(iel.CloseJet_FlavourInt()==5) FillEventCutflowAll("OSElectron_0j", "HFB_Fake_type", weight_ll, lables,lep_fake_tag);
+              if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("OSElectron_0j", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+              if(iel.CloseJet_FlavourInt()==5) FillEventCutflowAll("OSElectron_0j", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+            }
+            else     if(JetColl.size() == 1){
+              if(iel.CloseJet_FlavourInt()==0) FillEventCutflowAll("OSElectron_1j", "LF_Fake_type", weight_ll, lables,lep_fake_tag);
+              if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("OSElectron_1j", "HFC_Fake_type", weight_ll, lables,lep_fake_tag);
+              if(iel.CloseJet_FlavourInt()==5) FillEventCutflowAll("OSElectron_1j", "HFB_Fake_type", weight_ll, lables,lep_fake_tag);
+              if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("OSElectron_1j", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+              if(iel.CloseJet_FlavourInt()==5) FillEventCutflowAll("OSElectron_1j", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+            }
+            else{
+              if(iel.CloseJet_FlavourInt()==0) FillEventCutflowAll("OSElectron_2j", "LF_Fake_type", weight_ll, lables,lep_fake_tag);
+              if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("OSElectron_2j", "HFC_Fake_type", weight_ll, lables,lep_fake_tag);
+              if(iel.CloseJet_FlavourInt()==5) FillEventCutflowAll("OSElectron_2j", "HFB_Fake_type", weight_ll, lables,lep_fake_tag);
+              if(iel.CloseJet_FlavourInt()==4) FillEventCutflowAll("OSElectron_2j", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+              if(iel.CloseJet_FlavourInt()==5) FillEventCutflowAll("OSElectron_2j", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+	      
+            }
+
+	  }
 	}
       }
     }
     
     //// Now events are SS dilepton with 1/2 fakes
     
-    FillAllElectronPlots("FakeElectron","MC"+channel_string,ElectronCollFake,weight_ll);
-    FillAllElectronPlots("PromptElectron","MC"+channel_string,ElectronCollPrompt,weight_ll);
+    //FillAllElectronPlots("FakeElectron","MC"+channel_string,ElectronCollFake,weight_ll);
+    //FillAllElectronPlots("PromptElectron","MC"+channel_string,ElectronCollPrompt,weight_ll);
 
-    if(!CheckLeptonFlavourForChannel(dilep_channel, LeptonColl)) return; // Check if EE cahnnel has 2 el                                                                                                                                                                                         
-    if(!SameCharge(LeptonColl)) return;
+    //   if(!CheckLeptonFlavourForChannel(dilep_channel, LeptonColl)) return; // Check if EE cahnnel has 2 el                                                                                                                                                                                         
+    //if(!SameCharge(LeptonColl)) return;
 
-    FillAllElectronPlots("SS_FakeElectron","MC"+channel_string,ElectronCollFake,weight_ll);
-    FillAllElectronPlots("SS_PromptElectron","MC"+channel_string,ElectronCollPrompt,weight_ll);
+    //FillAllElectronPlots("SS_FakeElectron","MC"+channel_string,ElectronCollFake,weight_ll);
+    //FillAllElectronPlots("SS_PromptElectron","MC"+channel_string,ElectronCollPrompt,weight_ll);
 
     
   }
-  
+
   if(dilep_channel==MuMu){
+
+    /// JOHN 
 
     if(ElectronColl.size()>0) return;
 
@@ -868,21 +913,45 @@ void HNL_LeptonIDBDTStudies::CheckSSFakeBreakDown(AnalyzerParameter param,HNL_Le
     if(MuonCollFake.size()==0) return;
 
     //// Now events are SS dilepton with 1/2 fakes                                                                                                                                            
-    FillAllMuonPlots("PromptMuon","MC"+channel_string,MuonCollPrompt,weight_ll);                                                                                                        
-    FillAllMuonPlots("FakeMuon"  ,"MC"+channel_string,MuonCollFake,weight_ll);
+    //    FillAllMuonPlots("PromptMuon","MC"+channel_string,MuonCollPrompt,weight_ll);                                                                                                        
+    //FillAllMuonPlots("FakeMuon"  ,"MC"+channel_string,MuonCollFake,weight_ll);
                                                  
     for(auto imu : MuonCollFake) {
 
       TString lep_fake_tag=MatchGenDef(All_Gens, imu);
-      
+
+      vector<TString>  Types = {"q","pi+","g","pi0"};
+
+      if (std::find(Types.begin(), Types.end(), lep_fake_tag) != Types.end()){
+
+        cout << "Types  Reco " << imu.MotherJetFlavour() << " pt = " << imu.Pt() << " eta = " << imu.Eta() << " phi = " << imu.Phi() <<  endl;
+        cout << "CloseJet_Flavour = " << imu.CloseJet_Flavour() << endl;
+        cout <<"lep_fake_tag = " << lep_fake_tag << " missing "<< endl;
+
+        PrintMatchedGen(All_Gens, imu);
+
+        map<TString, double> mapbdt = imu.MAPBDT();
+	for(auto i : mapbdt) cout << i.first <<" " << i.second<< endl;
+
+      }
+
+
       if (std::find(lables.begin(), lables.end(), lep_fake_tag) == lables.end()){
-	cout << "Reco " << imu.GetFlavour() << " pt = " << imu.Pt() << " eta = " << imu.Eta() << " phi = " << imu.Phi() << endl;
+	cout << "MUON MISSING Reco " << imu.MotherJetFlavour() << " pt = " << imu.Pt() << " eta = " << imu.Eta() << " phi = " << imu.Phi() << endl;
 	cout << "CloseJet_Flavour = " << imu.CloseJet_Flavour() << endl;
 	cout <<"lep_fake_tag = " << lep_fake_tag << " missing "<< endl;
         PrintMatchedGen(All_Gens, imu);
 
       }
+      //else if(lep_fake_tag=="__"){
+      //	cout << "Mu Reco " << imu.MotherJetFlavour() << " pt = " << imu.Pt() << " eta = " << imu.Eta() << " phi = " << imu.Phi() << endl;
+      // cout << "Mu CloseJet_Flavour = " << imu.CloseJet_Flavour() << endl;
+      // cout <<"lep_fake_tag = " << lep_fake_tag << " missing "<< endl;
+      //	TString lep_fake_tag2=MatchGenDef(All_Gens, imu,true);
 
+      //        PrintMatchedGen(All_Gens, imu);
+
+      //      }
       else{
 	if(imu.CloseJet_FlavourInt()==0) FillEventCutflowAll("Muon", "LF_Fake_type", weight_ll, lables,lep_fake_tag);
 	if(imu.CloseJet_FlavourInt()==4) FillEventCutflowAll("Muon", "HFC_Fake_type", weight_ll, lables,lep_fake_tag);
@@ -891,18 +960,76 @@ void HNL_LeptonIDBDTStudies::CheckSSFakeBreakDown(AnalyzerParameter param,HNL_Le
         if(imu.CloseJet_FlavourInt()==5) FillEventCutflowAll("Muon", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
 
 
+	if(MuonCollFake.size()==1){
+
+          bool useevent=false;
+          for(auto ijet : JetColl) {
+            float dphi =fabs(TVector2::Phi_mpi_pi(MuonCollFake[0].Phi()- ijet.Phi()));
+            if(dphi > 2.5) useevent=true;
+          }
+          if(useevent) {
+
+            FillBDTHists(imu, "FakeCR_Mu_Fake/"+imu.MotherJetFlavour()+"/"+lep_fake_tag,weight_ll);
+
+	    map<TString, double> mapbdt = imu.MAPBDT();
+	    for(auto i : mapbdt){
+	      if(i.first.Contains("LF")) continue;
+
+	      FillHist( "MuonCR/"+imu.MotherJetFlavour()+"/"+i.first+"_"+channel_string +"_"+lep_fake_tag , i.second, weight_ll, 100, -1., 1., "MVA");
+	      if(MuonCollFake[0].IsBB() && MuonCollFake[0].Pt() < 20) 	      FillHist( "MuonCR/"+imu.MotherJetFlavour()+"/BB_Pt1_"+i.first+"_"+channel_string +"_"+lep_fake_tag , i.second, weight_ll, 100, -1., 1., "MVA");
+	      else if(MuonCollFake[0].IsBB() && MuonCollFake[0].Pt() < 30) 	      FillHist( "MuonCR/"+imu.MotherJetFlavour()+"/BB_Pt2_"+i.first+"_"+channel_string +"_"+lep_fake_tag , i.second, weight_ll, 100, -1., 1., "MVA");
+	      else if(MuonCollFake[0].IsBB() && MuonCollFake[0].Pt() < 50) 	      FillHist( "MuonCR/"+imu.MotherJetFlavour()+"/BB_Pt3_"+i.first+"_"+channel_string +"_"+lep_fake_tag , i.second, weight_ll, 100, -1., 1., "MVA");
+	      else FillHist( "MuonCR/"+imu.MotherJetFlavour()+"/BB_Pt4_"+i.first+"_"+channel_string +"_"+lep_fake_tag , i.second, weight_ll, 100, -1., 1., "MVA");
+
+	      if(MuonCollFake[0].IsEC() && MuonCollFake[0].Pt() < 20)         FillHist( "MuonCR/"+imu.MotherJetFlavour()+"/EC_Pt1_"+i.first+"_"+channel_string +"_"+lep_fake_tag , i.second, weight_ll, 100, -1., 1., "MVA");
+	      else if(MuonCollFake[0].IsEC() && MuonCollFake[0].Pt() < 30)         FillHist( "MuonCR/"+imu.MotherJetFlavour()+"/EC_Pt2_"+i.first+"_"+channel_string +"_"+lep_fake_tag , i.second, weight_ll, 100, -1., 1., "MVA");
+	      else if(MuonCollFake[0].IsEC() && MuonCollFake[0].Pt() < 50)         FillHist( "MuonCR/"+imu.MotherJetFlavour()+"/EC_Pt3_"+i.first+"_"+channel_string +"_"+lep_fake_tag , i.second, weight_ll, 100, -1., 1., "MVA");
+	      else FillHist( "MuonCR/"+imu.MotherJetFlavour()+"/EC_Pt4_"+i.first+"_"+channel_string +"_"+lep_fake_tag , i.second, weight_ll, 100, -1., 1., "MVA");
+
+	    }
+	    
+            if(imu.CloseJet_FlavourInt()==0) FillEventCutflowAll("CRMuon", "LF_Fake_type", weight_ll, lables,lep_fake_tag);
+            if(imu.CloseJet_FlavourInt()==4) FillEventCutflowAll("CRMuon", "HFC_Fake_type", weight_ll, lables,lep_fake_tag);
+            if(imu.CloseJet_FlavourInt()==5) FillEventCutflowAll("CRMuon", "HFB_Fake_type", weight_ll, lables,lep_fake_tag);
+            if(imu.CloseJet_FlavourInt()==4) FillEventCutflowAll("CRMuon", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+            if(imu.CloseJet_FlavourInt()==5) FillEventCutflowAll("CRMuon", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+
+          }
+        }
 	if(SameCharge(LeptonColl))  {
+
 	  if(imu.CloseJet_FlavourInt()==0) FillEventCutflowAll("SSMuon", "LF_Fake_type", weight_ll, lables,lep_fake_tag);
-	  
 	  if(imu.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSMuon", "HFC_Fake_type", weight_ll, lables,lep_fake_tag);	  
 	  if(imu.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSMuon", "HFB_Fake_type", weight_ll, lables,lep_fake_tag);
 	  if(imu.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSMuon", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
           if(imu.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSMuon", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
-	  
+	  if(JetColl.size() == 0){
+	    if(imu.CloseJet_FlavourInt()==0) FillEventCutflowAll("SSMuon_0j", "LF_Fake_type", weight_ll, lables,lep_fake_tag);
+	    if(imu.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSMuon_0j", "HFC_Fake_type", weight_ll, lables,lep_fake_tag);
+	    if(imu.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSMuon_0j", "HFB_Fake_type", weight_ll, lables,lep_fake_tag);
+	    if(imu.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSMuon_0j", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+	    if(imu.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSMuon_0j", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+    	  }
+	  else           if(JetColl.size() == 1){
+            if(imu.CloseJet_FlavourInt()==0) FillEventCutflowAll("SSMuon_1j", "LF_Fake_type", weight_ll, lables,lep_fake_tag);
+            if(imu.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSMuon_1j", "HFC_Fake_type", weight_ll, lables,lep_fake_tag);
+            if(imu.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSMuon_1j", "HFB_Fake_type", weight_ll, lables,lep_fake_tag);
+            if(imu.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSMuon_1j", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+            if(imu.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSMuon_1j", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+          }
+
+	  else{
+	    if(imu.CloseJet_FlavourInt()==0) FillEventCutflowAll("SSMuon_2j", "LF_Fake_type", weight_ll, lables,lep_fake_tag);
+            if(imu.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSMuon_2j", "HFC_Fake_type", weight_ll, lables,lep_fake_tag);
+            if(imu.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSMuon_2j", "HFB_Fake_type", weight_ll, lables,lep_fake_tag);
+            if(imu.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSMuon_2j", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+            if(imu.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSMuon_2j", "HF_Fake_type", weight_ll, lables,lep_fake_tag);
+	  }
 	}
       }
       
     }
+    return;
     if(!SameCharge(LeptonColl))return;
 
     FillAllMuonPlots("SS_FakeMuon","MC"+channel_string,MuonCollFake,weight_ll);

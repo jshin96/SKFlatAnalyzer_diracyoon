@@ -22,7 +22,7 @@ void HNL_ControlRegionPlotter::executeEvent(){
 
   vector<TString> IDs = {"HNL_ULID_Baseline"};//"HNL_ULID_2016",  "HNL_ULID_2017",      "HNL_ULID_2018"};
   
-  vector<TString> ELIDs = {"HNL_ULID_Run2","HNL_ULID_Run2v4"};//"HNL_LID_2016",    "HNL_ULID_Run2",  "HNL_ULID_Run2v2","HNL_ULID_Run2v3","HNL_ULID_Run2v4"};    
+  vector<TString> ELIDs = {"HNL_ULID_ConvUpdate","HNL_ULID_ConvUpdateSplit","HNL_ULID_ConvUpdateFlat","HNL_ULID_Conv_2016","HNL_ULID_Conv_Run2", "passMVAID_noIso_WP90"};
 
   TString param_signal_name = param_signal.Name;
   for (auto id: IDs){
@@ -37,10 +37,10 @@ void HNL_ControlRegionPlotter::executeEvent(){
     param_signal.Electron_FR_Key  = "ptcone_eta_AwayJetPt40";
    
     RunControlRegions(param_signal , {"BDTCheck"});
+    
+    return;
   }
 
-  
-  return;
   AnalyzerParameter param_signal2 = HNL_LeptonCore::InitialiseHNLParameter("HNL");
 
   for (auto id: ELIDs){

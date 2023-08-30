@@ -19,6 +19,9 @@ class HNL_LeptonIDSF : public HNL_RegionDefinitions {
   void MeasureMuonIDSF(AnalyzerParameter param);
   void MeasureIDSF(AnalyzerParameter param,HNL_LeptonCore::Channel dilep_channel, vector<Muon > LeptonColl, TString ID, double w);
   void MeasureIDSF(AnalyzerParameter param,HNL_LeptonCore::Channel dilep_channel, vector<Electron > LeptonColl, TString ID, double w);
+
+  void MeasureIDSF(AnalyzerParameter param,HNL_LeptonCore::Channel dilep_channel, vector<Electron> ElectronColl, vector<bool> PassIDs, TString ID, double weight_ll);
+
   void FilllHistBins(Lepton lep, bool passID,  TString Channel_string,TString _ID, double lep_weight);
 
 

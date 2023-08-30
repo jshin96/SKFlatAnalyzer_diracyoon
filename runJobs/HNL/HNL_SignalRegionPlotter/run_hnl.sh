@@ -12,9 +12,9 @@ nmax=500
 skim=' '
 declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
 
-if [[ $1 == "WZ" ]]; then
+if [[ $1 == "WG" ]]; then
 
-    SKFlat.py -a $analyzer  -i WZTo3LNu_amcatnlo -n 300   --nmax ${nmax}  -e 2018 --skim SkimTree_HNMultiLep&
+    SKFlat.py -a $analyzer  -i WGToLNuG -n 100   --nmax ${nmax}  -e 2017 --skim SkimTree_HNMultiLepBDT&
     
 fi
 

@@ -1676,7 +1676,6 @@ double HNL_LeptonCore::SetupWeight(Event ev, AnalyzerParameter param){
     
   FillWeightHist("MCFullWeight_" , this_mc_weight);
 
-
   return this_mc_weight;
   
 }
