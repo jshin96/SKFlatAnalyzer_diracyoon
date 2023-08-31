@@ -527,13 +527,10 @@ void SKFlatNtuple::Init()
   electron_mva_conv_ed_v5=0;
   electron_mva_cf_ed_v5=0;
   electron_mva_cf_ed_v5pt=0;
-  electron_mva_fake_LFvsHF_v5=0;
   electron_mva_fake_QCD_LFvsHF_v5=0;
-  electron_mva_fake_HFBvsHFC_v5=0;
   electron_mva_fake_QCD_HFBvsHFC_v5=0;
-  electron_mva_fake_LF1_v5=0;
-  electron_mva_fake_LF2_v5=0;
-  electron_mva_fake_LF3_v5=0;
+  electron_mva_fake_QCD_LF1_v5=0;
+  electron_mva_fake_QCD_LF2_v5=0;
 
   muon_PfChargedHadronIsoR04 = 0;
   muon_PfNeutralHadronIsoR04 = 0;
@@ -633,13 +630,10 @@ void SKFlatNtuple::Init()
   muon_v2_cj_flavour=0;
   muon_mva_fake_v4=0;
   muon_mva_fake_ed_v4=0;
-  muon_mva_fake_LFvsHF_v5=0;
   muon_mva_fake_QCD_LFvsHF_v5=0;
-  muon_mva_fake_HFBvsHFC_v5=0;
   muon_mva_fake_QCD_HFBvsHFC_v5=0;
-  muon_mva_fake_LF1_v5=0;
-  muon_mva_fake_LF2_v5=0;
-  muon_mva_fake_LF3_v5=0;
+  muon_mva_fake_QCD_LF1_v5=0;
+  muon_mva_fake_QCD_LF2_v5=0;
 
   muon_v2_lepton_type=0;
   muon_v2_is_cf=0;
@@ -961,14 +955,11 @@ void SKFlatNtuple::Init()
   if(fChain->GetBranch("electron_mva_fakeHFC_v5")) fChain->SetBranchAddress("electron_mva_fakeHFC_v5",&electron_mva_fakeHFC_v5,&b_electron_mva_fakeHFC_v5);
   if(fChain->GetBranch("electron_mva_fakeLF_v5")) fChain->SetBranchAddress("electron_mva_fakeLF_v5",&electron_mva_fakeLF_v5,&b_electron_mva_fakeLF_v5);
 
-  if(fChain->GetBranch("electron_mva_fake_LFvsHF_v5")) fChain->SetBranchAddress("electron_mva_fake_LFvsHF_v5",&electron_mva_fake_LFvsHF_v5,&b_electron_mva_fake_LFvsHF_v5);
-  if(fChain->GetBranch("electron_mva_fake_QCD_LFvsHF_v5")) fChain->SetBranchAddress("electron_mva_fake_QCD_LFvsHF_v5",&electron_mva_fake_QCD_LFvsHF_v5,&b_electron_mva_fake_QCD_LFvsHF_v5);
-  if(fChain->GetBranch("electron_mva_fake_HFBvsHFC_v5")) fChain->SetBranchAddress("electron_mva_fake_HFBvsHFC_v5",&electron_mva_fake_HFBvsHFC_v5,&b_electron_mva_fake_HFBvsHFC_v5);
+  if(fChain->GetBranch("electron_mva_fake_QCD_LFvsHF_v5"))   fChain->SetBranchAddress("electron_mva_fake_QCD_LFvsHF_v5",&electron_mva_fake_QCD_LFvsHF_v5,&b_electron_mva_fake_QCD_LFvsHF_v5);
   if(fChain->GetBranch("electron_mva_fake_QCD_HFBvsHFC_v5")) fChain->SetBranchAddress("electron_mva_fake_QCD_HFBvsHFC_v5",&electron_mva_fake_QCD_HFBvsHFC_v5,&b_electron_mva_fake_QCD_HFBvsHFC_v5);
 
-  if(fChain->GetBranch("electron_mva_fake_LF1_v5")) fChain->SetBranchAddress("electron_mva_fake_LF1_v5",&electron_mva_fake_LF1_v5,&b_electron_mva_fake_LF1_v5);
-  if(fChain->GetBranch("electron_mva_fake_LF2_v5")) fChain->SetBranchAddress("electron_mva_fake_LF2_v5",&electron_mva_fake_LF2_v5,&b_electron_mva_fake_LF2_v5);
-  if(fChain->GetBranch("electron_mva_fake_LF3_v5")) fChain->SetBranchAddress("electron_mva_fake_LF3_v5",&electron_mva_fake_LF3_v5,&b_electron_mva_fake_LF3_v5);
+  if(fChain->GetBranch("electron_mva_fake_QCD_LF1_v5")) fChain->SetBranchAddress("electron_mva_fake_QCD_LF1_v5",&electron_mva_fake_QCD_LF1_v5,&b_electron_mva_fake_QCD_LF1_v5);
+  if(fChain->GetBranch("electron_mva_fake_QCD_LF2_v5")) fChain->SetBranchAddress("electron_mva_fake_QCD_LF2_v5",&electron_mva_fake_QCD_LF2_v5,&b_electron_mva_fake_QCD_LF2_v5);
 
   if(fChain->GetBranch("electron_v2_lepton_type")) fChain->SetBranchAddress("electron_v2_lepton_type",&electron_v2_lepton_type,&b_electron_v2_lepton_type);
   if(fChain->GetBranch("electron_v2_is_cf")) fChain->SetBranchAddress("electron_v2_is_cf",&electron_v2_is_cf,&b_electron_v2_is_cf);
@@ -1061,7 +1052,8 @@ void SKFlatNtuple::Init()
   fChain->SetBranchAddress("muon_softMVA", &muon_softMVA, &b_muon_softMVA);
   fChain->SetBranchAddress("muon_jetPtRatio", &muon_jetPtRatio, &b_muon_jetPtRatio);
   fChain->SetBranchAddress("muon_jetPtRel", &muon_jetPtRel, &b_muon_jetPtRel);
-  
+
+  //// HNL BDT variables   
   if(fChain->GetBranch("muon_v2_ptrel")) fChain->SetBranchAddress("muon_v2_ptrel",&muon_v2_ptrel,&b_muon_v2_ptrel);
   if(fChain->GetBranch("muon_v2_ptratio"))fChain->SetBranchAddress("muon_v2_ptratio",&muon_v2_ptratio,&b_muon_v2_ptratio);
   if(fChain->GetBranch("muon_v2_cj_bjetdisc"))fChain->SetBranchAddress("muon_v2_cj_bjetdisc",&muon_v2_cj_bjetdisc,&b_muon_v2_cj_bjetdisc);
@@ -1070,15 +1062,10 @@ void SKFlatNtuple::Init()
   if(fChain->GetBranch("muon_v2_cj_flavour"))fChain->SetBranchAddress("muon_v2_cj_flavour",&muon_v2_cj_flavour,&b_muon_v2_cj_flavour);
   if(fChain->GetBranch("muon_mva_fake_v4"))fChain->SetBranchAddress("muon_mva_fake_v4",&muon_mva_fake_v4,&b_muon_mva_fake_v4);
   if(fChain->GetBranch("muon_mva_fake_ed_v4"))fChain->SetBranchAddress("muon_mva_fake_ed_v4",&muon_mva_fake_ed_v4,&b_muon_mva_fake_ed_v4);
-
-  if(fChain->GetBranch("muon_mva_fake_LFvsHF_v5")) fChain->SetBranchAddress("muon_mva_fake_LFvsHF_v5",&muon_mva_fake_LFvsHF_v5,&b_muon_mva_fake_LFvsHF_v5);
   if(fChain->GetBranch("muon_mva_fake_QCD_LFvsHF_v5")) fChain->SetBranchAddress("muon_mva_fake_QCD_LFvsHF_v5",&muon_mva_fake_QCD_LFvsHF_v5,&b_muon_mva_fake_QCD_LFvsHF_v5);
-  if(fChain->GetBranch("muon_mva_fake_HFBvsHFC_v5")) fChain->SetBranchAddress("muon_mva_fake_HFBvsHFC_v5",&muon_mva_fake_HFBvsHFC_v5,&b_muon_mva_fake_HFBvsHFC_v5);
   if(fChain->GetBranch("muon_mva_fake_QCD_HFBvsHFC_v5")) fChain->SetBranchAddress("muon_mva_fake_QCD_HFBvsHFC_v5",&muon_mva_fake_QCD_HFBvsHFC_v5,&b_muon_mva_fake_QCD_HFBvsHFC_v5);
-
-  if(fChain->GetBranch("muon_mva_fake_LF1_v5")) fChain->SetBranchAddress("muon_mva_fake_LF1_v5",&muon_mva_fake_LF1_v5,&b_muon_mva_fake_LF1_v5);
-  if(fChain->GetBranch("muon_mva_fake_LF2_v5")) fChain->SetBranchAddress("muon_mva_fake_LF2_v5",&muon_mva_fake_LF2_v5,&b_muon_mva_fake_LF2_v5);
-  if(fChain->GetBranch("muon_mva_fake_LF3_v5")) fChain->SetBranchAddress("muon_mva_fake_LF3_v5",&muon_mva_fake_LF3_v5,&b_muon_mva_fake_LF3_v5);
+  if(fChain->GetBranch("muon_mva_fake_QCD_LF1_v5")) fChain->SetBranchAddress("muon_mva_fake_QCD_LF1_v5",&muon_mva_fake_QCD_LF1_v5,&b_muon_mva_fake_QCD_LF1_v5);
+  if(fChain->GetBranch("muon_mva_fake_QCD_LF2_v5")) fChain->SetBranchAddress("muon_mva_fake_QCD_LF2_v5",&muon_mva_fake_QCD_LF2_v5,&b_muon_mva_fake_QCD_LF2_v5);
 
 
   if(fChain->GetBranch("muon_v2_lepton_type"))fChain->SetBranchAddress("muon_v2_lepton_type",&muon_v2_lepton_type,&b_muon_v2_lepton_type);

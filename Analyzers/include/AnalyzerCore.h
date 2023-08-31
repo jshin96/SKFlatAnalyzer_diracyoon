@@ -616,24 +616,19 @@ public:
   vector<float>* velectron_mva_fakeHFB_v5;
   vector<float>* velectron_mva_fakeHFC_v5;
   vector<float>* velectron_mva_fakeLF_v5;
-  vector<float>* velectron_mva_fake_LFvsHF_v5;
   vector<float>* velectron_mva_fake_QCD_LFvsHF_v5;
-  vector<float>* velectron_mva_fake_HFBvsHFC_v5;
   vector<float>* velectron_mva_fake_QCD_HFBvsHFC_v5;
-  vector<float>* velectron_mva_fake_LF1_v5;
-  vector<float>* velectron_mva_fake_LF2_v5;
-  vector<float>* velectron_mva_fake_LF3_v5;
+  vector<float>* velectron_mva_fake_QCD_LF1_v5;
+  vector<float>* velectron_mva_fake_QCD_LF2_v5;
+
   ///// MUON
   vector<float>* vmuon_mva_fake_v4;
   vector<float>* vmuon_mva_fake_ed_v4;
   ///// MVA V5                                                                                                                                                                                                                                                                                                                
-  vector<float>* vmuon_mva_fake_LFvsHF_v5;
   vector<float>* vmuon_mva_fake_QCD_LFvsHF_v5;
-  vector<float>* vmuon_mva_fake_HFBvsHFC_v5;
   vector<float>* vmuon_mva_fake_QCD_HFBvsHFC_v5;
-  vector<float>* vmuon_mva_fake_LF1_v5;
-  vector<float>* vmuon_mva_fake_LF2_v5;
-  vector<float>* vmuon_mva_fake_LF3_v5;
+  vector<float>* vmuon_mva_fake_QCD_LF1_v5;
+  vector<float>* vmuon_mva_fake_QCD_LF2_v5;
 
   vector<float>* vmuon_v2_ptrel;
   vector<float>* vmuon_v2_ptratio;

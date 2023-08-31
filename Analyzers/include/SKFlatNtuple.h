@@ -248,13 +248,11 @@ public :
    vector<float>   *electron_mva_cf_ed_v5pt;
    vector<float>   *electron_mva_conv_ed_v5;
 
-   vector<float>   *electron_mva_fake_LFvsHF_v5;
    vector<float>   *electron_mva_fake_QCD_LFvsHF_v5;
-   vector<float>   *electron_mva_fake_HFBvsHFC_v5;
    vector<float>   *electron_mva_fake_QCD_HFBvsHFC_v5;
-   vector<float>   *electron_mva_fake_LF1_v5;
-   vector<float>   *electron_mva_fake_LF2_v5;
-   vector<float>   *electron_mva_fake_LF3_v5;
+   vector<float>   *electron_mva_fake_QCD_LF1_v5;
+   vector<float>   *electron_mva_fake_QCD_LF2_v5;
+
 
    vector<float>   *electron_conv_ntracks;
    vector<float>   *electron_conv_fitprob;
@@ -360,13 +358,10 @@ public :
    vector<float>   *muon_mva_fake_v4;
    vector<float>   *muon_mva_fake_ed_v4;
 
-   vector<float>   *muon_mva_fake_LFvsHF_v5;
    vector<float>   *muon_mva_fake_QCD_LFvsHF_v5;
-   vector<float>   *muon_mva_fake_HFBvsHFC_v5;
    vector<float>   *muon_mva_fake_QCD_HFBvsHFC_v5;
-   vector<float>   *muon_mva_fake_LF1_v5;
-   vector<float>   *muon_mva_fake_LF2_v5;
-   vector<float>   *muon_mva_fake_LF3_v5;
+   vector<float>   *muon_mva_fake_QCD_LF1_v5;
+   vector<float>   *muon_mva_fake_QCD_LF2_v5;
 
    vector<float>   *muon_PfChargedHadronIsoR04;
    vector<float>   *muon_PfNeutralHadronIsoR04;
@@ -743,13 +738,10 @@ public :
    TBranch        *b_electron_mva_cf_ed_v5;
    TBranch        *b_electron_mva_cf_ed_v5pt;
 
-   TBranch        *b_electron_mva_fake_LFvsHF_v5;
    TBranch        *b_electron_mva_fake_QCD_LFvsHF_v5;
-   TBranch        *b_electron_mva_fake_HFBvsHFC_v5;
    TBranch        *b_electron_mva_fake_QCD_HFBvsHFC_v5;
-   TBranch        *b_electron_mva_fake_LF1_v5;
-   TBranch        *b_electron_mva_fake_LF2_v5;
-   TBranch        *b_electron_mva_fake_LF3_v5;
+   TBranch        *b_electron_mva_fake_QCD_LF1_v5;
+   TBranch        *b_electron_mva_fake_QCD_LF2_v5;
 
    TBranch        *b_electron_v2_is_cf;
    TBranch        *b_electron_v2_lepton_type;
@@ -848,13 +840,10 @@ public :
    TBranch        *b_muon_mva_fake_v4;
    TBranch        *b_muon_mva_fake_ed_v4;
 
-   TBranch        *b_muon_mva_fake_LFvsHF_v5;
    TBranch        *b_muon_mva_fake_QCD_LFvsHF_v5;
-   TBranch        *b_muon_mva_fake_HFBvsHFC_v5;
    TBranch        *b_muon_mva_fake_QCD_HFBvsHFC_v5;
-   TBranch        *b_muon_mva_fake_LF1_v5;
-   TBranch        *b_muon_mva_fake_LF2_v5;
-   TBranch        *b_muon_mva_fake_LF3_v5;
+   TBranch        *b_muon_mva_fake_QCD_LF1_v5;
+   TBranch        *b_muon_mva_fake_QCD_LF2_v5;
    
    TBranch        *b_muon_PfChargedHadronIsoR04;   //!
    TBranch        *b_muon_PfNeutralHadronIsoR04;   //!

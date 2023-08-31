@@ -148,7 +148,7 @@ public:
 
 
   void SetHNL_FakeLepMVA_EtaDependantV5(double mvafake, double mvafake_hfb,double mvafake_hfc, double mvafake_lf); 
-  void SetHNL_FakeFlavourLepMVA_V5(double mvafake1,double mvafake2, double mvafake3,double mvafake4, double mvafake5, double mvafake6, double mvafake7);
+  void SetHNL_FakeFlavourLepMVA_V5(double mvafake1,double mvafake2, double mvafake3,double mvafake4);
 
   void SetHNL_ConvLepMVAV4(double mvaconv);
   void SetHNL_ConvLepMVA_EtaDependantV4(double mvaconv);
@@ -187,25 +187,19 @@ public:
       _map["El_Fake_v5_HFB"]    = j_lep_mva_hnl_fake_v5_hfb;
       _map["El_Fake_v5_HFC"]    = j_lep_mva_hnl_fake_v5_hfc;
       _map["El_Fake_v5_LF"]     = j_lep_mva_hnl_fake_v5_lf;
-      _map["El_Fake_LFvsHF_v5"]    = j_lep_mva_hnl_fake_LFvsHF_v5;
-      _map["El_Fake_BvsC_v5"]      = j_lep_mva_hnl_fake_BvsC_v5;
       _map["El_Fake_QCD_LFvsHF_v5"]= j_lep_mva_hnl_fake_QCD_LFvsHF_v5;
       _map["El_Fake_QCD_BvsC_v5"]  = j_lep_mva_hnl_fake_QCD_BvsC_v5;
       _map["El_Fake_LF1_v5"]    = j_lep_mva_hnl_fake_LF1_v5;
       _map["El_Fake_LF2_v5"]    = j_lep_mva_hnl_fake_LF2_v5;
-      _map["El_Fake_LF3_v5"]    = j_lep_mva_hnl_fake_LF3_v5;
 
     }
     else{
       _map["Mu_LF_Fake_v4"]         = j_lep_mva_hnl_fake_v4;
       _map["Mu_ED_LF_Fake_v4"]      = j_lep_mva_hnl_fake_ed_v4;
-      _map["Mu_Fake_LFvsHF_v5"]     = j_lep_mva_hnl_fake_LFvsHF_v5;
-      _map["Mu_Fake_BvsC_v5"]       = j_lep_mva_hnl_fake_BvsC_v5;
       _map["Mu_Fake_QCD_LFvsHF_v5"] = j_lep_mva_hnl_fake_QCD_LFvsHF_v5;
       _map["Mu_Fake_QCD_BvsC_v5"]   = j_lep_mva_hnl_fake_QCD_BvsC_v5;
       _map["Mu_Fake_LF1_v5"]    = j_lep_mva_hnl_fake_LF1_v5;
       _map["Mu_Fake_LF2_v5"]    = j_lep_mva_hnl_fake_LF2_v5;
-      _map["Mu_Fake_LF3_v5"]    = j_lep_mva_hnl_fake_LF3_v5;
       _map["Mu_HF_Fake_POG"]        = j_lep_mva;
     }
     return _map;
@@ -236,27 +230,20 @@ public:
       else if(vers=="v5HFB")  return j_lep_mva_hnl_fake_v5_hfb;
       else if(vers=="v5HFC")  return j_lep_mva_hnl_fake_v5_hfc;
       else if(vers=="v5LF")   return j_lep_mva_hnl_fake_v5_lf;
-
-      else if(vers=="LFvsHF_v5")     return j_lep_mva_hnl_fake_LFvsHF_v5;
-      else if(vers=="BvsC_v5")       return j_lep_mva_hnl_fake_BvsC_v5;
       else if(vers=="QCD_LFvsHF_v5") return j_lep_mva_hnl_fake_QCD_LFvsHF_v5;
       else if(vers=="QCD_BvsC_v5")   return j_lep_mva_hnl_fake_QCD_BvsC_v5;
       else if(vers=="LF1_v5")     return j_lep_mva_hnl_fake_LF1_v5;
       else if(vers=="LF2_v5")     return j_lep_mva_hnl_fake_LF2_v5;
-      else if(vers=="LF3_v5")     return j_lep_mva_hnl_fake_LF3_v5;
 
 
     }
     else{
       if(vers=="v4")             return j_lep_mva_hnl_fake_v4;
       else if(vers=="EDv4")      return j_lep_mva_hnl_fake_ed_v4;
-      else if(vers=="LFvsHF_v5")      return  j_lep_mva_hnl_fake_LFvsHF_v5;
-      else if(vers=="BvsC_v5")        return  j_lep_mva_hnl_fake_BvsC_v5;
       else if(vers=="QCD_LFvsHF_v5")  return  j_lep_mva_hnl_fake_QCD_LFvsHF_v5;
       else if(vers=="QCD_BvsC_v5")    return  j_lep_mva_hnl_fake_QCD_BvsC_v5;
       else if(vers=="LF1_v5")     return j_lep_mva_hnl_fake_LF1_v5;
       else if(vers=="LF2_v5")     return j_lep_mva_hnl_fake_LF2_v5;
-      else if(vers=="LF3_v5")     return j_lep_mva_hnl_fake_LF3_v5;
       else if(vers=="HFTop")          return  j_lep_mva;
     }
     cout<<"[Lepton::HNL_MVA_Fake] no version set "<< vers<< endl;
@@ -457,7 +444,7 @@ public:
   /// Version 5
   double j_lep_mva_hnl_fake_ed_v5,j_lep_mva_hnl_fake_v5_hfb,j_lep_mva_hnl_fake_v5_hfc,j_lep_mva_hnl_fake_v5_lf;
   
-  double j_lep_mva_hnl_fake_LFvsHF_v5, j_lep_mva_hnl_fake_BvsC_v5, j_lep_mva_hnl_fake_QCD_LFvsHF_v5, j_lep_mva_hnl_fake_QCD_BvsC_v5,j_lep_mva_hnl_fake_LF1_v5,j_lep_mva_hnl_fake_LF2_v5,j_lep_mva_hnl_fake_LF3_v5;
+  double j_lep_mva_hnl_fake_QCD_LFvsHF_v5, j_lep_mva_hnl_fake_QCD_BvsC_v5,j_lep_mva_hnl_fake_LF1_v5,j_lep_mva_hnl_fake_LF2_v5;
 
   ///// Conv
   

@@ -10,67 +10,67 @@ void SkimTree_FakeEventSkimBDT::initializeAnalyzer(){
   InitialiseLeptonBDTSKFlat();
   ///// ELECTRON BRANCHES                                                                                                                                                                                                                                                                                                     
   if(!fChain->GetBranch("electron_mva_cf_v2")){
-    newtree->Branch("electron_mva_cf_v2",&velectron_mva_cf_v2);
-    newtree->Branch("electron_mva_cf_ed_v2",&velectron_mva_cf_ed_v2);
-    newtree->Branch("electron_mva_conv_v2",&velectron_mva_conv_v2);
+    newtree->Branch("electron_mva_cf_v2",     &velectron_mva_cf_v2);
+    newtree->Branch("electron_mva_cf_ed_v2",  &velectron_mva_cf_ed_v2);
+    newtree->Branch("electron_mva_conv_v2",   &velectron_mva_conv_v2);
     newtree->Branch("electron_mva_conv_ed_v2",&velectron_mva_conv_ed_v2);
 
-    newtree->Branch("electron_mva_fake_v4",&velectron_mva_fake_v4);
-    newtree->Branch("electron_mva_fakeHF_v4",&velectron_mva_fakeHF_v4);
+    newtree->Branch("electron_mva_fake_v4",   &velectron_mva_fake_v4);
+    newtree->Branch("electron_mva_fakeHF_v4", &velectron_mva_fakeHF_v4);
     newtree->Branch("electron_mva_fakeHFB_v4",&velectron_mva_fakeHFB_v4);
     newtree->Branch("electron_mva_fakeHFC_v4",&velectron_mva_fakeHFC_v4);
-    newtree->Branch("electron_mva_fakeLF_v4",&velectron_mva_fakeLF_v4);
+    newtree->Branch("electron_mva_fakeLF_v4", &velectron_mva_fakeLF_v4);
     newtree->Branch("electron_mva_fakeTop_v4",&velectron_mva_fakeTop_v4);
 
-    newtree->Branch("electron_mva_fake_ed_v4",&velectron_mva_fake_ed_v4);
-    newtree->Branch("electron_mva_fakeHF_ed_v4",&velectron_mva_fakeHF_ed_v4);
+    newtree->Branch("electron_mva_fake_ed_v4",   &velectron_mva_fake_ed_v4);
+    newtree->Branch("electron_mva_fakeHF_ed_v4", &velectron_mva_fakeHF_ed_v4);
     newtree->Branch("electron_mva_fakeHFB_ed_v4",&velectron_mva_fakeHFB_ed_v4);
     newtree->Branch("electron_mva_fakeHFC_ed_v4",&velectron_mva_fakeHFC_ed_v4);
-    newtree->Branch("electron_mva_fakeLF_ed_v4",&velectron_mva_fakeLF_ed_v4);
+    newtree->Branch("electron_mva_fakeLF_ed_v4", &velectron_mva_fakeLF_ed_v4);
     newtree->Branch("electron_mva_fakeTop_ed_v4",&velectron_mva_fakeTop_ed_v4);
   }
+
   newtree->Branch("electron_mva_fake_ed_v5",&velectron_mva_fake_ed_v5);
   newtree->Branch("electron_mva_fakeHFB_v5",&velectron_mva_fakeHFB_v5);
   newtree->Branch("electron_mva_fakeHFC_v5",&velectron_mva_fakeHFC_v5);
-  newtree->Branch("electron_mva_fakeLF_v5",&velectron_mva_fakeLF_v5);
+  newtree->Branch("electron_mva_fakeLF_v5", &velectron_mva_fakeLF_v5);
   newtree->Branch("electron_mva_conv_ed_v5",&velectron_mva_conv_ed_v5);
-  newtree->Branch("electron_mva_cf_ed_v5",&velectron_mva_cf_ed_v5 );
+  newtree->Branch("electron_mva_cf_ed_v5",  &velectron_mva_cf_ed_v5 );
   newtree->Branch("electron_mva_cf_ed_v5pt",&velectron_mva_cf_ed_v5pt );
 
-  newtree->Branch("electron_mva_fake_LFvsHF_v5",&velectron_mva_fake_LFvsHF_v5);
-  newtree->Branch("electron_mva_fake_QCD_LFvsHF_v5",&velectron_mva_fake_QCD_LFvsHF_v5);
-  newtree->Branch("electron_mva_fake_HFBvsHFC_v5",&velectron_mva_fake_HFBvsHFC_v5);
+  newtree->Branch("electron_mva_fake_QCD_LFvsHF_v5",  &velectron_mva_fake_QCD_LFvsHF_v5);
   newtree->Branch("electron_mva_fake_QCD_HFBvsHFC_v5",&velectron_mva_fake_QCD_HFBvsHFC_v5);
-
-
-  newtree->Branch("electron_v2_ptrel",&velectron_v2_ptrel);
-  newtree->Branch("electron_v2_ptratio",&velectron_v2_ptratio);
+  newtree->Branch("electron_mva_fake_QCD_LF1_v5",     &velectron_mva_fake_QCD_LF1_v5);
+  newtree->Branch("electron_mva_fake_QCD_LF2_v5",     &velectron_mva_fake_QCD_LF2_v5);
+  
+  newtree->Branch("electron_v2_ptrel",      &velectron_v2_ptrel);
+  newtree->Branch("electron_v2_ptratio",    &velectron_v2_ptratio);
   newtree->Branch("electron_v2_cj_bjetdisc",&velectron_v2_cj_bjetdisc);
   newtree->Branch("electron_v2_cj_bjetdisc",&velectron_v2_cj_cvsbjetdisc);
   newtree->Branch("electron_v2_cj_bjetdisc",&velectron_v2_cj_cvsljetdisc);
-  newtree->Branch("electron_v2_cj_flavour",&velectron_v2_cj_flavour);
+  newtree->Branch("electron_v2_cj_flavour", &velectron_v2_cj_flavour);
   newtree->Branch("electron_v2_lepton_type",&velectron_v2_lepton_type);
-  newtree->Branch("electron_v2_is_cf",   &velectron_v2_is_cf);
+  newtree->Branch("electron_v2_is_cf",      &velectron_v2_is_cf);
   //// MUON BRANCH                                                                                                                                                                                                                                                                                                            
 
   if(!fChain->GetBranch("muon_mva_fake_ed_v4")){
-    newtree->Branch("muon_mva_fake_v4",&vmuon_mva_fake_v4);
+    newtree->Branch("muon_mva_fake_v4",   &vmuon_mva_fake_v4);
     newtree->Branch("muon_mva_fake_ed_v4",&vmuon_mva_fake_ed_v4);
   }
 
-  newtree->Branch("muon_mva_fake_LFvsHF_v5",&vmuon_mva_fake_LFvsHF_v5);
-  newtree->Branch("muon_mva_fake_QCD_LFvsHF_v5",&vmuon_mva_fake_QCD_LFvsHF_v5);
-  newtree->Branch("muon_mva_fake_HFBvsHFC_v5",&vmuon_mva_fake_HFBvsHFC_v5);
+  newtree->Branch("muon_mva_fake_QCD_LFvsHF_v5",  &vmuon_mva_fake_QCD_LFvsHF_v5);
   newtree->Branch("muon_mva_fake_QCD_HFBvsHFC_v5",&vmuon_mva_fake_QCD_HFBvsHFC_v5);
+  newtree->Branch("muon_mva_fake_QCD_LF1_v5",     &vmuon_mva_fake_QCD_LF1_v5);
+  newtree->Branch("muon_mva_fake_QCD_LF2_v5",     &vmuon_mva_fake_QCD_LF2_v5);
 
-  newtree->Branch("muon_v2_ptrel",&vmuon_v2_ptrel);
-  newtree->Branch("muon_v2_ptratio",&vmuon_v2_ptratio);
-  newtree->Branch("muon_v2_cj_bjetdisc",&vmuon_v2_cj_bjetdisc);
+  newtree->Branch("muon_v2_ptrel",         &vmuon_v2_ptrel);
+  newtree->Branch("muon_v2_ptratio",       &vmuon_v2_ptratio);
+  newtree->Branch("muon_v2_cj_bjetdisc",   &vmuon_v2_cj_bjetdisc);
   newtree->Branch("muon_v2_v2_cj_bjetdisc",&vmuon_v2_cj_cvsbjetdisc);
   newtree->Branch("muon_v2_v2_cj_bjetdisc",&vmuon_v2_cj_cvsljetdisc);
-  newtree->Branch("muon_v2_cj_flavour",&vmuon_v2_cj_flavour);
-  newtree->Branch("muon_v2_lepton_type",&vmuon_v2_lepton_type);
-  newtree->Branch("muon_v2_is_cf",   &vmuon_v2_is_cf);
+  newtree->Branch("muon_v2_cj_flavour",    &vmuon_v2_cj_flavour);
+  newtree->Branch("muon_v2_lepton_type",   &vmuon_v2_lepton_type);
+  newtree->Branch("muon_v2_is_cf",         &vmuon_v2_is_cf);
 
   newtree->Branch("SKWeight", &vSKWeight);
 
@@ -80,12 +80,12 @@ void SkimTree_FakeEventSkimBDT::initializeAnalyzer(){
 void SkimTree_FakeEventSkimBDT::executeEvent(){
 
   if(!fChain->GetBranch("electron_mva_cf_v2"))  ResetLeptonBDTSKFlat();
-  ResetLeptonBDTSKFlat();
+  ResetLeptonBDTSKFlatV5();
 
   vSKWeight=MCweight(true,true);
 
   if(!fChain->GetBranch("electron_mva_cf_v2"))SetupLeptonBDTSKFlat();
-  SetupLeptonBDTSKFlat();
+  SetupLeptonBDTSKFlatV5();
 
   newtree->Fill();
   //if(newtree->Fill()<0) exit(EIO);

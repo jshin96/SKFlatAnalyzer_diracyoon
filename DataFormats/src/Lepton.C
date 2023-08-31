@@ -55,13 +55,10 @@ Lepton::Lepton() : Particle() {
   j_lep_mva_hnl_fake_v5_hfc=-999;
   j_lep_mva_hnl_fake_v5_lf=-999;
 
-  j_lep_mva_hnl_fake_LFvsHF_v5=-999;
-  j_lep_mva_hnl_fake_BvsC_v5=-999;
   j_lep_mva_hnl_fake_QCD_LFvsHF_v5=-999;
   j_lep_mva_hnl_fake_QCD_BvsC_v5=-999;
   j_lep_mva_hnl_fake_LF1_v5=-999;
   j_lep_mva_hnl_fake_LF2_v5=-999;
-  j_lep_mva_hnl_fake_LF3_v5=-999;
 
   
   j_lep_mva_hnl_conv_v4=-999;
@@ -204,15 +201,12 @@ void Lepton::SetHNL_FakeLepMVAMuon_EtaDependantV4(double mvafake){
   j_lep_mva_hnl_fake_ed_v4=mvafake;
 }
 
-void Lepton::SetHNL_FakeFlavourLepMVA_V5(double mvafake1,double mvafake2, double mvafake3,double mvafake4, double mvafake5,double mvafake6,double mvafake7){
+void Lepton::SetHNL_FakeFlavourLepMVA_V5(double mvafake1,double mvafake2, double mvafake3,double mvafake4){
 
-  j_lep_mva_hnl_fake_LFvsHF_v5=mvafake1;
-  j_lep_mva_hnl_fake_BvsC_v5=mvafake2;
-  j_lep_mva_hnl_fake_QCD_LFvsHF_v5=mvafake3;
-  j_lep_mva_hnl_fake_QCD_BvsC_v5=mvafake4;
-  j_lep_mva_hnl_fake_LF1_v5=mvafake5;
-  j_lep_mva_hnl_fake_LF2_v5=mvafake6;
-  j_lep_mva_hnl_fake_LF3_v5=mvafake7;
+  j_lep_mva_hnl_fake_QCD_LFvsHF_v5=mvafake1;
+  j_lep_mva_hnl_fake_QCD_BvsC_v5=mvafake2;
+  j_lep_mva_hnl_fake_LF1_v5=mvafake3;
+  j_lep_mva_hnl_fake_LF2_v5=mvafake4;
 
 }
 
