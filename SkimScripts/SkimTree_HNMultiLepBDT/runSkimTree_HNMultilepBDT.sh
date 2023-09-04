@@ -37,7 +37,7 @@ if [[ $1 == "Signal" ]]; then
     done
 fi
 
-if [[ $1 == "MC" ]]; then
+if [[ $1 == "MC1" ]]; then
 
     declare  -a era_list=("2017" "2018")
 
@@ -45,10 +45,29 @@ if [[ $1 == "MC" ]]; then
     do
         SKFlat.py -a $analyzer  -l ${mcpath}/MCXSmall.txt  -n 2  --nmax ${nmax}   -e ${i}   --skim  SkimTree_HNMultiLepBDT&
         SKFlat.py -a $analyzer  -l ${mcpath}/MCSmall.txt  -n 5  --nmax ${nmax}   -e ${i}   --skim  SkimTree_HNMultiLepBDT&
+    done
+fi
+
+if [[ $1 == "MC2" ]]; then
+
+    declare  -a era_list=("2017" "2018")
+
+    for i in "${era_list[@]}"
+    do
         SKFlat.py -a $analyzer  -l ${mcpath}/MCMedium.txt  -n 20  --nmax ${nmax}   -e ${i}   --skim  SkimTree_HNMultiLepBDT
+        SKFlat.py -a $analyzer  -l ${mcpath}/${i}/QCD.txt -n 2  --nmax ${nmax}   -e ${i}  --skim  SkimTree_HNMultiLepBDT&
+    done
+fi
+
+
+if [[ $1 == "MC3" ]]; then
+
+    declare  -a era_list=("2017" "2018")
+
+    for i in "${era_list[@]}"
+    do
         SKFlat.py -a $analyzer  -l ${mcpath}/MCLarge.txt  -n 50  --nmax ${nmax}   -e ${i}   --skim  SkimTree_HNMultiLepBDT &
         SKFlat.py -a $analyzer  -l ${mcpath}/MCXLarge.txt  -n 200  --nmax ${nmax}   -e ${i}   --skim  SkimTree_HNMultiLepBDT &
-        SKFlat.py -a $analyzer  -l ${mcpath}/${i}/QCD.txt -n 2  --nmax ${nmax}   -e ${i}  --skim  SkimTree_HNMultiLepBDT&
     done
 fi
 
