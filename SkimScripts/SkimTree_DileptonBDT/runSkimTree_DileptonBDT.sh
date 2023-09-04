@@ -11,14 +11,18 @@ declare  -a era_list=("2018" "2017"  "2016preVFP" "2016postVFP")
 
 if [[ $1 == "" ]]; then
 
+    declare  -a era_list=("2018" "2017")
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -i DYJets10to50_MG  --nmax 350           -e ${i}  &
+        SKFlat.py -a $analyzer  -l $mcpath/MC2.txt   --nmax 400           -e ${i} &
+        #SKFlat.py -a $analyzer  -i SingleTop_sch_Lep  --nmax 350           -e ${i}  --skim SkimTree_Dilepton&
+        #SKFlat.py -a $analyzer  -i SingleTop_tW_antitop_NoFullyHad  --nmax 350           -e ${i}  --skim SkimTree_Dilepton&
+        #SKFlat.py -a $analyzer  -i SingleTop_tW_top_NoFullyHad  --nmax 350           -e ${i}  --skim SkimTree_Dilepton&
     done
 
 fi
 
-if [[ $1 == "IndData" ]]; then
+if [[ $1 == "ta" ]]; then
     
     declare  -a era_list=("2018" "2017"  "2016preVFP")
     
@@ -33,13 +37,14 @@ fi
 
 if [[ $1 == "All" ]]; then
 
+    declare  -a era_list=("2018" "2017" )
     for i in "${era_list[@]}"
     
     do
-        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}.txt  -n ${njobs_data}  --nmax ${nmax}           -e ${i}  --skim SkimTree_Dilepton  &
-	SKFlat.py -a $analyzer  -l $datapath/${i}_SingleLepton.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_Dilepton  &
-	SKFlat.py -a $analyzer  -l $datapath/DATA_${i}EMu.txt  -n ${njobs_data}  --nmax ${nmax}        -e ${i}   &
-	SKFlat.py -a $analyzer  -l $mcpath/MC.txt  -n 2000  --nmax ${nmax}   -e ${i}  --skim SkimTree_Dilepton &
+        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}.txt  -n ${njobs_data}  --nmax ${nmax}           -e ${i}  --skim SkimTree_DileptonBDT  &
+	SKFlat.py -a $analyzer  -l $datapath/${i}_SingleLepton.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_DileptonBDT  &
+	SKFlat.py -a $analyzer  -l $datapath/DATA_${i}EMu.txt  -n ${njobs_data}  --nmax ${nmax}        -e ${i} --skim SkimTree_DileptonBDT  &
+	SKFlat.py -a $analyzer  -l $mcpath/MC.txt  -n 2000  --nmax ${nmax}   -e ${i}  --skim SkimTree_DileptonBDT &
     done
 fi
 
