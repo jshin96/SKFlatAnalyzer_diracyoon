@@ -356,11 +356,11 @@ List_Debug_BkdMC_2016a = [["DYJets", 1]]
 List_Debug_BkdMC_2016b = [["TTLJ_powheg", 1]]
 List_Debug_Data_2016a = [["DoubleMuon", 1, "B_ver2"]]
 List_Debug_SigMC_2017 = [
-  #["TT_HeavyN-El_2L_MN20", 1],
-  #["TT_HeavyN-Mu_2L_MN20", 1],
-  ["TT_HeavyN-Mu_LepSMTop_3L_MN100", 1],
-  ["TT_HeavyN-Mu_HadSMTop_3L_MN100", 1],
-  ["TT_HeavyN-Mu_4L_MN100", 1],
+  ["TT_HeavyN-El_2L_MN20", 1],
+  ["TT_HeavyN-Mu_2L_MN20", 1],
+  #["TT_HeavyN-Mu_LepSMTop_3L_MN100", 1],
+  #["TT_HeavyN-Mu_HadSMTop_3L_MN100", 1],
+  #["TT_HeavyN-Mu_4L_MN100", 1],
 ]
 #List_Debug_BkdMC_2017 = [["ttHToNonbb", 1]]
 #List_Debug_BkdMC_2017 = [["ZGToLLG", 1]]
@@ -373,7 +373,6 @@ List_Debug_BkdMC_2017 = [["TTLL_powheg", 1], ["DYJets", 1]]
 #List_Debug_BkdMC_2017 = [["WGToLNuG", 1]]
 List_Debug_Data_2017 = [["DoubleEG", 1, "B"]]
 List_Debug_Flip_2017 = [["TTLL_powheg", 1], ["DYJets", 1]]
->>>>>>> Run2UltraLegacy
 #List_Debug_Data_2017 = [["DoubleMuon", 1, "B"]]
 List_Debug_SigMC_2018 = [["TestFiltered_TTToHcToWA_AToMuMu_MHc160_MA75", 1]]
 List_Debug_BkdMC_2018 = [["DYJets", 10]]
