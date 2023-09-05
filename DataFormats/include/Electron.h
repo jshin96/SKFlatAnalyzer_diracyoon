@@ -12,6 +12,13 @@ public:
   ~Electron();
 
   void  PrintObject(TString label);
+  
+
+  inline bool IsIB() const { return (Lepton::Region(fabs(this->scEta())) == 1); }
+  inline bool IsOB() const { return (Lepton::Region(fabs(this->scEta())) == 2); }
+  inline bool IsEC() const { return (Lepton::Region(fabs(this->scEta())) == 3); }
+  inline bool IsBB() const { return (Lepton::Region(fabs(this->scEta())) < 3); }
+
 
   void SetEnShift(double en_up, double en_down);
   inline double EnShift(int s) const {
@@ -30,12 +37,6 @@ public:
   inline double scEta() const { return j_scEta; }
   inline double scPhi() const { return j_scPhi; }
   inline double scE() const { return j_scE; }
-
-
-  // MVA
-  void SetMVA(double mvaiso, double mvanoiso);
-  inline double MVAIso() const { return j_mvaiso; }
-  inline double MVANoIso() const { return j_mvanoiso; }
 
 
   inline bool PassCFMVA(double val, double mva1, double mva2) {
@@ -62,6 +63,15 @@ public:
 
   }
 
+
+
+  ///////// ELECTRON MVA FUNCTIONS 
+
+  // MVA                                                                                                                                                                                                                                                                  
+  void SetMVA(double mvaiso, double mvanoiso);
+  inline double MVAIso() const { return j_mvaiso; }
+  inline double MVANoIso() const { return j_mvanoiso; }
+
   inline bool PassMVANoIsoResponse(double A, double B, double C){
     double mva_resp = MVANoIsoResponse();
     double cut = A - std::exp(-Pt() / B) * C;
@@ -77,6 +87,7 @@ public:
     return false;
   }
 
+  
   inline double MVANoIsoResponseV1() const {
 
     if (j_mvanoiso == 1.) return 8;
@@ -347,6 +358,7 @@ public:
   int  PassIDOpt(TString ID) const;
   int  PassIDLoose(TString ID) const;
   int  PassIDTight(TString ID) const;
+  int  PassIDStudy(TString ID) const;
 
 
   bool Pass_TESTID() const;
@@ -366,6 +378,10 @@ public:
 
   inline void SetR9(double r9) { j_r9=r9; }
   inline double R9() const { return j_r9; }
+
+  inline void  SetpsEoverEraw(double psE) {j_psEoverEraw=psE;}
+  inline double psEoverEraw() const { return j_psEoverEraw;}
+
   inline void SetL1Et(double l1et) { j_L1Et=l1et; }
   inline double L1Et() const { return j_L1Et; }
 
@@ -395,7 +411,7 @@ private:
   vector<int> j_IDCutBit;
   double j_RelPFIso_Rho;
 
-  double j_Rho ,j_r9;
+  double j_Rho ,j_r9, j_psEoverEraw;
   
 
   int j_isGsfCtfScPixChargeConsistent,j_isGsfScPixChargeConsistent,j_isGsfCtfChargeConsistent;
