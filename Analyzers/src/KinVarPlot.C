@@ -945,10 +945,7 @@ void KinVarPlot::CheckGenMatchedDist(vector<Muon>& MuTColl, vector<Muon>& MuLCol
         if(tDecN<0  && Idxbtx!=-1) MblljjW = (MuTColl.at(IdxlN)+MuTColl.at(Idxlt)+JetColl.at(IdxjN1)+JetColl.at(IdxjN2)+JetColl.at(Idxbtx)).M();
       }
       if(IdxlN!=-1 && IdxjW1!=-1) dRlNjW1 = MuTColl.at(IdxlN).DeltaR(JetColl.at(IdxjW1));
-      if(IdxlN!=-1 && IdxjN1!=-1){ dRlNjN1 = MuTColl.at(IdxlN).DeltaR(JetColl.at(IdxjN1));
-//        printf("Mu%d: PT:%.2e Eta:%.2f Phi:%.2f\n", IdxlN, MuTColl.at(IdxlN).Pt(), MuTColl.at(IdxlN).Eta(), MuTColl.at(IdxlN).Phi());
-//        printf("J%d: PT:%.2e Eta:%.2f Phi:%.2f\n", IdxjN1, JetColl.at(IdxjN1).Pt(), JetColl.at(IdxjN1).Eta(), JetColl.at(IdxjN1).Phi());
-      }
+      if(IdxlN!=-1 && IdxjN1!=-1) dRlNjN1 = MuTColl.at(IdxlN).DeltaR(JetColl.at(IdxjN1));
       if(Idxlt!=-1 && IdxjW1!=-1) dRltjW1 = MuTColl.at(Idxlt).DeltaR(JetColl.at(IdxjW1));
       if(Idxlt!=-1 && IdxjN1!=-1) dRltjN1 = MuTColl.at(Idxlt).DeltaR(JetColl.at(IdxjN1));
     }
@@ -1631,13 +1628,6 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
     float Mll = (ElConeColl.at(0)+ElConeColl.at(1)).M();
     if(fabs(Mll-91.2)<10.) return;
 
-    //if(FlipRun){
-    //  FillHist("PTl1_1lj"+Label, ElConeColl.at(0).Pt(), weight, 30, 0., 300.);
-    //  FillHist("PTl2_1lj"+Label, ElConeColl.at(1).Pt(), weight, 20, 0., 200.);
-    //  if(NonBJetColl.size()>1) FillHist("PTl1_2lj"+Label, ElConeColl.at(0).Pt(), weight, 30, 0., 300.);
-    //  if(NonBJetColl.size()>1) FillHist("PTl2_2lj"+Label, ElConeColl.at(1).Pt(), weight, 20, 0., 200.);
-    //}
-
     Nj      = JetColl.size();
     Nb      = min((Float_t) BJetColl.size(),(Float_t) 2.);
     Ptl1    = ElConeColl.at(0).Pt();
@@ -1757,6 +1747,7 @@ void KinVarPlot::MakePlot3L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector
                             vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
                             vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, float weight, TString Label)
 {
+  //Used in feasibility study of merging 4L final states using MC + fake (RD) in the early study with prelegacy dataset.
   int NMuT=MuTColl.size(), NElT=ElTColl.size(), NMuL=MuLColl.size(), NElL=ElLColl.size(), NMuV=MuVColl.size(), NElV=ElVColl.size();
   int NLepT = NMuT+NElT, NLepL = NMuL+NElL, NLepV = NMuV+NElV;
   if( !( NLepT==3 && NLepL==3 && NLepV==3 ) ) return; 
@@ -1896,7 +1887,7 @@ void KinVarPlot::MakePlot4L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector
                             vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
                             vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, float weight, TString Label)
 {
-
+  //Used in feasibility study of merging 4L final states using MC + fake (RD) in the early study with prelegacy dataset.
   int NMuT=MuTColl.size(), NElT=ElTColl.size(), NMuL=MuLColl.size(), NElL=ElLColl.size(), NMuV=MuVColl.size(), NElV=ElVColl.size();
   int NLepT = NMuT+NElT, NLepL = NMuL+NElL, NLepV = NMuV+NElV;
   if( !( NLepT==4 && NLepL==4 && NLepV==4 ) ) return; 
@@ -2057,21 +2048,16 @@ void KinVarPlot::PlotDiscriminators(TString Label){
     bool  PassCut  = PassDiscCut(MixTag, MNStrList.at(im), MVAvalue);
     if(DiscCutOpt) FillHist("BDTG"+MixTag+"_MN"+MNStrList.at(im)+Label, MVAvalue, w_tot, 200, -1., 1.);
     else if(DiscTable){
-      //int NMNTot = MNStrListL.size()+MNStrListH.size();
       int BinIdx = BelowMW? im:im+MNStrListL.size();
-      //if(!Is2M) BinIdx+=NMNTot;
       TString NewLabel(Label);
       NewLabel.ReplaceAll("_MNgtMW",""); NewLabel.ReplaceAll("_MNltMW","");
-      //NewLabel.ReplaceAll("_2M_MNgtMW",""); NewLabel.ReplaceAll("_2M_MNltMW","");
       FillHist("NCntBDTG_All"+NewLabel, PassCut? (double) BinIdx:-1., w_tot, 5, 0., 5.);
 
       int BinIdxPre = BelowMW? 0:1;
-      //if(!Is2M) BinIdxPre+=2;
       if(im==0) FillHist("NCntPreSel_All"+NewLabel, BinIdxPre, w_tot, 2, 0., 2.);
     }
     else if(DiscCNC) FillHist("BDTG"+MixTag+"_MN"+MNStrList.at(im)+Label, PassCut? 1.:0., w_tot, 2, 0., 2.);
     else             FillHist("BDTG"+MixTag+"_MN"+MNStrList.at(im)+Label, MVAvalue, w_tot,  20, -1., 1.);
-    //else           FillHist("BDTG"+MixTag+"_MN"+MNStrList.at(im)+Label, MVAvalue, w_tot, 40, -1., 1.);
   }
 
 }
@@ -2101,6 +2087,7 @@ bool KinVarPlot::PassDiscCut(TString Mix, TString MNStr, float Disc){
   else if(Mix.Contains("El") && MNStr=="85" ) Cut=0.70;
   else if(Mix.Contains("El") && MNStr=="95" ) Cut=0.85;
   else if(Mix.Contains("El") && MNStr=="100") Cut=0.85; //In case problem with stat->go-to 85
+  //For comparison with era dependent optimization
   //if     (Mix.Contains("Mu") && MNStr=="20" ) Cut=Is16a?  0.8:Is16b? 0.76:Is17?  0.8:Is18? 0.76:0.76;
   //else if(Mix.Contains("Mu") && MNStr=="50" ) Cut=Is16a?  0.8:Is16b? 0.88:Is17? 0.88:Is18? 0.88:0.88;
   //else if(Mix.Contains("Mu") && MNStr=="75" ) Cut=Is16a? 0.84:Is16b? 0.78:Is17? 0.88:Is18? 0.88:0.92;

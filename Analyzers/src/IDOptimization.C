@@ -88,11 +88,11 @@ void IDOptimization::executeEvent(){
   std::sort(muonRawColl.begin(), muonRawColl.end(), PtComparing);
   std::sort(electronRawColl.begin(), electronRawColl.end(), PtComparing);
 
-  vector<Muon>     muonTightColl     ;// SelectMuons(muonPreColl, "TopHNT", 10., 2.4);
-  vector<Electron> electronTightColl ;// SelectElectrons(electronPreColl, "TopHNSST", 10., 2.5);
-  vector<Muon>     muonLooseColl     ;// SelectMuons(muonPreColl, "TopHNL", 10., 2.4);
-  vector<Electron> electronLooseColl ;// SelectElectrons(electronPreColl, "TopHNSSL", 10., 2.5);
-  vector<Electron> electronVetoColl  ;// SelectElectrons(electronPreColl, "TopHNSSL", 10., 2.5);
+  vector<Muon>     muonTightColl     ;
+  vector<Electron> electronTightColl ;
+  vector<Muon>     muonLooseColl     ;
+  vector<Electron> electronLooseColl ;
+  vector<Electron> electronVetoColl  ;
 
 
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
@@ -101,8 +101,6 @@ void IDOptimization::executeEvent(){
   vector<Jet> jetRawColl     = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "NoID", 10., 2.9, "");
   vector<Jet> jetNoVetoColl  = SelectJets(jetRawColl, muonLooseColl, electronVetoColl, "tight", 25., 2.4, "");
   vector<Jet> bjetNoVetoColl = SelBJets(jetNoVetoColl, param_jets);
-  //vector<Jet> jetColl   = SelectJets( jetNoVetoColl, muonLooseColl, electronVetoColl, "tight", 25., 2.4, "LVeto");
-  //vector<Jet> bjetColl  = SelectJets(bjetNoVetoColl, muonLooseColl, electronVetoColl, "tight", 25., 2.4, "LVeto");
 
 
   Particle vMET = ev.GetMETVector();
@@ -298,8 +296,6 @@ void IDOptimization::executeEvent(){
 void IDOptimization::TEST(vector<Muon>& MuRawColl, vector<Electron>& ElRawColl,
 vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, Event& ev, float weight, TString Label)
 {
-
-
 
 
  return;
@@ -573,17 +569,6 @@ void IDOptimization::CheckMultiIso(vector<Muon>& MuPreColl, vector<Electron>& El
       if(PassHLTCut && PassMiniIsop10) FillHist("PassMultIsoCut"+CutTag.at(ic)+StTag+Label+TypeStr, 12., weight, 13, 0., 13.);
     }
   }
-
-
-//  if(NMuT==2){
-//    if(!ev.PassTrigger(TrigListLocal)) return;
-//    if(MuTColl.at(0).Charge()!=MuTColl.at(1).Charge()) return;
-//  }
-//  if(NElT==2){
-//    Label="_2E"+Label;
-//    if(!(ElTColl.at(0).Pt()>PTCut1 && ElTColl.at(1).Pt()>PTCut2)) return;
-//    if(!ev.PassTrigger(TrigListLocal)) return;
-//  }
 }
 
 

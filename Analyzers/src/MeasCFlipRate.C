@@ -105,8 +105,6 @@ void MeasCFlipRate::executeEvent(){
   vector<Jet> bjetColl = SelBJets(jetColl, param_jets);
 
 
-  //Particle vMET = ev.GetMETVector();
-  //Particle vMET_xyCorr(pfMET_Type1_PhiCor_pt*TMath::Cos(pfMET_Type1_PhiCor_phi), pfMET_Type1_PhiCor_pt*TMath::Sin(pfMET_Type1_PhiCor_phi), 0., pfMET_Type1_PhiCor_pt);
   Particle vMET        = GetvMET("PUPPIMETT1");
   Particle vMET_xyCorr = GetvMET("PUPPIMETT1xyCorr");
 
@@ -287,21 +285,17 @@ void MeasCFlipRate::CheckMCCFClosure(vector<Muon>& MuTColl, vector<Muon>& MuLCol
 
 
   float CFR1=0., CFR2=0., CFRMCDY=0.;
-  //float CFR1=0., CFR2=0., CFRMCDY=0., CFRMCTT=0.;
   for(unsigned int ie=0; ie<ElTColl.size() && !IsSS2l; ie++){
     TString TypeStr=IsDATA? "Data":"MC";
     Electron* El(&ElTColl.at(ie));
     CFR1 += GetCFRSF(*El, "App2Bin1_Fin", TypeStr+"Eff");
     CFR2 += GetCFRSF(*El, "App2Bin2_Fin", TypeStr+"Eff");
     CFRMCDY += GetMCCFR(El->Pt(), fabs(El->Eta()), "h2D_PTfEta_QF_DY");
-    //CFRMCTT += GetMCCFR(El->Pt(), fabs(El->Eta()), "h2D_PTfEta_QF_TT");
   }
 
   vector<TString> AppTagList = {"_App2Bin1", "_App2Bin2", "_CFRMCDY"};
-  //vector<TString> AppTagList = {"_App2Bin1", "_App2Bin2", "_CFRMCDY", "_CFRMCTT"};
   vector<TString> MassTagList = {""}; if(IsOnZ) MassTagList.push_back("_OnZ");
   vector<float>   CFRList    = {CFR1, CFR2, CFRMCDY};
-  //vector<float>   CFRList    = {CFR1, CFR2, CFRMCDY, CFRMCTT};
   TString TypeStr = IsSS2l? "_Obs":"_Exp";
 
   //Exp from CFR
@@ -345,10 +339,6 @@ void MeasCFlipRate::MeasMCCFRate(vector<Muon>& MuTColl, vector<Muon>& MuLColl, v
   
     double PT = El->Pt(), Eta = El->Eta(), fEta = fabs(Eta);
     TString QLabel = IsFlipped? "_QF":"_QT";
-    //float RelIsoNoEA = El->RelIso()+Rho*El->EA()/PT, RelTkIso = El->dr03TkSumPt()/PT ;
-    //TString RelIsoTag = RelIsoNoEA<0.06? "_PFIsoNoEAp06":RelIsoNoEA<0.1? "_PFIsoNoEAp1": RelIsoNoEA<0.2? "_PFIsoNoEAp2":"_PRIsoNoEAgtp2";
-    //TString TkIsoTag  = RelTkIso<0.06? "_RelTkIsop06":RelTkIso<0.1? "_RelTkIsop1": RelTkIso<0.2? "_RelTkIsop2":"_PRIsoNoEAgtp2";
-    //vector<TString> CutTagList = {"", RelIsoTag, TkIsoTag};
     vector<TString> CutTagList = {""};
     for(unsigned int it=0; it<CutTagList.size(); it++){
       TString CutTag(CutTagList.at(it));
@@ -401,49 +391,6 @@ void MeasCFlipRate::MeasMCPTScale(vector<Muon>& MuTColl, vector<Muon>& MuLColl, 
                 PtBinEdges.size()-1, &PtBinEdges[0], fEtaBinEdges.size()-1, &fEtaBinEdges[0]);
     }
   }
-}
-
-
-float MeasCFlipRate::GetFlipCorrPT(Electron& El, TString Tag, TString Option){
-
-  if(!(IsDATA  && Option.Contains("Data"))) return 0.;
-
-  bool DoScale = Option.Contains("Scale"), DoSmear = Option.Contains("Smear");
-  float PT=El.Pt(), fEta=fabs(El.Eta());
-  int EtaRegIndex1 = fEta<1.47? 0:1;
-  int EtaRegIndex2 = fEta<0.8? 0:fEta<1.47? 1: fEta<2.? 2:3;
-  int PtRegIndex1  = PT<35? 0:PT<50? 1: 2;
-  int PtRegIndex2  = PT<35? 0:PT<50? 1:PT<100? 2:3;
-  int BinIndex1 = EtaRegIndex1*3+PtRegIndex1+1; 
-  int BinIndex2 = EtaRegIndex2+1; 
-  int BinIndex3 = PtRegIndex2 +1; 
-
-  float PTScaleCorr=0., PTResCorr=0., ReturnPT=PT, RelRes=0.;
-  if(Tag.Contains("App2Bin1_")){
-    int Idx = BinIndex1;
-    PTScaleCorr = Idx==1? 0.978:Idx==2? 0.981:Idx==3? 0.988:Idx==4? 0.972:Idx==5? 0.985:Idx==6? 0.990:0.;
-    PTResCorr   = Idx==1?  1.38:Idx==2?  1.47:Idx==3?  1.31:Idx==4?  1.15:Idx==5?  1.08:Idx==6? 0.981:0.;
-    RelRes      = Idx==1? 0.0322:Idx==2? 0.0276:Idx==3? 0.0264:Idx==4? 0.0388:Idx==5? 0.0375:Idx==6? 0.0382:0.;
-  }
-  else if(Tag.Contains("App2Bin2_")){
-    int Idx = BinIndex2;
-    PTScaleCorr = 0.985;
-    PTResCorr   = 1.75;
-    RelRes      = Idx==1? 0.01:Idx==2? 0.0153:Idx==3? 0.0217:Idx==4? 0.0208:0.;
-  }
-  else if(Tag.Contains("App2Bin3_")){
-    int Idx = BinIndex3;
-    PTScaleCorr = Idx==1? 0.976:Idx==2? 0.985:Idx==3? 0.992:Idx==4? 0.999:0.;
-    PTResCorr   = Idx==1?  1.29:Idx==2?  1.41:Idx==3?  1.32:Idx==4?  1.18:0.;
-    RelRes      = Idx==1? 0.0343:Idx==2? 0.0287:Idx==3? 0.0285:Idx==4? 0.0297:0.;
-  }
-  PTScaleCorr = 1.-2.*(1.-PTScaleCorr);
-  PTResCorr   = 1.-2.*(1.-PTResCorr);
-
-  if(DoScale) ReturnPT = PT*PTScaleCorr;
-  if(DoSmear) ReturnPT = ReturnPT*( 1.+gRandom->Gaus(0,RelRes)*sqrt(max(pow(PTResCorr,2.)-1,0.)) );
-
-  return ReturnPT;
 }
 
 

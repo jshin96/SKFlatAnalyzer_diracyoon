@@ -3,7 +3,7 @@
 void MCFakeStudy::initializeAnalyzer(){
 
   ElFR=false, MuFR=false;
-  LIDOpt=false, MeasMCFR=false, MCClosure=false, CompCheck=false, PTDiffCheck=false;
+  LIDOpt=false, MeasMCFR=false, MCClosure=false, CompCheck=false;
   SystRun=false; 
   SpecTrig=false, NoTrig=false;
   for(unsigned int i=0; i<Userflags.size(); i++){
@@ -13,7 +13,6 @@ void MCFakeStudy::initializeAnalyzer(){
     if(Userflags.at(i).Contains("MeasMCFR"))    MeasMCFR    = true; 
     if(Userflags.at(i).Contains("MCClosure"))   MCClosure   = true; 
     if(Userflags.at(i).Contains("CompCheck"))   CompCheck   = true;
-    if(Userflags.at(i).Contains("PTDiffCheck")) PTDiffCheck = true;
     if(Userflags.at(i).Contains("NoTrig"))      NoTrig      = true; 
     if(Userflags.at(i).Contains("SpecTrig"))    SpecTrig    = true; 
     if(Userflags.at(i).Contains("SystRun"))     SystRun     = true; 
@@ -68,8 +67,8 @@ void MCFakeStudy::executeEvent(){
   FillHist("CutFlow", 0., weight, 20, 0., 20.);
 
   bool PassTrig=false;
-  if     (MuFR && (MCClosure or PTDiffCheck)){ PassTrig = ev.PassTrigger(TrigList_DblMu); }
-  else if(ElFR && (MCClosure or PTDiffCheck)){ PassTrig = ev.PassTrigger(TrigList_DblEG); }
+  if     (MuFR && (MCClosure)){ PassTrig = ev.PassTrigger(TrigList_DblMu); }
+  else if(ElFR && (MCClosure)){ PassTrig = ev.PassTrigger(TrigList_DblEG); }
   if(LIDOpt or MeasMCFR or NoTrig or CompCheck) PassTrig=true;
   if(!PassTrig) return;
   FillHist("CutFlow", 1., weight, 20, 0., 20.);
@@ -87,11 +86,11 @@ void MCFakeStudy::executeEvent(){
 
 
   TString IDSSLabel = "SS";
-  vector<Muon>     muonTightColl     ; //= SelectMuons(muonPreColl, "TopHNT", 10., 2.4);
-  vector<Electron> electronTightColl ; //= SelectElectrons(electronPreColl, "TopHN17"+IDSSLabel+"T", 10., 2.5);
-  vector<Muon>     muonLooseColl     ; //= SelectMuons(muonPreColl, "TopHNL", 10., 2.4);
-  vector<Electron> electronLooseColl ; //= SelectElectrons(electronPreColl, "TopHN17"+IDSSLabel+"L", 10., 2.5);
-  vector<Electron> electronVetoColl  ; //= SelectElectrons(electronPreColl, "TopHN17L", 10., 2.5);
+  vector<Muon>     muonTightColl     ;
+  vector<Electron> electronTightColl ;
+  vector<Muon>     muonLooseColl     ;
+  vector<Electron> electronLooseColl ;
+  vector<Electron> electronVetoColl  ;
 
 
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
@@ -104,7 +103,7 @@ void MCFakeStudy::executeEvent(){
   Particle vMET      = GetvMET("PUPPIMETT1");
   Particle vMET_T1xy = GetvMET("PUPPIMETT1xyCorr");
 
-  bool FillGenColl = MeasMCFR or MCClosure or LIDOpt or CompCheck or PTDiffCheck;
+  bool FillGenColl = MeasMCFR or MCClosure or LIDOpt or CompCheck;
   if(FillGenColl) truthColl = GetGens();
 
 
@@ -267,10 +266,6 @@ void MCFakeStudy::executeEvent(){
                            "TopHNT", "TopHNLLIsop6SIP5", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNL_"+GetEraShort(), weight, "_SRSelPOGT");
       }
     }
-    if(PTDiffCheck){
-      CheckFakeTLDiff(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight,
-                      "TopHNT", "TopHNLLIsop6SIP5", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNL_"+GetEraShort(), "_FRQCD_TopHNT_TopHNLLIsop6SIP5_MeasSel", "QCDMeasSelConeBasis");
-    }
   }
   if(ElFR){
     if(LIDOpt){
@@ -431,202 +426,9 @@ void MCFakeStudy::executeEvent(){
                            "TopHNT", "TopHNLLIsop6SIP5", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNL_"+GetEraShort(), weight, "_SRSel");
       }
     }
-    if(PTDiffCheck){
-      CheckFakeTLDiff(muonPreColl, electronPreColl, jetPreColl, vMET_T1xy, ev, truthColl, weight,
-                      "TopHNT", "TopHNL", "TopHNSST", "TopHNSSL_"+GetEraShort(), "TopHNL_"+GetEraShort(), "_FRQCD_TopHNSST_TopHNSSL_MeasSel", "QCDMeasSelConeBasis");
-    }
   }
 
 }
-
-
-void MCFakeStudy::CheckFakeTLDiff(vector<Muon>& MuRawColl, vector<Electron>& ElRawColl, vector<Jet>& JetRawColl, 
-                                  Particle& vMET, Event& Ev, vector<Gen>& TruthColl, float weight, 
-                                  TString MuTID, TString MuLID, TString ElTID, TString ElLID, TString ElVID, TString Label, TString Option)
-{
-
-  InitializeTreeVars();
-  vector<Muon>     MuTColl  = SelectMuons    (MuRawColl, MuTID, 10., 2.4);
-  vector<Electron> ElTColl  = SelectElectrons(ElRawColl, ElTID, 15., 2.5);
-  vector<Muon>     MuLColl  = SelectMuons    (MuRawColl, MuLID, 10., 2.4);
-  vector<Electron> ElLColl  = SelectElectrons(ElRawColl, ElLID, 15., 2.5);
-  vector<Electron> ElVColl  = SelectElectrons(ElRawColl, ElVID, 10., 2.5);
-  vector<Jet>      JetColl  = SelectJets     (JetRawColl, MuLColl, ElVColl, "tightLepVeto", 25., 2.4, "LVeto");
-  JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
-  vector<Jet>      BJetColl = SelBJets       (JetColl, param_jets);
-
-  TString FRProc = Label.Contains("FRTT")? "TT_powheg":Label.Contains("FRQCD")? "QCD":"";
-  TString MeasSel = Option.Contains("MeasSel")? "_QCDMeasSel":""; 
-  TString TrigStr = Option.Contains("Trig")?    "_Trig":"";
-  TString MuLIDBase = MuLID, ElLIDBase= ElLID;
-  MuLIDBase.ReplaceAll("_2016a",""); MuLIDBase.ReplaceAll("_2016b",""); MuLIDBase.ReplaceAll("_2017",""); MuLIDBase.ReplaceAll("_2018","");
-  ElLIDBase.ReplaceAll("_2016a",""); ElLIDBase.ReplaceAll("_2016b",""); ElLIDBase.ReplaceAll("_2017",""); ElLIDBase.ReplaceAll("_2018","");
-  TString MuFRKey = "FR2D_"+FRProc+"_"+MuTID+"_"+MuLIDBase+MeasSel+TrigStr+"_All";
-  TString ElFRKey = "FR2D_"+FRProc+"_"+ElTID+"_"+ElLIDBase+MeasSel+TrigStr+"_All";
-  if(Label.Contains("Pt10")){
-    ElFRKey = "FR2D_"+FRProc+"_"+ElTID+"_"+ElLIDBase+"_Pt10"+MeasSel+TrigStr+"_All";
-  }
-  
-  bool ConeBasis = Option.Contains("ConeBasis");
-  //int NMuT=MuTColl.size(), NElT=ElTColl.size();
-  int NMuL=MuLColl.size(), NElL=ElLColl.size(), NElV=ElVColl.size();
-  vector<Muon> MuConeColl; vector<Electron> ElConeColl;
-  vector<Muon> MuNuConeColl; vector<Electron> ElNuConeColl;
-  if( NElL!=NElV ) return;
-  if( !((NMuL==2 && NElL==0) or (NMuL==0 && NElL==2)) ) return;
-  if(NMuL==2 && MuFR){
-    int aSumQ = abs(SumCharge(MuLColl));
-    if(aSumQ==0) return;
-    if(!(MuLColl.at(0).Pt()>20. && MuLColl.at(1).Pt()>10.)) return;
-    double Mll = (MuLColl.at(0)+MuLColl.at(1)).M();
-    if(Mll<4) return; 
-    if(!(BJetColl.size()>0 && JetColl.size()>2)) return;
-    if(!( (JetColl.size()-BJetColl.size())>0 )) return;
-    if(!IsDATA){
-      int GenLepInfo = GetGenLepInfo(ElLColl, MuLColl, TruthColl);
-      if(GenLepInfo<1000) return;
-    }
-
-    int SystDir = Option.Contains("FRUp")? 1: Option.Contains("FRDown")? -1: 0; 
-    float TightIso=0.1;
-    for(unsigned int im=0; im<MuLColl.size(); im++){
-      Muon TmpMu(MuLColl.at(im)), TmpMu2(MuLColl.at(im));
-      float RelIso = MuLColl.at(im).MiniRelIso();
-      float PTCorr = MuLColl.at(im).CalcPtCone(RelIso,TightIso), PT=MuLColl.at(im).Pt();
-      float dRCone = MuLColl.at(im).miniIsoDr();
-      if(ConeBasis && RelIso>TightIso) TmpMu *= PTCorr/PT;
-      MuConeColl.push_back(TmpMu);
-
-      Gen TmpGenNu;
-      for(unsigned int it=2; it<truthColl.size(); it++){
-        int PID = truthColl.at(it).PID(), aPID = abs(PID);
-        if(!(aPID==12 or aPID==14 or aPID==16)) continue;
-
-        int MIdx = FirstNonSelfMotherIdx(it,truthColl);
-        int MPID = MIdx>=0? truthColl.at(im).PID():0, aMPID = abs(MPID);
-        if(aMPID==24 or aMPID==23) continue;
-
-        if(truthColl.at(it).DeltaR(TmpMu)>dRCone) continue;
-        TmpGenNu.SetPxPyPzE(TmpGenNu.Px()+truthColl.at(it).Px(), TmpGenNu.Py()+truthColl.at(it).Py(), TmpGenNu.Pz()+truthColl.at(it).Pz(), TmpGenNu.E()+truthColl.at(it).E());
-      }
-      TmpMu2.SetPxPyPzE(TmpMu.Px()+TmpGenNu.Px(), TmpMu.Py()+TmpGenNu.Py(), TmpMu.Pz()+TmpGenNu.Pz(), TmpMu.E()+TmpGenNu.E());
-      MuNuConeColl.push_back(TmpMu2);
-    }
-
-
-    for(unsigned int im=0; im<MuLColl.size(); im++){
-      int LepType = GetLeptonType_JH(MuLColl.at(im), truthColl);
-      TString TypeStr("");
-      if     (LepType==3) TypeStr="_PrTa";
-      else if(LepType>0 ) TypeStr="_Pr";
-      else if(LepType<0 && LepType>-5) TypeStr="_Fk";
-      else if(LepType<-4) TypeStr="_Cv";
-
-      bool PassTID = MuLColl.at(im).PassID(MuTID);
-      TString IDStr("");
-      if(PassTID) IDStr="_TID";
-      else        IDStr="_LID";
-
-      float PTCorr = MuLColl.at(im).CalcPtCone(MuLColl.at(im).MiniRelIso(), TightIso);
-      if(MuFRKey.Contains("QCD") && PTCorr>50) PTCorr=49.;
-      float FR = GetMCFakeRate(PTCorr, fabs(MuLColl.at(im).Eta()), MuFRKey, SystDir);
-      float FRW = (!PassTID) && (FR!=1.)? FR/(1-FR):0.;
-
-      FillHist("PTMu"+TypeStr+IDStr+Label, MuLColl.at(im).Pt(), weight, 30, 0., 300);
-      FillHist("PTMuVisCorr"+TypeStr+IDStr+Label, MuConeColl.at(im).Pt(), weight, 30, 0., 300);
-      FillHist("PTMuVisNuCorr"+TypeStr+IDStr+Label, MuNuConeColl.at(im).Pt(), weight, 30, 0., 300);
-      FillHist("FrPTMu_PTMuVis"+TypeStr+IDStr+Label, MuLColl.at(im).Pt()/MuConeColl.at(im).Pt(), weight, 40, 0., 2.);
-      FillHist("FrPTMu_PTMuVisNu"+TypeStr+IDStr+Label, MuLColl.at(im).Pt()/MuNuConeColl.at(im).Pt(), weight, 40, 0., 2.);
-      FillHist("FrPTMuVis_PTMuVisNu"+TypeStr+IDStr+Label, MuConeColl.at(im).Pt()/MuNuConeColl.at(im).Pt(), weight, 40, 0., 2.);
-      if(!PassTID){
-        FillHist("PTMuFRCorr"+TypeStr+IDStr+Label, MuLColl.at(im).Pt(), weight*FRW, 30, 0., 300);
-        FillHist("PTMuVisFRCorr"+TypeStr+IDStr+Label, MuConeColl.at(im).Pt(), weight*FRW, 30, 0., 300);
-        FillHist("PTMuVisNuFRCorr"+TypeStr+IDStr+Label, MuNuConeColl.at(im).Pt(), weight*FRW, 30, 0., 300);
-        FillHist("FrPTMu_PTMuVis_FRCorr"+TypeStr+IDStr+Label, MuLColl.at(im).Pt()/MuConeColl.at(im).Pt(), weight*FRW, 40, 0., 2.);
-        FillHist("FrPTMu_PTMuVisNu_FRCorr"+TypeStr+IDStr+Label, MuLColl.at(im).Pt()/MuNuConeColl.at(im).Pt(), weight*FRW, 40, 0., 2.);
-        FillHist("FrPTMuVis_PTMuVisNu_FRCorr"+TypeStr+IDStr+Label, MuConeColl.at(im).Pt()/MuNuConeColl.at(im).Pt(), weight*FRW, 40, 0., 2.);
-      }
-    }
-  }
-  if(NElL==2 && ElFR){
-    int aSumQ = abs(SumCharge(ElLColl));
-    if(aSumQ==0) return;
-    if(!( ElLColl.at(0).Pt()>25 && ElLColl.at(1).Pt()>15 )) return;
-    if( BJetColl.size()==0 ) return;
-    if( JetColl.size()<3   ) return;
-    if( (JetColl.size()-BJetColl.size())==0 ) return;
-
-    if(!IsDATA){
-      int GenLepInfo = GetGenLepInfo(ElLColl, MuLColl, TruthColl);
-      if(GenLepInfo<1000) return;
-    }
-
-    int SystDir = Option.Contains("FRUp")? 1: Option.Contains("FRDown")? -1: 0; 
-    float TightIso=0.1;
-    for(unsigned int ie=0; ie<ElLColl.size() && ConeBasis; ie++){
-      Electron TmpEl(ElLColl.at(ie)), TmpEl2(ElLColl.at(ie));
-      float RelIso = ElLColl.at(ie).MiniRelIso();
-      float PTCorr = ElLColl.at(ie).CalcPtCone(RelIso,TightIso), PT=ElLColl.at(ie).Pt();
-      float dRCone = ElLColl.at(ie).miniIsoDr();
-      if(RelIso>TightIso) TmpEl *= PTCorr/PT;
-      ElConeColl.push_back(TmpEl);
-
-      Gen TmpGenNu;
-      for(unsigned int it=2; it<truthColl.size(); it++){
-        int PID = truthColl.at(it).PID(), aPID = abs(PID);
-        if(!(aPID==12 or aPID==14 or aPID==16)) continue;
-
-        int MIdx = FirstNonSelfMotherIdx(it,truthColl);
-        int MPID = MIdx>=0? truthColl.at(ie).PID():0, aMPID = abs(MPID);
-        if(aMPID==24 or aMPID==23) continue;
-
-        if(truthColl.at(it).DeltaR(TmpEl)>dRCone) continue;
-        TmpGenNu.SetPxPyPzE(TmpGenNu.Px()+truthColl.at(it).Px(), TmpGenNu.Py()+truthColl.at(it).Py(), TmpGenNu.Pz()+truthColl.at(it).Pz(), TmpGenNu.E()+truthColl.at(it).E());
-      }
-      TmpEl2.SetPxPyPzE(TmpEl.Px()+TmpGenNu.Px(), TmpEl.Py()+TmpGenNu.Py(), TmpEl.Pz()+TmpGenNu.Pz(), TmpEl.E()+TmpGenNu.E());
-      ElNuConeColl.push_back(TmpEl2);
-    }
-
-    if(!( fabs( (ElConeColl.at(0)+ElConeColl.at(1)).M()-91.2 )>10 )) return;
-
-
-    for(unsigned int ie=0; ie<ElLColl.size(); ie++){
-      int LepType = GetLeptonType_JH(ElLColl.at(ie), truthColl);
-      TString TypeStr("");
-      if     (LepType==3) TypeStr="_PrTa";
-      else if(LepType>0 ) TypeStr="_Pr";
-      else if(LepType<0 && LepType>-5) TypeStr="_Fk";
-      else if(LepType<-4) TypeStr="_Cv";
-
-      bool PassTID = ElLColl.at(ie).PassID(ElTID);
-      TString IDStr("");
-      if(PassTID) IDStr="_TID";
-      else        IDStr="_LID";
-
-      float PTCorr = ElLColl.at(ie).CalcPtCone(ElLColl.at(ie).MiniRelIso(), TightIso);
-      if(ElFRKey.Contains("QCD") && PTCorr>50) PTCorr=49.;
-      float FR = GetMCFakeRate(PTCorr, fabs(ElLColl.at(ie).Eta()), ElFRKey, SystDir);
-      float FRW = (!PassTID) && (FR!=1.)? FR/(1-FR):0.;
-
-      FillHist("PTEl"+TypeStr+IDStr+Label, ElLColl.at(ie).Pt(), weight, 30, 0., 300);
-      FillHist("PTElVisCorr"+TypeStr+IDStr+Label, ElConeColl.at(ie).Pt(), weight, 30, 0., 300);
-      FillHist("PTElVisNuCorr"+TypeStr+IDStr+Label, ElNuConeColl.at(ie).Pt(), weight, 30, 0., 300);
-      FillHist("FrPTEl_PTElVis"+TypeStr+IDStr+Label, ElLColl.at(ie).Pt()/ElConeColl.at(ie).Pt(), weight, 40, 0., 2.);
-      FillHist("FrPTEl_PTElVisNu"+TypeStr+IDStr+Label, ElLColl.at(ie).Pt()/ElNuConeColl.at(ie).Pt(), weight, 40, 0., 2.);
-      FillHist("FrPTElVis_PTElVisNu"+TypeStr+IDStr+Label, ElConeColl.at(ie).Pt()/ElNuConeColl.at(ie).Pt(), weight, 40, 0., 2.);
-      if(!PassTID){
-        FillHist("PTElFRCorr"+TypeStr+IDStr+Label, ElLColl.at(ie).Pt(), weight*FRW, 30, 0., 300);
-        FillHist("PTElVisFRCorr"+TypeStr+IDStr+Label, ElConeColl.at(ie).Pt(), weight*FRW, 30, 0., 300);
-        FillHist("PTElVisNuFRCorr"+TypeStr+IDStr+Label, ElNuConeColl.at(ie).Pt(), weight*FRW, 30, 0., 300);
-        FillHist("FrPTEl_PTElVis_FRCorr"+TypeStr+IDStr+Label, ElLColl.at(ie).Pt()/ElConeColl.at(ie).Pt(), weight*FRW, 40, 0., 2.);
-        FillHist("FrPTEl_PTElVisNu_FRCorr"+TypeStr+IDStr+Label, ElLColl.at(ie).Pt()/ElNuConeColl.at(ie).Pt(), weight*FRW, 40, 0., 2.);
-        FillHist("FrPTElVis_PTElVisNu_FRCorr"+TypeStr+IDStr+Label, ElConeColl.at(ie).Pt()/ElNuConeColl.at(ie).Pt(), weight*FRW, 40, 0., 2.);
-      }
-    }
-  }
-
-}
-
 
 
 void MCFakeStudy::CheckFakeComposition(vector<Muon>& MuRawColl, vector<Electron>& ElRawColl, vector<Jet>& JetRawColl, Particle& vMET, Event& ev,
@@ -1362,7 +1164,7 @@ bool MCFakeStudy::PassFRMeasSel(vector<Muon>& MuTColl, vector<Muon>& MuLColl, ve
     }
     if( !PassJetReq ) return false;
     if( !PassNBCut  ) return false;
-    //if( !(MET<25 && MTW<25) ) return false;
+    //if( !(MET<25 && MTW<25) ) return false; //excluded for limited MC stat.
 
   }
   else if(NElL==1){
@@ -1394,7 +1196,7 @@ bool MCFakeStudy::PassFRMeasSel(vector<Muon>& MuTColl, vector<Muon>& MuLColl, ve
     }
     if(!PassJetReq) return false;
     if(!PassNBCut ) return false;
-    //if( !(MET<25 && MTW<25) ) return false;
+    //if( !(MET<25 && MTW<25) ) return false; //excluded for limited MC stat.
   }
   else return false;
 
@@ -1543,8 +1345,6 @@ void MCFakeStudy::CheckMCClosure(vector<Muon>& MuRawColl, vector<Electron>& ElRa
   vector<Electron> ElTColl  = SelectElectrons(ElRawColl, ElTID, 15., 2.5);
   vector<Muon>     MuLColl  = SelectMuons    (MuRawColl, MuLID, 10., 2.4);
   vector<Electron> ElLColl  = SelectElectrons(ElRawColl, ElLID, 15., 2.5);
-  //vector<Muon>     MuLColl  = SelectMuons    (MuRawColl, MuLID, 7.7, 2.4);
-  //vector<Electron> ElLColl  = SelectElectrons(ElRawColl, ElLID, 12., 2.5);
   vector<Electron> ElVColl  = SelectElectrons(ElRawColl, ElVID, 10., 2.5);
   vector<Jet>      JetColl  = SelectJets     (JetRawColl, MuLColl, ElVColl, "tight", 25., 2.4, "LVeto");
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
@@ -1910,18 +1710,6 @@ float MCFakeStudy::GetMCFakeRate(float VarX, float VarY, TString Key, int SystDi
 }
 
 
-float MCFakeStudy::GetResidualNormSF(TString Key){
-
-  float SF=1.;
-  if     (Key=="TrigMu17") SF=1.586e-03;
-  else if(Key=="TrigMu8" ) SF=9.514e-05;
-  else if(Key=="TrigEl23") SF=8.397e-04;
-  else if(Key=="TrigEl12") SF=6.043e-04;
-
-  return SF;
-}
-
-
 float MCFakeStudy::NvtxReweight(TString Key){
   
   if(IsDATA) return 1.;
@@ -2257,17 +2045,6 @@ float MCFakeStudy::NvtxReweight(TString Key){
 
 
 
-bool MCFakeStudy::IsNearBJet(Lepton& Lepton, vector<Jet>& BJetColl){
-
-  bool FoundNearB=false;
-  for(unsigned int it_b=0; it_b<BJetColl.size(); it_b++){
-    if(Lepton.DeltaR(BJetColl.at(it_b))<0.4){ FoundNearB=true; break; }
-  }
-
-  return FoundNearB;
-}
-
-
 int MCFakeStudy::GetGenLepInfo(vector<Electron>& ElColl, vector<Muon>& MuColl, vector<Gen>& TruthColl){
 
   int NFk=0, NFlip=0, NCv=0, IdxFlipped=9;
@@ -2384,115 +2161,3 @@ int MCFakeStudy::GetFakeLepSrcType(Lepton& Lep, vector<Jet>& JetColl){
 //1) Higher Priority to B. if there's multiple near jets, then b-jet has higher priority
 }
 
-
-bool MCFakeStudy::PassLooseMVA(Electron& El, TString wp, TString Option){
-
-  vector<float> PTEdges, MVACuts, PTCenters;
-  float fEta = fabs(El.Eta()), PT=El.Pt(), PTCorr = El.CalcPtCone(El.MiniRelIso(),0.1);
-  bool IsEB1=fEta<0.8, IsEB2=(!IsEB1) && fEta<1.479;
-  bool PTBase=false, PTCorrBase=false, NoInt=false;
-  if(Option.Contains("PTCorrBase")) PTCorrBase=true;
-  else PTBase=true;
-  if(Option.Contains("NoInt")) NoInt=true;
-  float PTnow = PTBase? PT:PTCorrBase? PTCorr: PT;
-  float MVACut = 1; bool PassMVAT=false;
-
-  if(wp=="TopHNSSL_DynLMVANoSIP"){
-    PTEdges =                {15, 20,   25,   35,   50,   70,  100,  200};
-    PTCenters =              { 17.5, 22.5,   30, 42.5,   60,   85,  150};
-    if     (IsEB1) MVACuts = { 0.86, 0.95, 0.97, 0.94, 0.82, 0.82, 0.51};
-    else if(IsEB2) MVACuts = { 0.57, 0.82, 0.87, 0.87, 0.78, 0.83, 0.59};
-    else           MVACuts = {-0.27, 0.10, 0.50, 0.74, 0.87, 0.96, 0.96};
-    PassMVAT  = El.passMVAID_noIso_WP90(); 
-  }
-  else { printf("[Electron::PassLooseMVA] No id : %s\n", wp.Data()); return false; }
-  if(PTCenters.size()!=MVACuts.size()){ printf("N(PTCenter)!=N(MVACuts)\n"); return false; }
-
-  int Nbins=MVACuts.size();
-  if     (PTnow<PTCenters.at(0)      ){ MVACut = MVACuts.at(0); }
-  else if(PTnow>PTCenters.at(Nbins-1)){ MVACut = MVACuts.at(Nbins-1); }
-  else{
-    for(unsigned int ipt=0; ipt<PTCenters.size()-1 && (!NoInt); ipt++){
-      if( !(PTnow>=PTCenters.at(ipt) && PTnow<PTCenters.at(ipt+1)) ) continue;
-      float PT1  = PTCenters.at(ipt), PT2 = PTCenters.at(ipt+1);
-      float MVA1 = MVACuts.at(ipt), MVA2 = MVACuts.at(ipt+1);
-      MVACut = MVA1 + (PTnow-PT1)/(PT2-PT1)*(MVA2-MVA1);
-      break;
-    }
-    for(unsigned int ipt=0; ipt<PTEdges.size()-1 && NoInt; ipt++){
-      if( !(PTnow>=PTEdges.at(ipt) && PTnow<PTEdges.at(ipt+1)) ) continue;
-      float ThisMVA = MVACuts.at(ipt);
-      MVACut = ThisMVA;
-      break;
-    }
-  }
-
-  bool ReturnVal = El.MVANoIso()>MVACut; 
-  if( (!ReturnVal) && PassMVAT ) ReturnVal=true; 
-  return ReturnVal;
-  
-}
-
-
-/*    //Non-matched jets analysis
-      for(unsigned int ie=0; ie<FakeColl.size(); ie++){
-        if(!FakeColl.at(ie).PassID("TopHNIsoSSL_Mvam1Isop1")) continue;
-        vector<int> IdxJetList;
-        for(unsigned int ij=0; ij<jetNoVetoColl.size(); ij++){
-          if(jetNoVetoColl.at(ij).DeltaR(FakeColl.at(ie))<0.4){ IdxJetList.push_back(ij); break; }
-        }
-        if(IdxJetList.size()==0){
-          FillHist("FakeSrcType", -1, weight, 20, -10, 10);
-        }
-        for(unsigned int iIdxj=0; iIdxj<IdxJetList.size(); iIdxj++){
-          vector<unsigned int> IdxPrLepList, IdxPrhTauList;
-          for(unsigned int it=2; it<truthColl.size(); it++){
-            if(truthColl.at(it).MotherIndex()<0 ) continue;
-            int abspid=fabs(truthColl.at(it).PID());
-            int absmpid=fabs(truthColl.at(truthColl.at(it).MotherIndex()).PID());
-            if(!(abspid==11 or abspid==13 or abspid==15)) continue;
-            if(truthColl.at(it).DeltaR(jetNoVetoColl.at(IdxJetList.at(iIdxj)))>0.4) continue;
-
-            if( truthColl.at(it).Status()==1 ){
-              if( abspid==11 || abspid==13 ){
-                int LepType=GetLeptonType_JH(it, truthColl);
-                if( LepType==1 || LepType==2 || LepType==3 ) IdxPrLepList.push_back(it);
-              }
-            }
-            if( abspid==15 && truthColl.at(it).Status()>20 && truthColl.at(it).Status()<30 ) IdxPrhTauList.push_back(it);
-            else if( abspid==15 && (absmpid==23 || absmpid==24) && truthColl.at(it).Status()==2 ) IdxPrhTauList.push_back(it);
-          }
-          if(IdxPrLepList.size()!=0 or IdxPrhTauList.size()!=0){
-            int MatchedIdx = GenMatchedIdx(FakeColl.at(ie), truthColl), ClosestIdx = -1;
-            if(MatchedIdx==-1){
-              float mindR=-1;
-              for(unsigned int it=2; it<truthColl.size(); it++){
-                float dR = FakeColl.at(ie).DeltaR(truthColl.at(it));
-                if(mindR<0 or dR<mindR){ mindR=dR; ClosestIdx=it; }
-              }
-            }
-            int NPrL=IdxPrLepList.size(), NTauh=IdxPrhTauList.size();
-            if     (NPrL >0 && NTauh==0) FillHist("FakeSrcType", -2, weight, 20, -10, 10);
-            else if(NPrL==0 && NTauh >0) FillHist("FakeSrcType", -3, weight, 20, -10, 10);
-            else if(NPrL >0 && NTauh >0) FillHist("FakeSrcType", -4, weight, 20, -10, 10);
-            float Ptj=jetNoVetoColl.at(IdxJetList.at(iIdxj)).Pt(), Etaj=jetNoVetoColl.at(IdxJetList.at(iIdxj)).Eta(), phij=jetNoVetoColl.at(IdxJetList.at(iIdxj)).Phi();
-            float Pte=FakeColl.at(ie).Pt(), Etae=FakeColl.at(ie).Eta(), phie=FakeColl.at(ie).Phi(), MVAe=FakeColl.at(ie).MVANoIso();
-            printf("matchIdx:%d, NearIdx:%d, ElPt:%.0f-Eta:%.2f-phi:%.2f / JetPt:%.0f-Eta:%.2f-phi:%.2f / MVA:%.2f\n", MatchedIdx, ClosestIdx, Pte, Etae, phie, Ptj, Etaj, phij, MVAe);
-            cout << "index\tPID\tStatus\tMIdx\tMPID\tStart\tPt\tEta\tPhi\tM" << endl;
-            for(unsigned int it=2; it<truthColl.size() && false; it++){
-              Gen gen = truthColl.at(it);
-              vector<int> history = TrackGenSelfHistory(gen, truthColl);
-              bool Match=((int) it)==ClosestIdx or ((int) it)==MatchedIdx;
-              for(unsigned int id=0; id<IdxPrLepList.size() && !Match; id++){ if(IdxPrLepList.at(id)==it){ Match=true; continue; } }
-              for(unsigned int id=0; id<IdxPrhTauList.size() && !Match; id++){ if(IdxPrhTauList.at(id)==it){ Match=true; continue; } }
-              TString MatchTag=Match? "  <============":"";
-              cout << it << "\t" << gen.PID() << "\t" << gen.Status() << "\t" << gen.MotherIndex() << "\t" << truthColl.at(gen.MotherIndex()).PID()<< "\t" << history[0] << "\t";
-              printf("%.2f\t%.2f\t%.2f\t%.2f%s\n",gen.Pt(), gen.Eta(), gen.Phi(), gen.M(), MatchTag.Data());
-            }
-          }
-          else{
-            FillHist("FakeSrcType", jetNoVetoColl.at(IdxJetList.at(iIdxj)).hadronFlavour(), weight, 20, -10, 10);
-          }
-        }
-      }
-*/

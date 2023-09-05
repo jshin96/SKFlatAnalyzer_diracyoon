@@ -30,9 +30,7 @@ public:
                           vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, Event& Ev, float weight, TString Label);
 
   float GetResidualNormSF(TString Key, TString Era="");
-  float NvtxReweight(TString Key);
   float GetNvtxReweight(int Nvtx, TString Key);
-  bool  IsNearBJet(Lepton& Lepton, vector<Jet>& BJetColl);
 
   TFile* NvtxSFFile;
   map< TString, TH1D* > maphist_NvtxSF;

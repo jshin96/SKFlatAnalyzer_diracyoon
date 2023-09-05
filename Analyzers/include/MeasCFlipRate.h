@@ -40,7 +40,6 @@ public:
   float GetTestMuFR(Muon& Mu, TString Key, int SystDir=0);
   float GetTestElFR(Electron& El, TString Key, int SystDir=0);
   float GetCFRSF(Electron& El, TString Tag, TString Option="");
-  float GetFlipCorrPT(Electron& El, TString Tag, TString Option="");
   float GetMCCFR(float VarX, float VarY, TString Key);
 
   TFile* f_CFR_DY; TFile* f_CFR_TT; 

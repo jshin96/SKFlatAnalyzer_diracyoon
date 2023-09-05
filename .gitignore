@@ -8,3 +8,4 @@ lib/*
 */obj
 Debug_*/*
 *Tmp.txt
+*/libAnalyzers.rootmap

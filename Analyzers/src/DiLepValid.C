@@ -122,11 +122,6 @@ void DiLepValid::executeEvent(){
   vector<Jet> jetColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
   vector<Jet> bjetColl = SelBJets(jetColl, param_jets);
 
-  //Particle vMET_PFT1   = GetvMET("T1");
-  //Particle vMET_PFT1xy = GetvMET("T1xyCorr");
-  //Particle vMET; vMET.SetPtEtaPhiM(PuppiMET_Type1_pt, 0., PuppiMET_Type1_phi, 0.);
-  //Particle vMET1 = GetMETPhiTemp("PUPPIT1");
-  //Particle vMET2_T1xy = GetMETPhiTemp("PUPPIT1");
   Particle vMET = GetvMET("PUPPIMETT1"); //"T1"
   Particle vMET_T1xy = GetvMET("PUPPIMETT1xyCorr");
  
@@ -145,8 +140,6 @@ void DiLepValid::executeEvent(){
     if(MCSample.Contains("TT") and MCSample.Contains("powheg")){ truthColl = GetGens(); w_TopPtRW = mcCorr->GetTopPtReweight(truthColl); }
     w_Pref = GetPrefireWeight(0);
     sf_mID   = GetMuonSF(muonTightColl, MuTID, "ID");
-    //sf_mID   = GetMuonSF(muonTightColl, "NUM_MediumID_DEN_TrackerMuons", "ID")*GetMuonSF(muonTightColl, "TopHNTIsoIP_POGMID", "ISO");
-    //sf_mID   = GetMuonSF(muonTightColl, "NUM_MediumID_DEN_TrackerMuons", "ID")*GetMuonSF(muonTightColl, "NUM_TightRelIso_DEN_MediumID", "ISO");
     sf_eReco = GetElectronSF(electronTightColl, "", "Reco");
     sf_eID   = GetElectronSF(electronTightColl, ElTID, "ID");
     sf_B   = mcCorr->GetBTaggingReweight_1a(jetColl, param_jets);
@@ -209,19 +202,8 @@ void DiLepValid::executeEvent(){
                         w_GenNorm*w_Pref*w_PU*sf_mID*sf_muiso*sf_eReco*sf_eID*sf_Tr, "_PrefPUIDTrigMuEl");
     AnalyzeElectronMuon(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET_T1xy,
                         w_GenNorm*w_Pref*w_PU*sf_mID*sf_muiso*sf_eReco*sf_eID*sf_Tr, "_PrefPUIDTrigMuElMETPhi");
-
-    //AnalyzeElectronMuon(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET_PUPPIT1,
-    //                    w_GenNorm*w_Pref*w_PU*sf_mID*sf_muiso*sf_eReco*sf_eID*sf_Tr, "_PrefPUIDTrigMuElPUPPI");
-    //AnalyzeElectronMuon(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET_PUPPIT1xy,
-    //                    w_GenNorm*w_Pref*w_PU*sf_mID*sf_muiso*sf_eReco*sf_eID*sf_Tr, "_PrefPUIDTrigMuElPUPPIPhi");
-    //AnalyzeElectronMuon(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, TmpvMET_T1xy,
-    //                    w_GenNorm*w_Pref*w_PU*sf_mID*sf_muiso*sf_eReco*sf_eID*sf_Tr, "_PrefPUIDTrigMuElMETPhiv2");
-    //AnalyzeElectronMuon(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, TmpvMET_PUPPIT1xy,
-    ///                    w_GenNorm*w_Pref*w_PU*sf_mID*sf_muiso*sf_eReco*sf_eID*sf_Tr, "_PrefPUIDTrigMuElPUPPIPhiv2");
-
     AnalyzeElectronMuon(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET_T1xy,
                         w_GenNorm*w_Pref*w_PU*sf_mID*sf_muiso*sf_eReco*sf_eID*sf_Tr*sf_B, "_PrefPUIDTrigMuElMETPhiBTag");
-
   }
   if( SystRun && !IsDATA){
     vector<Muon>     MuEnUpTColl, MuEnUpLColl, MuEnDownTColl, MuEnDownLColl;
@@ -334,10 +316,6 @@ void DiLepValid::executeEvent(){
     float weight_TrUp      = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eID          * sf_TrUp        * sf_B;
     float weight_TrDown    = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eID          * sf_TrDown      * sf_B;
 
-    //int NEl=electronTightColl.size(), NMu=muonTightColl.size();
-    //int NMuUp = MuEnUpTColl.size(), NMuDown = MuEnDownTColl.size();
-    //printf("em:%d-%d-%d-%d W:%.2f WUp:%.2f WDown:%.2f\n", NEl, NMu, NMuUp, NMuDown, weight, weight_MuIDUp, weight_MuIDDown);
-    //printf("em:%d-%d-%d-%d W:%.2f WUp:%.2f WDown:%.2f\n", NEl, NMu, NMuUp, NMuDown, weight, weight_MuIDUp/weight, weight_MuIDDown/weight);
 
     if(!IsDATA){
       SysWgtStrPairList.clear();//safe-guard, in-case there was usage before this and uncleared
@@ -460,13 +438,6 @@ void DiLepValid::AnalyzeDiMuon(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vec
 
   float HT=0; for(unsigned int itj=0; itj<JetColl.size(); itj++){ HT+=JetColl.at(itj).Pt(); }
   FillHist("HT"+Label, HT, weight, 40, 0., 200., ApplyWVar, SysWgtStrPairList);
-  //-no longer need to test from ULv2 PUPPI, simple MET & HT already good
-  //float ST=HT+vMET.Pt()+MuTColl.at(0).Pt()+MuTColl.at(1).Pt();
-  //float MET2ST=pow(vMET.Pt(),2.)/ST;
-  //float MET2HT=HT==0? 0.:pow(vMET.Pt(),2.)/HT;
-  //FillHist("ST"+Label, ST, weight, 60, 0., 300., ApplyWVar, SysWgtStrPairList);
-  //FillHist("MET2ST"+Label, MET2ST, weight, 40, 0., 200., ApplyWVar, SysWgtStrPairList);
-  //FillHist("MET2HT"+Label, MET2HT, weight, 40, 0., 200., ApplyWVar, SysWgtStrPairList);
 } 
 
 
@@ -502,9 +473,6 @@ void DiLepValid::AnalyzeDiMuonBJet(vector<Muon>& MuTColl, vector<Muon>& MuLColl,
   }
 
   float HT=0; for(unsigned int itj=0; itj<JetColl.size(); itj++){ HT+=JetColl.at(itj).Pt(); }
-  //float ST=HT+vMET.Pt()+MuTColl.at(0).Pt()+MuTColl.at(1).Pt();
-  //float MET2ST=pow(vMET.Pt(),2.)/ST;
-  //float MET2HT=HT==0? 0.:pow(vMET.Pt(),2.)/HT;
   bool OffZ = fabs(Mmumu-91.2)>15, PtJet1_50 = JetColl.size()>0? JetColl.at(0).Pt()>50:false;
   bool MET50 = vMET.Pt()>50.;
 
@@ -560,9 +528,6 @@ void DiLepValid::AnalyzeDiMuonBJet(vector<Muon>& MuTColl, vector<Muon>& MuLColl,
     FillHist("METPhi"+FinLabel, vMET.Phi(), weight, 10, -3.15, 3.15, ApplyWVar, SysWgtStrPairList);
     FillHist("HT"+FinLabel, HT, weight, 32, 0., 800., ApplyWVar, SysWgtStrPairList);
     FillHist("dRll"+FinLabel, MuTColl.at(0).DeltaR(MuTColl.at(1)), weight, 25, 0., 5., ApplyWVar, SysWgtStrPairList);
-    //FillHist("ST"+FinLabel, ST, weight, 48, 0., 1200., ApplyWVar, SysWgtStrPairList);
-    //FillHist("MET2ST"+FinLabel, MET2ST, weight, 12, 0., 120., ApplyWVar, SysWgtStrPairList);
-    //FillHist("MET2HT"+FinLabel, MET2HT, weight, 30, 0., 300., ApplyWVar, SysWgtStrPairList);
   }
 
 } 
@@ -690,7 +655,6 @@ void DiLepValid::AnalyzeDiLeptonBJet(vector<Muon>& MuTColl, vector<Muon>& MuLCol
     Mll = (ElTColl.at(0)+ElTColl.at(1)).M();
     dRll = ElTColl.at(0).DeltaR(ElTColl.at(1));
     HT=0; for(unsigned int itj=0; itj<JetColl.size(); itj++){ HT+=JetColl.at(itj).Pt(); }
-    //MET2HT=HT==0? 0.:pow(vMET.Pt(),2.)/HT;
   }
   else if( NMuT==2 ){
     float PTmin1 = 10., PTmin2 = 10.;
@@ -703,7 +667,6 @@ void DiLepValid::AnalyzeDiLeptonBJet(vector<Muon>& MuTColl, vector<Muon>& MuLCol
     Mll  = (MuTColl.at(0)+MuTColl.at(1)).M();
     dRll = MuTColl.at(0).DeltaR(MuTColl.at(1));
     HT=0; for(unsigned int itj=0; itj<JetColl.size(); itj++){ HT+=JetColl.at(itj).Pt(); }
-    //MET2HT=HT==0? 0.:pow(vMET.Pt(),2.)/HT;
   }
   else return;
 
@@ -781,7 +744,6 @@ void DiLepValid::AnalyzeDiLeptonBJet(vector<Muon>& MuTColl, vector<Muon>& MuLCol
     FillHist("MET"   +FinLabel, vMET.Pt(), weight, 40, 0., 400., ApplyWVar, SysWgtStrPairList);
     FillHist("METPhi"+FinLabel, vMET.Phi(), weight, 10, -3.15, 3.15, ApplyWVar, SysWgtStrPairList);
     FillHist("HT"    +FinLabel, HT, weight, 32, 0., 800., ApplyWVar, SysWgtStrPairList);
-    //FillHist("MET2HT"+FinLabel, MET2HT, weight, 30, 0., 300., ApplyWVar, SysWgtStrPairList);
     FillHist("dRll"  +FinLabel, dRll, weight, 25, 0., 5., ApplyWVar, SysWgtStrPairList);
   }
 

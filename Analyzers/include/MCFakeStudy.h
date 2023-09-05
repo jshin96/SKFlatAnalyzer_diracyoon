@@ -13,7 +13,7 @@ public:
 
   bool SpecTrig, NoTrig;
   bool ElFR, MuFR;
-  bool LIDOpt, MeasMCFR, MCClosure, CompCheck, PTDiffCheck;
+  bool LIDOpt, MeasMCFR, MCClosure, CompCheck;
   bool SystRun;
   vector<TString> TrigList_ElFR, TrigList_MuFR, TrigList_DblMu, TrigList_DblEG, TrigList_MuEG;
   TString EraShort;
@@ -32,9 +32,7 @@ public:
   void ScanFakeRate(vector<Electron>& FakePreColl, vector<Jet>& JetColl, TString Var1Str, TString Var2Str, float Var1Cut, float Var2Cut, vector<double>& PtEdges, float weight, TString PreID, TString TightID, TString Label, TString Option);
   int  GetFakeLepSrcType(Lepton& Lep, vector<Jet>& JetColl);
 
-  float GetResidualNormSF(TString Key);
   float NvtxReweight(TString Key);
-  bool  IsNearBJet(Lepton& Lepton, vector<Jet>& BJetColl);
 
   bool PassFRMeasSel(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
                      vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, Event& Ev, TString Label);
@@ -48,16 +46,12 @@ public:
                       TString MuTID, TString MuLID, TString ElTID, TString ElLID, TString ElVID, TString Label, TString Option="");
   void CheckFakeComposition(vector<Muon>& MuRawColl, vector<Electron>& ElRawColl, vector<Jet>& JetRawColl, Particle& vMET, Event& ev,
                             TString MuTID, TString MuLID, TString ElTID, TString ElLID, TString ElVID, float weight, TString Label);
-  void CheckFakeTLDiff(vector<Muon>& MuRawColl, vector<Electron>& ElRawColl, vector<Jet>& JetRawColl, 
-                       Particle& vMET, Event& Ev, vector<Gen>& TruthColl, float weight, 
-                       TString MuTID, TString MuLID, TString ElTID, TString ElLID, TString ElVID, TString Label, TString Option="");
 
 
   float GetMCFakeRate(float VarX, float VarY, TString Key, int SystDir);
   float GetMCFakeWeight(vector<Muon>& MuColl, vector<Electron>& ElColl, TString MuTID, TString ElTID, TString MuFRKey, TString ElFRKey, int SystDir);
   float GetGenMatchFakeWeight(vector<Muon>& MuColl, vector<Electron>& ElColl, vector<Gen>& TruthColl, TString MuTID, TString ElTID, TString MuFRKey, TString ElFRKey);
   int   GetGenLepInfo(vector<Electron>& ElColl, vector<Muon>& MuColl, vector<Gen>& TruthColl);
-  bool  PassLooseMVA(Electron& El, TString wp, TString Option="");
 
   void  InitializeReader(TMVA::Reader* ThisReader, TString Option);
   void  InitializeTreeVars();

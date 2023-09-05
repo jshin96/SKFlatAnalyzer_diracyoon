@@ -11,8 +11,8 @@ public:
   void executeEventFromParameter(AnalyzerParameter param);
   void executeEvent();
 
-  bool OS2l, SS2l, TriLep, TetraLep, TopCR_OS2l, TopBSrc, SB_SS2L, SB_OS2L, CFlip, ConvCR, FkCR3l; 
-  bool ConvSrcDep, TrigClos, TypeFRCheck;
+  bool OS2l, SS2l, TriLep, TetraLep, SB_SS2L, CFlip, ConvCR, FkCR3l; 
+  bool TrigClos;
   bool DblMu, DblEG, MuEG, SglEl;
   bool FakeRun, ConvRun, FlipRun, SystRun, HEMCheck;
   vector<TString> TrigList_DblMu, TrigList_DblEG, TrigList_MuEG, TrigList_SglEl;
@@ -32,15 +32,6 @@ public:
   void CheckConvVar(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,
                     vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
                     vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, float weight, TString Label);
-  void CheckConvSrcDep(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,
-                       vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
-                       vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, float weight, TString Label);
-  void PlotTop2LCR_OS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,
-                        vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
-                        vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, float weight, TString Label);
-  void CheckTopBSrc(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,
-                    vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
-                    vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, float weight, TString Label);
   void CheckChargeFlip(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,
                        vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
                        vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, float weight, TString Label);
@@ -57,9 +48,6 @@ public:
   float GetCFRWeight(vector<Electron>& ElColl, TString Option);
   float GetCFRAndSF(float VarX, float VarY, TString Key, TString Opt);
 
-  float CalcTestFakeWeight(vector<Muon>& MuColl, vector<Electron>& ElColl, TString MuIDT, TString MuIDL, TString ElIDT, TString ElIDL, int NBJet=0, int SystDir=0);
-  float GetTestMuFR(Muon& Mu, TString Key, int SystDir=0);
-  float GetTestElFR(Electron& El, TString Key, int SystDir=0);
   float GetCFRSF(Electron& El, TString Tag, TString Option="");
   float GetConvSF(TString ElTID, int SystDir);
   float GetFlipCorrPT(Electron& El, TString Tag, TString Option="");

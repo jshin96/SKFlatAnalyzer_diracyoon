@@ -3,13 +3,12 @@
 void MeasTrigEff::initializeAnalyzer(){
 
   ElEl=false, MuMu=false, ElMu=false, SystRun=false; 
-  DiMuTrig_MuLeg=false, DiMuTrig_DZ=false, DiElTrig_DZ=false;
+  DiMuTrig_DZ=false, DiElTrig_DZ=false;
   EMuTrig_ElLeg=false, EMuTrig_MuLeg=false, EMuTrig_DZ=false;
   for(unsigned int i=0; i<Userflags.size(); i++){
     if(Userflags.at(i).Contains("ElEl")) ElEl = true; 
     if(Userflags.at(i).Contains("MuMu")) MuMu = true; 
     if(Userflags.at(i).Contains("ElMu")) ElMu = true; 
-    if(Userflags.at(i).Contains("DiMuTrig_MuLeg")) DiMuTrig_MuLeg = true; 
     if(Userflags.at(i).Contains("DiMuTrig_DZ"))    DiMuTrig_DZ    = true; 
     if(Userflags.at(i).Contains("DiElTrig_DZ"))    DiElTrig_DZ    = true; 
     if(Userflags.at(i).Contains("EMuTrig_ElLeg"))  EMuTrig_ElLeg  = true; 
@@ -54,9 +53,6 @@ void MeasTrigEff::initializeAnalyzer(){
     TrigList_ElMuDZ   = {"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v"};
   }
 
-  if(MuMu){
-    if(DiMuTrig_MuLeg){ TrigList = TrigList_SglMu; }
-  }
   if(ElEl){
     if(DiElTrig_DZ   ){ TrigList = TrigList_DblEG; }
   }
@@ -104,8 +100,6 @@ void MeasTrigEff::executeEvent(){
   if(!PreCutPass) return;
 
 
-  //TString MuTID = "TopHNTIsop10NoIP", MuLID = "TopHNLLIsop6NoIP";
-  //TString MuTID = "POGMIDTIso", MuLID = "POGMIDVVLIso";
   TString MuTID = "TopHNT", MuLID = "TopHNLLIsop6SIP5";
   TString ElTID = "TopHNSST", ElLID = "TopHNSSLFixLMVAIsop4NoSIP_"+GetEraShort(), ElVID = "TopHNV";
   float PTminEl = ElTID.Contains("SS")? 15.:10.;
@@ -156,7 +150,6 @@ void MeasTrigEff::executeEvent(){
 
  
   if(MuMu){
-    if(DiMuTrig_MuLeg) MeasEffDiMuTrig_MuLeg(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET, ev, weight, "");
     if(DiMuTrig_DZ   ) MeasEffDiMuTrig_DZ(muonTightColl, muonLooseColl, electronTightColl, electronLooseColl, jetColl, bjetColl, vMET, ev, weight, "");
   }
   if(ElEl){
@@ -174,77 +167,6 @@ void MeasTrigEff::executeEvent(){
     }
   }
 
-
-}
-
-
-
-void MeasTrigEff::MeasEffDiMuTrig_MuLeg(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Electron>& ElTColl, vector<Electron>& ElLColl,
-                                        vector<Jet>& JetColl,  vector<Jet>& BJetColl, Particle& vMET, Event& ev, float weight, TString Label){
-
-  if( !(MuTColl.size()==2 && ElTColl.size()==0) ) return;
-  if( !(MuLColl.size()==2 && ElLColl.size()==0) ) return;
-  if( MuTColl.at(0).Pt()<(DataYear!=2017? 26:29) ) return;
-  if( MuTColl.at(0).Charge()==MuTColl.at(1).Charge() ) return;
-  if( MuTColl.at(0).DeltaR(MuTColl.at(1))<0.4 ) return;
-
-  const int NPtBinEdges1=10, NPtBinEdges2=10, NfEtaBinEdges=9;
-  double PtBinEdges1[NPtBinEdges1], PtBinEdges2[NPtBinEdges2];
-  double PtBinEdges1_17[NPtBinEdges1] = {0.,15.,17.,20.,25.,30.,40.,50.,100.,200.};
-  double PtBinEdges2_17[NPtBinEdges2] = {0.,5.,8.,10.,15.,20.,30.,50.,100.,200.};
-  copy(PtBinEdges1_17, PtBinEdges1_17+NPtBinEdges1, PtBinEdges1); 
-  copy(PtBinEdges2_17, PtBinEdges2_17+NPtBinEdges2, PtBinEdges2); 
-
-  double fEtaBinEdges[NfEtaBinEdges] = {-2.4,-2.1,-1.2,-0.9,0.,0.9,1.2,2.1,2.4};
-  double PTMu   = MuTColl.at(0).Pt();
-  //double fEtaMu = fabs(MuTColl.at(0).Eta());
-  double fEtaMu = MuTColl.at(0).Eta();
-
-  vector<TString> TrigListToMeas1={"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v"};
-  vector<TString> TrigListToMeas2={"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v"};
-  bool PassLeg1=false, PassLeg2=false;
-  if(MCSample.Contains("Trig") or DataStream.Contains("Trig")){
-//    for(unsigned int it_obj=0; it_obj<HLTObject_eta->size(); it_obj++){
-//      float dR = sqrt(pow(MuTColl.at(0).Eta()-HLTObject_eta->at(it_obj),2)+pow(MuTColl.at(0).Phi()-HLTObject_phi->at(it_obj),2));
-//      if(dR>0.2) continue;
-//      if(HLTObject_FiredPaths->at(it_obj).find(TrigListToMeas1.at(0))!=string::npos ){ PassLeg1=true; }
-//      if(HLTObject_FiredPaths->at(it_obj).find(TrigListToMeas2.at(0))!=string::npos ){ PassLeg2=true; }
-//      if(PassLeg1 && PassLeg2) break;
-//    }
-  }
-  else{
-    PassLeg1=ev.PassTrigger(TrigListToMeas1); PassLeg2=ev.PassTrigger(TrigListToMeas2);
-  }
-
-
-  FillHist("NMu1_ALL_Pt_1D", PTMu, weight, NPtBinEdges1-1, PtBinEdges1);
-  FillHist("NMu1_ALL_PtEta_2D", PTMu, fEtaMu, weight, NPtBinEdges1-1, PtBinEdges1, NfEtaBinEdges-1, fEtaBinEdges);
-  FillHist("NMu2_ALL_Pt_1D", PTMu, weight, NPtBinEdges2-1, PtBinEdges2);
-  FillHist("NMu2_ALL_PtEta_2D", PTMu, fEtaMu, weight, NPtBinEdges2-1, PtBinEdges2, NfEtaBinEdges-1, fEtaBinEdges);
-  if(PassLeg1){
-    FillHist("NMu1Trig_ALL_Pt_1D", PTMu, weight, NPtBinEdges1-1, PtBinEdges1);
-    FillHist("NMu1Trig_ALL_PtEta_2D", PTMu, fEtaMu, weight, NPtBinEdges1-1, PtBinEdges1, NfEtaBinEdges-1, fEtaBinEdges);
-  }
-  if(PassLeg2){
-    FillHist("NMu2Trig_ALL_Pt_1D", PTMu, weight, NPtBinEdges2-1, PtBinEdges2);
-    FillHist("NMu2Trig_ALL_PtEta_2D", PTMu, fEtaMu, weight, NPtBinEdges2-1, PtBinEdges2, NfEtaBinEdges-1, fEtaBinEdges);
-  }
-
-  //Syst:QCD contamination 
-  if(ElTColl.at(0).Pt()>40){
-    FillHist("NMu1_AltTag_ALL_Pt_1D", PTMu, weight, NPtBinEdges1-1, PtBinEdges1);
-    FillHist("NMu1_AltTag_ALL_PtEta_2D", PTMu, fEtaMu, weight, NPtBinEdges1-1, PtBinEdges1, NfEtaBinEdges-1, fEtaBinEdges);
-    FillHist("NMu2_AltTag_ALL_Pt_1D", PTMu, weight, NPtBinEdges2-1, PtBinEdges2);
-    FillHist("NMu2_AltTag_ALL_PtEta_2D", PTMu, fEtaMu, weight, NPtBinEdges2-1, PtBinEdges2, NfEtaBinEdges-1, fEtaBinEdges);
-    if(PassLeg1){
-      FillHist("NMu1Trig_AltTag_ALL_Pt_1D", PTMu, weight, NPtBinEdges1-1, PtBinEdges1);
-      FillHist("NMu1Trig_AltTag_ALL_PtEta_2D", PTMu, fEtaMu, weight, NPtBinEdges1-1, PtBinEdges1, NfEtaBinEdges-1, fEtaBinEdges);
-    }
-    if(PassLeg2){
-      FillHist("NMu2Trig_AltTag_ALL_Pt_1D", PTMu, weight, NPtBinEdges2-1, PtBinEdges2);
-      FillHist("NMu2Trig_AltTag_ALL_PtEta_2D", PTMu, fEtaMu, weight, NPtBinEdges2-1, PtBinEdges2, NfEtaBinEdges-1, fEtaBinEdges);
-    }
-  }
 
 }
 
