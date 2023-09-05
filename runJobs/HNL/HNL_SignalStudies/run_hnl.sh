@@ -26,11 +26,13 @@ if [[ $1 == "Sig" ]]; then
 fi
 
 
-if [[ $1 == "DY100" ]]; then
+if [[ $1 == "DY" ]]; then
+
+    declare  -a era_list=("2017")
 
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -i DYTypeI_DF_M100_private  -n 1  --nmax 1   -e ${i} --skim SkimTree_HNMultiLepBDT &
+        SKFlat.py -a $analyzer  -i QCD_Pt-20to30_EMEnriched  -n 1  --nmax 2000   -e ${i} --skim SkimTree_FakeEventSkimBDT &
     done
 
 fi
