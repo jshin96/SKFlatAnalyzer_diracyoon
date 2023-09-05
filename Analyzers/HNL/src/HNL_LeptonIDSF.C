@@ -6,7 +6,7 @@ void HNL_LeptonIDSF::initializeAnalyzer(){
 
   HNL_LeptonCore::initializeAnalyzer();
 
-  SetupIDMVAReaderDefault(false,true);  
+  SetupIDMVAReaderDefault(false,false);  
 
 
   cout << "HNL_LeptonIDSF Code is used to measure and study lepton ID efficinecy and SF (temp SF)" << endl;
@@ -208,7 +208,11 @@ void HNL_LeptonIDSF::MeasureElectronIDSF(AnalyzerParameter param){
   std::vector<Muon>       MuonCollV     = GetMuons    (param.Muon_Veto_ID, 5., 2.4);
   if(MuonCollV.size() != 0) return;
 
+  //  return; /// JOHN
   std::vector<Electron> ProbeEl = GetElectrons( "passProbeID", 10., 2.5);
+
+
+
   if(ProbeEl.size() != 2) return;
   if(!IsData){
     if(!ProbeEl[0].IsPrompt()) return;
@@ -231,11 +235,29 @@ void HNL_LeptonIDSF::MeasureElectronIDSF(AnalyzerParameter param){
 
   for(auto id : IDs)    MeasureIDSF(param ,dilep_channel, ProbeEl, id, weight);
   
-  vector<TString> MVAIDs = {"HNL_ULID_Run2","HNL_ULID_Run2IP","HNL_ULID_Run2IPv0","HNL_ULID_Run2IPv1","HNL_ULID_Run2IPv2","HNL_ULID_Run2IPv3","HNL_ULID_Run2v1","HNL_ULID_Run2v2","HNL_ULID_Run2v3"};
+  vector<TString> MVAIDs = {"HNL_ULID_Run2",
+			    "HNL_ULID_Run2_CF",
+			    "HNL_ULID_Run2_CFPt",
+			    "HNL_ULID_Run2_Conv",
+			    "HNL_ULID_Run2_Fake",
+			    "HNL_LID_Run2",
+			    "HNL_LID_Run2_CF",
+			    "HNL_LID_Run2_Conv",
+			    "HNL_LID_Run2_Fake",
+			    "HNTightV2",
+			    "HNL_Peking_2016","HNL_Peking_2017",
+			    "passHEEPID","passMediumID","passTightID","passMVAID_Iso_WP80","passMVAID_Iso_WP90","passMVAID_noIso_WP80","passMVAID_noIso_WP90"};
+
 
   for(auto mvaid : MVAIDs){
-    bool passID1 = ProbeEl[0].PassID("passMVAID_noIso_WP90Opt") && ProbeEl[0].PassID(mvaid);
-    bool passID2 = ProbeEl[1].PassID("passMVAID_noIso_WP90Opt") && ProbeEl[1].PassID(mvaid);
+
+    
+    //bool passID1 = ProbeEl[0].PassID("passMVAID_noIso_WP90Opt") && ProbeEl[0].PassID(mvaid);
+    //bool passID2 = ProbeEl[1].PassID("passMVAID_noIso_WP90Opt") && ProbeEl[1].PassID(mvaid);
+    
+    bool passID1 = ProbeEl[0].PassID(mvaid);                                                                                  
+    bool passID2 = ProbeEl[1].PassID(mvaid);                                                                                  
+
     vector<bool> PassedIDs = {passID1,passID2};
     MeasureIDSF(param ,dilep_channel, ProbeEl, PassedIDs, mvaid,weight);                                                                                                                                                                                                
   }

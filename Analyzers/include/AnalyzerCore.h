@@ -584,8 +584,8 @@ public:
 
   float vSKWeight;
   //// v2 values for making V5 BDTSkims
-  vector<float>* velectron_v2_ptratio;
-  vector<float>* velectron_v2_ptrel;
+  vector<float>* velectron_ptratio;
+  vector<float>* velectron_ptrel;
   vector<float>* velectron_v2_cj_bjetdisc;
   vector<float>* velectron_v2_cj_cvsbjetdisc;
   vector<float>* velectron_v2_cj_cvsljetdisc;
@@ -630,16 +630,16 @@ public:
   vector<float>* vmuon_mva_fake_QCD_LF1_v5;
   vector<float>* vmuon_mva_fake_QCD_LF2_v5;
 
-  vector<float>* vmuon_v2_ptrel;
-  vector<float>* vmuon_v2_ptratio;
+  vector<float>* vmuon_ptrel;
+  vector<float>* vmuon_ptratio;
   vector<float>* vmuon_v2_cj_bjetdisc;
   vector<float>* vmuon_v2_cj_cvsbjetdisc;
   vector<float>* vmuon_v2_cj_cvsljetdisc;
   vector<float>* vmuon_v2_cj_flavour;
-  vector<int>*   vmuon_v2_lepton_type;
-  vector<int>*   velectron_v2_lepton_type;
-  vector<bool>*  velectron_v2_is_cf;
-  vector<bool>*  vmuon_v2_is_cf;
+  vector<int>*   vmuon_lepton_type;
+  vector<int>*   velectron_lepton_type;
+  vector<bool>*  velectron_is_cf;
+  vector<bool>*  vmuon_is_cf;
 
   vector<Jet>      All_Jets;
   vector<FatJet>   All_FatJets;

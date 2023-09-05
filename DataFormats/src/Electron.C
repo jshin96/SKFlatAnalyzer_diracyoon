@@ -432,7 +432,7 @@ bool Electron::Pass_CB_Opt(TString ID) const {
 
   if(mvaconv_bb_cut1_method != ""){
     if(IsBB()){
-      if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(15,60, StringToDouble(mvaconv_bb_cut1_method,"MVABCV1"),StringToDouble(mvaconv_bb_cut2_method,"MVABCV2")),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(15,60, StringToDouble(mvaconv_bb_cut1_method,"MVABCV1"),StringToDouble(mvaconv_bb_cut2_method,"MVABCV2")),"j_lep_mva_hnl_conv_v2")) return 0;
     }
   }
   if(mvaconv_ec_cut1_method != ""){
@@ -443,7 +443,7 @@ bool Electron::Pass_CB_Opt(TString ID) const {
 
   if(mvacf_bb_method != ""){
     if(IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"), StringToDouble(mvacf_bb_method, "MVABCF"), "j_lep_mva_hnl_cf_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"), StringToDouble(mvacf_bb_method, "MVABCF"), "j_lep_mva_hnl_cf_v2")) return 0;
     }
   }
   if(mvacf_ec_method != ""){
@@ -694,10 +694,10 @@ int  Electron::PassIDStudy(TString ID) const{
   if(ID=="HNL_ULSubID_Convv1"){
     if(!Pass_LepMVAID()) return 0;
     if(IsBB()){
-      if(!PassULMVA(HNL_MVA_Conv("v2") , -0.7,"j_lep_mva_hnl_conv_v2"))  return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4") , -0.7,"j_lep_mva_hnl_conv_v2"))  return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_Conv("EDv2") , -0.7,"j_lep_mva_hnl_conv_ed_v2"))  return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4") , -0.7,"j_lep_mva_hnl_conv_ed_v2"))  return 0;
     }
     return 1;
   }
@@ -717,7 +717,7 @@ int  Electron::PassIDStudy(TString ID) const{
     IDTmp=IDTmp.ReplaceAll("_CFL_","_CF_");
     IDTmp=IDTmp.ReplaceAll("_CFVL_","_CF_");
 
-    if(IDTmp == "HNL_ULIDs_CF_BDTGv2"        && !PassULMVA(HNL_MVA_CF("v2"),_cut,"j_lep_mvav2_hnl_cf"))        return 0;
+    if(IDTmp == "HNL_ULIDs_CF_BDTGv2"        && !PassULMVA(HNL_MVA_CF("v4"),_cut,"j_lep_mvav2_hnl_cf"))        return 0;
 
     return 1;
   }
@@ -760,7 +760,7 @@ int  Electron::PassIDStudy(TString ID) const{
     IDTmp=IDTmp.ReplaceAll("_CONVM_","_CONV_");
     IDTmp=IDTmp.ReplaceAll("_CONVL_","_CONV_");
 
-    if(IDTmp == "HNL_ULIDs_CONV_BDTG"     && !PassULMVA(HNL_MVA_Conv("v2"),     _cut,"j_lep_mva_hnl_conv_v2"))  return 0;
+    if(IDTmp == "HNL_ULIDs_CONV_BDTG"     && !PassULMVA(HNL_MVA_Conv("v4"),     _cut,"j_lep_mva_hnl_conv_v2"))  return 0;
 
     return 1;
   }
@@ -769,10 +769,10 @@ int  Electron::PassIDStudy(TString ID) const{
   if(ID == "HNL_ULID_Conv_L" ){
     if(!Pass_LepMVAID()) return 0;
     if(IsBB()){
-      if(!PassULMVA(HNL_MVA_Conv("v2") , -0.7,"j_lep_mva_hnl_conv_v2"))  return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4") , -0.7,"j_lep_mva_hnl_conv_v2"))  return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_Conv("EDv2") ,-0.7,"j_lep_mva_hnl_conv_v2"))  return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4") ,-0.7,"j_lep_mva_hnl_conv_v2"))  return 0;
     }
     return 1;
   }
@@ -780,20 +780,20 @@ int  Electron::PassIDStudy(TString ID) const{
   if(ID == "HNL_ULID_Conv_M" ){
     if(!Pass_LepMVAID()) return 0;
     if(IsBB()){
-      if(!PassULMVA(HNL_MVA_Conv("v2") , -0.2,"j_lep_mva_hnl_conv_v2"))  return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4") , -0.2,"j_lep_mva_hnl_conv_v2"))  return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_Conv("EDv2") ,-0.2,"j_lep_mva_hnl_conv_v2"))  return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4") ,-0.2,"j_lep_mva_hnl_conv_v2"))  return 0;
     }
     return 1;
   }
   if(ID == "HNL_ULID_Conv_T" ){
     if(!Pass_LepMVAID()) return 0;
     if(IsBB()){
-      if(!PassULMVA(HNL_MVA_Conv("v2") , 0.4,"j_lep_mva_hnl_conv_v2"))  return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4") , 0.4,"j_lep_mva_hnl_conv_v2"))  return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_Conv("EDv2") ,0.4,"j_lep_mva_hnl_conv_v2"))  return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4") ,0.4,"j_lep_mva_hnl_conv_v2"))  return 0;
     }
     return 1;
   }
@@ -854,50 +854,25 @@ int  Electron::PassIDStudy(TString ID) const{
   if(ID == "HNL_ULID_CFEDv2" ){
     if(!PassMVABaseLine()) return 0;
     double cut = 0.5;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   cut ,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   cut ,  "j_lep_mva_hnl_cf_v2"))   return 0;
     return 1;
   }
-  if(ID == "HNL_ULID_CFEDv2p1" ){
-    if(!PassMVABaseLine()) return 0;
-    double cut = 0.5;
-    if(!PassULMVA(HNL_MVA_CF("EDv2p1"),   cut ,  "j_lep_mva_hnl_cf_v2"))   return 0;
-    return 1;
-  }
-  if(ID == "HNL_ULID_CFEDv2p2" ){
-    if(!PassMVABaseLine()) return 0;
-    double cut = 0.5;
-    if(!PassULMVA(HNL_MVA_CF("EDv2p2"),   cut ,  "j_lep_mva_hnl_cf_v2"))   return 0;
-    return 1;
-  }
+
   if(ID == "HNL_ULID_CFv2" ){
     if(!PassMVABaseLine()) return 0;
     double cut = 0.5;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   cut ,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   cut ,  "j_lep_mva_hnl_cf_v2"))   return 0;
     return 1;
   }
-
-  if(ID == "HNL_ULID_CFv2p1" ){
-    if(!PassMVABaseLine()) return 0;
-    double cut = 0.5;
-    if(!PassULMVA(HNL_MVA_CF("v2p1"),   cut ,  "j_lep_mva_hnl_cf_v2"))   return 0;
-    return 1;
-  }
-  if(ID == "HNL_ULID_CFv2p2" ){
-    if(!PassMVABaseLine()) return 0;
-    double cut = 0.5;
-    if(!PassULMVA(HNL_MVA_CF("v2p2"),   cut ,  "j_lep_mva_hnl_cf_v2"))   return 0;
-    return 1;
-  }
-
 
   if(ID == "HNL_ULID_CF_VL" ){
     if(!PassMVABaseLine()) return 0;
     double cut = 0.3;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"), cut,  "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"), cut,  "j_lep_mva_hnl_cf_v2"))   return 0;
     }
-    else      if(!PassULMVA(HNL_MVA_CF("EDv2"),   cut ,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    else      if(!PassULMVA(HNL_MVA_CF("EDv4"),   cut ,  "j_lep_mva_hnl_cf_v2"))   return 0;
     return 1;
 
   }
@@ -907,9 +882,9 @@ int  Electron::PassIDStudy(TString ID) const{
     double cut = 0.4;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"), cut,  "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"), cut,  "j_lep_mva_hnl_cf_v2"))   return 0;
     }
-    else      if(!PassULMVA(HNL_MVA_CF("EDv2"),   cut ,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    else      if(!PassULMVA(HNL_MVA_CF("EDv4"),   cut ,  "j_lep_mva_hnl_cf_v2"))   return 0;
     return 1;
 
   }
@@ -920,9 +895,9 @@ int  Electron::PassIDStudy(TString ID) const{
     double cut = 0.5;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"), cut,  "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"), cut,  "j_lep_mva_hnl_cf_v2"))   return 0;
     }
-    else      if(!PassULMVA(HNL_MVA_CF("EDv2"),   cut ,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    else      if(!PassULMVA(HNL_MVA_CF("EDv4"),   cut ,  "j_lep_mva_hnl_cf_v2"))   return 0;
     return 1;
 
   }
@@ -933,9 +908,9 @@ int  Electron::PassIDStudy(TString ID) const{
     double cut = 0.6;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"), cut,  "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"), cut,  "j_lep_mva_hnl_cf_v2"))   return 0;
     }
-    else      if(!PassULMVA(HNL_MVA_CF("EDv2"),   cut ,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    else      if(!PassULMVA(HNL_MVA_CF("EDv4"),   cut ,  "j_lep_mva_hnl_cf_v2"))   return 0;
     return 1;
   }
   if(ID == "HNL_ULID_CF_VT" ){
@@ -943,9 +918,9 @@ int  Electron::PassIDStudy(TString ID) const{
     double cut = 0.7;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"), cut,  "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"), cut,  "j_lep_mva_hnl_cf_v2"))   return 0;
     }
-    else      if(!PassULMVA(HNL_MVA_CF("EDv2"),   cut ,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    else      if(!PassULMVA(HNL_MVA_CF("EDv4"),   cut ,  "j_lep_mva_hnl_cf_v2"))   return 0;
     return 1;
 
   }
@@ -954,18 +929,18 @@ int  Electron::PassIDStudy(TString ID) const{
   if(ID == "HNL_ULID_Conv_Run2" ){
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(10,80,-0.45,0.25) ,"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(10,80,-0.45,0.25) ,"j_lep_mva_hnl_conv_v2")) return 0;
     }
-    else   if(!PassULMVA(HNL_MVA_Conv("EDv2"), GetPtSlopeCut(10,80,-0.45,0.55) , "j_lep_mva_hnl_conv_ed_v2")) return 0;
+    else   if(!PassULMVA(HNL_MVA_Conv("EDv4"), GetPtSlopeCut(10,80,-0.45,0.55) , "j_lep_mva_hnl_conv_ed_v2")) return 0;
     return 1;
   }
 
   if(ID == "HNL_ULID_Conv_2016" ){
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(10,60,-0.45,-0.45) ,"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(10,60,-0.45,-0.45) ,"j_lep_mva_hnl_conv_v2")) return 0;
     }
-    else   if(!PassULMVA(HNL_MVA_Conv("EDv2"), GetPtSlopeCut(10,60,-0.45,0.25) , "j_lep_mva_hnl_conv_ed_v2")) return 0;
+    else   if(!PassULMVA(HNL_MVA_Conv("EDv4"), GetPtSlopeCut(10,60,-0.45,0.25) , "j_lep_mva_hnl_conv_ed_v2")) return 0;
     return 1;
 
 
@@ -975,7 +950,7 @@ int  Electron::PassIDStudy(TString ID) const{
 
     if(!PassMVABaseLine()) return 0;
 
-    if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(10,60,-0.45,0.25),"j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(10,60,-0.45,0.25),"j_lep_mva_hnl_conv_v2")) return 0;
 
     return 1;
   }
@@ -984,7 +959,7 @@ int  Electron::PassIDStudy(TString ID) const{
 
     if(!PassMVABaseLine()) return 0;
 
-    if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(10,60,-0.45,0.25),"j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(10,60,-0.45,0.25),"j_lep_mva_hnl_conv_v2")) return 0;
 
     return 1;
   }
@@ -999,95 +974,95 @@ int  Electron::PassIDStudy(TString ID) const{
 
   if(ID == "BBv1" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.15,         "j_lep_mva_hnl_fake_v4")) return 0;
     if(!PassID("HNL_ULID_Conv_Run2")) return 0;
     return 1;
   }
   if(ID == "BBv2" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.15,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), -0.45,     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), -0.45,     "j_lep_mva_hnl_conv_v2")) return 0;
     return 1;
   }
   if(ID == "BBv3" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.15,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), -0.2,     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), -0.2,     "j_lep_mva_hnl_conv_v2")) return 0;
     return 1;
   }
   if(ID == "BBv4" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.15,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), 0.,     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), 0.,     "j_lep_mva_hnl_conv_v2")) return 0;
     return 1;
   }
   if(ID == "BBv5" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.15,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(10,60,-0.45,0.),     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(10,60,-0.45,0.),     "j_lep_mva_hnl_conv_v2")) return 0;
     return 1;
   }
   if(ID == "BBv6" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.15,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(10,60,-0.45,0.2),     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(10,60,-0.45,0.2),     "j_lep_mva_hnl_conv_v2")) return 0;
     return 1;
   }
   
 
   if(ID == "BBv7" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,         "j_lep_mva_hnl_fake_v4")) return 0;
     if(!PassID("HNL_ULID_Conv_Run2")) return 0;
     return 1;
   }
   if(ID == "BBv8" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), -0.45,     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), -0.45,     "j_lep_mva_hnl_conv_v2")) return 0;
     return 1;
   }
   if(ID == "BBv9" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), -0.2,     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), -0.2,     "j_lep_mva_hnl_conv_v2")) return 0;
     return 1;
   }
   if(ID == "BBv10" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), 0.,     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), 0.,     "j_lep_mva_hnl_conv_v2")) return 0;
     return 1;
   }
   if(ID == "BBv11" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(10,60,-0.45,0.),     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(10,60,-0.45,0.),     "j_lep_mva_hnl_conv_v2")) return 0;
     return 1;
   }
   if(ID == "BBv12" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(10,60,-0.45,0.2),     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(10,60,-0.45,0.2),     "j_lep_mva_hnl_conv_v2")) return 0;
     return 1;
   }
   /////
 
   if(ID == "BBv13" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,         "j_lep_mva_hnl_fake_v4")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.1,     "j_lep_mva_hnl_fake_v4")) return 0;
     if(!PassID("HNL_ULID_Conv_Run2")) return 0;
@@ -1095,74 +1070,74 @@ int  Electron::PassIDStudy(TString ID) const{
   }
   if(ID == "BBv14" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,         "j_lep_mva_hnl_fake_v4")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.1,     "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), -0.45,     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), -0.45,     "j_lep_mva_hnl_conv_v2")) return 0;
     return 1;
   }
   if(ID == "BBv15" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,         "j_lep_mva_hnl_fake_v4")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.1,     "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), -0.2,     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), -0.2,     "j_lep_mva_hnl_conv_v2")) return 0;
     return 1;
   }
   if(ID == "BBv16" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,         "j_lep_mva_hnl_fake_v4")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.1,     "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), 0.,     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), 0.,     "j_lep_mva_hnl_conv_v2")) return 0;
     return 1;
   }
   if(ID == "BBv17" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(10,60,-0.45,0.),     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(10,60,-0.45,0.),     "j_lep_mva_hnl_conv_v2")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.1,     "j_lep_mva_hnl_fake_v4")) return 0;
     return 1;
   }
   if(ID == "BBv18" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(10,60,-0.45,0.2),     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(10,60,-0.45,0.2),     "j_lep_mva_hnl_conv_v2")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.1,     "j_lep_mva_hnl_fake_v4")) return 0;
     return 1;
   }
 
   if(ID == "BBv19" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.25,         "j_lep_mva_hnl_fake_v4")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.15,     "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), 0.,     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), 0.,     "j_lep_mva_hnl_conv_v2")) return 0;
     return 1;
   }
   if(ID == "BBv20" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.25,         "j_lep_mva_hnl_fake_v4")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.2,     "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), 0.,     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), 0.,     "j_lep_mva_hnl_conv_v2")) return 0;
     return 1;
   }
   if(ID == "BBv21" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.25,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(10,60,-0.45,0.),     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(10,60,-0.45,0.),     "j_lep_mva_hnl_conv_v2")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.15,     "j_lep_mva_hnl_fake_v4")) return 0;
     return 1;
   }
   if(ID == "BBv22" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.25,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(10,60,-0.45,0.),     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(10,60,-0.45,0.),     "j_lep_mva_hnl_conv_v2")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.2,     "j_lep_mva_hnl_fake_v4")) return 0;
     return 1;
   }
@@ -1171,87 +1146,87 @@ int  Electron::PassIDStudy(TString ID) const{
   //////
   if(ID == "BBv23" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.25,         "j_lep_mva_hnl_fake_v4")) return 0;
     if(!PassID("HNL_ULID_Conv_Run2")) return 0;
     return 1;
   }
   if(ID == "BBv24" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.25,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), -0.45,     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), -0.45,     "j_lep_mva_hnl_conv_v2")) return 0;
     return 1;
   }
   if(ID == "BBv25" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.25,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), -0.2,     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), -0.2,     "j_lep_mva_hnl_conv_v2")) return 0;
     return 1;
   }
   if(ID == "BBv26" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.25,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), 0.,     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), 0.,     "j_lep_mva_hnl_conv_v2")) return 0;
     return 1;
   }
   if(ID == "BBv27" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.25,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(10,60,-0.45,0.),     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(10,60,-0.45,0.),     "j_lep_mva_hnl_conv_v2")) return 0;
     return 1;
   }
   if(ID == "BBv28" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.25,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(10,60,-0.45,0.2),     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(10,60,-0.45,0.2),     "j_lep_mva_hnl_conv_v2")) return 0;
     return 1;
   }
 
   if(ID == "BBv29" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.35,         "j_lep_mva_hnl_fake_v4")) return 0;
     if(!PassID("HNL_ULID_Conv_Run2")) return 0;
     return 1;
   }
   if(ID == "BBv30" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.35,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), -0.45,     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), -0.45,     "j_lep_mva_hnl_conv_v2")) return 0;
     return 1;
   }
   if(ID == "BBv31" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.35,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), -0.2,     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), -0.2,     "j_lep_mva_hnl_conv_v4")) return 0;
     return 1;
   }
   if(ID == "BBv32" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.35,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), 0.,     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), 0.,     "j_lep_mva_hnl_conv_v4")) return 0;
     return 1;
   }
   if(ID == "BBv33" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.35,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(10,60,-0.45,0.),     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(10,60,-0.45,0.),     "j_lep_mva_hnl_conv_v4")) return 0;
     return 1;
   }
   if(ID == "BBv34" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("v4"), 0.35,         "j_lep_mva_hnl_fake_v4")) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(10,60,-0.45,0.2),     "j_lep_mva_hnl_conv_v2")) return 0;
+    if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(10,60,-0.45,0.2),     "j_lep_mva_hnl_conv_v4")) return 0;
     return 1;
   }
 
@@ -1259,7 +1234,7 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
     if(!passMVAID_noIso_WP90())  return 0;
     if(! (RelIso()<0.1) ) return 0;
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,             "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,             "j_lep_mva_hnl_cf_v4"))   return 0;
     if(!(fabs(dXY()) < 0.02 && fabs(dZ())< 0.1 && fabs(IP3D()/IP3Derr()) < 6.)) return 0;
     return 1;
   }
@@ -1270,7 +1245,7 @@ int  Electron::PassIDStudy(TString ID) const{
   }
 
   if(ID == "BBv37" ){
-    if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,             "j_lep_mva_hnl_cf_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,             "j_lep_mva_hnl_cf_v4"))   return 0;
     if(!passMVAID_Iso_WP90())  return 0;
     if(!(fabs(dXY()) < 0.02 && fabs(dZ())< 0.1 && fabs(IP3D()/IP3Derr()) < 6.)) return 0;
     return 1;
@@ -1303,51 +1278,51 @@ int  Electron::PassIDStudy(TString ID) const{
   if(ID == "ECv1" ){
     if(!PassMVABaseLine()) return 0;
     if(!PassID("HNL_ULID_Conv_Run2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.5,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
   if(ID == "ECv2" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    -0.45 , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    -0.45 , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.5,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
 
   if(ID == "ECv3" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    -0.2 , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    -0.2 , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.5,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
   if(ID == "ECv4" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.5,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
 
   if(ID == "ECv5" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.5,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
   if(ID == "ECv6" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    GetPtSlopeCut(10,60,-0.45,0.25) , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    GetPtSlopeCut(10,60,-0.45,0.25) , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.5,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
   if(ID == "ECv7" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    GetPtSlopeCut(10,60,-0.45,0.) , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    GetPtSlopeCut(10,60,-0.45,0.) , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.5,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
@@ -1357,51 +1332,51 @@ int  Electron::PassIDStudy(TString ID) const{
   if(ID == "ECv8" ){
     if(!PassMVABaseLine()) return 0;
     if(!PassID("HNL_ULID_Conv_Run2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.4,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
   if(ID == "ECv9" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    -0.45 , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    -0.45 , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.4,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
 
   if(ID == "ECv10" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    -0.2 , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    -0.2 , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.4,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
   if(ID == "ECv11" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.4,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
 
   if(ID == "ECv12" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.4,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
   if(ID == "ECv13" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    GetPtSlopeCut(10,60,-0.45,0.25) , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    GetPtSlopeCut(10,60,-0.45,0.25) , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.4,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
   if(ID == "ECv14" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    GetPtSlopeCut(10,60,-0.45,0.) , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    GetPtSlopeCut(10,60,-0.45,0.) , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.4,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
@@ -1411,51 +1386,51 @@ int  Electron::PassIDStudy(TString ID) const{
   if(ID == "ECv15" ){
     if(!PassMVABaseLine()) return 0;
     if(!PassID("HNL_ULID_Conv_Run2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.35,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
   if(ID == "ECv16" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    -0.45 , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    -0.45 , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.35,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
 
   if(ID == "ECv17" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    -0.2 , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    -0.2 , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.35,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
   if(ID == "ECv18" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.35,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
 
   if(ID == "ECv19" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.35,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
   if(ID == "ECv20" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    GetPtSlopeCut(10,60,-0.45,0.25) , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    GetPtSlopeCut(10,60,-0.45,0.25) , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.35,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
   if(ID == "ECv21" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    GetPtSlopeCut(10,60,-0.45,0.) , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    GetPtSlopeCut(10,60,-0.45,0.) , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.35,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
@@ -1464,51 +1439,51 @@ int  Electron::PassIDStudy(TString ID) const{
   if(ID == "ECv22" ){
     if(!PassMVABaseLine()) return 0;
     if(!PassID("HNL_ULID_Conv_Run2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.3,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
   if(ID == "ECv23" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    -0.45 , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    -0.45 , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.3,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
 
   if(ID == "ECv24" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    -0.2 , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    -0.2 , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.3,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
   if(ID == "ECv25" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.3,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
 
   if(ID == "ECv26" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.3,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
   if(ID == "ECv27" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    GetPtSlopeCut(10,60,-0.45,0.25) , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    GetPtSlopeCut(10,60,-0.45,0.25) , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.3,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
   if(ID == "ECv28" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    GetPtSlopeCut(10,60,-0.45,0.) , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    GetPtSlopeCut(10,60,-0.45,0.) , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.3,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
@@ -1518,51 +1493,51 @@ int  Electron::PassIDStudy(TString ID) const{
   if(ID == "ECv29" ){
     if(!PassMVABaseLine()) return 0;
     if(!PassID("HNL_ULID_Conv_Run2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.25,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
   if(ID == "ECv30" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    -0.45 , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    -0.45 , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.25,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
 
   if(ID == "ECv31" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    -0.2 , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    -0.2 , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.25,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
   if(ID == "ECv32" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.25,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
 
   if(ID == "ECv33" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.25,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
   if(ID == "ECv34" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    GetPtSlopeCut(10,60,-0.45,0.25) , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    GetPtSlopeCut(10,60,-0.45,0.25) , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.25,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
   if(ID == "ECv35" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    GetPtSlopeCut(10,60,-0.45,0.) , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    GetPtSlopeCut(10,60,-0.45,0.) , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.25,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     return 1;
   }
@@ -1571,15 +1546,15 @@ int  Electron::PassIDStudy(TString ID) const{
   if(ID == "ECv36" ){
     if(!PassMVABaseLine()) return 0;
     if(!PassID("HNL_ULID_Conv_Run2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.3,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     return 1;
   }
   if(ID == "ECv37" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    -0.45 , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    -0.45 , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.3,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     return 1;
@@ -1587,8 +1562,8 @@ int  Electron::PassIDStudy(TString ID) const{
 
   if(ID == "ECv38" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    -0.2 , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    -0.2 , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.3,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
 
@@ -1596,8 +1571,8 @@ int  Electron::PassIDStudy(TString ID) const{
   }
   if(ID == "ECv39" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.3,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
 
@@ -1606,16 +1581,16 @@ int  Electron::PassIDStudy(TString ID) const{
 
   if(ID == "ECv40" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.3,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     return 1;
   }
   if(ID == "ECv41" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    GetPtSlopeCut(10,60,-0.45,0.25) , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    GetPtSlopeCut(10,60,-0.45,0.25) , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.3,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
 
@@ -1623,8 +1598,8 @@ int  Electron::PassIDStudy(TString ID) const{
   }
   if(ID == "ECv42" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    GetPtSlopeCut(10,60,-0.45,0.) , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    GetPtSlopeCut(10,60,-0.45,0.) , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.3,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
 
@@ -1636,15 +1611,15 @@ int  Electron::PassIDStudy(TString ID) const{
   if(ID == "ECv43" ){
     if(!PassMVABaseLine()) return 0;
     if(!PassID("HNL_ULID_Conv_Run2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.25,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     return 1;
   }
   if(ID == "ECv44" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    -0.45 , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    -0.45 , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.25,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     return 1;
@@ -1652,8 +1627,8 @@ int  Electron::PassIDStudy(TString ID) const{
 
   if(ID == "ECv45" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    -0.2 , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    -0.2 , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.25,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
 
@@ -1661,8 +1636,8 @@ int  Electron::PassIDStudy(TString ID) const{
   }
   if(ID == "ECv46" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.25,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
 
@@ -1671,16 +1646,16 @@ int  Electron::PassIDStudy(TString ID) const{
 
   if(ID == "ECv47" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.25,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     return 1;
   }
   if(ID == "ECv48" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    GetPtSlopeCut(10,60,-0.45,0.25) , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    GetPtSlopeCut(10,60,-0.45,0.25) , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.25,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
 
@@ -1688,8 +1663,8 @@ int  Electron::PassIDStudy(TString ID) const{
   }
   if(ID == "ECv49" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),    GetPtSlopeCut(10,60,-0.45,0.) , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),    GetPtSlopeCut(10,60,-0.45,0.) , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.25,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
 
@@ -1700,7 +1675,7 @@ int  Electron::PassIDStudy(TString ID) const{
   if(ID == "ECv50" ){
     if(!PassMVABaseLine()) return 0;
     if(! (RelIso()<0.1) ) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!passMVAID_noIso_WP80())  return 0;
     if(!(fabs(dXY()) < 0.04 && fabs(dZ())< 0.1 && fabs(IP3D()/IP3Derr()) < 6.)) return 0;
     return 1;
@@ -1712,7 +1687,7 @@ int  Electron::PassIDStudy(TString ID) const{
   }
   if(ID == "ECv52" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     if(!passMVAID_Iso_WP80())  return 0;
     return 1;
   }
@@ -1738,11 +1713,11 @@ int  Electron::PassIDStudy(TString ID) const{
     //    if(!PassID("HNL_ULID_Conv_Run2")) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.68,  "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.68,  "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.08,         "j_lep_mva_hnl_fake_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.62, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.62, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.52,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     }
     return 1;
@@ -1752,12 +1727,12 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassID("HNL_ULID_Conv_Run2")) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.68,  "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.68,  "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.08,         "j_lep_mva_hnl_fake_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.62, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.62, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.52,"j_lep_mva_hnl_fake_ed_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
@@ -1770,14 +1745,14 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_Conv("v2"),      -0.45,     "j_lep_mva_hnl_conv_v2")) return 0;
-      if(!PassULMVA(HNL_MVA_CF  ("v2"),       0.65,     "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"),      -0.45,     "j_lep_mva_hnl_conv_v4")) return 0;
+      if(!PassULMVA(HNL_MVA_CF  ("v4"),       0.65,     "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"),       0.25,     "j_lep_mva_hnl_fake_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4HFB"),    0.1,      "j_lep_mva_hnl_fake_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"),    -0.15 , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),      0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"),    -0.15 , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),      0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"),    0.25,"j_lep_mva_hnl_fake_ed_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"), 0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
@@ -1788,16 +1763,16 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
   
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),        0.65,    "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),        0.65,    "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"),      0.2,     "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"),      0.1,     "j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"),      0.1,     "j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.1,     "j_lep_mva_hnl_fake_v4")) return 0;
 
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF  ("EDv2"),    0.6 ,          "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF  ("EDv4"),    0.6 ,          "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"),    0.25,            "j_lep_mva_hnl_fake_ed_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"),    0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"),    0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     return 1;
@@ -1807,13 +1782,13 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), 0.1,"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), 0.1,"j_lep_mva_hnl_conv_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), 0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.7 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), 0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.7 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.35,    "j_lep_mva_hnl_fake_ed_v4")) return 0;
     }
     return 1;
@@ -1823,14 +1798,14 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(15,60,-0.7,0.),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(15,60,-0.7,0.),"j_lep_mva_hnl_conv_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.7 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.7 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.15,    "j_lep_mva_hnl_fake_ed_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), GetPtSlopeCut(15,60,-0.7,0.),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), GetPtSlopeCut(15,60,-0.7,0.),"j_lep_mva_hnl_conv_v4")) return 0;
     }
     return 1;
   }
@@ -1839,15 +1814,15 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(15,60,-0.7,0.),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(15,60,-0.7,0.),"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.7 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.7 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.25,    "j_lep_mva_hnl_fake_ed_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), GetPtSlopeCut(15,60,-0.7,0.),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), GetPtSlopeCut(15,60,-0.7,0.),"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     return 1;
@@ -1856,14 +1831,14 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(15,60,-0.7,0.),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(15,60,-0.7,0.),"j_lep_mva_hnl_conv_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.7 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.7 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.25,    "j_lep_mva_hnl_fake_ed_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), GetPtSlopeCut(15,60,-0.7,0.),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), GetPtSlopeCut(15,60,-0.7,0.),"j_lep_mva_hnl_conv_v4")) return 0;
     }
     return 1;
   }
@@ -1873,14 +1848,14 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(15,60,-0.7,0.),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(15,60,-0.7,0.),"j_lep_mva_hnl_conv_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.7 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.7 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.25,    "j_lep_mva_hnl_fake_ed_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), GetPtSlopeCut(15,60,-0.7,0.),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), GetPtSlopeCut(15,60,-0.7,0.),"j_lep_mva_hnl_conv_v4")) return 0;
     }
     return 1;
   }
@@ -1891,15 +1866,15 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(15,60,-0.45,0.),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(15,60,-0.45,0.),"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.25,    "j_lep_mva_hnl_fake_ed_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), GetPtSlopeCut(15,60,-0.45,0.),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), GetPtSlopeCut(15,60,-0.45,0.),"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     return 1;
@@ -1909,15 +1884,15 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(15,60,-0.45,0.1),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(15,60,-0.45,0.1),"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.25,    "j_lep_mva_hnl_fake_ed_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), GetPtSlopeCut(15,60,-0.45,0.1),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), GetPtSlopeCut(15,60,-0.45,0.1),"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     return 1;
@@ -1927,15 +1902,15 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.25,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(15,60,-0.45,0.1),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(15,60,-0.45,0.1),"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.3,    "j_lep_mva_hnl_fake_ed_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), GetPtSlopeCut(15,60,-0.45,0.1),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), GetPtSlopeCut(15,60,-0.45,0.1),"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     return 1;
@@ -1946,15 +1921,15 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.1,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(15,60,-0.45,0.1),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(15,60,-0.45,0.1),"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.1,    "j_lep_mva_hnl_fake_ed_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), GetPtSlopeCut(15,60,-0.45,0.1),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), GetPtSlopeCut(15,60,-0.45,0.1),"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     return 1;
@@ -1964,15 +1939,15 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.1,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(15,60,-0.45,0.2),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(15,60,-0.45,0.2),"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.1,    "j_lep_mva_hnl_fake_ed_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), GetPtSlopeCut(15,60,-0.45,0.2),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), GetPtSlopeCut(15,60,-0.45,0.2),"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     return 1;
@@ -1983,15 +1958,15 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.15,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(15,60,-0.45,0.),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(15,60,-0.45,0.),"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.15,    "j_lep_mva_hnl_fake_ed_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), GetPtSlopeCut(15,60,-0.45,0.),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), GetPtSlopeCut(15,60,-0.45,0.),"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     return 1;
@@ -2002,15 +1977,15 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.15,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), -0.45,"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), -0.45,"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.15,    "j_lep_mva_hnl_fake_ed_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), 0. ,"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), 0. ,"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     return 1;
@@ -2021,15 +1996,15 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), -0.45,"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), -0.45,"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.2,    "j_lep_mva_hnl_fake_ed_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), 0. ,"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), 0. ,"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     return 1;
@@ -2040,15 +2015,15 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.7,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.7,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), -0.45,"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), -0.45,"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.25,    "j_lep_mva_hnl_fake_ed_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), 0. ,"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), 0. ,"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     return 1;
@@ -2059,15 +2034,15 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.7,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.7,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), -0.45,"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), -0.45,"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.15,    "j_lep_mva_hnl_fake_ed_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), 0. ,"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), 0. ,"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     return 1;
@@ -2077,15 +2052,15 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.25,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), -0.45,"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), -0.45,"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.15,    "j_lep_mva_hnl_fake_ed_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), 0. ,"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), 0. ,"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     return 1;
@@ -2095,15 +2070,15 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), -0.45,"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), -0.45,"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.3,    "j_lep_mva_hnl_fake_ed_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), 0. ,"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), 0. ,"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4HFB"),   0.1,           "j_lep_mva_hnl_fake_v4")) return 0;
     }
     return 1;
@@ -2113,13 +2088,13 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), -0.45,"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), -0.45,"j_lep_mva_hnl_conv_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), 0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.7 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), 0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.7 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.35,    "j_lep_mva_hnl_fake_ed_v4")) return 0;
     }
     return 1;
@@ -2128,13 +2103,13 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), -0.25,"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), -0.25,"j_lep_mva_hnl_conv_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), 0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.7 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), 0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.7 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.35,    "j_lep_mva_hnl_fake_ed_v4")) return 0;
     }
     return 1;
@@ -2144,13 +2119,13 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), -0.1,"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), -0.1,"j_lep_mva_hnl_conv_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), 0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.7 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), 0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.7 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.35,    "j_lep_mva_hnl_fake_ed_v4")) return 0;
     }
     return 1;
@@ -2160,13 +2135,13 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), 0.,"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), 0.,"j_lep_mva_hnl_conv_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), 0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.7 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), 0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.7 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.35,    "j_lep_mva_hnl_fake_ed_v4")) return 0;
     }
     return 1;
@@ -2176,13 +2151,13 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(15,60,-0.45,0.),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(15,60,-0.45,0.),"j_lep_mva_hnl_conv_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), 0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.7 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), 0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.7 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.35,    "j_lep_mva_hnl_fake_ed_v4")) return 0;
     }
     return 1;
@@ -2201,12 +2176,12 @@ int  Electron::PassIDStudy(TString ID) const{
 
     if(! (RelIso()<0.1) ) return 0;
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.7,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.7,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!passMVAID_noIso_WP90())  return 0;
       if(!(fabs(dXY()) < 0.02 && fabs(dZ())< 0.1 && fabs(IP3D()/IP3Derr()) < 6.)) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!passMVAID_noIso_WP80())  return 0;
       if(!(fabs(dXY()) < 0.04 && fabs(dZ())< 0.1 && fabs(IP3D()/IP3Derr()) < 6.)) return 0;
     }
@@ -2231,12 +2206,12 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.7,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.7,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!passMVAID_Iso_WP90())  return 0;
       if(!(fabs(dXY()) < 0.02 && fabs(dZ())< 0.1 && fabs(IP3D()/IP3Derr()) < 6.)) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!passMVAID_Iso_WP80())  return 0;
       if(!(fabs(dXY()) < 0.04 && fabs(dZ())< 0.1 && fabs(IP3D()/IP3Derr()) < 6.)) return 0;
     }
@@ -2287,11 +2262,11 @@ int  Electron::PassIDStudy(TString ID) const{
 
     if( IsBB()){
 
-      if(!PassULMVA(HNL_MVA_CF("v2"),    0.7,  "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),    0.7,  "j_lep_mva_hnl_cf_v4"))   return 0;
     }
     else{
 
-      if(!PassULMVA(HNL_MVA_CF  ("EDv2"),    0.5 ,    "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF  ("EDv4"),    0.5 ,    "j_lep_mva_hnl_cf_ed_v4"))   return 0;
     }
     return 1;
   }
@@ -2302,7 +2277,7 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_Conv("v2"),  -0.7,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"),  -0.7,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,             "j_lep_mva_hnl_fake_v4")) return 0;
     }
     return 1;
@@ -2313,7 +2288,7 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsEC()){
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), -0.7 , "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), -0.7 , "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.2  , "j_lep_mva_hnl_fake_ed_v4")) return 0;
     }
     return 1;
@@ -2324,8 +2299,8 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_Conv("v2"), -0.7 , "j_lep_mva_hnl_cf_ed_v2"))   return 0;
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.7,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), -0.7 , "j_lep_mva_hnl_cf_ed_v4"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.7,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,             "j_lep_mva_hnl_fake_v4")) return 0;
     }
     return 1;
@@ -2337,8 +2312,8 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsEC()){
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), -0.7 , "j_lep_mva_hnl_cf_ed_v2"))   return 0;
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.5 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), -0.7 , "j_lep_mva_hnl_cf_ed_v4"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.5 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.2 ,  "j_lep_mva_hnl_fake_ed_v4")) return 0;
     }
     return 1;
@@ -2352,7 +2327,7 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.7,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.7,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,             "j_lep_mva_hnl_fake_v4")) return 0;
     }
     return 1;
@@ -2363,7 +2338,7 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsEC()){
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.5 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.5 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.2 ,  "j_lep_mva_hnl_fake_ed_v4")) return 0;
     }
     return 1;
@@ -2376,8 +2351,8 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.7,             "j_lep_mva_hnl_cf_v2"))   return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), -0.7,             "j_lep_mva_hnl_fake_v4")) return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.7,             "j_lep_mva_hnl_cf_v4"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), -0.7,             "j_lep_mva_hnl_fake_v4")) return 0;
     }
     return 1;
 
@@ -2387,8 +2362,8 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsEC()){
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.5 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), -0.7 ,  "j_lep_mva_hnl_fake_ed_v4")) return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.5 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), -0.7 ,  "j_lep_mva_hnl_fake_ed_v4")) return 0;
     }
     return 1;
 
@@ -2400,11 +2375,11 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.7,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.7,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,             "j_lep_mva_hnl_fake_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.55 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.55 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.3 ,  "j_lep_mva_hnl_fake_ed_v4")) return 0;
     }
     return 1;
@@ -2415,12 +2390,12 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.7,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.7,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,             "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), GetPtSlopeCut(15,80,-0.7,0.4),"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), GetPtSlopeCut(15,80,-0.7,0.4),"j_lep_mva_hnl_conv_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.5 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.5 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.2 ,  "j_lep_mva_hnl_fake_ed_v4")) return 0;
     }
     return 1;
@@ -2431,12 +2406,12 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.7,             "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.7,             "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,             "j_lep_mva_hnl_fake_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), GetPtSlopeCut(15,80,-0.7,0.2),"j_lep_mva_hnl_conv_ed_v2")) return 0;
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.5 ,  "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), GetPtSlopeCut(15,80,-0.7,0.2),"j_lep_mva_hnl_conv_ed_v4")) return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.5 ,  "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.2 ,  "j_lep_mva_hnl_fake_ed_v4")) return 0;
     }
     return 1;
@@ -2462,123 +2437,62 @@ int  Electron::PassIDTight(TString ID) const{
   if(ID=="HNL_ULID_Baseline") return PassMVABaseLine() ? 1 : 0 ;
 
 
-  if(ID == "HNL_LID_2016" || ID == "HNL_LID_2017" || ID == "HNL_LID_2018"){
+  if(ID == "HNL_LID_Run2"){
     
     if(!PassMVABaseLine()) return 0;
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.7,  "j_lep_mva_hnl_cf_v2"))   return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), -0.7,"j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.7,  "j_lep_mva_hnl_cf_v4"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), -0.7,"j_lep_mva_hnl_conv_v4")) return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,"j_lep_mva_hnl_fake_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), -0.7, "j_lep_mva_hnl_conv_ed_v2")) return 0;
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.65, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), -0.7, "j_lep_mva_hnl_conv_ed_v4")) return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.65, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.2,  "j_lep_mva_hnl_fake_ed_v4")) return 0;
     }
 
     return 1;
   }
 
-  if(ID == "HNL_ULID_ConvUpdate" ){
+
+  if(ID == "HNL_LID_Run2_CF"){
 
     if(!PassMVABaseLine()) return 0;
-    double mva_value = HNL_MVA_Conv("EDv5");
-    if( IsIB()){
-      double cutCategory =  0.6881 - exp(- this->Pt() / 16.18) * 6.735;
-      double mva_cut =  (this->Pt() < 30) ?  -0.366516 : cutCategory;
-      if(mva_value  < mva_cut) return 0;
-    }
-    else if( IsOB()){
-      double cutCategory =  0.36 - exp(- this->Pt() / 17.5) * 5.6;
-      double mva_cut =  (this->Pt() < 30) ?  -0.648517 : cutCategory;
-      if(mva_value  < mva_cut) return 0;
+    if( IsBB()){
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.7,  "j_lep_mva_hnl_cf_v4"))   return 0;
     }
     else{
-      double cutCategory =  0.3 - exp(- this->Pt() / 20.6) * 4.3;
-      double mva_cut =  (this->Pt() < 30) ?  -0.702307 : cutCategory;
-      if(mva_value  < mva_cut) return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.65, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
+    }
+
+    return 1;
+  }
+
+  if(ID == "HNL_LID_Run2_Conv"){
+
+    if(!PassMVABaseLine()) return 0;
+    if( IsBB()){
+      if(!PassULMVA(HNL_MVA_Conv("v4"), -0.7,"j_lep_mva_hnl_conv_v4")) return 0;
+    }
+    else{
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), -0.7, "j_lep_mva_hnl_conv_ed_v4")) return 0;
     }
     return 1;
-    
-    //IB -0.366516
-    //OB -0.648517
-    //EC -0.702307
-
   }
 
-  if(ID == "HNL_ULID_ConvUpdateMulti" ){                                                                                                                                                                                                                                                                                   
-    if(!PassMVABaseLine()) return 0;                                                                                                                                                                                                                                                                                       
-    double mva_value = HNL_MVA_Conv("EDv5");                                                                                                                                                                                                                                                                               
-    if(mva_value < -0.7) return 0;                                                                                                                                                                                                                                                                                        
-    double mva_value2 = HNL_MVA_Fake("EDv5");
-    if(mva_value2 < 0.2) return 0;
+  if(ID == "HNL_LID_Run2_Fake"){
 
-    double mva_value3 = HNL_MVA_CF("EDv5");
-    if(mva_value3 < 0.4) return 0;
-
-    
-    return 1;                                                                                                                                                                                                                                                                                                              
-  }                                              
-
-
-  if(ID == "HNL_ULID_ConvUpdateFlat_L" ){
     if(!PassMVABaseLine()) return 0;
-    double mva_value = HNL_MVA_Conv("EDv5");
-    if(mva_value < -0.7) return 0;
+    if( IsBB()){
+      if(!PassULMVA(HNL_MVA_Fake("v4"), 0.2,"j_lep_mva_hnl_fake_v4")) return 0;
+    }
+    else{
+      if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.2,  "j_lep_mva_hnl_fake_ed_v4")) return 0;
+    }
+
     return 1;
   }
 
-  if(ID == "HNL_ULID_ConvUpdateFlat_M" ){
-    if(!PassMVABaseLine()) return 0;
-    double mva_value = HNL_MVA_Conv("EDv5");
-    if(mva_value < -0.3) return 0;
-    return 1;
-  }
-
-
-  if(ID == "HNL_ULID_ConvUpdateFlat_T" ){
-    if(!PassMVABaseLine()) return 0;
-    double mva_value = HNL_MVA_Conv("EDv5");
-    if(mva_value < 0.) return 0;
-    return 1;
-  }
-
-  if(ID == "HNL_ULID_FakeUpdateFlat_L" ){
-    if(!PassMVABaseLine()) return 0;
-    double mva_value = HNL_MVA_Fake("EDv5");
-    if(mva_value < 0.2) return 0;
-    return 1;
-  }
-  
-  if(ID == "HNL_ULID_FakeUpdateFlat_M" ){
-    if(!PassMVABaseLine()) return 0;
-    double mva_value = HNL_MVA_Fake("EDv5");
-    if(mva_value < 0.4) return 0;
-    return 1;
-  }
-
-
-  if(ID == "HNL_ULID_CFUpdateFlat_L" ){
-    if(!PassMVABaseLine()) return 0;
-    double mva_value = HNL_MVA_CF("EDv5");
-    if(mva_value < 0.4) return 0;
-    return 1;
-  }
-
-  if(ID == "HNL_ULID_CFUpdateFlat_M" ){
-    if(!PassMVABaseLine()) return 0;
-    double mva_value = HNL_MVA_CF("EDv5");
-    if(mva_value < 0.6) return 0;
-    return 1;
-  }
-  if(ID == "HNL_ULID_CFUpdateFlat2_M" ){
-    if(!PassMVABaseLine()) return 0;
-    double mva_value = HNL_MVA_CF("EDv5Pt");
-    if(mva_value < 0.6) return 0;
-    return 1;
-  }
-
-  
   if(ID == "HNL_ULID_Run2" ){
 
     if(!PassMVABaseLine()) return 0;
@@ -2596,7 +2510,7 @@ int  Electron::PassIDTight(TString ID) const{
     return 1;
   }
   
-  if(ID == "HNL_ULID_Run2v1" ){
+  if(ID == "HNL_ULID_Run2_CF" ){
 
     if(!PassMVABaseLine()) return 0;
     if( IsBB()){
@@ -2609,7 +2523,7 @@ int  Electron::PassIDTight(TString ID) const{
     return 1;
   }  
 
-  if(ID == "HNL_ULID_Run2v2" ){
+  if(ID == "HNL_ULID_Run2_Conv" ){
 
     if(!PassMVABaseLine()) return 0;
     if( IsBB()){
@@ -2622,7 +2536,7 @@ int  Electron::PassIDTight(TString ID) const{
     return 1;
   }
 
-  if(ID == "HNL_ULID_Run2v3" ){
+  if(ID == "HNL_ULID_Run2_Fake" ){
 
     if(!PassMVABaseLine()) return 0;
     if( IsBB()){
@@ -2635,25 +2549,7 @@ int  Electron::PassIDTight(TString ID) const{
     return 1;
   }
 
-  if(ID == "HNL_ULID_Run2IP" ){
-
-    if(!PassMVABaseLine()) return 0;
-    if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("EDv5"),        0.65,  "j_lep_mva_hnl_cf_v5"))   return 0;
-      if(!PassULMVA(HNL_MVA_Conv("EDv5"),      -0.7,  "j_lep_mva_hnl_fake_v5")) return 0;
-      if(!PassULMVA(HNL_MVA_Fake("EDv5"),      0.2,   "j_lep_mva_hnl_fake_v5")) return 0;
-
-    }
-    else{
-      if(!PassULMVA(HNL_MVA_CF("EDv5"),      0.65, "j_lep_mva_hnl_cf_v5"))   return 0;
-      if(!PassULMVA(HNL_MVA_Conv("EDv5"),    -0.7, "j_lep_mva_hnl_fake_v5")) return 0;
-      if(!PassULMVA(HNL_MVA_Fake("EDv5"),    0.2,  "j_lep_mva_hnl_fake_v5")) return 0;
-    }
-    return 1;
-  }
-
-
-  if(ID == "HNL_ULID_Run2IPv0" ){
+  if(ID == "HNL_ULID_Run2_CFPt" ){
 
     if(!PassMVABaseLine()) return 0;
     if( IsBB()){
@@ -2667,57 +2563,16 @@ int  Electron::PassIDTight(TString ID) const{
   }
 
 
-  if(ID == "HNL_ULID_Run2IPv1" ){
-
-    if(!PassMVABaseLine()) return 0;
-    if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("EDv5"),        0.65,  "j_lep_mva_hnl_cf_v5"))   return 0;
-
-    }
-    else{
-      if(!PassULMVA(HNL_MVA_CF("EDv5"),      0.65, "j_lep_mva_hnl_cf_v5"))   return 0;
-    }
-    return 1;
-  }
-
-  if(ID == "HNL_ULID_Run2IPv2" ){
-
-    if(!PassMVABaseLine()) return 0;
-    if( IsBB()){
-      if(!PassULMVA(HNL_MVA_Conv("EDv5"),      -0.7,  "j_lep_mva_hnl_fake_v5")) return 0;
-    }
-    else{
-      if(!PassULMVA(HNL_MVA_Conv("EDv5"),    -0.7, "j_lep_mva_hnl_fake_v5")) return 0;
-    }
-    return 1;
-  }
-
-  if(ID == "HNL_ULID_Run2IPv3" ){
-
-    if(!PassMVABaseLine()) return 0;
-    if( IsBB()){
-      if(!PassULMVA(HNL_MVA_Fake("EDv5"),      0.2,   "j_lep_mva_hnl_fake_v5")) return 0;
-
-    }
-    else{
-      if(!PassULMVA(HNL_MVA_Fake("EDv5"),    0.2,  "j_lep_mva_hnl_fake_v5")) return 0;
-    }
-    return 1;
-  }
-
-
-
-
   if(ID == "HNL_ULID_2016" ){
     if(!PassMVABaseLine()) return 0;
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.35,         "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), 0.,     "j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), 0.,     "j_lep_mva_hnl_conv_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), -0.2 , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.6, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), -0.2 , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.6, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.4,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     }
     return 1;
@@ -2727,13 +2582,13 @@ int  Electron::PassIDTight(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.35,         "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), 0.,     "j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), 0.,     "j_lep_mva_hnl_conv_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"),  0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.65, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"),  0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.65, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.4,"j_lep_mva_hnl_fake_ed_v4")) return 0;
 
     }
@@ -2745,13 +2600,13 @@ int  Electron::PassIDTight(TString ID) const{
     if(!PassMVABaseLine()) return 0;
 
     if( IsBB()){
-      if(!PassULMVA(HNL_MVA_CF("v2"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_CF("v4"),   0.65,  "j_lep_mva_hnl_cf_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("v4"), 0.25,         "j_lep_mva_hnl_fake_v4")) return 0;
-      if(!PassULMVA(HNL_MVA_Conv("v2"), -0.45,     "j_lep_mva_hnl_conv_v2")) return 0;
+      if(!PassULMVA(HNL_MVA_Conv("v4"), -0.45,     "j_lep_mva_hnl_conv_v4")) return 0;
     }
     else{
-      if(!PassULMVA(HNL_MVA_Conv("EDv2"), 0. , "j_lep_mva_hnl_conv_ed_v2")) return 0;
-      if(!PassULMVA(HNL_MVA_CF("EDv2"),   0.65, "j_lep_mva_hnl_cf_ed_v2"))   return 0;
+      if(!PassULMVA(HNL_MVA_Conv("EDv4"), 0. , "j_lep_mva_hnl_conv_ed_v4")) return 0;
+      if(!PassULMVA(HNL_MVA_CF("EDv4"),   0.65, "j_lep_mva_hnl_cf_ed_v4"))   return 0;
       if(!PassULMVA(HNL_MVA_Fake("EDv4"), 0.5,"j_lep_mva_hnl_fake_ed_v4")) return 0;
     }
     return 1;
@@ -2796,7 +2651,7 @@ int  Electron::PassIDTight(TString ID) const{
     return 1;
     
   }
-  
+
   
   if(ID=="HNTightV2")  return passTightID_NoCC() &&PassHNID()  &&(fabs(IP3D()/IP3Derr())<4.)? 1 : 0 ;
   if(ID=="HNTightV3")  return (PassHNOpt()==1)  ? 1 : 0 ;
@@ -2934,13 +2789,13 @@ bool Electron::PassMVABaseLine() const{
 bool Electron::PassHNLMVA(double fake_cut,double cf_cut, double conv_cut) const{
   
   if( IsBB()){
-    if(!PassULMVA(HNL_MVA_CF("v2"),  cf_cut,  "j_lep_mva_hnl_cf_v2"))   return false;
-    if(!PassULMVA(HNL_MVA_Conv("v2"),conv_cut,"j_lep_mva_hnl_conv_v2")) return false;
+    if(!PassULMVA(HNL_MVA_CF("v4"),  cf_cut,  "j_lep_mva_hnl_cf_v4"))   return false;
+    if(!PassULMVA(HNL_MVA_Conv("v4"),conv_cut,"j_lep_mva_hnl_conv_v4")) return false;
     if(!PassULMVA(HNL_MVA_Fake("v4"),fake_cut,"j_lep_mva_hnl_fake_v4")) return false;
   }
   else{
-    if(!PassULMVA(HNL_MVA_Conv("EDv2"),conv_cut,"j_lep_mva_hnl_conv_ed_v2")) return false;
-    if(!PassULMVA(HNL_MVA_CF("EDv2"),  cf_cut,  "j_lep_mva_hnl_cf_ed_v2"))   return false;
+    if(!PassULMVA(HNL_MVA_Conv("EDv4"),conv_cut,"j_lep_mva_hnl_conv_ed_v4")) return false;
+    if(!PassULMVA(HNL_MVA_CF("EDv4"),  cf_cut,  "j_lep_mva_hnl_cf_ed_v4"))   return false;
     if(!PassULMVA(HNL_MVA_Fake("EDv4"),fake_cut,"j_lep_mva_hnl_fakeed__v4")) return false;
   }
 
@@ -3897,9 +3752,9 @@ bool Electron::PassMVA_UL_Conv(TString elpt, TString bb1, TString bb2, TString e
   //cout << "mva_cut = " << mva_cut << " HNL_MVA_Conv("v2") = " << HNL_MVA_Conv("v2") << endl;
 
   if(IsBB()){
-    if(HNL_MVA_Conv("v2") < mva_cut) return false;
+    if(HNL_MVA_Conv("v4") < mva_cut) return false;
   }
-  else     if(HNL_MVA_Conv("EDv2") < mva_cut) return false;
+  else     if(HNL_MVA_Conv("EDv4") < mva_cut) return false;
 
   return true;
 
@@ -3927,7 +3782,7 @@ bool Electron::PassMVA_UL_CF(TString val1, TString val2, TString ptboundary) con
   //cout << val1 << " " << val2 << " ptboundary=" << ptboundary << endl;                                                                                                                                                                  /  
   //  cout << "MVA() = " << j_lep_mva_hnl_cf << " mva_cut = " << mva_cut << endl;                                                                                                                                                                       
   
-  if( HNL_MVA_CF("v2") < mva_cut) return false;
+  if( HNL_MVA_CF("v4") < mva_cut) return false;
   else return true;
 
 }

@@ -465,7 +465,7 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
     }
 
     if(iSetupLeptonBDTv5) {
-
+      
       if(!fChain->GetBranch("muon_mva_fake_QCD_LFvsHF_v5")){
 	
 	mu.SetHNL_FakeFlavourLepMVA_V5( GetBDTScoreMuon(mu,AnalyzerCore::FakeRate,  "BDTGv5_QCD_LFvsHF"),
@@ -476,15 +476,16 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
       }
     }
     
-    
-    if(fChain->GetBranch("muon_v2_ptrel"))      mu.SetJetPtRel(muon_v2_ptrel->at(i));
-    if(fChain->GetBranch("muon_v2_ptratio"))    mu.SetJetPtRatio(muon_v2_ptratio->at(i));
-    if(fChain->GetBranch("muon_v2_cj_bjetdisc"))mu.SetCloseJetBScore(muon_v2_cj_bjetdisc->at(i));
-    if(fChain->GetBranch("muon_v2_cj_cvsjetdisc"))mu.SetCloseJetCvsBScore(muon_v2_cj_cvsbjetdisc->at(i));
+
+    if(fChain->GetBranch("muon_ptrel"))            mu.SetJetPtRel(muon_ptrel->at(i));
+    if(fChain->GetBranch("muon_ptratio"))          mu.SetJetPtRatio(muon_ptratio->at(i));
+    if(fChain->GetBranch("muon_v2_cj_bjetdisc"))   mu.SetCloseJetBScore(muon_v2_cj_bjetdisc->at(i));
+    if(fChain->GetBranch("muon_v2_cj_cvsbjetdisc"))mu.SetCloseJetCvsBScore(muon_v2_cj_cvsbjetdisc->at(i));
     if(fChain->GetBranch("muon_v2_cj_cvsljetdisc"))mu.SetCloseJetCvsLScore(muon_v2_cj_cvsljetdisc->at(i));
-    if(fChain->GetBranch("muon_v2_cj_flavour")) mu.SetCloseJetFlavour(muon_v2_cj_flavour->at(i));
+    if(fChain->GetBranch("muon_v2_cj_flavour"))    mu.SetCloseJetFlavour(muon_v2_cj_flavour->at(i));
     
-    bool FillCloseJetVar=!fChain->GetBranch("muon_v2_cj_flavour");
+
+    bool FillCloseJetVar=!fChain->GetBranch("muon_v2_cj_cvsljetdisc");
     if(Analyzer=="HNL_LeptonID_BDT_KinVar") FillCloseJetVar=false;
 
     if(FillCloseJetVar){
@@ -526,15 +527,15 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
       mu.SetCloseJetFlavour(JetHadFlavour);
     }
 
-    if(!fChain->GetBranch("muon_v2_lepton_type") ||  !fChain->GetBranch("muon_v2_is_cf"))  {
+    if(!fChain->GetBranch("muon_lepton_type") ||  !fChain->GetBranch("muon_is_cf"))  {
       int lep_type = GetLeptonType_JH(mu, All_Gens);
       mu.SetLeptonType(lep_type);
       mu.SetLeptonIsCF(IsCF(mu, All_Gens));
 
     }
     else {
-      if(fChain->GetBranch("muon_v2_lepton_type")) mu.SetLeptonType(muon_v2_lepton_type->at(i));
-      if(fChain->GetBranch("muon_v2_is_cf")) mu.SetLeptonIsCF(muon_v2_is_cf->at(i));
+      if(fChain->GetBranch("muon_lepton_type")) mu.SetLeptonType(muon_lepton_type->at(i));
+      if(fChain->GetBranch("muon_is_cf")) mu.SetLeptonIsCF(muon_is_cf->at(i));
     }
     
     out.push_back(mu);
@@ -1274,7 +1275,7 @@ void AnalyzerCore::SetupIDMVAReaderDefault(bool ForceSetupV4, bool ForceSetupV5)
 
   if(SetupVersion5){
     
-    if(fChain->GetBranch("electron_mva_fake_ed_v5"))         cout << "WARNING SetupIDMVAReaderDefault set tp force V4 setup when running on a skimmed sample with V4 variables in ntup" << endl;
+    if(fChain->GetBranch("electron_mva_fake_ed_v5"))         cout << "WARNING SetupIDMVAReaderDefault set tp force V5 setup when running on a skimmed sample with V4 variables in ntup" << endl;
     SetupIDMVAReaderElectronUpdate(); 
   }
 
@@ -2710,8 +2711,8 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
 
     /////// USE NEW Branches to set lepton variables
     if(fChain->GetBranch("electron_v2_cj_flavour")) el.SetCloseJetFlavour(electron_v2_cj_flavour->at(i));
-    if(fChain->GetBranch("electron_v2_ptrel"))      el.SetJetPtRel(electron_v2_ptrel->at(i));
-    if(fChain->GetBranch("electron_v2_ptratio"))    el.SetJetPtRatio(electron_v2_ptratio->at(i));
+    if(fChain->GetBranch("electron_ptrel"))      el.SetJetPtRel(electron_ptrel->at(i));
+    if(fChain->GetBranch("electron_ptratio"))    el.SetJetPtRatio(electron_ptratio->at(i));
     if(fChain->GetBranch("electron_v2_cj_bjetdisc"))    el.SetCloseJetBScore(electron_v2_cj_bjetdisc->at(i));
     if(fChain->GetBranch("electron_v2_cj_cvsbjetdisc")) el.SetCloseJetCvsBScore(electron_v2_cj_cvsbjetdisc->at(i));
     if(fChain->GetBranch("electron_v2_cj_cvsljetdisc")) el.SetCloseJetCvsLScore(electron_v2_cj_cvsljetdisc->at(i));
@@ -2825,7 +2826,7 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool FillCloseJetVar=!fChain->GetBranch("electron_v2_cj_flavour");
+    bool FillCloseJetVar=!fChain->GetBranch("electron_v2_cj_cvsbjetdisc");
     if(Analyzer=="HNL_LeptonID_BDT_KinVar") FillCloseJetVar=false;
     if(FillCloseJetVar){
       
@@ -2868,14 +2869,14 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
       
     }
     
-    if(!fChain->GetBranch("electron_v2_lepton_type") ||  !fChain->GetBranch("electron_v2_is_cf"))  {
+    if(!fChain->GetBranch("electron_lepton_type") ||  !fChain->GetBranch("electron_is_cf"))  {
       int lep_type = GetLeptonType_JH(el, All_Gens);
       el.SetLeptonType(lep_type);
       el.SetLeptonIsCF(IsCF(el, All_Gens) );
     }
     else {
-      if(fChain->GetBranch("electron_v2_lepton_type")) el.SetLeptonType(electron_v2_lepton_type->at(i));
-      if(fChain->GetBranch("electron_v2_is_cf")) el.SetLeptonIsCF(electron_v2_is_cf->at(i));
+      if(fChain->GetBranch("electron_lepton_type")) el.SetLeptonType(electron_lepton_type->at(i));
+      if(fChain->GetBranch("electron_is_cf")) el.SetLeptonIsCF(electron_is_cf->at(i));
     }
     out.push_back(el);
   }
@@ -5039,15 +5040,11 @@ void AnalyzerCore::SetupLeptonBDTSKFlatV5(){
     vmuon_v2_cj_cvsljetdisc->push_back(JetDiscCJ_CvsL);
     vmuon_v2_cj_bjetdisc->push_back(JetDiscCJ);
     vmuon_v2_cj_flavour->push_back(JetFlavourCJ);
-    vmuon_v2_lepton_type->push_back(GetLeptonType_JH(i, All_Gens));
-    vmuon_v2_is_cf->push_back(IsCF(i, All_Gens));
 
     vmuon_mva_fake_QCD_LFvsHF_v5->push_back(GetBDTScoreMuon(i,AnalyzerCore::FakeRate,     "BDTGv5_QCD_LFvsHF"));
     vmuon_mva_fake_QCD_HFBvsHFC_v5->push_back(GetBDTScoreMuon(i,AnalyzerCore::FakeRate,   "BDTGv5_QCD_HFBvsHFC"));
     vmuon_mva_fake_QCD_LF1_v5->push_back(GetBDTScoreMuon(i,AnalyzerCore::FakeRate,  "BDTGv5_LF1"));
     vmuon_mva_fake_QCD_LF2_v5->push_back(GetBDTScoreMuon(i,AnalyzerCore::FakeRate,  "BDTGv5_LF2"));
-
-
 
   }
 
@@ -5101,8 +5098,6 @@ void AnalyzerCore::SetupLeptonBDTSKFlatV5(){
     velectron_v2_cj_cvsljetdisc->push_back(JetDiscCJ_CvsL);
     velectron_v2_cj_bjetdisc->push_back(JetDiscCJ);
     velectron_v2_cj_flavour->push_back(JetFlavourCJ);
-    velectron_v2_lepton_type->push_back(GetLeptonType_JH(i, All_Gens));
-    velectron_v2_is_cf->push_back(IsCF(i, All_Gens));
   }
  
   return;
@@ -5121,6 +5116,12 @@ void AnalyzerCore::SetupLeptonBDTSKFlat(){
   for(auto i: AllmuonColl){
     vmuon_mva_fake_v4->push_back(GetBDTScoreMuon(i,AnalyzerCore::Fake,  "BDTGv4"));
     vmuon_mva_fake_ed_v4->push_back(GetBDTScoreMuon_EtaDependant(i,AnalyzerCore::Fake,  "BDTGv4"));
+
+    vmuon_ptratio->push_back(JetLeptonPtRatioLepAware(i));
+    vmuon_ptrel->push_back(JetLeptonPtRelLepAware(i));
+    vmuon_lepton_type->push_back(GetLeptonType_JH(i, All_Gens));
+    vmuon_is_cf->push_back(IsCF(i, All_Gens));
+
   }
 
   for(auto i: AllelectronColl){
@@ -5144,6 +5145,13 @@ void AnalyzerCore::SetupLeptonBDTSKFlat(){
 
     velectron_mva_cf_v2->push_back(GetBDTScoreEl(i,AnalyzerCore::CF,  "BDTGv4"));
     velectron_mva_cf_ed_v2->push_back(GetBDTScoreEl_EtaDependant(i,AnalyzerCore::CF,  "BDTGv4"));
+
+
+    velectron_ptratio->push_back(JetLeptonPtRatioLepAware(i));
+    velectron_ptrel->push_back(JetLeptonPtRelLepAware(i));
+    velectron_lepton_type->push_back(GetLeptonType_JH(i, All_Gens));
+    velectron_is_cf->push_back(IsCF(i, All_Gens));
+
    
   }
 
@@ -5154,14 +5162,14 @@ void AnalyzerCore::SetupLeptonBDTSKFlat(){
 
 void AnalyzerCore::ResetLeptonBDTSKFlatV5(){
 
-  velectron_v2_ptrel->clear();
-  velectron_v2_ptratio->clear();
+  velectron_ptrel->clear();
+  velectron_ptratio->clear();
   velectron_v2_cj_bjetdisc->clear();
   velectron_v2_cj_cvsbjetdisc->clear();
   velectron_v2_cj_cvsljetdisc->clear();
   velectron_v2_cj_flavour->clear();
-  velectron_v2_lepton_type->clear();
-  velectron_v2_is_cf->clear();
+  velectron_lepton_type->clear();
+  velectron_is_cf->clear();
   
   velectron_mva_cf_ed_v5->clear();
   velectron_mva_cf_ed_v5pt->clear();
@@ -5175,14 +5183,14 @@ void AnalyzerCore::ResetLeptonBDTSKFlatV5(){
   velectron_mva_fake_QCD_LF1_v5->clear();
   velectron_mva_fake_QCD_LF2_v5->clear();
 
-  vmuon_v2_ptrel->clear();
-  vmuon_v2_ptratio->clear();
+  vmuon_ptrel->clear();
+  vmuon_ptratio->clear();
   vmuon_v2_cj_bjetdisc->clear();
   vmuon_v2_cj_cvsbjetdisc->clear();
   vmuon_v2_cj_cvsljetdisc->clear();
   vmuon_v2_cj_flavour->clear();
-  vmuon_v2_lepton_type->clear();
-  vmuon_v2_is_cf->clear();
+  vmuon_lepton_type->clear();
+  vmuon_is_cf->clear();
 
   vmuon_mva_fake_QCD_LFvsHF_v5->clear();
   vmuon_mva_fake_QCD_HFBvsHFC_v5->clear();
@@ -5221,8 +5229,8 @@ void AnalyzerCore::InitialiseLeptonBDTSKFlat(){
 
   vSKWeight=0;
 
-  velectron_v2_ptratio = 0;
-  velectron_v2_ptrel  = 0;
+  velectron_ptratio = 0;
+  velectron_ptrel  = 0;
   velectron_v2_cj_bjetdisc = 0;
   velectron_v2_cj_cvsbjetdisc = 0;
   velectron_v2_cj_cvsljetdisc = 0;
@@ -5260,8 +5268,8 @@ void AnalyzerCore::InitialiseLeptonBDTSKFlat(){
   velectron_mva_fake_QCD_LF1_v5 = 0 ;
   velectron_mva_fake_QCD_LF2_v5 = 0 ;
 
-  velectron_v2_lepton_type=0;
-  velectron_v2_is_cf=0;
+  velectron_lepton_type=0;
+  velectron_is_cf=0;
 
   vmuon_mva_fake_v4 = 0;
   vmuon_mva_fake_ed_v4 = 0;
@@ -5273,14 +5281,14 @@ void AnalyzerCore::InitialiseLeptonBDTSKFlat(){
   vmuon_mva_fake_QCD_LF1_v5 = 0 ;
   vmuon_mva_fake_QCD_LF2_v5 = 0 ;
 
-  vmuon_v2_ptratio = 0;
-  vmuon_v2_ptrel  = 0;
+  vmuon_ptratio = 0;
+  vmuon_ptrel  = 0;
   vmuon_v2_cj_bjetdisc = 0;
   vmuon_v2_cj_cvsbjetdisc = 0;
   vmuon_v2_cj_cvsljetdisc = 0;
   vmuon_v2_cj_flavour = 0;
-  vmuon_v2_lepton_type=0;
-  vmuon_v2_is_cf=0;
+  vmuon_lepton_type=0;
+  vmuon_is_cf=0;
 
   return;
 }
@@ -5332,7 +5340,9 @@ void AnalyzerCore::beginEvent(){
   if(!IsData) All_Gens = GetGens();  
   All_Jets      = GetAllJets();
   All_FatJets   = GetAllFatJets();
+  if(_jentry%10000==0) cout << "GetAllMuons " << endl;
   All_Muons     = GetAllMuons();
+  if(_jentry%10000==0) cout << "GetAllElectrons " << endl;
   All_Electrons = GetAllElectrons();
 
   return;

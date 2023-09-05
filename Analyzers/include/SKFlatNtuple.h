@@ -211,14 +211,14 @@ public :
    vector<float>   *fatjet_LSFlep_Eta;
    vector<float>   *fatjet_LSFlep_Phi;
 
-   vector<float>   *electron_v2_ptrel;
-   vector<float>   *electron_v2_ptratio;
+   vector<float>   *electron_ptrel;
+   vector<float>   *electron_ptratio;
    vector<float>   *electron_v2_cj_bjetdisc;
    vector<float>   *electron_v2_cj_cvsbjetdisc;
    vector<float>   *electron_v2_cj_cvsljetdisc;
    vector<float>   *electron_v2_cj_flavour;
-   vector<bool>   *electron_v2_is_cf;
-   vector<int>    *electron_v2_lepton_type;
+   vector<bool>   *electron_is_cf;
+   vector<int>    *electron_lepton_type;
 
    vector<float>   *electron_mva_cf_v2;
    vector<float>   *electron_mva_cf_ed_v2;
@@ -347,14 +347,14 @@ public :
    vector<float>   *electron_jetNTracks;
    vector<float>   *electron_jetNTracksMVA;
 
-   vector<float>   *muon_v2_ptrel;
-   vector<float>   *muon_v2_ptratio;
+   vector<float>   *muon_ptrel;
+   vector<float>   *muon_ptratio;
    vector<float>   *muon_v2_cj_bjetdisc;
    vector<float>   *muon_v2_cj_cvsbjetdisc;
    vector<float>   *muon_v2_cj_cvsljetdisc;
    vector<float>   *muon_v2_cj_flavour;
-   vector<int>     *muon_v2_lepton_type;
-   vector<bool>    *muon_v2_is_cf;
+   vector<int>     *muon_lepton_type;
+   vector<bool>    *muon_is_cf;
    vector<float>   *muon_mva_fake_v4;
    vector<float>   *muon_mva_fake_ed_v4;
 
@@ -702,8 +702,8 @@ public :
    TBranch        *b_electron_conv_log_chi2_min_pt;
 
 
-   TBranch        *b_electron_v2_ptrel;
-   TBranch        *b_electron_v2_ptratio;
+   TBranch        *b_electron_ptrel;
+   TBranch        *b_electron_ptratio;
    TBranch        *b_electron_v2_cj_bjetdisc;
    TBranch        *b_electron_v2_cj_cvsbjetdisc;
    TBranch        *b_electron_v2_cj_cvsljetdisc;
@@ -743,8 +743,8 @@ public :
    TBranch        *b_electron_mva_fake_QCD_LF1_v5;
    TBranch        *b_electron_mva_fake_QCD_LF2_v5;
 
-   TBranch        *b_electron_v2_is_cf;
-   TBranch        *b_electron_v2_lepton_type;
+   TBranch        *b_electron_is_cf;
+   TBranch        *b_electron_lepton_type;
 
 
    TBranch        *b_electron_MVAIso;   //!
@@ -829,14 +829,14 @@ public :
    TBranch        *b_electron_jetNTracks; //!                                                                                                                                                                                                                                     
    TBranch        *b_electron_jetNTracksMVA; //!                                                                                                                                                                    
 
-   TBranch        *b_muon_v2_ptrel;
-   TBranch        *b_muon_v2_ptratio;
+   TBranch        *b_muon_ptrel;
+   TBranch        *b_muon_ptratio;
    TBranch        *b_muon_v2_cj_bjetdisc;
    TBranch        *b_muon_v2_cj_cvsbjetdisc;
    TBranch        *b_muon_v2_cj_cvsljetdisc;
    TBranch        *b_muon_v2_cj_flavour;
-   TBranch        *b_muon_v2_lepton_type;
-   TBranch        *b_muon_v2_is_cf;
+   TBranch        *b_muon_lepton_type;
+   TBranch        *b_muon_is_cf;
    TBranch        *b_muon_mva_fake_v4;
    TBranch        *b_muon_mva_fake_ed_v4;
 

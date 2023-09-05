@@ -68,35 +68,39 @@ void HNL_LeptonIDBDTStudies::executeEvent(){
   std::vector<Lepton *> LeptonCollProbe      = MakeLeptonPointerVector(MuonCollProbe,ElectronCollProbe);  
   if(LeptonCollProbe.size() == 0) return;
   
-  if(HasFlag("NewBDT")){
-
-    for(auto ilep : ElectronCollProbe){
-      TString  LepType = "";
-      if ( FindHEMElectron (ilep )) continue;
-      
-      if (ilep.IsConv())  LepType = "Conv";
-      if (ilep.IsFake())  LepType = "Fake"+ilep.CloseJet_Flavour();
-      if (ilep.IsFake() && ilep.CloseJet_Flavour() == "Pileup") continue;
-      if (ilep.LeptonIsCF())  LepType = "CF";
-      else if (ilep.IsPrompt()) LepType = "Prompt";
-      if(ilep.IsEWtau()) continue;
-      if (LepType == "") continue;
-     
-      
-      if(ilep.Pt() < 30 ){
-	if(ilep.fEta() < 1.) FillBDTHists(ilep,LepType+"/Pt1_Eta1",weight);
-	else if(ilep.fEta() < 1.44) FillBDTHists(ilep,LepType+"/Pt1_Eta2",weight);
-	else if(ilep.fEta() > 1.56 && ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt1_Eta3",weight);
-	else if(ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt1_Eta4",weight);
-	else FillBDTHists(ilep,LepType+"/Pt1_Eta5",weight);
-      }   
-      else{
-	if(ilep.fEta() < 1.) FillBDTHists(ilep,LepType+"/Pt2_Eta1",weight);
-	else if(ilep.fEta() < 1.44) FillBDTHists(ilep,LepType+"/Pt2_Eta2",weight);
-	else if(ilep.fEta() > 1.56 && ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt2_Eta3",weight);
-	else if(ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt2_Eta4",weight);
-	else FillBDTHists(ilep,LepType+"/Pt2_Eta5",weight);
-      }
+  for(auto ilep : ElectronCollProbe){
+    TString  LepType = "";
+    if ( FindHEMElectron (ilep )) continue;
+    
+    if (ilep.IsConv())  LepType = "Conv";
+    if (ilep.IsFake())  LepType = "Fake"+ilep.CloseJet_Flavour();
+    if (ilep.IsFake() && ilep.CloseJet_Flavour() == "Pileup") continue;
+    if (ilep.LeptonIsCF())  LepType = "CF";
+    else if (ilep.IsPrompt()) LepType = "Prompt";
+    if(ilep.IsEWtau()) continue;
+    if (LepType == "") continue;
+    
+    
+    if(ilep.Pt() < 30 ){
+      if(ilep.fEta() < 1.) FillBDTHists(ilep,LepType+"/Pt1_Eta1",weight);
+      else if(ilep.fEta() < 1.44) FillBDTHists(ilep,LepType+"/Pt1_Eta2",weight);
+      else if(ilep.fEta() > 1.56 && ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt1_Eta3",weight);
+      else if(ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt1_Eta4",weight);
+      else FillBDTHists(ilep,LepType+"/Pt1_Eta5",weight);
+    }   
+    else  if(ilep.Pt() < 150 ){
+      if(ilep.fEta() < 1.) FillBDTHists(ilep,LepType+"/Pt2_Eta1",weight);
+      else if(ilep.fEta() < 1.44) FillBDTHists(ilep,LepType+"/Pt2_Eta2",weight);
+      else if(ilep.fEta() > 1.56 && ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt2_Eta3",weight);
+      else if(ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt2_Eta4",weight);
+      else FillBDTHists(ilep,LepType+"/Pt2_Eta5",weight);
+    }
+    else{
+      if(ilep.fEta() < 1.) FillBDTHists(ilep,LepType+"/Pt3_Eta1",weight);
+      else if(ilep.fEta() < 1.44) FillBDTHists(ilep,LepType+"/Pt3_Eta2",weight);
+      else if(ilep.fEta() > 1.56 && ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt3_Eta3",weight);
+      else if(ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt3_Eta4",weight);
+      else FillBDTHists(ilep,LepType+"/Pt3_Eta5",weight);
     }
   }
   

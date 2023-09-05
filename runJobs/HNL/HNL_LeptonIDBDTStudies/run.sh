@@ -41,6 +41,8 @@ fi
 if [[ $1 == "All" ]]; then
 
     declare  -a era_list=("2018" "2016postVFP" "2016preVFP" "2017")
+
+    declare  -a era_list=("2016postVFP" "2016preVFP")
     for i in "${era_list[@]}"
     do
 	

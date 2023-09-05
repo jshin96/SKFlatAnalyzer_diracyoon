@@ -104,6 +104,10 @@ void SkimTree_DileptonBDT::initializeAnalyzer(){
     newtree->Branch("electron_mva_fakeHFC_ed_v4",&velectron_mva_fakeHFC_ed_v4);
     newtree->Branch("electron_mva_fakeLF_ed_v4", &velectron_mva_fakeLF_ed_v4);
     newtree->Branch("electron_mva_fakeTop_ed_v4",&velectron_mva_fakeTop_ed_v4);
+    newtree->Branch("electron_ptrel",      &velectron_ptrel);
+    newtree->Branch("electron_ptratio",    &velectron_ptratio);
+    newtree->Branch("electron_lepton_type",&velectron_lepton_type);
+    newtree->Branch("electron_is_cf",      &velectron_is_cf);
   }
 
   newtree->Branch("electron_mva_fake_ed_v5",&velectron_mva_fake_ed_v5);
@@ -119,18 +123,19 @@ void SkimTree_DileptonBDT::initializeAnalyzer(){
   newtree->Branch("electron_mva_fake_QCD_LF1_v5",     &velectron_mva_fake_QCD_LF1_v5);
   newtree->Branch("electron_mva_fake_QCD_LF2_v5",     &velectron_mva_fake_QCD_LF2_v5);
 
-  newtree->Branch("electron_v2_ptrel",      &velectron_v2_ptrel);
-  newtree->Branch("electron_v2_ptratio",    &velectron_v2_ptratio);
   newtree->Branch("electron_v2_cj_bjetdisc",&velectron_v2_cj_bjetdisc);
-  newtree->Branch("electron_v2_cj_bjetdisc",&velectron_v2_cj_cvsbjetdisc);
-  newtree->Branch("electron_v2_cj_bjetdisc",&velectron_v2_cj_cvsljetdisc);
+  newtree->Branch("electron_v2_cj_cvsbjetdisc",&velectron_v2_cj_cvsbjetdisc);
+  newtree->Branch("electron_v2_cj_cvsljetdisc",&velectron_v2_cj_cvsljetdisc);
   newtree->Branch("electron_v2_cj_flavour", &velectron_v2_cj_flavour);
-  newtree->Branch("electron_v2_lepton_type",&velectron_v2_lepton_type);
-  newtree->Branch("electron_v2_is_cf",      &velectron_v2_is_cf);
   //// MUON BRANCH                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
   if(!fChain->GetBranch("muon_mva_fake_ed_v4")){
     newtree->Branch("muon_mva_fake_v4",   &vmuon_mva_fake_v4);
     newtree->Branch("muon_mva_fake_ed_v4",&vmuon_mva_fake_ed_v4);
+    newtree->Branch("muon_ptrel",         &vmuon_ptrel);
+    newtree->Branch("muon_ptratio",       &vmuon_ptratio);
+    newtree->Branch("muon_lepton_type",   &vmuon_lepton_type);
+    newtree->Branch("muon_is_cf",         &vmuon_is_cf);
+
   }
 
   newtree->Branch("muon_mva_fake_QCD_LFvsHF_v5",  &vmuon_mva_fake_QCD_LFvsHF_v5);
@@ -138,15 +143,10 @@ void SkimTree_DileptonBDT::initializeAnalyzer(){
   newtree->Branch("muon_mva_fake_QCD_LF1_v5",     &vmuon_mva_fake_QCD_LF1_v5);
   newtree->Branch("muon_mva_fake_QCD_LF2_v5",     &vmuon_mva_fake_QCD_LF2_v5);
 
-  newtree->Branch("muon_v2_ptrel",         &vmuon_v2_ptrel);
-  newtree->Branch("muon_v2_ptratio",       &vmuon_v2_ptratio);
   newtree->Branch("muon_v2_cj_bjetdisc",   &vmuon_v2_cj_bjetdisc);
-  newtree->Branch("muon_v2_v2_cj_bjetdisc",&vmuon_v2_cj_cvsbjetdisc);
-  newtree->Branch("muon_v2_v2_cj_bjetdisc",&vmuon_v2_cj_cvsljetdisc);
+  newtree->Branch("muon_v2_cj_cvsbjetdisc",&vmuon_v2_cj_cvsbjetdisc);
+  newtree->Branch("muon_v2_cj_cvsljetdisc"   ,&vmuon_v2_cj_cvsljetdisc);
   newtree->Branch("muon_v2_cj_flavour",    &vmuon_v2_cj_flavour);
-  newtree->Branch("muon_v2_lepton_type",   &vmuon_v2_lepton_type);
-  newtree->Branch("muon_v2_is_cf",         &vmuon_v2_is_cf);
-
 
 
   newtree->Branch("SKWeight", &vSKWeight);

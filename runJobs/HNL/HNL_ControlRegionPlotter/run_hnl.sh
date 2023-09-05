@@ -92,11 +92,11 @@ fi
 if [[ $1 == "MVA" ]]; then
 
     declare  -a era_list=("2016postVFP" "2016preVFP" "2018"  "2017")
-    
+    declare  -a era_list=("2016postVFP" "2016preVFP")
     for i in "${era_list[@]}"
     do
-	SKFlat.py -a $analyzer  -l $datapath/${i}_SingleLepton_E.txt  -n 200  --nmax 400   -e ${i}  --skim SkimTree_DileptonBDT  &
-	SKFlat.py -a $analyzer  -i DYJets -n 400  --nmax 400   -e ${i}   --skim SkimTree_DileptonBDT --userflags RunPrompt &
+	SKFlat.py -a $analyzer  -l $datapath/${i}_SingleLepton_E.txt  -n 200  --nmax 300   -e ${i}  --skim SkimTree_DileptonBDT  &
+	SKFlat.py -a $analyzer  -i DYJets -n 400  --nmax 300   -e ${i}   --skim SkimTree_DileptonBDT --userflags RunPrompt &
     done
 
 fi

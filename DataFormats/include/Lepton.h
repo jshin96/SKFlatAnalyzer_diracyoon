@@ -189,8 +189,8 @@ public:
       _map["El_Fake_v5_LF"]     = j_lep_mva_hnl_fake_v5_lf;
       _map["El_Fake_QCD_LFvsHF_v5"]= j_lep_mva_hnl_fake_QCD_LFvsHF_v5;
       _map["El_Fake_QCD_BvsC_v5"]  = j_lep_mva_hnl_fake_QCD_BvsC_v5;
-      _map["El_Fake_LF1_v5"]    = j_lep_mva_hnl_fake_LF1_v5;
-      _map["El_Fake_LF2_v5"]    = j_lep_mva_hnl_fake_LF2_v5;
+      _map["El_Fake_QCD_LF1_v5"]    = j_lep_mva_hnl_fake_LF1_v5;
+      _map["El_Fake_QCD_LF2_v5"]    = j_lep_mva_hnl_fake_LF2_v5;
 
     }
     else{
@@ -198,8 +198,8 @@ public:
       _map["Mu_ED_LF_Fake_v4"]      = j_lep_mva_hnl_fake_ed_v4;
       _map["Mu_Fake_QCD_LFvsHF_v5"] = j_lep_mva_hnl_fake_QCD_LFvsHF_v5;
       _map["Mu_Fake_QCD_BvsC_v5"]   = j_lep_mva_hnl_fake_QCD_BvsC_v5;
-      _map["Mu_Fake_LF1_v5"]    = j_lep_mva_hnl_fake_LF1_v5;
-      _map["Mu_Fake_LF2_v5"]    = j_lep_mva_hnl_fake_LF2_v5;
+      _map["Mu_Fake_QCD_LF1_v5"]    = j_lep_mva_hnl_fake_LF1_v5;
+      _map["Mu_Fake_QCD_LF2_v5"]    = j_lep_mva_hnl_fake_LF2_v5;
       _map["Mu_HF_Fake_POG"]        = j_lep_mva;
     }
     return _map;
@@ -232,8 +232,8 @@ public:
       else if(vers=="v5LF")   return j_lep_mva_hnl_fake_v5_lf;
       else if(vers=="QCD_LFvsHF_v5") return j_lep_mva_hnl_fake_QCD_LFvsHF_v5;
       else if(vers=="QCD_BvsC_v5")   return j_lep_mva_hnl_fake_QCD_BvsC_v5;
-      else if(vers=="LF1_v5")     return j_lep_mva_hnl_fake_LF1_v5;
-      else if(vers=="LF2_v5")     return j_lep_mva_hnl_fake_LF2_v5;
+      else if(vers=="QCD_LF1_v5")     return j_lep_mva_hnl_fake_LF1_v5;
+      else if(vers=="QCD_LF2_v5")     return j_lep_mva_hnl_fake_LF2_v5;
 
 
     }
@@ -242,8 +242,8 @@ public:
       else if(vers=="EDv4")      return j_lep_mva_hnl_fake_ed_v4;
       else if(vers=="QCD_LFvsHF_v5")  return  j_lep_mva_hnl_fake_QCD_LFvsHF_v5;
       else if(vers=="QCD_BvsC_v5")    return  j_lep_mva_hnl_fake_QCD_BvsC_v5;
-      else if(vers=="LF1_v5")     return j_lep_mva_hnl_fake_LF1_v5;
-      else if(vers=="LF2_v5")     return j_lep_mva_hnl_fake_LF2_v5;
+      else if(vers=="QCD_LF1_v5")     return j_lep_mva_hnl_fake_LF1_v5;
+      else if(vers=="QCD_LF2_v5")     return j_lep_mva_hnl_fake_LF2_v5;
       else if(vers=="HFTop")          return  j_lep_mva;
     }
     cout<<"[Lepton::HNL_MVA_Fake] no version set "<< vers<< endl;
