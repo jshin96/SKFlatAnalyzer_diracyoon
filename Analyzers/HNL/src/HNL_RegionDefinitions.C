@@ -1110,30 +1110,14 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 	    TString FakeMVA = "";
 	    if( FindHEMElectron (ilep)) FillBDTHists(ilep,"HEM",weight_channel);
 	    if( FindHEMElectron (ilep))  continue;
+	    
+	    TString ptstring = "Pt1";
+	    if(ilep.Pt() < 30 ) ptstring = "Pt1";
+	    else if(ilep.Pt() < 150 ) ptstring = "Pt2";
+	    else ptstring = "Pt3";
 
-	    if(ilep.Pt() < 30 ){
-	      if(ilep.fEta() < 1.) FillBDTHists(ilep,"Pt1_Eta1",weight_channel);
-	      else if(ilep.fEta() < 1.44) FillBDTHists(ilep,"Pt1_Eta2",weight_channel);
-	      else if(ilep.fEta() > 1.56 && ilep.fEta() < 2.) FillBDTHists(ilep,"Pt1_Eta3",weight_channel);
-	      else if(ilep.fEta() < 2.) FillBDTHists(ilep,"Pt1_Eta4",weight_channel);
-	      else FillBDTHists(ilep,"Pt1_Eta5",weight_channel);
-	    }
-	    else  if(ilep.Pt() < 150 ){
-	      if(ilep.fEta() < 1.) FillBDTHists(ilep,"Pt2_Eta1",weight_channel);
-              else if(ilep.fEta() < 1.44) FillBDTHists(ilep,"Pt2_Eta2",weight_channel);
-              else if(ilep.fEta() > 1.56 && ilep.fEta() < 2.) FillBDTHists(ilep,"Pt2_Eta3",weight_channel);
-              else if(ilep.fEta() < 2.) FillBDTHists(ilep,"Pt2_Eta4",weight_channel);
-              else FillBDTHists(ilep,"Pt2_Eta5",weight_channel);
-	    }
-	    else  {
-              if(ilep.fEta() < 1.) FillBDTHists(ilep,"Pt3_Eta1",weight_channel);
-              else if(ilep.fEta() < 1.44) FillBDTHists(ilep,"Pt3_Eta2",weight_channel);
-              else if(ilep.fEta() > 1.56 && ilep.fEta() < 2.) FillBDTHists(ilep,"Pt3_Eta3",weight_channel);
-              else if(ilep.fEta() < 2.) FillBDTHists(ilep,"Pt3_Eta4",weight_channel);
-              else FillBDTHists(ilep,"Pt3_Eta5",weight_channel);
-            }
-	    
-	    
+	    TString etastring = ilep.sEtaRegion();
+	    FillBDTHists(ilep,ptstring+"_"+etastring,weight_channel);
 	    
 	    if(ilep.IsBB() ){
 	      

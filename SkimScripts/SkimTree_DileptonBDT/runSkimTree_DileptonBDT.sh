@@ -22,14 +22,13 @@ if [[ $1 == "" ]]; then
 
 fi
 
-if [[ $1 == "ta" ]]; then
+if [[ $1 == "Ind" ]]; then
     
-    declare  -a era_list=("2018" "2017"  "2016preVFP")
+    declare  -a era_list=("2018" )
     
      for i in "${era_list[@]}"
      do
-	 SKFlat.py -a $analyzer  -l  $datapath/DATA_${i}_ind.txt  -n 500  --nmax 100    -e ${i} --skim SkimTree_Dilepton& 
-	 SKFlat.py -a $analyzer  -l  $datapath/DATA_${i}EMu_ind.txt  -n 500  --nmax 100    -e ${i} 
+	 SKFlat.py -a $analyzer  -l  $datapath/DATA_${i}_ind.txt  -n 500  --nmax 300    -e ${i} --skim SkimTree_Dilepton& 
      done
 
 fi

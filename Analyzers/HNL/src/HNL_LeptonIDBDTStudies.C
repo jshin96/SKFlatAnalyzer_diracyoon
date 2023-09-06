@@ -80,28 +80,14 @@ void HNL_LeptonIDBDTStudies::executeEvent(){
     if(ilep.IsEWtau()) continue;
     if (LepType == "") continue;
     
+    TString ptstring = "Pt1";
+    if(ilep.Pt() < 30 ) ptstring = "Pt1";
+    else if(ilep.Pt() < 150 ) ptstring = "Pt2";
+    else ptstring = "Pt3";
+
+    TString etastring = ilep.sEtaRegion();
     
-    if(ilep.Pt() < 30 ){
-      if(ilep.fEta() < 1.) FillBDTHists(ilep,LepType+"/Pt1_Eta1",weight);
-      else if(ilep.fEta() < 1.44) FillBDTHists(ilep,LepType+"/Pt1_Eta2",weight);
-      else if(ilep.fEta() > 1.56 && ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt1_Eta3",weight);
-      else if(ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt1_Eta4",weight);
-      else FillBDTHists(ilep,LepType+"/Pt1_Eta5",weight);
-    }   
-    else  if(ilep.Pt() < 150 ){
-      if(ilep.fEta() < 1.) FillBDTHists(ilep,LepType+"/Pt2_Eta1",weight);
-      else if(ilep.fEta() < 1.44) FillBDTHists(ilep,LepType+"/Pt2_Eta2",weight);
-      else if(ilep.fEta() > 1.56 && ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt2_Eta3",weight);
-      else if(ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt2_Eta4",weight);
-      else FillBDTHists(ilep,LepType+"/Pt2_Eta5",weight);
-    }
-    else{
-      if(ilep.fEta() < 1.) FillBDTHists(ilep,LepType+"/Pt3_Eta1",weight);
-      else if(ilep.fEta() < 1.44) FillBDTHists(ilep,LepType+"/Pt3_Eta2",weight);
-      else if(ilep.fEta() > 1.56 && ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt3_Eta3",weight);
-      else if(ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt3_Eta4",weight);
-      else FillBDTHists(ilep,LepType+"/Pt3_Eta5",weight);
-    }
+    FillBDTHists(ilep,LepType+"/"+ptstring+"_"+etastring,weight);
   }
   
   

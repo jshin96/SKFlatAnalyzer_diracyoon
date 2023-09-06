@@ -82,6 +82,30 @@ public:
     else if( eta < 1.479 ) return 2;
     else return 3;
   }
+  
+  inline TString sEtaRegion() const {
+    if(j_LeptonFlavour==MUON){
+      if( this->Eta() < -2 ) return "Eta1";
+      else if( this->Eta() < -1.479 ) return "Eta2";
+      else if( this->Eta() < -1 ) return "Eta3";
+      else if( this->Eta() < 0 ) return "Eta4";
+      else if( this->Eta() < 1 ) return "Eta5";
+      else if( this->Eta() < 1.479 ) return "Eta6";
+      else if( this->Eta() < 2 ) return "Eta7";
+      else return "Eta8";
+    }
+    else{
+      if( this->Eta() < -2 ) return "Eta1";
+      else if( this->Eta() < -1.56 ) return "Eta2";
+      else if( this->Eta()  > -1.44 && this->Eta() < -1 ) return "Eta3";
+      else if( this->Eta() < 0 ) return "Eta4";
+      else if( this->Eta() < 1 ) return "Eta5";
+      else if( this->Eta() < 1.444 ) return "Eta6";
+      else if( this->Eta() < 2 && this->Eta() > 1.56) return "Eta7";
+      else return "Eta8";
+    }    
+  }
+
 
   inline bool IsIB() const { return (Region(fabs(this->Eta())) == 1); }
   inline bool IsOB() const { return (Region(fabs(this->Eta())) == 2); }

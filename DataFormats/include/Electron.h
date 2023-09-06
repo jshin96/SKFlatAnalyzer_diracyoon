@@ -39,32 +39,6 @@ public:
   inline double scE() const { return j_scE; }
 
 
-  inline bool PassCFMVA(double val, double mva1, double mva2) {
-    if(fabs(j_scEta) <= 1.5 && val > mva1) return true;
-    if(fabs(j_scEta) > 1.5 && val > mva2) return true;
-
-    return false;
-
-  }
-
-  inline bool PassConvMVA(double val, double mva1, double mva2) {
-    if(fabs(j_scEta) <= 1.5 && val > mva1) return true;
-    if(fabs(j_scEta) > 1.5 && val > mva2) return true;
-
-    return false;
-
-  }
-
-  inline bool PassFakeMVA(double val, double mva1, double mva2) {
-    if(fabs(j_scEta) <= 1.5 && val > mva1) return true;
-    if(fabs(j_scEta) > 1.5 && val > mva2) return true;
-
-    return false;
-
-  }
-
-
-
   ///////// ELECTRON MVA FUNCTIONS 
 
   // MVA                                                                                                                                                                                                                                                                  
@@ -150,15 +124,6 @@ public:
   bool PassMVA_UL_CF(TString val1, TString val2, TString ptboundary)const ;
   bool PassMVA_UL_Conv(TString pt,TString bb1, TString bb2, TString ee1, TString ee2)const ;
   double PassStepCut(double val, double val2, double pt1, double pt2) const;
-
-
-  inline bool PassIP(double A , double B) const{
-    double cut = A   +  ((B-A) * ( Pt()-10)) / 50;
-    if  (Pt() > 59) cut = B;
-
-    if(fabs(IP3D()/IP3Derr()) < cut) return true;
-    return false;
-  }
 
   void SetUncorrE(double une);
   inline double UncorrE() const { return j_EnergyUnCorr; }
