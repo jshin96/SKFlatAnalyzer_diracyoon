@@ -10,8 +10,8 @@ njobs_sig=2
 njobs_data=100
 nmax=400
 skim=' '
-declare  -a era_list=("2016postVFP" "2016preVFP" "2017" )
-declare  -a era_list=("2017")
+declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018" )
+
 
 if [[ $1 == "WZ" ]]; then
 
@@ -92,7 +92,7 @@ fi
 if [[ $1 == "MVA" ]]; then
 
     declare  -a era_list=("2016postVFP" "2016preVFP" "2018"  "2017")
-    declare  -a era_list=("2016postVFP" "2016preVFP")
+ 
     for i in "${era_list[@]}"
     do
 	SKFlat.py -a $analyzer  -l $datapath/${i}_SingleLepton_E.txt  -n 200  --nmax 300   -e ${i}  --skim SkimTree_DileptonBDT  &

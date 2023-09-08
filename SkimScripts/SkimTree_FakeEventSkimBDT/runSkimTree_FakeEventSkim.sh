@@ -7,8 +7,8 @@ nmax=350
 skim=' '
 declare  -a era_list=("2018" "2017"  "2016preVFP" "2016postVFP")
 
-declare  -a era_list=( "2018")
-# "2017")
+declare  -a era_list=(  "2016preVFP" "2016postVFP")
+
 if [[ $1 == "" ]]; then
     for i in "${era_list[@]}"
     do

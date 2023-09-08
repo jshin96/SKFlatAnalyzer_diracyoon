@@ -266,14 +266,14 @@ void Lepton::SetCloseJetBScore(double bscore){
 }
 
 
-void Lepton::SetCloseJetCvsBScore(double bscore){
-  j_lep_jetbscore = bscore;
+void Lepton::SetCloseJetCvsBScore(double score){
+  j_lep_jetcvsbscore= score;
 }
 
 
-void Lepton::SetCloseJetCvsLScore(double bscore){
+void Lepton::SetCloseJetCvsLScore(double score){
 
-  j_lep_jetbscore = bscore;
+  j_lep_jetcvslscore = score;
 }
 
 void Lepton::SetCloseJetFlavour(int flav){
