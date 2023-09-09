@@ -301,16 +301,12 @@ bool Muon::PassID(TString ID) const {
 
 
   /////////// FINAL UL HNL Type-1 ID                                                                                                                                                                                                                                                                                          
-  if(ID.Contains("HNL_ULID_2016_L")){
+  if(ID.Contains("HNL_ULID_2016_Fake")){
     
     if(!PassID("MVALoose")) return false;
+    if(MVA() < 0.72)  return false;
+    if(fabs(IP3D()/IP3Derr()) > 7) return false;
 
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(MVA() < 0.75)  return false;
-    }
-    else{
-      if(MVA() < 0.72)  return false;
-    }
     return true;
   }
 
@@ -319,18 +315,9 @@ bool Muon::PassID(TString ID) const {
 
     if(!PassID("MVALoose")) return false;
 
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(MVA() < 0.75)  return false;
-    }
-    else{
-      if(MVA() < 0.72)  return false;
-    }
-    if(fabs(IP3D()/IP3Derr()) > 6) return false;
+    if(MVA() < 0.72)  return false;
 
-
-    ///if(!( RelIso()<0.15 ))  return false;
-    if(fabs(dXY()) > 0.01)   return false;
-    if(fabs(dZ()) >  0.05)   return false;
+    if(fabs(IP3D()/IP3Derr()) > 7) return false;
         
     return true;
   }
@@ -339,17 +326,9 @@ bool Muon::PassID(TString ID) const {
 
     if(!PassID("MVALoose")) return false;
 
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(MVA() < 0.68)  return false;
-    }
-    else{
-      if(MVA() < 0.64)  return false;
-    }
-
-    if(fabs(IP3D()/IP3Derr()) > 6) return false;
-
-    if(fabs(dZ()) >  0.05)   return false;
-    if(fabs(dXY()) >  0.01)   return false;
+    if(MVA() < 0.64)  return false;
+    
+    if(fabs(IP3D()/IP3Derr()) > 7) return false;
 
     return true;
   }
@@ -358,97 +337,13 @@ bool Muon::PassID(TString ID) const {
   if(ID.Contains("HNL_ULID_2018"))  {
 
     if(!PassID("MVALoose")) return false;
-
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(MVA() < 0.68)  return false;
-    }
-    else{
-      if(MVA() < 0.64)  return false;
-    }
-
-    if(fabs(IP3D()/IP3Derr()) > 6) return false;
-
-    if(fabs(dZ()) >  0.05)   return false;
-    if(fabs(dXY()) >  0.01)   return false;
-
-
-    return true;
-  }
-
-
-
-  ///////// Preliminary v1 IDs [These were reaplce 12/Jun/23/]
-
-  if(ID.Contains("HNL_ULIDv1_2016")){
-
-    if(!PassID("MVALoose")) return false;
-
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(MVA() < 0.77)  return false;
-    }
-    else{
-      if(MVA() < 0.6)  return false;
-    }
-
-    return true;
-  }
-
-  if(ID.Contains("HNL_ULIDv1_2017"))  {
-
-    if(!PassID("MVALoose")) return false;
-
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(MVA() < 0.68)  return false;
-    }
-    else{
-      if(MVA() < 0.64)  return false;
-    }
-
-    if(!PassID("HNLIPv8"))  return false;
-
-    return true;
-  }
-
-  if(ID.Contains("HNL_ULIDv1_2018"))  {
-
-    if(!PassID("MVALoose")) return false;
-
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(MVA() < 0.6)  return false;
-    }
-    else{
-      if(MVA() < 0.78)  return false;
-    }
-
-    if(!PassID("HNLIPv9"))  return false;
-
-    return true;
-  }
-
-
-
-  if(ID.Contains("HNL_LFULID_2017"))  {
-
-    if(!PassID("MVALoose")) return false;
-
-    if( fabs(this->Eta()) <= 1.479 ){
-      if(MVA() < 0.68) {
-	if(HNL_MVA_Fake("EDv4") < -0.6) return false;
-      }
-    }
-    else{
-      if(MVA() < 0.64)  {
-        if(HNL_MVA_Fake("EDv4") < -0.6) return false;
-      }
-    }
-
-
-    if(fabs(dXY()) >  0.05)   return false;
-    if(fabs(dZ()) >  0.1)   return false;
+    if(MVA() < 0.64)  return false;
+    
     if(fabs(IP3D()/IP3Derr()) > 7) return false;
 
     return true;
   }
+
 
 
   //// Following are functions to test UL UDs
