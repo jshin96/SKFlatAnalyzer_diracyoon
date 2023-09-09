@@ -63,10 +63,11 @@ fi
 if [[ $1 == "MC3" ]]; then
 
     declare  -a era_list=("2016preVFP" "2016postVFP")
+    declare  -a era_list=("2016preVFP")
 
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -l ${mcpath}/MCLarge.txt  -n 50  --nmax ${nmax}   -e ${i}   --skim  SkimTree_HNMultiLepBDT &
+        #SKFlat.py -a $analyzer  -l ${mcpath}/MCLarge.txt  -n 50  --nmax ${nmax}   -e ${i}   --skim  SkimTree_HNMultiLepBDT &
         SKFlat.py -a $analyzer  -l ${mcpath}/MCXLarge.txt  -n 200  --nmax ${nmax}   -e ${i}   --skim  SkimTree_HNMultiLepBDT &
     done
 fi

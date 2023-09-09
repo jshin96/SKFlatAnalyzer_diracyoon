@@ -28,7 +28,7 @@ void HNL_LeptonIDSF::executeEvent(){
   //  MeasureMuonEfficiencies(param);
 
   MeasureElectronIDSF(param);
-  // MeasureMuonIDSF(param);
+  MeasureMuonIDSF(param);
   return ;
 }
 
@@ -141,19 +141,21 @@ void HNL_LeptonIDSF::PlotIDEfficiency(AnalyzerParameter param,HNL_LeptonCore::Ch
 
 void HNL_LeptonIDSF::MeasureMuonIDSF(AnalyzerParameter param){
 
-  Event ev = GetEvent();
-  double weight =SetupWeight(ev,param);
+  ///// Functiom to measure PRELIMINARY SFs for muon ID
+
+  Event ev      = GetEvent();
+  double weight = SetupWeight(ev,param);
 
   HNL_LeptonCore::Channel dilep_channel = MuMu;
-  std::vector<Muon>       MuonCollProbe     = GetMuons    ("passProbe",    10., 2.4);
-
-  /// Event cuts                                                                                                                                                                                                                       
+  std::vector<Muon>       MuonCollProbe = GetMuons    ("passProbe",    10., 2.4);
 
   std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5);
-  if(ElectronCollV.size() != 0) return;                                                                                                                                                                                                
+  if(ElectronCollV.size() != 0) return;                                                                                                                                                                                               
 
+  //// BASIC event cuts
+  
   std::vector<Jet> BJetColl  = GetHNLJets("BJetL", param);
-  Particle METv              = GetvMET("PuppiT1xyCorr"); // reyturns MET with systematic correction                                                                                                                                                                                                                                                                                                                                                                                      
+  Particle METv              = GetvMET("PuppiT1xyCorr"); // reyturns MET with systematic correction                                                           
   if(BJetColl.size() > 0 ) return;
   if(!PassMETFilter()) return;
 
@@ -163,28 +165,32 @@ void HNL_LeptonIDSF::MeasureMuonIDSF(AnalyzerParameter param){
   if(!CheckLeptonFlavourForChannel(dilep_channel, LeptonColl)) return;
   if (!PassTriggerSelection(dilep_channel, ev, LeptonColl,"POG")) return;
 
-  // Reuqire 2 Probe muons in Z mass
+  // Require 2 Probe muons in Z mass
   if(MuonCollProbe.size() != 2) return;
-  if(fabs(GetLLMass(MuonCollProbe)- 90.1) > 10) return;
+  if(fabs(GetLLMass(MuonCollProbe)- 90.1) > 20) return;
 
   if(!IsData){
     if(!MuonCollProbe[0].IsPrompt()) return;
     if(!MuonCollProbe[1].IsPrompt()) return;
   }
 
+
   vector<TString> IDs = {
     "MVALoose",
     "MVAID",
     "POGLoose",
     "POGMedium",    
-    "HNL_ULID_2016",                                                                                                                                                                                                                                 
-    "HNL_ULID_2017",                                                                                                                                                                                                                                 
+    "HNL_ULID_2016",
+    "HNL_ULID_2017",
+    "HNL_ULID_2018",
     "HNTightV2"
   };
 
   /// Make cuts to remove fakes
   
-  for(auto id : IDs) MeasureIDSF(param,dilep_channel, MuonCollProbe, id, weight);
+  for(auto id : IDs) {
+    MeasureIDSF(param,dilep_channel, MuonCollProbe, id, weight);
+  }
   
   return;
 }
@@ -276,12 +282,16 @@ void HNL_LeptonIDSF::MeasureIDSF(AnalyzerParameter param,HNL_LeptonCore::Channel
 
   TString channel_string = GetChannelString(dilep_channel) ;
        
+
+  bool TightWindowCut = ((GetLLMass(MuonColl)- 90.1) < 10) ;
+
   std::vector<Lepton *> LeptonColl      = MakeLeptonPointerVector(MuonColl);
 
-
-  if(SameCharge(MuonColl)) channel_string=channel_string+"_SS";
-  else  channel_string=channel_string+"_OS";
-
+  ///// Set SS events to -1 * weight to remove Fake leptons from T&P
+  if(IsData){
+    if(SameCharge(MuonColl)) weight_ll = -1;
+    else weight_ll=1;
+  }  
 
   if(MuonColl[0].PassID("POGTightWithTightIso") && MuonColl[0].Pt() > 35) {
     
@@ -300,9 +310,8 @@ void HNL_LeptonIDSF::MeasureIDSF(AnalyzerParameter param,HNL_LeptonCore::Channel
       SF = lep1_idsf*lep1_isosf*lep1_recosf*lep2_recosf;
     }
     
-    FilllHistBins(Lepton(MuonColl[1]), MuonColl[1].PassID(ID),  channel_string,ID, SF*weight_ll);
-    
-
+    if(MuonColl[1].Pt() > 100) FilllHistBins(Lepton(MuonColl[1]), MuonColl[1].PassID(ID),  channel_string,ID, SF*weight_ll);
+    else if(TightWindowCut)    FilllHistBins(Lepton(MuonColl[1]), MuonColl[1].PassID(ID),  channel_string,ID, SF*weight_ll);
   }
   if(MuonColl[1].PassID("POGTightWithTightIso")&& MuonColl[1].Pt() > 35) {
 
@@ -321,7 +330,8 @@ void HNL_LeptonIDSF::MeasureIDSF(AnalyzerParameter param,HNL_LeptonCore::Channel
       SF = lep1_idsf*lep1_isosf*lep1_recosf*lep2_recosf;
     }
 
-    FilllHistBins(Lepton(MuonColl[0]), MuonColl[0].PassID(ID),  channel_string,ID, SF*weight_ll);
+    if(MuonColl[0].Pt() > 100) FilllHistBins(Lepton(MuonColl[0]), MuonColl[0].PassID(ID),  channel_string,ID, SF*weight_ll);
+    else if(TightWindowCut)    FilllHistBins(Lepton(MuonColl[0]), MuonColl[0].PassID(ID),  channel_string,ID, SF*weight_ll);
 
   }
   
@@ -336,6 +346,8 @@ void HNL_LeptonIDSF::MeasureIDSF(AnalyzerParameter param,HNL_LeptonCore::Channel
   
   TString channel_string = GetChannelString(dilep_channel) ;
 
+  bool TightWindowCut = ((GetLLMass(ElectronColl)- 90.1) < 10) ;
+
   std::vector<Lepton *> LeptonColl      = MakeLeptonPointerVector(ElectronColl);
 
   if(!IsData){
@@ -347,6 +359,7 @@ void HNL_LeptonIDSF::MeasureIDSF(AnalyzerParameter param,HNL_LeptonCore::Channel
     if(SameCharge(ElectronColl)) weight_ll = -1;
     else weight_ll=1;
   }
+
   if(ElectronColl[0].PassID("passPOGTight")&& ElectronColl[0].Pt() > 35) {
 
     double SF=1;
@@ -359,7 +372,9 @@ void HNL_LeptonIDSF::MeasureIDSF(AnalyzerParameter param,HNL_LeptonCore::Channel
     }
 
 
-    FilllHistBins(Lepton(ElectronColl[1]), ElectronColl[1].PassID(ID),  channel_string,ID, SF*weight_ll);
+    if(ElectronColl[1].Pt() > 100 ) FilllHistBins(Lepton(ElectronColl[1]), ElectronColl[1].PassID(ID),  channel_string,ID, SF*weight_ll);
+    else if(TightWindowCut) FilllHistBins(Lepton(ElectronColl[1]), ElectronColl[1].PassID(ID),  channel_string,ID, SF*weight_ll);
+
 
   }
   if(ElectronColl[1].PassID("passPOGTight")&& ElectronColl[1].Pt() > 35) {
@@ -373,7 +388,8 @@ void HNL_LeptonIDSF::MeasureIDSF(AnalyzerParameter param,HNL_LeptonCore::Channel
       SF = this_recosf*this_idsf*lep2_recosf;
     }
 
-    FilllHistBins(Lepton(ElectronColl[0]), ElectronColl[0].PassID(ID),  channel_string,ID, SF*weight_ll);
+    if(ElectronColl[0].Pt() > 100 ) FilllHistBins(Lepton(ElectronColl[0]), ElectronColl[0].PassID(ID),  channel_string,ID, SF*weight_ll);
+    else if(TightWindowCut) FilllHistBins(Lepton(ElectronColl[0]), ElectronColl[0].PassID(ID),  channel_string,ID, SF*weight_ll);
 
   }
 
@@ -427,7 +443,7 @@ void HNL_LeptonIDSF::MeasureIDSF(AnalyzerParameter param,HNL_LeptonCore::Channel
       SF = this_recosf*this_idsf*lep2_recosf;
     }
 
-    if(ElectronColl[1].Pt() > 100 ) FilllHistBins(Lepton(ElectronColl[0]), PassIDs[0],  channel_string,ID, SF*weight_ll);
+    if(ElectronColl[0].Pt() > 100 ) FilllHistBins(Lepton(ElectronColl[0]), PassIDs[0],  channel_string,ID, SF*weight_ll);
     else if(TightWindowCut) FilllHistBins(Lepton(ElectronColl[0]), PassIDs[0],  channel_string,ID, SF*weight_ll);
 
   }

@@ -11,14 +11,11 @@ declare  -a era_list=("2018" "2017"  "2016preVFP" "2016postVFP")
 
 if [[ $1 == "" ]]; then
 
-    declare  -a era_list=("2018" "2017")
+    declare  -a era_list=( "2016preVFP" "2016postVFP")
     for i in "${era_list[@]}"
     do
         SKFlat.py -a $analyzer  -l $mcpath/MC2.txt   --nmax 400           -e ${i} &
-        #SKFlat.py -a $analyzer  -i SingleTop_sch_Lep  --nmax 350           -e ${i}  --skim SkimTree_Dilepton&
-        #SKFlat.py -a $analyzer  -i SingleTop_tW_antitop_NoFullyHad  --nmax 350           -e ${i}  --skim SkimTree_Dilepton&
-        #SKFlat.py -a $analyzer  -i SingleTop_tW_top_NoFullyHad  --nmax 350           -e ${i}  --skim SkimTree_Dilepton&
-    done
+      done
 
 fi
 
@@ -36,7 +33,7 @@ fi
 
 if [[ $1 == "All" ]]; then
 
-    declare  -a era_list=("2018" "2017" )
+    declare  -a era_list=( "2016preVFP" "2016postVFP")
     for i in "${era_list[@]}"
     
     do
