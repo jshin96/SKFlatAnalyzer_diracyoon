@@ -18,7 +18,7 @@ fi
 
 if [[ $1 == "DATA" ]]; then
 
-    declare  -a era_list=("2017" "2018")
+    declare  -a era_list=("2016preVFP" "2016postVFP")
 
     for i in "${era_list[@]}"
     do
@@ -29,7 +29,7 @@ fi
 
 if [[ $1 == "Signal" ]]; then
 
-    declare  -a era_list=("2017" "2018")
+    declare  -a era_list=("2016preVFP" "2016postVFP")
 
     for i in "${era_list[@]}"
     do
@@ -39,7 +39,7 @@ fi
 
 if [[ $1 == "MC1" ]]; then
 
-    declare  -a era_list=("2017" "2018")
+    declare  -a era_list=("2016preVFP" "2016postVFP")
 
     for i in "${era_list[@]}"
     do
@@ -50,11 +50,11 @@ fi
 
 if [[ $1 == "MC2" ]]; then
 
-    declare  -a era_list=("2017" "2018")
+    declare  -a era_list=("2016preVFP" "2016postVFP")
 
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -l ${mcpath}/MCMedium.txt  -n 20  --nmax ${nmax}   -e ${i}   --skim  SkimTree_HNMultiLepBDT
+        SKFlat.py -a $analyzer  -l ${mcpath}/MCMedium.txt  -n 20  --nmax ${nmax}   -e ${i}   --skim  SkimTree_HNMultiLepBDT&
         SKFlat.py -a $analyzer  -l ${mcpath}/${i}/QCD.txt -n 2  --nmax ${nmax}   -e ${i}  --skim  SkimTree_HNMultiLepBDT&
     done
 fi
@@ -62,7 +62,7 @@ fi
 
 if [[ $1 == "MC3" ]]; then
 
-    declare  -a era_list=("2017" "2018")
+    declare  -a era_list=("2016preVFP" "2016postVFP")
 
     for i in "${era_list[@]}"
     do
@@ -74,7 +74,7 @@ fi
 
 if [[ $1 == "" ]]; then
 
-    declare  -a era_list=("2017" "2018")
+    declare  -a era_list=("2016preVFP" "2016postVFP")
 
     for i in "${era_list[@]}"
     do

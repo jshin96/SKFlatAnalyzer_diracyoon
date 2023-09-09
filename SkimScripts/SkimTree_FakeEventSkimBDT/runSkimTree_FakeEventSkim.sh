@@ -13,9 +13,9 @@ if [[ $1 == "" ]]; then
     for i in "${era_list[@]}"
     do
 	
-	#SKFlat.py -a $analyzer  -l  $mcpath/QCD_${i}.txt    -n 600  --nmax ${nmax}   -e ${i}  --skim SkimTree_FakeEventSkimBDT&
-        SKFlat.py -a $analyzer  -l  $mcpath/HaneolList.txt  -n 100  --nmax ${nmax}   -e ${i}  --skim SkimTree_FakeEventSkim&
-	#SKFlat.py -a $analyzer  -l  $mcpath/MC.txt          -n 600  --nmax ${nmax}   -e ${i}  --skim SkimTree_FakeEventSkimBDT&
+	#SKFlat.py -a $analyzer  -l  $mcpath/QCD_${i}.txt    -n 20  --nmax ${nmax}   -e ${i}  --skim SkimTree_FakeEventSkimBDT&
+        #SKFlat.py -a $analyzer  -l  $mcpath/HaneolList.txt  -n 100  --nmax ${nmax}   -e ${i}  --skim SkimTree_FakeEventSkimBDT&
+	SKFlat.py -a $analyzer  -l  $mcpath/MC.txt          -n 100  --nmax ${nmax}   -e ${i}  --skim SkimTree_FakeEventSkimBDT&
 
     done
 
