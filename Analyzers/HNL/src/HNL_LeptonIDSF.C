@@ -466,13 +466,17 @@ HNL_LeptonIDSF::~HNL_LeptonIDSF(){
 
 void HNL_LeptonIDSF::FilllHistBins(Lepton lep, bool passID,  TString Channel_string,TString _ID, double lep_weight){
   
-  int nbin_pt    =7;
+  int nbin_pt    =6;
   int nbin_eta   =10;
 
-  double ptbins16    [nbin_pt ]    = { 10.,20.,30., 40.,50.,100.,300.};
-  double ptbins    [nbin_pt +1]    = { 10.,20.,30., 40.,50.,100.,200.,300.};
-  double etabins   [nbin_eta+1   ] = {-2.5, -2.0, -1.56, -1.4442, -1.0, 0, 1.0, 1.4442, 1.56, 2.0, 2.5};
+  double ptbins16  [nbin_pt ]      = { 10.,20.,35., 50.,100.,300.};
+  double ptbins    [nbin_pt +1]    = { 10.,20.,35., 50.,100.,200.,300.};
+  double etabins   [nbin_eta+1   ] = {-2.5, -2.0, -1.566, -1.4442, -1.0, 0, 1.0, 1.4442, 1.566, 2.0, 2.5};
   
+  double Mu_ptbins [8]    = { 15.,20.,25., 30.,40., 60., 120.};
+  double Mu_etabins     [5 ] = {0, 0..9, 1.2, 2.1, 2.4};
+
+
   int lepType = (IsData) ? 1 : lep.LeptonGenType();
   TString TypeLable="";
 
@@ -484,23 +488,27 @@ void HNL_LeptonIDSF::FilllHistBins(Lepton lep, bool passID,  TString Channel_str
   
   if(IsData && PtLep > 100 && lep_weight < 0) return;
 
+  // 2D plots
   FillHist(Channel_string+"/Pt_Eta_"   +_ID+Den_tag,    PtLep,     lep.Eta(),  lep_weight, nbin_pt, ptbins, nbin_eta , etabins);
   FillHist(Channel_string+"/Pt16_Eta_" +_ID+Den_tag,    PtLep,     lep.Eta(),  lep_weight, nbin_pt-1, ptbins16, nbin_eta , etabins);
   FillHist(Channel_string+"/Eta_Pt_"   +_ID+Den_tag,    lep.Eta(), PtLep,  lep_weight, nbin_eta , etabins,  nbin_pt, ptbins);
   FillHist(Channel_string+"/Eta_Pt16_"   +_ID+Den_tag,    lep.Eta(), PtLep,  lep_weight, nbin_eta , etabins,  nbin_pt-1, ptbins16);
-  FillHist(Channel_string+"/Pt_"       +_ID+Den_tag,    PtLep,   lep_weight, 100, 0, 200);
+  
+  /// 1D Plots
   FillHist(Channel_string+"/Ptbinned_" + lep.etaRegionString()+"_"+_ID+Den_tag,PtLep,   lep_weight, nbin_pt, ptbins,"");
-  FillHist(Channel_string+"/Pt_"       + lep.etaRegionString()+"_"+_ID+Den_tag,PtLep,         lep_weight, 100, 0, 200.);
   FillHist(Channel_string+"/Eta"       +_ID+Den_tag,lep.Eta(),   lep_weight, 60., -3, 3.);
+  
   
   if(passID){
     TString Num_tag=TypeLable+"_num";
+
+    // 2D plots                                                                                                                                                                                                                                                                                                     
     FillHist(Channel_string+"/Pt_Eta_"+_ID+Num_tag,PtLep, lep.Eta(),  lep_weight, nbin_pt, ptbins, nbin_eta , etabins);
     FillHist(Channel_string+"/Pt16_Eta_"+_ID+Num_tag,PtLep, lep.Eta(),  lep_weight, nbin_pt-1, ptbins16, nbin_eta , etabins);
     FillHist(Channel_string+"/Eta_Pt_"+_ID+Num_tag,lep.Eta(), PtLep,  lep_weight, nbin_eta , etabins,  nbin_pt, ptbins);
     FillHist(Channel_string+"/Eta_Pt16_"+_ID+Num_tag,lep.Eta(), PtLep,  lep_weight, nbin_eta , etabins,  nbin_pt-1, ptbins16);
-    FillHist(Channel_string+"/Pt_"+    _ID+Num_tag,PtLep,   lep_weight, 100, 0, 200.);
-    FillHist(Channel_string+"/Pt_"+lep.etaRegionString()+"_"+_ID+Num_tag,PtLep,         lep_weight, 100,0, 200.);
+
+    /// 1D Plots                                                                                                                                                                                                                                                                                                  
     FillHist(Channel_string+"/Ptbinned_"+lep.etaRegionString()+"_"+_ID+Num_tag,PtLep,   lep_weight, nbin_pt, ptbins,"");
     FillHist(Channel_string+"/Eta"+_ID+Num_tag,lep.Eta(),   lep_weight, 60, -3, 3.);
     

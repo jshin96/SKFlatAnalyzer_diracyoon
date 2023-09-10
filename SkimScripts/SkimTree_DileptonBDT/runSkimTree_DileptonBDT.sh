@@ -30,7 +30,7 @@ if [[ $1 == "All" ]]; then
         SKFlat.py -a $analyzer  -l $datapath/DATA_${i}.txt               -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_DileptonBDT &
 	SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_EMu.txt           -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_DileptonBDT &
 	SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_SingleLepton.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_DileptonBDT &
-	SKFlat.py -a $analyzer  -l $mcpath/MC.txt                        -n 2000           --nmax ${nmax}   -e ${i}  --skim SkimTree_DileptonBDT &
+	SKFlat.py -a $analyzer  -l $mcpath/MC.txt                        -n 500            --nmax ${nmax}   -e ${i}  --skim SkimTree_DileptonBDT &
     done
 fi
 
