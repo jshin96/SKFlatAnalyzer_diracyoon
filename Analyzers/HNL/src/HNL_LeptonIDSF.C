@@ -465,17 +465,22 @@ HNL_LeptonIDSF::~HNL_LeptonIDSF(){
 
 
 void HNL_LeptonIDSF::FilllHistBins(Lepton lep, bool passID,  TString Channel_string,TString _ID, double lep_weight){
-  
+
+  /// Electron Binning https://twiki.cern.ch/twiki/pub/CMS/EgammaUL2016To2018/egammaEffi.txt_Ele_Medium_preVFP_egammaPlots.pdf  
+  int nbin_pt16  =5;
   int nbin_pt    =6;
   int nbin_eta   =10;
 
-  double ptbins16  [nbin_pt ]      = { 10.,20.,35., 50.,100.,300.};
-  double ptbins    [nbin_pt +1]    = { 10.,20.,35., 50.,100.,200.,300.};
-  double etabins   [nbin_eta+1   ] = {-2.5, -2.0, -1.566, -1.4442, -1.0, 0, 1.0, 1.4442, 1.566, 2.0, 2.5};
+  double ptbins16  [nbin_pt16+1]   = { 10.,20.,35., 50.,100.,300.};
+  double ptbins    [nbin_pt  +1]   = { 10.,20.,35., 50.,100.,200.,300.};
+  double etabins   [nbin_eta +1]   = {-2.5, -2.0, -1.566, -1.444, -0.8, 0, 0.8, 1.444, 1.566, 2.0, 2.5};
   
-  double Mu_ptbins [8]    = { 15.,20.,25., 30.,40., 60., 120.};
-  double Mu_etabins     [5 ] = {0, 0..9, 1.2, 2.1, 2.4};
+  /// Muon Binning https://indico.cern.ch/event/950340/contributions/3992871/attachments/2093495/3518135/tnp_2018_UL.pdf
+  int nbin_Mupt    =8;
+  int nbin_Mueta   =4;
 
+  double Mu_ptbins [nbin_Mupt  + 1]    = {10., 15.,20.,25., 30.,40.,50., 60., 120.};
+  double Mu_etabins[nbin_Mueta + 1]    = {0, 0.9, 1.2, 2.1, 2.4};
 
   int lepType = (IsData) ? 1 : lep.LeptonGenType();
   TString TypeLable="";
@@ -484,33 +489,44 @@ void HNL_LeptonIDSF::FilllHistBins(Lepton lep, bool passID,  TString Channel_str
 
   TString Den_tag=TypeLable+"_denom";
 
-  double PtLep = (lep.Pt() > 300) ? 299 : lep.Pt();
+  double PtLep     = (lep.Pt() > 300) ? 299 : lep.Pt();
+  double MuonPtLep = (lep.Pt() > 120) ? 119 : lep.Pt();
   
   if(IsData && PtLep > 100 && lep_weight < 0) return;
 
   // 2D plots
-  FillHist(Channel_string+"/Pt_Eta_"   +_ID+Den_tag,    PtLep,     lep.Eta(),  lep_weight, nbin_pt, ptbins, nbin_eta , etabins);
-  FillHist(Channel_string+"/Pt16_Eta_" +_ID+Den_tag,    PtLep,     lep.Eta(),  lep_weight, nbin_pt-1, ptbins16, nbin_eta , etabins);
-  FillHist(Channel_string+"/Eta_Pt_"   +_ID+Den_tag,    lep.Eta(), PtLep,  lep_weight, nbin_eta , etabins,  nbin_pt, ptbins);
-  FillHist(Channel_string+"/Eta_Pt16_"   +_ID+Den_tag,    lep.Eta(), PtLep,  lep_weight, nbin_eta , etabins,  nbin_pt-1, ptbins16);
-  
+  FillHist(Channel_string+"/Pt_Eta_"     + _ID+Den_tag,    PtLep,     lep.defEta(),  lep_weight, nbin_pt,   ptbins,   nbin_eta , etabins);
+  FillHist(Channel_string+"/Pt16_Eta_"   + _ID+Den_tag,    PtLep,     lep.defEta(),  lep_weight, nbin_pt16, ptbins16, nbin_eta , etabins);
+  FillHist(Channel_string+"/Eta_MuonPt_" + _ID+Den_tag,    lep.fEta(),   MuonPtLep,  lep_weight, nbin_Mueta , Mu_etabins, nbin_Mupt, Mu_ptbins);
+  FillHist(Channel_string+"/Eta_Pt_"     + _ID+Den_tag,    lep.defEta(), PtLep,      lep_weight, nbin_eta , etabins,  nbin_pt,   ptbins);
+  FillHist(Channel_string+"/Eta_Pt16_"   + _ID+Den_tag,    lep.defEta(), PtLep,      lep_weight, nbin_eta , etabins,  nbin_pt16, ptbins16);
+  FillHist(Channel_string+"/MuonPt_Eta_" + _ID+Den_tag,    MuonPtLep, lep.fEta(), lep_weight, nbin_Mupt, Mu_ptbins, nbin_Mueta , Mu_etabins);
+
   /// 1D Plots
-  FillHist(Channel_string+"/Ptbinned_" + lep.etaRegionString()+"_"+_ID+Den_tag,PtLep,   lep_weight, nbin_pt, ptbins,"");
-  FillHist(Channel_string+"/Eta"       +_ID+Den_tag,lep.Eta(),   lep_weight, 60., -3, 3.);
-  
-  
+  FillHist(Channel_string+"/1D_Pt_"     + lep.sEtaRegion() +"_"+_ID+Den_tag, PtLep,       lep_weight, nbin_pt,   ptbins,"");
+  FillHist(Channel_string+"/1D_MuonPt_" + lep.sEtaRegion() +"_"+_ID+Den_tag, MuonPtLep,   lep_weight, nbin_Mupt, Mu_ptbins,"");
+
+  FillHist(Channel_string+"/1D_Eta"     + lep.sPtRegion(GetYearString())+"_"+_ID+Den_tag,lep.defEta(),    lep_weight, nbin_eta   , etabins);
+  FillHist(Channel_string+"/1D_MuonEta" + lep.sPtRegion(GetYearString())+"_"+_ID+Den_tag,lep.fEta(),   lep_weight, nbin_Mueta , Mu_etabins);
+    
   if(passID){
     TString Num_tag=TypeLable+"_num";
 
-    // 2D plots                                                                                                                                                                                                                                                                                                     
-    FillHist(Channel_string+"/Pt_Eta_"+_ID+Num_tag,PtLep, lep.Eta(),  lep_weight, nbin_pt, ptbins, nbin_eta , etabins);
-    FillHist(Channel_string+"/Pt16_Eta_"+_ID+Num_tag,PtLep, lep.Eta(),  lep_weight, nbin_pt-1, ptbins16, nbin_eta , etabins);
-    FillHist(Channel_string+"/Eta_Pt_"+_ID+Num_tag,lep.Eta(), PtLep,  lep_weight, nbin_eta , etabins,  nbin_pt, ptbins);
-    FillHist(Channel_string+"/Eta_Pt16_"+_ID+Num_tag,lep.Eta(), PtLep,  lep_weight, nbin_eta , etabins,  nbin_pt-1, ptbins16);
+    // 2D plots                                                                                                                                             
+    FillHist(Channel_string+"/Pt_Eta_"  +_ID+Num_tag,PtLep, lep.defEta(),  lep_weight, nbin_pt, ptbins, nbin_eta , etabins);
+    FillHist(Channel_string+"/Pt16_Eta_"+_ID+Num_tag,PtLep, lep.defEta(),  lep_weight, nbin_pt16, ptbins16, nbin_eta , etabins);
+    FillHist(Channel_string+"/Eta_MuonPt_" + _ID+Num_tag,    lep.fEta(),   MuonPtLep,  lep_weight, nbin_Mueta , Mu_etabins, nbin_Mupt, Mu_ptbins);
+    FillHist(Channel_string+"/Eta_Pt_"  +_ID+Num_tag,lep.defEta(), PtLep,  lep_weight, nbin_eta , etabins,  nbin_pt, ptbins);
+    FillHist(Channel_string+"/Eta_Pt16_"+_ID+Num_tag,lep.defEta(), PtLep,  lep_weight, nbin_eta , etabins,  nbin_pt16, ptbins16);
+    FillHist(Channel_string+"/MuonPt_Eta_" + _ID+Num_tag,  MuonPtLep,  lep.fEta(),  lep_weight, nbin_Mupt, Mu_ptbins, nbin_Mueta , Mu_etabins);
 
     /// 1D Plots                                                                                                                                                                                                                                                                                                  
-    FillHist(Channel_string+"/Ptbinned_"+lep.etaRegionString()+"_"+_ID+Num_tag,PtLep,   lep_weight, nbin_pt, ptbins,"");
-    FillHist(Channel_string+"/Eta"+_ID+Num_tag,lep.Eta(),   lep_weight, 60, -3, 3.);
+    FillHist(Channel_string+"/1D_Pt_"     + lep.sEtaRegion()+"_"+_ID+Num_tag, PtLep,       lep_weight, nbin_pt, ptbins,"");
+    FillHist(Channel_string+"/1D_MuonPt_" + lep.sEtaRegion()+"_"+_ID+Num_tag, MuonPtLep,   lep_weight, nbin_Mupt,       Mu_ptbins,"");
+    FillHist(Channel_string+"/1D_Eta"     + lep.sPtRegion(GetYearString())+"_"+_ID+Num_tag,lep.defEta(),    lep_weight, nbin_eta , etabins);
+    FillHist(Channel_string+"/1D_MuonEta" + lep.sPtRegion(GetYearString())+"_"+_ID+Num_tag,lep.fEta(),   lep_weight, nbin_Mueta , Mu_etabins);
+
+
     
   }
 
