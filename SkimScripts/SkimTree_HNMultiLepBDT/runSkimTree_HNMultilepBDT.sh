@@ -29,7 +29,10 @@ if [[ $1 == "Signal" ]]; then
 
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -l ${sigpath}/Signal.txt  -n 10  --nmax ${nmax}   -e ${i} --skim  SkimTree_HNMultiLepBDT&
+        SKFlat.py -a $analyzer  -l ${sigpath}/DYAdditionalBDT.txt  -n 20  --nmax ${nmax}   -e ${i} &
+        SKFlat.py -a $analyzer  -l ${sigpath}/DYOfficial.txt  -n 20  --nmax ${nmax}   -e ${i} &
+	SKFlat.py -a $analyzer  -l ${sigpath}/VBFOfficial.txt  -n 20  --nmax ${nmax}   -e ${i} &
+	SKFlat.py -a $analyzer  -l ${sigpath}/SSWWOfficial.txt  -n 20  --nmax ${nmax}   -e ${i} &
     done
 fi
 

@@ -39,10 +39,6 @@ AnalyzerCore::~AnalyzerCore(){
 
   //=== hist maps
   
-
-
-
-
   for(std::map< TString, TH1D* >::iterator mapit = maphist_TH1D.begin(); mapit!=maphist_TH1D.end(); mapit++){
     delete mapit->second;
   }
