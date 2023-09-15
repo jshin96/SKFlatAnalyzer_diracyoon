@@ -315,7 +315,7 @@ public:
   }
 
 
-  inline double HNL_MVA_Conv(TString vers) const {
+  inline double HNL_MVA_Conv(TString vers="EDv5") const {
  
     ///// v5 is July 23 MVA Trained
     ///// v2 is Mar - May trained
@@ -335,7 +335,7 @@ public:
     exit(ENODATA);
 
   }
-  inline double HNL_MVA_CF(TString vers) const {
+  inline double HNL_MVA_CF(TString vers="EDv5") const {
 
 
     if(j_LeptonFlavour==ELECTRON){
