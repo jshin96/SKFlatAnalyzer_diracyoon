@@ -5,7 +5,8 @@ void HNL_LeptonIDBDTStudies::initializeAnalyzer(){
   // All default settings like trigger/ PD/ BJet are decalred in HNL_LeptonCore::initializeAnalyzer to make them consistent for all HNL codes
 
   HNL_LeptonCore::initializeAnalyzer();
-  if(HasFlag("NewBDT")) SetupIDMVAReaderDefault(false,true);  //set v3 true
+  if(HasFlag("FakeSplit")) SetupIDMVAReaderDefault(false,false);  //set v3 true
+  if(HasFlag("NewBDT")) SetupIDMVAReaderDefault(false,true);  //set v3 true                                                                                                                                                                                                    
   if(HasFlag("SSBreakdown")) SetupIDMVAReaderDefault(false,true); 
 
 }
@@ -64,40 +65,94 @@ void HNL_LeptonIDBDTStudies::executeEvent(){
   //
   //////////////////////////  //////////////////////////  //////////////////////////  //////////////////////////
   //////////////////////////  //////////////////////////  //////////////////////////  //////////////////////////
+
   
   std::vector<Lepton *> LeptonCollProbe      = MakeLeptonPointerVector(MuonCollProbe,ElectronCollProbe);  
   if(LeptonCollProbe.size() == 0) return;
   
-  if(HasFlag("NewBDT")){
+  
+  if(HasFlag("FakeSplit")){
 
     for(auto ilep : ElectronCollProbe){
-      TString  LepType = "";
       if ( FindHEMElectron (ilep )) continue;
+      if (!ilep.IsFake()) continue;
+      TString LepType = "Fake"+ilep.CloseJet_Flavour();
+      double bvsl_score = ilep.CloseJet_BScore();
+      double cvsb_score = ilep.CloseJet_CvsBScore();
+      double cvsl_score = ilep.CloseJet_CvsLScore();
+      FillHist("FakeSplit/"+ ilep.GetFlavour()+ "/"+LepType+"_BvsLscore", bvsl_score  , weight, 200, -1., 1);
+      FillHist("FakeSplit/"+ ilep.GetFlavour()+ "/"+LepType+"_BvsCscore", cvsb_score  , weight, 200, -1., 1);
+      FillHist("FakeSplit/"+ ilep.GetFlavour()+ "/"+LepType+"_CvsLscore", cvsl_score  , weight, 200, -1., 1);
+
+      map<TString, double> mapBDT = ilep.MAPBDT();
+      for(auto imap : mapBDT )  FillHist("BDTVariable/"+ ilep.GetFlavour()+ "/"+ LepType+"_"+imap.first, imap.second  , weight, 200, -1., 1);
+
+      if (bvsl_score < 0.3 && cvsl_score < 0.1 )       FillHist("FakeSplit/"+ ilep.GetFlavour()+ "/JetTaggerBin_"+LepType, 1  , weight, 5, 0., 5);
+      if (bvsl_score > 0.3 && cvsb_score < 0.3 )       FillHist("FakeSplit/"+ ilep.GetFlavour()+ "/JetTaggerBin_"+LepType, 2  , weight, 5, 0., 5);
+      if (cvsl_score > 0.1 && cvsb_score > 0.3 )       FillHist("FakeSplit/"+ ilep.GetFlavour()+ "/JetTaggerBin_"+LepType, 3  , weight, 5, 0., 5);
       
-      if (ilep.IsConv())  LepType = "Conv";
-      if (ilep.IsFake())  LepType = "Fake"+ilep.CloseJet_Flavour();
-      if (ilep.IsFake() && ilep.CloseJet_Flavour() == "Pileup") continue;
-      if (ilep.LeptonIsCF())  LepType = "CF";
-      else if (ilep.IsPrompt()) LepType = "Prompt";
-      if(ilep.IsEWtau()) continue;
-      if (LepType == "") continue;
-     
-      
-      if(ilep.Pt() < 30 ){
-	if(ilep.fEta() < 1.) FillBDTHists(ilep,LepType+"/Pt1_Eta1",weight);
-	else if(ilep.fEta() < 1.44) FillBDTHists(ilep,LepType+"/Pt1_Eta2",weight);
-	else if(ilep.fEta() > 1.56 && ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt1_Eta3",weight);
-	else if(ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt1_Eta4",weight);
-	else FillBDTHists(ilep,LepType+"/Pt1_Eta5",weight);
-      }   
-      else{
-	if(ilep.fEta() < 1.) FillBDTHists(ilep,LepType+"/Pt2_Eta1",weight);
-	else if(ilep.fEta() < 1.44) FillBDTHists(ilep,LepType+"/Pt2_Eta2",weight);
-	else if(ilep.fEta() > 1.56 && ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt2_Eta3",weight);
-	else if(ilep.fEta() < 2.) FillBDTHists(ilep,LepType+"/Pt2_Eta4",weight);
-	else FillBDTHists(ilep,LepType+"/Pt2_Eta5",weight);
+      if(ilep.HNL_MVA_Fake("QCD_LFvsHF_v5") > 0.9 ) FillHist("FakeSplit/"+ ilep.GetFlavour()+ "/LepQCDTaggerBin_"+LepType, 1  , weight, 5, 0., 5);
+      else if(ilep.HNL_MVA_Fake("QCD_LFvsHF_v5") > -0.5 ){
+	
+	if(ilep.HNL_MVA_Fake("QCD_BvsC_v5") > 0.2) FillHist("FakeSplit/"+ ilep.GetFlavour()+ "/LepQCDTaggerBin_"+LepType, 2  , weight, 5, 0., 5);
       }
+      else {
+	//// Pure B
+	FillHist("FakeSplit/"+ ilep.GetFlavour()+ "/LepQCDTaggerBin_"+LepType, 1  , weight, 5, 0., 5);
+      }
+      
     }
+    
+    for(auto ilep : MuonCollProbe){
+      if (!ilep.IsFake()) continue;
+      TString LepType = "Fake"+ilep.CloseJet_Flavour();
+      double bvsl_score = ilep.CloseJet_BScore();
+      double cvsb_score = ilep.CloseJet_CvsBScore();
+      double cvsl_score = ilep.CloseJet_CvsLScore();
+      FillHist("FakeSplit/"+ ilep.GetFlavour()+ "/"+LepType+"_BvsLscore", bvsl_score  , weight, 200, -1., 1);
+      FillHist("FakeSplit/"+ ilep.GetFlavour()+ "/"+LepType+"_BvsCscore", cvsb_score  , weight, 200, -1., 1);
+      FillHist("FakeSplit/"+ ilep.GetFlavour()+ "/"+LepType+"_CvsLscore", cvsl_score  , weight, 200, -1., 1);
+
+      map<TString, double> mapBDT = ilep.MAPBDT();
+      for(auto imap : mapBDT )  FillHist("BDTVariable/"+ ilep.GetFlavour()+ "/"+ LepType+"_"+imap.first, imap.second  , weight, 200, -1., 1);
+
+      if (bvsl_score < 0.3 && cvsl_score < 0.1 )       FillHist("FakeSplit/"+ ilep.GetFlavour()+ "/JetTaggerBin_"+LepType, 1  , weight, 5, 0., 5);
+      if (bvsl_score > 0.3 && cvsb_score < 0.3 )       FillHist("FakeSplit/"+ ilep.GetFlavour()+ "/JetTaggerBin_"+LepType, 2  , weight, 5, 0., 5);
+      if (cvsl_score > 0.1 && cvsb_score > 0.3 )       FillHist("FakeSplit/"+ ilep.GetFlavour()+ "/JetTaggerBin_"+LepType, 3  , weight, 5, 0., 5);
+      
+      if(ilep.HNL_MVA_Fake("QCD_LFvsHF_v5") > 0) FillHist("FakeSplit/"+ ilep.GetFlavour()+ "/LepQCDTaggerBin_"+LepType, 1  , weight, 5, 0., 5);
+      else  {
+	if(ilep.HNL_MVA_Fake("QCD_BvsC_v5") > 0) FillHist("FakeSplit/"+ ilep.GetFlavour()+ "/LepQCDTaggerBin_"+LepType, 2  , weight, 5, 0., 5);
+	else FillHist("FakeSplit/"+ ilep.GetFlavour()+ "/LepQCDTaggerBin_"+LepType, 3  , weight, 5, 0., 5);
+      } 
+    }
+    
+    
+    return;
+  }
+  
+
+
+  for(auto ilep : ElectronCollProbe){
+    TString  LepType = "";
+    if ( FindHEMElectron (ilep )) continue;
+   
+    if (ilep.IsConv())  LepType = "Conv";
+    if (ilep.IsFake())  LepType = "Fake"+ilep.CloseJet_Flavour();
+    if (ilep.IsFake() && ilep.CloseJet_Flavour() == "Pileup") continue;
+    if (ilep.LeptonIsCF())  LepType = "CF";
+    else if (ilep.IsPrompt()) LepType = "Prompt";
+    if(ilep.IsEWtau()) continue;
+    if (LepType == "") continue;
+    
+    TString ptstring = "Pt1";
+    if(ilep.Pt() < 30 ) ptstring = "Pt1";
+    else if(ilep.Pt() < 150 ) ptstring = "Pt2";
+    else ptstring = "Pt3";
+
+    TString etastring = ilep.sEtaRegion();
+    
+    FillBDTHists(ilep,LepType+"/"+ptstring+"_"+etastring,weight);
   }
   
   
