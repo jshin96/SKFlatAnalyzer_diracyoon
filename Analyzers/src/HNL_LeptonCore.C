@@ -1339,7 +1339,7 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
   param.Electron_MinPt = 10.;
   param.Electron_MaxEta = 2.5;
   /// Lepton IDs
-  param.Muon_Veto_ID     = "HNVeto2016";
+  param.Muon_Veto_ID     = "HNVetoMVA";
   param.Electron_Veto_ID = "HNVetoMVA";
   param.Tau_Veto_ID      = "JetVLElVLMuVL";
   /// Fakes
@@ -4763,25 +4763,43 @@ void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::SearchRegion sr, double ev
   }
   
   if(verbose_level >= 0){
-    vector<TString> SRlabels = {"SR1_MNbin1","SR1_MNbin2","SR1_MNbin3","SR1_MNbin4","SR1_MNbin5", "SR1_MNbin6","SR1_MNbin7","SR1_MNbin8","SR2_HTLTbin1", "SR2_HTLTbin2", "SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8", "SR3_bin9","SR3_bin10","SR3_bin11"};
-    vector<TString> SRQlabels=  {"QMSR1_MNbin1","QMSR1_MNbin2","QMSR1_MNbin3","QMSR1_MNbin4","QMSR1_MNbin5","QMSR1_MNbin6","QMSR1_MNbin7","QMSR2_HTLTbin1", "QMSR2_HTLTbin2",  "QMSR3_bin1","QMSR3_bin2","QMSR3_bin3","QMSR3_bin4","QMSR3_bin5","QMSR3_bin6","QMSR3_bin7",  "QPSR1_MNbin1","QPSR1_MNbin2","QPSR1_MNbin3","QPSR1_MNbin4","QPSR1_MNbin5","QPSR1_MNbin6","QPSR1_MNbin7","QPSR2_HTLTbin1","QPSR2_HTLTbin2",  "QPSR3_bin1","QPSR3_bin2","QPSR3_bin3","QPSR3_bin4","QPSR3_bin5","QPSR3_bin6","QPSR3_bin7"};
-    vector<TString> SRBDTlabels=  {"SR1_MNbin1","SR1_MNbin2","SR1_MNbin3","SR1_MNbin4","SR1_MNbin5","SR1_MNbin6","SR1_MNbin7","SR1_MNbin8","SR2_HTLTbin1", "SR2_HTLTbin2",  "SR3_BDTbin1","SR3_BDTbin2","SR3_BDTbin3","SR3_BDTbin4","SR3_BDTbin5","SR3_BDTbin6","SR3_BDTbin7","SR3_BDTbin8","SR3_BDTbin9"};
 
-    if(sr==MuonSR || sr==ElectronSR || sr==ElectronMuonSR)       labels = SRlabels;
-    if(sr==MuonSRQQ || sr==ElectronSRQQ || sr==ElectronMuonSRQQ) labels = SRQlabels;
-    if(sr==MuonSRBDT || sr==ElectronSRBDT || sr==ElectronMuonSRBDT) labels = SRBDTlabels ;    
+    vector<TString> SRlabels = {"SR1_MNbin1","SR1_MNbin2","SR1_MNbin3","SR1_MNbin4","SR1_MNbin5", "SR1_MNbin6","SR1_MNbin7","SR1_MNbin8",
+				"SR2_HTLTbin1", "SR2_HTLTbin2", 
+				"SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8", "SR3_bin9","SR3_bin10","SR3_bin11"};
+    vector<TString> SRQlabels=  {"QMSR1_MNbin1","QMSR1_MNbin2","QMSR1_MNbin3","QMSR1_MNbin4","QMSR1_MNbin5","QMSR1_MNbin6","QMSR1_MNbin7","QMSR2_HTLTbin1", "QMSR2_HTLTbin2",  "QMSR3_bin1","QMSR3_bin2","QMSR3_bin3","QMSR3_bin4","QMSR3_bin5","QMSR3_bin6","QMSR3_bin7",  "QPSR1_MNbin1","QPSR1_MNbin2","QPSR1_MNbin3","QPSR1_MNbin4","QPSR1_MNbin5","QPSR1_MNbin6","QPSR1_MNbin7","QPSR2_HTLTbin1","QPSR2_HTLTbin2",  "QPSR3_bin1","QPSR3_bin2","QPSR3_bin3","QPSR3_bin4","QPSR3_bin5","QPSR3_bin6","QPSR3_bin7"};
+    vector<TString> SRBDTlabels=  {"SR1_MNbin1","SR1_MNbin2","SR1_MNbin3","SR1_MNbin4","SR1_MNbin5","SR1_MNbin6","SR1_MNbin7","SR1_MNbin8",
+				   "SR2_HTLTbin1", "SR2_HTLTbin2", 
+				   "SR3_BDTbin1","SR3_BDTbin2","SR3_BDTbin3","SR3_BDTbin4","SR3_BDTbin5","SR3_BDTbin6","SR3_BDTbin7","SR3_BDTbin8","SR3_BDTbin9"};
+
+
+    vector<TString> SRlabelsOpt = {"SR1_MNbin1","SR1_MNbin2","SR1_MNbin3","SR1_MNbin4",
+				"SR2_HTLTbin1", "SR2_HTLTbin2", 
+				"SR3_bin1","SR3_bin2","SR3_bin3","SR3_bin4","SR3_bin5","SR3_bin6","SR3_bin7","SR3_bin8", "SR3_bin9","SR3_bin10","SR3_bin11"};
+    vector<TString> SRBDTlabelsOpt=  {"SR1_MNbin1","SR1_MNbin2","SR1_MNbin3","SR1_MNbin4",
+				   "SR2_HTLTbin1", "SR2_HTLTbin2", 
+				   "SR3_BDTbin1","SR3_BDTbin2","SR3_BDTbin3","SR3_BDTbin4","SR3_BDTbin5","SR3_BDTbin6","SR3_BDTbin7"};
+
+    ///// STANDARD ANALYSIS LIMIT LABELS
+    if(sr==MuonSR    || sr==ElectronSR    || sr==ElectronMuonSR)       labels = SRlabels;
+    ///// STANDARD ANALYSIS LIMIT LABELS WITH CHARGE SPLIT
+    if(sr==MuonSRQQ  || sr==ElectronSRQQ  || sr==ElectronMuonSRQQ)     labels = SRQlabels;
+    ///// STANDARD ANALYSIS LIMIT LABELS FOR BDT MASSES                                                                                                                                                                       
+    if(sr==MuonSRBDT || sr==ElectronSRBDT || sr==ElectronMuonSRBDT)    labels = SRBDTlabels ;    
+
+    //// OPTIMISING LIMIT PLOTS
+    if(sr==MuonSRBDTOpt || sr==ElectronSRBDTOpt || sr==ElectronMuonSRBDTOpt)    labels = SRBDTlabelsOpt ;
+    if(sr==MuonSROpt    || sr==ElectronSROpt    || sr==ElectronMuonSROpt)       labels = SRlabelsOpt;
+
     //
-    if(sr==MuonSR)         EVhitname ="MuonSR";
-    if(sr==ElectronSR)     EVhitname ="ElectronSR";
-    if(sr==ElectronMuonSR) EVhitname ="ElectronMuonSR";
+    if(sr==MuonSR         || sr==MuonSRBDT         || sr==MuonSROpt         || sr==MuonSRBDTOpt)         EVhitname ="MuonSR";
+    if(sr==ElectronSR     || sr==ElectronSRBDT     || sr==ElectronSROpt     || sr==ElectronSRBDTOpt)     EVhitname ="ElectronSR";
+    if(sr==ElectronMuonSR || sr==ElectronMuonSRBDT || sr==ElectronMuonSROpt || sr==ElectronMuonSRBDTOpt) EVhitname ="ElectronMuonSR";
     //
     if(sr==MuonSRQQ )       EVhitname ="MuonChargeSplitSR";
     if(sr==ElectronSRQQ)    EVhitname ="ElectronChargeSplitSR";
     if(sr==ElectronMuonSRQQ)EVhitname ="ElectronMuonChargeSplitSR";
-    //
-    if(sr==MuonSRBDT)     EVhitname ="MuonSR";
-    if(sr==ElectronSRBDT) EVhitname ="ElectronSR";
-    if(sr==ElectronMuonSRBDT) EVhitname ="ElectronMuonSR";
+
   }
   
   

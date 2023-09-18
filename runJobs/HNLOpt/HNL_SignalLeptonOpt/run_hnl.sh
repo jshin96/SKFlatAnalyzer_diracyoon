@@ -16,7 +16,7 @@ njobs=25
 nLargejobs=50
 njobs_sig=30
 njobs_data=10
-nmax=350
+nmax=400
 
 
 if [[ $1 == "" ]]; then
@@ -26,14 +26,14 @@ if [[ $1 == "" ]]; then
 fi
 
 
-if [[ $1 == "ELECTRON_Conv_Scan" ]]; then
+if [[ $1 == "ELECTRON_FinalScan" ]]; then
 
     declare  -a era_list=("2018" "2016postVFP" "2016preVFP"  "2017")
 
     for i in "${era_list[@]}"
     do
 
-        Flag='RunEE,ELID_ConvScan'
+        Flag='RunEE,ELID_FinalScan'
         source ${runPATH}/run_hnl.sh Electron ${Flag} ${i}
     done
 fi
@@ -88,7 +88,7 @@ if [[ $1 == "Electron" ]]; then
     FakeFlag=${2}',RunFake'
     source ${runPATH}/run_hnl.sh Fake  ${3} ${FakeFlag}  &
     PromptFlag=${2}',RunPrompt'
-    source ${runPATH}/run_hnl.sh Prompt  ${3} ${PromptFlag}  
+    source ${runPATH}/run_hnl.sh Prompt  ${3} ${PromptFlag}  &
 
 
 fi

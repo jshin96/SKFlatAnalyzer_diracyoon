@@ -941,8 +941,7 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK4StringBDT(TString mN, HNL_Le
     else if(MVAvalue< 0.2) return LabelPrefix+"_BDTbin5";
     else if(MVAvalue< 0.225) return LabelPrefix+"_BDTbin6";
     else if(MVAvalue< 0.25) return LabelPrefix+"_BDTbin7";
-    else if(MVAvalue< 0.275) return LabelPrefix+"_BDTbin8";
-    else  return LabelPrefix+"_BDTbin9";
+    else  return LabelPrefix+"_BDTbin8";
 
   }
   
@@ -954,8 +953,7 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK4StringBDT(TString mN, HNL_Le
     else if(MVAvalue< 0.2) return LabelPrefix+"_BDTbin5";
     else if(MVAvalue< 0.225) return LabelPrefix+"_BDTbin6";
     else if(MVAvalue< 0.25) return LabelPrefix+"_BDTbin7";
-    else if(MVAvalue< 0.275) return LabelPrefix+"_BDTbin8";
-    else  return LabelPrefix+"_BDTbin9";
+    else  return LabelPrefix+"_BDTbin8";
   }
 
   if(DataYear==2018){
@@ -966,8 +964,7 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK4StringBDT(TString mN, HNL_Le
     else if(MVAvalue< 0.2) return LabelPrefix+"_BDTbin5";
     else if(MVAvalue< 0.225) return LabelPrefix+"_BDTbin6";
     else if(MVAvalue< 0.25) return LabelPrefix+"_BDTbin7";
-    else if(MVAvalue< 0.275) return LabelPrefix+"_BDTbin8";
-    else  return LabelPrefix+"_BDTbin9";
+    else  return LabelPrefix+"_BDTbin8";
 
   }
   return "true";
