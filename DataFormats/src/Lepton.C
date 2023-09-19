@@ -147,13 +147,13 @@ bool Lepton::Pass_MVA_BBEC(TString MVALabel , double cut_b, double cut_ec, TStri
   double mva_value = MVAKey(MVALabel);
     
   if( IsBB()){
-    if(!Pass_MVA(mva_value, cut_b,  s_helper))   return true;
+    if(!Pass_MVA(mva_value, cut_b,  s_helper))   return false;
     
   }
   else{
-    if(!Pass_MVA(mva_value, cut_ec, s_helper))   return true;
+    if(!Pass_MVA(mva_value, cut_ec, s_helper))   return false;
   }
-  return false;
+  return true;
 
 }
 

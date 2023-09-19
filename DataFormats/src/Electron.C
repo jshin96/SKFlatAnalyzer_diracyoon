@@ -1741,9 +1741,9 @@ int  Electron::PassIDTight(TString ID) const{
 
   if(ID == "HNL_ULID_2017" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassID("HNL_ULID_Conv_2017")) return 0;
+    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,80,-0.8,0.3) , GetPtSlopeCut(20,80,-0.8,0.3) ,   "conv_v5")) return 0;
     if(!Pass_MVA_BBEC("Fake_EDv5", 0.35 ,0.4 ,   "Fake_v5")) return 0;
-    if(!Pass_MVA_BBEC("CF_EDv5", 0.65 ,0.65 ,   "CF_v5")) return 0;
+    if(!Pass_MVA_BBEC("CF_EDv5",   0.65 ,0.65 ,  "CF_v5"))   return 0;
 
     return 1;
   }
@@ -1751,7 +1751,7 @@ int  Electron::PassIDTight(TString ID) const{
 
   if(ID == "HNL_ULID_2018" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassID("HNL_ULID_Conv_2018")) return 0;
+    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,80,-0.8,0.3) , GetPtSlopeCut(20,80,-0.8,0.3) ,   "conv_v5")) return 0;
     if(!Pass_MVA_BBEC("Fake_EDv5", 0.4 ,0.5 ,   "Fake_v5")) return 0;
     if(!Pass_MVA_BBEC("CF_EDv5", 0.65 ,0.65 ,   "CF_v5")) return 0;
 
