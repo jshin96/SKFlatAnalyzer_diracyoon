@@ -310,6 +310,8 @@ public:
   int  PassIDTight(TString ID) const;
   int  PassIDStudy(TString ID) const;
 
+  // Jiwhan functio
+  bool Pass_CaloIdL_TrackIdL_IsoVL(TString Option="") const;
 
   bool Pass_TESTID() const;
 

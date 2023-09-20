@@ -4141,7 +4141,9 @@ void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, TString p
     map<TString, double> lep_bdt_map = ilep->MAPBDT();
     for(auto i : lep_bdt_map)     FillHist( plot_dir+"/LepRegionPlots_"+ region+ "/Lepton_mva_"+i.first + "_"+region , i.second, w, 100, -1., 1., "MVA");
     FillHist( plot_dir+ "/LepRegionPlots_"+ region+ "/Lepton_mva_HF_"+region , ilep->LepMVA(), w, 100, -1., 1., "MVA");
-    for(auto i : lep_bdt_map)FillHist( plot_dir+ "/LepRegionPlots_"+ region+ "/"+i.first+"_HFMVA_"+region, i.second, ilep->LepMVA(), w, 100, -1., 1.,100, -1., 1.);
+
+    double LepPt = (ilep->Pt() < 200) ? ilep->Pt() : 199;
+    for(auto i : lep_bdt_map)FillHist( plot_dir+ "/LepRegionPlots_"+ region+ "/"+i.first+"_HFMVA_"+region, LepPt, i.second,  w, 100, 0., 200.,100, -1., 1.);
   }
 
   if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/SumQ", leps[0]->Charge() + leps[1]->Charge(),  w, 10, -5, 5, "Q size");
@@ -4311,6 +4313,36 @@ void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, TString p
   double PTLep2 = (leps[1]->Pt() > 200.) ? 199. : leps[1]->Pt();
   double PTLep1b = (leps[0]->Pt() > 500.) ? 499. : leps[0]->Pt();
   double PTLep2b = (leps[1]->Pt() > 300.) ? 299. : leps[1]->Pt();
+
+  if(!IsData){
+    for(auto il : leps){
+      double PTLep = (il->Pt() > 200.) ? 199. : il->Pt();
+
+      TString LepType = "";
+      if (il->IsConv())  LepType = "Conv";
+      if (il->IsFake())  LepType = "Fake"+il->CloseJet_Flavour();
+      if (il->IsFake() && il->CloseJet_Flavour() == "Pileup") continue;
+      if (il->LeptonIsCF())  LepType = "CF";
+      else if (il->IsPrompt()) LepType = "Prompt";
+      if(il->IsEWtau()) continue;
+      if (LepType == "") continue;
+      if(DrawSyst)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+LepType+"_Lep_pt", PTLep  ,  w, nPtbins, Pt1bins,"l_{1} p_{T} GeV");
+      if(DrawSyst)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+LepType+"_Lep_eta", il->fEta()  , w, 60, 0.,  3.,"l_{2} #eta");
+
+
+      for(auto ilep : leps){
+	map<TString, double> lep_bdt_map = ilep->MAPBDT();
+	for(auto i : lep_bdt_map)  {
+	  
+	  if(i.first.Contains("v5")){
+	    if(il->IsBB())FillHist( plot_dir+"/LepRegionPlots_"+ region+ "/"+LepType+"_Lepton_BB_mva_"+i.first + "_"+region , i.second, w, 100, -1., 1., "MVA");
+	    else FillHist( plot_dir+"/LepRegionPlots_"+ region+ "/"+LepType+"_Lepton_EC_mva_"+i.first + "_"+region , i.second, w, 100, -1., 1., "MVA");
+
+	  }
+	}
+      }
+    }
+  }
 
   if(DrawSyst)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Lep_1_pt", PTLep1  ,  w, nPtbins, Pt1bins,"l_{1} p_{T} GeV");
   if(DrawSyst)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Lep_2_pt", PTLep2  ,  w, nPtbins, Pt2bins,"1_{2} p_{T} GeV");

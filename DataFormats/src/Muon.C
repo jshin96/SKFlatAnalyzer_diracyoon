@@ -157,56 +157,88 @@ bool Muon::PassID(TString ID) const {
   if(ID=="NOCUT") return true;
 
 
+  //// LOOSE & VETO                                                                                                                                                                                               
+  if(ID=="HNLoosest") return (Pass_LepMVAID() || Pass_HNVeto2016());
+  if(ID=="HNVetoMVA") return Pass_HNVetoUL(); /// Clone of Pass_HNVeto2016 
+
+
+  /// looser IP                                                                                                                                                                                                  
+  if(ID=="HNLooseV1")  {
+    if(!( isPOGLoose() ))  return false;
+    if(!( fabs(dXY()) < 0.2 && fabs(dZ())< 0.5) ) return false;
+    if(!(fabs(IP3D()/IP3Derr())< 10 )) return false;
+    if(!( RelIso()< 0.4 )) return false;
+    if(!( Chi2()<50. ))    return false;
+    return true;
+  }
+  if(ID=="HNLoosePOG") {
+    if(!( isPOGLoose() ))  return false;
+    if(!( fabs(dXY()) < 0.2 && fabs(dZ())< 0.5) ) return false;
+    if(!( RelIso()< 0.4 )) return false;
+    if(!( Chi2()<50. ))    return false;
+    return true;
+  }
+  //// Probe ID for IDSF                                                                                                                                                                                          
+  if(ID=="passProbe") {
+    if(!isPOGLoose())      return false;
+    if(this->fdXY() > 0.2) return false;
+    if(this->fdZ() > 0.5)  return false;
+    return true;
+  }
+
+
   //==== POG/ POG BASED IDs
-  if(ID=="POGTight") return isPOGTight();
+  if(ID=="POGTight")  return isPOGTight();
   if(ID=="POGHighPt") return isPOGHighPt();
   if(ID=="POGMedium") return isPOGMedium();
-  if(ID=="POGLoose") return isPOGLoose();
-  if(ID=="POGTightWithTightIso") return Pass_POGTightWithTightIso();
+  if(ID=="POGLoose")  return isPOGLoose();
+  if(ID=="POGTightWithTightIso")     return Pass_POGTightWithTightIso();
   if(ID=="POGHighPtWithLooseTrkIso") return Pass_POGHighPtWithLooseTrkIso();
-  if(ID=="POGHighPtTight") return Pass_POGHighPtTight();
-  if(ID=="POGHighPtLoose") return Pass_POGHighPtLoose();
+  if(ID=="POGHighPtTight")    return Pass_POGHighPtTight();
+  if(ID=="POGHighPtLoose")    return Pass_POGHighPtLoose();
   if(ID=="POGHighPtMixTight") return Pass_POGHighPtTightOR();
   if(ID=="POGHighPtMixLoose") return Pass_POGHighPtLooseOR();
   if(ID=="HNTightPFIsoLoose") return Pass_POGTightPFIsoLoose(true);
-  if(ID=="HNTightPFIsoMedium") return Pass_POGTightPFIsoMedium(true);
+  if(ID=="HNTightPFIsoMedium")return Pass_POGTightPFIsoMedium(true);
   if(ID=="HNTightPFIsoTight") return Pass_POGTightPFIsoTight(true);
-  if(ID=="HNTightPFIsoVeryTight") return Pass_POGTightPFIsoVeryTight(true);
+  if(ID=="HNTightPFIsoVeryTight")     return Pass_POGTightPFIsoVeryTight(true);
   if(ID=="HNTightPFIsoVeryVeryTight") return Pass_POGTightPFIsoVeryVeryTight(true);
-  if(ID=="POGTightPFIsoLoose") return Pass_POGTightPFIsoLoose(false);
+  if(ID=="POGTightPFIsoLoose")  return Pass_POGTightPFIsoLoose(false);
   if(ID=="POGTightPFIsoMedium") return Pass_POGTightPFIsoMedium(false);
-  if(ID=="POGTightPFIsoTight") return Pass_POGTightPFIsoTight(false);
-  if(ID=="POGTightPFIsoVeryTight") return Pass_POGTightPFIsoVeryTight(false);
+  if(ID=="POGTightPFIsoTight")  return Pass_POGTightPFIsoTight(false);
+  if(ID=="POGTightPFIsoVeryTight")     return Pass_POGTightPFIsoVeryTight(false);
   if(ID=="POGTightPFIsoVeryVeryTight") return Pass_POGTightPFIsoVeryVeryTight(false);
   if(ID=="CutBasedTightNoIP") return Pass_CutBasedTightNoIP();
 
+  if(ID=="POGMHLT"){
+    if( !isPOGMedium()       ) return false;
+    if( !(TrkIso()/Pt()<0.4) ) return false;
+    if( !(fabs(dZ())<0.1)    ) return false;
+    return true;
+  }
 
-  /// Previous IDs
+
+  /// Previous IDs 
   if(ID=="HNTightV1") return Pass_HNTight(0.07, 0.02, 0.05, 3.);
   if(ID=="HNTightV2") return Pass_HNTight(0.07, 0.05, 0.1, 3.);
-
 
   /// OTHER GROUP IDs
 
   if(ID=="HNL_Peking") {
-
-    if(!isPOGTight()) return false;
+    if(!isPOGTight())       return false;
     if(!( RelIso()<0.15 ))  return false;
     double dxy_cut = (this->Pt() < 20) ? 0.01 : 0.02 ;
-    if(fabs(dXY()) >  dxy_cut)   return false;
-    if(fabs(dZ()) >  0.1)   return false;
-
+    if(fabs(dXY()) >  dxy_cut) return false;
+    if(fabs(dZ()) >  0.1)      return false;
     return true;
   }
 
 
   if(ID=="HNL_HN3L" || ID == "HNL_TopMVA_MM") {
     if(!PassID("MVALoose")) return false;
-    if(MVA() < 0.64)  return false;
+    if(MVA() < 0.64)        return false;
     return true;
   }
-
-
 
   if(ID=="HNL_TopMVA_FO_MM") {
     if(!PassID("MVALoose")) return false;
@@ -263,29 +295,21 @@ bool Muon::PassID(TString ID) const {
   }
 
 
+  /// Jiwhans SSTop                                                                                                                                                                                               
+  if(ID=="TopHNT"){
+    if(! isPOGMedium()        ) return false;
+    if(! (MiniRelIso()<0.1)) return false;
+    if(! (TrkIso()/Pt()<0.4) ) return false;
+    if(! (fabs(dZ())<0.1)  ) return false;
+    if(! (SIP3D()<3.) ) return false;
+    return true;
+  }
 
-  //==== Customized
-
-
-  if(ID=="HNLoosest") return (Pass_LepMVAID() || Pass_HNVeto2016());
-  if(ID=="HNVetoMVA") return Pass_HNVetoUL();
-
-  ///// ECO17028
-  if(ID=="HNVeto_17028") return Pass_HNVeto2016();
+  ///// EXO-17028                                                                                                                                                                                                 
+  if(ID=="HNVeto_17028")  return Pass_HNVeto2016();
   if(ID=="HNLoose_17028") return Pass_HNLoose2016(0.4, 0.2, 0.1, 3.);
   if(ID=="HNTight_17028") return Pass_HNTight2016();
 
-  /// looser IP
-  if(ID=="HNLooseV1") return Pass_HNLoose(0.4,  0.2, 0.5,10.);
-  if(ID=="HNLoosePOG") return Pass_HNLoose(0.4,  0.2, 0.5,99999.);
-
-  //// Probe ID for IDSF
-  if(ID=="passProbe") {
-    if(!isPOGLoose()) return false;
-    if(this->fdXY() > 0.2) return false;
-    if(this->fdZ() > 0.5) return false;
-    return true;
-  }
 
   /////////////////   MVA ID FUNCTIONS
   
@@ -303,52 +327,29 @@ bool Muon::PassID(TString ID) const {
 
 
   /////////// FINAL UL HNL Type-1 ID                                                                                                                                                                                                                                                                                          
-  if(ID.Contains("HNL_ULID_2016_Fake")){
-    
+  if(ID == "HNL_ULID_FakeObj"){
+    if(!PassID("MVALoose")) return false;
+    if(fabs(IP3D()/IP3Derr()) > 7) return false;
+    return true;
+  }
+
+  if(ID == "HNL_ULID_2016"){
     if(!PassID("MVALoose")) return false;
     if(MVA() < 0.72)  return false;
     if(fabs(IP3D()/IP3Derr()) > 7) return false;
-
     return true;
   }
 
-
-  if(ID.Contains("HNL_ULID_2016")){
-
-    if(!PassID("MVALoose")) return false;
-
-    if(MVA() < 0.72)  return false;
-
-    if(fabs(IP3D()/IP3Derr()) > 7) return false;
-        
-    return true;
-  }
-
-  if(ID.Contains("HNL_ULID_2017"))  {
-
-    if(!PassID("MVALoose")) return false;
-
-    if(MVA() < 0.64)  return false;
-    
-    if(fabs(IP3D()/IP3Derr()) > 7) return false;
-
-    return true;
-  }
-
-
-  if(ID.Contains("HNL_ULID_2018"))  {
-
+  if(ID == "HNL_ULID_2017" || ID == "HNL_ULID_2018" )  {
     if(!PassID("MVALoose")) return false;
     if(MVA() < 0.64)  return false;
-    
     if(fabs(IP3D()/IP3Derr()) > 7) return false;
-
     return true;
   }
 
 
 
-  //// Following are functions to test UL UDs
+  //// Following are functions to test UL IDs
   
   if(ID=="HNLIPv1") {
     double dxy_cut = 0.01 ;

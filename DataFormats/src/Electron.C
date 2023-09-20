@@ -205,7 +205,6 @@ void Electron::SetEOverP(double d){
 }
 
 
-
 void Electron::SetEtaWidth(double d){
   j_EtaWidth= d;
 }
@@ -508,15 +507,13 @@ bool Electron::Pass_MultiFunction_Opt(TString ID) const {
   }
   
   if(!Pass_LepMVAID()) return false;
-  
-  
 
-  if(pog_method == "POGT" && ! (passTightID()) ) return false;
-  if(pog_method == "POGM" && ! (passMediumID()) ) return false;
-  if(pog_method == "POGTNoIso" && ! (Pass_CutBasedTightNoIso()) ) return false;
-  if(pog_method == "POGMNoIso" &&! (Pass_CutBasedMediumNoIso()) ) return false;
-  if(pog_method == "MVAWP90" && !passMVAID_noIso_WP90())  return false;
-  if(pog_method == "MVAWP80" &&!passMVAID_noIso_WP80())  return false;
+  if(pog_method == "POGT"      && !(passTightID())) return false;
+  if(pog_method == "POGM"      && !(passMediumID())) return false;
+  if(pog_method == "POGTNoIso" && !(Pass_CutBasedTightNoIso()) ) return false;
+  if(pog_method == "POGMNoIso" && !(Pass_CutBasedMediumNoIso()) ) return false;
+  if(pog_method == "MVAWP90"   && !passMVAID_noIso_WP90())  return false;
+  if(pog_method == "MVAWP80"   && !passMVAID_noIso_WP80())  return false;
   
   if( IsBB() ){
   
@@ -595,9 +592,9 @@ int  Electron::PassIDStudy(TString ID) const{
 
     double _cut=1;
     if(ID.Contains("CFVT")) _cut=0.7;
-    if(ID.Contains("CFT")) _cut=0.6;
-    if(ID.Contains("CFM")) _cut=0.4;
-    if(ID.Contains("CFL")) _cut=0.2;
+    if(ID.Contains("CFT"))  _cut=0.6;
+    if(ID.Contains("CFM"))  _cut=0.4;
+    if(ID.Contains("CFL"))  _cut=0.2;
     if(ID.Contains("CFVL")) _cut=0.;
     TString IDTmp = ID;
     IDTmp=IDTmp.ReplaceAll("CFVT","CF");
@@ -618,12 +615,11 @@ int  Electron::PassIDStudy(TString ID) const{
     double _cut=1;
     if(ID.Contains("FAKEVVT")) _cut=0.6;
     if(ID.Contains("FAKEVT"))  _cut=0.5;
-    if(ID.Contains("FAKET"))  _cut=0.4;
-    if(ID.Contains("FAKEM"))  _cut=0.3;
-    if(ID.Contains("FAKEL"))  _cut=0.2;
+    if(ID.Contains("FAKET"))   _cut=0.4;
+    if(ID.Contains("FAKEM"))   _cut=0.3;
+    if(ID.Contains("FAKEL"))   _cut=0.2;
     if(ID.Contains("FAKEVL"))  _cut=0.;
     if(ID.Contains("FAKEVVL")) _cut=-0.2;
-
 
     TString IDTmp = ID;
     IDTmp=IDTmp.ReplaceAll("FAKEVVT","FAKE");
@@ -646,9 +642,9 @@ int  Electron::PassIDStudy(TString ID) const{
 
     double _cut=1;
     if(ID.Contains("CONVVT"))  _cut=0.2;
-    if(ID.Contains("CONVT"))  _cut=0.;
-    if(ID.Contains("CONVM"))  _cut=-0.5;
-    if(ID.Contains("CONVL"))  _cut=-0.7;
+    if(ID.Contains("CONVT"))   _cut=0.;
+    if(ID.Contains("CONVM"))   _cut=-0.5;
+    if(ID.Contains("CONVL"))   _cut=-0.7;
 
     TString IDTmp = ID;
     IDTmp=IDTmp.ReplaceAll("CONVVT","CONV");
@@ -666,22 +662,21 @@ int  Electron::PassIDStudy(TString ID) const{
   //////   Efficiency IDs are IDs that are tested, based off scans of MVAs in BB/EC                                                                                                                                                     
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////////////                                                                                                                                                    
-
   if(ID == "HNL_ULID_Run2_CF" ){
     if(!PassMVABaseLine()) return 0;
-    if(!Pass_MVA_BBEC("CF_EDv5", 0.65,0.6, "j_lep_mva_hnl_cf_v5"))   return 0;
+    if(!Pass_MVA_BBEC("CF_EDv5", 0.6,0.6, "j_lep_mva_hnl_cf_v5"))   return 0;
     return 1;
   }
 
   if(ID == "HNL_ULID_Run2_Conv" ){
     if(!PassMVABaseLine()) return 0;
-    if(!Pass_MVA_BBEC("Conv_EDv5" , -0.7, -0.7, "j_lep_mva_hnl_fake_v5")) return 0;
+    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.4,0.) , GetPtSlopeCut(20,50,-0.4,0.2) ,   "Conv_v5")) return 0;
     return 1;
   }
 
   if(ID == "HNL_ULID_Run2_Fake" ){
     if(!PassMVABaseLine()) return 0;
-    if(!Pass_MVA_BBEC("Fake_EDv5", 0.2, 0.2 ,   "j_lep_mva_hnl_fake_v5")) return 0;
+    if(!Pass_MVA_BBEC("Fake_EDv5", 0.4, 0.5 ,   "j_lep_mva_hnl_fake_v5")) return 0;
     return 1;
   }
 
@@ -690,7 +685,6 @@ int  Electron::PassIDStudy(TString ID) const{
     if(!Pass_MVA_BBEC("CFPt_EDv5", 0.65,0.6 ,   "j_lep_mva_hnl_fake_v5")) return 0;
     return 1;
   }
-
 
   if(ID == "HNL_LID_Run2_CF"){
     if(!PassMVABaseLine()) return 0;
@@ -756,7 +750,7 @@ int  Electron::PassIDStudy(TString ID) const{
   if(ID == "BBv1" ){
     if(!PassMVABaseLine()) return 0;
     if(!Pass_MVA(HNL_MVA_CF("EDv5"),   0.65,  "j_lep_mva_hnl_cf_v2"))   return 0;
-    if(!Pass_MVA(HNL_MVA_Fake("EDv5"), 0.15,         "j_lep_mva_hnl_fake_v4")) return 0;
+    if(!Pass_MVA(HNL_MVA_Fake("EDv5"), 0.15,  "j_lep_mva_hnl_fake_v4")) return 0;
     if(!PassID("HNL_ULID_Conv_Run2")) return 0;
     return 1;
   }
@@ -1664,6 +1658,71 @@ int  Electron::PassIDStudy(TString ID) const{
     return 1;
   }
 
+  if(ID.Contains("HNL_ULID_Ver2017_" ) || ID.Contains("HNL_ULID_Ver2018_" ) ){
+    if(!PassMVABaseLine()) return 0;
+
+    if(ID.Contains("_CV1_")&& !Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,60, -0.7,0.) , GetPtSlopeCut(20,60,-0.7,0.) ,   "Conv_v5")) return 0;
+    if(ID.Contains("_CV2_")&& !Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.6,0.) , GetPtSlopeCut(20,50,-0.5,0.2) ,   "Conv_v5")) return 0;
+    if(ID.Contains("_CV3_")&& !Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.5,0.) , GetPtSlopeCut(20,50,-0.5,0.2) ,   "Conv_v5")) return 0;
+    if(ID.Contains("_CV4_")&& !Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.4,0.) , GetPtSlopeCut(20,50,-0.4,0.2) ,   "Conv_v5")) return 0;
+    if(ID.Contains("_CV5_")&& !Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.6,0.2) , GetPtSlopeCut(20,50,-0.5,0.2) ,   "Conv_v5")) return 0;
+    if(ID.Contains("_CV6_")&& !Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.5,0.2) , GetPtSlopeCut(20,50,-0.5,0.2) ,   "Conv_v5")) return 0;
+    if(ID.Contains("_CV7_")&& !Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.4,0.2) , GetPtSlopeCut(20,50,-0.4,0.2) ,   "Conv_v5")) return 0;
+    if(ID.Contains("_CV8_")&& !Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.6,0.2) , GetPtSlopeCut(20,50,-0.5,0.4) ,   "Conv_v5")) return 0;
+    if(ID.Contains("_CV9_")&& !Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.5,0.2) , GetPtSlopeCut(20,50,-0.5,0.4) ,   "Conv_v5")) return 0;
+    if(ID.Contains("_CV10_")&& !Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.4,0.2) , GetPtSlopeCut(20,50,-0.4,0.4) ,   "Conv_v5")) return 0;
+    
+    if(ID.Contains("_NP1_") && !Pass_MVA_BBEC("Fake_EDv5",   0.3 ,0.4 ,   "Fake_v5")) return 0;
+    if(ID.Contains("_NP2_") && !Pass_MVA_BBEC("Fake_EDv5",   0.3 ,0.45 ,   "Fake_v5")) return 0;
+    if(ID.Contains("_NP3_") && !Pass_MVA_BBEC("Fake_EDv5",   0.3 ,0.5 ,   "Fake_v5")) return 0;
+    if(ID.Contains("_NP4_") && !Pass_MVA_BBEC("Fake_EDv5",   0.35 , 0.4 ,   "Fake_v5")) return 0;
+    if(ID.Contains("_NP5_") && !Pass_MVA_BBEC("Fake_EDv5",   0.35 , 0.45 ,   "Fake_v5")) return 0;
+    if(ID.Contains("_NP6_") && !Pass_MVA_BBEC("Fake_EDv5",   0.35 ,0.5 ,   "Fake_v5")) return 0;
+    if(ID.Contains("_NP7_") && !Pass_MVA_BBEC("Fake_EDv5",   0.4 ,0.4 ,   "Fake_v5")) return 0;
+    if(ID.Contains("_NP8_") && !Pass_MVA_BBEC("Fake_EDv5",   0.4 ,0.5 ,   "Fake_v5")) return 0;
+    if(ID.Contains("_NP9_") && !Pass_MVA_BBEC("Fake_EDv5",   0.4 ,0.45 ,   "Fake_v5")) return 0;
+
+    if(ID.Contains("_LFNP1_") && !Pass_MVA_BBEC("FakeLF_EDv5", 0.6 , 0.4 ,   "Fake_v5")) return 0;
+    if(ID.Contains("_LFNP2_") && !Pass_MVA_BBEC("FakeLF_EDv5", 0.4 , 0.4 ,   "Fake_v5")) return 0;
+
+    if(ID.Contains("_CF1_") &&!Pass_MVA_BBEC("CF_EDv5",     0.7 , 0.6 ,  "CF_v5"))   return 0;
+    if(ID.Contains("_CF2_") &&!Pass_MVA_BBEC("CF_EDv5",     0.7 , 0.55 ,  "CF_v5"))   return 0;
+    if(ID.Contains("_CF3_") &&!Pass_MVA_BBEC("CF_EDv5",     0.6 , 0.6 ,  "CF_v5"))   return 0;
+    if(ID.Contains("_CF4_") &&!Pass_MVA_BBEC("CF_EDv5",     0.6 , 0.55 ,  "CF_v5"))   return 0;
+    if(ID.Contains("_CF5_") &&!Pass_MVA_BBEC("CF_EDv5",     0.6 , 0.5 ,  "CF_v5"))   return 0;
+    return 1;
+  }
+
+  if(ID.Contains("HNL_ULID_Ver2016_" ) ){
+    if(!PassMVABaseLine()) return 0;
+
+    if(ID.Contains("_CV1_")&& !Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,60, -0.7,0.) , GetPtSlopeCut(20,60,-0.7,0.) ,   "Conv_v5")) return 0;
+    if(ID.Contains("_CV2_")&& !Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,60, -0.7,0.) , GetPtSlopeCut(20,60,-0.7,0.2) ,   "Conv_v5")) return 0;
+    if(ID.Contains("_CV3_")&& !Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,60, -0.7,0.) , GetPtSlopeCut(20,60,-0.7,0.4) ,   "Conv_v5")) return 0;
+    if(ID.Contains("_CV4_")&& !Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,60, -0.7,0.2) , GetPtSlopeCut(20,60,-0.7,0.2) ,   "Conv_v5")) return 0;
+    if(ID.Contains("_CV5_")&& !Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,60, -0.7,0.2) , GetPtSlopeCut(20,60,-0.7,0.4) ,   "Conv_v5")) return 0;
+
+    if(ID.Contains("_NP1_") && !Pass_MVA_BBEC("Fake_EDv5",   0.3 ,0.4 ,   "Fake_v5")) return 0;
+    if(ID.Contains("_NP2_") && !Pass_MVA_BBEC("Fake_EDv5",   0.3 ,0.45 ,   "Fake_v5")) return 0;
+    if(ID.Contains("_NP3_") && !Pass_MVA_BBEC("Fake_EDv5",   0.3 ,0.5 ,   "Fake_v5")) return 0;
+    if(ID.Contains("_NP4_") && !Pass_MVA_BBEC("Fake_EDv5",   0.35 , 0.4 ,   "Fake_v5")) return 0;
+    if(ID.Contains("_NP5_") && !Pass_MVA_BBEC("Fake_EDv5",   0.35 , 0.45 ,   "Fake_v5")) return 0;
+    if(ID.Contains("_NP6_") && !Pass_MVA_BBEC("Fake_EDv5",   0.35 ,0.5 ,   "Fake_v5")) return 0;
+    if(ID.Contains("_NP7_") && !Pass_MVA_BBEC("Fake_EDv5",   0.4 ,0.4 ,   "Fake_v5")) return 0;
+    if(ID.Contains("_NP8_") && !Pass_MVA_BBEC("Fake_EDv5",   0.4 ,0.5 ,   "Fake_v5")) return 0;
+    if(ID.Contains("_NP9_") && !Pass_MVA_BBEC("Fake_EDv5",   0.4 ,0.45 ,   "Fake_v5")) return 0;
+
+    if(ID.Contains("_LFNP1_") && !Pass_MVA_BBEC("FakeLF_EDv5", 0.6 , 0.4 ,   "Fake_v5")) return 0;
+    if(ID.Contains("_LFNP2_") && !Pass_MVA_BBEC("FakeLF_EDv5", 0.4 , 0.4 ,   "Fake_v5")) return 0;
+
+    if(ID.Contains("_CF1_") &&!Pass_MVA_BBEC("CF_EDv5",     0.7 , 0.6 ,  "CF_v5"))   return 0;
+    if(ID.Contains("_CF2_") &&!Pass_MVA_BBEC("CF_EDv5",     0.7 , 0.55 ,  "CF_v5"))   return 0;
+    if(ID.Contains("_CF3_") &&!Pass_MVA_BBEC("CF_EDv5",     0.6 , 0.6 ,  "CF_v5"))   return 0;
+    if(ID.Contains("_CF4_") &&!Pass_MVA_BBEC("CF_EDv5",     0.6 , 0.55 ,  "CF_v5"))   return 0;
+    if(ID.Contains("_CF5_") &&!Pass_MVA_BBEC("CF_EDv5",     0.6 , 0.5 ,  "CF_v5"))   return 0;
+    return 1;
+  }
+
 
   return -1;
 
@@ -1713,18 +1772,22 @@ int  Electron::PassIDTight(TString ID) const{
   ////////////////////////////////////////////////////////////////////////////////////   
   //#########   RUN2 Opt
   ////////////////////////////////////////////////////////////////////////////////////
-  if(ID == "HNL_ULID_Run2" ){
-
+  
+  //// General ID that is checked merging all Run2
+  if(ID == "HNL_ULID_Run2L" ){
     if(!PassMVABaseLine()) return 0;
-
-    if(!Pass_MVA_BBEC("CF_EDv5", 0.65 ,0.65 ,   "CF_v5")) return 0;
-    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,80, -0.8,0), GetPtSlopeCut(20,80, -0.8,0) , "CONV_v5")) return 0;
-    if(!Pass_MVA_BBEC("Fake_EDv5", 0.2 ,0.2 ,   "Fake_v5")) return 0;
+    if(!Pass_MVA_BBEC("CF_EDv5",   0.5 ,0.5 ,   "CF_v5")) return 0;
+    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,80, -0.7,0.), GetPtSlopeCut(20,80, -0.7,0.) , "Run2_Conv_v5")) return 0;
+    if(!Pass_MVA_BBEC("Fake_EDv5", 0.25 ,0.35 ,   "Fake_v5")) return 0;
     return 1;
   }
-
-
-
+  if(ID == "HNL_ULID_Run2T" ){
+    if(!PassMVABaseLine()) return 0;
+    if(!Pass_MVA_BBEC("CF_EDv5",   0.75 ,0.6 ,   "CF_v5")) return 0;
+    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.4,0.3), GetPtSlopeCut(20,50, -0.4,0.3) , "Run2_Conv_v5")) return 0;
+    if(!Pass_MVA_BBEC("Fake_EDv5", 0.5 ,0.5 ,   "Fake_v5")) return 0;
+    return 1;
+  }
 
   //////////////////////////////////////////////////////////////////////////////////// 
   ///  Era Scanned ID
@@ -1732,29 +1795,26 @@ int  Electron::PassIDTight(TString ID) const{
 
   if(ID == "HNL_ULID_2016" ){
     if(!PassMVABaseLine()) return 0;
-    if(!PassID("HNL_ULID_Conv_2016")) return 0;
-    if(!Pass_MVA_BBEC("Fake_EDv5", 0.3 ,0.3 ,   "Fake_v5")) return 0;
-    if(!Pass_MVA_BBEC("CF_EDv5", 0.6 ,0.55 ,   "CF_v5")) return 0;
-
+    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,60, -0.7,0.) , GetPtSlopeCut(20,60,-0.7,0.) ,   "Conv_v5")) return 0;
+    if(!Pass_MVA_BBEC("Fake_EDv5", 0.25, 0.5,   "Fake_v5")) return 0;
+    if(!Pass_MVA_BBEC("CF_EDv5",   0.6,  0.6,   "CF_v5"))   return 0;
     return 1;
   }
 
   if(ID == "HNL_ULID_2017" ){
     if(!PassMVABaseLine()) return 0;
-    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,80,-0.8,0.3) , GetPtSlopeCut(20,80,-0.8,0.3) ,   "conv_v5")) return 0;
-    if(!Pass_MVA_BBEC("Fake_EDv5", 0.35 ,0.4 ,   "Fake_v5")) return 0;
-    if(!Pass_MVA_BBEC("CF_EDv5",   0.65 ,0.65 ,  "CF_v5"))   return 0;
-
+    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.4,0.) , GetPtSlopeCut(20,50,-0.4,0.2) ,   "Conv_v5")) return 0;
+    if(!Pass_MVA_BBEC("Fake_EDv5",   0.4, 0.45,   "Fake_v5")) return 0;
+    if(!Pass_MVA_BBEC("CF_EDv5",     0.6, 0.6,    "CF_v5"))   return 0;
     return 1;
   }
 
 
   if(ID == "HNL_ULID_2018" ){
     if(!PassMVABaseLine()) return 0;
-    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,80,-0.8,0.3) , GetPtSlopeCut(20,80,-0.8,0.3) ,   "conv_v5")) return 0;
+    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.4,0.2) , GetPtSlopeCut(20,50,-0.4,0.2) ,   "Conv_v5")) return 0;
     if(!Pass_MVA_BBEC("Fake_EDv5", 0.4 ,0.5 ,   "Fake_v5")) return 0;
-    if(!Pass_MVA_BBEC("CF_EDv5", 0.65 ,0.65 ,   "CF_v5")) return 0;
-
+    if(!Pass_MVA_BBEC("CF_EDv5",   0.6 ,0.6 , "CF_v5")) return 0;
     return 1;
   }
 
@@ -1800,6 +1860,20 @@ int  Electron::PassIDTight(TString ID) const{
   }
 
   
+  if(ID=="TopHN17SST" or ID=="TopHNSST"){
+    if(! passMVAID_noIso_WP90()          ) return false;
+    if(! (MiniRelIso()<0.1)              ) return false;
+    if(! (SIP3D()<4)                     ) return false;
+    if(! (fabs(dZ())<0.1)                ) return false;
+    if(! Pass_CaloIdL_TrackIdL_IsoVL()   ) return false;
+    if(! PassConversionVeto()            ) return false;
+    if(! (NMissingHits()<2)              ) return false;
+    if(! (fabs(Eta())<2.5)               ) return false;
+    if(! IsGsfCtfScPixChargeConsistent() ) return false;
+    return true;
+  }
+
+
   if(ID=="HNTightV2")  return passTightID_NoCC() &&PassHNID()  &&(fabs(IP3D()/IP3Derr())<4.)? 1 : 0 ;
   if(ID=="HNTightV3")  return (PassHNOpt()==1)  ? 1 : 0 ;
   if(ID=="HNTight_17028") return Pass_HNTight2016()? 1 : 0 ;  // EXO-17-028             
@@ -2298,6 +2372,37 @@ bool Electron::Pass_CutBasedTightWithIPcut() const{
     if(! (fabs(dXY())<0.1 && fabs(dZ())<0.2) ) return false;
   }
   return true;
+}
+
+
+bool Electron::Pass_CaloIdL_TrackIdL_IsoVL(TString Option) const{
+  
+  bool ApplyEA = !Option.Contains("NoEA");
+  if( fabs(scEta()) <=1.479 ){
+    if(! (Full5x5_sigmaIetaIeta() < 0.013) ) return false;
+    if(! (fabs(dEtaSeed()) < 0.01) ) return false;
+    if(! (fabs(dPhiIn()) < 0.07) ) return false;
+    if(! (HoverE() < 0.13) ) return false;
+    if(! (max(0.,ecalPFClusterIso()-Rho()*(ApplyEA? 0.16544:0.)) < 0.5*Pt()) ) return false;
+    if(! (max(0.,hcalPFClusterIso()-Rho()*(ApplyEA? 0.05956:0.)) < 0.3*Pt()) ) return false;
+    if(! (dr03TkSumPt() < 0.2*Pt()) ) return false; 
+  }
+  else{
+    if(! (Full5x5_sigmaIetaIeta() < 0.035) ) return false;
+    if(! (fabs(dEtaSeed()) < 0.015) ) return false;
+    if(! (fabs(dPhiIn()) < 0.1) ) return false;
+    if(! (HoverE() < 0.13) ) return false;
+    if(! (max(0.,ecalPFClusterIso()-Rho()*(ApplyEA? 0.13212:0.)) < 0.5*Pt()) ) return false;
+    if(! (max(0.,hcalPFClusterIso()-Rho()*(ApplyEA? 0.13052:0.)) < 0.3*Pt()) ) return false;
+    if(! (dr03TkSumPt() < 0.2*Pt()) ) return false; 
+  }
+
+  return true;
+  //1-a) in menu of some periods, dEtaInSeed and dPhiIn cuts are not applied in EE.
+  //1-b) EA is tightened from the later runs of 2016 to 2018 (i.e. higher EA)
+  //- the cuts are set as tighter one among them.
+  //2) cuts are a bit tighter in HctoWA, as it is higher in trig eff. but does not reduce sig eff much.
+  //   but due to detector degradation, it start to hurt the sig. eff. so set the values as cuts in menu.
 }
 
 //===============================================

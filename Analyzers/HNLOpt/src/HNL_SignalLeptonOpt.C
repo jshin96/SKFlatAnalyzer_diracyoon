@@ -62,6 +62,26 @@ void HNL_SignalLeptonOpt::executeEvent(){
     
   /////// SCANS FOR ID
   
+  if(HasFlag("ELID_ULScan")){
+    vector<TString> List1a = {"_CV1_","_CV2_","_CV3_","_CV4_","_CV5_"} ;
+    vector<TString> List1b = {"_CV1_","_CV2_","_CV3_","_CV4_","_CV5_","_CV6_","_CV7_","_CV8_","_CV9_","_CV10_"};
+    vector<TString> List1;
+    if(GetYearString() == "2016") List1=List1a;
+    else List1=List1b;
+
+    vector<TString> List2 = {"_NP1_","_NP2_","_NP3_","_NP4_","_NP5_","_NP6_","_NP7_","_NP8_","_NP9_"};
+    vector<TString> List3 = {"","_LFNP1_","_LFNP2_"};
+    vector<TString> List4 = {"_CF1_","_CF2_","_CF3_","_CF4_","_CF5_"};
+    for(auto id1 : List1){
+      for(auto id2 : List2){
+        for(auto id3 : List3){
+          for(auto id4 : List4){
+	    ElectronsIDs.push_back("HNL_ULID_Ver"+GetYearString()+"_"+id1+id2+id3+id4);
+	  }
+	}
+      }
+    }
+  }
   if(HasFlag("ELID_FinalScan")){
     
     vector<TString> List1 = {"_CONV1_","_CONV2_","_CONV3_","_CONV4_","_CONV5_","_CONV6_","_CONV7_","_CONV8_","_CONV9_","_CONV10_","_CONV11_","_CONV12_","_CONV13_","_CONV14_"};
@@ -248,7 +268,10 @@ void HNL_SignalLeptonOpt::executeEvent(){
   
 
   if(_jentry%10000==0) cout << "ElectronsIDs size = " << ElectronsIDs.size() << endl;
-
+  if(_jentry== 1000){
+    cout << "ElectronsIDs size = " << ElectronsIDs.size() << endl;
+    for(auto id : ElectronsIDs)   cout << id << endl; 
+  }
   
   
   for(auto id : ElectronsIDs){
