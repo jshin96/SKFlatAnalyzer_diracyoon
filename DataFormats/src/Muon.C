@@ -327,7 +327,7 @@ bool Muon::PassID(TString ID) const {
 
 
   /////////// FINAL UL HNL Type-1 ID                                                                                                                                                                                                                                                                                          
-  if(ID == "HNL_ULID_FakeObj"){
+  if(ID == "HNL_ULID_FO"){
     if(!PassID("MVALoose")) return false;
     if(fabs(IP3D()/IP3Derr()) > 7) return false;
     return true;
