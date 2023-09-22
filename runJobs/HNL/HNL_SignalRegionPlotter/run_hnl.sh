@@ -36,6 +36,7 @@ fi
 if [[ $1 == "DY" ]]; then
 
     SKFlat.py -a $analyzer  -i DYTypeI_DF_M100_private  -n 10  --nmax ${nmax}   -e 2017 --skim SkimTree_HNMultiLepBDT&
+    SKFlat.py -a $analyzer  -i DYTypeI_DF_M1000_private  -n 10  --nmax ${nmax}   -e 2017 --skim SkimTree_HNMultiLepBDT&
 
 fi
 
@@ -75,13 +76,14 @@ if [[ $1 == "FAKE" ]]; then
 fi
 
 
-if [[ $1 == "Merge" ]]; then
+if [[ $1 == "CF" ]]; then
     
 
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -l $mcpath/CFDY.txt  -n $njobs  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT  --userflags RunCF &
-	SKFlat.py -a $analyzer  -l $mcpath/MCMerge.txt  -n 20  --nmax ${nmax}   -e ${i}   --skim SkimTree_HNMultiLepBDT &
+        SKFlat.py -a $analyzer  -l $mcpath/CF.txt  -n 10  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT  --userflags RunCF &
+
+	#SKFlat.py -a $analyzer  -l $mcpath/MCMerge.txt  -n 20  --nmax ${nmax}   -e ${i}   --skim SkimTree_HNMultiLepBDT &
 
 
     done
@@ -90,11 +92,12 @@ fi
 
 if [[ $1 == "" ]]; then
 
+    declare  -a era_list=("2018")
 
     for i in "${era_list[@]}"
     do
 
-	#SKFlat.py -a $analyzer  -l $mcpath/PromptSS.txt  -n 20  --nmax ${nmax}   -e ${i}   --skim SkimTree_HNMultiLepBDT &
+	#SKFlat.py -a $analyzer  -l $mcpath/PromptSS.txt  -n 20  --nmax ${nmax}   -e ${i}   --skim SkimTree_HNMultiLepBDT  --userflags RunPrompt &
 	#SKFlat.py -a $analyzer  -l $sigpath/SSWWOpt.txt  -n $njobs_sig  --nmax ${nmax}  -e ${i}    &                                                            
         #SKFlat.py -a $analyzer  -l $sigpath/DYOpt.txt    -n $njobs_sig  --nmax ${nmax}   -e ${i}  &                                                             
         #SKFlat.py -a $analyzer  -l $sigpath/VBFOpt.txt   -n $njobs_sig  --nmax ${nmax}   -e ${i}  &                                                             
@@ -102,14 +105,15 @@ if [[ $1 == "" ]]; then
 	#SKFlat.py -a $analyzer  -l $sigpath/DY.txt    -n $njobs_sig  --nmax ${nmax}   -e ${i}  &
 	#SKFlat.py -a $analyzer  -l $sigpath/VBF.txt   -n $njobs_sig  --nmax ${nmax}   -e ${i}  &
         
-	SKFlat.py -a $analyzer  -l $mcpath/Fake.txt  -n 10  --nmax 300   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags RunFake  &
-	SKFlat.py -a $analyzer  -l $mcpath/Conv.txt  -n 10  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT  --userflags RunConv &
-	SKFlat.py -a $analyzer  -l $mcpath/CF.txt  -n 10  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT  --userflags RunCF &
+	#SKFlat.py -a $analyzer  -l $mcpath/Fake.txt  -n 200  --nmax 300   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags RunFake  &
+	#SKFlat.py -a $analyzer  -i DYJets  -n 200  --nmax 300   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags RunFake  &
+	#SKFlat.py -a $analyzer  -l $mcpath/Conv.txt  -n 10  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT  --userflags RunConv &
+	#SKFlat.py -a $analyzer  -l $mcpath/CF.txt  -n 200  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT  --userflags RunCF &
 	SKFlat.py -a $analyzer  -i DYTypeI_DF_M100_private  -n 10  --nmax ${nmax}   -e  ${i}  --skim SkimTree_HNMultiLepBDT&
 	SKFlat.py -a $analyzer  -i DYTypeI_DF_M1000_private  -n 10  --nmax ${nmax}   -e  ${i}  --skim SkimTree_HNMultiLepBDT
-
+	
         #SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags RunFake  
-        #SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT &  
+        SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT &  
 
 	
     done

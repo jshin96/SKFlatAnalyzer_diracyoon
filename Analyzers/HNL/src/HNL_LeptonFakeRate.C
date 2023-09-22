@@ -38,7 +38,7 @@ void HNL_LeptonFakeRate::executeEvent(){
 
   for (auto i: ELIDs) {
     channel.push_back(EE);
-    MuIDs.push_back(make_pair("HNVeto2016","HNLoose_17028"));
+    MuIDs.push_back(make_pair("HNVetoMVA","HNLoose_17028"));
   }
     
   MuIDs.push_back(make_pair("HNL_ULID_"+era, "HNL_ULID_FO_"+era));
