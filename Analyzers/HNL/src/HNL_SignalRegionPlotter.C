@@ -7,7 +7,8 @@ void HNL_SignalRegionPlotter::initializeAnalyzer(){
   HNL_LeptonCore::initializeAnalyzer();
   
   SetupIDMVAReaderDefault(); /// Not needed for BDT skim
-  SetupEventMVAReader();                                                                                                                                                                                                                            
+  SetupEventMVAReader();                                                                                                       
+                                                                                                                     
 }
 
 
@@ -26,23 +27,6 @@ void HNL_SignalRegionPlotter::executeEvent(){
   //  RunULAnalysis(param_signal);
 
   vector<TString> IDs = {  "HNL_ULID_2016",  "HNL_ULID_2017",      "HNL_ULID_2018",  "HNL_ULID_Run2",  "HNTightV2"};
-  //vector<TString> IDs = {"HNL_ULID_ConvUpdate","HNL_ULID_ConvUpdateSplit","HNL_ULID_ConvUpdateFlat","HNL_ULID_Conv_2016","HNL_ULID_Conv_Run2", "passMVAID_noIso_WP90"};
-  ////
-  /*"HNL_ULID_OPT_POG1",
-    "HNL_ULID_OPT_POG2",
-    "HNL_ULID_OPT_POG3",
-    "HNL_ULID_OPT_POG4",
-    "HNL_ULID_Run2_OPT",
-    "HNL_ULID_2016_OPT",
-    "HNL_ULID_2017_OPT",
-    "HNL_ULID_2018_OPT",
-    "HNL_ULID_2016",
-    "HNL_ULID_2017",
-    "HNL_ULID_2018",
-    "HNL_ULID_Run2",
-    "HNL_LID_2016",
-    "HNL_ULID_Run2v2",
-    "HNTightV2"};*/
   
   TString param_signal_name = param_signal.Name;
   

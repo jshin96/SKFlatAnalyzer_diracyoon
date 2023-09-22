@@ -1,10 +1,7 @@
-FakeRate        HNL_ULID_2017 pt_eta AwayJetPt40 FakeRate13TeV_mu_2017_mva.root
-FakeRate	HNTightV2	ptcone_eta        AwayJetPt40	    FakeRate13TeV_mu_2017.root
-FakeRate	HNTightV2	ptcone_ptfix_eta        AwayJetPt40     FakeRate13TeV_mu_ptfix_2017.root
-FakeRate	HNTight_17028	ptcone_eta        AwayJetPt40   FakeRate13TeV_mu_2017.root
-FakeRate	HNTight_17028	ptcone_ptfix_eta        AwayJetPt40   FakeRate13TeV_mu_ptfix_2017.root
-FakeRate	POGTightWithTightIso			ptcone_eta        AwayJetPt40	FakeRate13TeV_mu_2017.root
-FakeRate	POGTightWithTightIso			ptcone_ptfix_eta        AwayJetPt40	FakeRate13TeV_mu_ptfix_2017.root
-PromptRate	HNTightV2							ptcone_eta		central		PromptRate13TeV_mu_2017.root
-PromptRate	HNTight_17028										ptcone_eta	 central  PromptRate13TeV_mu_2017.root
-PromptRate	POGTightWithTightIso											 ptcone_eta  central  PromptRate13TeV_mu_2017.root
+FakeRate	HNTightV2	     ptcone_eta        AwayJetPt40   FakeRate13TeV_mu_2017.root
+FakeRate	HNTight_17028	     ptcone_eta        AwayJetPt40   FakeRate13TeV_mu_2017.root
+FakeRate	POGTightWithTightIso ptcone_eta        AwayJetPt40   FakeRate13TeV_mu_2017.root
+FakeRate        HNL_ULID_2017        pt_eta            AwayJetPt40   FakeRate_Mu_2017_HNL_ULID.root
+FakeRate        HNL_ULID_2017        LF_pt_eta         AwayJetPt40   FakeRate_Mu_2017_HNL_ULID.root
+FakeRate        HNL_ULID_2017        HFB_pt_eta        AwayJetPt40   FakeRate_Mu_2017_HNL_ULID.root
+FakeRate        HNL_ULID_2017        HFC_pt_eta        AwayJetPt40   FakeRate_Mu_2017_HNL_ULID.root

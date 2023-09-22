@@ -1,4 +1,3 @@
-
 #include "HNL_RegionDefinitions.h"
 
 
@@ -21,7 +20,6 @@
   2- RunSignalRegionWW  (SR2) OR RunSignalRegionWWString To run RunSignalRegionWW and return Limit input string  
   3- RunSignalRegionAK4 (SR3) OR RunSignalRegionAK4String To run RunSignalRegionAK4  and return Limit input string  
   4- RunSignalRegionAK4StringBDT Run SR3 BDT
-  5- RunSignalRegionTrilepton  (REMNANT)
   
 
   CR Functions
@@ -225,10 +223,14 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
     }
  
     if(RunFake&& IsData){
+      if(_jentry%nLog==0){
+	cout << "Running Fakes... " <<  GetFakeWeight(leps, param_channel,false) << "  " << GetFakeWeight(leps, param_channel, true) << endl;
+      }
+
       weight_channel = GetFakeWeight(leps, param_channel, true);
-      FillWeightHist(param_channel.Name+"/FakeWeight",weight_channel);
+      FillFakeWeightHist(param_channel.Name+"/FakeWeight", leps,param_channel, weight_channel);
     }
-    
+
     // Run PRESEL + SR1-3                                                                                                                                                           
     //bool run_ORTrigger = false;
 
@@ -850,65 +852,6 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4String(HNL_LeptonCore::Channel 
 }
 
 
-
-bool HNL_RegionDefinitions::RunSignalRegionTrilepton(HNL_LeptonCore::Channel channel,std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto ,  std::vector<Jet> JetColl ,std::vector<FatJet>  AK8_JetColl, std::vector<Jet> B_JetColl, Event ev, Particle METv, AnalyzerParameter param, TString PostLabel ,  float w){
-  
-  if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
-  if (leps_veto.size() != 3) return false;
-  
-  FillEventCutflow(HNL_LeptonCore::SR4,w, "SR4_3lep",param.Name);
-  
-  // If running fake bkg now set weight to Fake weight
-  //if(RunFake)   w= GetFakeWeightMuon(leps, param);
-  if(RunFake&&IsData)   FillWeightHist(param.Name+"/FakeWeight_"+param.Name,w);
-
-  int n_veto_lep  = leps_veto.size();
-  
-  bool pass_sr1(true);
-
-  if(n_veto_lep > 3) pass_sr1=false;
-
-  if(pass_sr1)FillEventCutflow(HNL_LeptonCore::SR4,w, "SR4_3lep_veto",param.Name);
-
- 
- 
-  if(pass_sr1)FillEventCutflow(HNL_LeptonCore::SR4,w, "SR4_3lep_chargereq",param.Name);
-
-  int  NB_JetColl      = B_JetColl.size();
-
-  if (NB_JetColl > 0)pass_sr1=false;
-  
-  if(pass_sr1)FillEventCutflow(HNL_LeptonCore::SR4,w, "SR4_3lep_bjet",param.Name);
-  
-  if(ZmasslllWindowCheck(leps)) pass_sr1=false;
-  if(pass_sr1)FillEventCutflow(HNL_LeptonCore::SR4,w, "SR4_3lep_Zmlll",param.Name);
-  if(ZmassOSWindowCheck(leps)) pass_sr1=false;
-  if(pass_sr1)FillEventCutflow(HNL_LeptonCore::SR4,w, "SR4_3lep_Zmll_os",param.Name);
-
-  
-  if(pass_sr1)  {
-    // For Cut flow comparison
-    //PrintEvent(param,"SR4_"+PostLabel,w);    
-    // For event cut flow
-    FillEventCutflow(HNL_LeptonCore::SR4, w, "SR4_lll_mu",param.Name);
-    // Make histograms generically
-    //    Fill_RegionPlots(channel_lll,true,"HNL_SR4_lll" , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
-    // make limit inout plots
-    //Fill_SigRegionPlots4(channel_lll, param.Name, JetColl,  AK8_JetColl, leps,  METv, nPV, w);
-
-    FillEventCutflow(SR,w, "SR4Pass",param.Name);
-
-  }
-
-  if(!pass_sr1)     FillEventCutflow(SR,w, "SR4Fail",param.Name);
-
-  return pass_sr1;
- 
-  
-}
-
-
-
 HNL_RegionDefinitions::HNL_RegionDefinitions(){
       
 }
@@ -991,9 +934,13 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
   vector<HNL_LeptonCore::Channel> channels = {EE,MuMu, EMu};
   vector<HNL_LeptonCore::Channel> channels_lll = {EEE,MuMuMu, EMuL};
   vector<HNL_LeptonCore::Channel> channels_llll = {EEEE,MuMuMuMu, EMuLL};
+  
+  int nlog(0);
+  if(run_Debug) {cout << "RunAllControlRegions ["<< nlog<< "] " << endl; nlog++;}
 
   if(!PassMETFilter()) return;
- 
+  if(run_Debug) {cout <<"RunAllControlRegions ["<< nlog<< "] pass METFilters" << endl;nlog++;}
+
   //cout << "----------------   RunAllControlRegions [Tight]  ----------------------------------------------------------------------------------------------------------------" << endl;
   std::vector<Lepton *> LepsT       = MakeLeptonPointerVector(muons,electrons,param);
   //cout << "----------------   RunAllControlRegions  [Veto ]----------------------------------------------------------------------------------------------------------------" << endl;
@@ -1006,9 +953,12 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
   
   /// Filters events based on COnv/CF/Fake/Prompt
   
+  
+  
   if(! ( (MCSample == "WZ_pythia") || (MCSample == "WW_pythia") || (MCSample == "ZZ_pythia"))){
     if(!PassGenMatchFilter(LepsT,param)) return;
   }
+  if(run_Debug) {cout <<"RunAllControlRegions ["<< nlog<< "] pass GENMATCH" << endl;nlog++;}
 
   for(unsigned int ic = 0; ic < channels.size(); ic++){
 
@@ -1038,6 +988,8 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     // Weight Lepton with SF corr
     if(!IsDATA && dilep_channel != MuMu)  weight_channel*= GetElectronSFEventWeight(electrons, param);
     if(!IsDATA && dilep_channel != EE)    weight_channel*= GetMuonSFEventWeight(muons, param);
+
+    if(run_Debug) {cout <<"RunAllControlRegions ["<< nlog<< "] pass Correction weight =" << GetElectronSFEventWeight(electrons, param)*GetMuonSFEventWeight(muons, param) << endl;nlog++;}
     
     TString label    = param.Name;
     
@@ -1048,7 +1000,12 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       
     }
     
-    if(! (CheckLeptonFlavourForChannel(dilep_channel, LepsT) || CheckLeptonFlavourForChannel(trilep_channel, LepsT) || CheckLeptonFlavourForChannel(fourlep_channel, LepsT))) continue;
+    if(! (CheckLeptonFlavourForChannel(dilep_channel, LepsT) 
+	  || CheckLeptonFlavourForChannel(trilep_channel, LepsT) 
+	  || CheckLeptonFlavourForChannel(fourlep_channel, LepsT))) continue;
+
+    if(run_Debug) {cout <<"RunAllControlRegions ["<< nlog<< "] pass Lep Flavour" << endl;nlog++;}
+
     
     if(SameCharge(LepsT)){
       int LepType1= LepsT[0]->LeptonGenType();
@@ -1056,6 +1013,9 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       FillHist("ControlRegionLeptonType/"+param.Name + "/"+GetChannelString(channels[ic]) , LepType1, LepType2,  weight_channel, 14,-7., 7.,14, -7.,7.);
     }
    
+                                                                                                                  
+    if (!PassTriggerSelection(dilep_channel, ev, LepsT,"Dilep")) continue;
+    if(run_Debug) {cout <<"RunAllControlRegions ["<< nlog<< "] passes trigger  " << endl;nlog++;}
 
     weight_channel *= FillWeightHist(param.Name+"_HNLZvtxSF", HNLZvtxSF(dilep_channel));
     
@@ -1076,17 +1036,22 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       
       if(IsData){
 	weight_channel = GetFakeWeight(LepsT, param , false);
-	FillWeightHist(param.Name+"/FakeWeight",weight_channel);
+	FillFakeWeightHist(param.Name+"/FakeWeight", LepsT,param, weight_channel);
+	
+	if(run_Debug) {cout <<"RunAllControlRegions ["<< nlog<< "] Fake Weight = " << weight_channel << endl;nlog++;}
+
       }
       if(!IsData)  Fake_weight_OS*=-1;
 
     }
 
+
+
     vector<TString> passed;
-    //if(RunCR("Inclusive",CRs))
-    Fill_RegionPlots(dilep_channel, 0,"Inclusive" , param.Name,  VBF_JetColl,  AK8_JetColl,  LepsT, METv, nPV, weight_channel);
+
+    if(RunCR("Inclusive",CRs))  Fill_RegionPlots(dilep_channel, 0,"Inclusive" , param.Name,  VBF_JetColl,  AK8_JetColl,  LepsT, METv, nPV, weight_channel);
     
-    
+   
     if(RunCR("BDTCheck",CRs)){
       
       double BDTweight_channel = weight_channel;
@@ -1132,10 +1097,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       return;
     }
 
-    /// This removes overlap in streams                                                                                                                                                                                                                                    
-    if (!PassTriggerSelection(dilep_channel, ev, LepsT,"Dilep")) continue;
-    if(run_Debug)cout << param.Name << " " << " passes trigger " << endl;
-
+    /// This removes overlap in streams                                                                                                                                                                                                                                   
     // OS CR
 
     if(RunCR("CR_OS_ZAk8",CRs)    &&PassTight && FillZAK8CRPlots  (dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, Fake_weight_OS)) passed.push_back("ZAK8_CR");
@@ -1146,17 +1108,13 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 
 
     // LLL+ 
-    if(RunCR("CR_ZZ",CRs)        &&FillZZCRPlots(  fourlep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramQuadlep, weight_channel)) passed.push_back("ZZ_CR");
-    if(RunCR("CR_ZZLoose",CRs)   &&FillZZ2CRPlots( fourlep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramQuadlep, weight_channel)) passed.push_back("ZZLoose_CR"); 
-    if(RunCR("CR_WZ",CRs)    &&FillWZCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) {
-      passed.push_back("WZ_CR");
+    if(RunCR("CR_VV",CRs)){
+      if(FillZZCRPlots(  fourlep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramQuadlep, weight_channel)) passed.push_back("ZZ_CR");
+      if(FillZZ2CRPlots( fourlep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramQuadlep, weight_channel)) passed.push_back("ZZLoose_CR"); 
+      if(FillWZCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("WZ_CR");
+      if(FillZNPCRPlots(trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("ZNP_CR"); 
     }
-    if(RunCR("CR_ZNP",CRs)   &&FillZNPCRPlots(trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("ZNP_CR");                                                                                                                                                                        
-           
-
-
-    return;
-    
+        
     if(run_Debug) cout << "FillTopCRPlots " << endl;
 
     if(RunCF){    
@@ -1168,7 +1126,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 	if(!IsData && !SameCharge(LepsT)) continue;
 	
 	if(IsData)weight_channel = GetCFWeightElectron(LepsT, param);
-  //if(IsData)weight_channel = GetCFWeightElectron(leps, param_channel, true, 0); // data-driven charge flip
+	//if(IsData)weight_channel = GetCFWeightElectron(leps, param_channel, true, 0); // data-driven charge flip
 	if(IsData)FillWeightHist(param.Name+"/CFWeight",weight_channel);
       }
       else continue;
@@ -1177,59 +1135,66 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       if(!SameCharge(LepsT)) continue;
     }
    
-    
-    return;
-    if(FillSSPreselectionPlots(dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("SSPresel");
-    if(FillSSVBFPreselectionPlots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("SSVBFPresel");
-
-    //VBF CR                                                                                                                                                                      
-    if(FillWWCR1Plots  (dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("WpWp_CR1");
-    if(FillWWCR2Plots  (dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("WpWp_CR2");
-    if(FillWWCRNPPlots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("WpWp_CRNP");
-    if(FillWWCRNP2Plots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("WpWp_CRNP2");
-    if(FillWWCRNP3Plots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("WpWp_CRNP3");
-    if(FillWZ2CRPlots (trilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("WZ2_CR");
-    if(FillWZBCRPlots (trilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("WZB_CR");
-    
-
-    if(run_Debug)cout << "Conv split "  <<  ConversionVeto(LepsT,All_Gens) << " " << ConversionSplitting(LepsT ,RunConv,3) << endl;
-    
-    // Treat conversions using GENT MEthod
-    if(ConversionVeto(LepsT,All_Gens)){
-      if(FillWGCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("WG_CR");
-      if(FillZGCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("ZG_CR");
+    if(RunCR("Presel",CRs)){
+      if(FillSSPreselectionPlots(dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("SSPresel");
+      if(FillSSVBFPreselectionPlots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("SSVBFPresel");
     }
-    // Treat using pt cit method
-    if(ConversionSplitting(LepsT,RunConv,3)){
+
+    if(RunCR("VV",CRs)){
       
-      AnalyzerParameter paramTMP=param;
-      paramTMP.Name=param.Name+"_ConvMethodPt";
-      if(FillWGCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTMP, weight_channel)) passed.push_back("WG_Method2_CR");
-      if(FillZGCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTMP, weight_channel)) passed.push_back("ZG_Method2_CR");
+      //VBF CR                                                                                                                                                                      
+      if(FillWWCR1Plots  (dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("WpWp_CR1");
+      if(FillWWCR2Plots  (dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("WpWp_CR2");
+      if(FillWWCRNPPlots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("WpWp_CRNP");
+      if(FillWWCRNP2Plots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("WpWp_CRNP2");
+      if(FillWWCRNP3Plots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("WpWp_CRNP3");
+      if(FillWZ2CRPlots (trilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("WZ2_CR");
+      if(FillWZBCRPlots (trilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("WZB_CR");
+    }
 
+    if(RunCR("CR_VG",CRs)){
+      
+      if(run_Debug)cout << "Conv split "  <<  ConversionVeto(LepsT,All_Gens) << " " << ConversionSplitting(LepsT ,RunConv,3) << endl;
+      
+      // Treat conversions using GENT MEthod
+      if(ConversionVeto(LepsT,All_Gens)){
+	if(FillWGCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("WG_CR");
+	if(FillZGCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("ZG_CR");
+      }
+      // Treat using pt cit method
+      if(ConversionSplitting(LepsT,RunConv,3)){
+	
+	AnalyzerParameter paramTMP=param;
+	paramTMP.Name=param.Name+"_ConvMethodPt";
+	if(FillWGCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTMP, weight_channel)) passed.push_back("WG_Method2_CR");
+	if(FillZGCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTMP, weight_channel)) passed.push_back("ZG_Method2_CR");
+	
+      }
     }
     
+    if(RunCR("CR_SR",CRs)){
+
+      // 17-028 +CR                                                                                                                                                                                                  
+      // SR1 : MET Inv. || BVeto Inv.
+      if(FillHighMassSR1CRPlots(dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR1_CR");
+      
+      // SR2 : MET Inv. || BVeto Inv.
+      if(FillHighMassSR2CRPlots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR2_CR");
+      
+      // SR3 : MET Inv. || BVeto Inv.
+      if(FillHighMassSR3CRPlots(dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR3_CR");
+      
+      FillHighMassSR3BDTCRPlots(dilep_channel, LepsT, LepsV, JetAllColl, JetColl,VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel);
+      
+      
+      if(FillHighMass1JetCRPlots(dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMass1Jet_CR");
+      
+      if(FillHighMassBJetCRPlots(dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassBJet_CR");
+      
+      // 0 Jet : 2 SS lep dphi > 2.5
+      if(FillHighMassNPCRPlots(dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassNP_CR");
     
-    // 17-028 +CR                                                                                                                                                                                                  
-    // SR1 : MET Inv. || BVeto Inv.
-    if(FillHighMassSR1CRPlots(dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR1_CR");
-
-    // SR2 : MET Inv. || BVeto Inv.
-    if(FillHighMassSR2CRPlots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR2_CR");
-
-    // SR3 : MET Inv. || BVeto Inv.
-    if(FillHighMassSR3CRPlots(dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR3_CR");
-  
-    FillHighMassSR3BDTCRPlots(dilep_channel, LepsT, LepsV, JetAllColl, JetColl,VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel);
-
-
-    if(FillHighMass1JetCRPlots(dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMass1Jet_CR");
-
-    if(FillHighMassBJetCRPlots(dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassBJet_CR");
-    
-    // 0 Jet : 2 SS lep dphi > 2.5
-    if(FillHighMassNPCRPlots(dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassNP_CR");
-    
+    }
     
 
     vector<TString> cutlabels = { "TopAK8_CR","ZAK8_CR","WpWp_CR1","WpWp_CR2","WpWp_CRNP","WpWp_CRNP2","ZZ_CR","ZZLoose_CR","ZG_CR","WG_CR","WZ_CR","WG_Method2_CR","ZG_Method2_CR","WZ2_CR","WZB_CR","HighMassSR1_CR","HighMassSR2_CR","HighMassSR3_CR","HighMass1Jet_CR","HighMassBJet_CR","HighMassNP_CR","ZNP_CR","SSPresel","SSVBFPresel"};
@@ -1267,12 +1232,12 @@ bool HNL_RegionDefinitions::FillTopCRPlots(HNL_LeptonCore::Channel channel, std:
     for(auto ilep: leps) cout << "HNL_TopAK8_TwoLepton_CR Type " <<  ilep->LeptonGenType() << endl;
     //PrintGen(gens);                                                                                                                                                                                              
   }
-  //if(SameCharge(leps)) Fill_RegionPlots(channel,1,"HNL_SS_TopAK8_TwoLepton_CR" , param.Name, JetColl  ,AK8_JetColl,  leps,  METv, nPV, w);
+  //if(SameCharge(leps)) Fill_RegionPlots(channel,0,"HNL_SS_TopAK8_TwoLepton_CR" , param.Name, JetColl  ,AK8_JetColl,  leps,  METv, nPV, w);
   if(RunFake) {
-    if(SameCharge(leps)) Fill_RegionPlots(channel,1,"HNL_OS_Top_TwoLepton_CR" , param.Name, JetColl  ,AK8_JetColl,  leps,  METv, nPV, w);
+    if(SameCharge(leps)) Fill_RegionPlots(channel,0,"HNL_OS_Top_TwoLepton_CR" , param.Name, JetColl  ,AK8_JetColl,  leps,  METv, nPV, w);
   }
   else {
-    if(!SameCharge(leps)) Fill_RegionPlots(channel,1,"HNL_OS_Top_TwoLepton_CR" , param.Name, JetColl  ,AK8_JetColl,  leps,  METv, nPV, w);
+    if(!SameCharge(leps)) Fill_RegionPlots(channel,0,"HNL_OS_Top_TwoLepton_CR" , param.Name, JetColl  ,AK8_JetColl,  leps,  METv, nPV, w);
   }
   return true;
 }
@@ -1297,8 +1262,8 @@ bool HNL_RegionDefinitions::FillTopAK8CRPlots(HNL_LeptonCore::Channel channel, s
     for(auto ilep: leps) cout << "HNL_TopAK8_TwoLepton_CR Type " <<  ilep->LeptonGenType() << endl;
     //PrintGen(gens);                                                                                                                                                                                                                                    
   }
-  if(SameCharge(leps)) Fill_RegionPlots(channel,1,"HNL_SS_TopAK8_TwoLepton_CR" , param.Name, JetColl  ,AK8_JetColl,  leps,  METv, nPV, w);
-  else Fill_RegionPlots(channel,1,"HNL_OS_TopAK8_TwoLepton_CR" , param.Name, JetColl  ,AK8_JetColl,  leps,  METv, nPV, w);
+  if(SameCharge(leps)) Fill_RegionPlots(channel,0,"HNL_SS_TopAK8_TwoLepton_CR" , param.Name, JetColl  ,AK8_JetColl,  leps,  METv, nPV, w);
+  else Fill_RegionPlots(channel,0,"HNL_OS_TopAK8_TwoLepton_CR" , param.Name, JetColl  ,AK8_JetColl,  leps,  METv, nPV, w);
   return true;
 }
 
@@ -1322,7 +1287,7 @@ bool HNL_RegionDefinitions::FillZNPCRPlots(HNL_LeptonCore::Channel channel, std:
     for(auto ilep: leps) cout << "HNL_ZNP_ThreeLepton_CR Type " <<  ilep->LeptonGenType() << endl;
   }
 
-  Fill_RegionPlots(channel,1,"HNL_ZNP_ThreeLepton_CR" , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  Fill_RegionPlots(channel,0,"HNL_ZNP_ThreeLepton_CR" , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
   return true;
 
@@ -1655,7 +1620,7 @@ bool HNL_RegionDefinitions::FillOSPreselectionPlots(HNL_LeptonCore::Channel chan
 
   if(njet < 1) return false;
 
-  Fill_RegionPlots(channel,1,"HNL_OSPresel_TwoLepton"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  Fill_RegionPlots(channel,0,"HNL_OSPresel_TwoLepton"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
   return true;
 
@@ -1679,7 +1644,7 @@ bool HNL_RegionDefinitions::FillSSPreselectionPlots(HNL_LeptonCore::Channel chan
 
   //int njets = JetColl.size() + AK8_JetColl.size();
 
-  Fill_RegionPlots(channel,1,"HNL_SSPresel_TwoLepton"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  Fill_RegionPlots(channel,0,"HNL_SSPresel_TwoLepton"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
   return true;
 
 }
@@ -1706,7 +1671,7 @@ bool HNL_RegionDefinitions::FillSSVBFPreselectionPlots(HNL_LeptonCore::Channel c
 
 
   if(VBF_JetColl.size() < 2) return false;
-  Fill_RegionPlots(channel,1,"HNL_SSVBFPresel_TwoLepton"  , param.Name, VBF_JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  Fill_RegionPlots(channel,0,"HNL_SSVBFPresel_TwoLepton"  , param.Name, VBF_JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
   return true;
 
@@ -1764,7 +1729,7 @@ bool HNL_RegionDefinitions::FillHighMassSR1CRPlots(HNL_LeptonCore::Channel chann
 
   FillEventCutflow(HNL_LeptonCore::ChannelDepCR1, w, GetChannelString(channel) +"_CR1", "ChannelCutFlow/"+param.DefName);
 
-  Fill_RegionPlots(channel,1,"HNL_HighMassSR1_TwoLepton_CR"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  Fill_RegionPlots(channel,0,"HNL_HighMassSR1_TwoLepton_CR"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
   return true;
 }
@@ -1784,7 +1749,7 @@ bool HNL_RegionDefinitions::FillHighMass1JetCRPlots(HNL_LeptonCore::Channel chan
   if (fabs(ll.M()-90.) > 10) return false;
   
   if(JetColl.size() != 1) return false;
-  Fill_RegionPlots(channel,1,"HNL_HighMass1Jet_TwoLepton_CR"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  Fill_RegionPlots(channel,0,"HNL_HighMass1Jet_TwoLepton_CR"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
 
   return true;
@@ -1806,7 +1771,7 @@ bool HNL_RegionDefinitions::FillHighMassBJetCRPlots(HNL_LeptonCore::Channel chan
   int NB_JetColl = B_JetColl.size();
 
   if(NB_JetColl  < 1) return false;
-  Fill_RegionPlots(channel,1,"HNL_HighMassBJet_TwoLepton_CR"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  Fill_RegionPlots(channel,0,"HNL_HighMassBJet_TwoLepton_CR"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
   return true;
 
@@ -1830,7 +1795,7 @@ bool HNL_RegionDefinitions::FillHighMassNPCRPlots(HNL_LeptonCore::Channel channe
 
   if(leps[0]->DeltaPhi(*leps[1]) < 2.5) return false;
 
-  Fill_RegionPlots(channel,1,"HNL_HighMassNP_TwoLepton_CR"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  Fill_RegionPlots(channel,0,"HNL_HighMassNP_TwoLepton_CR"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
   return true;
 
@@ -1905,17 +1870,17 @@ bool HNL_RegionDefinitions::FillHighMassSR3CRPlots(HNL_LeptonCore::Channel chann
   if(JetColl.size() == 0 && leps[1]->Pt() > 80.) FillHist( "ControlSR3/"+param.Name+"/SignalBins",   0.5, w, 16, 0, 16., "Signalbins");
   if(JetColl.size() == 1 && leps[1]->Pt() > 80.) FillHist( "ControlSR3/"+param.Name+"/SignalBins",   1.5, w, 16, 0, 16., "Signalbins");
   
-  if (JetColl.size() < 2 && leps[1]->Pt() > 80.) Fill_RegionPlots(channel,1,"HNL_HighMassSR3b_TwoLepton_CR"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  if (JetColl.size() < 2 && leps[1]->Pt() > 80.) Fill_RegionPlots(channel,0,"HNL_HighMassSR3b_TwoLepton_CR"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
   if (JetColl.size() < 2  && leps[1]->Pt() > 80.) {
-    Fill_RegionPlots(channel,1,"HNL_HighMassSR3LowJet_TwoLepton_CR"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+    Fill_RegionPlots(channel,0,"HNL_HighMassSR3LowJet_TwoLepton_CR"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
     return true;
   }
   if (JetColl.size() < 2) return false;
 
   if(!(GetMass("HNL_SR3", JetColl, AK8_JetColl,leps) < UpperMassSR3WmassCut && GetMass("HNL_SR3", JetColl, AK8_JetColl,leps) > LowerMassSR3WmassCut)) return false;
 
-  Fill_RegionPlots(channel,1,"HNL_HighMassSR3_TwoLepton_CR"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  Fill_RegionPlots(channel,0,"HNL_HighMassSR3_TwoLepton_CR"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
   float dijetmass_tmp=999.;
   float dijetmass=9990000.;
@@ -2028,7 +1993,7 @@ bool HNL_RegionDefinitions::FillHighMassSR2CRPlots(HNL_LeptonCore::Channel chann
     }
     if (HT/leps[0]->Pt() > 2)  return false;
     
-    Fill_RegionPlots(channel,1,"HNL_HighMassCR2_TwoLepton_CR"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+    Fill_RegionPlots(channel,0,"HNL_HighMassCR2_TwoLepton_CR"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
     
   
     double HTLT[2] = { 0., 2};
@@ -2089,7 +2054,7 @@ bool HNL_RegionDefinitions::FillWZ2CRPlots(HNL_LeptonCore::Channel channel, std:
 
   if (zeppenfeld > 1.00) return false;
 
-  Fill_RegionPlots(channel, 1,"HNL_WZ2_ThreeLepton_CR" , param.Name, jets_eta5,  AK8_JetColl,  leps,  METv, nPV, w);
+  Fill_RegionPlots(channel, 0,"HNL_WZ2_ThreeLepton_CR" , param.Name, jets_eta5,  AK8_JetColl,  leps,  METv, nPV, w);
 
 
   return true;
@@ -2144,7 +2109,7 @@ bool HNL_RegionDefinitions::FillWZBCRPlots(HNL_LeptonCore::Channel channel, std:
   if (zeppenfeld > 1.00) return false;
 
 
-  Fill_RegionPlots(channel, 1,"HNL_WZB_ThreeLepton_CR" , param.Name, jets_eta5,  AK8_JetColl,  leps,  METv, nPV, w);
+  Fill_RegionPlots(channel, 0,"HNL_WZB_ThreeLepton_CR" , param.Name, jets_eta5,  AK8_JetColl,  leps,  METv, nPV, w);
 
 
   return true;
@@ -2193,7 +2158,7 @@ bool HNL_RegionDefinitions::FillZZCRPlots(HNL_LeptonCore::Channel channel, std::
     }
   }
   if(m_llos_l10 || !z_cr_pass)  return false;
-  Fill_RegionPlots(channel, 1,"HNL_ZZ_FourLepton_CR" , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  Fill_RegionPlots(channel,0,"HNL_ZZ_FourLepton_CR" , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
   return true;
 }
@@ -2230,7 +2195,7 @@ bool HNL_RegionDefinitions::FillZZ2CRPlots(HNL_LeptonCore::Channel channel, std:
 
 
   if(m_llos_l10 || !z_cr_pass)  return false;
-  Fill_RegionPlots(channel, 1,"HNL_ZZLoose_FourLepton_CR" , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  Fill_RegionPlots(channel, 0,"HNL_ZZLoose_FourLepton_CR" , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
   return true;
 }
@@ -2300,7 +2265,7 @@ bool HNL_RegionDefinitions::FillZGCRPlots(HNL_LeptonCore::Channel channel, std::
     //PrintGen(All_Gens);
   }
 
-  Fill_RegionPlots(channel,1,"HNL_ZG_ThreeLepton_CR" , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  Fill_RegionPlots(channel,0,"HNL_ZG_ThreeLepton_CR" , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
   return true;
 
@@ -2339,7 +2304,7 @@ bool HNL_RegionDefinitions::FillWGCRPlots(HNL_LeptonCore::Channel channel, std::
 
     PrintGen(All_Gens);
   }
-  Fill_RegionPlots(channel,1,"HNL_WG_ThreeLepton_CR"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  Fill_RegionPlots(channel,0,"HNL_WG_ThreeLepton_CR"  , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
   return true;
 }
@@ -2382,7 +2347,7 @@ bool HNL_RegionDefinitions::FillWZCRPlots(HNL_LeptonCore::Channel channel, std::
 
 
 
-  Fill_RegionPlots(channel,1,"HNL_WZ_ThreeLepton_CR" , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  Fill_RegionPlots(channel,0,"HNL_WZ_ThreeLepton_CR" , param.Name, JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
   
   return true;
 }

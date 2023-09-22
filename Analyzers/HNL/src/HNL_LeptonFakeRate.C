@@ -8,6 +8,8 @@ void HNL_LeptonFakeRate::initializeAnalyzer(){
   TString FilePath="/data/"+SKFlatV+"/"+GetEra()+"/FakeRate/NvtxSF/";
   NvtxSFFile = new TFile(AnalyzerPath+FilePath+"FakeRateNVtx13TeV_"+GetEra()+".root");
 
+  
+
 }
 
 void HNL_LeptonFakeRate::executeEvent(){
@@ -23,46 +25,28 @@ void HNL_LeptonFakeRate::executeEvent(){
   vector<HNL_LeptonCore::Channel> channel;
   vector<TString> paramnames;
   
-  TString           era="2016";
-  if(DataYear==2017)era="2017";
-  if(DataYear==2018)era="2018";
-  
   // Loose ID has no loose IP
   // HNTight_17028 :  PassMVA(0.9, 0.825, 0.5)) && fabs(dXY())<0.01 && fabs(dZ())<0.04 && fabs(IP3D()/IP3Derr())<4. RelIso()<0.08
   //                  PassConversionVeto() IsGsfCtfScPixChargeConsistent Pass_TriggerEmulation
   // HNLoose_17028 : Pass_HNLoose2016(0.6, 0.2, 0.1, 10.) && MVA(-0.1, 0.1, -0.1) PassConversionVeto() IsGsfCtfScPixChargeConsistent Pass_TriggerEmulation
 
-  ELIDs.push_back(make_pair("HNL_ULID_"+era, "HNL_ULID_FO_"+era));
-  paramnames.push_back("HNL_ULID_"+era  );                                                                                                                    
-
+  ELIDs.push_back(make_pair("HNL_ULID_"+ GetYearString(), "HNL_ULID_FO_"+GetYearString()));
+  paramnames.push_back("HNL_ULID_"+GetYearString()  );                                                                                                                    
+  ELIDs.push_back(make_pair("HNTightV2",    "HNLooseV4")); 
+  paramnames.push_back("HNTightV2"      );
+  
 
   for (auto i: ELIDs) {
     channel.push_back(EE);
     MuIDs.push_back(make_pair("HNVetoMVA","HNLoose_17028"));
   }
     
-  MuIDs.push_back(make_pair("HNL_ULID_"+era, "HNL_ULID_FO_"+era));
-  paramnames.push_back("HNL_ULID_"+era  );
-  
-
-  // MUON IDS
-  /*MuIDs.push_back(make_pair("HNTightPFIsoMedium","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTightPFIsoTight","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTightPFIsoVeryTight","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTightPFIsoVeryVeryTight","HNLoosePOG"));
-  MuIDs.push_back(make_pair("HNTight_17028","HNLoose_17028"));
+  MuIDs.push_back(make_pair("HNL_ULID_"+GetYearString(), "HNL_ULID_FO"));
+  paramnames.push_back("HNL_ULID_"+GetYearString()  );
   MuIDs.push_back(make_pair("HNTightV2","HNLooseV1"));
-  MuIDs.push_back(make_pair("HNLooseMVA","HNLooseMVA"));
-  
-  paramnames.push_back("POGTightWithMediumIso");
-  paramnames.push_back("POGTightWithTightIso");
-  paramnames.push_back("POGTightWithVeryTightIso");
-  paramnames.push_back("POGTightWithVeryVeryTightIso");
-  paramnames.push_back("HNTight_17028");
   paramnames.push_back("HNTightV2");
-  paramnames.push_back("HNMVA");*/
 
- 
+
   int iel= MuIDs.size() - channel.size();
   for (int i =0; i < iel; i++){
     channel.push_back(MuMu);
@@ -111,13 +95,12 @@ void HNL_LeptonFakeRate::executeEvent(){
     //     param.WriteOutVerbose = 2;  Run Main ID and make  only FR 
     //     param.WriteOutVerbose = 3;  Run Main ID and make  only FR + PR
     //     param.WriteOutVerbose = 0;  makes NVertx plots
-    param.WriteOutVerbose= -2; // 0 means only make FR  1 means FR+PR  2 means SR+PR + CR plots  3 means makes NVertx plots
-   
-    
-    if(param.WriteOutVerbose >=0){
-      if (channel[it_id]==MuMu && MuonTightID != "HNL_ULID_"+era) continue;
-      if (channel[it_id]==EE   && ElectronTightID != "HNL_ULID_"+era) continue;
-    }
+    param.WriteOutVerbose= 2; // 0 means only make FR  1 means FR+PR  2 means SR+PR + CR plots  3 means makes NVertx plots
+       
+    //    if(param.WriteOutVerbose >=0){
+    //  if (channel[it_id]==MuMu && MuonTightID != "HNL_ULID_"+GetYearString()) continue;
+    //  if (channel[it_id]==EE   && ElectronTightID != "HNL_ULID_"+GetYearString()) continue;
+    // }
     
     param.Name = GetChannelString(channel[it_id]) + "_"+ paramnames[it_id];
     
@@ -144,8 +127,8 @@ void HNL_LeptonFakeRate::executeEventFromParameter(AnalyzerParameter param, TStr
   if(!PassMETFilter()) return;
 
   
-  std::vector<Electron> loose_electrons     = GetElectrons( param,param.Electron_Loose_ID, 9.5, 2.5,false) ;
-  std::vector<Muon>     loose_muons         = GetMuons    ( param,param.Muon_Loose_ID, 5, 2.4, false);
+  std::vector<Electron> loose_electrons     = GetElectrons( param,param.Electron_Loose_ID, 9.5, 2.5, false) ;
+  std::vector<Muon>     loose_muons         = GetMuons    ( param,param.Muon_Loose_ID,     5,   2.4, false);
   
   //cout << "loose_electrons = " << loose_electrons.size() << " loose_muons " << loose_muons.size() << endl;
 
@@ -214,7 +197,7 @@ void HNL_LeptonFakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon>
     return;
   }
 
-  if (param.Muon_Tight_ID != "HNTightV2") return;
+  //  if (param.Muon_Tight_ID != "HNTightV2") return;
 
   MakeDiLepPlots(MuMu,param, ev, leps,blepsT,param.Name+channel_s,event_weight);
 
@@ -352,7 +335,7 @@ void HNL_LeptonFakeRate::RunE( std::vector<Electron> loose_el, std::vector<Muon>
   }
 
 
-  if (param.Electron_Tight_ID != "HNTightV2") return;
+  ///  if (param.Electron_Tight_ID != "HNTightV2") return;
 
   MakeDiLepPlots(EE,param, ev, leps,blepsT,param.Name+channel_s,event_weight);
   
@@ -749,7 +732,6 @@ void HNL_LeptonFakeRate::MakeNVertexDistPrescaledTrig(HNL_LeptonCore::Channel ch
 }
 void HNL_LeptonFakeRate::GetFakeRateAndPromptRates(AnalyzerParameter param, std::vector<Lepton *> leps,std::vector<bool> blepsT, std::vector<Jet>    jetCollTight, TString label, float event_weight, float isocut){
 						      
-  
   if (leps.size()<1) return;
   
   Event ev = GetEvent();
@@ -946,14 +928,10 @@ float HNL_LeptonFakeRate::GetPrescale(std::vector<Lepton *>   leps  ){
 void HNL_LeptonFakeRate::MakeFakeRatePlots(TString label, TString mutag,AnalyzerParameter param,  std::vector<Lepton *> leps , std::vector<bool> blepsT ,  std::vector<Jet> jets,  float event_weight, float isocut, Particle MET){
 				
   /// FOR FAKE RATE SUBTRACTION NEED ONLY PROMPT MUONS                                                                                                                                                  
-  bool truth_match= false;
+  bool truth_match= true;
 
-  if(!IsDATA) {
-    if(leps.size() > 0){
-      if(leps[0]->LeptonGenType() > 0 ) truth_match=true;
-    }
-  }
-  else truth_match=true;
+  if(!IsDATA && leps.size() > 0) truth_match = leps[0]->IsPrompt() ;
+
   if(!truth_match) return;
 
   bool useevent20 = UseEvent(leps , jets, 20.,  MET, event_weight);
@@ -965,9 +943,9 @@ void HNL_LeptonFakeRate::MakeFakeRatePlots(TString label, TString mutag,Analyzer
   label= mutag;
   if(jets.size() >= 1){
     if(useevent20)GetFakeRates(leps, blepsT, param, label, jets,  label+"_20",(event_weight),isocut);
-    if(useevent30)GetFakeRates(leps, blepsT,param, label, jets,   label+"_30",(event_weight),isocut);
-    if(useevent40)GetFakeRates(leps, blepsT,param, label, jets,  label+"_40",(event_weight),isocut);
-    if(useevent60)GetFakeRates(leps, blepsT,param, label,jets,   label+"_60",(event_weight),isocut);
+    if(useevent30)GetFakeRates(leps, blepsT, param, label, jets,  label+"_30",(event_weight),isocut);
+    if(useevent40)GetFakeRates(leps, blepsT, param, label, jets,  label+"_40",(event_weight),isocut);
+    if(useevent60)GetFakeRates(leps, blepsT, param, label, jets,  label+"_60",(event_weight),isocut);
   }
   return;
 }
@@ -1010,38 +988,74 @@ void HNL_LeptonFakeRate::GetFakeRates(std::vector<Lepton *> leps,std::vector<boo
 					 
   bool IsMuon=(leps[0]->LeptonFlavour() == Lepton::MUON);
   int nbin_ptcone=  IsMuon ? 10 : 8;
-  int nbin_pt    = IsMuon ? 10 : 9;
-  int nbin_eta   = 4;
+
+
+  int nbin_pt       = IsMuon ? 9 : 9;
+  int nbin_pt_LF    = IsMuon ? 8 : 7;
+  int nbin_pt_HF    = IsMuon ? 7 : 7;
+
+  int nbin_eta   = 4; 
   
   double ptbinscone  [nbin_ptcone+1];
   double ptbins      [nbin_pt+1];
-  double etabins   [nbin_eta+1   ] =  { 0.,0.8,  1.479, 2.,  2.5};
+  double ptbinsLF    [nbin_pt_LF+1];
+  double ptbinsHF    [nbin_pt_HF+1];
+
+  double etabins     [nbin_eta+1   ] =  { 0.,0.8,  1.479,  2.,  2.5};
+
   if(IsMuon){
     vector<double> vptbinscone = {6.,10., 15.,20.,25.,30.,35.,40.,50., 60.,100. } ;
-    vector<double> vptbins =  { 5., 10., 15.,20.,25.,30.,35.,40.,50.,60.,100.} ; 
+    vector<double> vptbins =   { 10., 15.,20.,25.,30.,35.,40.,50.,60.,100} ; 
+    vector<double> vptbinsLF = { 10., 15.,20.,25.,30.,35.,40.,50.,60.} ;
+    vector<double> vptbinsHF = { 10., 15.,20.,25.,30.,35.,40.,50.} ;
+
     std::copy(vptbinscone.begin(), vptbinscone.end(), ptbinscone);
     std::copy(vptbins.begin(), vptbins.end(), ptbins);
+    std::copy(vptbinsLF.begin(), vptbinsLF.end(), ptbinsLF);
+    std::copy(vptbinsHF.begin(), vptbinsHF.end(), ptbinsHF);
+
   }
   else{
     vector<double> vptbinscone = { 10., 15.,23.,30.,35., 40.,50.,60.,100.};
     vector<double> vptbins     = { 10., 15.,20.,25.,30., 35.,40.,50.,60.,100.};
+    vector<double> vptbinsLF   = { 10., 20.,25.,30., 35.,40.,50.,60.};
+    vector<double> vptbinsHF   = { 10., 15.,20.,25.,30., 35.,40.,50};
+
     std::copy(vptbinscone.begin(), vptbinscone.end(), ptbinscone);
     std::copy(vptbins.begin(), vptbins.end(), ptbins);
+    std::copy(vptbinsLF.begin(), vptbinsLF.end(), ptbinsLF);
+    std::copy(vptbinsHF.begin(), vptbinsHF.end(), ptbinsHF);
+
 
   }
+
+
+  int nbin_mva   = 100;
+  double mvabins [nbin_mva+1];
+
+  vector<double> mvabinsTMP;
+  for(int ib =0 ; ib < nbin_mva+1; ib++) mvabinsTMP.push_back(ib*0.02);
+  std::copy(mvabinsTMP.begin(), mvabinsTMP.end(), mvabins);
+
+
   Event ev = GetEvent();
 
-  float lep_pt = leps[0]->Pt();
-  //float lep_pt_corr =  leps[0]->CalcPtCone(leps[0]->RelIso(), isocut);
-  //double lep_jet_ptratio = lep_pt/leps[0]->CloseJet_Ptratio();
-  float lep_eta =   fabs(leps[0]->Eta());
+  float lep_pt      =  (leps[0]->Pt() < 100) ?  leps[0]->Pt() : 99;
+  float lep_pt_LF      =  (leps[0]->Pt() < 60) ?  leps[0]->Pt() : 59;
+  float lep_pt_HF      =  (leps[0]->Pt() < 50) ?  leps[0]->Pt() : 49;
+  float lep_eta     = leps[0]->fEta(); /// returns |eta| OR for el |scEta|
   float lep_reliso  = leps[0]->RelIso();
-  float lep_ip3d    = fabs(leps[0]->IP3D()/leps[0]->IP3Derr());
-  float lep_mva     =  leps[0]->LepMVA();
-  float lep_dxy     = fabs(leps[0]->dXY());
-  
-  //if(lep_jet_ptratio > 100.) lep_jet_ptratio = 99.;
-  if(lep_pt > 60.) lep_pt = 59;
+  float lep_ip3d    = leps[0]->SIP3D();
+  float lep_mva     = leps[0]->LepMVA();
+  float lep_dxy     = leps[0]->fdXY();
+  float lep_mva_lfvshf  = leps[0]->HNL_MVA_Fake("QCD_LFvsHF_v5");
+  float lep_mva_bvsc    = leps[0]->HNL_MVA_Fake("QCD_BvsC_v5");
+  float lep_blscore     = leps[0]->CloseJet_BScore();
+  float lep_cbscore     = leps[0]->CloseJet_CvsBScore();
+  float lep_clscore     = leps[0]->CloseJet_CvsLScore();
+  TString lepEtaRegion  = leps[0]->etaRegionString();
+  TString lepRegion     = (leps[0]->IsBB()) ? "BB" : "EC";
+
   float weight_ptcorr=event_weight;
   float weight_pt=event_weight;
   TString L_prefix = "Fake_Loose"+tag;
@@ -1086,7 +1100,6 @@ void HNL_LeptonFakeRate::GetFakeRates(std::vector<Lepton *> leps,std::vector<boo
 
     bool El8PD=  (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_8, this->DataStream) ));
     bool El12PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_12, this->DataStream) ));
-    //    bool El17PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_17, this->DataStream) ));
     bool El23PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_23, this->DataStream) ));
 
 
@@ -1110,45 +1123,94 @@ void HNL_LeptonFakeRate::GetFakeRates(std::vector<Lepton *> leps,std::vector<boo
 
 
   std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
-  std::vector<FatJet> AK8_JetColl;
-  JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
-							     
 
-  std::vector<Jet> BJetColl    = SelectBJets(param, jets_tmp , param_jets);
-  double sf_btag               = GetBJetSF(param, jets_tmp, param_jets);
-  if(!IsData )weight_pt*= sf_btag;
 
-  
   double ptmin    = IsMuon ? 10 : 10;
 
   for(int ilep = 0 ; ilep < 2; ilep++)  {
 
     TString prefix = (ilep==0) ? L_prefix : T_prefix;
     if((ilep==1) && !(blepsT[0])) continue;
-    
-    if(lep_pt > ptmin){
 
-      if(param.WriteOutVerbose ==  -3){
-	FillHist((prefix + "_reliso").Data(), lep_reliso, weight_pt*prescale_lep, 50, 0., 1.);
-	FillHist((prefix + "_dXY").Data(),    lep_dxy, weight_pt*prescale_lep, 50, 0., 1.);
-	FillHist((prefix + "_IP3D").Data(),   lep_ip3d, weight_pt*prescale_lep, 50, 0., 10.);
-	FillHist((prefix + "_mva").Data(),    lep_mva, weight_pt*prescale_lep, 50, -1., 1.);
-	FillHist((prefix + "_pt_eta").Data(), lep_pt, lep_eta,weight_pt*prescale_lep, nbin_pt, ptbins, nbin_eta , etabins);
-	FillHist((prefix + "_pt").Data(),     lep_pt, weight_pt*prescale_lep, nbin_pt, ptbins, "p_{T} (GeV)");
-	FillHist((prefix + "_eta").Data(),    lep_eta, weight_pt*prescale_lep , nbin_eta, etabins,"#eta");
-	if(BJetColl.size()==0){
-	  FillHist((prefix + "_0BJet_pt").Data(),     lep_pt, weight_pt*prescale_lep, nbin_pt, ptbins, "p_{T} (GeV)");
-	  FillHist((prefix + "_0BJet_eta").Data(),    lep_eta, weight_pt*prescale_lep , nbin_eta, etabins,"#eta");
+    if(fill_plot && lep_pt > ptmin){
+      FillHist((prefix + "_reliso").Data(), lep_reliso, weight_ptcorr, 50, 0., 1.);
+      FillHist((prefix + "_dXY").Data(),    lep_dxy,    weight_ptcorr, 50, 0., 1.);
+      FillHist((prefix + "_IP3D").Data(),   lep_ip3d,   weight_ptcorr, 50, 0., 10.);
+      FillHist((prefix + "_mva").Data(),    lep_mva,    weight_ptcorr, 50, -1., 1.);
+      FillHist((prefix + "_blscore").Data(), lep_blscore,    weight_ptcorr, 50, -1., 1.);
+      FillHist((prefix + "_cbscore").Data(), lep_cbscore,    weight_ptcorr, 50, -1., 1.);
+      FillHist((prefix + "_clscore").Data(), lep_clscore,    weight_ptcorr, 50, -1., 1.);
+      FillHist((prefix + "_pt").Data(),     lep_pt,     weight_ptcorr, nbin_pt, ptbins, "p_{T} (GeV)");
+      FillHist((prefix + "_pt_"+ lepEtaRegion).Data(),     lep_pt,     weight_ptcorr, nbin_pt, ptbins, "p_{T} (GeV)");
+      FillHist((prefix + "_pt_"+ lepRegion).Data(),     lep_pt,     weight_ptcorr, nbin_pt, ptbins, "p_{T} (GeV)");
+      FillHist((prefix + "_eta").Data(),    lep_eta, weight_ptcorr , nbin_eta, etabins,"#eta");
+      FillHist((prefix + "_eta_fine").Data(),    lep_eta, weight_ptcorr , 50, 0, 2.5,"#eta");
+      FillHist((prefix + "_lep_mva_lfvshf").Data(),   lep_mva_lfvshf,  weight_ptcorr, 50, -1., 1.);
+      FillHist((prefix + "_lep_mva_bvsc").Data(),   lep_mva_bvsc,  weight_ptcorr, 50, -1., 1.);
+      FillHist((prefix + "_pt_eta").Data(), lep_pt, lep_eta,  weight_ptcorr, nbin_pt, ptbins, nbin_eta , etabins);
+      FillHist((prefix + "_pt_LFvsHF").Data(), lep_pt, lep_mva_lfvshf,  weight_ptcorr, nbin_pt, ptbins, nbin_mva, mvabins);
+      FillHist((prefix + "_pt_BvsC").Data(), lep_pt, lep_mva_bvsc,  weight_ptcorr, nbin_pt, ptbins, nbin_mva, mvabins);
+
+      if(lep_mva_lfvshf > 0){
+	FillHist((prefix + "_LF_pt").Data(),     lep_pt_LF,     weight_ptcorr, nbin_pt_LF, ptbinsLF, "p_{T} (GeV)");
+	FillHist((prefix + "_LF_pt_"+ lepEtaRegion).Data(),     lep_pt_LF,     weight_ptcorr, nbin_pt_LF, ptbinsLF, "p_{T} (GeV)");
+	FillHist((prefix + "_LF_pt_"+ lepRegion).Data(),     lep_pt_LF,     weight_ptcorr, nbin_pt_LF, ptbinsLF, "p_{T} (GeV)");
+	FillHist((prefix + "_LF_eta").Data(),    lep_eta,    weight_ptcorr , nbin_eta, etabins,"#eta");
+	FillHist((prefix + "_LF_eta_fine").Data(),    lep_eta, weight_ptcorr , 50, -2.5, 2.5,"#eta");
+	FillHist((prefix + "_LF_mva").Data(),    lep_mva,    weight_ptcorr, 50, -1., 1.);
+	FillHist((prefix + "_LF_pt_eta").Data(), lep_pt_LF, lep_eta,  weight_ptcorr, nbin_pt_LF, ptbinsLF, nbin_eta , etabins);
+	FillHist((prefix + "_LF_pt_LFvsHF").Data(), lep_pt_LF, lep_mva_lfvshf,  weight_ptcorr, nbin_pt_LF, ptbinsLF, nbin_mva, mvabins);
+	FillHist((prefix + "_LF_pt_BvsC").Data(), lep_pt_LF, lep_mva_bvsc,  weight_ptcorr, nbin_pt_LF, ptbinsLF, nbin_mva, mvabins);
+	FillHist((prefix + "_LF_blscore").Data(), lep_blscore,    weight_ptcorr, 50, -1., 1.);
+	FillHist((prefix + "_LF_cbscore").Data(), lep_cbscore,    weight_ptcorr, 50, -1., 1.);
+	FillHist((prefix + "_LF_clscore").Data(), lep_clscore,    weight_ptcorr, 50, -1., 1.);
+
+      }
+      else{
+	FillHist((prefix + "_HF_pt").Data(),     lep_pt_HF,     weight_ptcorr, nbin_pt_HF, ptbinsHF, "p_{T} (GeV)");
+	FillHist((prefix + "_HF_pt_"+ lepEtaRegion).Data(),     lep_pt_HF,     weight_ptcorr, nbin_pt_HF, ptbinsHF, "p_{T} (GeV)");
+	FillHist((prefix + "_HF_pt_"+ lepRegion).Data(),     lep_pt_HF,     weight_ptcorr, nbin_pt_HF, ptbinsHF, "p_{T} (GeV)");
+        FillHist((prefix + "_HF_eta").Data(),    lep_eta,    weight_ptcorr , nbin_eta, etabins,"#eta");
+	FillHist((prefix + "_HF_eta_fine").Data(),    lep_eta, weight_ptcorr , 50, -2.5, 2.5,"#eta");
+	FillHist((prefix + "_HF_mva").Data(),    lep_mva,    weight_ptcorr, 50, -1., 1.);
+	FillHist((prefix + "_HF_pt_eta").Data(), lep_pt_HF, lep_eta,  weight_ptcorr, nbin_pt_HF, ptbinsHF, nbin_eta , etabins);
+	FillHist((prefix + "_HF_pt_LFvsHF").Data(), lep_pt_HF, lep_mva_lfvshf,  weight_ptcorr, nbin_pt_HF, ptbinsHF, nbin_mva, mvabins);
+	FillHist((prefix + "_HF_pt_BvsC").Data(), lep_pt_HF, lep_mva_bvsc,  weight_ptcorr, nbin_pt_HF, ptbinsHF, nbin_mva, mvabins);
+        FillHist((prefix + "_HF_blscore").Data(), lep_blscore,    weight_ptcorr, 50, -1., 1.);
+        FillHist((prefix + "_HF_cbscore").Data(), lep_cbscore,    weight_ptcorr, 50, -1., 1.);
+        FillHist((prefix + "_HF_clscore").Data(), lep_clscore,    weight_ptcorr, 50, -1., 1.);
+
+	if(lep_mva_bvsc > 0){
+	  FillHist((prefix + "_HFB_pt").Data(),     lep_pt_HF,     weight_ptcorr, nbin_pt_HF, ptbinsHF, "p_{T} (GeV)");
+	  FillHist((prefix + "_HFB_pt_"+ lepEtaRegion).Data(),     lep_pt_HF,     weight_ptcorr, nbin_pt_HF, ptbinsHF, "p_{T} (GeV)");
+	  FillHist((prefix + "_HFB_pt_"+ lepRegion).Data(),     lep_pt_HF,     weight_ptcorr, nbin_pt_HF, ptbinsHF, "p_{T} (GeV)");
+	  FillHist((prefix + "_HFB_eta").Data(),    lep_eta,    weight_ptcorr , nbin_eta, etabins,"#eta");
+	  FillHist((prefix + "_HFB_eta_fine").Data(),    lep_eta, weight_ptcorr , 50, -2.5, 2.5,"#eta");
+	  FillHist((prefix + "_HFB_mva").Data(),    lep_mva,    weight_ptcorr, 50, -1., 1.);
+	  FillHist((prefix + "_HFB_pt_eta").Data(), lep_pt_HF, lep_eta,  weight_ptcorr, nbin_pt_HF, ptbinsHF, nbin_eta , etabins);
+	  FillHist((prefix + "_HFB_pt_LFvsHF").Data(), lep_pt_HF, lep_mva_lfvshf,  weight_ptcorr, nbin_pt_HF, ptbinsHF, nbin_mva, mvabins);
+	  FillHist((prefix + "_HFB_pt_BvsC").Data(), lep_pt_HF, lep_mva_bvsc,  weight_ptcorr, nbin_pt_HF, ptbinsHF, nbin_mva, mvabins);
+	  FillHist((prefix + "_HFB_blscore").Data(), lep_blscore,    weight_ptcorr, 50, -1., 1.);
+	  FillHist((prefix + "_HFB_cbscore").Data(), lep_cbscore,    weight_ptcorr, 50, -1., 1.);
+	  FillHist((prefix + "_HFB_clscore").Data(), lep_clscore,    weight_ptcorr, 50, -1., 1.);
+
 	}
 	else{
-	  FillHist((prefix + "_BJet_pt").Data(),     lep_pt, weight_pt*prescale_lep, nbin_pt, ptbins, "p_{T} (GeV)");
-	  FillHist((prefix + "_BJet_eta").Data(),    lep_eta, weight_pt*prescale_lep , nbin_eta, etabins,"#eta");
+	  FillHist((prefix + "_HFC_pt").Data(),     lep_pt_HF,     weight_ptcorr, nbin_pt_HF, ptbinsHF, "p_{T} (GeV)");
+	  FillHist((prefix + "_HFC_pt_"+ lepEtaRegion).Data(),     lep_pt_HF,     weight_ptcorr, nbin_pt_HF, ptbinsHF, "p_{T} (GeV)");
+	  FillHist((prefix + "_HFC_pt_"+ lepRegion).Data(),     lep_pt_HF,     weight_ptcorr, nbin_pt_HF, ptbinsHF, "p_{T} (GeV)");
+	  FillHist((prefix + "_HFC_eta").Data(),    lep_eta,    weight_ptcorr , nbin_eta, etabins,"#eta");
+	  FillHist((prefix + "_HFC_eta_fine").Data(),    lep_eta, weight_ptcorr , 50, -2.5, 2.5,"#eta");
+	  FillHist((prefix + "_HFC_mva").Data(),    lep_mva,    weight_ptcorr, 50, -1., 1.);
+	  FillHist((prefix + "_HFC_pt_eta").Data(), lep_pt_HF, lep_eta,  weight_ptcorr, nbin_pt_HF, ptbinsHF, nbin_eta , etabins);
+	  FillHist((prefix + "_HFC_pt_LFvsHF").Data(), lep_pt_HF, lep_mva_lfvshf,  weight_ptcorr, nbin_pt_HF, ptbinsHF, nbin_mva, mvabins);
+	  FillHist((prefix + "_HFC_pt_BvsC").Data(), lep_pt_HF, lep_mva_bvsc,  weight_ptcorr, nbin_pt_HF, ptbinsHF, nbin_mva, mvabins);
+	  FillHist((prefix + "_HFC_blscore").Data(), lep_blscore,    weight_ptcorr, 50, -1., 1.);
+	  FillHist((prefix + "_HFC_cbscore").Data(), lep_cbscore,    weight_ptcorr, 50, -1., 1.);
+	  FillHist((prefix + "_HFC_clscore").Data(), lep_clscore,    weight_ptcorr, 50, -1., 1.);
+
 	}
-      }    
-    }
-    if(fill_plot) {
-      FillHist((prefix + "_pt_eta").Data(), lep_pt, lep_eta,  weight_ptcorr, nbin_pt, ptbins, nbin_eta , etabins);
-      //FillHist((prefix + "_ptratio_eta").Data(), lep_jet_ptratio, lep_eta,  weight_ptcorr, nbin_pt, ptbins, nbin_eta , etabins);
+      }
     }
   }
   return;

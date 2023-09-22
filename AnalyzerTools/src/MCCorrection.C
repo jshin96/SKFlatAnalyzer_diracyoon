@@ -4865,7 +4865,8 @@ double MCCorrection::MuonID_SF(TString ID, double eta, double pt, int sys){
 
     this_bin = this_hist->FindBin(eta,pt);
   }
-  else this_bin = this_hist->FindBin(pt,eta);
+
+  else this_bin = this_hist->FindBin(eta,pt);
 
   value = this_hist->GetBinContent(this_bin);
   error = this_hist->GetBinError(this_bin);
@@ -4910,8 +4911,7 @@ double MCCorrection::MuonISO_SF(TString ID, double eta, double pt, int sys){
 
   int this_bin(-999);
 
-  this_bin = this_hist->FindBin(pt,eta);
-  if(!ID.Contains("Tmp")) this_bin = this_hist->FindBin(eta,pt);
+  this_bin = this_hist->FindBin(eta,pt);
 
   value = this_hist->GetBinContent(this_bin);
   error = this_hist->GetBinError(this_bin);
@@ -5178,9 +5178,7 @@ double MCCorrection::ElectronID_SF(TString ID, double sceta, double pt, int sys)
     // TMP ID variables
     sceta = fabs(sceta);
 
-    int this_bin = this_hist->FindBin(pt,sceta);
-
-    if(!ID.Contains("Tmp")) this_bin = this_hist->FindBin(sceta,pt);
+    int this_bin = this_hist->FindBin(sceta,pt);
 
     value = this_hist->GetBinContent(this_bin);
     error = this_hist->GetBinError(this_bin);

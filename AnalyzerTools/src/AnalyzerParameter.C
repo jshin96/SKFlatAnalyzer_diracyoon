@@ -62,6 +62,7 @@ void AnalyzerParameter::Clear(){
   SystDir_PU=0;
   SystDir_BTag="central";
   BJet_Method="2a";
+  FakeRateMethod="BDTFlavour";
   FakeMethod="MC";
   CFMethod="MC";
   ConvMethod="MC";
@@ -110,6 +111,7 @@ AnalyzerParameter::AnalyzerParameter(){
   SystDir_PU=0;
   SystDir_BTag="Default";
   BJet_Method="Default";
+  FakeRateMethod="BDTFlavour";
   FakeMethod="MC";
   CFMethod="MC";
   ConvMethod="MC";

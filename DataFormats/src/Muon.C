@@ -321,7 +321,8 @@ bool Muon::PassID(TString ID) const {
   /// Loose ID for SR with MVA cuts
   if(ID == "MVALoose") {
     if(!Pass_LepMVAID()) return false;
-    if(!isPOGMedium()) return false;
+    if(!isPOGMedium())   return false;
+    if( !(TrkIso()/Pt()<0.4) ) return false;
     return true;
   }
 
@@ -753,16 +754,14 @@ bool Muon::passIDHN(int ID, double dxy_b, double dxy_e, double dz_b,double dz_e,
 
 bool Muon::Pass_LepMVAID() const {
 
-  if(this->Pt() < 10) return false;
-  if(this->fEta() > 2.4) return false;
-  if(MiniRelIso() > 0.4) return false;
-  if(SIP3D() > 8) return false;
+  if(this->Pt() < 10)     return false;
+  if(this->fEta() > 2.4)  return false;
+  if(MiniRelIso() > 0.4)  return false;
+  if(SIP3D() > 8)         return false;
   if(this->fdXY() > 0.05) return false;
-  if(this->fdZ() > 0.1) return false;
-  if(!( isPOGLoose() )) return false;
-
+  if(this->fdZ() > 0.1)   return false;
+  if(!( isPOGLoose() ))   return false;
   return true;
-
 }
 
 bool Muon::PassSoftMVA(double mva1, double mva2, double mva3) const {

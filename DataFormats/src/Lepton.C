@@ -35,6 +35,7 @@ Lepton::Lepton() : Particle() {
   j_LeptonIsCF = false;
   j_passID = false;
   j_IDSet= false;
+  j_TIDName="";
 
   j_lep_map_mva_hnl.clear();
   j_lep_mva_hnl_fake_v4=-999;
@@ -369,10 +370,11 @@ void Lepton::SetID(){
   j_IDSet = true;
 }
 
-void Lepton::SetPassID(bool p){
+void Lepton::SetPassID(bool p, TString IDName){
 
   j_IDSet= true;
   j_passID = p;
+  j_TIDName = IDName;
 }
 
 

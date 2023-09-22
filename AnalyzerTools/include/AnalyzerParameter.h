@@ -38,10 +38,9 @@ public:
   TString Tau_Tight_ID, Tau_Loose_ID, Tau_Veto_ID;
   
   TString SRConfig;
-
   int SystDir_PU,WriteOutVerbose;
 
-  std::string SystDir_BTag,  BJet_Method,   FakeMethod,CFMethod,  ConvMethod;
+  std::string SystDir_BTag,  BJet_Method,   FakeMethod,CFMethod,  ConvMethod, FakeRateMethod;
 ;
 ;
 

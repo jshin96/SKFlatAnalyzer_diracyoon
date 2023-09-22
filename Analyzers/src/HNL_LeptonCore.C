@@ -10,7 +10,7 @@ void HNL_LeptonCore::initializeAnalyzer(){
     
   //=== VERBOSE                                                                                                                                        
   run_Debug = HasFlag("DEBUG");
-  
+
 
   //=== bkg flags                                                                                                                                      
   RunPrompt = HasFlag("RunPrompt");
@@ -1343,10 +1343,9 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
   param.Electron_Veto_ID = "HNVetoMVA";
   param.Tau_Veto_ID      = "JetVLElVLMuVL";
   /// Fakes
-  param.Muon_FR_Key  ="ptcone_eta_AwayJetPt40";
-  param.Muon_PR_Key  ="ptcone_eta_central";
-  param.Electron_FR_Key  = "ptcone_eta_AwayJetPt40";
-  param.Electron_PR_Key  ="ptcone_eta_central";
+  param.FakeRateMethod   = "BDTFlavour";
+  param.Muon_FR_Key      = "AwayJetPt40";
+  param.Electron_FR_Key  = "AwayJetPt40";
   /// Defaul Corrections                                                                                                                    
   param.Muon_ID_SF_Key = "NUM_TightID_DEN_TrackerMuons";
   param.Muon_ISO_SF_Key = "NUM_TightRelIso_DEN_TightIDandIPCut";
@@ -1378,13 +1377,14 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
   else if (s_setup=="HNL"){
     param.FakeMethod = "DATA";
     param.CFMethod         = "MC"; ///////// -> TMP
-    param.Muon_Tight_ID    = "HNTightV2";
-    param.Muon_ID_SF_Key   = "TmpHNTightV2";
-    param.Muon_FR_ID       = "HNLooseV1";
+    param.Muon_Tight_ID    = "HNL_ULID_"+GetYearString();
+    param.Muon_ID_SF_Key   = "NUM_HNL_ULID_"+GetYearString();
+    param.Muon_ISO_SF_Key  = "Default";
+    param.Muon_FR_ID       = "HNL_ULID_FO";
     param.Muon_RECO_SF_Key =  "MuonRecoSF";
-    param.Electron_Tight_ID  = "HNTightV2";
-    param.Electron_ID_SF_Key = "TmpHNTightV2";
-    param.Electron_FR_ID     = "HNLooseV4";
+    param.Electron_Tight_ID  = "HNL_ULID_"+GetYearString();
+    param.Electron_ID_SF_Key = "passHNL_ULID_"+GetYearString();
+    param.Electron_FR_ID     = "HNL_ULID_FO_"+GetYearString();
     return param;
   }
   else if (s_setup=="HNLOpt"){
@@ -1393,8 +1393,8 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
     param.ConvMethod = "MC";
     param.Muon_Tight_ID = "HNTightV2";
     param.Electron_Tight_ID = "HNTightV2";
-    param.Electron_ID_SF_Key = "TmpHNTightV2";
-    param.Muon_ID_SF_Key = "TmpHNTightV2";
+    param.Electron_ID_SF_Key = "NUM_HNTightV2";
+    param.Muon_ID_SF_Key = "NUM_HNTightV2";
     param.Muon_FR_ID = "HNLooseV1";
     param.Electron_FR_ID = "HNLooseV4";
     param.Muon_RECO_SF_Key = "MuonRecoSF";
@@ -1405,8 +1405,8 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
     param.ConvMethod = "MC";
     param.Muon_Tight_ID = "HNTightV2";
     param.Electron_Tight_ID = "HNTightV2";
-    param.Electron_ID_SF_Key = "TmpHNTightV2";
-    param.Muon_ID_SF_Key = "TmpHNTightV2";
+    param.Electron_ID_SF_Key = "NUM_HNTightV2";
+    param.Muon_ID_SF_Key = "NUM_HNTightV2";
     param.Muon_FR_ID = "HNLooseV1";
     param.Electron_FR_ID = "HNLooseV4";
     param.Muon_RECO_SF_Key = "MuonRecoSF";
@@ -1418,8 +1418,8 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
     param.ConvMethod = "MC";
     param.Muon_Tight_ID = "MVAID";
     param.Electron_Tight_ID = "MVAID";
-    param.Electron_ID_SF_Key = "TmpHNTightV2";
-    param.Muon_ID_SF_Key = "TmpHNTightV2";
+    param.Electron_ID_SF_Key = "NUM_HNTightV2";
+    param.Muon_ID_SF_Key = "NUM_HNTightV2";
     param.Muon_FR_ID = "HNLooseV1";
     param.Electron_FR_ID = "HNLooseV4";
     param.Muon_RECO_SF_Key = "MuonRecoSF";
@@ -1472,8 +1472,8 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
     if (s_setup=="MVAULNCF33")  param.Electron_Tight_ID = "HNL_ULID_CFL_BDTGv3_MD3";
     if (s_setup=="MVAULNCF34")  param.Electron_Tight_ID = "HNL_ULID_CFVL_BDTGv3_MD3";
 
-    param.Electron_ID_SF_Key = "TmpHNTightV2";
-    param.Muon_ID_SF_Key = "TmpHNTightV2";
+    param.Electron_ID_SF_Key = "NUM_HNTightV2";
+    param.Muon_ID_SF_Key = "NUM_HNTightV2";
     param.Muon_FR_ID = "HNLooseV1";
     param.Electron_FR_ID = "HNLooseV4";
     param.Muon_RECO_SF_Key = "MuonRecoSF";
@@ -1485,8 +1485,8 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
     param.ConvMethod = "MC";
     param.Muon_Tight_ID = "MVAID";
     param.Electron_Tight_ID = "TopMVAID";
-    param.Electron_ID_SF_Key = "TmpHNTightV2";
-    param.Muon_ID_SF_Key = "TmpHNTightV2";
+    param.Electron_ID_SF_Key = "NUM_HNTightV2";
+    param.Muon_ID_SF_Key = "NUM_HNTightV2";
     param.Muon_FR_ID = "HNLooseV1";
     param.Electron_FR_ID = "HNLooseV4";
     param.Muon_RECO_SF_Key = "MuonRecoSF";

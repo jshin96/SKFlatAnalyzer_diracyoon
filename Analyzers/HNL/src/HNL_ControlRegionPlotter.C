@@ -5,6 +5,7 @@ void HNL_ControlRegionPlotter::initializeAnalyzer(){
   HNL_LeptonCore::initializeAnalyzer();
   //SetupIDMVAReaderDefault(); /// Not needed for BDT skim                                                                                                                                                                                                                  
   //SetupEventMVAReader();
+  SetupIDMVAReaderDefault(false,false);
 
 }
 
@@ -17,45 +18,61 @@ void HNL_ControlRegionPlotter::executeEvent(){
 
   Event ev = GetEvent();
 
-  AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("HNL");
-  //RunControlRegions(param_signal , {"CR_OS_Z","CR_OS_Top","CR_WZ"});
 
-  vector<TString> IDs = {};//"HNL_ULID_Baseline";
-  
-  TString param_signal_name = param_signal.Name;
-  for (auto id: IDs){
-    param_signal.Electron_Tight_ID = id;
-    param_signal.Muon_Tight_ID = id;
-    param_signal.Name = param_signal_name + id;
-    param_signal.DefName = param_signal_name + id;
-    param_signal.Electron_ID_SF_Key = "Default";
-    param_signal.Muon_FR_ID = "HNL_ULID_Baseline";
-    param_signal.Electron_FR_ID = "HNL_ULID_Baseline";
-    param_signal.Muon_FR_Key  ="ptcone_eta_AwayJetPt40";
-    param_signal.Electron_FR_Key  = "ptcone_eta_AwayJetPt40";
-   
-    RunControlRegions(param_signal , {"BDTCheck"});
-    
-    return;
+  if(HasFlag("BDTCheck")) {
+
+  AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("HNL");
+  vector<TString> IDs = {};
+
+    IDs.push_back("HNL_ULID_Baseline");
+    TString param_signal_name = param_signal.Name;
+    for (auto id: IDs){
+      param_signal.Electron_Tight_ID = id;
+      param_signal.Muon_Tight_ID = id;
+      param_signal.Name = param_signal_name + id;
+      param_signal.DefName = param_signal_name + id;
+      param_signal.Electron_ID_SF_Key = "Default";
+      param_signal.Muon_FR_ID = "HNL_ULID_Baseline";
+      param_signal.Electron_FR_ID = "HNL_ULID_Baseline";
+      param_signal.Muon_FR_Key  ="ptcone_eta_AwayJetPt40";
+      param_signal.Electron_FR_Key  = "ptcone_eta_AwayJetPt40";
+      
+      RunControlRegions(param_signal , {"BDTCheck"});
+      
+      return;
+    }
   }
   
-  vector<TString> ELIDs = {"HNL_ULID_Run2","passMVAID_noIso_WP90","HNTightV2"};
+  vector<TString> ELIDs = {"HNL_ULID_"+GetYearString()};//,"HNTightV2"};
   for (auto id: ELIDs){
-    AnalyzerParameter param_signal2 = HNL_LeptonCore::InitialiseHNLParameter("HNL");
-    param_signal2.Name = param_signal_name + id;
-    param_signal2.FakeMethod = "MC";
-    param_signal2.CFMethod   = "MC";
-    param_signal2.ConvMethod = "MC";
-
-    param_signal2.Electron_Tight_ID = id;
-    if(id=="HNL_ULID_Run2")param_signal2.Electron_ID_SF_Key = "passHNL_ULID_Run2";
-    else if(id=="HNTightV2")param_signal2.Electron_ID_SF_Key = "passHNTightV2";
-    else  param_signal2.Electron_ID_SF_Key = "Default";
+    AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("HNL");
+    /// Name
+    param_signal.Name    =  id;
+    param_signal.DefName =  id;
     
-    param_signal2.Muon_ID_SF_Key = "NUM_HNL_ULID_"+GetYearString();
-    param_signal2.Muon_Tight_ID  = "HNL_ULID_"+GetYearString();
-    param_signal2.Muon_RECO_SF_Key = "MuonRecoSF";
-    RunControlRegions(param_signal2 , {"CR_OS_Z","CR_OS_Top","CR_WZ"});
+    //// Background 
+    param_signal.FakeRateMethod = "BDTFlavour";
+    param_signal.FakeMethod   = "DATA";
+    param_signal.CFMethod   = "MC";
+    param_signal.ConvMethod = "MC";
+    /// IDs
+    param_signal.Electron_Tight_ID = id;
+    param_signal.Electron_FR_ID    = "HNL_ULID_FO_"+GetYearString();
+    param_signal.Muon_Tight_ID     = id;
+    param_signal.Muon_FR_ID        = "HNL_ULID_FO";
+    
+    //// Correction
+    if(id=="HNL_ULID_"+GetYearString())param_signal.Electron_ID_SF_Key = "passHNL_ULID_"+GetYearString();
+    else if(id=="HNTightV2")param_signal.Electron_ID_SF_Key = "passHNTightV2";
+    else  param_signal.Electron_ID_SF_Key = "Default";
+    
+    param_signal.Muon_ID_SF_Key = "NUM_HNL_ULID_"+GetYearString();
+    param_signal.Muon_Tight_ID  = "HNL_ULID_"+GetYearString();
+    param_signal.Muon_RECO_SF_Key = "MuonRecoSF";
+
+    ///// Run command
+    if(HasFlag("OSCR")) RunControlRegions(param_signal , {"CR_OS_Z"});
+    else RunControlRegions(param_signal , {"CR_OS_Z","CR_OS_Top","CR_SR","CR_VV","CR_VG","VV"});
   }
   
   return;
@@ -66,8 +83,8 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
 
 
   if(_jentry==0) PrintParam(param);
+  run_Debug = (_jentry%nLog==0);
   
- 
   if(run_Debug) {
       
     if(RunFake)  cout << "HNL_ControlRegionPlotter::RunControlRegions [RunFake]" << endl;
@@ -93,8 +110,8 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   //  el_ID= param.Electron_Tight_ID;
   //mu_ID =param.Muon_Tight_ID;
 
-  double Min_Muon_Pt     = (RunFake) ? 8. : 10.;
-  double Min_Electron_Pt = (RunFake) ? 8. : 10.;
+  double Min_Muon_Pt     = (RunFake) ? 10. : 10.;
+  double Min_Electron_Pt = (RunFake) ? 10. : 10.;
 
   if(run_Debug) {
     cout << "Min_Muon_Pt = " << Min_Muon_Pt << endl;
@@ -109,14 +126,15 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   // std::vector<Muon>       MuonCollT     = GetLepCollByRunType    ( GetMuons    ( param,mu_ID, Min_Muon_Pt, 2.4, RunFake)      ,gens,param,"");
   //std::vector<Electron>   ElectronCollT = GetLepCollByRunType    ( GetElectrons( param,el_ID, Min_Electron_Pt, 2.5, RunFake)  ,gens,param,"");
 
-  std::vector<Muon>       MuonCollTInit = GetMuons        ( param,mu_ID, Min_Muon_Pt,     2.4, false);
-  std::vector<Electron>   ElectronCollTInit = GetElectrons( param,el_ID, Min_Electron_Pt, 2.5, false)  ;
+  std::vector<Muon>       MuonCollTInit = GetMuons        ( param,mu_ID, Min_Muon_Pt,     2.4,RunFake);
+  std::vector<Electron>   ElectronCollTInit = GetElectrons( param,el_ID, Min_Electron_Pt, 2.5,RunFake)  ;
 
   if(run_Debug) {
     cout << "MuonCollTInit size = " << MuonCollTInit.size() << endl;
     cout << "ElectronCollTInit size = " << ElectronCollTInit.size() << endl;
   }
-  std::vector<Muon>       MuonCollT     = GetLepCollByRunType    ( MuonCollTInit, param);  
+
+  std::vector<Muon>       MuonCollT      =  GetLepCollByRunType    ( MuonCollTInit, param);  
   std::vector<Electron>   ElectronCollT  =  GetLepCollByRunType   ( ElectronCollTInit,param);
 
   std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(MuonCollV,ElectronCollV);
@@ -132,7 +150,7 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
 
   if(run_Debug) cout << "PuppiT1xyULCorr = " << METv.Pt() << endl;
 
-  std::vector<FatJet> AK8_JetColl                 = GetHNLAK8Jets("HNL",param);
+  std::vector<FatJet> AK8_JetColl                 = GetHNLAK8Jets("HNL_PNL",param);
   std::vector<Jet>    AK4_JetAllColl              = GetHNLJets("NoCut_Eta3",param);
   std::vector<Jet>    AK4_JetColl                 = GetHNLJets("Tight",     param);
   std::vector<Jet>    AK4_JetCollLoose            = GetHNLJets("Loose",     param);
