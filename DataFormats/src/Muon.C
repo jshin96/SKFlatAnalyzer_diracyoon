@@ -165,17 +165,26 @@ bool Muon::PassID(TString ID) const {
   /// looser IP                                                                                                                                                                                                  
   if(ID=="HNLooseV1")  {
     if(!( isPOGLoose() ))  return false;
-    if(!( fabs(dXY()) < 0.2 && fabs(dZ())< 0.5) ) return false;
+    if(!( fabs(dXY()) < 0.2 )) return false;
     if(!(fabs(IP3D()/IP3Derr())< 10 )) return false;
     if(!( RelIso()< 0.4 )) return false;
     if(!( Chi2()<50. ))    return false;
+    /// Trigger
+    if( !(TrkIso()/Pt()<0.4) ) return false;
+    if( !(fabs(dZ())<0.1)    ) return false;
+
     return true;
   }
   if(ID=="HNLoosePOG") {
     if(!( isPOGLoose() ))  return false;
-    if(!( fabs(dXY()) < 0.2 && fabs(dZ())< 0.5) ) return false;
+    if(!( fabs(dXY()) < 0.2 ) ) return false;
     if(!( RelIso()< 0.4 )) return false;
     if(!( Chi2()<50. ))    return false;
+
+    /// Trigger                                                                                                                                                                                       
+    if( !(TrkIso()/Pt()<0.4) ) return false;
+    if( !(fabs(dZ())<0.1)    ) return false;
+
     return true;
   }
   //// Probe ID for IDSF                                                                                                                                                                                          
@@ -318,8 +327,16 @@ bool Muon::PassID(TString ID) const {
   if(ID.Contains("MuOpt")) return Pass_MultiFunction_Opt(ID);
   if(ID=="HNL_ULID_Baseline") return Pass_LepMVAID();
 
+
   /// Loose ID for SR with MVA cuts
   if(ID == "MVALoose") {
+    if(!Pass_LepMVAID()) return false;
+    if(!isPOGMedium())   return false;
+    return true;
+  }
+
+  /// Loose ID for SR with MVA cuts                                                                                                                                                                                              
+  if(ID == "MVALooseTrgSafe") {
     if(!Pass_LepMVAID()) return false;
     if(!isPOGMedium())   return false;
     if( !(TrkIso()/Pt()<0.4) ) return false;
@@ -347,7 +364,19 @@ bool Muon::PassID(TString ID) const {
     if(fabs(IP3D()/IP3Derr()) > 7) return false;
     return true;
   }
-
+  
+  if(ID == "HNL_ULIDTrg_2016"){
+    if(!PassID("MVALooseTrgSafe")) return false;
+    if(MVA() < 0.72)  return false;
+    if(fabs(IP3D()/IP3Derr()) > 7) return false;
+    return true;
+  }
+  if(ID == "HNL_ULIDTrg_2017" || ID == "HNL_ULIDTrg_2018" )  {
+    if(!PassID("MVALooseTrgSafe")) return false;
+    if(MVA() < 0.64)  return false;
+    if(fabs(IP3D()/IP3Derr()) > 7) return false;
+    return true;
+  }
 
 
   //// Following are functions to test UL IDs

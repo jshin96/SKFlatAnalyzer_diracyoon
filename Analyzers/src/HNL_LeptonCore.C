@@ -3925,7 +3925,13 @@ void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, int plotL
   if(verbose_level>0) return;
   std::vector<Tau>  Taus;
   Fill_RegionPlots(channel, plotLL,plot_dir ,region, Taus,jets, fatjets, Leps, met, nvtx, w , verbose_level);
-
+  if(RunFake){
+    if(Leps.size() == 2){
+      if( (!Leps[0]->PassLepID()  && Leps[1]->PassLepID()) || (Leps[0]->PassLepID()  && !Leps[1]->PassLepID())){
+	Fill_RegionPlots(channel, plotLL,plot_dir ,region+"_LT", Taus,jets, fatjets, Leps, met, nvtx, 1 , verbose_level);
+      }
+    }	
+  }
 }
 
 
@@ -4294,6 +4300,8 @@ void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, TString p
     if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Leps_pt", i->Pt()  , w, 1000, 0., 1000.,"1_{2} p_{T} GeV");
     if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Leps_et", i->Et()  , w, 1000, 0., 1000.,"1_{2} p_{T} GeV");
     if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Leps_eta",i->Eta()  , w, 50, -2.5, 2.5,"l_{1} #eta");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Leps_phi",i->Phi()  , w, 50, -2.5, 2.5,"l_{1} #phi");
+
     LT += i->Pt();
     
     
@@ -4355,10 +4363,13 @@ void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, TString p
   if(threelep) {
     if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Lep_3_pt", leps[2]->Pt()  , w, 200, 0., 1000.,"l_{3} p_{T} GeV");
     if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Lep_3_eta", leps[2]->Eta()  , w, 60, -3., 3.,"l_{3} #eta");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Lep_3_phi", leps[2]->Phi()  , w, 60, -3., 3.,"l_{3} #phi");
   }
   if(fourlep) {
     if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Lep_4_pt", leps[3]->Pt()  , w, 200, 0., 1000.,"l_{4} p_{T} GeV");
     if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Lep_4_eta", leps[3]->Eta()  , w, 60, -3., 3.,"l_{4} #eta");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Lep_4_phi", leps[3]->Phi()  , w, 60, -3., 3.,"l_{4} #phi");
+
   }
 
   if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Vertex_X", vertex_X  , w, 200, 0., 1,"L_{T} GeV");

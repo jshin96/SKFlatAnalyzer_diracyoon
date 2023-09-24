@@ -18,13 +18,9 @@ void HNL_ControlRegionPlotter::executeEvent(){
 
   Event ev = GetEvent();
 
-
   if(HasFlag("BDTCheck")) {
-
-  AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("HNL");
-  vector<TString> IDs = {};
-
-    IDs.push_back("HNL_ULID_Baseline");
+    AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("HNL");
+    vector<TString> IDs = {"HNL_ULID_Baseline"};
     TString param_signal_name = param_signal.Name;
     for (auto id: IDs){
       param_signal.Electron_Tight_ID = id;
@@ -34,16 +30,12 @@ void HNL_ControlRegionPlotter::executeEvent(){
       param_signal.Electron_ID_SF_Key = "Default";
       param_signal.Muon_FR_ID = "HNL_ULID_Baseline";
       param_signal.Electron_FR_ID = "HNL_ULID_Baseline";
-      param_signal.Muon_FR_Key  ="ptcone_eta_AwayJetPt40";
-      param_signal.Electron_FR_Key  = "ptcone_eta_AwayJetPt40";
-      
       RunControlRegions(param_signal , {"BDTCheck"});
       
       return;
     }
   }
-  
-  vector<TString> ELIDs = {"HNL_ULID_"+GetYearString()};//,"HNTightV2"};
+  vector<TString> ELIDs = {"HNL_ULID_"+GetYearString(),"HNTightV2"};
   for (auto id: ELIDs){
     AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("HNL");
     /// Name
@@ -51,32 +43,51 @@ void HNL_ControlRegionPlotter::executeEvent(){
     param_signal.DefName =  id;
     
     //// Background 
-    param_signal.FakeRateMethod = "BDTFlavour";
+    if(id=="HNTightV2" ) param_signal.FakeRateMethod = "PtCone";
+    else param_signal.FakeRateMethod = "BDTFlavour";
+    
     param_signal.FakeMethod   = "DATA";
     param_signal.CFMethod   = "MC";
     param_signal.ConvMethod = "MC";
+
     /// IDs
     param_signal.Electron_Tight_ID = id;
-    param_signal.Electron_FR_ID    = "HNL_ULID_FO_"+GetYearString();
     param_signal.Muon_Tight_ID     = id;
-    param_signal.Muon_FR_ID        = "HNL_ULID_FO";
-    
+
+    if(id=="HNTightV2" )param_signal.Muon_FR_ID        = "HNLooseV1";
+    else param_signal.Muon_FR_ID        = "HNL_ULID_FO";
+
+    if(id=="HNTightV2" ) param_signal.Electron_FR_ID = "HNLooseV4";
+    else     param_signal.Electron_FR_ID    = "HNL_ULID_FO_"+GetYearString();
+
     //// Correction
     if(id=="HNL_ULID_"+GetYearString())param_signal.Electron_ID_SF_Key = "passHNL_ULID_"+GetYearString();
     else if(id=="HNTightV2")param_signal.Electron_ID_SF_Key = "passHNTightV2";
     else  param_signal.Electron_ID_SF_Key = "Default";
     
-    param_signal.Muon_ID_SF_Key = "NUM_HNL_ULID_"+GetYearString();
-    param_signal.Muon_Tight_ID  = "HNL_ULID_"+GetYearString();
+    if(id=="HNL_ULID_"+GetYearString())   param_signal.Muon_ID_SF_Key = "NUM_"+id;
+    else     param_signal.Muon_ID_SF_Key = "NUM_"+id;
+  
     param_signal.Muon_RECO_SF_Key = "MuonRecoSF";
 
+    /// Trigger Key
+    param_signal.Muon_Trigger_SF_Key="DiMuIso_HNL_ULID";
+    param_signal.Electron_Trigger_SF_Key="DiEgIso_HNL_ULID";
+    
     ///// Run command
-    if(HasFlag("OSCR")) RunControlRegions(param_signal , {"CR_OS_Z"});
-    else RunControlRegions(param_signal , {"CR_OS_Z","CR_OS_Top","CR_SR","CR_VV","CR_VG","VV"});
+    vector<TString> CRToRun;
+    if(HasFlag("OSCR")) CRToRun = {"CR_OS_Z","CR_OS_Top","CR_OS_ZAk8","CR_OS_TopAK8"};
+    if(HasFlag("SS"))   CRToRun.push_back("CR_SR");
+    if(HasFlag("SS"))   CRToRun.push_back("Presel");
+    if(HasFlag("VV"))   CRToRun.push_back("CR_VV");
+    if(HasFlag("VV"))   CRToRun.push_back("CR_VG");
+    if(HasFlag("VV"))   CRToRun.push_back("VV");
+    RunControlRegions(param_signal , CRToRun );
+    
   }
   
   return;
-
+  
 }
 
 void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector<TString> CRs){
@@ -95,58 +106,52 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   }
 
   Event ev = GetEvent();
+
+  /// SetupWeight applies w_GenNorm=1., w_BR=1., w_PU  w_Pref  
   double weight =SetupWeight(ev,param);
+  
   if(run_Debug) cout << "HNL_ControlRegionPlotter::RunControlRegions Weight = " << weight << endl;
   
-
   // HL ID                                                                                                                                                   
-  std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5);
-  std::vector<Muon>       MuonCollV     = GetMuons    (param.Muon_Veto_ID,     5.,  2.4);
+  std::vector<Electron>   ElectronVetoColl = GetElectrons(param.Electron_Veto_ID, 10.,  2.5);
+  std::vector<Muon>       MuonVetoColl     = GetMuons    (param.Muon_Veto_ID,     10.,  2.4);
 
-  TString el_ID = (RunFake) ?  param.Electron_FR_ID  : param.Electron_Tight_ID ;
-  TString mu_ID = (RunFake) ?  param.Muon_FR_ID      : param.Muon_Tight_ID ;
+  /// IF ruunning fake then sue FR_ID not Tight
+  TString Electron_ID = (RunFake) ?  param.Electron_FR_ID  : param.Electron_Tight_ID ;
+  TString Muon_ID     = (RunFake) ?  param.Muon_FR_ID      : param.Muon_Tight_ID ;
 
-  //// OS CHECK TMP FAKE
-  //  el_ID= param.Electron_Tight_ID;
-  //mu_ID =param.Muon_Tight_ID;
+  double Min_Muon_Pt     = (!RunFake) ? 10. :  (param.FakeRateMethod == "PtCone") ?  7 : 10.;
+  double Min_Electron_Pt = (!RunFake) ? 15. :  (param.FakeRateMethod == "PtCone") ? 10 : 15;
 
-  double Min_Muon_Pt     = (RunFake) ? 10. : 10.;
-  double Min_Electron_Pt = (RunFake) ? 10. : 10.;
+  if(run_Debug) cout << "Min_Muon_Pt = " << Min_Muon_Pt << endl;
+  if(run_Debug) cout << "Min_Electron_Pt = " << Min_Electron_Pt << endl;
 
-  if(run_Debug) {
-    cout << "Min_Muon_Pt = " << Min_Muon_Pt << endl;
-    cout << "Min_Electron_Pt = " << Min_Electron_Pt << endl;
-						
-  }
 
   // 3 Methods to run MC
   // 1) Fakes/ CF are done by data and Conv done my MC
   // - in this case if MC should remove Fake lep and CF leps
   // - this is done by Adding option 
-  // std::vector<Muon>       MuonCollT     = GetLepCollByRunType    ( GetMuons    ( param,mu_ID, Min_Muon_Pt, 2.4, RunFake)      ,gens,param,"");
-  //std::vector<Electron>   ElectronCollT = GetLepCollByRunType    ( GetElectrons( param,el_ID, Min_Electron_Pt, 2.5, RunFake)  ,gens,param,"");
+  // std::vector<Muon>       MuonTightColl     = GetLepCollByRunType    ( GetMuons    ( param,Muon_ID, Min_Muon_Pt, 2.4, RunFake)      ,gens,param,"");
+  //std::vector<Electron>   ElectronTightColl = GetLepCollByRunType    ( GetElectrons( param,Electron_ID, Min_Electron_Pt, 2.5, RunFake)  ,gens,param,"");
 
-  std::vector<Muon>       MuonCollTInit = GetMuons        ( param,mu_ID, Min_Muon_Pt,     2.4,RunFake);
-  std::vector<Electron>   ElectronCollTInit = GetElectrons( param,el_ID, Min_Electron_Pt, 2.5,RunFake)  ;
+  std::vector<Muon>       MuonTightCollInit     = GetMuons    ( param,Muon_ID,     Min_Muon_Pt,     2.4,RunFake); /// IF RunFake and param.FakeRateMethod == "PtCone" Pt is switched to pt code in Muon/Electron
+  std::vector<Electron>   ElectronTightCollInit = GetElectrons( param,Electron_ID, Min_Electron_Pt, 2.5,RunFake);
 
-  if(run_Debug) {
-    cout << "MuonCollTInit size = " << MuonCollTInit.size() << endl;
-    cout << "ElectronCollTInit size = " << ElectronCollTInit.size() << endl;
-  }
-
-  std::vector<Muon>       MuonCollT      =  GetLepCollByRunType    ( MuonCollTInit, param);  
-  std::vector<Electron>   ElectronCollT  =  GetLepCollByRunType   ( ElectronCollTInit,param);
-
-  std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(MuonCollV,ElectronCollV);
+  if(run_Debug)  cout << "MuonTightCollInit size = " << MuonTightCollInit.size() << endl;
+  if(run_Debug)  cout << "ElectronTightCollInit size = " << ElectronTightCollInit.size() << endl;
+  
+  std::vector<Muon>       MuonTightColl      =  GetLepCollByRunType    (MuonTightCollInit,    param);  
+  std::vector<Electron>   ElectronTightColl  =  GetLepCollByRunType    (ElectronTightCollInit,param);
+  std::vector<Lepton *>   Leps_Veto          =  MakeLeptonPointerVector(MuonVetoColl,ElectronVetoColl);
 
   if(run_Debug) {
-    cout << "Number of Tight Muons = " << MuonCollT.size() << endl;
-    cout << "Number of Tight Electrons = " << ElectronCollT.size() << endl;
+    cout << "Number of Tight Muons = "     << MuonTightColl.size() << endl;
+    cout << "Number of Tight Electrons = " << ElectronTightColl.size() << endl;
   }
 
   // Creat Lepton vector to have lepton blind codes                                                                                                          
 
-  Particle METv = GetvMET("PuppiT1xyULCorr"); // reyturns MET with systematic correction                                                                      
+  Particle METv = GetvMET("PuppiT1xyULCorr"); // returns MET with systematic correction                                                                      
 
   if(run_Debug) cout << "PuppiT1xyULCorr = " << METv.Pt() << endl;
 
@@ -156,21 +161,30 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   std::vector<Jet>    AK4_JetCollLoose            = GetHNLJets("Loose",     param);
   std::vector<Jet>    AK4_VBF_JetColl             = GetHNLJets("VBFTight",  param);
   std::vector<Jet>    AK4_BJetColl                = GetHNLJets("BJetM",     param);
-  std::vector<Jet>    AK4_BJetCollSR1             = GetHNLJets("BJetT",     param);
 
   TString PUIDWP="";
   if(PUIDWP != ""){
     double PJet_PUID_weight = GetJetPileupIDSF(AK4_JetColl, PUIDWP, param);
-    weight*= PJet_PUID_weight;
     FillWeightHist("PJet_PUID_weight_" ,PJet_PUID_weight);
+    weight*= PJet_PUID_weight;
   }
 
-  // Get BJet collection
-  JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
-  double sf_btag               = GetBJetSF(param,  AK4_JetColl, param_jets);
-  if(!IsData )weight*= sf_btag;
+  if(!IsData) {
+    
+    // Get BJet collection
+    JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
+    double sf_btag                    = GetBJetSF(param,  AK4_JetColl, param_jets);
+    weight*= sf_btag;
+    for(auto iJ : AK8_JetColl) weight*= iJ.GetTaggerSF(JetTagging::particleNet_WvsQCD, DataEra,0);
+    weight*= GetElectronSFEventWeight(ElectronTightColl, param);
+    weight*= GetMuonSFEventWeight    (MuonTightColl    , param);
+  }
 
-  RunAllControlRegions(ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, AK4_JetAllColl, AK4_JetColl,AK4_VBF_JetColl,AK8_JetColl, AK4_BJetColl, ev,METv, param, CRs,weight);
+  /// GetElectronSFEventWeight Applied Reco / ID / ISO  
+  if(run_Debug) cout <<"RunAllControlRegions GetElectronSFEventWeight =" << GetElectronSFEventWeight(ElectronTightColl, param)  << endl;
+  if(run_Debug) cout <<"RunAllControlRegions GetMuonSFEventWeight     =" << GetMuonSFEventWeight    (MuonTightColl    , param)  << endl;
+
+  RunAllControlRegions(ElectronTightColl,ElectronVetoColl,MuonTightColl,MuonVetoColl, AK4_JetAllColl, AK4_JetColl,AK4_VBF_JetColl,AK8_JetColl, AK4_BJetColl, ev,METv, param, CRs,weight);
   
 
 }

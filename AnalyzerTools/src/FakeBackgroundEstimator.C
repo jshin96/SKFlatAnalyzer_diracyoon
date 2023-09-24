@@ -138,9 +138,10 @@ double FakeBackgroundEstimator::GetElectronFakeRate(TString ID, TString key, TSt
   value = (mapit->second)->GetBinContent(this_bin);
   error = (mapit->second)->GetBinError(this_bin);
 
-  //if(FakeTagger == "HFB" || FakeTagger == "HFC"){
-  //  if(eta > 2.4) value *=1.5;
-  // }
+  if(FakeTagger == "HFB" || FakeTagger == "HFC"){
+    if(eta > 2.4) value *=1.5;
+  }
+  if(value > 0.5) value= 0.5;
 
   //cout << "[FakeBackgroundEstimator::FakeBackgroundEstimator] value = " << value << endl;
 
@@ -235,7 +236,7 @@ double FakeBackgroundEstimator::GetMuonFakeRate(TString ID, TString key, TString
   if(BinningMethod == "BDTFlavour" ) {
     if(pt < 10)  pt=10;
     if(FakeTagger == "LF"){
-      if(pt >= 60) pt = 59;
+      if(pt >= 35) pt = 34;
     }
     if(FakeTagger == "HFB"){
       if(pt>=50) pt = 49;
@@ -261,6 +262,8 @@ double FakeBackgroundEstimator::GetMuonFakeRate(TString ID, TString key, TString
   value = (mapit->second)->GetBinContent(this_bin);
   error = (mapit->second)->GetBinError(this_bin);
 
+  if(value > 0.5) value = 0.5; 
+  
   //cout << "[FakeBackgroundEstimator::FakeBackgroundEstimator] value = " << value << endl;
 
   return value+double(sys)*error;

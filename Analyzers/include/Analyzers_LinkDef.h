@@ -33,4 +33,5 @@
 #pragma link C++ class SkimTree_HNL_SS_ElEl+;
 #pragma link C++ class SkimTree_HNL_SS_ElMu+;
 #pragma link C++ class MeasureJetTaggingEfficiency+;
+#pragma link C++ class MeasTrigEff+;
 #endif
