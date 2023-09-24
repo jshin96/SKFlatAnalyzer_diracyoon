@@ -35,16 +35,18 @@ void HNL_ControlRegionPlotter::executeEvent(){
       return;
     }
   }
-  vector<TString> ELIDs = {"HNL_ULID_"+GetYearString(),"HNTightV2"};
-  for (auto id: ELIDs){
+  vector<TString> LepIDs = {"HNL_ULID_"+GetYearString(),"HNTightV2","TopHNT", "DefaultPOGTight"};
+
+  for (auto id: LepIDs){
+
     AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("HNL");
     /// Name
     param_signal.Name    =  id;
     param_signal.DefName =  id;
     
     //// Background 
-    if(id=="HNTightV2" ) param_signal.FakeRateMethod = "PtCone";
-    else param_signal.FakeRateMethod = "BDTFlavour";
+    if(id.Contains("HNL_ULID")) param_signal.FakeRateMethod = "BDTFlavour";
+    else param_signal.FakeRateMethod = "PtCone";
     
     param_signal.FakeMethod   = "DATA";
     param_signal.CFMethod   = "MC";
@@ -53,35 +55,55 @@ void HNL_ControlRegionPlotter::executeEvent(){
     /// IDs
     param_signal.Electron_Tight_ID = id;
     param_signal.Muon_Tight_ID     = id;
+    
+    if(id=="HNTightV2" )        param_signal.Muon_FR_ID        = "HNLooseV1";
+    if(id=="TopHNT" )           param_signal.Muon_FR_ID        = "TopHNL"; 
+    if(id.Contains("HNL_ULID")) param_signal.Muon_FR_ID        = "HNL_ULID_FO";
 
-    if(id=="HNTightV2" )param_signal.Muon_FR_ID        = "HNLooseV1";
-    else param_signal.Muon_FR_ID        = "HNL_ULID_FO";
-
-    if(id=="HNTightV2" ) param_signal.Electron_FR_ID = "HNLooseV4";
-    else     param_signal.Electron_FR_ID    = "HNL_ULID_FO_"+GetYearString();
+    if(id=="HNTightV2" )        param_signal.Electron_FR_ID    = "HNLooseV4";
+    if(id=="TopHNT" )           param_signal.Electron_FR_ID    = "TopHNL"; 
+    if(id.Contains("HNL_ULID")) param_signal.Electron_FR_ID    = "HNL_ULID_FO_"+GetYearString();
 
     //// Correction
-    if(id=="HNL_ULID_"+GetYearString())param_signal.Electron_ID_SF_Key = "passHNL_ULID_"+GetYearString();
-    else if(id=="HNTightV2")param_signal.Electron_ID_SF_Key = "passHNTightV2";
-    else  param_signal.Electron_ID_SF_Key = "Default";
-    
-    if(id=="HNL_ULID_"+GetYearString())   param_signal.Muon_ID_SF_Key = "NUM_"+id;
-    else     param_signal.Muon_ID_SF_Key = "NUM_"+id;
-  
-    param_signal.Muon_RECO_SF_Key = "MuonRecoSF";
+    param_signal.Electron_ID_SF_Key = "pass"+id;
+    param_signal.Muon_ID_SF_Key     = "NUM_"+id;
+    param_signal.Muon_RECO_SF_Key   = "MuonRecoSF";
+    if(id =="DefaultPOGTight"){
+      param_signal.Muon_ID_SF_Key  =    "NUM_TightID_DEN_TrackerMuons";
+      param_signal.Muon_ISO_SF_Key =    "NUM_TightRelIso_DEN_TightIDandIPCut";
+      param_signal.Muon_Tight_ID   =    "POGTightWithTightIso";
+      param_signal.Electron_ID_SF_Key = "passTightID";
+      param_signal.Electron_Tight_ID  = "passPOGTight";
 
-    /// Trigger Key
-    param_signal.Muon_Trigger_SF_Key="DiMuIso_HNL_ULID";
-    param_signal.Electron_Trigger_SF_Key="DiEgIso_HNL_ULID";
+      TString trigKey=TrigList_POG_Mu[0];
+      trigKey=trigKey.ReplaceAll("HLT_","");
+      trigKey=trigKey.ReplaceAll("_v","");
+      param_signal.Muon_Trigger_SF_Key=trigKey+"_POGTight";
+    }
     
+    /// Trigger Key
+    if(id.Contains("HNL_ULID")){
+      param_signal.Muon_Trigger_SF_Key="DiMuIso_HNL_ULID";
+      param_signal.Electron_Trigger_SF_Key="DiEgIso_HNL_ULID";
+    }
+    if(id=="TopHNT" ) {
+      param_signal.Muon_Trigger_SF_Key="DiMuIso_HNL_ULID";
+      param_signal.Electron_Trigger_SF_Key="DiEgIso_HNL_ULID";
+    }
+    if(id=="HNTightV2" ){
+      param_signal.Muon_Trigger_SF_Key="DiMuIso_HNL_ULID";
+      param_signal.Electron_Trigger_SF_Key="DiEgIso_HNL_ULID";
+    }
+    
+
     ///// Run command
     vector<TString> CRToRun;
     if(HasFlag("OSCR")) CRToRun = {"CR_OS_Z","CR_OS_Top","CR_OS_ZAk8","CR_OS_TopAK8"};
-    if(HasFlag("SS"))   CRToRun.push_back("CR_SR");
-    if(HasFlag("SS"))   CRToRun.push_back("Presel");
-    if(HasFlag("VV"))   CRToRun.push_back("CR_VV");
-    if(HasFlag("VV"))   CRToRun.push_back("CR_VG");
-    if(HasFlag("VV"))   CRToRun.push_back("VV");
+    if(HasFlag("SSVV"))   CRToRun.push_back("CR_SR");
+    if(HasFlag("SSVV"))   CRToRun.push_back("Presel");
+    if(HasFlag("SSVV"))   CRToRun.push_back("CR_VV");
+    if(HasFlag("SSVV"))   CRToRun.push_back("CR_VG");
+    if(HasFlag("SSVV"))   CRToRun.push_back("VV");
     RunControlRegions(param_signal , CRToRun );
     
   }
@@ -163,19 +185,15 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   std::vector<Jet>    AK4_BJetColl                = GetHNLJets("BJetM",     param);
 
   TString PUIDWP="";
-  if(PUIDWP != ""){
-    double PJet_PUID_weight = GetJetPileupIDSF(AK4_JetColl, PUIDWP, param);
-    FillWeightHist("PJet_PUID_weight_" ,PJet_PUID_weight);
-    weight*= PJet_PUID_weight;
-  }
-
+  if(PUIDWP != "")   weight*= FillWeightHist("PJet_PUID_weight_" , GetJetPileupIDSF(AK4_JetColl, PUIDWP, param));
+  
   if(!IsData) {
     
     // Get BJet collection
     JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
     double sf_btag                    = GetBJetSF(param,  AK4_JetColl, param_jets);
     weight*= sf_btag;
-    for(auto iJ : AK8_JetColl) weight*= iJ.GetTaggerSF(JetTagging::particleNet_WvsQCD, DataEra,0);
+    for(auto iJ : AK8_JetColl) weight*= FillWeightHist("PNET_JETTagger",iJ.GetTaggerSF(JetTagging::particleNet_WvsQCD, DataEra,0));
     weight*= GetElectronSFEventWeight(ElectronTightColl, param);
     weight*= GetMuonSFEventWeight    (MuonTightColl    , param);
   }

@@ -267,7 +267,7 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
       if (dilep_channel == EMu)  SFKey_Trig = "EMuIso_HNL_ULID";
 
       double this_trigsf =  SFKey_Trig!=""? mcCorr->GetTriggerSF(electrons, muons, SFKey_Trig, ""):1.;
-      
+    
       if(!HasFlag("NoTrigSF")) weight_channel*=this_trigsf;
       if(run_Debug) cout << "SFKey_Trig = " << SFKey_Trig << " sf_T = " << this_trigsf << endl;
     }	 
@@ -997,12 +997,6 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     
     TString label    = param.Name;
    
-    if(run_Debug){
-      cout << "CheckLeptonFlavourForChannel(dilep_channel, LepsT) = " <<CheckLeptonFlavourForChannel(dilep_channel, LepsT) << endl;
-      cout << "CheckLeptonFlavourForChannel(trilep_channel, LepsT) = " <<CheckLeptonFlavourForChannel(trilep_channel, LepsT) << endl;
-      cout << "CheckLeptonFlavourForChannel(fourlep_channel, LepsT) = " <<CheckLeptonFlavourForChannel(fourlep_channel, LepsT) << endl;
-    }
-    
     if(! (CheckLeptonFlavourForChannel(dilep_channel, LepsT) 
 	  || CheckLeptonFlavourForChannel(trilep_channel, LepsT) 
 	  || CheckLeptonFlavourForChannel(fourlep_channel, LepsT))) continue;
@@ -1019,16 +1013,16 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       weight_channel *= FillWeightHist(param.Name+"_HNLZvtxSF", HNLZvtxSF(dilep_channel));
 
       //// Apply Trigger SF			                                                                                                                                                                                                              
-      TString SFKey_Trig = "DiMuIso_HNL_ULID";
-      if (dilep_channel == EE)   SFKey_Trig = "DiElIso_HNL_ULID";
-      if (dilep_channel == EMu)  SFKey_Trig = "EMuIso_HNL_ULID";
-
+      TString SFKey_Trig = param.Muon_Trigger_SF_Key;
+      if (dilep_channel == EE)   SFKey_Trig = param.Electron_Trigger_SF_Key;
+      //if (dilep_channel == EMu)  SFKey_Trig = "EMuIso_HNL_ULID";
+      
       double this_trigsf =  SFKey_Trig!=""? mcCorr->GetTriggerSF(electrons, muons, SFKey_Trig, ""):1.;
 
       if(!HasFlag("NoTrigSF")) weight_channel*=this_trigsf;
       if(run_Debug) cout << "SFKey_Trig = " << SFKey_Trig << " sf_T = " << this_trigsf<< endl;
     }   
-
+ 
        
     double Fake_weight_OS = weight_channel;
 
@@ -1058,11 +1052,6 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       }
     }
 
-
-    vector<TString> passed;
-
-    if(RunCR("Inclusive",CRs))  Fill_RegionPlots(dilep_channel, 0,"Inclusive" , param.Name,  VBF_JetColl,  AK8_JetColl,  LepsT, METv, nPV, weight_channel);
- 
     if(RunCR("BDTCheck",CRs)){
       double BDTweight_channel = weight_channel;
       if( B_JetColl.size() > 0)  return;
@@ -1094,11 +1083,15 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       return;
     }
 
+
+    vector<TString> passed;
+
     if(HasFlag("OSCR")){
       if(RunCR("CR_OS_ZAk8",CRs)    &&PassTight && FillZAK8CRPlots  (dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, Fake_weight_OS)) passed.push_back("ZAK8_CR");
       if(RunCR("CR_OS_TopAK8",CRs)  &&PassTight && FillTopAK8CRPlots(dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, Fake_weight_OS)) passed.push_back("TopAK8_CR");
       if(RunCR("CR_OS_Z",CRs)   &&PassTight&& FillZCRPlots  (dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, Fake_weight_OS)) passed.push_back("Z_CR");
       if(RunCR("CR_OS_Top",CRs) &&PassTight&& FillTopCRPlots(dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, Fake_weight_OS)) passed.push_back("Top_CR");
+      return;
     }
         
     // LLL+ 
@@ -1173,7 +1166,44 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     }
     
 
-    vector<TString> cutlabels = { "TopAK8_CR","ZAK8_CR","WpWp_CR1","WpWp_CR2","WpWp_CRNP","WpWp_CRNP2","ZZ_CR","ZZLoose_CR","ZG_CR","WG_CR","WZ_CR","WG_Method2_CR","ZG_Method2_CR","WZ2_CR","WZB_CR","HighMassSR1_CR","HighMassSR2_CR","HighMassSR3_CR","HighMass1Jet_CR","HighMassBJet_CR","HighMassNP_CR","ZNP_CR","SSPresel","SSVBFPresel"};
+    vector<TString> cutlabels = {};
+    if(HasFlag("OSCR")){
+      cutlabels.push_back("ZAK8_CR");
+      cutlabels.push_back("TopAK8_CR");
+      cutlabels.push_back("Z_CR");
+      cutlabels.push_back("Top_CR");
+    }
+    if(RunCR("CR_VV",CRs)){
+      cutlabels.push_back("ZZ_CR");
+      cutlabels.push_back("ZZLoose_CR");
+      cutlabels.push_back("WZ_CR");
+      cutlabels.push_back("ZNP_CR");
+    }
+    if(RunCR("Presel",CRs)){
+      cutlabels.push_back("SSPresel");
+      cutlabels.push_back("SSVBFPresel");
+    }
+    if(RunCR("VV",CRs)){
+      cutlabels.push_back("WpWp_CR1");
+      cutlabels.push_back("WpWp_CR2");
+      cutlabels.push_back("WpWp_CRNP");
+      cutlabels.push_back("WpWp_CRNP2");
+      cutlabels.push_back("WpWp_CRNP3");
+      cutlabels.push_back("WZ2_CR");
+      cutlabels.push_back("WZB_CR");
+    }
+    if(RunCR("CR_VG",CRs)){
+      cutlabels.push_back("WG_Method2_CR");
+      cutlabels.push_back("ZG_Method2_CR");
+    }
+    if(RunCR("CR_SR",CRs)){
+      cutlabels.push_back("HighMassSR1_CR");
+      cutlabels.push_back("HighMassSR2_CR");
+      cutlabels.push_back("HighMassSR3_CR");
+      cutlabels.push_back("HighMass1Jet_CR");
+      cutlabels.push_back("HighMassBJet_CR");
+      cutlabels.push_back("HighMassNP_CR");
+    }
     
     for(auto ip : passed) FillEventCutflow(HNL_LeptonCore::CR, weight_channel, ip, "ChannelCutflow/"+param.Name);
     

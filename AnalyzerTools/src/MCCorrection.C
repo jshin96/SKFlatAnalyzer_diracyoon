@@ -4834,7 +4834,7 @@ double MCCorrection::MuonID_SF(TString ID, double eta, double pt, int sys){
 
   eta = fabs(eta);
 
-  if(ID.Contains("HNL_ULID") || ID == "HNTightV2"){
+  if(ID.Contains("HN")){
     if(pt<10.) pt = 10.1;
     if(pt>=120.) pt = 119.9;
     if(eta>=2.4) eta = 2.39;
@@ -4859,15 +4859,7 @@ double MCCorrection::MuonID_SF(TString ID, double eta, double pt, int sys){
     }
   }
 
-  int this_bin(-999);
-
-  if(ID=="NUM_TightID_DEN_TrackerMuons" || ID=="NUM_MediumID_DEN_TrackerMuons" || ID=="NUM_HighPtID_DEN_TrackerMuons"){
-
-    this_bin = this_hist->FindBin(eta,pt);
-  }
-
-  else this_bin = this_hist->FindBin(eta,pt);
-
+  int this_bin = this_hist->FindBin(eta,pt);
   value = this_hist->GetBinContent(this_bin);
   error = this_hist->GetBinError(this_bin);
 
@@ -4912,7 +4904,6 @@ double MCCorrection::MuonISO_SF(TString ID, double eta, double pt, int sys){
   int this_bin(-999);
 
   this_bin = this_hist->FindBin(eta,pt);
-
   value = this_hist->GetBinContent(this_bin);
   error = this_hist->GetBinError(this_bin);
 

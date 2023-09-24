@@ -219,6 +219,14 @@ bool Muon::PassID(TString ID) const {
   if(ID=="POGTightPFIsoVeryVeryTight") return Pass_POGTightPFIsoVeryVeryTight(false);
   if(ID=="CutBasedTightNoIP") return Pass_CutBasedTightNoIP();
 
+  if(ID=="POGMIDTIso") return isPOGMedium() && RelIso()<0.15;
+  if(ID=="POGMIDVVLIso") return isPOGMedium() && RelIso()<0.4;
+  if(ID=="POGTIDTIso") return isPOGTight() && RelIso()<0.15;
+  if(ID=="POGTIDVVLIso") return isPOGTight() && RelIso()<0.4;
+  if(ID=="POGIDMPrIsoM" ) return isPOGMedium() && fabs(dXY())<0.02 && fabs(dZ())<0.1 && RelIso()<0.2;
+  if(ID=="POGIDMPrIsoVL") return isPOGMedium() && fabs(dXY())<0.02 && fabs(dZ())<0.1 && RelIso()<0.4;
+
+
   if(ID=="POGMHLT"){
     if( !isPOGMedium()       ) return false;
     if( !(TrkIso()/Pt()<0.4) ) return false;
@@ -229,7 +237,13 @@ bool Muon::PassID(TString ID) const {
 
   /// Previous IDs 
   if(ID=="HNTightV1") return Pass_HNTight(0.07, 0.02, 0.05, 3.);
-  if(ID=="HNTightV2") return Pass_HNTight(0.07, 0.05, 0.1, 3.);
+  if(ID=="HNTightV2") {
+    
+    if( !(TrkIso()/Pt()<0.4) ) return false;
+    if( !(fabs(dZ())<0.1)    ) return false;
+
+    return Pass_HNTight(0.07, 0.05, 0.1, 3.);
+  }
 
   /// OTHER GROUP IDs
 
@@ -303,8 +317,6 @@ bool Muon::PassID(TString ID) const {
     return true;
   }
 
-
-  /// Jiwhans SSTop                                                                                                                                                                                               
   if(ID=="TopHNT"){
     if(! isPOGMedium()        ) return false;
     if(! (MiniRelIso()<0.1)) return false;

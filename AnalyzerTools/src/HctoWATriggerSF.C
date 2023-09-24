@@ -138,41 +138,51 @@ float MCCorrection::TriggerEfficiency(vector<Electron>& EleColl, vector<Muon>& M
   float TriggerEff=0.;  int NMu=MuColl.size(), NEl=EleColl.size();
   if(SiglMuTrig){
 
-    bool OutOfRangeLep=false;
+    TriggerEff = 1;
+    
     for(unsigned int it_m=0; it_m<MuColl.size(); it_m++){
       float pt   = MuColl.at(it_m).Pt();
       float feta = fabs(MuColl.at(it_m).Eta());
-      if     (pt<MinPt1) {OutOfRangeLep=true; continue;}
-      else if(pt>MaxPt1) {OutOfRangeLep=true; continue;}
-      if     (feta>MaxfEta1) {OutOfRangeLep=true; continue;}
+      if     (pt<MinPt1)  continue;
+      else if(pt>MaxPt1)  continue;
+      if     (feta>MaxfEta1)  continue;
       
       int BinIdx = HistEff1->FindBin(pt, feta);
-      TriggerEff = HistEff1->GetBinContent(BinIdx);
-      if(SystDir!=0){ TriggerEff += float(SystDir)*HistEff1->GetBinError(BinIdx); }
+      double SLTriggerEff = HistEff1->GetBinContent(BinIdx);
+      if(SystDir!=0){ SLTriggerEff += float(SystDir)*HistEff1->GetBinError(BinIdx); }
       
-      if(TriggerEff > 0) break;
+      TriggerEff *= (1 - SLTriggerEff);
+
     }
-    if(OutOfRangeLep && TriggerEff == 0) return 1;
+
+    if (TriggerEff == 1) return 1;
+    else return ( 1. -TriggerEff);
 
   }
   else if(SiglElTrig){
-    bool OutOfRangeLep=false;
+
+    TriggerEff = 1;
 
     for(unsigned int it_e=0; it_e<EleColl.size(); it_e++){
       float pt   = EleColl.at(it_e).Pt();
       float feta = fabs(EleColl.at(it_e).Eta());
-      if     (pt<MinPt1) {OutOfRangeLep=true; continue;}
-      else if(pt>MaxPt1) {OutOfRangeLep=true; continue;}
-      if     (feta>MaxfEta1) {OutOfRangeLep=true; continue;}
+
+      if     (pt<MinPt1)  continue;
+      else if(pt>MaxPt1)  continue;
+      if     (feta>MaxfEta1)  continue;
 
       int BinIdx = HistEff1->FindBin(feta, pt);
       //int BinIdx = HistEff1->FindBin(pt, feta);
-      TriggerEff = HistEff1->GetBinContent(BinIdx);
-      if(SystDir!=0){ TriggerEff += float(SystDir)*HistEff1->GetBinError(BinIdx); }
 
-      if(TriggerEff > 0) break;
+      double SLTriggerEff = HistEff1->GetBinContent(BinIdx);
+      if(SystDir!=0){ SLTriggerEff += float(SystDir)*HistEff1->GetBinError(BinIdx); }
+
+      TriggerEff *= (1 - SLTriggerEff);
+
     }
-    if(OutOfRangeLep && TriggerEff == 0) return 1;
+    if (TriggerEff == 1) return 1;
+    else return ( 1. -TriggerEff);
+
 
   }
   else if(DiMuTrig){

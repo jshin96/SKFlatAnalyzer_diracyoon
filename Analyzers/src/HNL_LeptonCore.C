@@ -1353,7 +1353,7 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
   param.Muon_RECO_SF_Key = "MuonRecoSF";
   /// ---------                                                                                                                             
   param.Electron_ID_SF_Key = "passTightID";
-  param.Electron_Tight_ID = "passPOGTight";
+  param.Electron_Tight_ID  = "passPOGTight";
 
   TString trigKey=TrigList_POG_Mu[0];
   trigKey=trigKey.ReplaceAll("HLT_","");

@@ -12,72 +12,58 @@ HasLooseLepton(false)
 void FakeBackgroundEstimator::ReadHistograms(){
 
   TString datapath = getenv("DATA_DIR");
-  datapath = datapath+"/"+GetEra()+"/FakeRate/";
-
+  
+  TString DataFakePath = datapath+"/"+GetEra()+"/FakeRate/DataFR/";
+  TString MCFakePath = datapath+"/"+GetEra()+"/FakeRate/MCFR/";
+  
   TDirectory* origDir = gDirectory;
 
-  string elline;
-  ifstream in(datapath+"/histmap_Electron.txt");
-  while(getline(in,elline)){
-    std::istringstream is( elline );
-    TString a,b,c,d,e;
-    is >> a; // <Rate>
-    is >> b; // <IDlabel>
-    is >> c; // <var key>
-    is >> d; // <syst key>
-    is >> e; // <rootfilename>
-    
-    TFile *file = new TFile(datapath+"/"+e);
-    TList *histlist = file->GetListOfKeys();
-    for(int i=0;i<histlist->Capacity();i++){
-      TString this_frname = histlist->At(i)->GetName();
+  vector<TString> FakeHMaps = {   DataFakePath+"/ElFR/histmap_Electron.txt",
+				 DataFakePath+"/MuFR/histmap_Muon.txt",
+				 MCFakePath+"/ElFR/histmap_Electron.txt",
+				 MCFakePath+"/MuFR/histmap_Muon.txt"};
 
-      if (!this_frname.Contains(b)) continue;
-      if (!this_frname.Contains(c)) continue;
-      if (!this_frname.Contains(d)) continue;
-
-      histDir->cd();
-
-      map_hist_Electron[a+"_"+b+"_"+c+"_"+d] = (TH2D *)file->Get(this_frname)->Clone(a+"_"+b+"_"+c+"_"+d);
-
-      origDir->cd();
-      cout << "[FakeBackgroundEstimator::FakeBackgroundEstimator] map_hist_Electron : " << a+"_"+b+"_"+c+"_"+d+ " --> "+this_frname << endl;
-
-    }
-    file->Close();
-    delete file;
-  }
-
-  string elline2;
-  ifstream in2(datapath+"/histmap_Muon.txt");
-  while(getline(in2,elline2)){
-   std::istringstream is( elline2 );
-    TString a,b,c,d,e;
-    is >> a; // <Rate>  
-    is >> b; // <IDlabel> 
-    is >> c; // <var key> 
-    is >> d; // <syst key>
-    is >> e; // <rootfilename>                                                                                                                                                                    
-
-    TFile *file = new TFile(datapath+"/"+e);
-    TList *histlist = file->GetListOfKeys();
-    for(int i=0;i<histlist->Capacity();i++){
-      TString this_frname = histlist->At(i)->GetName();
-      if (!this_frname.Contains(b)) continue;
-      if (!this_frname.Contains(c)) continue;
-      if (!this_frname.Contains(d)) continue;
+  for(auto ihmap  :  FakeHMaps){
+    string elline;
+    ifstream in(ihmap);
+    while(getline(in,elline)){
+      std::istringstream is( elline );
+      TString a,b,c,d,e;
+      is >> a; // <Rate>
+      is >> b; // <IDlabel>
+      is >> c; // <var key>
+      is >> d; // <syst key>
+      is >> e; // <rootfilename>
       
-      histDir->cd();
+      TString FFRPath = ihmap;
+      FFRPath = FFRPath.ReplaceAll("histmap_Electron.txt","");
+      FFRPath = FFRPath.ReplaceAll("histmap_Muon.txt","");
+      TFile *file = new TFile(FFRPath+"/"+e);
+      TList *histlist = file->GetListOfKeys();
+      for(int i=0;i<histlist->Capacity();i++){
+	TString this_frname = histlist->At(i)->GetName();
+	
+	if (!b.Contains("Top")) {
+	  if (!this_frname.Contains(b)) continue;
+	  if (!this_frname.Contains(c)) continue;
+	  if (!this_frname.Contains(d)) continue;
+	}
 
-      map_hist_Muon[a+"_"+b+"_"+c+"_"+d] = (TH2D *)file->Get(this_frname)->Clone();
+	histDir->cd();
+	
+	if(ihmap.Contains("Electron")) map_hist_Electron[a+"_"+b+"_"+c+"_"+d] = (TH2D *)file->Get(this_frname)->Clone(a+"_"+b+"_"+c+"_"+d);
+	else  map_hist_Muon[a+"_"+b+"_"+c+"_"+d] = (TH2D *)file->Get(this_frname)->Clone(a+"_"+b+"_"+c+"_"+d);
 
-      origDir->cd();
-      cout << "[FakeBackgroundEstimator::FakeBackgroundEstimator] map_hist_Muon : " << a+"_"+b+"_"+c+"_"+d+ " --> "+this_frname << endl;
-
+	origDir->cd();
+	cout << "[FakeBackgroundEstimator::FakeBackgroundEstimator] map_hist_Electron : " << a+"_"+b+"_"+c+"_"+d+ " --> "+this_frname << endl;
+	
+      }
+      file->Close();
+      delete file;
     }
-    file->Close();
-    delete file;
   }
+
+
 
 }
 
@@ -228,9 +214,9 @@ double FakeBackgroundEstimator::GetMuonFakeRate(TString ID, TString key, TString
   eta = fabs(eta);
 
   /// Make Sure pt is not out of bin range
-  if(pt>=80) pt = 79;
+  if(pt>=50) pt = 49;
   if(pt < 7) pt=7;
-
+  
   /// For Flvour bins binning is differen
 
   if(BinningMethod == "BDTFlavour" ) {
