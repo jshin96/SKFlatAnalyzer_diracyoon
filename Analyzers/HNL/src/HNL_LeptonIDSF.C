@@ -193,16 +193,8 @@ void HNL_LeptonIDSF::MeasureMuonIDSF(AnalyzerParameter param){
   }
 
 
-  vector<TString> IDs = {
-    "HNL_ULID_2016",
-    "HNL_ULID_2017",
-    "HNL_ULID_2018",
-    "HNL_ULIDTrg_2016",
-    "HNL_ULIDTrg_2017",
-    "HNL_ULIDTrg_2018",
-    "HNTightV2"
-  };
-  IDs = {  "HNL_ULID_2017", "HNL_ULIDTrg_2017"};
+  vector<TString> IDs;
+  IDs = {  "HNL_ULID_"+GetYearString(), "HNL_ULID_NoHLT_"+GetYearString(),"TopHNT","HNTightV2"};
 
   /// Make cuts to remove fakes
   

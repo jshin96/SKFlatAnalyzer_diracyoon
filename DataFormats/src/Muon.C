@@ -337,8 +337,7 @@ bool Muon::PassID(TString ID) const {
 
   /// Loose ID for SR with MVA cuts                                                                                                                                                                                              
   if(ID == "MVALooseTrgSafe") {
-    if(!Pass_LepMVAID()) return false;
-    if(!isPOGMedium())   return false;
+    if(!PassID("MVALoose")) return false;
     if( !(TrkIso()/Pt()<0.4) ) return false;
     return true;
   }
@@ -346,32 +345,36 @@ bool Muon::PassID(TString ID) const {
 
   /////////// FINAL UL HNL Type-1 ID                                                                                                                                                                                                                                                                                          
   if(ID == "HNL_ULID_FO"){
+    if(!PassID("MVALooseTrgSafe")) return false;
+    if(fabs(IP3D()/IP3Derr()) > 7) return false;
+    return true;
+  }
+  if(ID == "HNL_ULID_NoHLT_FO"){
     if(!PassID("MVALoose")) return false;
     if(fabs(IP3D()/IP3Derr()) > 7) return false;
     return true;
   }
-
-  if(ID == "HNL_ULID_2016"){
+  if(ID == "HNL_ULID_NoHLT_2016"){
     if(!PassID("MVALoose")) return false;
     if(MVA() < 0.72)  return false;
     if(fabs(IP3D()/IP3Derr()) > 7) return false;
     return true;
   }
 
-  if(ID == "HNL_ULID_2017" || ID == "HNL_ULID_2018" )  {
+  if(ID == "HNL_ULID_NoHLT_2017" || ID == "HNL_ULID_NoHLT_2018" )  {
     if(!PassID("MVALoose")) return false;
     if(MVA() < 0.64)  return false;
     if(fabs(IP3D()/IP3Derr()) > 7) return false;
     return true;
   }
   
-  if(ID == "HNL_ULIDTrg_2016"){
+  if(ID == "HNL_ULID_2016"){
     if(!PassID("MVALooseTrgSafe")) return false;
     if(MVA() < 0.72)  return false;
     if(fabs(IP3D()/IP3Derr()) > 7) return false;
     return true;
   }
-  if(ID == "HNL_ULIDTrg_2017" || ID == "HNL_ULIDTrg_2018" )  {
+  if(ID == "HNL_ULID_2017" || ID == "HNL_ULID_2018" )  {
     if(!PassID("MVALooseTrgSafe")) return false;
     if(MVA() < 0.64)  return false;
     if(fabs(IP3D()/IP3Derr()) > 7) return false;
