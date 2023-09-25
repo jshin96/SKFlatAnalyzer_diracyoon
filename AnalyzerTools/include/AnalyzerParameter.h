@@ -31,7 +31,7 @@ public:
   bool Muon_UseMini, Muon_UsePtCone, Muon_UseTuneP;
   double Muon_MinPt, Muon_MaxEta ;
 
-  TString JetPUID;
+  TString JetPUID,TriggerSelection;
   double Jet_MinPt, Jet_MaxEta ;
   double FatJet_MinPt, FatJet_MaxEta ;
 
@@ -40,7 +40,8 @@ public:
   TString SRConfig;
   int SystDir_PU,WriteOutVerbose;
 
-  std::string SystDir_BTag,  BJet_Method,   FakeMethod,CFMethod,  ConvMethod, FakeRateMethod;
+  std::string SystDir_BTag,  BJet_Method,   FakeMethod,CFMethod,  ConvMethod;
+  TString FakeRateMethod;
 ;
 ;
 

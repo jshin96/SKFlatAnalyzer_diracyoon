@@ -6,9 +6,6 @@ void HNL_LeptonIDSF::initializeAnalyzer(){
 
   HNL_LeptonCore::initializeAnalyzer();
 
-  SetupIDMVAReaderDefault(false,false);  
-
-
   cout << "HNL_LeptonIDSF Code is used to measure and study lepton ID efficinecy and SF (temp SF)" << endl;
 
 }

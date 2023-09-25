@@ -325,6 +325,14 @@ bool Muon::PassID(TString ID) const {
     if(! (SIP3D()<3.) ) return false;
     return true;
   }
+  if(ID=="TopHNL"){
+    if(! isPOGMedium()       ) return false;
+    if(! (MiniRelIso()<0.6)  ) return false;
+    if(! (TrkIso()/Pt()<0.4) ) return false;
+    if(! (SIP3D()<5)         ) return false;
+    if(! (fabs(dZ())<0.1)    ) return false;
+    return true;
+  }
 
   ///// EXO-17028                                                                                                                                                                                                 
   if(ID=="HNVeto_17028")  return Pass_HNVeto2016();

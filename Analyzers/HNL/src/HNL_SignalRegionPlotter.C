@@ -6,7 +6,6 @@ void HNL_SignalRegionPlotter::initializeAnalyzer(){
 
   HNL_LeptonCore::initializeAnalyzer();
   
-  SetupIDMVAReaderDefault(); /// Not needed for BDT skim
   SetupEventMVAReader();                                                                                                       
                                                                                                                      
 }

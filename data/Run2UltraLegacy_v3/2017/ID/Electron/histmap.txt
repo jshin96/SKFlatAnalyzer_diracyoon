@@ -15,3 +15,12 @@ ID      SF      passHNL_ULID_Run2L  HNL_LeptonIDSF_Electron_2017_Eta_Pt.root    
 ID      SF      passHNL_ULID_2016  HNL_LeptonIDSF_Electron_2017_Eta_Pt.root            Data_MC_SF_Eta_Pt_HNL_ULID_2016   TH2F
 ID      SF      passHNL_ULID_2017  HNL_LeptonIDSF_Electron_2017_Eta_Pt.root            Data_MC_SF_Eta_Pt_HNL_ULID_2017   TH2F
 ID      SF      passHNL_ULID_2018  HNL_LeptonIDSF_Electron_2017_Eta_Pt.root            Data_MC_SF_Eta_Pt_HNL_ULID_2018   TH2F
+ID      SF      TopHNSST                IDEff_TopHNSST_2017.root        EGamma_SF2D     TH2F
+Trigger Eff_DATA  DiElIsoEl23_HNTopIDSS   TrigEff_Ele23_TopHNSST_2017.root     EGamma_EffData2D         TH2F
+Trigger Eff_MC    DiElIsoEl23_HNTopIDSS   TrigEff_Ele23_TopHNSST_2017.root     EGamma_EffMC2D           TH2F
+Trigger Eff_DATA  DiElIsoEl12_HNTopIDSS   TrigEff_Ele12_TopHNSST_2017.root     EGamma_EffData2D         TH2F
+Trigger Eff_MC    DiElIsoEl12_HNTopIDSS   TrigEff_Ele12_TopHNSST_2017.root     EGamma_EffMC2D           TH2F
+Trigger Eff_DATA  EMuIsoEl23_HNTopIDSS    TrigEl23_TopHNT_TopHNSST_2017.root     hEff_TrigEl23_Data_ALL           TH2F
+Trigger Eff_MC    EMuIsoEl23_HNTopIDSS    TrigEl23_TopHNT_TopHNSST_2017.root     hEff_TrigEl23_MC_ALL             TH2F
+Trigger Eff_DATA  EMuIsoEl12_HNTopIDSS    TrigEl12_TopHNT_TopHNSST_2017.root     hEff_TrigEl12_Data_ALL           TH2F
+Trigger Eff_MC    EMuIsoEl12_HNTopIDSS    TrigEl12_TopHNT_TopHNSST_2017.root     hEff_TrigEl12_MC_ALL             TH2F

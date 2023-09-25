@@ -562,8 +562,8 @@ public:
   vector<Jet> SkimJetColl(const vector<Jet>& JetColl, vector<Gen>& TruthColl, AnalyzerParameter param,TString Option);
   bool HasEWLepInJet(Jet Jet, vector<Gen>& TruthColl, TString Option);
 
+  bool run_Debug;
 
-  // JH functions 
 
   // HEM code                                                                                                                                                
 

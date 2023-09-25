@@ -66,6 +66,7 @@ void AnalyzerParameter::Clear(){
   FakeMethod="MC";
   CFMethod="MC";
   ConvMethod="MC";
+  TriggerSelection="Dilep";
   JetPUID="Default";
   Jet_ID = "Default";
   FatJet_ID = "Default";
@@ -117,7 +118,7 @@ AnalyzerParameter::AnalyzerParameter(){
   ConvMethod="MC";
 
   JetPUID="Default";
-
+  TriggerSelection="Dilep";
   Jet_ID = "Default";
   FatJet_ID = "Default";
 

@@ -16,57 +16,13 @@ declare  -a era_list=("2017")
 if [[ $1 == "TEST" ]]; then
 
     SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton.txt  -n ${njobs_data}  --nmax ${nmax}   -e 2017  --skim SkimTree_HNMultiLepBDT --userflags RunFake  &
-fi
-
-
-if [[ $1 == "VBF" ]]; then
-
-    for i in "${era_list[@]}"
-    do
-        SKFlat.py -a $analyzer  -l $sigpath/${i}/VBF.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
-    done
-
-fi
-
-if [[ $1 == "VBF1500" ]]; then
-
-    for i in "${era_list[@]}"
-    do
-        SKFlat.py -a $analyzer  -i VBFTypeI_SF_ll_M1500  -n 1  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT  &
-    done
+    SKFlat.py -a $analyzer  -l $sigpath/${i}/VBF.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
+    SKFlat.py -a $analyzer  -i VBFTypeI_SF_ll_M1500  -n 1  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT  &
+    SKFlat.py -a $analyzer  -l $sigpath/${i}/SSWW.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
 
 fi
 
 
-if [[ $1 == "SSWW" ]]; then
-
-    for i in "${era_list[@]}"
-    do
-        SKFlat.py -a $analyzer  -l $sigpath/${i}/SSWW.txt  -n $njobs  --nmax ${nmax}   -e ${i} &
-    done
-
-fi
-
-
-
-if [[ $1 == "DATA" ]]; then
-
-    for i in "${era_list[@]}"
-    do
-        SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT  &
-    done
-    
-fi
-
-if [[ $1 == "FAKE" ]]; then
-
-    
-    for i in "${era_list[@]}"
-    do
-        SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags RunFake  &
-    done
-
-fi
 
 
 if [[ $1 == "XG" ]]; then
@@ -85,7 +41,6 @@ if [[ $1 == "XG" ]]; then
     done
 
 fi
-
 
 if [[ $1 == "WZ" ]]; then
 
@@ -140,3 +95,21 @@ if [[ $1 == "Full" ]]; then
     done
 
 fi
+
+if [[ $1 == "OS" ]]; then
+
+    declare  -a era_list=("2017")
+    FLAG="OSCR"
+    
+    for i in "${era_list[@]}"
+    do
+        #### Data                                                                                                                                                                                                                                                             
+        SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton.txt  -n 40    --nmax ${nmax}   -e ${i}  --skim SkimTree_DileptonBDT  --userflags $FLAG  &  
+        SKFlat.py -a $analyzer  -l $mcpath/PromptOS.txt         -n 50    --nmax ${nmax}   -e ${i}  --skim SkimTree_DileptonBDT   --userflags RunPrompt,$FLAG &             
+        SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags RunFake,$FLAG  &
+        SKFlat.py -a $analyzer  -l $mcpath/VVOS.txt             -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags RunFake,$FLAG  &                                                                                                             
+
+    done
+
+fi
+

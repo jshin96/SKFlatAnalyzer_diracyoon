@@ -5,10 +5,7 @@ void HNL_LeptonIDBDTStudies::initializeAnalyzer(){
   // All default settings like trigger/ PD/ BJet are decalred in HNL_LeptonCore::initializeAnalyzer to make them consistent for all HNL codes
 
   HNL_LeptonCore::initializeAnalyzer();
-  if(HasFlag("FakeSplit")) SetupIDMVAReaderDefault(false,false);  //set v3 true
-  if(HasFlag("NewBDT")) SetupIDMVAReaderDefault(false,true);  //set v3 true                                                                                                                                                                                                   
-  if(HasFlag("SSBreakdown")) SetupIDMVAReaderDefault(false,true); 
-  SetupIDMVAReaderDefault(false,true);
+
 }
 
 

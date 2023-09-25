@@ -2604,12 +2604,15 @@ std::vector<Muon> AnalyzerCore::GetMuons(AnalyzerParameter param, TString id, do
  
     if(Run_Fake){
       
-
       Muon this_muon = muons.at(i);
       
       if(param.FakeRateMethod == "PtCone"){
 	double isocut_mu = GetIsoFromID("Muon", param.Muon_Tight_ID,muons.at(i).Eta(), muons.at(i).Pt());
 	this_muon.SetPtEtaPhiM( muons.at(i).CalcPtCone(muons.at(i).RelIso(), isocut_mu), muons.at(i).Eta(), muons.at(i).Phi(), muons.at(i).M() );
+      }
+      if(param.FakeRateMethod == "PtConeMini"){
+        double isocut_mu = GetIsoFromID("Muon", param.Muon_Tight_ID,muons.at(i).Eta(), muons.at(i).Pt());
+        this_muon.SetPtEtaPhiM( muons.at(i).CalcPtCone(muons.at(i).MiniRelIso(), isocut_mu), muons.at(i).Eta(), muons.at(i).Phi(), muons.at(i).M() );
       }
       if(param.FakeRateMethod == "PtCorr"){
 	this_muon.SetPtEtaPhiM( muons.at(i).PtParton(0.697,0.64,0.64),muons.at(i).Eta(), muons.at(i).Phi(), muons.at(i).M() );
@@ -2939,6 +2942,10 @@ std::vector<Electron> AnalyzerCore::GetElectrons(AnalyzerParameter param, TStrin
 	double isocut_el = GetIsoFromID("Electron",param.Electron_Tight_ID,electrons.at(i).Eta(), electrons.at(i).Pt());   
 	this_electron.SetPtEtaPhiM( electrons.at(i).CalcPtCone(electrons.at(i).RelIso(), isocut_el), electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() );
       }
+      if(param.FakeRateMethod == "PtConeMini"){
+        double isocut_el = GetIsoFromID("Electron",param.Electron_Tight_ID,electrons.at(i).Eta(), electrons.at(i).Pt());
+        this_electron.SetPtEtaPhiM( electrons.at(i).CalcPtCone(electrons.at(i).MiniRelIso(), isocut_el), electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() );
+      }
       if(param.FakeRateMethod == "PtCorr"){
 	this_electron.SetPtEtaPhiM( electrons.at(i).PtParton(1,0.15,0.2),  electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() );
 	
@@ -3055,42 +3062,13 @@ double AnalyzerCore::GetIsoFromID(TString  lep_type, TString id, double eta, dou
 
   if (lep_type == "Muon") {
     
-    if (id.Contains("MuOpt")){
-
-      TString ID_sub = id;
-      ID_sub = ID_sub.ReplaceAll("_"," ");
-      string sID_sub = string(ID_sub);
-
-      vector<TString> subStrings;
-      istringstream ID_subs(sID_sub);
-      do {
-	string subs;
-	ID_subs >> subs;
-	subStrings.push_back(TString(subs));
-      } while (ID_subs);
-
-      TString iso_string="";
-      for(unsigned int i=0; i < subStrings.size(); i++){
-	if (subStrings[i].Contains("ISO")) iso_string = subStrings[i];
-      }
-      TString iso_cut = iso_string.ReplaceAll("ISOB","");
-      iso_cut = iso_cut.ReplaceAll("ISOEC","");
-      iso_cut = iso_cut.ReplaceAll("p",".");
-
-      std::string iso_s = std::string(iso_cut);
-      std::string::size_type sz;  
-      
-      double iso_d = std::stod (iso_s,&sz);
-      return iso_d;
-      
-    }
+    if (id == "TopHNT") return 0.1;
 
     if (id == "HNTight_17028") return 0.07;
     if (id == "HNTightV1") return 0.07;
     if (id == "HNTightV2") return 0.07;
 
     if (id == "POGTightPFIsoVeryVeryTight") return 0.05;
-    if (id == "HNTight_Iso07_dxy_02_ip_3")  return 0.07;
     if (id.Contains("TightPFIsoVeryVeryTight")) return 0.05;
     if (id.Contains("TightPFIsoVeryTight")) return 0.1;
     if (id.Contains("TightPFIsoTight")) return 0.15;
@@ -3115,36 +3093,7 @@ double AnalyzerCore::GetIsoFromID(TString  lep_type, TString id, double eta, dou
   }
   else if(lep_type == "Electron"){
 
-    if (id.Contains("ElOpt")){
-
-      TString ID_sub = id;
-      ID_sub = ID_sub.ReplaceAll("_"," ");
-      string sID_sub = string(ID_sub);
-
-      vector<TString> subStrings;
-      istringstream ID_subs(sID_sub);
-      do {
-        string subs;
-        ID_subs >> subs;
-        subStrings.push_back(TString(subs));
-      } while (ID_subs);
-
-      TString iso_string="";
-      for(unsigned int i=0; i < subStrings.size(); i++){
-        if (subStrings[i].Contains("ISO")) iso_string = subStrings[i];
-      } 
-      TString iso_cut = iso_string.ReplaceAll("ISOB","");
-      iso_cut = iso_cut.ReplaceAll("ISOEC","");
-      iso_cut = iso_cut.ReplaceAll("p",".");
-
-      std::string iso_s = std::string(iso_cut);
-      std::string::size_type sz;  
-      
-      double iso_d = std::stod (iso_s,&sz);
-      return iso_d;
-
-    }
-
+    if( id == "TopHNSST" ) return 0.1;
 
     if( id == "HNTight_17028") return 0.08;
 
@@ -5344,15 +5293,11 @@ void AnalyzerCore::beginEvent(){
   // fill jets first as they are independant
   if(Analyzer.Contains("BDT") && Analyzer.Contains("SkimTree")) PtOrderObj=false;
   else PtOrderObj=true;
-  
-  if(_jentry%10000==0) cout << "PtOrderObj = " << PtOrderObj << endl;
 
   if(!IsData) All_Gens = GetGens();  
   All_Jets      = GetAllJets();
   All_FatJets   = GetAllFatJets();
-  if(_jentry%10000==0) cout << "GetAllMuons " << endl;
   All_Muons     = GetAllMuons();
-  if(_jentry%10000==0) cout << "GetAllElectrons " << endl;
   All_Electrons = GetAllElectrons();
 
   return;
@@ -5986,17 +5931,12 @@ std::vector<Electron> AnalyzerCore::ElectronPromptOnly(const std::vector<Electro
   std::vector<Electron> out;
   for(unsigned int i=0; i<electrons.size(); i++){
     bool pass=true;
-    //if(GetLeptonType(electrons.at(i), gens)<=0) continue;
 
     if(param.FakeMethod == "Data"){
       if(GetLeptonType(electrons.at(i), gens) <= 0)pass=false;
     }
 
-    if(param.FakeMethod == "DataNoConv"){
-      if(GetLeptonType(electrons.at(i), gens) <= 0)pass=false;
-      if(GetLeptonType(electrons.at(i), gens)== -5)pass=true;
-      if(GetLeptonType(electrons.at(i), gens)== -6)pass=true;
-    }
+
     if(param.CFMethod == "Data"){
       if(electrons.at(i).LeptonIsCF()) pass=false;
     }
@@ -7618,31 +7558,33 @@ TH3D* AnalyzerCore::GetHist3D(TString histname){
 
 double AnalyzerCore::FillWeightHist(TString label, double _weight){
   
+  if(run_Debug) cout << "AnalyzerCore::FillWeightHist ["+label+"]  corr.=" <<   _weight << endl;
+
   if(!label.Contains("Syst_"))   FillHist( "weights/"+ label , _weight ,1., 200, -5., 5,"ev weight");
     
   return _weight;
 }
 
 double AnalyzerCore::FillFakeWeightHist(TString label, vector<Lepton *> Leps,AnalyzerParameter param,  double _weight){
-  
-  bool DEBUG=true;
-  if(DEBUG) cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << endl;
-  if(DEBUG) {
+
+		  
+  if(run_Debug) cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << endl;
+  if(run_Debug) {
     for(auto i: Leps) {
       if(i->LeptonFlavour()==Lepton::MUON) cout << "Muon " << endl;
       else cout<< "Electron " << endl;
     }
   }
     
-  if(DEBUG) cout << "nLep = " << Leps.size() << endl;
-  if(DEBUG) cout << "Weight = " << _weight << endl;
+  if(run_Debug) cout << "nLep = " << Leps.size() << endl;
+  if(run_Debug) cout << "Weight = " << _weight << endl;
   
   TString TLType="";
   for(auto i: Leps) {
     if(i->PassLepID())TLType+="T";
     else TLType+="L";
   }
-  if(DEBUG) cout << "TLType = " << TLType << endl;
+  if(run_Debug) cout << "TLType = " << TLType << endl;
   if(Leps.size() > 0) cout << "LepTightIDName = " << Leps[0]->LepTightIDName() << endl;
 
   FillHist( "FakeWeights/"+ label , _weight ,1., 200, -5., 5,"ev weight");
@@ -7655,7 +7597,7 @@ double AnalyzerCore::FillFakeWeightHist(TString label, vector<Lepton *> Leps,Ana
     if(T1&&!T2)        FillHist( "FakeStudy/TLSplit/TightLoose"+ label , 2, _weight , 5, 0., 5);
     if(!T1&&T2)        FillHist( "FakeStudy/TLSplit/TightLoose"+ label , 3, _weight , 5, 0., 5);
     if(!T1&&!T2)       FillHist( "FakeStudy/TLSplit/TightLoose"+ label , 4, _weight , 5, 0., 5);
-    if(DEBUG) cout << "FillFakeWeightHist Lepton Types T1T2 = " << T1 << " "  << T2 << endl;
+    if(run_Debug) cout << "FillFakeWeightHist Lepton Types T1T2 = " << T1 << " "  << T2 << endl;
   }
   
   for(auto ilep : Leps) {
@@ -7672,8 +7614,8 @@ double AnalyzerCore::FillFakeWeightHist(TString label, vector<Lepton *> Leps,Ana
 
       double FRFlav = (ilep->LeptonFlavour()==Lepton::MUON) ? fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, param.Muon_FR_Key , param.FakeRateMethod, ilep->fEta(), ilep->PtMaxed(60.), ilep->LeptonFakeTagger(),0) :  fakeEst->GetElectronFakeRate(param.Electron_Tight_ID,param.Electron_FR_Key,param.FakeRateMethod,ilep->fEta(), ilep->PtMaxed(60.), ilep->LeptonFakeTagger(), 0);
 
-      if(DEBUG) cout << "!Tight Lep Type = " <<ilep->LeptonFakeTagger() << "  LFvsHFMVA = " << ilep->HNL_MVA_Fake("QCD_LFvsHF_v5") << " BvsC MVA = " << ilep->HNL_MVA_Fake("QCD_BvsC_v5")   << endl;
-      if(DEBUG) cout << "!Tight Pt = " << ilep->PtMaxed(60.) << " pt = " << ilep->Pt() << " eta =  " << ilep->fEta() << " FR = " << FR << " FRFlav = " << FRFlav <<  endl;
+      if(run_Debug) cout << "!Tight Lep Type = " <<ilep->LeptonFakeTagger() << "  LFvsHFMVA = " << ilep->HNL_MVA_Fake("QCD_LFvsHF_v5") << " BvsC MVA = " << ilep->HNL_MVA_Fake("QCD_BvsC_v5")   << endl;
+      if(run_Debug) cout << "!Tight Pt = " << ilep->PtMaxed(60.) << " pt = " << ilep->Pt() << " eta =  " << ilep->fEta() << " FR = " << FR << " FRFlav = " << FRFlav <<  endl;
       
 
       FillHist( "FakeStudy/Rates/"+ilep->LepTightIDName()+"/Loose_"+ label , FR, 1 , 1000, 0., 5);
@@ -7693,7 +7635,7 @@ double AnalyzerCore::FillFakeWeightHist(TString label, vector<Lepton *> Leps,Ana
     if(T1&&!T2)FillHist( "FakeStudy/EventWeight/TL_"+ label , FW, _weight , 100, 0., 5);
     if(!T1&&T2)FillHist( "FakeStudy/EventWeight/LT_"+ label , FW, _weight , 100, 0., 5);
     if(!T1&&!T2)FillHist( "FakeStudy/EventWeight/LL_"+ label , FW, _weight , 100, 0., 5);
-    if(DEBUG) cout << "EventWeight = " << FW << endl;
+    if(run_Debug) cout << "EventWeight = " << FW << endl;
   }
     
   return _weight;
