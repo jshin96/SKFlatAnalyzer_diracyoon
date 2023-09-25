@@ -165,17 +165,26 @@ bool Muon::PassID(TString ID) const {
   /// looser IP                                                                                                                                                                                                  
   if(ID=="HNLooseV1")  {
     if(!( isPOGLoose() ))  return false;
-    if(!( fabs(dXY()) < 0.2 && fabs(dZ())< 0.5) ) return false;
+    if(!( fabs(dXY()) < 0.2 )) return false;
     if(!(fabs(IP3D()/IP3Derr())< 10 )) return false;
     if(!( RelIso()< 0.4 )) return false;
     if(!( Chi2()<50. ))    return false;
+    /// Trigger
+    if( !(TrkIso()/Pt()<0.4) ) return false;
+    if( !(fabs(dZ())<0.1)    ) return false;
+
     return true;
   }
   if(ID=="HNLoosePOG") {
     if(!( isPOGLoose() ))  return false;
-    if(!( fabs(dXY()) < 0.2 && fabs(dZ())< 0.5) ) return false;
+    if(!( fabs(dXY()) < 0.2 ) ) return false;
     if(!( RelIso()< 0.4 )) return false;
     if(!( Chi2()<50. ))    return false;
+
+    /// Trigger                                                                                                                                                                                       
+    if( !(TrkIso()/Pt()<0.4) ) return false;
+    if( !(fabs(dZ())<0.1)    ) return false;
+
     return true;
   }
   //// Probe ID for IDSF                                                                                                                                                                                          
@@ -210,6 +219,14 @@ bool Muon::PassID(TString ID) const {
   if(ID=="POGTightPFIsoVeryVeryTight") return Pass_POGTightPFIsoVeryVeryTight(false);
   if(ID=="CutBasedTightNoIP") return Pass_CutBasedTightNoIP();
 
+  if(ID=="POGMIDTIso") return isPOGMedium() && RelIso()<0.15;
+  if(ID=="POGMIDVVLIso") return isPOGMedium() && RelIso()<0.4;
+  if(ID=="POGTIDTIso") return isPOGTight() && RelIso()<0.15;
+  if(ID=="POGTIDVVLIso") return isPOGTight() && RelIso()<0.4;
+  if(ID=="POGIDMPrIsoM" ) return isPOGMedium() && fabs(dXY())<0.02 && fabs(dZ())<0.1 && RelIso()<0.2;
+  if(ID=="POGIDMPrIsoVL") return isPOGMedium() && fabs(dXY())<0.02 && fabs(dZ())<0.1 && RelIso()<0.4;
+
+
   if(ID=="POGMHLT"){
     if( !isPOGMedium()       ) return false;
     if( !(TrkIso()/Pt()<0.4) ) return false;
@@ -220,7 +237,13 @@ bool Muon::PassID(TString ID) const {
 
   /// Previous IDs 
   if(ID=="HNTightV1") return Pass_HNTight(0.07, 0.02, 0.05, 3.);
-  if(ID=="HNTightV2") return Pass_HNTight(0.07, 0.05, 0.1, 3.);
+  if(ID=="HNTightV2") {
+    
+    if( !(TrkIso()/Pt()<0.4) ) return false;
+    if( !(fabs(dZ())<0.1)    ) return false;
+
+    return Pass_HNTight(0.07, 0.05, 0.1, 3.);
+  }
 
   /// OTHER GROUP IDs
 
@@ -294,14 +317,20 @@ bool Muon::PassID(TString ID) const {
     return true;
   }
 
-
-  /// Jiwhans SSTop                                                                                                                                                                                               
   if(ID=="TopHNT"){
     if(! isPOGMedium()        ) return false;
     if(! (MiniRelIso()<0.1)) return false;
     if(! (TrkIso()/Pt()<0.4) ) return false;
     if(! (fabs(dZ())<0.1)  ) return false;
     if(! (SIP3D()<3.) ) return false;
+    return true;
+  }
+  if(ID=="TopHNL"){
+    if(! isPOGMedium()       ) return false;
+    if(! (MiniRelIso()<0.6)  ) return false;
+    if(! (TrkIso()/Pt()<0.4) ) return false;
+    if(! (SIP3D()<5)         ) return false;
+    if(! (fabs(dZ())<0.1)    ) return false;
     return true;
   }
 
@@ -318,35 +347,59 @@ bool Muon::PassID(TString ID) const {
   if(ID.Contains("MuOpt")) return Pass_MultiFunction_Opt(ID);
   if(ID=="HNL_ULID_Baseline") return Pass_LepMVAID();
 
+
   /// Loose ID for SR with MVA cuts
   if(ID == "MVALoose") {
     if(!Pass_LepMVAID()) return false;
-    if(!isPOGMedium()) return false;
+    if(!isPOGMedium())   return false;
+    return true;
+  }
+
+  /// Loose ID for SR with MVA cuts                                                                                                                                                                                              
+  if(ID == "MVALooseTrgSafe") {
+    if(!PassID("MVALoose")) return false;
+    if( !(TrkIso()/Pt()<0.4) ) return false;
     return true;
   }
 
 
   /////////// FINAL UL HNL Type-1 ID                                                                                                                                                                                                                                                                                          
   if(ID == "HNL_ULID_FO"){
+    if(!PassID("MVALooseTrgSafe")) return false;
+    if(fabs(IP3D()/IP3Derr()) > 7) return false;
+    return true;
+  }
+  if(ID == "HNL_ULID_NoHLT_FO"){
     if(!PassID("MVALoose")) return false;
     if(fabs(IP3D()/IP3Derr()) > 7) return false;
     return true;
   }
-
-  if(ID == "HNL_ULID_2016"){
+  if(ID == "HNL_ULID_NoHLT_2016"){
     if(!PassID("MVALoose")) return false;
     if(MVA() < 0.72)  return false;
     if(fabs(IP3D()/IP3Derr()) > 7) return false;
     return true;
   }
 
-  if(ID == "HNL_ULID_2017" || ID == "HNL_ULID_2018" )  {
+  if(ID == "HNL_ULID_NoHLT_2017" || ID == "HNL_ULID_NoHLT_2018" )  {
     if(!PassID("MVALoose")) return false;
     if(MVA() < 0.64)  return false;
     if(fabs(IP3D()/IP3Derr()) > 7) return false;
     return true;
   }
-
+  
+  if(ID == "HNL_ULID_2016"){
+    if(!PassID("MVALooseTrgSafe")) return false;
+    if(MVA() < 0.72)  return false;
+    if(fabs(IP3D()/IP3Derr()) > 7) return false;
+    return true;
+  }
+  if(ID == "HNL_ULID_2017" || ID == "HNL_ULID_2018" )  {
+    if(!PassID("MVALooseTrgSafe")) return false;
+    if(MVA() < 0.64)  return false;
+    if(fabs(IP3D()/IP3Derr()) > 7) return false;
+    return true;
+  }
 
 
   //// Following are functions to test UL IDs
@@ -753,16 +806,14 @@ bool Muon::passIDHN(int ID, double dxy_b, double dxy_e, double dz_b,double dz_e,
 
 bool Muon::Pass_LepMVAID() const {
 
-  if(this->Pt() < 10) return false;
-  if(this->fEta() > 2.4) return false;
-  if(MiniRelIso() > 0.4) return false;
-  if(SIP3D() > 8) return false;
+  if(this->Pt() < 10)     return false;
+  if(this->fEta() > 2.4)  return false;
+  if(MiniRelIso() > 0.4)  return false;
+  if(SIP3D() > 8)         return false;
   if(this->fdXY() > 0.05) return false;
-  if(this->fdZ() > 0.1) return false;
-  if(!( isPOGLoose() )) return false;
-
+  if(this->fdZ() > 0.1)   return false;
+  if(!( isPOGLoose() ))   return false;
   return true;
-
 }
 
 bool Muon::PassSoftMVA(double mva1, double mva2, double mva3) const {

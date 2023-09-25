@@ -1892,7 +1892,7 @@ int  Electron::PassIDTight(TString ID) const{
   }
 
   
-  if(ID=="TopHN17SST" or ID=="TopHNSST"){
+  if(ID=="TopHNSST"){
     if(! passMVAID_noIso_WP90()          ) return false;
     if(! (MiniRelIso()<0.1)              ) return false;
     if(! (SIP3D()<4)                     ) return false;
@@ -1902,6 +1902,25 @@ int  Electron::PassIDTight(TString ID) const{
     if(! (NMissingHits()<2)              ) return false;
     if(! (fabs(Eta())<2.5)               ) return false;
     if(! IsGsfCtfScPixChargeConsistent() ) return false;
+    return true;
+  }
+
+
+  if(ID.Contains("TopHNSSLFixLMVAIsop4NoSIP_201") or ID.Contains("TopHNSSL_201")){
+    if(! (MiniRelIso()<0.4)              ) return false;
+    if(! (fabs(dZ())<0.1)                ) return false;
+    if(! Pass_CaloIdL_TrackIdL_IsoVL()   ) return false;
+    if(! PassConversionVeto()            ) return false;
+    if(! (NMissingHits()<=1)             ) return false;
+    if(! (fabs(Eta())<2.5)               ) return false;
+    if(! IsGsfCtfScPixChargeConsistent() ) return false;
+    float MVACut=-1, fEta=fabs(Eta());
+    if     (ID.Contains("2016a")) MVACut=fEta<0.8? 0.96:fEta<1.5? 0.93:0.85;
+    else if(ID.Contains("2016b")) MVACut=fEta<0.8? 0.96:fEta<1.5? 0.93:0.85;
+    else if(ID.Contains("2017") ) MVACut=fEta<0.8? 0.94:fEta<1.5? 0.79:0.5;
+    else if(ID.Contains("2018") ) MVACut=fEta<0.8? 0.94:fEta<1.5? 0.79:0.5;
+
+    if(! (MVANoIso()>MVACut or passMVAID_noIso_WP90()) ) return false;
     return true;
   }
 

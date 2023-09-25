@@ -183,7 +183,7 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   /// ------ Corrections
   double HNLZvtxSF(HNL_LeptonCore::Channel ch);
-  bool PassHEMVeto(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps);
+  bool PassHEMVeto(std::vector<Lepton *> leps);
 
 
   /// ---- TRIGGER
@@ -313,8 +313,6 @@ class HNL_LeptonCore : public AnalyzerCore {
   vector<TString> FakeRateIDs;
   vector<TString> ElectronTightIDs;
 
-
-  bool run_Debug;
   // Lepton pT cut
 
   // obj vectors
@@ -401,8 +399,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   TH1D *hist_PUReweight_Down;
 
   double weight_PU, weight_PU_Up, weight_PU_Down;
-
-
+  
   /// BDT 
 
 

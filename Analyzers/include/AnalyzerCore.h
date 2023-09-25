@@ -92,9 +92,9 @@ public:
   double GetFakeWeightMuon(std::vector<Muon> muons , std::vector<TString> vtrig, AnalyzerParameter param);
   double GetFakeWeightElectron(std::vector<Electron> electrons , vector<TString> trigs, AnalyzerParameter param);
   double GetFakeWeightElectron(std::vector<Electron> electrons , AnalyzerParameter param);
-  double GetFakeRateEl(double eta, double pt, AnalyzerParameter param);
-  double GetFakeRateM(double eta, double pt, AnalyzerParameter param);
-  double GetFakeWeight(std::vector<Lepton *> leps,  AnalyzerParameter param, bool apply_r);
+  double GetFakeRateElectron(Electron el , AnalyzerParameter param);
+  double GetFakeRateMuon(Muon mu, AnalyzerParameter param);
+  double GetFakeWeight(std::vector<Lepton *> leps,  AnalyzerParameter param, bool apply_r=false);
 
   double GetCFWeightElectron(std::vector<Electron> electrons ,  AnalyzerParameter param);
   double GetCFWeightElectron(vector<double> el_pt, vector<double> el_eta ,  AnalyzerParameter param);
@@ -486,6 +486,7 @@ public:
 
   // === Ev weights                                                                                                                              
   double FillWeightHist(TString label, double _weight);
+  double FillFakeWeightHist(TString label, vector<Lepton *> Leps,AnalyzerParameter param,  double _weight);
 
   // === HIST settings/filling                        
 
@@ -561,8 +562,8 @@ public:
   vector<Jet> SkimJetColl(const vector<Jet>& JetColl, vector<Gen>& TruthColl, AnalyzerParameter param,TString Option);
   bool HasEWLepInJet(Jet Jet, vector<Gen>& TruthColl, TString Option);
 
+  bool run_Debug;
 
-  // JH functions 
 
   // HEM code                                                                                                                                                
 
@@ -650,6 +651,7 @@ public:
 
 
   bool TESTBDT;
+  int nLog;
 
 };
 

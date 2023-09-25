@@ -42,8 +42,8 @@ public:
   std::map< TString, TH2D* > map_hist_Electron;
   std::map< TString, TH2D* > map_hist_Muon;
 
-  double GetElectronFakeRate(TString ID, TString key, double eta, double pt, int sys=0);
-  double GetMuonFakeRate(TString ID, TString key, double eta, double pt, int sys=0);
+  double GetElectronFakeRate(TString ID, TString key, TString BinningMethod, double eta, double pt, TString FakeTagger, int sys=0);
+  double GetMuonFakeRate(TString ID, TString key, TString BinningMethod,    double eta, double pt, TString FakeTagger, int sys=0);
 
   double GetElectronPromptRate(TString ID, TString key, double eta, double pt, int sys=0);
   double GetMuonPromptRate(TString ID, TString key, double eta, double pt, int sys=0);

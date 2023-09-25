@@ -31,17 +31,17 @@ public:
   bool Muon_UseMini, Muon_UsePtCone, Muon_UseTuneP;
   double Muon_MinPt, Muon_MaxEta ;
 
-  TString JetPUID;
+  TString JetPUID,TriggerSelection;
   double Jet_MinPt, Jet_MaxEta ;
   double FatJet_MinPt, FatJet_MaxEta ;
 
   TString Tau_Tight_ID, Tau_Loose_ID, Tau_Veto_ID;
   
   TString SRConfig;
-
   int SystDir_PU,WriteOutVerbose;
 
   std::string SystDir_BTag,  BJet_Method,   FakeMethod,CFMethod,  ConvMethod;
+  TString FakeRateMethod;
 ;
 ;
 
