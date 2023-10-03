@@ -1593,7 +1593,7 @@ void HNL_LeptonCore::PrintParam(AnalyzerParameter param){
   cout << "param.ConvMethod = " << param.ConvMethod << endl;
   cout << "param.FakeRateMethod = " << param.FakeRateMethod << endl;
   cout << "param.TriggerSelection = " << param.TriggerSelection << endl;
-
+  cout << "param.Electron_CF_Key = " << param.Electron_CF_Key << endl;
   cout << "-----ELECTRON PARAMETERS------------------------------------" << endl;
   
   cout << "Electron_Tight_ID = " << param.Electron_Tight_ID << endl;
@@ -1629,23 +1629,34 @@ double HNL_LeptonCore::SetupWeight(Event ev, AnalyzerParameter param){
   if(IsDATA) return 1.;
 
   double prefire_weight = 1.;
-  
-  if(param.syst_ == AnalyzerParameter::PrefireUp) prefire_weight = GetPrefireWeight(1);
-  else if(param.syst_ == AnalyzerParameter::PrefireDown)  prefire_weight = GetPrefireWeight(-1);
-  else  prefire_weight = GetPrefireWeight(0);
-
+  if(param.Weight_PreFire){
+    if(param.syst_ == AnalyzerParameter::PrefireUp) prefire_weight = GetPrefireWeight(1);
+    else if(param.syst_ == AnalyzerParameter::PrefireDown)  prefire_weight = GetPrefireWeight(-1);
+    else  prefire_weight = GetPrefireWeight(0);
+    FillWeightHist(param.Name+"_PrefireWeight" ,prefire_weight);
+  }
 
   double pileup_weight(1.);
-  if(param.syst_ == AnalyzerParameter::PUUp) pileup_weight= GetPileUpWeight(nPileUp,1);
-  else if(param.syst_ == AnalyzerParameter::PUDown) pileup_weight= GetPileUpWeight(nPileUp,-1);
-  else pileup_weight= GetPileUpWeight(nPileUp,0);
+  if(param.Weight_PileUp){
+    if(param.syst_ == AnalyzerParameter::PUUp) pileup_weight= GetPileUpWeight(nPileUp,1);
+    else if(param.syst_ == AnalyzerParameter::PUDown) pileup_weight= GetPileUpWeight(nPileUp,-1);
+    else pileup_weight= GetPileUpWeight(nPileUp,0);
+    FillWeightHist(param.Name+"_PileupWeight",pileup_weight);
+  }
+
+  double this_mc_weight =  MCweight(param.Weight_SumW, param.Weight_LumiNorm);
+  FillWeightHist(param.Name+"_MCWeight",    this_mc_weight);
   
-  double this_mc_weight =   FillWeightHist(param.Name+"_PrefireWeight" ,prefire_weight);
-  this_mc_weight*=  FillWeightHist(param.Name+"_MCWeight",    MCweight(true, true));
-  this_mc_weight*=  FillWeightHist(param.Name+"_LumiWeight",  ev.GetTriggerLumi("Full"));
-  this_mc_weight*=  FillWeightHist(param.Name+"_PileupWeight",pileup_weight);
-  this_mc_weight*=  FillWeightHist(param.Name+"_KFactor",     GetKFactor());
-    
+  if(param.Weight_LumiNorm) FillWeightHist(param.Name+"_LumiWeight",  ev.GetTriggerLumi("Full"));
+  if(param.Weight_kFactor)  FillWeightHist(param.Name+"_KFactor",     GetKFactor());
+
+
+  if(param.Weight_LumiNorm) this_mc_weight *= ev.GetTriggerLumi("Full");
+  if(param.Weight_kFactor)  this_mc_weight *= GetKFactor();
+  if(param.Weight_PileUp)   this_mc_weight *= pileup_weight;
+  if(param.Weight_PreFire)  this_mc_weight *= prefire_weight;
+     
+     
   FillWeightHist("MCFullWeight_" , this_mc_weight);
 
   return this_mc_weight;

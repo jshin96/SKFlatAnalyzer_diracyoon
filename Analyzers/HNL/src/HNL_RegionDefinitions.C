@@ -975,7 +975,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
   
   /// Filters events based on COnv/CF/Fake/Prompt
   
-  if(! ( (MCSample == "WZ_pythia") || (MCSample == "WW_pythia") || (MCSample == "ZZ_pythia"))){
+  if(!(HasFlag("OSCR") && RunFake)){
     if(!PassGenMatchFilter(LepsT,param)) return;
   }
 

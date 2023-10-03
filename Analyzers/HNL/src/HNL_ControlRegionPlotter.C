@@ -41,6 +41,15 @@ void HNL_ControlRegionPlotter::executeEvent(){
     /// Name
     param_signal.Name    =  id;
     param_signal.DefName =  id;
+
+
+    param_signal.Weight_LumiNorm = true;
+    param_signal.Weight_SumW     = true;
+    param_signal.Weight_PileUp   = true;
+    param_signal.Weight_PreFire  = true;
+    param_signal.Weight_kFactor  = true;
+    param_signal.Weight_IDSF     = true;
+    param_signal.Weight_TriggerSF= true;
     
     //// Background 
     if(id.Contains("HNL_ULID")) param_signal.FakeRateMethod = "BDTFlavour";
@@ -48,7 +57,7 @@ void HNL_ControlRegionPlotter::executeEvent(){
     else param_signal.FakeRateMethod = "PtCone";
     
     param_signal.FakeMethod   = "DATA";
-    param_signal.CFMethod   = "MC";
+    param_signal.CFMethod   = "DATA";
     param_signal.ConvMethod = "MC";
 
     /// IDs
@@ -142,11 +151,11 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   std::vector<Muon>       MuonVetoColl     = GetMuons    (param.Muon_Veto_ID,     10.,  2.4);
 
   /// IF ruunning fake then sue FR_ID not Tight
-  TString Electron_ID = (RunFake) ?  param.Electron_FR_ID  : param.Electron_Tight_ID ;
-  TString Muon_ID     = (RunFake) ?  param.Muon_FR_ID      : param.Muon_Tight_ID ;
+  TString Electron_ID = (RunFake&&!HasFlag("OSCR")) ?  param.Electron_FR_ID  : param.Electron_Tight_ID ;
+  TString Muon_ID     = (RunFake&&!HasFlag("OSCR")) ?  param.Muon_FR_ID      : param.Muon_Tight_ID ;
 
-  double Min_Muon_Pt     = (!RunFake) ? 10. :  (param.FakeRateMethod.Contains("PtCone")) ?  7 : 10.;
-  double Min_Electron_Pt = (!RunFake) ? 15. :  (param.FakeRateMethod.Contains("PtCone")) ? 10 : 15;
+  double Min_Muon_Pt     = (!RunFake&&!HasFlag("OSCR")) ? 10. :  (param.FakeRateMethod.Contains("PtCone")) ?  7 : 10.;
+  double Min_Electron_Pt = (!RunFake&&!HasFlag("OSCR")) ? 15. :  (param.FakeRateMethod.Contains("PtCone")) ? 10 : 15;
 
   if(run_Debug) cout << "HNL_ControlRegionPlotter::RunControlRegions Min_Muon_Pt = " << Min_Muon_Pt << endl;
   if(run_Debug) cout << "HNL_ControlRegionPlotter::RunControlRegions Min_Electron_Pt = " << Min_Electron_Pt << endl;
@@ -156,11 +165,11 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   // 1) Fakes/ CF are done by data and Conv done my MC
   // - in this case if MC should remove Fake lep and CF leps
   // - this is done by Adding option 
-  // std::vector<Muon>       MuonTightColl     = GetLepCollByRunType    ( GetMuons    ( param,Muon_ID, Min_Muon_Pt, 2.4, RunFake)      ,gens,param,"");
-  //std::vector<Electron>   ElectronTightColl = GetLepCollByRunType    ( GetElectrons( param,Electron_ID, Min_Electron_Pt, 2.5, RunFake)  ,gens,param,"");
+  // std::vector<Muon>       MuonTightColl     = GetLepCollByRunType    ( GetMuons    ( param,Muon_ID, Min_Muon_Pt, 2.4, RunFake&&!HasFlag("OSCR"))      ,gens,param,"");
+  //std::vector<Electron>   ElectronTightColl = GetLepCollByRunType    ( GetElectrons( param,Electron_ID, Min_Electron_Pt, 2.5, RunFake&&!HasFlag("OSCR"))  ,gens,param,"");
 
-  std::vector<Muon>       MuonTightCollInit     = GetMuons    ( param,Muon_ID,     Min_Muon_Pt,     2.4,RunFake); /// IF RunFake and param.FakeRateMethod == "PtCone" Pt is switched to pt code in Muon/Electron
-  std::vector<Electron>   ElectronTightCollInit = GetElectrons( param,Electron_ID, Min_Electron_Pt, 2.5,RunFake);
+  std::vector<Muon>       MuonTightCollInit     = GetMuons    ( param,Muon_ID,     Min_Muon_Pt,     2.4,RunFake&&!HasFlag("OSCR")); /// IF RunFake and param.FakeRateMethod == "PtCone" Pt is switched to pt code in Muon/Electron
+  std::vector<Electron>   ElectronTightCollInit = GetElectrons( param,Electron_ID, Min_Electron_Pt, 2.5,RunFake&&!HasFlag("OSCR"));
 
   if(run_Debug)  cout << "HNL_ControlRegionPlotter::RunControlRegions Number of Muon Tight Coll = " << MuonTightCollInit.size() << endl;
   if(run_Debug)  cout << "HNL_ControlRegionPlotter::RunControlRegions Number of Electron Tight Coll  = " << ElectronTightCollInit.size() << endl;

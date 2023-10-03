@@ -96,11 +96,12 @@ public:
   double GetFakeRateMuon(Muon mu, AnalyzerParameter param);
   double GetFakeWeight(std::vector<Lepton *> leps,  AnalyzerParameter param, bool apply_r=false);
 
-  double GetCFWeightElectron(std::vector<Electron> electrons ,  AnalyzerParameter param);
-  double GetCFWeightElectron(vector<double> el_pt, vector<double> el_eta ,  AnalyzerParameter param);
-  double GetCFWeightElectron(std::vector<Lepton* > leps ,  AnalyzerParameter param);
-  double GetCFrates(TString id, double pt, double eta);
-  double GetCFWeightElectron(vector<Lepton *> lepptrs, AnalyzerParameter param, bool applySF, int syst);
+  double GetCFSF(AnalyzerParameter param, std::vector<Electron> electrons);
+
+  double GetCFWeightElectron(std::vector<Electron> electrons ,  AnalyzerParameter param,bool ApplySF=true);
+  double GetCFWeightElectron(std::vector<Lepton* > leps ,  AnalyzerParameter param,bool ApplySF=true);
+  double GetCFWeightElectron(vector<double> el_pt, vector<double> el_eta ,  AnalyzerParameter param, bool ApplySF=true);
+
   std::vector<Electron> GetAllElectrons();
   std::vector<Electron> GetElectrons(TString id, double ptmin, double fetamax, bool vetoHEM = false);
   std::vector<Electron> GetElectrons(AnalyzerParameter param, TString id, double ptmin, double fetamax ,bool Run_Fake=false, bool vetoHEM=false);
@@ -118,6 +119,7 @@ public:
   std::vector<Photon> GetAllPhotons();
   std::vector<Photon> GetPhotons(TString id, double ptmin, double fetamax);
 
+  double GetShiftCFEl(Electron el) ;
 
 
   TMVA::Reader *MuonIDv5_FakeMVAReader;
@@ -257,9 +259,9 @@ public:
 
   bool ConversionSplitting(std::vector<Lepton *> leps, bool RunConvMode, int nlep);
   bool ConversionVeto(std::vector<Lepton *> leps,const std::vector<Gen>& gens);
-  bool IsCF(Electron el, std::vector<Gen> gens);
+  bool IsCF(Electron el, std::vector<Gen> gens, bool checcloseel=true);
   bool IsCF(Muon mu, std::vector<Gen> gens);
-
+  bool HasPromptConv(Electron el);
 
   //===================================================
   //==== Get objects METHOD 2
@@ -442,6 +444,8 @@ public:
   int  GenMatchedIdx(const Lepton& Lep, std::vector<Gen>& truthColl);
   int  GetNearPhotonIdx(const Lepton& Lep, std::vector<Gen>& TruthColl);
   int  FirstNonSelfMotherIdx(int TruthIdx, std::vector<Gen>& TruthColl);
+  int  LastAbsSelfMotherIdx(int TruthIdx,std::vector<Gen>& TruthColl);
+
   int  LastSelfMotherIdx(int TruthIdx,std::vector<Gen>& TruthColl);
   bool HasHadronicAncestor(int TruthIdx, std::vector<Gen>& TruthColl);
   bool IsFinalPhotonSt23(std::vector<Gen>& TruthColl);

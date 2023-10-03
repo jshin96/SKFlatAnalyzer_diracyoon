@@ -2884,12 +2884,14 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
     if(!fChain->GetBranch("electron_lepton_type") ||  !fChain->GetBranch("electron_is_cf"))  {
       int lep_type = GetLeptonType_JH(el, All_Gens);
       el.SetLeptonType(lep_type);
-      el.SetLeptonIsCF(IsCF(el, All_Gens) );
+      //el.SetLeptonIsCF(IsCF(el, All_Gens) );
     }
     else {
       if(fChain->GetBranch("electron_lepton_type")) el.SetLeptonType(electron_lepton_type->at(i));
-      if(fChain->GetBranch("electron_is_cf")) el.SetLeptonIsCF(electron_is_cf->at(i));
+      //if(fChain->GetBranch("electron_is_cf")) el.SetLeptonIsCF(electron_is_cf->at(i));
     }
+    el.SetLeptonIsCF(IsCF(el, All_Gens,true) );                                                                                                               
+
     out.push_back(el);
   }
   
@@ -4744,211 +4746,87 @@ double AnalyzerCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParameter
 
 
 
+double AnalyzerCore::GetCFSF(AnalyzerParameter param, std::vector<Electron> electrons){
 
-double AnalyzerCore::GetCFWeightElectron(std::vector<Lepton* > leps ,  AnalyzerParameter param){
+  double _SF=1.;
+  
+  for(auto i : electrons) {
+    if(i.IsBB()) {
+      if(GetYearString() == "2017"){
+	if(param.Electron_Tight_ID == "POGTight") _SF*= 1.217 ;
+	if(param.Electron_Tight_ID == "HNTightV2") _SF*=1.030 ;
+	if(param.Electron_Tight_ID == "HNL_ULID_2017") _SF*= 1.119;
+	if(param.Electron_Tight_ID == "TopHNSST") _SF*=1.162 ;
+      }
+      else{
+	
+      }
+    }
+    else{
+      if(GetYearString() == "2017"){
+	if(param.Electron_Tight_ID == "POGTight") _SF*= 1.026;
+	if(param.Electron_Tight_ID == "HNTightV2") _SF*= 1.060;
+        if(param.Electron_Tight_ID == "HNL_ULID_2017") _SF*= 1.111 ;
+        if(param.Electron_Tight_ID == "TopHNSST") _SF*= 1.052;
+      }
+      else{
+
+      } 
+
+
+    }
+  }
+
+  return _SF;
+
+}
+
+
+double AnalyzerCore::GetCFWeightElectron(std::vector<Lepton* > leps ,  AnalyzerParameter param, bool ApplySF){
 
   vector<double> el_pt,el_eta;
   for(auto ilep : leps){
     if(ilep->LeptonFlavour()==Lepton::ELECTRON){
       el_pt.push_back(ilep->Pt());
-      el_eta.push_back(ilep->Eta());
+      el_eta.push_back(ilep->defEta());
     }
   }
 
-  return GetCFWeightElectron(el_pt,el_eta, param);
+  return GetCFWeightElectron(el_pt,el_eta, param, ApplySF);
 }
 
-double AnalyzerCore::GetCFWeightElectron(std::vector<Electron> electrons ,  AnalyzerParameter param){
+double AnalyzerCore::GetCFWeightElectron(std::vector<Electron> electrons ,  AnalyzerParameter param,bool ApplySF){
 
   vector<double> el_pt, el_eta;
   for(auto ilep : electrons){
     el_pt.push_back(ilep.Pt());
     el_eta.push_back(ilep.scEta());
-    
   }
 
-  return GetCFWeightElectron(el_pt,el_eta, param);
+  return GetCFWeightElectron(el_pt,el_eta, param, ApplySF);
 }
 
-
-double AnalyzerCore::GetCFWeightElectron(vector<double> el_pt, vector<double> el_eta ,  AnalyzerParameter param){
-  //double CFBackgroundEstimator::GetElectronCFRate(TString ID, TString key, double eta, double pt, int sys){                                    
-
-  cfEst->IgnoreNoHist = param.MCCorrrectionIgnoreNoHist;
-
+double AnalyzerCore::GetCFWeightElectron(vector<double> el_pt, vector<double> el_eta, AnalyzerParameter param, bool ApplySF){
+  
+  //cfEst->IgnoreNoHist = param.MCCorrrectionIgnoreNoHist;
 
   if(el_pt.size()  != 2) return 1.;
 
-  double el1_cf_rate =   cfEst->GetElectronCFRate2D(param.Electron_Tight_ID,"central",el_eta[0], el_pt[0], 0);
-  double el2_cf_rate =   cfEst->GetElectronCFRate2D(param.Electron_Tight_ID,"central",el_eta[1], el_pt[1], 0);
 
+  double el1_cf_rate =   cfEst->GetElectronCFRate(param.Electron_Tight_ID, param.Electron_CF_Key,el_eta[0], el_pt[0], 0);
+  double el2_cf_rate =   cfEst->GetElectronCFRate(param.Electron_Tight_ID, param.Electron_CF_Key,el_eta[1], el_pt[1], 0);
 
-  if((el_eta[0]) < 1.5) el1_cf_rate *= 0.95;
-  else el1_cf_rate *= 0.95;
-  if((el_eta[1]) < 1.5) el2_cf_rate *= 0.95;
-  else el2_cf_rate *= 0.95;
+  if(ApplySF){
+    el1_cf_rate *= 1.; 
+    el2_cf_rate *= 1.; /// No SF Yet
+  }
 
   double cf_weight = (el1_cf_rate / (1.-el1_cf_rate))  + (el2_cf_rate/(1.-el2_cf_rate));
+  
+  if(run_Debug) cout << "GetCFWeightElectron weight=" << cf_weight << endl;
   return cf_weight;
 }
 
-
-double AnalyzerCore::GetCFrates(TString id, double pt, double eta){
-
-  eta = fabs(eta);
-  double x = 1./pt;
-  double a, b, c;
-  double rate (0.);
-
-  if(DataEra=="2016preVFP"){ // UL MIGRATED
-    if(id == "HNTightV2"){
-      if(eta < 0.8){
-        if(x < 0.004){ a = -6.19041e+00; b = -7.38711e+02; rate = TMath::Exp(a + b*x); }
-        else if(x>=0.004 && x<0.038){ a = 1.45276e-06; b = 7.72346e-03; c = -1.45076e-05; rate = a/(x+b)+c; }
-        else{ a = 9.71303e-05; b = -0.00208995; rate = a + b*x; }
-      }
-      else if(eta>=0.8 && eta<1.479){
-        if(x < 0.004){ a = -4.73210e+00; b = -4.98697e+02; rate = TMath::Exp(a + b*x); }
-        else if(x>=0.004 && x<0.036){ a = 1.08024e-05; b = 4.03858e-03; c = -8.32696e-05; rate = a/(x+b)+c; }
-        else{ a = 0.000740277; b = -0.0154686; rate = a + b*x; }
-      }
-      else{
-        //if(x < 0.01){ a = 0.0127778; b = -0.744197; }
-        //else if(x>=0.01 && x<0.0205){ a = 0.00725863; b = -0.18864; }
-        //else{ a = 0.00417112; b = -0.0371866; }
-        a = 3.19899e-05; b = -6.09451e-04; c = 1.50164e-03; rate = a/(x+b)+c;
-      }
-    }
-  }
-
-  else if(DataEra=="2016postVFP"){ // UL MIGRATED
-    if(id == "HNTightV2"){
-      if(eta < 0.8){
-        if(x < 0.002){ a = -5.09610e+00; b = -1.29241e+03; rate = TMath::Exp(a + b*x); }
-        else if(x>=0.002 && x<0.022){ a = 3.95560e-07; b = -1.14944e-03; c = 1.83440e-05; rate = a/(x+b)+c; }
-        else{ a = 6.34584e-05; b = -0.00131961; rate = a + b*x; }
-      }
-      else if(eta>=0.8 && eta<1.479){
-        if(x < 0.002){ a = -3.55492e+00; b = -1.05267e+03; rate = TMath::Exp(a + b*x); }
-        else if(x>=0.002 && x<0.014){ a = 5.04842e-06; b = -2.06530e-04; c = 1.51220e-04; rate = a/(x+b)+c; }
-        else{ a = 0.000642187; b = -0.0134713; rate = a + b*x; }
-      }
-      else{
-        //if(x < 0.01){ a = 0.0127778; b = -0.744197; }
-        //else if(x>=0.01 && x<0.0205){ a = 0.00725863; b = -0.18864; }
-        //else{ a = 0.00417112; b = -0.0371866; }
-        a = 4.98575e-05; b = 8.07806e-04; c = 6.91510e-04; rate = a/(x+b)+c;
-      }
-    }
-  }
-
-  else if(DataYear==2017){ //UL MIGRATED
-    if(id == "HNTightV2"){
-      if(eta < 0.8){ 
-        if(x < 0.005){ a = -7.20188e+00; b = -5.35974e+02; rate = TMath::Exp(a + b*x); }
-        else if(x>=0.005 && x<0.026){ a = 1.11758e-06; b = 1.20114e-02; c = -1.48319e-05; rate = a/(x+b)+c; }
-        else{ a = 2.75774e-05; b = -0.000472906; rate = a + b*x; }
-      }
-      else if(eta>=0.8 && eta<1.479){ 
-        if(x < 0.003){ a = -4.84051e+00; b = -7.80357e+02; rate = TMath::Exp(a + b*x); }
-        else if(x>=0.003 && x<0.038){ a = 2.04166e-06; b = -2.92844e-04; c = 4.42685e-06; rate = a/(x+b)+c; }
-        else{ a = 0.000126619; b = -0.00189268; rate = a + b*x; }
-      }
-      else{
-        //if(x < 0.01){ a = 0.0127778; b = -0.744197; }
-        //else if(x>=0.01 && x<0.0205){ a = 0.00725863; b = -0.18864; }
-        //else{ a = 0.00417112; b = -0.0371866; }
-        a = 2.12574e-05; b = 4.01600e-04; c = -7.53337e-06; rate = a/(x+b)+c;
-      }
-    }
-  }
-  else if(DataYear==2018){ // UL MIGRATED
-    if(id == "HNTightV2"){
-      if(eta < 0.8){
-        if(x < 0.002){ a = -5.73695e+00; b = -1.29458e+03; rate = TMath::Exp(a + b*x); }
-        else if(x>=0.002 && x<0.022){ a = 1.85580e-07; b = -1.29739e-03; c = 1.18060e-05; rate = a/(x+b)+c; }
-        else{ a = 3.68107e-05; b = -0.000730055; rate = a + b*x; }
-      }
-      else if(eta>=0.8 && eta<1.479){
-        if(x < 0.002){ a = -4.48813e+00; b = -1.06378e+03; rate = TMath::Exp(a + b*x); }
-        else if(x>=0.002 && x<0.035){ a = 2.04543e-06; b = -5.01415e-04; c = 1.05875e-05; rate = a/(x+b)+c; }
-        else{ a = 0.000119787; b = -0.00166241; rate = a + b*x; }
-      }
-      else{
-        //if(x < 0.01){ a = 0.0127778; b = -0.744197; }
-        //else if(x>=0.01 && x<0.0205){ a = 0.00725863; b = -0.18864; }
-        //else{ a = 0.00417112; b = -0.0371866; }
-        a = 2.06403e-05; b = 4.25782e-04; c = 4.31896e-06; rate = a/(x+b)+c;
-      }
-    }
-  }
-
-  if(rate < 0.) rate = 0.;
-  return rate;
-
-}
-
-double AnalyzerCore::GetCFWeightElectron(vector<Lepton *> lepptrs, AnalyzerParameter param, bool applySF, int syst){
-  if(!param.Electron_Tight_ID.Contains("HNTight")) return 0.;
-  if(lepptrs.size() > 2) return 0.;
-
-  std::vector<Electron> el;
-  for(unsigned int i=0; i<lepptrs.size(); i++){
-    if(lepptrs.at(i)->LeptonFlavour() == Lepton::ELECTRON){
-      Electron *el_tmp = (Electron *)lepptrs.at(i);
-      el.push_back(*el_tmp);
-    }
-  }
-  if(el.size()==2 && el.at(0).Charge()*el.at(1).Charge()>0) return 0.;
-
-  std::vector<double> CFrate, CFweight, sf;
-  double cfweight = 0.;
-  for(unsigned int i=0; i<el.size(); i++){
-    CFrate.push_back(GetCFrates(param.Electron_Tight_ID, el.at(i).Pt(), el.at(i).scEta()));
-    CFweight.push_back(CFrate.at(i)/(1.-CFrate.at(i)));
-
-    if(applySF){
-      if(DataEra=="2016preVFP"){
-        if(fabs(el.at(i).scEta()) < 1.479){
-          if(param.Electron_Tight_ID == "HNTightV2") sf.push_back(0.9330 + syst*0.);
-        }
-        else{
-          if(param.Electron_Tight_ID == "HNTightV2") sf.push_back(1.1681 + syst*0.);
-        }
-      }
-      if(DataEra=="2016postVFP"){
-        if(fabs(el.at(i).scEta()) < 1.479){
-          if(param.Electron_Tight_ID == "HNTightV2") sf.push_back(0.9763 + syst*0.);
-        }
-        else{
-          if(param.Electron_Tight_ID == "HNTightV2") sf.push_back(1.1475 + syst*0.);
-        }
-      }
-      if(DataYear==2017){
-        if(fabs(el.at(i).scEta()) < 1.479){
-          if(param.Electron_Tight_ID == "HNTightV2") sf.push_back(1.4395 + syst*0.);
-        }
-        else{
-          if(param.Electron_Tight_ID == "HNTightV2") sf.push_back(1.3247 + syst*0.);
-        }
-      }
-      if(DataYear==2018){
-        if(fabs(el.at(i).scEta()) < 1.479){
-          if(param.Electron_Tight_ID == "HNTightV2") sf.push_back(1.1234 + syst*0.);
-        }
-        else{
-          if(param.Electron_Tight_ID == "HNTightV2") sf.push_back(1.3097 + syst*0.);
-        }
-      }
-    }
-    else sf.push_back(1.);
-
-    cfweight += sf.at(i)*CFweight.at(i);
-  }
-
-  return cfweight;
-
-}
 
 void AnalyzerCore::SetupLeptonBDTSKFlatV5(){
   
@@ -5099,7 +4977,7 @@ void AnalyzerCore::SetupLeptonBDTSKFlat(){
     velectron_ptratio->push_back(JetLeptonPtRatioLepAware(i));
     velectron_ptrel->push_back(JetLeptonPtRelLepAware(i));
     velectron_lepton_type->push_back(GetLeptonType_JH(i, All_Gens));
-    velectron_is_cf->push_back(IsCF(i, All_Gens));
+    velectron_is_cf->push_back(IsCF(i, All_Gens,true));
 
    
   }
@@ -5691,7 +5569,7 @@ std::vector<Muon> AnalyzerCore::MuonPromptOnly(const std::vector<Muon>& muons, c
   std::vector<Muon> out;
 
   for(unsigned int i=0; i<muons.size(); i++){
-    if(GetLeptonType(muons.at(i), gens)<=0) continue;
+    if(muons.at(i).LeptonGenType() <= 0) continue;
     out.push_back( muons.at(i) );
   }
 
@@ -5708,9 +5586,8 @@ std::vector<Muon> AnalyzerCore::MuonPromptOnly(const std::vector<Muon>& muons, c
   std::vector<Muon> out;
 
   for(unsigned int i=0; i<muons.size(); i++){
-    if(param.FakeMethod == "Data"){
-      if(GetLeptonType(muons.at(i), gens)<=0) continue;
-    }
+    if(muons.at(i).LeptonGenType() <= 0) continue;
+    
     out.push_back( muons.at(i) );
   }
 
@@ -5888,6 +5765,25 @@ Particle AnalyzerCore::UpdateMETSyst(AnalyzerParameter param, const Particle& ME
 
 }
 
+double AnalyzerCore::GetShiftCFEl(Electron el) {
+
+  //// Get Shift for  Prompt -> CF Pt response
+  double PtShift = 1.;
+  if(el.IsBB()){
+    if(el.Pt() < 50) PtShift = 0.995;
+    else if(el.Pt() < 100) PtShift =  0.998;
+    else  PtShift = 1;
+
+  }
+  else{
+    if(el.Pt() < 50) PtShift = 0.987;
+    else if(el.Pt() < 100) PtShift =  0.994;
+    else if(el.Pt() < 250) PtShift =  0.997;
+    else  PtShift = 0.999;
+  }
+
+  return PtShift;
+}
 
 std::vector<Muon> AnalyzerCore::MuonApplyPtCut(const std::vector<Muon>& muons, double ptcut){
 
@@ -5911,10 +5807,8 @@ std::vector<Electron> AnalyzerCore::ElectronPromptOnly(const std::vector<Electro
   std::vector<Electron> out;
   for(unsigned int i=0; i<electrons.size(); i++){
     bool pass=true;
-    if(GetLeptonType(electrons.at(i), gens) <= 0)pass=false;
-    if(GetLeptonType(electrons.at(i), gens)== -5)pass=true;
-    if(GetLeptonType(electrons.at(i), gens)== -6)pass=true;
-  
+    if(electrons.at(i).LeptonGenType() <= 0) pass=false;
+    //    if(electrons.at(i).LeptonGenType() >= 4) pass=false;
     if(pass)out.push_back( electrons.at(i) );
   }
   
@@ -5931,17 +5825,8 @@ std::vector<Electron> AnalyzerCore::ElectronPromptOnly(const std::vector<Electro
   std::vector<Electron> out;
   for(unsigned int i=0; i<electrons.size(); i++){
     bool pass=true;
-
-    if(param.FakeMethod == "Data"){
-      if(GetLeptonType(electrons.at(i), gens) <= 0)pass=false;
-    }
-
-
-    if(param.CFMethod == "Data"){
-      if(electrons.at(i).LeptonIsCF()) pass=false;
-    }
-    
-    if(pass)out.push_back( electrons.at(i) );
+    if(electrons.at(i).LeptonGenType() <= 0) pass=false;
+    if(pass) out.push_back(electrons.at(i));
   }
 
   std::sort(out.begin(),       out.end(),        PtComparing);
@@ -6846,7 +6731,7 @@ TString AnalyzerCore::MatchGenDef(std::vector<Gen>& gens,const Lepton& Lep, bool
           if(fabs(gen.PID()) == 22 && gen.Status()==1 && (fabs(gens.at(gen.MotherIndex()).PID()) == 111)) return "pi0ph";
           if((fabs(gens.at(gen.MotherIndex()).PID()) == 111)) return "pi0";
           if(fabs(gen.PID()) == 22 ) return "conv";
-
+	  
         }
       }
       return "proton";
@@ -6901,12 +6786,14 @@ void AnalyzerCore::PrintMatchedGen(std::vector<Gen>& gens,const Lepton& Lep){
     if (Idx_Closest == i)  addon += " ----> ";
     //if(Lep.DeltaR(gen) < 0.4)     cout << "\033[91m\033[107m"<<  i << "\t" << gen.SPID() << "\t" << gen.Status() << "\t" << gen.MotherIndex() << "\t" << gens.at(gen.MotherIndex()).SPID()<< "\t" << history[0] << "\t \033[0m";
 
-    if(Lep.DeltaR(gen) < 0.4)     cout <<  i << "\t" << gen.SPID() << "\t" << gen.Status() << "\t" << gen.MotherIndex() << "\t" << gens.at(gen.MotherIndex()).SPID()<< "\t" << history[0] << "\t";
-    //else cout << i << "\t" << gen.SPID() << "\t" << gen.Status() << "\t" << gen.MotherIndex() << "\t" << gens.at(gen.MotherIndex()).SPID()<< "\t" << history[0] << "\t";
-
-    //if(Lep.DeltaR(gen) < 0.4)  printf("\033[91m\033[107m%.2f\t%.2f\t%.2f\t%.2f\033[0m\n",gen.Pt(), gen.Eta(), gen.Phi(), gen.M());
-    if(Lep.DeltaR(gen) < 0.4)  printf("%.2f\t%.2f\t%.2f\t%.2f " +addon+ "\n",gen.Pt(), gen.Eta(), gen.Phi(), gen.M());
-    //else  printf("%.2f\t%.2f\t%.2f\t%.2f\n",gen.Pt(), gen.Eta(), gen.Phi(), gen.M());
+    if(Lep.DeltaR(gen) < 0.4)  {
+      cout <<  i << "\t" << gen.SPID() << "\t" << gen.Status() << "\t" << gen.MotherIndex() << "\t" << gens.at(gen.MotherIndex()).SPID()<< "\t" << history[0] << "\t";
+      printf("%.2f\t%.2f\t%.2f\t%.2f =======> DrMatched %.2f\t "  +addon+ "\n",gen.Pt(), gen.Eta(), gen.Phi(), gen.M(),Lep.DeltaR(gen));
+    }
+    else {
+      //  cout << i << "\t" << gen.SPID() << "\t" << gen.Status() << "\t" << gen.MotherIndex() << "\t" << gens.at(gen.MotherIndex()).SPID()<< "\t" << history[0] << "\t";
+      //printf("%.2f\t%.2f\t%.2f\t%.2f\n",gen.Pt(), gen.Eta(), gen.Phi(), gen.M());
+    }
     
   }
 
@@ -6925,7 +6812,34 @@ void AnalyzerCore::PrintEvent(AnalyzerParameter param,TString selection,double w
 
 }
 
-bool AnalyzerCore::IsCF(Electron el, std::vector<Gen> truthColl){
+
+bool AnalyzerCore::HasPromptConv(Electron el){
+
+
+  if(All_Gens.size() == 0) return false;
+
+  int TruthIdx  = GenMatchedIdx(el, All_Gens);;
+
+  int nSt1el(0);
+  for(unsigned int i=2; i < All_Gens.size(); i++){
+    if(TruthIdx == int(i)) continue;
+    if(fabs(All_Gens.at(TruthIdx).Eta()-All_Gens.at(i).Eta())>0.1) continue;
+    if(All_Gens.at(TruthIdx).DeltaPhi(All_Gens.at(i))>0.3) continue;
+    if(All_Gens[TruthIdx].MotherIndex() == All_Gens[i].MotherIndex()){
+      if(All_Gens[i].Status() == 1) {
+	if(fabs(All_Gens[i].PID()) == 11) nSt1el++;
+      }
+    }
+  }
+
+  /// if nSt1el (number of status 1 electrons in dR < 0.4 from same mother , if > 1 e->eee  that passes JH Gen code
+  bool bIsConv  =  (nSt1el > 0);
+  
+  return bIsConv;
+
+}
+
+bool AnalyzerCore::IsCF(Electron el, std::vector<Gen> truthColl, bool CheckCloseEl){
 
   int charge_el_reco = el.Charge();
   Lepton l = Lepton(el);
@@ -6933,10 +6847,35 @@ bool AnalyzerCore::IsCF(Electron el, std::vector<Gen> truthColl){
   int LepType = GetLeptonType_JH(el, truthColl);
   
   if(LepType<= 0)    return false;
+
+  //// Get Index of matched Status 1 el
   int Idx_Closest    = GenMatchedIdx(el,truthColl);
+
+  if(CheckCloseEl){
+
+    // check if multiple close status 1 el overlap
+    int LastSelfIdx    = LastAbsSelfMotherIdx(Idx_Closest,All_Gens);
+
+    int nSt1el(0);
+    for(unsigned int i=2; i < All_Gens.size(); i++){
+      if(Idx_Closest == i) continue;
+      if(All_Gens[i].DeltaR(All_Gens[Idx_Closest])>0.1) continue;
+      if(All_Gens[Idx_Closest].MotherIndex() == All_Gens[i].MotherIndex()){
+	if(All_Gens[i].Status() == 1) {
+	  if(fabs(All_Gens[i].PID()) == 11) nSt1el++;
+	}
+      }
+    }
+    if(nSt1el > 0){
+      int MGenQ = (All_Gens[LastSelfIdx].PID()  < 0 ) ? 1 : -1;
+      if( fabs(All_Gens[LastSelfIdx].PID()) == 11 && (MGenQ != el.Charge()))  return  true;
+      else return  false;
+    }  
+  }
+
   int IdxType_NearEl = LepType>3? GetPrElType_InSameSCRange(Idx_Closest, truthColl, "IdxType"):Idx_Closest;
   int Idx_NearEl     = LepType>3? IdxType_NearEl/10:Idx_Closest;
-
+  
   // METHOD 1
   // This does not include internal conv CF
   //bool method1=false;
@@ -7560,7 +7499,9 @@ double AnalyzerCore::FillWeightHist(TString label, double _weight){
   
   if(run_Debug) cout << "AnalyzerCore::FillWeightHist ["+label+"]  corr.=" <<   _weight << endl;
 
-  if(!label.Contains("Syst_"))   FillHist( "weights/"+ label , _weight ,1., 200, -5., 5,"ev weight");
+  double max_x_range = 5. + 2*(fabs(_weight));
+
+  if(!label.Contains("Syst_"))   FillHist( "weights/"+ label , _weight ,1., 200, -1.*max_x_range, max_x_range,"ev weight");
     
   return _weight;
 }
@@ -8245,6 +8186,7 @@ int AnalyzerCore::GetLeptonType_JH(const Lepton& Lep, std::vector<Gen>& TruthCol
   }
   else{
     LeptonType = GetLeptonType_JH(MatchedTruthIdx, TruthColl);//4)
+
     if(LeptonType>=4 && LeptonType<=5){//5)
       int NearbyPrElType = GetPrElType_InSameSCRange(MatchedTruthIdx, TruthColl);
       if(NearbyPrElType>0) LeptonType = NearbyPrElType;
@@ -8389,6 +8331,19 @@ int AnalyzerCore::FirstNonSelfMotherIdx(int TruthIdx, std::vector<Gen>& TruthCol
 }
 
 
+int AnalyzerCore::LastAbsSelfMotherIdx(int TruthIdx,std::vector<Gen>& TruthColl){
+
+  if(TruthIdx<2) return TruthIdx;
+
+  int pid=fabs(TruthColl.at(TruthIdx).PID()), midx=TruthIdx, currentidx=TruthIdx;
+  while(fabs(TruthColl.at(midx).PID())==pid){
+    currentidx=midx;
+    midx=TruthColl.at(midx).MotherIndex();
+    if(midx<0) break;
+  }
+
+  return currentidx;
+}
 
 
 int AnalyzerCore::LastSelfMotherIdx(int TruthIdx,std::vector<Gen>& TruthColl){

@@ -35,6 +35,8 @@ public:
   double Jet_MinPt, Jet_MaxEta ;
   double FatJet_MinPt, FatJet_MaxEta ;
 
+  bool   Weight_LumiNorm, Weight_SumW,  Weight_PileUp, Weight_PreFire ,Weight_kFactor, Weight_IDSF , Weight_TriggerSF;
+
   TString Tau_Tight_ID, Tau_Loose_ID, Tau_Veto_ID;
   
   TString SRConfig;

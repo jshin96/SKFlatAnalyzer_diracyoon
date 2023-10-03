@@ -71,6 +71,14 @@ void AnalyzerParameter::Clear(){
   Jet_ID = "Default";
   FatJet_ID = "Default";
 
+  Weight_LumiNorm = true;
+  Weight_SumW     = true;
+  Weight_PileUp   = true;
+  Weight_PreFire  = true;
+  Weight_kFactor  = true;
+  Weight_TriggerSF = true;
+  Weight_IDSF  = true;
+
   syst_ = Central;
 
 }
@@ -122,6 +130,13 @@ AnalyzerParameter::AnalyzerParameter(){
   Jet_ID = "Default";
   FatJet_ID = "Default";
 
+  Weight_LumiNorm = true;
+  Weight_SumW     = true;
+  Weight_PileUp   = true;
+  Weight_PreFire  = true;
+  Weight_kFactor  = true;
+  Weight_TriggerSF = true;
+  Weight_IDSF  = true;
   syst_ = Central;
 
 }
