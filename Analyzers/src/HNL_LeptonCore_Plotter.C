@@ -1,0 +1,1017 @@
+#include "HNL_LeptonCore.h"
+
+
+/*------------------------------------------------------------------------------------------------------------                                           
+------------------------------------------------------------------------------------------------------------  
+//                                                                                                          
+//                                                                                                          
+// FUNCTIONS NOW ARE FOR PLOTTING OF SR/CR/GENERAL                                                         
+//                                                                                                         
+------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------*/
+
+void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, int plotLL, TString plot_dir, TString region,   std::vector<Jet> jets,  std::vector<FatJet> fatjets,std::vector<Lepton *> Leps, Particle  met, double nvtx,  double w, int verbose_level){
+
+  if(verbose_level>0) return;
+  std::vector<Tau>  Taus;
+  Fill_RegionPlots(channel, plotLL,plot_dir ,region, Taus,jets, fatjets, Leps, met, nvtx, w , verbose_level);
+
+  //// Make LL/LT plots                                                                                                                                                                                                                                                                                                       
+  if(RunFake){
+    if(Leps.size() == 2){
+      if( (!Leps[0]->PassLepID()  && Leps[1]->PassLepID()) || (Leps[0]->PassLepID()  && !Leps[1]->PassLepID())){
+        Fill_RegionPlots(channel, plotLL,plot_dir ,region+"_LT", Taus,jets, fatjets, Leps, met, nvtx, 1 , verbose_level);
+      }
+    }
+  }
+}
+
+
+
+
+void HNL_LeptonCore::FillAK8Plots(HNL_LeptonCore::Channel channel,  TString plot_dir, TString region,std::vector<Tau> TauColl, std::vector<Jet> jets,   std::vector<FatJet> fatjets, std::vector<Lepton *> leps , Particle  met, double nvtx,  double w){
+
+
+  bool threelep = (leps.size()  == 3);
+  bool fourlep  = (leps.size()  == 4);
+
+  if(threelep && !(channel == EEE  || channel == EMuL || channel == MuMuMu )) return;
+  if(fourlep  && !(channel == EEEE  || channel == MuMuMuMu || channel == EMuLL)) return;
+
+  bool DrawAll(false), DrawSyst(false);
+  if (plot_dir.Contains("Syst")){
+    DrawSyst=true;
+  }
+  else{
+    DrawAll=true;
+    DrawSyst=true;
+  }
+
+
+
+  if(DrawSyst) FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+  "N_AK8Jets", fatjets.size() , w, 10, 0., 10., "N_{AK8 jets}");
+
+  double minDRTauAK8=9999.;
+  for(unsigned int i=0; i < fatjets.size(); i++){
+
+    for(auto itau : TauColl){
+      if(fatjets[i].DeltaR(itau) < minDRTauAK8) minDRTauAK8 = fatjets[i].DeltaR(itau) ;
+    }
+
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_Eta",  fatjets[i].Eta() , w, 100, -5., 5., "AK8 Jet #eta");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_Pt",  fatjets[i].Pt() , w, 100, 0., 2000., "AK8 Jet p_{T} GeV");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_SDMass",  fatjets[i].SDMass() , w, 100, 0., 500., "Mass_{softdrop} GeV");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_tau21",  fatjets[i].PuppiTau2()/ fatjets[i].PuppiTau1() , w, 200, 0., 1., "#tau_{21}");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/R_AK8Jet_MET",  fatjets[i].DeltaR(met) ,w, 50,  0., 5,"#DeltaR(FJ,met)");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/AK8_Tagger_DeepCSV" , fatjets[i].GetTaggerResult(JetTagging::DeepCSV), w, 50, 0, 1., "JetTagging::DeepCSV");
+
+
+    vector<JetTagging::Tagger> Taggers = {    JetTagging::DeepCSV, JetTagging::DeepCSV_CvsL, JetTagging::DeepCSV_CvsB,
+                                              JetTagging::particleNet_TvsQCD, JetTagging::particleNet_WvsQCD, JetTagging::particleNet_ZvsQCD,
+                                              JetTagging::particleNet_HbbvsQCD, JetTagging::particleNet_HccvsQCD, JetTagging::particleNet_H4qvsQCD, JetTagging::particleNet_QCD,
+                                              JetTagging::particleNetMD_Xbb, JetTagging::particleNetMD_Xcc, JetTagging::particleNetMD_Xqq, JetTagging::particleNetMD_QCD};
+
+    for (auto jet_tagger  : Taggers){
+      if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/AK8_Taggers_"+TString(JetTagging::TaggerToString(jet_tagger)) , fatjets[i].GetTaggerResult(jet_tagger), w, 50, 0, 1., "JetTagging::"+TString(JetTagging::TaggerToString(jet_tagger)));
+    }
+
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/AK8_Tagger_particleNet_WvsQCD" , fatjets[i].GetTaggerResult(JetTagging::particleNet_WvsQCD), w, 50, 0, 1., "JetTagging::particleNet_WvsQCD");
+
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/AK8_Tagger_particleNet_TvsQCD" , fatjets[i].GetTaggerResult(JetTagging::particleNet_TvsQCD), w, 50, 0, 1., "JetTagging::particleNet_TvsQCD");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/AK8_Tagger_particleNet_ZvsQCD" , fatjets[i].GetTaggerResult(JetTagging::particleNet_ZvsQCD), w, 50, 0, 1., "JetTagging::particleNet_ZvsQCD");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/AK8_Tagger_particleNet_QCD" , fatjets[i].GetTaggerResult(JetTagging::particleNet_QCD), w, 50, 0, 1., "JetTagging::particleNet_WvsQCD");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/AK8_Tagger_particleNetMD_QCD" , fatjets[i].GetTaggerResult(JetTagging::particleNetMD_QCD), w, 50, 0, 1., "JetTagging::particleNetMD_WvsQCD");
+
+
+  }
+
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_dRmin_Tau",   minDRTauAK8,  w, 50, 0, 5, "#DeltaR (WAK8,Tau)");
+
+
+  if(leps.size() != 2) return;
+  if(fatjets.size() == 0) return;
+
+
+  Particle llJCand =  *leps[0] + *leps[1]+ fatjets[0];
+  Particle l1JCand = *leps[0] +  fatjets[0];
+  Particle l2JCand = *leps[1] +  fatjets[0];
+
+
+  Particle WCand   = fatjets[0];
+  Particle N1Cand  = fatjets[0] + *leps[0] ;
+  Particle N2Cand  = fatjets[0] + *leps[1] ;
+  Particle NCand = (leps[1]->Pt() < leps[0]->Pt()) ? N2Cand : N1Cand;
+  Lepton Nlep = (leps[1]->Pt() < 100.) ?  *leps[1] : *leps[0];
+  Lepton Wlep = (leps[1]->Pt() > 100.) ? *leps[1] : *leps[0];
+
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaR_Lep_FromN_N",  NCand.DeltaR(Nlep) , w, 200, 0., 5.,"");
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaR_Lep_FromN_W",  WCand.DeltaR(Nlep), w, 200, 0., 5.,"");
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaR_Lep_FromN_N",  NCand.DeltaR(Nlep), w, 200, 0., 5.,"");
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaR_Lep_FromW_N",  NCand.DeltaR(Wlep), w, 200, 0., 5.,"");
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaR_Lep_FromW_W",  WCand.DeltaR(Wlep), w, 200, 0., 5.,"");
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaR_Lep_FromW_LepFromN",  Nlep.DeltaR(Wlep), w, 200, 0., 5.,"");
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaR_W_N",  NCand.DeltaR(Wlep), w, 200, 0., 5.,"");
+
+
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaPhi_Lep_FromN_N",  fabs(TVector2::Phi_mpi_pi( ( (NCand.Phi() - Nlep.Phi() )))),  w, 200, 0., 5.,"");
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaPhi_Lep_FromN_W",  fabs(TVector2::Phi_mpi_pi( ( (WCand.Phi() - Nlep.Phi() )))),  w, 200, 0., 5.,"");
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaPhi_Lep_FromW_N",  fabs(TVector2::Phi_mpi_pi( ( (NCand.Phi() - Wlep.Phi() )))),  w, 200, 0., 5.,"");
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaPhi_Lep_FromW_W",  fabs(TVector2::Phi_mpi_pi( ( (WCand.Phi() - Wlep.Phi() )))),  w, 200, 0., 5.,"");
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaPhi_Lep_FromW_LepFromN",  fabs(TVector2::Phi_mpi_pi( ( (Nlep.Phi() - Wlep.Phi() )))),  w, 200, 0., 5.,"");
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaPhi_W_N",  fabs(TVector2::Phi_mpi_pi( ( (WCand.Phi() - NCand.Phi() )))),  w, 200, 0., 5.,"");
+
+  Particle WrongN = Wlep + WCand;
+
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaRWr_Lep_FromN_N",  WrongN.DeltaR(Nlep), w, 200, 0., 5.,"");
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaRWr_Lep_FromW_N",  WrongN.DeltaR(Wlep), w, 200, 0., 5.,"");
+
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaPhiWr_Lep_FromN_N",  fabs(TVector2::Phi_mpi_pi( ( (WrongN.Phi() - Nlep.Phi() )))),  w, 200, 0., 5.,"");
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaPhiWr_Lep_FromW_N",  fabs(TVector2::Phi_mpi_pi( ( (WrongN.Phi() - Wlep.Phi() )))),  w, 200, 0., 5.,"");
+
+  Particle W1 = (NCand+Wlep);
+
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaR_W1_Lep_FromN", W1.DeltaR(Nlep),w, 200, 0., 5.,"");
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaR_W1_Lep_FromW", W1.DeltaR(Wlep),w, 200, 0., 5.,"");
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaR_W1_N", W1.DeltaR(NCand),w, 200, 0., 5.,"");
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaR_W1_WCand", W1.DeltaR(WCand),w, 200, 0., 5.,"");
+
+
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaPhi_W1_Lep_FromN",  fabs(TVector2::Phi_mpi_pi( ( (W1.Phi() - Nlep.Phi() )))), w, 200, 0., 5.,"");
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaPhi_W1_Lep_FromW",  fabs(TVector2::Phi_mpi_pi( ( (W1.Phi() - Wlep.Phi() )))), w, 200, 0., 5.,"");
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaPhi_W1_N",  fabs(TVector2::Phi_mpi_pi( ( (W1.Phi() - NCand.Phi() )))), w, 200, 0., 5.,"");
+  if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_DeltaPhi_W1_WCand",  fabs(TVector2::Phi_mpi_pi( ( (W1.Phi() - WCand.Phi() )))), w, 200, 0., 5.,"");
+
+
+  for(unsigned int ij =0; ij < jets.size(); ij++){
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_dR_AK4J",   fatjets[0].DeltaR(jets[ij]),  w, 50, 0, 5, "#DeltaR (WAK8,j)");
+    if(jets[ij].GetTaggerResult(JetTagging::DeepCSV) > mcCorr->GetJetTaggingCutValue(JetTagging::DeepCSV , JetTagging::Medium)) {
+      if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_dR_AK4BJ",   fatjets[0].DeltaR(jets[ij]),  w, 50, 0, 5, "#DeltaR (WAK8,Bj)");
+    }
+  }
+
+  if(DrawSyst)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_Mass_l1J",  l1JCand.M(),  w, 50, 0, 2500, "Reco M_{llJ}");
+  if(DrawSyst)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_Mass_l2J",  l2JCand.M(),  w, 50, 0, 2500, "Reco M_{llJ}");
+  if(DrawSyst)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_Mass_llJ",  llJCand.M(),  w, 50, 0, 2500, "Reco M_{llJ}");
+
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_dR_W_lep1",   fatjets[0].DeltaR(*leps[0]),  w, 50, 0, 5, "#DeltaR (Wj1,lep1)");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_dR_W_lep2",   fatjets[0].DeltaR(*leps[1]),  w, 50, 0, 5, "#DeltaR (Wj2,lep2)");
+
+  if(fatjets[0].DeltaR(*leps[0] ) < fatjets[0].DeltaR(*leps[1] )){
+    Particle lJcloseCand = *leps[0]  +  fatjets[0];
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_Mass_W_close_lep",  lJcloseCand.M(),  w, 250, 0, 2000, "Reco M_{llJ}");
+  }
+
+
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_dPhi_l1_llJ",  fabs(TVector2::Phi_mpi_pi( ( (fatjets[0] + *leps[0]+*leps[1]).Phi() - (leps[0]->Phi() )))),  w,  100, 0., 5., "");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_dPhi_l2_llJ",  fabs(TVector2::Phi_mpi_pi( ( (fatjets[0] + *leps[0]+*leps[1]).Phi() - (leps[1]->Phi() )))),  w,  100, 0., 5., "");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_dPhi_N1_llJ",  fabs(TVector2::Phi_mpi_pi( ( (fatjets[0] + *leps[0]+*leps[1]).Phi() - ((*leps[0]+fatjets[0]).Phi() )))),  w,  100, 0., 5., "");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_dPhi_N2_llJ",  fabs(TVector2::Phi_mpi_pi( ( (fatjets[0] + *leps[0]+*leps[1]).Phi() - ((*leps[1]+fatjets[0]).Phi() )))),  w,  100, 0., 5., "");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_dPhi_W_llJ",  fabs(TVector2::Phi_mpi_pi( ( (fatjets[0] + *leps[0]+*leps[1]).Phi() - ((fatjets[0]).Phi() )))),  w,  100, 0., 5., "");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_dPhi_l1_lJ",  fabs(TVector2::Phi_mpi_pi( ( (fatjets[0] + *leps[0]).Phi() - (leps[1]->Phi() )))),  w,  100, 0., 5., "");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_dPhi_l2_lJ",  fabs(TVector2::Phi_mpi_pi( ( (fatjets[0] + *leps[1]).Phi() - (leps[0]->Phi() )))),  w,  100, 0., 5., "");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_dPhi_l1_J",  fabs(TVector2::Phi_mpi_pi( ( (fatjets[0] ).Phi() - (leps[0]->Phi() )))),  w,  100, 0., 5., "");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK8Jet_dPhi_l2_J",  fabs(TVector2::Phi_mpi_pi( ( (fatjets[0] ).Phi() - (leps[1]->Phi() )))),  w,  100, 0., 5., "");
+
+  return;
+}
+
+  void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, int fill_lep, TString plot_dir, TString region, vector<Tau> Taus,  std::vector<Jet> jets,    std::vector<FatJet> fatjets, std::vector<Lepton *> leps , Particle  met, double nvtx,  double w,int verbose_level){
+
+  if(verbose_level > 0) return;
+  Fill_RegionPlots(channel, plot_dir ,region, Taus, jets,fatjets, leps, met, nvtx, w,verbose_level);
+
+  if(fill_lep ==0) {
+  TString plot_dir_lep = plot_dir;
+  plot_dir_lep = plot_dir_lep.ReplaceAll(GetChannelString(channel),"LL");
+  Fill_RegionPlots(channel, plot_dir_lep ,region, Taus, jets ,fatjets, leps, met, nvtx, w,verbose_level);
+}
+  return;
+}
+
+void HNL_LeptonCore::Fill_RegionPlots(HNL_LeptonCore::Channel channel, TString plot_dir, TString region, std::vector<Tau> TauColl, std::vector<Jet> jets,    std::vector<FatJet> fatjets, std::vector<Lepton *> leps , Particle  met, double nvtx,  double w, int verbose_level ){
+  
+  if(verbose_level > 0) return;
+  
+  bool threelep = (leps.size()  == 3);
+  bool fourlep  = (leps.size()  == 4);
+  
+  if(threelep && !(channel == EEE  || channel == EMuL || channel == MuMuMu )) return;
+  if(fourlep  && !(channel == EEEE  || channel == MuMuMuMu || channel == EMuLL)) return;
+  
+  
+  int nel(0), nmu(0);
+  for(auto ilep: leps) {
+    if(ilep->LeptonFlavour() == Lepton::ELECTRON) nel++;
+    if(ilep->LeptonFlavour() == Lepton::MUON) nmu++;
+  }
+  
+  bool DrawAll(false), DrawSyst(false);
+  if (plot_dir.Contains("Syst")){
+    DrawSyst=true;
+  }
+  else{
+    DrawAll=true;
+    DrawSyst=true;
+  }
+  
+  FillAK8Plots(channel, plot_dir, region, TauColl,jets , fatjets, leps, met, nvtx,w);
+  
+  
+  
+  /// Draw N leptons                                                                                                                                                                                                                                                             
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/N_El", nel,  w, 5, 0, 5, "El size");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/N_Mu", nmu,  w, 5, 0, 5, "Mu size");
+  // Draw N jets                                                                                                                                                                                                                                                                
+  if(DrawSyst) FillHist( plot_dir+"/RegionPlots_"+ region+ "/N_AK4Jets", jets.size() , w, 10, 0., 10., "N_{AK4 jets}");
+
+
+  if(leps.size() < 2) return;
+
+  for(auto ilep : leps){
+    map<TString, double> lep_bdt_map = ilep->MAPBDT();
+    for(auto i : lep_bdt_map)     FillHist( plot_dir+"/LepRegionPlots_"+ region+ "/Lepton_mva_"+i.first + "_"+region , i.second, w, 100, -1., 1., "MVA");
+    FillHist( plot_dir+ "/LepRegionPlots_"+ region+ "/Lepton_mva_HF_"+region , ilep->LepMVA(), w, 100, -1., 1., "MVA");
+
+    double LepPt = (ilep->Pt() < 200) ? ilep->Pt() : 199;
+    for(auto i : lep_bdt_map)FillHist( plot_dir+ "/LepRegionPlots_"+ region+ "/"+i.first+"_HFMVA_"+region, LepPt, i.second,  w, 100, 0., 200.,100, -1., 1.);
+  }
+
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/SumQ", leps[0]->Charge() + leps[1]->Charge(),  w, 10, -5, 5, "Q size");
+
+  Particle llCand = *leps[0] + *leps[1];
+  Particle lllCand = (threelep) ? *leps[0] + *leps[1] + *leps[2] :  Particle();
+  Particle lljjCand;
+
+  if(jets.size() ==1 ) {
+
+    lljjCand += jets[0];
+
+    Particle WCand  = jets[0];
+    Particle N1Cand = jets[0]+ *leps[0] ;
+    Particle N2Cand = jets[0]+ *leps[1] ;
+
+    //if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Single_AK4Jet_M_l1W_M_l2W",  N1Cand.M(), N2Cand.M(), w, 200, 0., 2000., 200, 0., 2000.);                                                                                                                         
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Single_AK4Jet_dR_W_lep1",   WCand.DeltaR(*leps[0] ),  w, 50, 0, 5, "#DeltaR (W,lep1)");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Single_AK4Jet_dR_W_lep2",   WCand.DeltaR(*leps[1] ),  w, 50, 0, 5, "#DeltaR (W,lep2)");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Single_AK4Jet_mW",   WCand.M(),  w, 50, 0, 500, "Reco_Onejet M_{jj}");
+
+    int nSRbins=10;
+    double mljbins[nSRbins] = { 0., 200., 400.,500., 600.,700., 1000.,1250., 1500., 2000.};
+    double MN1 = (N1Cand.M() > 2000.) ? 1999. : N1Cand.M();
+    double MN2 = (N2Cand.M() > 2000.) ? 1999. : N2Cand.M();
+    double MllW = (lljjCand.M() > 2000.) ? 1999. : lljjCand.M();
+
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Single_AK4Jet_M_l1W", MN1,  w, 7, mljbins , "Reco_Onejet M_{l1jj}");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Single_AK4Jet_M_l2W",  MN2,  w, 7, mljbins, "Reco_Onejet M_{l2jj} ");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Single_AK4Jet_M_llW",  MllW,  w, 7, mljbins, "Reco_Onejet M_{lljj}");
+
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Single_AK4Jet_dPhi_l1_l1J",  fabs(TVector2::Phi_mpi_pi( ( (*leps[0]+ jets[0]).Phi() - (leps[1]->Phi() )))),  w,  500, 0., 2000., "Reco_Onejet M_{lljj}");
+
+  }
+  if(jets.size() > 1){
+
+    double dijetmass_tmp=999.;
+    double dijetmass=9990000.;
+    int m=-999;
+    int n=-999;
+
+    for(UInt_t emme=0; emme<jets.size(); emme++){
+      for(UInt_t enne=1; enne<jets.size(); enne++) {
+
+        if(emme == enne) continue;
+        dijetmass_tmp = (jets[emme]+jets[enne]).M();
+
+        if ( fabs(dijetmass_tmp-80.4) < fabs(dijetmass-80.4) ) {
+          dijetmass = dijetmass_tmp;
+          m = emme;
+          n = enne;
+        }
+      }
+    }
+    Particle W1Cand = *leps[0]  + *leps[1]  + jets[m]+jets[n];
+    Particle WCand  = jets[m]+jets[n];
+    Particle N1Cand  = jets[m]+jets[n]+ *leps[0] ;
+    Particle N2Cand  = jets[m]+jets[n]+ *leps[1] ;
+    Particle NCand = (leps[1]->Pt() < leps[0]->Pt()) ? N2Cand : N1Cand;
+    Lepton Nlep = (leps[1]->Pt() < 100.) ?  *leps[1] : *leps[0];
+    Lepton Wlep = (leps[1]->Pt() > 100.) ? *leps[1] : *leps[0];
+
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaR_Lep_FromN_N",  NCand.DeltaR(Nlep) , w, 200, 0., 5.,"");
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaR_Lep_FromN_W",  WCand.DeltaR(Nlep), w, 200, 0., 5.,"");
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaR_Lep_FromN_N",  NCand.DeltaR(Nlep), w, 200, 0., 5.,"");
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaR_Lep_FromW_N",  NCand.DeltaR(Wlep), w, 200, 0., 5.,"");
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaR_Lep_FromW_W",  WCand.DeltaR(Wlep), w, 200, 0., 5.,"");
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaR_Lep_FromN_J1",  jets[m].DeltaR(Nlep), w, 200, 0., 5.,"");
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaR_Lep_FromN_J2",  jets[n].DeltaR(Nlep), w, 200, 0., 5.,"");
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaR_Lep_FromW_LepFromN",  Nlep.DeltaR(Wlep), w, 200, 0., 5.,"");
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaR_W_N",  NCand.DeltaR(Wlep), w, 200, 0., 5.,"");
+
+
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaPhi_Lep_FromN_N",  fabs(TVector2::Phi_mpi_pi( ( (NCand.Phi() - Nlep.Phi() )))),  w, 200, 0., 5.,"");
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaPhi_Lep_FromN_W",  fabs(TVector2::Phi_mpi_pi( ( (WCand.Phi() - Nlep.Phi() )))),  w, 200, 0., 5.,"");
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaPhi_Lep_FromW_N",  fabs(TVector2::Phi_mpi_pi( ( (NCand.Phi() - Wlep.Phi() )))),  w, 200, 0., 5.,"");
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaPhi_Lep_FromW_W",  fabs(TVector2::Phi_mpi_pi( ( (WCand.Phi() - Wlep.Phi() )))),  w, 200, 0., 5.,"");
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaPhi_Lep_FromW_LepFromN",  fabs(TVector2::Phi_mpi_pi( ( (Nlep.Phi() - Wlep.Phi() )))),  w, 200, 0., 5.,"");
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaPhi_W_N",  fabs(TVector2::Phi_mpi_pi( ( (WCand.Phi() - NCand.Phi() )))),  w, 200, 0., 5.,"");
+
+    Particle WrongN = Wlep + WCand;
+
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaRWr_Lep_FromN_N",  WrongN.DeltaR(Nlep), w, 200, 0., 5.,"");
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaRWr_Lep_FromW_N",  WrongN.DeltaR(Wlep), w, 200, 0., 5.,"");
+
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaPhiWr_Lep_FromN_N",  fabs(TVector2::Phi_mpi_pi( ( (WrongN.Phi() - Nlep.Phi() )))),  w, 200, 0., 5.,"");
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaPhiWr_Lep_FromW_N",  fabs(TVector2::Phi_mpi_pi( ( (WrongN.Phi() - Wlep.Phi() )))),  w, 200, 0., 5.,"");
+
+    Particle W1 = (NCand+Wlep);
+
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaR_W1_Lep_FromN", W1.DeltaR(Nlep),w, 200, 0., 5.,"");
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaR_W1_Lep_FromW", W1.DeltaR(Wlep),w, 200, 0., 5.,"");
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaR_W1_N", W1.DeltaR(NCand),w, 200, 0., 5.,"");
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaR_W1_WCand", W1.DeltaR(WCand),w, 200, 0., 5.,"");
+
+
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaPhi_W1_Lep_FromN",  fabs(TVector2::Phi_mpi_pi( ( (W1.Phi() - Nlep.Phi() )))), w, 200, 0., 5.,"");
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaPhi_W1_Lep_FromW",  fabs(TVector2::Phi_mpi_pi( ( (W1.Phi() - Wlep.Phi() )))), w, 200, 0., 5.,"");
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaPhi_W1_N",  fabs(TVector2::Phi_mpi_pi( ( (W1.Phi() - NCand.Phi() )))), w, 200, 0., 5.,"");
+    if(DrawAll)FillHist(plot_dir+"/RegionPlots_"+ region+ "/DiJet_DeltaPhi_W1_WCand",  fabs(TVector2::Phi_mpi_pi( ( (W1.Phi() - WCand.Phi() )))), w, 200, 0., 5.,"");
+
+
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/DiJet_dPhi_l1_llJ",  fabs(TVector2::Phi_mpi_pi( ( (jets[m]+ jets[n] + *leps[0]+*leps[1]).Phi() - (leps[0]->Phi() )))),  w,  100, 0., 5., "");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/DiJet_dPhi_l2_llJ",  fabs(TVector2::Phi_mpi_pi( ( (jets[m]+ jets[n] + *leps[0]+*leps[1]).Phi() - (leps[1]->Phi() )))),  w,  100, 0., 5., "");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/DiJet_dPhi_N1_llJ",  fabs(TVector2::Phi_mpi_pi( ( (jets[m]+ jets[n] + *leps[0]+*leps[1]).Phi() - ((*leps[0]+jets[m]+ jets[n]).Phi() )))),  w,  100, 0., 5., "");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/DiJet_dPhi_N2_llJ",  fabs(TVector2::Phi_mpi_pi( ( (jets[m]+ jets[n] + *leps[0]+*leps[1]).Phi() - ((*leps[1]+jets[m]+ jets[n]).Phi() )))),  w,  100, 0., 5., "");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/DiJet_dPhi_W_llJ",  fabs(TVector2::Phi_mpi_pi( ( (jets[m]+ jets[n] + *leps[0]+*leps[1]).Phi() - ((jets[m]+ jets[n]).Phi() )))),  w,  100, 0., 5., "");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/DiJet_dPhi_l1_lJ",  fabs(TVector2::Phi_mpi_pi( ( (jets[m]+ jets[n] + *leps[0]).Phi() - (leps[1]->Phi() )))),  w,  100, 0., 5., "");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/DiJet_dPhi_l2_lJ",  fabs(TVector2::Phi_mpi_pi( ( (jets[m]+ jets[n] + *leps[1]).Phi() - (leps[0]->Phi() )))),  w,  100, 0., 5., "");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/DiJet_dPhi_l1_J",  fabs(TVector2::Phi_mpi_pi( ( (jets[m]+ jets[n] ).Phi() - (leps[0]->Phi() )))),  w,  100, 0., 5., "");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/DiJet_dPhi_l2_J",  fabs(TVector2::Phi_mpi_pi( ( (jets[m]+ jets[n] ).Phi() - (leps[1]->Phi() )))),  w,  100, 0., 5., "");
+
+
+
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/DiJet_dR_W_lep1",   WCand.DeltaR(*leps[0] ),  w, 50, 0, 5, "#DeltaR (W,lep1)");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/DiJet_dR_W_lep2",   WCand.DeltaR(*leps[1] ),  w, 50, 0, 5, "#DeltaR (W,lep2)");
+    if(DrawSyst)FillHist( plot_dir+"/RegionPlots_"+ region+ "/DiJet_M_W",   WCand.M(),  w, 50, 0, 500, "Reco M_{jj}");
+
+
+    int nSRbins=10;
+    double mljbins[nSRbins] = { 0., 200., 400.,500., 600.,700., 1000.,1250.,1500.,  2000.};
+    double MN1 = (N1Cand.M() > 2000.) ? 1999. : N1Cand.M();
+    double MN2 = (N2Cand.M() > 2000.) ? 1999. : N2Cand.M();
+    double MllW = (W1Cand.M() > 2000.) ? 1999. : W1Cand.M();
+
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/DiJet_M_l1W_M_W",  MN1, MllW,  w, 100, 0., 2000., 100, 0., 2000.);
+
+    if(DrawSyst)FillHist( plot_dir+"/RegionPlots_"+ region+ "/DiJet_M_l1W_multibins",   MN1,  w, 200, 0, 2000, "Reco M_{l1jj}");
+    if(DrawSyst)FillHist( plot_dir+"/RegionPlots_"+ region+ "/DiJet_M_l1W",   MN1,  w, 7, mljbins , "Reco M_{l1jj}");
+    if(DrawSyst)FillHist( plot_dir+"/RegionPlots_"+ region+ "/DiJet_M_l2W",   MN2,  w, 7, mljbins , "Reco M_{l2jj} ");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/DiJet_M_lAv12W", (N1Cand.M()+  N2Cand.M())/2.,  w,  500, 0., 2000., "Reco M_{l1_2jj} ");
+
+    if(DrawSyst)FillHist( plot_dir+"/RegionPlots_"+ region+ "/DiJet_M_llW",  MllW ,  w, 7, mljbins , "Reco M_{lljj}");
+    if(DrawSyst)FillHist( plot_dir+"/RegionPlots_"+ region+ "/DiJet_M_llW_multibins",  MllW ,  w,  200, 0, 2000, "Reco M_{lljj}");
+
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/DiJet_dR_Wj1_lep2",   jets[m].DeltaR(*leps[1] ),  w, 50, 0, 5, "#DeltaR (Wj1,lep2)");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/DiJet_dR_Wj2_lep2",   jets[n].DeltaR(*leps[1] ),  w, 50, 0, 5, "#DeltaR (Wj2,lep2)");
+  }// end dijet loop                                            
+
+
+  double LT(0.);
+  double minDRLep1Tau=9999.;
+  double minDRLep2Tau=9999.;
+  int nlep(0);
+  for(auto i : leps){
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Leps_pt", i->Pt()  , w, 1000, 0., 1000.,"1_{2} p_{T} GeV");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Leps_et", i->Et()  , w, 1000, 0., 1000.,"1_{2} p_{T} GeV");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Leps_eta",i->Eta()  , w, 50, -2.5, 2.5,"l_{1} #eta");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Leps_phi",i->Phi()  , w, 50, -2.5, 2.5,"l_{1} #phi");
+
+    LT += i->Pt();
+
+
+    for(auto itau  : TauColl){
+      if(nlep==0 && i->DeltaR(itau) < minDRLep1Tau) minDRLep1Tau = i->DeltaR(itau);
+      if(nlep==1 && i->DeltaR(itau) < minDRLep2Tau) minDRLep2Tau = i->DeltaR(itau);
+    }
+    nlep++;
+  }
+  if(DrawAll&&minDRLep1Tau < 999)FillHist( plot_dir+"/RegionPlots_"+ region+ "/dRMin_Lep1_Tau", minDRLep1Tau  ,w, 50, 0, 5, "#DeltaR (Tau,lep1)");
+  if(DrawAll&&minDRLep2Tau < 999)FillHist( plot_dir+"/RegionPlots_"+ region+ "/dRMin_Lep2_Tau", minDRLep2Tau  ,w, 50, 0, 5, "#DeltaR (Tau,lep2)");
+
+  int nPtbins=10;
+  double Pt1bins[nPtbins+1] = { 20.,25.,30., 40.,50., 70., 100., 120., 140., 160.,  200.};
+  double Pt2bins[nPtbins+1] = { 10.,15., 20.,30., 40.,50., 100.,120., 140., 160.,  200.};
+  double PTLep1 = (leps[0]->Pt() > 200.) ? 199. : leps[0]->Pt();
+  double PTLep2 = (leps[1]->Pt() > 200.) ? 199. : leps[1]->Pt();
+  double PTLep1b = (leps[0]->Pt() > 500.) ? 499. : leps[0]->Pt();
+  double PTLep2b = (leps[1]->Pt() > 300.) ? 299. : leps[1]->Pt();
+
+
+  if(!IsData){
+    for(auto il : leps){
+      double PTLep = (il->Pt() > 200.) ? 199. : il->Pt();
+
+      TString LepType = "";
+      if (il->IsConv())  LepType = "Conv";
+      if (il->IsFake())  LepType = "Fake"+il->CloseJet_Flavour();
+      if (il->IsFake() && il->CloseJet_Flavour() == "Pileup") continue;
+      if (il->LeptonIsCF())  LepType = "CF";
+      else if (il->IsPrompt()) LepType = "Prompt";
+      if(il->IsEWtau()) continue;
+      if (LepType == "") continue;
+      if(DrawSyst)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+LepType+"_Lep_pt", PTLep  ,  w, nPtbins, Pt1bins,"l_{1} p_{T} GeV");
+      if(DrawSyst)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+LepType+"_Lep_eta", il->fEta()  , w, 60, 0.,  3.,"l_{2} #eta");
+
+
+      for(auto ilep : leps){
+        map<TString, double> lep_bdt_map = ilep->MAPBDT();
+        for(auto i : lep_bdt_map)  {
+
+          if(i.first.Contains("v5")){
+            if(il->IsBB())FillHist( plot_dir+"/LepRegionPlots_"+ region+ "/"+LepType+"_Lepton_BB_mva_"+i.first + "_"+region , i.second, w, 100, -1., 1., "MVA");
+            else FillHist( plot_dir+"/LepRegionPlots_"+ region+ "/"+LepType+"_Lepton_EC_mva_"+i.first + "_"+region , i.second, w, 100, -1., 1., "MVA");
+
+          }
+        }
+      }
+    }
+  }
+
+
+  if(DrawSyst)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Lep_1_pt", PTLep1  ,  w, nPtbins, Pt1bins,"l_{1} p_{T} GeV");
+  if(DrawSyst)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Lep_2_pt", PTLep2  ,  w, nPtbins, Pt2bins,"1_{2} p_{T} GeV");
+  if(DrawSyst)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Lep_1b_pt", PTLep1b  ,  w, 100, 0, 500,"l_{1} p_{T} GeV");
+  if(DrawSyst)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Lep_2b_pt", PTLep2b  ,  w, 100, 0, 300,"1_{2} p_{T} GeV");
+
+  if(DrawSyst)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Lep_1_eta", leps[0]->Eta()  , w, 60, -3., 3,"l_{1} #eta");
+  if(DrawSyst)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Lep_2_eta", leps[1]->Eta()  , w, 60, -3., 3.,"l_{2} #eta");
+
+  if(threelep) {
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Lep_3_pt", leps[2]->Pt()  , w, 200, 0., 1000.,"l_{3} p_{T} GeV");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Lep_3_eta", leps[2]->Eta()  , w, 60, -3., 3.,"l_{3} #eta");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Lep_3_phi", leps[2]->Phi()  , w, 60, -3., 3.,"l_{3} #phi");
+  }
+  if(fourlep) {
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Lep_4_pt", leps[3]->Pt()  , w, 200, 0., 1000.,"l_{4} p_{T} GeV");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Lep_4_eta", leps[3]->Eta()  , w, 60, -3., 3.,"l_{4} #eta");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Lep_4_phi", leps[3]->Phi()  , w, 60, -3., 3.,"l_{4} #phi");
+
+  }
+
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Vertex_X", vertex_X  , w, 200, 0., 1,"L_{T} GeV");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Vertex_Y", vertex_Y  , w, 200, 0., 1,"L_{T} GeV");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Vertex_Z", vertex_Z  , w, 200, 0., 1,"L_{T} GeV");
+
+
+  double HT = GetHT(jets, fatjets);
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Ev_LT", LT  , w, 200, 0., 2000.,"L_{T} GeV");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Ev_HT", HT  , w, 200, 0., 2000.,"H_{T} GeV");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/HToLepPt1", HT/ leps[0]->Pt()  , w, 100, 0., 20.,"HT/PT(1)");
+  if(DrawSyst)FillHist( plot_dir+"/RegionPlots_"+ region+ "/HToLepPt2", HT/ leps[1]->Pt()  , w, 100, 0., 20.,"HT/PT(2)");
+  if(threelep&&DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/HToLepPt3", HT/ leps[2]->Pt()  , w, 100, 0., 20.,"HT/PT(3)");
+  if(fourlep&&DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/HToLepPt4", HT/ leps[3]->Pt()  , w, 100, 0., 20.,"HT/PT(4)");
+
+
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+ "nPV",  nvtx , w, 120, 0., 120.);
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+ "nPileUp",  nPileUp, w, 120, 0., 120.);
+
+  double ST = GetST(leps, jets, fatjets, met);
+  double met2_st = pow(met.Pt(),2.)/ ST;
+
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Ev_ST", ST  , w, 250, 0., 5000.,"ST GeV");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Ev_MET2_ST", met2_st  , w, 40, 0., 20.,"MET2/ST GeV");
+
+
+  Particle METv      = GetvMET("T1xyCorr");
+  Particle PuppiMETv = GetvMET("PuppiT1xyCorr");
+  Particle METvNoPhi = GetvMET("T1");
+  Particle PuppiMETvNoPhi = GetvMET("PuppiT1");
+  Particle PuppiMETvULPhiCorr = GetvMET("PuppiT1xyULCorr");
+  Particle METvULPhiCorr = GetvMET("T1xyULCorr");
+
+
+
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Ev_MET", met.Pt()  , w, 200, 0., 400.,"MET GeV");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Ev_pfMET_T1", METvNoPhi.Pt()  , w, 200, 0., 400.,"MET GeV");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Ev_pfMET_T1xyCorr", METv.Pt()  , w, 200, 0., 400.,"MET GeV");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Ev_PuppiMET_T1", PuppiMETvNoPhi.Pt()  , w, 200, 0., 400.,"MET GeV");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Ev_PuppiMET_T1xyCorr", PuppiMETv.Pt()  , w, 200, 0., 400.,"MET GeV");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Ev_PuppiMET_T1ULxyCorr", PuppiMETvULPhiCorr.Pt()  , w, 200, 0., 400.,"MET GeV");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Ev_pfMET_T1ULxyCorr", METvULPhiCorr.Pt()  , w, 200, 0., 400.,"MET GeV");
+
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Ev_pfMETphi_T1", METvNoPhi.Phi()  , w, 200, -5., 5.,"MET #phi");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Ev_pfMETphi_T1xyCorr", METv.Phi()  , w, 200, -5., 5.,"MET #phi");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Ev_PuppiMETphi_T1", PuppiMETvNoPhi.Phi()  , w, 200, -5., 5.,"MET #phi");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Ev_PuppiMETphi_T1xyCorr", PuppiMETv.Phi()  , w, 200, -5., 5.,"MET #phi");
+
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Mt_lep1", MT(*leps[0] ,met)  , w, 200, 0., 400.,"MT GeV");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Mt_lep2", MT(*leps[1] ,met)  , w, 200, 0., 400.,"MT GeV");
+
+  if(threelep) {
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/M_lll"+region, lllCand.M() , w, 200, 0., 800.,"M(lll) GeV");
+
+    if(GetIndexNonMinOSSF(leps)> 0 && DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Mt_minOSSF", MT(*leps[GetIndexNonMinOSSF(leps)], met) , w, 200, 0., 800.,"M(T) non MinOS GeV");
+
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/M_minOSSF", GetMassMinOSSF(leps), w, 200, 0., 800.,"M non MinOS GeV");
+
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/M_minSSSF", GetMassMinSSSF(leps), w, 200, 0., 800.,"M(T) non MinSS GeV");
+    if(GetIndexNonMinSSSF(leps) > 0 && DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Mt_minSSSF", MT(*leps[GetIndexNonMinSSSF(leps)], met) , w, 200, 0., 800.,"M non MinSS GeV");
+
+  }
+
+
+  if(fourlep) {
+    Particle llllCand = *leps[0] + *leps[1] + *leps[2] + *leps[3] ;
+
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/M_llll", llllCand.M() , w, 200, 0., 800.,"M(llll) GeV");
+  }
+
+  Event ev = GetEvent();
+  Particle METunsmearedv = ev.GetMETVector();
+
+
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/MET_uncorr", METunsmearedv.Pt()  , w, 200, 0., 400.,"MET GeV");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/M_ll",  llCand.M(), w, 400, 0., 2000., "M_{ll} GeV");
+
+  //  return;                                                                                                                                                                                                                                                                   
+
+  double mindRlepj1(99999.);
+  double mindRlepj2(99999.);
+
+  for(unsigned int i=0; i < jets.size(); i++){
+
+    if(i == 0)     if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+ "Jet_0_pt",  jets[i].Pt() , w, 400, 0., 2000., "AK4 Jet p_{T} GeV");
+
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Jet_pileup_mva",  jets[i].PileupJetId() , w, 100, -1., 1., "PileupJetId");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Jet_pileup_loose", jets[i].PassPileupMVA("Loose", GetEraShort()), w, 2, 0., 2., "PileupJetId");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Jet_pileup_medium", jets[i].PassPileupMVA("Medium", GetEraShort()), w, 2, 0., 2., "PileupJetId");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Jet_pileup_tight", jets[i].PassPileupMVA("Tight", GetEraShort()), w, 2, 0., 2., "PileupJetId");
+
+
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK4DeepCSV_score", jets[i].GetTaggerResult(JetTagging::DeepCSV), w, 100, 0, 1., "DeepCSV_score");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/AK4DeepJet_score", jets[i].GetTaggerResult(JetTagging::DeepJet), w, 100, 0, 1., "DeepCSV_score");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Jet_pt",  jets[i].Pt() , w, 400, 0., 2000., "AK4 Jet p_{T} GeV");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Jet_eta",  jets[i].Eta() , w, 100, -5., 5., "AK4 Jet #eta ");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Jet_CEEF", jets[i].ChargedEmEnergyFraction(), w, 50, 0., 1. ,"");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/Jet_CHEF", jets[i].ChargedHadEnergyFraction(), w, 50, 0., 1. ,"");
+
+    if(jets[i].DeltaR(*leps[0] ) < mindRlepj1) mindRlepj1=jets[i].DeltaR(*leps[0] );
+    if(jets[i].DeltaR(*leps[1] ) < mindRlepj2) mindRlepj2=jets[i].DeltaR(*leps[1] );
+
+    if(i == 0){
+      if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+ "dR_jet1_lep1",  jets[i].DeltaR(*leps[0] ) , w, 50, 0., 5., "#Delta R(l1,j)") ;
+      if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+ "dR_jet1_lep2",  jets[i].DeltaR(*leps[1] ) , w, 50, 0., 5., "#Delta R(l2,j)");
+    }
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+ "dR_jet_lep1",  jets[i].DeltaR(*leps[0] ) , w, 50, 0., 5., "#Delta R(l1,j)") ;
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+ "dR_jet_lep2",  jets[i].DeltaR(*leps[1] ) , w, 50, 0., 5., "#Delta R(l2,j)");
+
+
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/"+"dR_jet_MET",  jets[i].DeltaR(met) ,w, 50,  0., 5,"#DeltaR(j,met)");
+
+    for(unsigned int j=1; j < jets.size(); j++){
+      if(i==j)continue;
+      if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/"+"Jet_dR_jj",  jets[i].DeltaR(jets[j]) ,w, 50,  0., 5,"#DeltaR(j,j)");
+      if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/"+"Jet_M_jj",  (jets[i]+jets[j]).M() ,w, 200,  0., 2000,"M(j,j)");
+    }
+  }
+
+
+
+  if(jets.size() > 1){
+
+    double maxDiJetDeta=0.;
+    int ijet1(-1), ijet2(-1);
+    for(unsigned int ij = 0; ij < jets.size()-1; ij++){
+      for(unsigned int ij2 = ij+1; ij2 < jets.size(); ij2++){
+
+        double deta = fabs(jets[ij].Eta() - jets[ij2].Eta());
+        if(deta > maxDiJetDeta) {
+          maxDiJetDeta=deta;
+          ijet1=ij;
+          ijet2=ij2;
+        }
+      }
+    }
+
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/Jet_dR_jet1_lep1",  jets[ijet1].DeltaR(*leps[0]) ,w, 100,  0., 5,"#DeltaR(j,l1)");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/Jet_dR_jet1_lep2",  jets[ijet1].DeltaR(*leps[1]) ,w, 100,  0., 5,"#DeltaR(j,l1)");
+
+
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+ "MaxDEta_jet1_jet2", maxDiJetDeta  , w, 200, 0., 10., "Max DEta");
+    Particle JJMEta = jets[ijet1] + jets[ijet2];
+
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+ "MaxDEtaJets_MJJ",JJMEta.M()   , w, 200, 0., 2000., "MaxDEta MJJ");
+
+    double Av_JetEta= 0.5*(jets[ijet1].Eta()+ jets[ijet2].Eta());
+    double zeppenfeld = TMath::Max((*leps[0]).Eta()  - Av_JetEta , (*leps[1]).Eta()  - Av_JetEta ) /maxDiJetDeta;
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+ "MaxDEta_Jets_zeppenfeld", zeppenfeld  , w, 200, 0., 2., "zeppenfeld");
+  }
+
+  if(jets.size()>1){
+
+    Particle JJLead = jets[0] + jets[1];
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+ "Lead_MJJ",JJLead.M()   , w, 200, 0., 2000., "Lead MJJ");
+
+    double maxDiJetDeta=fabs(jets[0].Eta() - jets[1].Eta());
+
+    double Av_JetEta= 0.5*(jets[0].Eta()+ jets[1].Eta());
+    double zeppenfeld = TMath::Max((*leps[0]).Eta()  - Av_JetEta , (*leps[1]).Eta()  - Av_JetEta ) /maxDiJetDeta;
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+ "Lead_zeppenfeld", zeppenfeld  , w, 200, 0., 2., "zeppenfeld");
+  }
+
+
+  //////                                                                                                                                                                                                                                                                        
+
+  double ll_dphi = fabs(TVector2::Phi_mpi_pi( ( (*leps[0]).Phi() - (*leps[1]).Phi() )) );
+  double ll_deta = fabs((*leps[0]).Eta() - (*leps[1]).Eta());
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+ "dPhi_lep1_lep2", ll_dphi  , w, 200, -5., 5., "#Delta #Phi(l1,l2)") ;
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+ "dEta_lep1_lep2", ll_deta  , w, 200, -5., 5., "#Delta #Phi(l1,l2)") ;
+
+
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+ "dRmin_jet_lep1", mindRlepj1  , w, 50, 0., 5., "#Delta R(l1,j)") ;
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+ "dRmin_jet_lep2", mindRlepj2  , w, 50, 0., 5., "#Delta R(l1,j)") ;
+
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+ "Sum_lep_eta", (fabs(leps[0]->Eta())+  fabs(leps[1]->Eta())) , w, 50, 0., 5.);
+  if(fabs(leps[0]->Eta()) > fabs(leps[1]->Eta())) {
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+ "Max_lep_eta", fabs(leps[0]->Eta()) , w, 50, 0., 2.5);
+  }
+  else  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+ "/"+ "Max_lep_eta", fabs(leps[1]->Eta()) , w, 50, 0., 2.5);
+
+
+
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/"+"dR_l1_MET",  leps[0]->DeltaR(met) ,w, 100,  0., 5,"#DeltaR(l1,met)");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/"+"dR_l2_MET",  leps[1]->DeltaR(met) ,w, 100,  0., 5,"#DeltaR(l2,met)");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/"+"dR_ll", leps[0]->DeltaR(*leps[1] ) ,w, 50,  0., 5,"#DeltaR(l,l)");
+
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/"+"dPhi_l1_MET",  fabs(TVector2::Phi_mpi_pi( ( (*leps[0]).Phi() - (met).Phi() )) ) ,w, 100,  0., 5,"#DeltaR(l1,met)");
+  if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/"+"dPhi_l2_MET",  fabs(TVector2::Phi_mpi_pi( ( (*leps[1]).Phi() - (met).Phi() )) ) ,w, 100,  0., 5,"#DeltaR(l1,met)");
+
+  if(leps[1]->Pt() < 100){
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/"+"dR_lN_MET",  leps[1]->DeltaR(met) ,w, 100,  0., 5,"#DeltaR(l1,met)");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/"+"dPhi_lN_MET",  fabs(TVector2::Phi_mpi_pi( ( (*leps[1]).Phi() - (met).Phi() )) ) ,w, 100,  0., 5,"#DeltaR(l1,met)");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/"+"dR_lW_MET",  leps[0]->DeltaR(met) ,w, 100,  0., 5,"#DeltaR(l1,met)");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/"+"dPhi_lW_MET",  fabs(TVector2::Phi_mpi_pi( ( (*leps[0]).Phi() - (met).Phi() ))) ,w, 100,  0., 5,"#DeltaR(l1,met)");
+  }
+  else{
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/"+"dR_lN_MET",  leps[0]->DeltaR(met) ,w, 100,  0., 5,"#DeltaR(l1,met)");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/"+"dPhi_lN_MET",  fabs(TVector2::Phi_mpi_pi( ( (*leps[0]).Phi() - (met).Phi() ))) ,w, 100,  0., 5,"#DeltaR(l1,met)");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/"+"dR_lW_MET",  leps[1]->DeltaR(met) ,w, 100,  0., 5,"#DeltaR(l1,met)");
+    if(DrawAll)FillHist( plot_dir+"/RegionPlots_"+ region+"/"+"dPhi_lW_MET",  fabs(TVector2::Phi_mpi_pi( ( (*leps[1]).Phi() - (met).Phi() ))) ,w, 100,  0., 5,"#DeltaR(l1,met)");
+
+  }
+
+
+
+
+
+  return;
+}
+
+
+
+
+
+
+/// FillMuonPlots Fills all kinamatics                                                                                                                                                                                                                                          
+void HNL_LeptonCore::FillMuonPlots(TString label , TString cut,  std::vector<Muon> muons, double w){
+
+  for(auto imu: muons)   FillMuonKinematicPlots("muon"+label, cut, imu, w);
+
+  return;
+}
+
+/// FillAllMuonPlots Fills all kinamatics in pt/eta bins                                                                                                                                                                                                                        
+
+void HNL_LeptonCore::FillAllMuonPlots(TString label , TString cut,  std::vector<Muon> muons, double w){
+
+  for(unsigned int i=0; i <  muons.size(); i++){
+    TString eta_label="";
+    if(fabs(muons.at(i).Eta()) < 1.5) eta_label = "_BB";
+    else eta_label = "_EC";
+
+    TString pt_label=GetPtBin(true,muons.at(i).Pt());
+
+    int LepType= muons.at(i).LeptonGenType();
+
+    TString gen_label = "";
+    if (LepType >= 0) gen_label = to_string(LepType);
+    else gen_label = "Minus_"+to_string(fabs(LepType));
+
+    //if(Analyzer == "HNL_LeptonIDBDTStudies"){                                                                                                                                                                                                                                 
+    //  if(GenTypeMatched(MatchGenDef(All_Gens,muons[i]))){/                                                                                                                                                                                                                    
+    //  if(label.Contains("Fake")) FillMuonKinematicPlots("muon"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,muons[i]), cut, muons.at(i), w);                                                                                                             
+    // }                                                                                                                                                                                                                                                                        
+
+    //if(muons[i].HNL_MVA_Fake("EDv4") < -0.5) FillMuonKinematicPlots("muon_lowMVAv4_"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,muons[i]), cut, muons.at(i), w);                                                                                       
+    //  if(muons[i].HNL_MVA_Fake("EDv4") > 0.5) FillMuonKinematicPlots("muon_highMVAv4_"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);                                                                                                                        
+    //  if(muons[i].MVA() < -0.5) FillMuonKinematicPlots("muon_lowMVAHF_"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,muons[i]), cut, muons.at(i), w);                                                                                                    
+    //  if(muons[i].MVA() > 0.5) FillMuonKinematicPlots("muon_highMVAHF_"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);                                                                                                                                       
+
+    //}                                                                                                                                                                                                                                                                         
+    //FillMuonKinematicPlots("muon"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);                                                                                                                                                                             
+    FillMuonKinematicPlots("muon"+label, cut, muons.at(i), w);
+
+  }
+
+  return;
+}
+
+
+
+void HNL_LeptonCore::FillLeptonKinematicPlots(TString label , TString cut,  Lepton lep, double w){
+
+  vector<Jet> JetAllColl = All_Jets;
+
+  int IdxMatchJet=-1;
+  int IdxMatchAwayJet=-1;
+
+  double mindR(999.);
+  double maxDphi=-999;
+  double PtRatioAwayJet(-999.);
+  double Jet_Disc(-1);
+
+
+  for(unsigned int ij=0; ij<JetAllColl.size(); ij++){
+
+    double dR=lep.DeltaR(JetAllColl.at(ij));
+    if(dR<mindR){       mindR=dR; IdxMatchJet=ij;     }
+    double dphi =fabs(TVector2::Phi_mpi_pi(lep.Phi()- JetAllColl.at(ij).Phi()));
+    if(dphi > maxDphi) {maxDphi= dphi; IdxMatchAwayJet=ij;}
+  }
+  if(IdxMatchJet!=-1)     Jet_Disc       = JetAllColl.at(IdxMatchJet).GetTaggerResult(JetTagging::DeepJet);
+  if(IdxMatchAwayJet!=-1) PtRatioAwayJet = JetAllColl.at(IdxMatchAwayJet).Pt()/ lep.Pt();
+
+  TString label_lep = (lep.LeptonFlavour()==Lepton::ELECTRON) ? "Electron": "Muon";
+  double Pt_Lep = (lep.Pt() > 2000) ? 1999 : lep.Pt();
+
+  /// Kinematics                                                                                                                                                                                                                                                                
+  FillHist( cut+ "/Lepton_Pt_"+label   , lep.Pt() , w, 5000, 0., 10000., label_lep+"p_{T} GeV");
+  FillHist( cut+ "/Lepton_Eta_"+label  , lep.Eta() , w, 60, -3., 3.,label_lep+"#eta");
+  FillHist( cut+ "/Lepton_Phi_"+label  , lep.Phi() , w, 60, -3., 3.,label_lep+"#phi");
+  double ptbins[11] = { 0., 10.,15., 20., 30., 40.,50., 100.,500. ,1000.,2000.};
+  FillHist( cut+ "/Lepton_PtBinned_"+label   , Pt_Lep, w, 10, ptbins);
+
+  // IP                                                                                                                                                                                                                                                                         
+  FillHist( cut+ "/Lepton_Dxy_"+label           , lep.fdXY() , w, 250,  0, 0.2, "dXY");
+  FillHist( cut+ "/Lepton_Dz_"+label            , lep.fdZ() , w, 250, 0, 0.5, "dZ");
+  FillHist( cut+ "/Lepton_LogDxy_"+label        , lep.LogdXY() , w, 300, -20,  10, "dXY");
+
+  FillHist( cut+ "/Lepton_dXYSig_"+ label       , lep.LogdXYSig(), w, 100, -10,10);
+  FillHist( cut+ "/Lepton_dZSig_"+ label        , lep.LogdZSig(),w, 100,-10,10);
+  FillHist( cut+ "/Lepton_SIP3D_"+ label        , lep.SIP3D(),w, 200,0,20);
+  FillHist( cut+ "/Lepton_IP3D_"+ label        , lep.IP3D(),w, 100,0,1);
+
+
+  // Lep/Jet                                                                                                                                                                                                                                                                    
+  FillHist( cut+ "/Lepton_PtRel_"+label         , JetLeptonPtRelLepAware( lep), w, 500, 0., 100., "");
+  FillHist( cut+ "/Lepton_PtRatio_"+label       , JetLeptonPtRatioLepAware(lep), w, 500, 0., 2., "");
+
+  if(IdxMatchJet != -1 ){
+    FillHist( cut+ "/Lepton_CHFracCJ_"+label      , JetAllColl.at(IdxMatchJet).ChargedHadEnergyFraction(), w, 100, 0., 1., "");
+    FillHist( cut+ "/Lepton_NEMFracCJ_"+label     , JetAllColl.at(IdxMatchJet).NeutralEmEnergyFraction(), w, 100, 0., 1., "");
+    FillHist( cut+ "/Lepton_CEMFracCJ_"+label     , JetAllColl.at(IdxMatchJet).ChargedEmEnergyFraction(), w, 100, 0., 1., "");
+    FillHist( cut+ "/Lepton_NFracCJ_"+label       , JetAllColl.at(IdxMatchJet).NeutralHadEnergyFraction(), w, 100, 0., 1., "");
+    FillHist( cut+ "/Lepton_JetDiscCJ_"+label     , Jet_Disc , w, 400, -2., 2., "");
+    FillHist( cut+ "/Lepton_PtRatioAwayJet_"+label, PtRatioAwayJet , w, 100, 0., 5., "");
+  }
+
+  map<TString, double> lep_bdt_map = lep.MAPBDT();
+  for(auto i : lep_bdt_map)     FillHist( cut+ "/Lepton_mva_"+i.first+label  , i.second, w, 100, -1., 1., "MVA");
+
+  // Isolation                                                                                                                                                                                                                                                                  
+
+  FillHist( cut+ "/Lepton_MiniReliso_"+label , lep.MiniRelIso() , w, 500, 0., 2., "R_{ISO} GeV");
+  FillHist( cut+ "/Lepton_Reliso_el_"+label , lep.RelIso() , w, 200, 0., 0.4, "R_{ISO} GeV");
+
+}
+
+
+void HNL_LeptonCore::FillMuonKinematicPlots(TString label , TString cut,  Muon lep, double w){
+
+  FillLeptonKinematicPlots(label, cut, Lepton(lep),w);
+
+  FillHist( cut+ "/Muon_Mva_"+label  , lep.MVA(), w, 600, -1., 1., "MVA");
+  FillHist( cut+ "/Muon_Pt_mva_"+label , lep.Pt() , lep.MVA(), fabs(w), 200, 0., 1000., 600, -1., 2.);
+  FillHist( cut+ "/Muon_Chi2_"+label  , lep.Chi2(), w, 200,0., 20., "chi2");
+  FillHist( cut+ "/Muon_Validhits_"+label  , lep.ValidMuonHits(), w, 100,0., 100., "");
+  FillHist( cut+ "/Muon_Matched_stations_"+label  , lep.MatchedStations(), w, 10,0., 10., "");
+  FillHist( cut+ "/Muon_Pixel_hits_"+label  , lep.PixelHits(), w, 10,0., 10., "");
+  FillHist( cut+ "/Muon_Tracker_layers_"+label  , lep.TrackerLayers(), w, 50,0., 50., "");
+
+  vector<TString> IDs ={"HNTightV2"};
+  for (auto ID : IDs){
+    if(lep.PassID(ID)) FillHist( cut+ "/Muon_Pass_"+ID+label  , 1, w, 4, 0., 4., "Pass " + ID);
+    else FillHist( cut+ "/Muon_Pass_"+ID+label  , 0, w, 4, 0., 4., "Pass " + ID);
+  }
+
+  return;
+}
+
+
+
+void HNL_LeptonCore::FillElectronPlots(TString label , TString cut,  std::vector<Electron> ElectronColl, double w){
+
+  for(auto iel : ElectronColl)   FillElectronKinematicPlots("Electron_"+label, cut, iel, w);
+
+  return;
+}
+
+void HNL_LeptonCore::FillAllElectronPlots(TString label , TString cut,  std::vector<Electron> ElectronColl, double w){
+
+  if(MCSample.Contains("Type")) w=1;
+
+  FillHist( cut+ "/nelectrons"+label , size(ElectronColl) , w, 5, 0., 5., "n_{el}");
+
+  for(unsigned int i=0; i < ElectronColl.size(); i++){
+
+    TString eta_label="";
+    if(fabs(ElectronColl.at(i).Eta()) < 1.5) eta_label = "_BB";
+    else eta_label = "_EC";
+
+    TString pt_label=GetPtBin(false,ElectronColl.at(i).Pt());
+
+    int LepType= ElectronColl.at(i).LeptonGenType();
+    TString gen_label ="";
+    if (LepType >= 0) gen_label = to_string(LepType);
+    else gen_label = "Minus_"+to_string(fabs(LepType));
+
+    if(Analyzer== "HNL_LeptonIDBDTStudies"){
+
+      if(GenTypeMatched(MatchGenDef(All_Gens,ElectronColl.at(i)))){
+
+if(label.Contains("Fake")) FillElectronKinematicPlots("Electron_"+label+"_"+ ElectronColl.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,ElectronColl[i]), cut, ElectronColl.at(i), w);
+      }
+    }
+    FillElectronKinematicPlots("Electron_"+label+"_"+ ElectronColl.at(i).CloseJet_Flavour() , cut, ElectronColl.at(i), w);
+  }
+  return;
+}
+
+void HNL_LeptonCore::FillElectronKinematicPlots(TString label , TString cut,  Electron lep, double w){
+
+  FillLeptonKinematicPlots(label, cut, Lepton(lep),w);
+
+  FillHist( cut+ "/Electron_SCEta_"+label  , lep.scEta() , w, 60, -3., 3.,"electron #eta");
+  FillHist( cut+ "/Electron_SCPhi_"+label  , lep.scPhi() , w, 70, -3.5, 3.5,"electron #phi");
+
+  /// POG MVA                                                                                                                                                                                                                                                                   
+  FillHist( cut+ "/Electron_NoIsoMva_"+label  , lep.MVANoIso(), w, 600, -1., 1., "MVA");
+  FillHist( cut+ "/Electron_RelNoIsoMvaResponse_"+label  , lep.MVANoIsoResponse()/lep.Pt(), w, 160, -1.,1., "MVA");
+  FillHist( cut+ "/Electron_NoIsoMvaResponse_"+label  , lep.MVANoIsoResponse(), w, 160, -8.,8., "MVA");
+  FillHist( cut+ "/Electron_MvaIso_"+label  , lep.MVAIso(), w, 600, -1., 1., "MVA");
+  FillHist( cut+ "/Electron_RelMvaIsoResponse_"+label  , lep.MVAIsoResponse()/lep.Pt(), w, 600, -1., 1., "MVA");
+  FillHist( cut+ "/Electron_MvaIsoResponse_"+label  , lep.MVAIsoResponse(), w, 600, -8., 8., "MVA");
+
+  /// CF MVA                                                                                                                                                                                                                                                                    
+  FillHist( cut+ "/Electron_EoverP_"+label  , lep.EOverP() , w, 400, -10, 100);
+  FillHist( cut+ "/Electron_LogEoverP_"+label  , log(lep.EOverP()) , w, 400, -1, 10);
+
+  FillHist( cut+ "/Electron_FBrem_"+label  , std::max(lep.FBrem(),-2.),  w, 200, -1., 1);
+  FillHist( cut+ "/Electron_R9_"+label  , lep.R9(), w, 100, 0., 1);
+  FillHist( cut+ "/Electron_dr03TkSumPt_"+label  , lep.dr03TkSumPt()/lep.UncorrPt(), w, 200, 0., 0.5, "");
+  FillHist( cut+ "/Electron_E15_"+label  , lep.e15(), w, 1000, 0., 1000);
+  FillHist( cut+ "/Electron_E25_"+label  , lep.e25(), w, 1000, 0., 1000);
+  FillHist( cut+ "/Electron_E55_"+label  , lep.e55(), w, 1000, 0., 1000);
+  FillHist( cut+ "/Electron_e2x5OverE5x5_"+label  , lep.e2x5OverE5x5(), w, 100, 0., 1);
+  FillHist( cut+ "/Electron_e1x5OverE5x5_"+label  , lep.e1x5OverE5x5(), w, 100, 0., 1);
+  FillHist( cut+ "/Electron_EtaWidth_"+label  , lep.EtaWidth(), w, 100, 0., 0.2);
+  FillHist( cut+ "/Electron_PhiWidth_"+label  , lep.PhiWidth(), w, 200, 0., 0.2);
+
+  FillHist( cut+ "/Electron_MissingHits_"+label  , lep.NMissingHits(), w, 8, 0., 8., "Missing Hits");
+  FillHist( cut+ "/Electron_Full5x5_sigmaIetaIeta_"+label  , lep.Full5x5_sigmaIetaIeta(), w, 200, 0., 0.05, "");
+  FillHist( cut+ "/Electron_PassConversionVeto_"+label  , lep.PassConversionVeto(), w, 2, 0., 2., "");
+  FillHist( cut+ "/Electron_IsGsfCtfScPixChargeConsistent_"+label  , lep.IsGsfCtfScPixChargeConsistent(), w, 2, 0., 2., "");
+  FillHist( cut+ "/Electron_IsGsfScPixChargeConsistent_"+label  , lep.IsGsfScPixChargeConsistent(), w, 2, 0., 2., "");
+  FillHist( cut+ "/Electron_IsGsfCtfChargeConsistent_"+label  , lep.IsGsfCtfChargeConsistent(), w, 2, 0., 2., "");
+  FillHist( cut+ "/Electron_dEtaSeed_"+label  , lep.dEtaSeed(), w, 200, -0.1, 0.1, "");
+  FillHist( cut+ "/Electron_dPhiIn_"+label  , lep.dPhiIn(), w, 400, -0.5, 0.5, "");
+  FillHist( cut+ "/Electron_dEtaIn_"+label  , lep.dEtaIn(), w, 400, -0.2, 0.2, "");
+  FillHist( cut+ "/Electron_HoverE_"+label  , lep.HoverE(), w, 500, 0., 1., "");
+  FillHist( cut+ "/Electron_TrkIso_"+label  , lep.TrkIso(), w, 1000, 0., 100, "");
+  FillHist( cut+ "/Electron_isEcalDriven_"+label  , lep.isEcalDriven(), w, 2, 0., 2., "");
+  FillHist( cut+ "/Electron_InvEminusInvP_"+label  , fabs(lep.InvEminusInvP()), w, 100., 0., 0.2);
+
+
+  // COnv MVA                                                                                                                                                                                                                                                                   
+  FillHist( cut+ "/Electron_dr03HcalTowerSumEt_"+label  , lep.dr03HcalTowerSumEt(), w, 200, 0., 10., "");
+  /// Extra                                                                                                                                                                                                                                                                     
+  FillHist( cut+ "/Electron_dr03EcalRecHitSumEt_"+label  , lep.dr03EcalRecHitSumEt(), w, 2000, 0., 100., "");
+  FillHist( cut+ "/Electron_dr03HcalDepth1TowerSumEt_"+label  , lep.dr03HcalDepth1TowerSumEt(), w, 200, 0., 10., "");
+  FillHist( cut+ "/Electron_ecalPFClusterIso_"+label  , lep.ecalPFClusterIso()/lep.UncorrPt(), w, 100, 0., 1., "");
+  FillHist( cut+ "/Electron_hcalPFClusterIso_"+label  , lep.hcalPFClusterIso()/lep.UncorrPt(), w, 100, 0., 1., "");
+
+  vector<TString> IDs ={"HNTightV2"};
+  for (auto ID : IDs){
+    if(lep.PassID(ID)) FillHist( cut+ "/Electron_Pass_"+ID+label  , 1, w, 4, 0., 4., "Pass " + ID);
+    else FillHist( cut+ "/Electron_Pass_"+ID+label  , 0, w, 4, 0., 4., "Pass " + ID);
+  }
+
+  return;
+
+
+}
+
+void HNL_LeptonCore::Fill_SigRegionPlots4(HNL_LeptonCore::Channel channel, TString label, std::vector<Jet> jets, std::vector<FatJet> fatjets,  std::vector<Lepton *> leps, Particle  met, double nvtx,  double w){
+
+
+  if(!CheckLeptonFlavourForChannel(channel, leps)) return;
+
+  double HT(0.);
+  for(auto ij : jets) HT += ij.Pt();
+
+  //double ST += lep1.Pt() + lep2.Pt() + met.Pt();                                                                                                                                                                                     
+
+  int NJet = jets.size();
+  int bin = 0;
+  double mass_lll = (*leps[0]+ *leps[1]+ *leps[2]).M();
+  double LToHT=HT/(leps[0]->Pt()+leps[1]->Pt()+leps[2]->Pt());
+
+  if(LToHT < 10.){
+    if(mass_lll < 50){
+      if(NJet<=0) bin=1;
+      else bin=2;
+    }
+    else{
+      if(NJet<=0) bin=3;
+      else bin=4;
+    }
+  }
+  else {
+    if(mass_lll < 50){
+      if(NJet<=0) bin=5;
+      else bin=6;
+    }
+    else{
+      if(NJet<=0) bin=7;
+      else bin=8;
+    }
+
+  }
+  FillHist( label + "/LimitInput_HNL_SR4/signalbin_"+label+"_HNL_SR4",  bin,  w, 8, 0.,8., "SRs");
+
+
+}
+
+void HNL_LeptonCore::FillLeptonPlots(std::vector<Lepton *> leps, TString this_region, double weight){
+
+  for(unsigned int i=0; i<leps.size(); i++){
+
+    TString this_itoa = TString::Itoa(i,10);
+
+    Lepton *lep = leps[i];
+
+    FillHist(this_region+"/Lepton_"+this_itoa+"_Pt_"+this_region, lep->Pt(), weight, 1000, 0., 1000.);
+    FillHist(this_region+"/Lepton_"+this_itoa+"_Eta_"+this_region, lep->Eta(), weight, 60, -3., 3.);
+    FillHist(this_region+"/Lepton_"+this_itoa+"_RelIso_"+this_region, lep->RelIso(), weight, 100, 0., 1.);
+    FillHist(this_region+"/Lepton_"+this_itoa+"_MiniRelIso_"+this_region, lep->MiniRelIso(), weight, 100, 0., 1.);
+
+    FillHist(this_region+"/Lepton_"+this_itoa+"_dXY_"+this_region, fabs(lep->dXY()), weight, 500, 0., 0.05);
+    FillHist(this_region+"/Lepton_"+this_itoa+"_dXYSig_"+this_region, fabs(lep->dXY()/lep->dXYerr()), weight, 100, 0., 10);
+    FillHist(this_region+"/Lepton_"+this_itoa+"_dZ_"+this_region, fabs(lep->dZ()), weight, 500, 0., 0.5);
+    FillHist(this_region+"/Lepton_"+this_itoa+"_dZSig_"+this_region, fabs(lep->dZ()/lep->dZerr()), weight, 100, 0., 10);
+    FillHist(this_region+"/Lepton_"+this_itoa+"_IP3D_"+this_region, fabs(lep->IP3D()), weight, 500, 0., 0.5);
+    FillHist(this_region+"/Lepton_"+this_itoa+"_IP3DSig_"+this_region, fabs(lep->IP3D()/lep->IP3Derr()), weight, 100, 0., 10);
+
+    if(lep->LeptonFlavour()==Lepton::ELECTRON){
+      Electron *el = (Electron *)lep;
+      FillHist(this_region+"/Lepton_"+this_itoa+"_MVANoIso_"+this_region, el->MVANoIso(), weight, 200, -1., 1.);
+    }
+    else if(lep->LeptonFlavour()==Lepton::MUON){
+      Muon *mu = (Muon *)lep;
+      FillHist(this_region+"/Lepton_"+this_itoa+"_Chi2_"+this_region, mu->Chi2(), weight, 500, 0., 50.);
+      FillHist(this_region+"/Lepton_"+this_itoa+"_TrkRelIso_"+this_region, mu->TrkIso()/mu->TuneP4().Pt(), weight, 100, 0., 1.);
+    }
+    else{
+      cout << "[HNL_LeptonCore::FillLeptonPlots] lepton flavour wrong.." << endl;
+      exit(EXIT_FAILURE);
+    }
+
+
+  }
+
+}
+
+void HNL_LeptonCore::FillJetPlots(std::vector<Jet> jets, std::vector<FatJet> fatjets, TString this_region, double weight){
+
+  for(unsigned int i=0; i<jets.size(); i++){
+
+    TString this_itoa = TString::Itoa(i,10);
+    FillHist(this_region+"/Jet_"+this_itoa+"_Pt_"+this_region, jets.at(i).Pt(), weight, 1000, 0., 1000.);
+    FillHist(this_region+"/Jet_"+this_itoa+"_Eta_"+this_region, jets.at(i).Eta(), weight, 60, -3., 3.);
+
+  }
+
+  for(unsigned int i=0; i<fatjets.size(); i++){
+
+    TString this_itoa = TString::Itoa(i,10);
+    FillHist(this_region+"/FatJet_"+this_itoa+"_Pt_"+this_region, fatjets.at(i).Pt(), weight, 1000, 0., 1000.);
+    FillHist(this_region+"/FatJet_"+this_itoa+"_Eta_"+this_region, fatjets.at(i).Eta(), weight, 60, -3., 3.);
+    FillHist(this_region+"/FatJet_"+this_itoa+"_Mass_"+this_region, fatjets.at(i).M(), weight, 3000, 0., 3000.);
+    FillHist(this_region+"/FatJet_"+this_itoa+"_SDMass_"+this_region, fatjets.at(i).SDMass(), weight, 3000, 0., 3000.);
+    FillHist(this_region+"/FatJet_"+this_itoa+"_LSF_"+this_region, fatjets.at(i).LSF(), weight, 100, 0., 1.);
+    FillHist(this_region+"/FatJet_"+this_itoa+"_PuppiTau21_"+this_region, fatjets.at(i).PuppiTau2()/fatjets.at(i).PuppiTau1(), weight, 100, 0., 1.);
+    FillHist(this_region+"/FatJet_"+this_itoa+"_PuppiTau31_"+this_region, fatjets.at(i).PuppiTau3()/fatjets.at(i).PuppiTau1(), weight, 100, 0., 1.);
+    FillHist(this_region+"/FatJet_"+this_itoa+"_PuppiTau32_"+this_region, fatjets.at(i).PuppiTau3()/fatjets.at(i).PuppiTau2(), weight, 100, 0., 1.);
+  }
+
+}
+
