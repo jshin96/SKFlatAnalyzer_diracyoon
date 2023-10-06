@@ -60,6 +60,7 @@ class HNL_LeptonCore : public AnalyzerCore {
     SR,    sigmm,    sigee,    sigem,
     sigmm_17028,    sigee_17028,    sigem_17028,
     SR1Tau,    SR2Tau,    SR3Tau,  
+    ControlRegionMuMu,ControlRegionEE,ControlRegionEMu,
     ChannelDepCR1,    ChannelDepCR2,    ChannelDepCR3, CR };
 
   enum LeptonType

@@ -808,7 +808,7 @@ double HNL_LeptonCore::SetupWeight(Event ev, AnalyzerParameter param){
     if(param.syst_ == AnalyzerParameter::PrefireUp) prefire_weight = GetPrefireWeight(1);
     else if(param.syst_ == AnalyzerParameter::PrefireDown)  prefire_weight = GetPrefireWeight(-1);
     else  prefire_weight = GetPrefireWeight(0);
-    FillWeightHist(param.Name+"_PrefireWeight" ,prefire_weight);
+    FillWeightHist(param.Name+"/PrefireWeight" ,prefire_weight);
   }
 
   double pileup_weight(1.);
@@ -816,14 +816,14 @@ double HNL_LeptonCore::SetupWeight(Event ev, AnalyzerParameter param){
     if(param.syst_ == AnalyzerParameter::PUUp) pileup_weight= GetPileUpWeight(nPileUp,1);
     else if(param.syst_ == AnalyzerParameter::PUDown) pileup_weight= GetPileUpWeight(nPileUp,-1);
     else pileup_weight= GetPileUpWeight(nPileUp,0);
-    FillWeightHist(param.Name+"_PileupWeight",pileup_weight);
+    FillWeightHist(param.Name+"/PileupWeight",pileup_weight);
   }
 
   double this_mc_weight =  MCweight(param.Weight_SumW, param.Weight_LumiNorm);
-  FillWeightHist(param.Name+"_MCWeight",    this_mc_weight);
+  FillWeightHist(param.Name+"/MCWeight",    this_mc_weight);
   
-  if(param.Weight_LumiNorm) FillWeightHist(param.Name+"_LumiWeight",  ev.GetTriggerLumi("Full"));
-  if(param.Weight_kFactor)  FillWeightHist(param.Name+"_KFactor",     GetKFactor());
+  if(param.Weight_LumiNorm) FillWeightHist(param.Name+"/LumiWeight",  ev.GetTriggerLumi("Full"));
+  if(param.Weight_kFactor)  FillWeightHist(param.Name+"/KFactor",     GetKFactor());
 
 
   if(param.Weight_LumiNorm) this_mc_weight *= ev.GetTriggerLumi("Full");
@@ -832,7 +832,7 @@ double HNL_LeptonCore::SetupWeight(Event ev, AnalyzerParameter param){
   if(param.Weight_PreFire)  this_mc_weight *= prefire_weight;
      
      
-  FillWeightHist("MCFullWeight_" , this_mc_weight);
+  FillWeightHist(param.Name+"/MCFullWeight_" , this_mc_weight);
 
   return this_mc_weight;
   
@@ -861,7 +861,7 @@ bool HNL_LeptonCore::CheckLeptonFlavourForChannel(HNL_LeptonCore::Channel channe
 	   (leps[0]->LeptonFlavour() == Lepton::MUON && leps[1]->LeptonFlavour() == Lepton::ELECTRON) ))  return false;
   
     double lep1_ptcut= (channel==EE) ?   25. : 20.;
-    double lep2_ptcut= (channel==EE) ?   10. : 5.;
+    double lep2_ptcut= (channel==EE) ?   10. : 10.;
     //
     if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut)) return false;
     
@@ -1070,7 +1070,7 @@ bool HNL_LeptonCore::PassPtTrigger(Event ev, vector<TString> triglist,std::vecto
       
       if(leps[ilep]->LeptonFlavour() == Lepton::ELECTRON) nel++;
       else nmu++;
-
+      
       double lep_ptcut = (leps[ilep]->LeptonFlavour() == Lepton::ELECTRON) ? GetPtCutTrigger(itrig, nel-1, "Electron") : GetPtCutTrigger(itrig, nmu-1, "Muon") ;
       
       if(leps[ilep]->Pt() < lep_ptcut) pass_trig_pt=false;
@@ -1093,7 +1093,7 @@ bool HNL_LeptonCore::PassTriggerAndCheckStream(bool apply_ptcut,vector<Lepton*> 
 
       if(ev.PassTrigger(itrig))  {
 	trig_passed=true;
-
+	
 	if(apply_ptcut  && !PassPtTrigger(ev, triglist, leps)) trig_passed=false;
 	if(trig_passed) return true;
       }
@@ -1521,9 +1521,12 @@ int HNL_LeptonCore::GetIndexNonMinOSSF(std::vector<Lepton *> leps){
 
   if (leps.size() == 3){
 
-    Particle ll1 = (*leps[0]) + (*leps[1]);
-    Particle ll2 = (*leps[0]) + (*leps[2]);
-    Particle ll3 = (*leps[1]) + (*leps[2]);
+    Particle ll1 = (*leps[0]);
+    ll1+= (*leps[1]);
+    Particle ll2 = (*leps[0]);
+    ll2+= (*leps[2]);
+    Particle ll3 = (*leps[1]);
+    ll3+= (*leps[2]);
 
     double minOS=99999999999.;
     if(ll1.Charge() == 0) {
@@ -1898,9 +1901,13 @@ int HNL_LeptonCore::GetIndexNonMinSSSF(std::vector<Lepton *> leps){
 
   if (leps.size() == 3){
 
-    Particle ll1 = (*leps[0]) + (*leps[1]);
-    Particle ll2 = (*leps[0]) + (*leps[2]);
-    Particle ll3 = (*leps[1]) + (*leps[2]);
+
+    Particle ll1 = (*leps[0]);
+    ll1+= (*leps[1]);
+    Particle ll2 = (*leps[0]);
+    ll2+= (*leps[2]);
+    Particle ll3 = (*leps[1]);
+    ll3+= (*leps[2]);
 
     double minOS=99999999999.;
     if(fabs(ll1.Charge()) == 2) {
@@ -1925,9 +1932,13 @@ int HNL_LeptonCore::GetIndexNonBestZ(std::vector<Lepton *> leps,double mass_diff
 
   if (leps.size() == 3){
 
-    Particle ll1 = (*leps[0]) + (*leps[1]);
-    Particle ll2 = (*leps[0]) + (*leps[2]);
-    Particle ll3 = (*leps[1]) + (*leps[2]);
+
+    Particle ll1 = (*leps[0]);
+    ll1+= (*leps[1]);
+    Particle ll2 = (*leps[0]);
+    ll2+= (*leps[2]);
+    Particle ll3 = (*leps[1]);
+    ll3+= (*leps[2]);
 
     double minOSZ=99999999999.;
     if(fabs(ll1.Charge()) == 0) {
@@ -2027,10 +2038,12 @@ bool  HNL_LeptonCore::ZmassOSWindowCheck(std::vector<Lepton *> leps){
 
   if (leps.size() == 3){
 
-
-    Particle ll1 = *leps[0] + *leps[1];
-    Particle ll2 = *leps[0] + *leps[2];
-    Particle ll3 = *leps[1] + *leps[2];
+    Particle ll1 = (*leps[0]);
+    ll1+= (*leps[1]);
+    Particle ll2 = (*leps[0]);
+    ll2+= (*leps[2]);
+    Particle ll3 = (*leps[1]);
+    ll3+= (*leps[2]);
 
     if(ll1.Charge() == 0 && (fabs(ll1.M() - 90.1) < 15.)) passZmass_os_Window=true;
     if(ll2.Charge() == 0 && (fabs(ll2.M() - 90.1) < 15.)) passZmass_os_Window=true;

@@ -3,58 +3,52 @@
 
 double AnalyzerCore::GetMuonSFEventWeight(std::vector<Muon> muons,AnalyzerParameter param ){
 
+  if(IsDATA)  return 1;
+
   double this_weight(1.);
-  if(!IsDATA){
 
-    mcCorr->IgnoreNoHist = param.MCCorrrectionIgnoreNoHist;
-
-    for (auto mu: muons){
-      double MiniAODP = sqrt( mu.MiniAODPt() * mu.MiniAODPt() + mu.Pz() * mu.Pz() );
-      double this_pt  = mu.MiniAODPt();
-      double this_eta = mu.Eta();
-
-
-      //if(this_pt < 20) cout << "Muon ID SF " << param.Muon_ID_SF_Key << endl;                                                                                                                                                                                                                                                                                                                                                          
-
-      int SystDir_MuonIDSF(0), SystDir_MuonISOSF(0), SystDir_MuonRecoSF (0);
-      if(param.syst_ == AnalyzerParameter::MuonRecoSFUp)SystDir_MuonRecoSF = +1;
-      else if(param.syst_ == AnalyzerParameter::MuonRecoSFDown)SystDir_MuonRecoSF = -1;
-      else if(param.syst_ == AnalyzerParameter::MuonIDSFUp)  SystDir_MuonIDSF = +1;
-      else if(param.syst_ == AnalyzerParameter::MuonIDSFDown)  SystDir_MuonIDSF = -1;
-      else if(param.syst_ == AnalyzerParameter::MuonISOSFUp) SystDir_MuonISOSF  = +1;
-      else if(param.syst_ == AnalyzerParameter::MuonISOSFDown) SystDir_MuonISOSF  = -1;
-
-      double this_idsf   = mcCorr->MuonID_SF (param.Muon_ID_SF_Key,  this_eta, this_pt,SystDir_MuonIDSF);
-      double this_isosf  = mcCorr->MuonISO_SF(param.Muon_ISO_SF_Key, this_eta, this_pt,SystDir_MuonISOSF);
-
-      if(!HasFlag("NoIDSF")) this_weight *= this_idsf*this_isosf;
-
-      if(param.DEBUG) cout << "GetMuonSFEventWeight this_idsf=" << this_idsf << " this_isosf=" << this_isosf  << endl;
-
-      double reco_pt = (param.Muon_RECO_SF_Key  == "HighPtMuonRecoSF") ?  MiniAODP : this_pt;
-
-      double this_recosf = mcCorr->MuonReco_SF(param.Muon_RECO_SF_Key, this_eta, reco_pt,SystDir_MuonRecoSF);
-
-      this_weight *= this_recosf;
-
-      FillWeightHist(param.Name+"/RecoMuWeight_"+param.Name,this_recosf);
-      FillWeightHist(param.Name+"/IDMuWeight_"+param.Name,this_idsf);
-      FillWeightHist(param.Name+"/ISOMuWeight_"+param.Name,this_isosf);
-
-    }// end of muon loop                                                                                                                                                                                                                                                                                                                                                                                                                 
-
-  }// end of MC req.                                                                                                                                                                                                                                                                                                                                                                                                                     
-
+  mcCorr->IgnoreNoHist = param.MCCorrrectionIgnoreNoHist;
+  
+  for (auto mu: muons){
+    double MiniAODP = sqrt( mu.MiniAODPt() * mu.MiniAODPt() + mu.Pz() * mu.Pz() );
+    double this_pt  = mu.MiniAODPt();
+    double this_eta = mu.Eta();
+    
+    int SystDir_MuonIDSF(0), SystDir_MuonISOSF(0), SystDir_MuonRecoSF (0);
+    if(param.syst_ == AnalyzerParameter::MuonRecoSFUp)SystDir_MuonRecoSF = +1;
+    else if(param.syst_ == AnalyzerParameter::MuonRecoSFDown)SystDir_MuonRecoSF = -1;
+    else if(param.syst_ == AnalyzerParameter::MuonIDSFUp)  SystDir_MuonIDSF = +1;
+    else if(param.syst_ == AnalyzerParameter::MuonIDSFDown)  SystDir_MuonIDSF = -1;
+    else if(param.syst_ == AnalyzerParameter::MuonISOSFUp) SystDir_MuonISOSF  = +1;
+    else if(param.syst_ == AnalyzerParameter::MuonISOSFDown) SystDir_MuonISOSF  = -1;
+    
+    double this_idsf   = mcCorr->MuonID_SF (param.Muon_ID_SF_Key,  this_eta, this_pt,SystDir_MuonIDSF);
+    double this_isosf  = mcCorr->MuonISO_SF(param.Muon_ISO_SF_Key, this_eta, this_pt,SystDir_MuonISOSF);
+    
+    if(!HasFlag("NoIDSF")) this_weight *= this_idsf*this_isosf;
+    
+    if(param.DEBUG) cout << "GetMuonSFEventWeight this_idsf=" << this_idsf << " this_isosf=" << this_isosf  << endl;
+    
+    double reco_pt = (param.Muon_RECO_SF_Key  == "HighPtMuonRecoSF") ?  MiniAODP : this_pt;
+    
+    double this_recosf = mcCorr->MuonReco_SF(param.Muon_RECO_SF_Key, this_eta, reco_pt,SystDir_MuonRecoSF);
+    
+    this_weight *= this_recosf;
+    
+    FillWeightHist(param.Name+"/RecoMuWeight_"+param.Name,this_recosf);
+    FillWeightHist(param.Name+"/IDMuWeight_"+param.Name,this_idsf);
+    FillWeightHist(param.Name+"/ISOMuWeight_"+param.Name,this_isosf);
+    
+  }// end of muon loop                                                                                                                                                                                                                                          
   bool apply_tracking_SF = true;
   double MuonTrackineSF(1.);
-
-  //https://twiki.cern.ch/twiki/bin/view/CMSPublic/TrackingPOGResultsRun2Legacy#Muon_tracking_performance_in_AN2                                                                                                                                                                                                                                                                                                                         
-  // https://cds.cern.ch/record/2724492/files/DP2020_035.pdf                                                                                                                                                                                                                                                                                                                                                                             
+  
+  //https://twiki.cern.ch/twiki/bin/view/CMSPublic/TrackingPOGResultsRun2Legacy#Muon_tracking_performance_in_AN2                 
+  // https://cds.cern.ch/record/2724492/files/DP2020_035.pdf                                                                     
   if (apply_tracking_SF){
     if(DataEra=="2016preVFP"){
       for(auto im : muons) {
         if(fabs(im.Eta()) > 1.5) MuonTrackineSF*= 0.99;
-
       }
     }
     if(DataEra=="2016postVFP"){
@@ -74,19 +68,21 @@ double AnalyzerCore::GetMuonSFEventWeight(std::vector<Muon> muons,AnalyzerParame
       }
     }
     this_weight=this_weight*MuonTrackineSF;
-
+    
     FillWeightHist(param.Name+"/TrackerMuWeight_"+param.Name,MuonTrackineSF);
   }
 
   FillWeightHist(param.Name+"/FullMuWeight_"+param.Name,this_weight);
-
+  
   return this_weight;
-
+  
 }
 
 
 
 double AnalyzerCore::GetLeptonSFEventWeight(std::vector<Lepton *> leps, AnalyzerParameter param ){
+
+  if(IsDATA) return 1.;
 
   double this_weight(1.);
   if(!IsDATA){
@@ -140,6 +136,8 @@ double AnalyzerCore::GetLeptonSFEventWeight(std::vector<Lepton *> leps, Analyzer
 
 }
 double AnalyzerCore::GetElectronSFEventWeight(std::vector<Electron> electrons, AnalyzerParameter param ){
+
+  if(IsDATA) return 1.;
 
   double this_weight(1.);
   if(!IsDATA){

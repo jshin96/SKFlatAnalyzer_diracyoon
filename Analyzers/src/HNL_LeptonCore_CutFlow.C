@@ -39,6 +39,8 @@ void HNL_LeptonCore::FillEventCutflowDef(TString analysis_dir_name,TString histn
 
 
 
+
+
 void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::SearchRegion sr, double event_weight, TString label,   TString analysis_dir_name, int verbose_level){
 
 
@@ -48,9 +50,6 @@ void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::SearchRegion sr, double ev
   vector<TString> labels;
   TString EVhitname("");
 
-  /// verbose_level  sets which Cutflow to fill                                                                                                                                                                                                                                                                                                                                                                                                                                              
-  /// by default it is 0 and ALL are filled                                                                                                                                                                                                                                                                                                                                                                                                                                                  
-  /// If set to 1 then only limits are filled                                                                                                                                                                                                                                                                                                                                                                                                                                                
   if (verbose_level < 0) return;
 
   if (verbose_level == 0) {
@@ -210,7 +209,6 @@ void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::SearchRegion sr, double ev
       EVhitname ="SR_Summary";
     }
 
-
     if(sr==ChannelDepCR1){
       labels = {"MuMu_CR1","EE_CR1","EMu_CR1"};
       EVhitname ="ChannelDependantCR1";
@@ -224,6 +222,14 @@ void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::SearchRegion sr, double ev
       labels = {"MuMu_CR3","EE_CR3","EMu_CR3"};
       EVhitname ="ChannelDependantCR3";
     }
+
+    if(sr == ControlRegionMuMu || sr == ControlRegionEE || sr == ControlRegionEMu){
+      labels = {"NoCut","HEMVeto","METFilter","GENMatched","LeptonFlavour","Trigger","OSCR"};
+      if(sr == ControlRegionMuMu) EVhitname = "MuMu_CR";
+      if(sr == ControlRegionEE)   EVhitname = "EE_CR";
+      if(sr == ControlRegionEMu)  EVhitname = "EMu_CR";
+    }
+
   }
 
   if(verbose_level >= 0){
@@ -271,7 +277,7 @@ PSR3_bin6","QPSR3_bin7"};
   if(verbose_level==0){
     if(sr==CR){
 
-      labels = { "TopAK8_CR","ZAK8_CR","WpWp_CR1","WpWp_CR2","WpWp_CRNP","WpWp_CRNP2","ZZ_CR","ZZLoose_CR","ZG_CR","WG_CR","WZ_CR","WG_Method2_CR","ZG_Method2_CR","WZ2_CR","WZB_CR","HighMassSR1_CR","HighMassSR2_CR","HighMassSR3_CR" ,"HighMass1Jet_CR","HighMassBJet_CR","HighMassNP_CR","ZNP_CR","SSPresel","SSVBFPresel"};
+      labels = { "Z_CR","Top_CR","Top_CR2", "TopAK8_CR","ZAK8_CR","WpWp_CR1","WpWp_CR2","WpWp_CRNP","WpWp_CRNP2","ZZ_CR","ZZLoose_CR","ZG_CR","WG_CR","WZ_CR","WG_Method2_CR","ZG_Method2_CR","WZ2_CR","WZB_CR","HighMassSR1_CR","HighMassSR2_CR","HighMassSR3_CR" ,"HighMass1Jet_CR","HighMassBJet_CR","HighMassNP_CR","ZNP_CR","SSPresel","SSVBFPresel"};
 
 
       EVhitname ="ControlRegions";

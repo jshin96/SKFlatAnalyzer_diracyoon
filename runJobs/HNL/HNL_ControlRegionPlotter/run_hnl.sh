@@ -107,8 +107,7 @@ if [[ $1 == "OS" ]]; then
         SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton.txt  -n 40    --nmax ${nmax}   -e ${i}  --skim SkimTree_DileptonBDT  --userflags $FLAG  &  
         SKFlat.py -a $analyzer  -l $mcpath/PromptOS.txt         -n 50    --nmax ${nmax}   -e ${i}  --skim SkimTree_DileptonBDT   --userflags RunPrompt,$FLAG &             
         SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags RunFake,$FLAG  &
-        SKFlat.py -a $analyzer  -l $mcpath/VVOS.txt             -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags RunFake,$FLAG  &                                                                                                             
-
+        SKFlat.py -a $analyzer  -l $mcpath/VVOS.txt             -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags RunFake,$FLAG  &                                          
     done
 
 fi

@@ -39,7 +39,8 @@ double AnalyzerCore::FillWeightHist(TString label, double _weight){
 
   if(run_Debug) cout << "AnalyzerCore::FillWeightHist ["+label+"]  corr.=" <<   _weight << endl;
 
-  double max_x_range = 5. + 2*(fabs(_weight));
+  double max_x_range = 5.;
+  if(label.Contains("Lumi")) max_x_range = 5.+ 2*(fabs(_weight));
 
   if(!label.Contains("Syst_"))   FillHist( "weights/"+ label , _weight ,1., 200, -1.*max_x_range, max_x_range,"ev weight");
 

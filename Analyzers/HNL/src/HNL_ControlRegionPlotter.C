@@ -42,7 +42,6 @@ void HNL_ControlRegionPlotter::executeEvent(){
     param_signal.Name    =  id;
     param_signal.DefName =  id;
 
-
     param_signal.Weight_LumiNorm = true;
     param_signal.Weight_SumW     = true;
     param_signal.Weight_PileUp   = true;
@@ -91,24 +90,27 @@ void HNL_ControlRegionPlotter::executeEvent(){
       param_signal.Muon_Trigger_SF_Key=trigKey+"_POGTight";
     }
     
-    /// Trigger Key
-    param_signal.TriggerSelection   = "Dilep";
-    if(id.Contains("HNL_ULID")){
-      param_signal.Muon_Trigger_SF_Key="DiMuIso_HNL_ULID";
-      param_signal.Electron_Trigger_SF_Key="DiEgIso_HNL_ULID";
+    else{
+      /// Trigger Key
+      param_signal.TriggerSelection   = "Dilep";
+      if(id.Contains("HNL_ULID")){
+	param_signal.Muon_Trigger_SF_Key="DiMuIso_HNL_ULID";
+	param_signal.Electron_Trigger_SF_Key="DiEgIso_HNL_ULID";
+      }
+      if(id=="TopHNT" ) {
+	param_signal.Muon_Trigger_SF_Key="DiMuIso_HNL_ULID";
+	param_signal.Electron_Trigger_SF_Key="DiEgIso_HNL_ULID";
+      }
+      if(id=="HNTightV2" ){
+	param_signal.Muon_Trigger_SF_Key="DiMuIso_HNL_ULID";
+	param_signal.Electron_Trigger_SF_Key="DiEgIso_HNL_ULID";
+      }
     }
-    if(id=="TopHNT" ) {
-      param_signal.Muon_Trigger_SF_Key="DiMuIso_HNL_ULID";
-      param_signal.Electron_Trigger_SF_Key="DiEgIso_HNL_ULID";
-    }
-    if(id=="HNTightV2" ){
-      param_signal.Muon_Trigger_SF_Key="DiMuIso_HNL_ULID";
-      param_signal.Electron_Trigger_SF_Key="DiEgIso_HNL_ULID";
-    }
-    
+
+
     ///// Run command
     vector<TString> CRToRun;
-    if(HasFlag("OSCR")) CRToRun = {"CR_OS_Z","CR_OS_Top","CR_OS_ZAk8","CR_OS_TopAK8"};
+    if(HasFlag("OSCR")) CRToRun = {"CR_OS_Z","CR_OS_Top","CR_OS_Top2","CR_OS_ZAk8","CR_OS_TopAK8"};
     if(HasFlag("SSVV"))   CRToRun.push_back("CR_SR");
     if(HasFlag("SSVV"))   CRToRun.push_back("Presel");
     if(HasFlag("SSVV"))   CRToRun.push_back("CR_VV");
@@ -128,7 +130,7 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   if(_jentry==0) PrintParam(param);
   run_Debug = (_jentry%nLog==0);
 
-  cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+  if(run_Debug) cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
   
   if(run_Debug) {
       
@@ -205,6 +207,7 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
     JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
     double sf_btag                    = GetBJetSF(param,  AK4_JetColl, param_jets);
     weight*= sf_btag;
+    FillWeightHist("DeepJetSF", sf_btag);
     for(auto iJ : AK8_JetColl) weight*= FillWeightHist("PNET_JETTagger",iJ.GetTaggerSF(JetTagging::particleNet_WvsQCD, DataEra,0));
    
     double ElSFWeight = GetElectronSFEventWeight(ElectronTightColl, param);
