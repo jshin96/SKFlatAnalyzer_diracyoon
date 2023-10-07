@@ -28,134 +28,8 @@ void HNL_LeptonCore::initializeAnalyzer(){
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Tight, JetTagging::incl, JetTagging::mujets));
 
 
-  // clear Trig vect
+  SetupTriggerLists();
 
-  TrigList_HNL_HighPtMu.clear();
-  TrigList_HNL_DblMu.clear();
-  TrigList_HNL_Mu.clear();
-  TrigList_Full_Mu.clear();
-  TrigList_POG_Mu.clear();
-
-  // EG                                                                                                                                                                              
-  TrigList_HNL_DblEG.clear();
-  TrigList_HNL_EG.clear();
-  TrigList_POG_EG.clear();
-  TrigList_HNL_HighPtEG.clear();
-  TrigList_Full_EG.clear();
-
-  // MUG                                                                                                                                                                             
-  TrigList_HNL_MuEG.clear();
-  TrigList_POG_MuEG.clear();
-  TrigList_Full_MuEG.clear();
-
-  
-  if(GetEraShort()=="2016a"){
-
-    // Lumi = 19.5 fb-1
-    //2016a run period 278808
-    // MU
-    TrigList_HNL_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v", 
-			  "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v"};
-
-    TrigList_HNL_MuEG  = {"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v", "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v"};
-    TrigList_POG_MuEG  = {"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v", "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v"};
-
-    // 278806 and 278807 should be removed frmo thsi dataset
-    // REF https://twiki.cern.ch/twiki/bin/view/CMS/PdmVDatasetsUL2016
-    // Run Range Bver2 [273150] - F [278770]
-  }
-  if(GetEraShort()=="2016b"){
-
-    // Lumi=16.8 /fb.
-    // MU                                                                                                                                                     
-    TrigList_HNL_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v", 
-			  "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"};// "HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"};
-    
-    TrigList_HNL_MuEG  = {"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
-    TrigList_POG_MuEG  = {"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
-    
-
-    //https://twiki.cern.ch/twiki/bin/view/CMS/MuonHLT2016
-    // Do we include HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v which is only in periodH
-    // Do we include HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v in perfiod F + G
-  }
-
-  if(DataYear==2016){
-
-    // Mu};
-    
-    TrigList_POG_Mu = {    "HLT_IsoMu24_v",   "HLT_IsoTkMu24_v",};
-    TrigList_HNL_HighPtMu = {"HLT_Mu50_v",   "HLT_TkMu50_v"};
-    TrigList_HNL_Mu = {    "HLT_IsoMu24_v",   "HLT_IsoTkMu24_v",};
-    // EG                                                                                                                                                     
-    TrigList_HNL_DblEG = {  "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
-    TrigList_HNL_EG    = {  "HLT_Ele27_WPTight_Gsf_v" ,
-			    "HLT_Ele25_eta2p1_WPTight_Gsf_v" ,
-			    "HLT_Ele115_CaloIdVT_GsfTrkIdT_v", 
-			    "HLT_Photon175_v",
-			    "HLT_Ele45_CaloIdVT_GsfTrkIdT_PFJet200_PFJet50_v",
-			    "HLT_Photon175_v",
-			    "HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165_v",
-			    "HLT_Photon175_v",
-			    "HLT_DoubleEle33_CaloIdL_MW_v",
-			    "HLT_DoubleEle37_Ele27_CaloIdL_GsfTrkIdVL_v"};
-    //https://twiki.cern.ch/twiki/bin/view/CMS/EgHLTRunIISummary
-    TrigList_HNL_HighPtEG = {"HLT_Photon175_v","HLT_DoublePhoton60_v"};
-    TrigList_POG_EG    = {  "HLT_Ele27_WPTight_Gsf_v" };
-
-    //https://twiki.cern.ch/twiki/bin/view/CMS/EgHLTPathDetails
-
-    
-  }  // END OF 2016 Triggers                                                                                                                 
-
-  else if(DataYear==2017){
-
-
-    TrigList_HNL_DblMu = { "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v", 
-			   "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v",
-			   "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v" };
-    TrigList_HNL_Mu = {  "HLT_IsoMu27_v"};
-    TrigList_POG_Mu = {  "HLT_IsoMu27_v"};
-    TrigList_HNL_HighPtMu = {"HLT_Mu50_v"};
-
-
-    TrigList_HNL_DblEG = { "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v"};
-    TrigList_HNL_EG = { "HLT_Ele32_WPTight_Gsf_v", 
-			"HLT_Ele32_WPTight_Gsf_L1DoubleEG_v",
-			"HLT_Ele115_CaloIdVT_GsfTrkIdT_v",
-			"HLT_Photon200_v",
-			"HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165_v",
-			"HLT_Photon200_v",
-			"HLT_DoubleEle33_CaloIdL_MW_v"};
-    TrigList_POG_EG = {"HLT_Ele32_WPTight_Gsf_v", "HLT_Ele32_WPTight_Gsf_L1DoubleEG_v"};
-    TrigList_HNL_HighPtEG = {"HLT_Photon200_v","HLT_DoublePhoton70_v"};
-
-    TrigList_HNL_MuEG  = {"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v"};
-
-  } // end of 2017 triggers                                                                                                                  
-
-  else if(DataYear==2018){
-
-    TrigList_HNL_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v"};
-    TrigList_HNL_Mu = {   "HLT_IsoMu24_v"};
-    TrigList_HNL_HighPtMu = {"HLT_Mu50_v"};
-    TrigList_POG_Mu = {   "HLT_IsoMu24_v"};
-    
-    // MAIN TRIGGER
-    TrigList_HNL_DblEG = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v"};
-    
-    TrigList_HNL_EG = { "HLT_Ele32_WPTight_Gsf_v",
-			"HLT_DoubleEle25_CaloIdL_MW_v" ,
-			"HLT_Ele115_CaloIdVT_GsfTrkIdT_v",
-			"HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165_v"};
-
-    TrigList_POG_EG = { "HLT_Ele32_WPTight_Gsf_v"};
-
-    TrigList_HNL_HighPtEG = { "HLT_Photon200_v", "HLT_DoublePhoton70_v"};
-
-    TrigList_HNL_MuEG  = {"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v"};
-
-  }   
 
   //--- Method 1d using JetTagging::iterativefit needs csv file changing in histmap to run                                                   
   // jtps.push_back( JetTagging::Parameters(JetTagging::DeepCSV, JetTagging::Medium, JetTagging::iterativefit, JetTagging::iterativefit) );  
@@ -164,27 +38,6 @@ void HNL_LeptonCore::initializeAnalyzer(){
 
   SetupIDMVAReaderDefault();
 
-  TrigList_Full_Mu.clear();
-  TrigList_Full_EG.clear();
-  TrigList_Full_MuEG.clear();
-  for(auto itrig : TrigList_HNL_DblMu) TrigList_Full_Mu.push_back(itrig);
-  for(auto itrig : TrigList_HNL_Mu) TrigList_Full_Mu.push_back(itrig);
-  for(auto itrig : TrigList_HNL_HighPtMu) TrigList_Full_Mu.push_back(itrig);
-  
-  for(auto itrig : TrigList_HNL_DblEG) TrigList_Full_EG.push_back(itrig);
-  for(auto itrig : TrigList_HNL_EG) TrigList_Full_EG.push_back(itrig);
-  for(auto itrig : TrigList_HNL_HighPtEG) TrigList_Full_EG.push_back(itrig);
-
-  for(auto itrig : TrigList_HNL_MuEG) TrigList_Full_MuEG.push_back(itrig);
-  for(auto itrig : TrigList_Full_Mu)TrigList_Full_MuEG.push_back(itrig);
-  for(auto itrig : TrigList_Full_EG) TrigList_Full_MuEG.push_back(itrig);
-
-  for(auto itrig : TrigList_Full_Mu){
-    cout << "TrigList_Full_Mu  : "<< itrig << endl;
-  }
-  for(auto itrig : TrigList_Full_EG){
-    cout << "TrigList_Full_EG  : "<< itrig << endl;
-  } 
 
 }
 
@@ -338,163 +191,6 @@ vector<AnalyzerParameter::Syst> HNL_LeptonCore::GetSystList(TString SystType){
 //====================================================/====================================================
 //====================================================/====================================================
 
-
-bool HNL_LeptonCore::PassMultiTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selectionMain, TString selectionOR){
-
-  
-  bool PassTrigger  = PassTriggerSelection(channel, ev,leps, selectionMain, true);
-  bool PassTrigger2  = PassTriggerSelection(channel, ev,leps, selectionOR, true);
-  bool PassTriggerAllPD  = PassTriggerSelection(channel, ev,leps, selectionMain, false); 
-
-  if(!IsData) return (PassTrigger || PassTrigger2);
-  
-  if(PassTrigger) return true;
-  if(PassTriggerAllPD) return false;
-  return PassTrigger2;
-  
-}
-
-bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selection, bool check_pd ){
-
-  bool PassTrigger(false);
-
-  bool apply_ptcut=true;
-  
-  if (channel == MuMu){
-    
-    std::vector<Lepton *> leps_muon;
-    for(auto ilep : leps) {
-      if(ilep->LeptonFlavour() == Lepton::MUON) leps_muon.push_back(ilep);
-    }
-    
-    if(selection == "Dilep"){
-      
-      // Check It passes DiMu Trigger
-      // Check if for data we are running on correct data stream
-      
-      return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_DblMu,check_pd);
-
-    }
-    
-    else     if(selection == "Lep"){
-      
-      return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_Mu,check_pd);
-      
-    }
-    else     if(selection == "POGSglLep"){
-
-      return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_POG_Mu,check_pd);
-
-    }
-    
-    else if(selection == "HighPt"){
-
-      return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_HighPtMu,check_pd);
-
-
-    }
-    else if(selection == "Full"){
-
-      return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_Full_Mu,check_pd);
-
-    }
-    else {
-      cout << "[HNL_LeptonCore::PassTriggerSelection ] selection " << selection <<  "not found.." << endl;
-      exit(EXIT_FAILURE);
-    }
-  }
-  
-  
-  if (channel == EE){
-    
-    std::vector<Lepton *> leps_eg;
-    
-    for(auto ilep : leps) {
-      if(ilep->LeptonFlavour() == Lepton::ELECTRON) leps_eg.push_back(ilep);
-    }
-    
-    if(selection == "Dilep"){
-      
-      return  PassTriggerAndCheckStream(apply_ptcut,leps_eg,ev,TrigList_HNL_DblEG,check_pd);
-    }
-
-    else     if(selection == "POGSglLep"){
-
-      return  PassTriggerAndCheckStream(apply_ptcut,leps_eg,ev,TrigList_POG_EG,check_pd);
-    }
-
-    else     if(selection == "Lep"){
-
-      return  PassTriggerAndCheckStream(apply_ptcut,leps_eg,ev,TrigList_HNL_EG,check_pd);
-    }
-
-    else if(selection == "HighPt"){
-
-      return  PassTriggerAndCheckStream(apply_ptcut,leps_eg,ev,TrigList_HNL_HighPtEG,check_pd);
- 
-    }
-    
-    
-    else if(selection == "Full"){
-      
-      return  PassTriggerAndCheckStream(apply_ptcut,leps_eg,ev,TrigList_Full_EG,check_pd);
-
-    }
-    else {
-      
-      cout << "[HNL_LeptonCore::PassTriggerSelection ] selection " << selection << "  not found.." << endl;
-      exit(EXIT_FAILURE);
-    }
-  }
-
-
-
-  if (channel == EMu){
-    
-    std::vector<Lepton *> leps_muon;
-    for(auto ilep : leps) {
-      if(ilep->LeptonFlavour() == Lepton::MUON) leps_muon.push_back(ilep);
-    }
-    if(selection == "Dilep"){
-      
-      return  PassTriggerAndCheckStream(apply_ptcut,leps,ev,TrigList_HNL_MuEG,check_pd);
-
-    }
-    else if(selection == "Lep"){
-
-      return  PassTriggerAndCheckStream(apply_ptcut,leps,ev,TrigList_HNL_Mu,check_pd) || PassTriggerAndCheckStream(apply_ptcut,leps,ev,TrigList_HNL_EG,check_pd);
-
-    }
-
-    else if(selection == "HighPt"){
-
-
-      return  PassTriggerAndCheckStream(apply_ptcut,leps,ev,TrigList_HNL_HighPtMu,check_pd) || PassTriggerAndCheckStream(apply_ptcut,leps,ev,TrigList_HNL_HighPtEG,check_pd);
-
-    }
-    else     if(selection == "POGSglLep"){
-
-      return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_POG_Mu,check_pd);
-    }    
-
-    else    if(selection == "Full"){
-      
-      return  PassTriggerAndCheckStream(apply_ptcut,leps,ev,TrigList_Full_MuEG,check_pd);
-
-    }
-    
-    else {
-      cout << "[HNL_LeptonCore::PassTriggerSelection ] selection " <<  selection << " not found.." << endl;
-      exit(EXIT_FAILURE);
-    }
-  }
-  
-       
-
-
-
-  return PassTrigger;
-}
 
 AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TString tag){
   
@@ -850,15 +546,14 @@ bool HNL_LeptonCore::CheckLeptonFlavourForChannel(HNL_LeptonCore::Channel channe
     if(ilep->LeptonFlavour() == Lepton::ELECTRON) n_el++;
   }
   
-  if(channel==MuMu  || channel==EE || channel== EMu  ){
+  if(channel==MuMu  || channel==EE || channel== EMu || channel== MuE ){
     
     if (leps.size() != 2) return false;
 
     if (channel==EE     && !(leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::ELECTRON)) return false;
     if (channel==MuMu   && !(leps[0]->LeptonFlavour() == Lepton::MUON     && leps[1]->LeptonFlavour() == Lepton::MUON))    return false;
-    if (channel==EMu  &&
-	!( (leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::MUON) ||
-	   (leps[0]->LeptonFlavour() == Lepton::MUON && leps[1]->LeptonFlavour() == Lepton::ELECTRON) ))  return false;
+    if (channel==EMu    && !(leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::MUON))    return false;
+    if (channel==MuE    && !(leps[1]->LeptonFlavour() == Lepton::ELECTRON && leps[0]->LeptonFlavour() == Lepton::MUON))    return false; 
   
     double lep1_ptcut= (channel==EE) ?   25. : 20.;
     double lep2_ptcut= (channel==EE) ?   10. : 10.;
@@ -906,213 +601,6 @@ bool HNL_LeptonCore::CheckLeptonFlavourForChannel(HNL_LeptonCore::Channel channe
 
   return true;
 
-}
-
-double HNL_LeptonCore::GetPtCutTrigger(TString trigname, int nlep, TString flavour){
-
-  if(flavour == "Muon"){
-    if(trigname.Contains("HLT_Mu17") ||  trigname.Contains("HLT_TkMu17")) {
-      if(trigname.Contains("Mu8") || trigname.Contains("TkMu8")) {
-	if(nlep==0) return 20;
-	if(nlep==1) return 10;
-	if(nlep>1) return 5.;
-      }  
-    }
-    else if(trigname.Contains("HLT_Mu23") ||  trigname.Contains("HLT_Mu23")) {
-      if(trigname.Contains("Mu8") || trigname.Contains("TkMu8")) {
-	if(nlep==0) return 20;
-	if(nlep==1) return 10;
-	if(nlep>1) return 5.;
-      }
-    }
-    
-    else if(trigname.Contains("HLT_Mu50") && trigname.Contains("HLT_TkMu50")) {
-      if(nlep==0) return 55;
-      if(nlep>0) return 5.;
-    }
-    
-    else if(trigname.Contains("HLT_Iso") && trigname.Contains("Mu24")) {
-      if(nlep==0) return 26;
-      if(nlep>0) return 5.;
-    }
-    
-    else if(trigname.Contains("HLT_Iso") && trigname.Contains("Mu27")) {
-      if(nlep==0) return 30;
-      if(nlep>0) return 5.;
-    }
-
-  }
-  if(flavour =="Electron"){
-    
-    if(trigname.Contains("HLT_Ele23_Ele12")){
-      if(nlep==0) return 25;
-      if(nlep==1) return 15.;
-      if(nlep>1) return 10.;
-    }
-    
-    else if(trigname.Contains("HLT_Ele27_WPTight")){
-      if(nlep==0) return 30;
-      if(nlep>0) return 10.;
-    }
-    
-    else if(trigname.Contains("HLT_Ele25_eta2p1")){
-      if(nlep==0) return 27;
-      if(nlep>0) return 10.;
-    }
-    
-    else if(trigname.Contains("HLT_Ele115")){
-      if(nlep==0) return 120;
-      if(nlep>0) return 10.;
-    }
-    
-    else if(trigname.Contains("HLT_Photon175")){
-      if(nlep==0) return 180;
-      if(nlep>0) return 10.;
-    }
-    
-    else if(trigname.Contains("HLT_Ele45_CaloIdVT")){
-      if(nlep==0) return 50;
-      if(nlep>0) return 10.;
-    }
-    
-    else if(trigname.Contains("HLT_Ele50_CaloIdVT")){
-      if(nlep==0) return 55;
-      if(nlep>0) return 10.;
-    }
-    
-    else if(trigname.Contains("HLT_DoubleEle33")){
-      if(nlep==0) return 35;
-      if(nlep==1) return 35;
-      if(nlep>0) return 10.;
-    }
-    
-    else if(trigname.Contains("HLT_DoubleEle37_Ele27")){
-      if(nlep==0) return 40;
-      if(nlep==1) return 30;
-      if(nlep>0) return 10.;
-    }
-    
-    else if(trigname.Contains("HLT_DoublePhoton60")){
-      if(nlep==0) return 65;
-      if(nlep>0) return 10.;
-    }
-  }
-  
-  if(flavour =="Muon" || flavour =="Electron"){
-    
-    if(trigname.Contains("HLT_Mu8_TrkIsoVVL_Ele23")){
-      if(flavour =="Electron" && nlep==0) return 25;
-      if(flavour =="Muon"&& nlep==0) return 10;
-      if(nlep>0) return 10.;
-    }
-    
-    else if(trigname.Contains("HLT_Mu23_TrkIsoVVL_Ele8")){
-      if(flavour =="Electron" && nlep==0) return 10;
-      if(flavour =="Muon"&& nlep==0) return 25;
-      if(nlep>0) return 10.;
-
-    }
-    else if(trigname.Contains("HLT_Mu23_TrkIsoVVL_Ele12")){
-      if(flavour =="Electron" && nlep==0) return 15;
-      if(flavour =="Muon"&& nlep==0) return 25;
-      if(nlep>0) return 10.;
-    }
-    
-  }
-
-  if(flavour =="Electron"){
-    
-    if(trigname.Contains("HLT_Ele27_")){
-      if(nlep==0) return 30;
-      if(nlep>0) return 10.;
-    }
-    else if(trigname.Contains("HLT_Ele32_")){
-      if(nlep==0) return 35;
-      if(nlep>0) return 10.;
-    }
-    else if(trigname.Contains("HLT_Ele35")){
-      if(nlep==0) return 37;
-      if(nlep>0) return 10.;
-    }
-    else if(trigname.Contains("HLT_Photon200")){
-      if(nlep==0) return 210;
-      if(nlep>0) return 10.;
-    }
-    else if(trigname.Contains("HLT_DoublePhoton70")){
-      if(nlep==0) return 80;
-      if(nlep==1) return 80;
-      if(nlep>1) return 10.;
-    }
-    
-    else if(trigname.Contains("HLT_DoubleEle25")){
-      if(nlep==0) return 28;
-      if(nlep==1) return 28;
-      if(nlep>1) return 10.;
-    }
-  }
-  return 0.;
-}
-bool HNL_LeptonCore::PassPtTrigger(Event ev, vector<TString> triglist,std::vector<Lepton *> leps, bool check_pd){
-
-  /// Code to check if event passes trigger/ Trigger is in PD running on for DAta and pt cuts are applied
-  
-
-  for(auto itrig : triglist){
-
-    bool pass_trig_pt=true;    
-    if(check_pd){
-      if(IsData&&!ev.IsPDForTrigger(itrig, this->DataStream)) continue;
-    }
-
-    int nel(0);
-    int nmu(0);
-    for(unsigned int ilep = 0 ; ilep < leps.size(); ilep++){
-      
-      if(leps[ilep]->LeptonFlavour() == Lepton::ELECTRON) nel++;
-      else nmu++;
-      
-      double lep_ptcut = (leps[ilep]->LeptonFlavour() == Lepton::ELECTRON) ? GetPtCutTrigger(itrig, nel-1, "Electron") : GetPtCutTrigger(itrig, nmu-1, "Muon") ;
-      
-      if(leps[ilep]->Pt() < lep_ptcut) pass_trig_pt=false;
-
-    }
-    if(pass_trig_pt) return true;
-  }
-
-  return false;
-}
-
-
-
-bool HNL_LeptonCore::PassTriggerAndCheckStream(bool apply_ptcut,vector<Lepton*> leps, Event ev, vector<TString> triglist, bool check_data_pd){
-
-  bool trig_passed=false;
-  for(auto itrig : triglist){
-    
-    if(!IsData) {
-
-      if(ev.PassTrigger(itrig))  {
-	trig_passed=true;
-	
-	if(apply_ptcut  && !PassPtTrigger(ev, triglist, leps)) trig_passed=false;
-	if(trig_passed) return true;
-      }
-    }
-    else if(check_data_pd){
-      if(ev.PassTrigger(itrig) && ev.IsPDForTrigger(itrig, this->DataStream)) {
-	trig_passed=true;
-	if(apply_ptcut  && !PassPtTrigger(ev, triglist, leps,check_data_pd)) trig_passed=false;
-	if(trig_passed) return true;
-      }
-    }
-    else if(ev.PassTrigger(itrig)){
-      trig_passed=true;
-      if(apply_ptcut  && !PassPtTrigger(ev, triglist, leps,check_data_pd)) trig_passed=false;
-      if(trig_passed) return true;
-    }
-  }
-  
-  return trig_passed;
 }
 
 
@@ -1235,14 +723,17 @@ TString HNL_LeptonCore::GetChannelString(HNL_LeptonCore::Channel channel, HNL_Le
   if (channel == EE) channel_string="EE";
   if (channel == MuMu) channel_string="MuMu";
   if (channel == EMu) channel_string="EMu";
+  if (channel == MuE) channel_string="MuE";
 
   if (channel == EEE) channel_string="EEE";
   if (channel == EMuL) channel_string="EMuL";
+  if (channel == MuEL) channel_string="MuEL";
   if (channel == MuMuMu) channel_string="MuMuMu";
 
   if (channel == EEEE) channel_string="EEEE";
   if (channel == MuMuMuMu) channel_string="MuMuMuMu";
   if (channel == EMuLL) channel_string="EMuLL";
+  if (channel == MuELL) channel_string="MuELL";
 
 
   if (q == Plus) channel_string+="_+";
@@ -1330,8 +821,8 @@ bool HNL_LeptonCore::SelectChannel(HNL_LeptonCore::Channel channel){
   if(channel == EE   && process.Contains("SS_El-El-")) return true;
   if(channel == EMu  && process.Contains("SS_El+Mu+")) return true;
   if(channel == EMu  && process.Contains("SS_El-Mu-")) return true;
-  if(channel == EMu  && process.Contains("SS_Mu+El+")) return true;
-  if(channel == EMu  && process.Contains("SS_Mu-El-")) return true;
+  if(channel == MuE  && process.Contains("SS_Mu+El+")) return true;
+  if(channel == MuE  && process.Contains("SS_Mu-El-")) return true;
 
 
   return false;

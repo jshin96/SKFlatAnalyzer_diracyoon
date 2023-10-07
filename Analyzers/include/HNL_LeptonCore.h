@@ -42,7 +42,8 @@ class HNL_LeptonCore : public AnalyzerCore {
     E=0,    EE=1,    EEE=2,    EEEE=3,
     Mu=10,    MuMu=11,    MuMuMu=12,    MuMuMuMu=13,
     EMu=15,     EMuL=16,    EMuLL=17,
-    LL=18
+    MuE=18, MuEL = 19, MuELL = 20,
+    LL=21
 
   };
   enum SearchRegion
@@ -60,7 +61,7 @@ class HNL_LeptonCore : public AnalyzerCore {
     SR,    sigmm,    sigee,    sigem,
     sigmm_17028,    sigee_17028,    sigem_17028,
     SR1Tau,    SR2Tau,    SR3Tau,  
-    ControlRegionMuMu,ControlRegionEE,ControlRegionEMu,
+    ControlRegionMuMu,ControlRegionEE,ControlRegionEMu, ControlRegionMuE,
     ChannelDepCR1,    ChannelDepCR2,    ChannelDepCR3, CR };
 
   enum LeptonType
@@ -113,7 +114,8 @@ class HNL_LeptonCore : public AnalyzerCore {
   Particle GetvMET(TString METType);
   Particle GetvCorrMET(TString METType, AnalyzerParameter param, Particle METUncorr);
 
-
+  
+  
 
   //---- BDT Related    HNL_LeptonCore_BDT                                                                                                                                                                                           
   void initializeAnalyzer();
@@ -206,21 +208,23 @@ class HNL_LeptonCore : public AnalyzerCore {
   bool PassGenMatchFilter(vector<Lepton *> leps,AnalyzerParameter param);
   bool HasLowMassMeson(std::vector<Lepton *> leps);
   double SetupWeight(Event ev, AnalyzerParameter param);
-  double GetPtCutTrigger(TString trigname, int nlep, TString flavour);
   TString GetPtBin(bool mu, double pt);
   TString DoubleToString(double d);
 
   /// ------ SYSTEMATICS
   vector<AnalyzerParameter::Syst> GetSystList(TString SystType);
 
-  /// ---- TRIGGER
+  /// ---- TRIGGER HNL_LeptonCore_Trigger
+  void    SetupTriggerLists();  
+  void    TriggerPrintOut(Event ev);
+  double  GetPtCutTrigger(TString trigname, int nlep, TString flavour);
   TString Category(Electron el);
-  bool PassPtTrigger(Event ev, vector<TString> triglist,std::vector<Lepton *> leps, bool check_pd=true);
-  void TriggerPrintOut(Event ev);
-  bool PassTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selection, bool check_pd=true);
-  bool PassMultiTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selectionMain, TString selectionOR);
-  bool PassTriggerAndCheckStream(bool apply_ptcut,vector<Lepton*> leps, Event ev, vector<TString> triglist, bool check_pd=true);
-  
+  bool    PassPtTrigger(Event ev, vector<TString> triglist,std::vector<Lepton *> leps, bool check_pd=true);
+  bool    PassTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selection, bool check_pd=true);
+  bool    PassMultiTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selectionMain, TString selectionOR);
+  bool    PassTriggerAndCheckStream(bool apply_ptcut,vector<Lepton*> leps, Event ev, vector<TString> triglist, bool check_pd=true);
+
+
 
   ///=============== GET/SELECT OBJECT
   vector<Gen> GetGenLepronsSignal();
@@ -302,6 +306,10 @@ class HNL_LeptonCore : public AnalyzerCore {
   vector<TString> TrigList_POG_MuEG;
   vector<TString> TrigList_Full_MuEG;
   
+  vector<TString> TrigList_HNL_EGMu;
+  vector<TString> TrigList_POG_EGMu;
+  vector<TString> TrigList_Full_EGMu;
+
   
   // Lepton ID
   vector<TString> MuonVetoIDs;

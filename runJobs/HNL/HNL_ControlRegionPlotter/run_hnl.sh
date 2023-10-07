@@ -112,3 +112,18 @@ if [[ $1 == "OS" ]]; then
 
 fi
 
+if [[ $1 == "OSEMu" ]]; then
+
+    declare  -a era_list=("2017")
+    FLAG="OSCR"
+
+    for i in "${era_list[@]}"
+    do
+        SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton.txt  -n 40    --nmax ${nmax}   -e ${i}  --skim SkimTree_DileptonBDT  --userflags $FLAG  &
+        SKFlat.py -a $analyzer  -l $mcpath/PromptOS.txt         -n 200    --nmax ${nmax}   -e ${i}  --skim SkimTree_DileptonBDT   --userflags $FLAG,RunPrompt &
+        SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_DileptonBDT --userflags $FLAG,RunFake  &
+
+    done
+
+fi
+

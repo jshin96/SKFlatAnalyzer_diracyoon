@@ -17,6 +17,8 @@ void AnalyzerParameter::Clear(){
   Electron_Trigger_SF_Key = "Default";
   Electron_Trigger_NameForSF = "Default";
 
+  EMu_Trigger_SF_Key = "Default";
+
   Electron_FR_ID = "Default";
   Electron_FR_Key = "Default";
   Electron_PR_Key = "Default";
@@ -100,6 +102,7 @@ AnalyzerParameter::AnalyzerParameter(){
   Electron_ID_SF_Key = "Default";
   Electron_Trigger_NameForSF = "Default";
   Electron_Trigger_SF_Key = "Default";
+  EMu_Trigger_SF_Key = "Default";
 
 
   Tau_Tight_ID = "Default";

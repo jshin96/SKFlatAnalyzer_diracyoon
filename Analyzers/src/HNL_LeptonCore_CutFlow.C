@@ -223,11 +223,13 @@ void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::SearchRegion sr, double ev
       EVhitname ="ChannelDependantCR3";
     }
 
-    if(sr == ControlRegionMuMu || sr == ControlRegionEE || sr == ControlRegionEMu){
-      labels = {"NoCut","HEMVeto","METFilter","GENMatched","LeptonFlavour","Trigger","OSCR"};
+    if(sr == ControlRegionMuMu || sr == ControlRegionEE || sr == ControlRegionEMu|| sr==ControlRegionMuE){
+      labels = {"NoCut","HEMVeto","METFilter","GENMatched","LeptonFlavour","Trigger","OS_VR","VV_VR","VG_VR","SS_CR"};
       if(sr == ControlRegionMuMu) EVhitname = "MuMu_CR";
       if(sr == ControlRegionEE)   EVhitname = "EE_CR";
       if(sr == ControlRegionEMu)  EVhitname = "EMu_CR";
+      if(sr == ControlRegionMuE)  EVhitname = "MuE_CR";
+
     }
 
   }

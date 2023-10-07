@@ -16,23 +16,6 @@ void HNL_ControlRegionPlotter::executeEvent(){
 
   Event ev = GetEvent();
 
-  if(HasFlag("BDTCheck")) {
-    AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("HNL");
-    vector<TString> IDs = {"HNL_ULID_Baseline"};
-    TString param_signal_name = param_signal.Name;
-    for (auto id: IDs){
-      param_signal.Electron_Tight_ID = id;
-      param_signal.Muon_Tight_ID = id;
-      param_signal.Name = param_signal_name + id;
-      param_signal.DefName = param_signal_name + id;
-      param_signal.Electron_ID_SF_Key = "Default";
-      param_signal.Muon_FR_ID = "HNL_ULID_Baseline";
-      param_signal.Electron_FR_ID = "HNL_ULID_Baseline";
-      RunControlRegions(param_signal , {"BDTCheck"});
-      
-      return;
-    }
-  }
   vector<TString> LepIDs = {"HNL_ULID_"+GetYearString(),"HNTightV2","TopHN", "DefaultPOGTight"};
 
   for (auto id: LepIDs){
@@ -51,13 +34,13 @@ void HNL_ControlRegionPlotter::executeEvent(){
     param_signal.Weight_TriggerSF= true;
     
     //// Background 
-    if(id.Contains("HNL_ULID")) param_signal.FakeRateMethod = "BDTFlavour";
+    if(id.Contains("HNL_ULID"))     param_signal.FakeRateMethod = "BDTFlavour";
     else if (id.Contains("TopHN"))  param_signal.FakeRateMethod = "PtConeMini";
     else param_signal.FakeRateMethod = "PtCone";
     
     param_signal.FakeMethod   = "DATA";
-    param_signal.CFMethod   = "DATA";
-    param_signal.ConvMethod = "MC";
+    param_signal.CFMethod     = "DATA";
+    param_signal.ConvMethod   = "MC";
 
     /// IDs
     param_signal.Electron_Tight_ID = (id == "TopHN") ? "TopHNSST" :  id;
@@ -68,7 +51,7 @@ void HNL_ControlRegionPlotter::executeEvent(){
     if(id.Contains("HNL_ULID")) param_signal.Muon_FR_ID        = "HNL_ULID_FO";
 
     if(id=="HNTightV2" )        param_signal.Electron_FR_ID    = "HNLooseV4";
-    if(id=="TopHNT" )           param_signal.Electron_FR_ID    = "TopHNSSL_"+GetEraShort();
+    if(id=="TopHN" )            param_signal.Electron_FR_ID    = "TopHNSSL_"+GetEraShort();
     if(id.Contains("HNL_ULID")) param_signal.Electron_FR_ID    = "HNL_ULID_FO_"+GetYearString();
 
     //// Correction
@@ -96,30 +79,54 @@ void HNL_ControlRegionPlotter::executeEvent(){
       if(id.Contains("HNL_ULID")){
 	param_signal.Muon_Trigger_SF_Key="DiMuIso_HNL_ULID";
 	param_signal.Electron_Trigger_SF_Key="DiEgIso_HNL_ULID";
+        param_signal.EMu_Trigger_SF_Key="EMuIso_HNL_ULID";
       }
       if(id=="TopHNT" ) {
 	param_signal.Muon_Trigger_SF_Key="DiMuIso_HNL_ULID";
 	param_signal.Electron_Trigger_SF_Key="DiEgIso_HNL_ULID";
+        param_signal.EMu_Trigger_SF_Key="EMuIso_HNL_ULID";
       }
       if(id=="HNTightV2" ){
 	param_signal.Muon_Trigger_SF_Key="DiMuIso_HNL_ULID";
 	param_signal.Electron_Trigger_SF_Key="DiEgIso_HNL_ULID";
+        param_signal.EMu_Trigger_SF_Key="EMuIso_HNL_ULID";
       }
     }
 
 
     ///// Run command
     vector<TString> CRToRun;
-    if(HasFlag("OSCR")) CRToRun = {"CR_OS_Z","CR_OS_Top","CR_OS_Top2","CR_OS_ZAk8","CR_OS_TopAK8"};
-    if(HasFlag("SSVV"))   CRToRun.push_back("CR_SR");
-    if(HasFlag("SSVV"))   CRToRun.push_back("Presel");
-    if(HasFlag("SSVV"))   CRToRun.push_back("CR_VV");
-    if(HasFlag("SSVV"))   CRToRun.push_back("CR_VG");
-    if(HasFlag("SSVV"))   CRToRun.push_back("VV");
+    if(HasFlag("OS_VR"))   CRToRun = {"CR_OS_Z","CR_OS_Top","CR_OS_Top2","CR_OS_ZAk8","CR_OS_TopAK8"};
+    if(HasFlag("SS_CR"))   CRToRun.push_back("SS_CR");
+    if(HasFlag("SS_CR"))   CRToRun.push_back("Presel");
+    if(HasFlag("VV_VR"))   CRToRun.push_back("VV_VR");
+    if(HasFlag("VV_VR"))   CRToRun.push_back("VG_VR");
     RunControlRegions(param_signal , CRToRun );
     
   }
-  
+
+  /// For BDT plots 
+
+  if(HasFlag("BDTCheck")) {
+    AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("HNL");
+    vector<TString> IDs = {"HNL_ULID_Baseline"};
+    TString param_signal_name = param_signal.Name;
+    for (auto id: IDs){
+      param_signal.Electron_Tight_ID = id;
+      param_signal.Muon_Tight_ID = id;
+      param_signal.Name = param_signal_name + id;
+      param_signal.DefName = param_signal_name + id;
+      param_signal.Electron_ID_SF_Key = "Default";
+      param_signal.Muon_FR_ID = "HNL_ULID_Baseline";
+      param_signal.Electron_FR_ID = "HNL_ULID_Baseline";
+      RunControlRegions(param_signal , {"BDTCheck"});
+
+      return;
+    }
+  }
+
+
+
   return;
   
 }
@@ -153,11 +160,11 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   std::vector<Muon>       MuonVetoColl     = GetMuons    (param.Muon_Veto_ID,     10.,  2.4);
 
   /// IF ruunning fake then sue FR_ID not Tight
-  TString Electron_ID = (RunFake&&!HasFlag("OSCR")) ?  param.Electron_FR_ID  : param.Electron_Tight_ID ;
-  TString Muon_ID     = (RunFake&&!HasFlag("OSCR")) ?  param.Muon_FR_ID      : param.Muon_Tight_ID ;
+  TString Electron_ID = (RunFake&&!HasFlag("OS_VR")) ?  param.Electron_FR_ID  : param.Electron_Tight_ID ;
+  TString Muon_ID     = (RunFake&&!HasFlag("OS_VR")) ?  param.Muon_FR_ID      : param.Muon_Tight_ID ;
 
-  double Min_Muon_Pt     = (!RunFake&&!HasFlag("OSCR")) ? 10. :  (param.FakeRateMethod.Contains("PtCone")) ?  7 : 10.;
-  double Min_Electron_Pt = (!RunFake&&!HasFlag("OSCR")) ? 15. :  (param.FakeRateMethod.Contains("PtCone")) ? 10 : 15;
+  double Min_Muon_Pt     = (!RunFake&&!HasFlag("OS_VR")) ? 10. :  (param.FakeRateMethod.Contains("PtCone")) ?  7 : 10.;
+  double Min_Electron_Pt = (!RunFake&&!HasFlag("OS_VR")) ? 15. :  (param.FakeRateMethod.Contains("PtCone")) ? 10 : 15;
 
   if(run_Debug) cout << "HNL_ControlRegionPlotter::RunControlRegions Min_Muon_Pt = " << Min_Muon_Pt << endl;
   if(run_Debug) cout << "HNL_ControlRegionPlotter::RunControlRegions Min_Electron_Pt = " << Min_Electron_Pt << endl;
@@ -167,11 +174,11 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   // 1) Fakes/ CF are done by data and Conv done my MC
   // - in this case if MC should remove Fake lep and CF leps
   // - this is done by Adding option 
-  // std::vector<Muon>       MuonTightColl     = GetLepCollByRunType    ( GetMuons    ( param,Muon_ID, Min_Muon_Pt, 2.4, RunFake&&!HasFlag("OSCR"))      ,gens,param,"");
-  //std::vector<Electron>   ElectronTightColl = GetLepCollByRunType    ( GetElectrons( param,Electron_ID, Min_Electron_Pt, 2.5, RunFake&&!HasFlag("OSCR"))  ,gens,param,"");
+  // std::vector<Muon>       MuonTightColl     = GetLepCollByRunType    ( GetMuons    ( param,Muon_ID, Min_Muon_Pt, 2.4, RunFake&&!HasFlag("OS_VR"))      ,gens,param,"");
+  //std::vector<Electron>   ElectronTightColl = GetLepCollByRunType    ( GetElectrons( param,Electron_ID, Min_Electron_Pt, 2.5, RunFake&&!HasFlag("OS_VR"))  ,gens,param,"");
 
-  std::vector<Muon>       MuonTightCollInit     = GetMuons    ( param,Muon_ID,     Min_Muon_Pt,     2.4,RunFake&&!HasFlag("OSCR")); /// IF RunFake and param.FakeRateMethod == "PtCone" Pt is switched to pt code in Muon/Electron
-  std::vector<Electron>   ElectronTightCollInit = GetElectrons( param,Electron_ID, Min_Electron_Pt, 2.5,RunFake&&!HasFlag("OSCR"));
+  std::vector<Muon>       MuonTightCollInit     = GetMuons    ( param,Muon_ID,     Min_Muon_Pt,     2.4,RunFake&&!HasFlag("OS_VR")); /// IF RunFake and param.FakeRateMethod == "PtCone" Pt is switched to pt code in Muon/Electron
+  std::vector<Electron>   ElectronTightCollInit = GetElectrons( param,Electron_ID, Min_Electron_Pt, 2.5,RunFake&&!HasFlag("OS_VR"));
 
   if(run_Debug)  cout << "HNL_ControlRegionPlotter::RunControlRegions Number of Muon Tight Coll = " << MuonTightCollInit.size() << endl;
   if(run_Debug)  cout << "HNL_ControlRegionPlotter::RunControlRegions Number of Electron Tight Coll  = " << ElectronTightCollInit.size() << endl;
