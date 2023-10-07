@@ -57,14 +57,14 @@ double AnalyzerCore::GetFakeRateMuon(Muon mu, AnalyzerParameter param){
 
 double AnalyzerCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParameter _param, bool apply_r){
 
-  //// Access event weight based on Lepton collection                                                                                                                                                                                                                                                                                                                                                                                    
+  //// Access event weight based on Lepton collection                                                               
   if(!IsData) return 1.;
 
   double this_weight = -1.;
   if(leps.size() == 1){
 
     TString fr_key1 = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.Electron_FR_Key : _param.Muon_FR_Key;
-
+    
     if(!leps[0]->LepIDSet()) {
       cout << "Lepton ID not set" << endl;
       exit(EXIT_FAILURE);
@@ -75,12 +75,8 @@ double AnalyzerCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParameter
     double this_pr1 = 1.;
 
     this_weight=  fakeEst->CalculateLepWeight(this_pr1, this_fr1, leps[0]->PassLepID() );
-
-    //    cout << this_weight<< " L"<<endl;                                                                                                                                                                                                                                                                                                                                                                                              
-
+    //    cout << this_weight<< " L"<<endl;                                                                                                                 
     return this_weight;
-
-
   }
   if (leps.size() == 2){
 
@@ -91,20 +87,24 @@ double AnalyzerCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParameter
 
     TString fr_key1 = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.Electron_FR_Key : _param.Muon_FR_Key;
     TString fr_key2 = (leps[1]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.Electron_FR_Key : _param.Muon_FR_Key;
+    if(run_Debug){
+      if(leps[0]->LeptonFlavour() == Lepton::ELECTRON) cout << "_param.Electron_Tight_ID = " << _param.Electron_Tight_ID <<  " fr_key1 = " << fr_key1 << endl;
+      else cout << "_param.Muon_Tight_ID  = " <<  _param.Muon_Tight_ID <<  " fr_key1 = " << fr_key1 <<endl;
+    }
 
     double this_fr1 =  (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ? fakeEst->GetElectronFakeRate(_param.Electron_Tight_ID, fr_key1, _param.FakeRateMethod,leps[0]->fEta(), leps[0]->Pt(),leps[0]->LeptonFakeTagger()) : fakeEst->GetMuonFakeRate(_param.Muon_Tight_ID, fr_key1,_param.FakeRateMethod, leps[0]->fEta(), leps[0]->Pt(), leps[0]->LeptonFakeTagger());
     double this_fr2 = (leps[1]->LeptonFlavour() == Lepton::ELECTRON) ? fakeEst->GetElectronFakeRate(_param.Electron_Tight_ID, fr_key2, _param.FakeRateMethod,leps[1]->fEta(), leps[1]->Pt(),leps[1]->LeptonFakeTagger()) : fakeEst->GetMuonFakeRate(_param.Muon_Tight_ID, fr_key2,_param.FakeRateMethod, leps[1]->fEta(), leps[1]->Pt(), leps[1]->LeptonFakeTagger());
 
-    ///// TEMP PR                                                                                                                                                                                                                                                                                                                                                                                                                        
-    double this_pr1 = 0.9;
-    double this_pr2 = 0.9;
+    
+    double this_pr1 = 0.95;
+    double this_pr2 = 0.95;
 
     TString ID1 =  (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.Electron_Tight_ID : _param.Muon_Tight_ID;
     TString ID2 =  (leps[1]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.Electron_Tight_ID : _param.Muon_Tight_ID;
 
     this_weight = fakeEst->CalculateDilepWeight(this_pr1,this_fr1, this_pr2, this_fr2, leps[0]->PassLepID(),leps[1]->PassLepID(),0);
 
-    //cout << this_weight << " 2L"<<endl;                                                                                                                                                                                                                                                                                                                                                                                                
+    //    cout << ID1 << " " << ID2 << "fr_key1 = " << fr_key1 <<  " w= " << this_weight << " 2L"<<endl;                                                    
     return this_weight;
   }
 

@@ -33,11 +33,6 @@ void HNL_ControlRegionPlotter::executeEvent(){
     param_signal.Weight_IDSF     = true;
     param_signal.Weight_TriggerSF= true;
     
-    //// Background 
-    if(id.Contains("HNL_ULID"))     param_signal.FakeRateMethod = "BDTFlavour";
-    else if (id.Contains("TopHN"))  param_signal.FakeRateMethod = "PtConeMini";
-    else param_signal.FakeRateMethod = "PtCone";
-    
     param_signal.FakeMethod   = "DATA";
     param_signal.CFMethod     = "DATA";
     param_signal.ConvMethod   = "MC";
@@ -47,13 +42,34 @@ void HNL_ControlRegionPlotter::executeEvent(){
     param_signal.Muon_Tight_ID     = (id == "TopHN") ? "TopHNT"   :  id;
     
     if(id=="HNTightV2" )        param_signal.Muon_FR_ID        = "HNLooseV1";
-    if(id=="TopHNT" )           param_signal.Muon_FR_ID        = "TopHNL"; 
+    if(id=="TopHN" )            param_signal.Muon_FR_ID        = "TopHNL"; 
     if(id.Contains("HNL_ULID")) param_signal.Muon_FR_ID        = "HNL_ULID_FO";
 
     if(id=="HNTightV2" )        param_signal.Electron_FR_ID    = "HNLooseV4";
     if(id=="TopHN" )            param_signal.Electron_FR_ID    = "TopHNSSL_"+GetEraShort();
     if(id.Contains("HNL_ULID")) param_signal.Electron_FR_ID    = "HNL_ULID_FO_"+GetYearString();
 
+    if(id=="HNTightV2" ) {
+      param_signal.FakeRateMethod       = "PtCone";
+      param_signal.Muon_FR_Key          = "AwayJetPt40";
+      param_signal.Electron_FR_Key      = "AwayJetPt40";
+    }
+    if(id=="TopHN" ) {
+      param_signal.FakeRateMethod       = "PtConeMini";
+      param_signal.Muon_FR_Key          = "FR_cent";
+      param_signal.Electron_FR_Key      = "FR_cent";
+    }
+    if(id =="DefaultPOGTight"){
+      param_signal.FakeRateMethod       = "PtCone";
+      param_signal.Muon_FR_Key          = "AwayJetPt40";
+      param_signal.Electron_FR_Key      = "AwayJetPt40";
+
+    }
+    if(id.Contains("HNL_ULID")){
+      param_signal.FakeRateMethod       = "BDTFlavour";
+      param_signal.Muon_FR_Key          = "FR_cent";
+      param_signal.Electron_FR_Key      = "FR_cent";
+    }
     //// Correction
     param_signal.Electron_ID_SF_Key = "pass"+id;
     param_signal.Muon_ID_SF_Key     = "NUM_"+id;
@@ -160,11 +176,11 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   std::vector<Muon>       MuonVetoColl     = GetMuons    (param.Muon_Veto_ID,     10.,  2.4);
 
   /// IF ruunning fake then sue FR_ID not Tight
-  TString Electron_ID = (RunFake&&!HasFlag("OS_VR")) ?  param.Electron_FR_ID  : param.Electron_Tight_ID ;
-  TString Muon_ID     = (RunFake&&!HasFlag("OS_VR")) ?  param.Muon_FR_ID      : param.Muon_Tight_ID ;
-
-  double Min_Muon_Pt     = (!RunFake&&!HasFlag("OS_VR")) ? 10. :  (param.FakeRateMethod.Contains("PtCone")) ?  7 : 10.;
-  double Min_Electron_Pt = (!RunFake&&!HasFlag("OS_VR")) ? 15. :  (param.FakeRateMethod.Contains("PtCone")) ? 10 : 15;
+  TString Electron_ID = (RunFake) ?  param.Electron_FR_ID  : param.Electron_Tight_ID ;
+  TString Muon_ID     = (RunFake) ?  param.Muon_FR_ID      : param.Muon_Tight_ID ;
+    
+  double Min_Muon_Pt     = RunFake ? 7  : 10.;
+  double Min_Electron_Pt = RunFake ? 10 : 15;
 
   if(run_Debug) cout << "HNL_ControlRegionPlotter::RunControlRegions Min_Muon_Pt = " << Min_Muon_Pt << endl;
   if(run_Debug) cout << "HNL_ControlRegionPlotter::RunControlRegions Min_Electron_Pt = " << Min_Electron_Pt << endl;
@@ -177,8 +193,8 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   // std::vector<Muon>       MuonTightColl     = GetLepCollByRunType    ( GetMuons    ( param,Muon_ID, Min_Muon_Pt, 2.4, RunFake&&!HasFlag("OS_VR"))      ,gens,param,"");
   //std::vector<Electron>   ElectronTightColl = GetLepCollByRunType    ( GetElectrons( param,Electron_ID, Min_Electron_Pt, 2.5, RunFake&&!HasFlag("OS_VR"))  ,gens,param,"");
 
-  std::vector<Muon>       MuonTightCollInit     = GetMuons    ( param,Muon_ID,     Min_Muon_Pt,     2.4,RunFake&&!HasFlag("OS_VR")); /// IF RunFake and param.FakeRateMethod == "PtCone" Pt is switched to pt code in Muon/Electron
-  std::vector<Electron>   ElectronTightCollInit = GetElectrons( param,Electron_ID, Min_Electron_Pt, 2.5,RunFake&&!HasFlag("OS_VR"));
+  std::vector<Muon>       MuonTightCollInit     = GetMuons    ( param,Muon_ID,     Min_Muon_Pt,     2.4,RunFake); /// IF RunFake and param.FakeRateMethod == "PtCone" Pt is switched to pt code in Muon/Electron
+  std::vector<Electron>   ElectronTightCollInit = GetElectrons( param,Electron_ID, Min_Electron_Pt, 2.5,RunFake);
 
   if(run_Debug)  cout << "HNL_ControlRegionPlotter::RunControlRegions Number of Muon Tight Coll = " << MuonTightCollInit.size() << endl;
   if(run_Debug)  cout << "HNL_ControlRegionPlotter::RunControlRegions Number of Electron Tight Coll  = " << ElectronTightCollInit.size() << endl;
@@ -195,11 +211,8 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   // Creat Lepton vector to have lepton blind codes                                                                                                          
 
   Particle METv = GetvMET("PuppiT1xyULCorr"); // returns MET with systematic correction                                                                      
-
-
   std::vector<FatJet> AK8_JetColl                 = GetHNLAK8Jets("HNL_PNL",param);
   std::vector<Jet>    AK4_JetColl                 = GetHNLJets("Tight",     param);
-
   std::vector<Jet>    AK4_JetAllColl              = GetHNLJets("NoCut_Eta3",param);
   std::vector<Jet>    AK4_JetCollLoose            = GetHNLJets("Loose",     param);
   std::vector<Jet>    AK4_VBF_JetColl             = GetHNLJets("VBFTight",  param);

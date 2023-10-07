@@ -4,5 +4,3 @@ TTLL_powheg
 WW_pythia
 WZ_pythia
 ZZ_pythia
-WGToLNuG
-ZGToLLG

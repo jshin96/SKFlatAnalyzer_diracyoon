@@ -58,7 +58,8 @@ void FakeBackgroundEstimator::ReadHistograms(){
 	else  map_hist_Muon[a+"_"+b+"_"+c+"_"+d] = (TH2D *)file->Get(this_frname)->Clone(a+"_"+b+"_"+c+"_"+d);
 
 	origDir->cd();
-	cout << "[FakeBackgroundEstimator::FakeBackgroundEstimator] map_hist_Electron : " << a+"_"+b+"_"+c+"_"+d+ " --> "+this_frname << endl;
+	if(ihmap.Contains("Electron")) cout << "[FakeBackgroundEstimator::FakeBackgroundEstimator] map_hist_Electron : " << a+"_"+b+"_"+c+"_"+d+ " --> "+this_frname << endl;
+	else cout << "[FakeBackgroundEstimator::FakeBackgroundEstimator] map_hist_Muon : " << a+"_"+b+"_"+c+"_"+d+ " --> "+this_frname << endl;
 	
       }
       file->Close();
@@ -81,13 +82,15 @@ double FakeBackgroundEstimator::GetElectronFakeRate(TString ID, TString key, TSt
   //HNL_ULID_2017_HFB_pt_eta_AwayJetPt40
   
   if(BinningMethod == "BDTFlavour" )   key = FakeTagger+"_pt_eta_"+ key;
-  if(BinningMethod == "PtCone" )       key = "ptcone_eta_" + key;
+  if(BinningMethod.Contains("PtCone")) key = "ptcone_eta_" + key;
   if(BinningMethod == "Pt" )           key = "pt_eta_" + key;
 
   if(BinningMethod == "BDTFlavour" && FakeTagger == ""){
     cout << "[FakeBackgroundEstimator::GetElectronFakeRate] BinningMethod Error" <<endl;
     exit(ENODATA);
   }
+
+  
 
   double value = 1.;
   double error = 0.;
@@ -110,7 +113,7 @@ double FakeBackgroundEstimator::GetElectronFakeRate(TString ID, TString key, TSt
   }
   
   std::map< TString, TH2D* >::const_iterator mapit;
-
+  //  cout << "FakeRate_"+ID+"_"+key << " ---" <<  endl;
   mapit = map_hist_Electron.find("FakeRate_"+ID+"_"+key);
 
   if(mapit==map_hist_Electron.end()){
@@ -203,7 +206,7 @@ double FakeBackgroundEstimator::GetMuonFakeRate(TString ID, TString key, TString
   //cout << "[FakeBackgroundEstimator::GetMuonFakeRate] eta = " << eta << ", pt = " << pt << endl;
 
   if(BinningMethod == "BDTFlavour" )   key = FakeTagger+"_pt_eta_"+ key;
-  if(BinningMethod == "PtCone" )       key = "ptcone_eta_" + key;
+  if(BinningMethod.Contains("PtCone")) key = "ptcone_eta_" + key;
   if(BinningMethod == "Pt" )           key = "pt_eta_" + key;
 
   if(BinningMethod == "BDTFlavour" && FakeTagger == ""){

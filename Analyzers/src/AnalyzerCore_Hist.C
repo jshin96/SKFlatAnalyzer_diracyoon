@@ -1,8 +1,6 @@
 #include "AnalyzerCore.h"
 
 
-
-
 TH1D* AnalyzerCore::GetHist1D(TString histname){
 
   TH1D *h = NULL;
@@ -67,7 +65,9 @@ double AnalyzerCore::FillFakeWeightHist(TString label, vector<Lepton *> Leps,Ana
     else TLType+="L";
   }
   if(run_Debug) cout << "TLType = " << TLType << endl;
-  if(Leps.size() > 0) cout << "LepTightIDName = " << Leps[0]->LepTightIDName() << endl;
+
+  //  if(Leps.size() > 0) cout << "LepTightIDName = " << Leps[0]->LepTightIDName() << endl;
+  // cout << "TLType = " << TLType <<  " Weight = " << _weight << endl;
 
   FillHist( "FakeWeights/"+ label , _weight ,1., 200, -5., 5,"ev weight");
 
