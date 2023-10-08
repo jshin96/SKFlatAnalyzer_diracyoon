@@ -1,0 +1,8 @@
+FakeRate  HNL_ULID_2017 IncFlav_pt_eta      FR_cent FR_El_2017_HNL_ULID.root
+FakeRate  HNL_ULID_2017 LF_pt_eta           FR_cent FR_El_2017_HNL_ULID.root
+FakeRate  HNL_ULID_2017 HFB_pt_eta          FR_cent FR_El_2017_HNL_ULID.root
+FakeRate  HNL_ULID_2017 HFC_pt_eta          FR_cent FR_El_2017_HNL_ULID.root
+FakeRate  HNTightV2	ptcone_eta  	    AwayJetPt40	FR_Type1_El.root
+FakeRate  HNTight_17028	ptcone_eta  	    AwayJetPt40	FR_Type1_El.root
+FakeRate  passPOGTight	ptcone_eta  	    AwayJetPt40	FR_Type1_El.root
+FakeRate  TopHNSST      ptcone_eta          FR_cent      FR_2017.root

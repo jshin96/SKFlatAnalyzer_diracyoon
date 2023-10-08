@@ -130,7 +130,7 @@ void HNL_SignalRegionPlotter21003::RunULAnalysis(AnalyzerParameter param){
 								  
     weight_channel *= HNLZvtxSF(dilep_channel);
     
-    if(!PassHEMVeto(dilep_channel, leps)) continue;
+    if(!PassHEMVeto( leps)) continue;
     
     Particle ll =  (*leps[0]) + (*leps[1]);
     if(ll.M() < 20)  continue;

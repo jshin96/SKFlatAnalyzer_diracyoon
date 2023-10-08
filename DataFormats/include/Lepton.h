@@ -77,7 +77,8 @@ public:
     double sceta = fabs(defEta());
     if( sceta < 0.8 ) return "EB1";
     else if( sceta < 1.479 ) return "EB2";
-    else return "EE";
+    else if( sceta < 2. ) return "EE1";
+    else return "EE2";
   }
 
 
@@ -151,26 +152,38 @@ public:
   inline bool IsBB() const { return (Region() < 3); }
 
   //// HNL UL Funtions
-  inline bool MaxPt() const { return (this->Pt() > 2000) ? 1999 : this->Pt(); }
-  inline double PtParton(double Corr, double MVACut){
-    
+  inline double PtMaxed(double ptmax=200) const { 
+    if(this->Pt() < ptmax) return this->Pt() ;
+    else return (ptmax - 1.);
+  }
+
+
+  
+  inline double InvPt(double shift=1.) const {
+    double ptshift = this->Pt()*shift;
+    if(ptshift > 200) return 1/200.;
+    else return (1/ptshift);
+  }
+
+
+  inline double PtParton(double Corr, double MVACutBB, double MVACutEC){
     if(j_LeptonFlavour==MUON){
-      if (j_lep_mva > MVACut)  return this->Pt();
+      if (j_lep_mva > MVACutBB)  return this->Pt();
       return ( this->Pt() /j_lep_jetptratio ) * Corr;
     }
-    else if(j_LeptonFlavour==ELECTRON){
+    else{
       if(IsBB()){
-	if (j_lep_mva_hnl_fake_v4 > MVACut)  return this->Pt();
-	return ( this->Pt() /j_lep_jetptratio ) * Corr;
+        if (j_lep_mva_hnl_fake_v4 > MVACutBB)  return this->Pt();
+        return ( this->Pt() /j_lep_jetptratio ) * Corr;
       }
       else{
-	if (j_lep_mva_hnl_fake_ed_v4 > MVACut)  return this->Pt();
+        if (j_lep_mva_hnl_fake_ed_v4 > MVACutEC)  return this->Pt();
         return ( this->Pt() /j_lep_jetptratio ) * Corr;
       }
     }
-    
-    return -1;
   }
+
+
   
   /// TEMP Variables to test MVA Top 
   inline double JetNTracksMVA() const { return j_jetntracks_mva;}
@@ -451,6 +464,14 @@ public:
   void SetLepIso(double ch, double nh, double ph);
 
   inline double fEta() const {return fabs(defEta());}
+  inline TString LeptonFakeTagger() const {
+    if (j_lep_mva_hnl_fake_QCD_LFvsHF_v5 > 0.) return "LF";
+    else{
+      if(j_lep_mva_hnl_fake_QCD_BvsC_v5 > 0) return "HFB";
+      return "HFC";
+    }
+  }
+
 
   bool Pass_MVA(double mva1, double cut, TString s_mva) const;
   bool Pass_MVA_BBEC(TString MVALabel , double cut_b, double cut_ec, TString s_helper) const ;
@@ -466,6 +487,7 @@ public:
 
   inline bool PassLepID()  const {return j_passID;}
   inline bool LepIDSet()  const {return j_IDSet;}
+  inline TString LepTightIDName() const {return j_TIDName;}
 
   inline int LeptonGenType() const {return j_LeptonType;}
   void SetLeptonType(int t);
@@ -475,7 +497,7 @@ public:
   inline Flavour LeptonFlavour() const {return j_LeptonFlavour;}
   void SetLeptonFlavour(Flavour f);
 
-  void SetPassID(bool p);
+  void SetPassID(bool p, TString IDName);
   void SetID();
 
   inline bool IsElectron() const {return j_LeptonFlavour==ELECTRON;}
@@ -561,6 +583,8 @@ private:
   bool j_passID;
   
   bool j_IDSet;
+  TString j_TIDName;
+
 
 
 

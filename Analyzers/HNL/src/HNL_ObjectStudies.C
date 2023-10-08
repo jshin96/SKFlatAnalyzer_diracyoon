@@ -978,7 +978,7 @@ void HNL_ObjectStudies::RunLeptonChannel(HNL_LeptonCore::Channel channel_ID, std
   if (LepsV.size() != 2) return;
   FillEventCutflow(Region1,_weight, "SS"+GetChannelString(channel_ID)+"_LepVeto",region1);
   
-  if(!PassHEMVeto(channel_ID, LepsT)) return;
+  if(!PassHEMVeto(LepsT)) return;
   FillEventCutflow(Region1,_weight, "SS"+GetChannelString(channel_ID)+"_HEMVeto",region1);
   
 
