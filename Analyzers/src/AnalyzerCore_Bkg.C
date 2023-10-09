@@ -96,8 +96,8 @@ double AnalyzerCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParameter
     double this_fr2 = (leps[1]->LeptonFlavour() == Lepton::ELECTRON) ? fakeEst->GetElectronFakeRate(_param.Electron_Tight_ID, fr_key2, _param.FakeRateMethod,leps[1]->fEta(), leps[1]->Pt(),leps[1]->LeptonFakeTagger()) : fakeEst->GetMuonFakeRate(_param.Muon_Tight_ID, fr_key2,_param.FakeRateMethod, leps[1]->fEta(), leps[1]->Pt(), leps[1]->LeptonFakeTagger());
 
     
-    double this_pr1 = 0.95;
-    double this_pr2 = 0.95;
+    double this_pr1 = 1;
+    double this_pr2 = 1;
 
     TString ID1 =  (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.Electron_Tight_ID : _param.Muon_Tight_ID;
     TString ID2 =  (leps[1]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.Electron_Tight_ID : _param.Muon_Tight_ID;

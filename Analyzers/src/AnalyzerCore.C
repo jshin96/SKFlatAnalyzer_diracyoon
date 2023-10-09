@@ -29,7 +29,7 @@ AnalyzerCore::AnalyzerCore(){
   //std::cout << "CPU time used: " << time_elapsed_ms / 1000.0 << " s\n";
 
 
-  nLog=10000;
+  nLog=50000;
 
   /// TESTBDT couts comparison of branches and Function 
   TESTBDT=false;

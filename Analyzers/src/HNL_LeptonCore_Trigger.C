@@ -71,7 +71,7 @@ void HNL_LeptonCore::SetupTriggerLists(){
     TrigList_HNL_HighPtMu = {"HLT_Mu50_v",   "HLT_TkMu50_v"};
     TrigList_HNL_Mu = {    "HLT_IsoMu24_v",   "HLT_IsoTkMu24_v",};
     // EG                                                                                                                                                                                    
-    TrigList_HNL_DblEG = {  "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
+    TrigList_HNL_DblEG = {  "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v","HLT_Photon175_v"};
     TrigList_HNL_EG    = {  "HLT_Ele27_WPTight_Gsf_v" ,
                             "HLT_Ele25_eta2p1_WPTight_Gsf_v" ,
                             "HLT_Ele115_CaloIdVT_GsfTrkIdT_v",
@@ -84,7 +84,7 @@ void HNL_LeptonCore::SetupTriggerLists(){
                             "HLT_DoubleEle37_Ele27_CaloIdL_GsfTrkIdVL_v"};
     //https://twiki.cern.ch/twiki/bin/view/CMS/EgHLTRunIISummary                                                                                                                             
     TrigList_HNL_HighPtEG = {"HLT_Photon175_v","HLT_DoublePhoton60_v"};
-    TrigList_POG_EG    = {  "HLT_Ele27_WPTight_Gsf_v" };
+    TrigList_POG_EG    = {  "HLT_Ele27_WPTight_Gsf_v" ,"HLT_Photon175_v"};
 
     //https://twiki.cern.ch/twiki/bin/view/CMS/EgHLTPathDetails                                                                                                                              
 
@@ -102,7 +102,7 @@ void HNL_LeptonCore::SetupTriggerLists(){
     TrigList_HNL_HighPtMu = {"HLT_Mu50_v"};
 
 
-    TrigList_HNL_DblEG = { "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v"};
+    TrigList_HNL_DblEG = { "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v","HLT_Photon200_v"};
     TrigList_HNL_EG = { "HLT_Ele32_WPTight_Gsf_v",
                         "HLT_Ele32_WPTight_Gsf_L1DoubleEG_v",
                         "HLT_Ele115_CaloIdVT_GsfTrkIdT_v",
@@ -110,7 +110,7 @@ void HNL_LeptonCore::SetupTriggerLists(){
                         "HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165_v",
                         "HLT_Photon200_v",
                         "HLT_DoubleEle33_CaloIdL_MW_v"};
-    TrigList_POG_EG = {"HLT_Ele32_WPTight_Gsf_v", "HLT_Ele32_WPTight_Gsf_L1DoubleEG_v"};
+    TrigList_POG_EG = {"HLT_Ele32_WPTight_Gsf_v", "HLT_Ele32_WPTight_Gsf_L1DoubleEG_v","HLT_Photon200_v"};
     TrigList_HNL_HighPtEG = {"HLT_Photon200_v","HLT_DoublePhoton70_v"};
 
     TrigList_HNL_MuEG  = {"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
@@ -133,7 +133,7 @@ void HNL_LeptonCore::SetupTriggerLists(){
                         "HLT_Ele115_CaloIdVT_GsfTrkIdT_v",
                         "HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165_v"};
 
-    TrigList_POG_EG = { "HLT_Ele32_WPTight_Gsf_v"};
+    TrigList_POG_EG = { "HLT_Ele32_WPTight_Gsf_v","HLT_Photon200_v"};
 
     TrigList_HNL_HighPtEG = { "HLT_Photon200_v", "HLT_DoublePhoton70_v"};
 
@@ -240,11 +240,14 @@ bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event 
       if(ilep->LeptonFlavour() == Lepton::ELECTRON) leps_eg.push_back(ilep);
     }
 
-    if(selection == "Dilep")       return  PassTriggerAndCheckStream(apply_ptcut,leps,ev,TrigList_HNL_EGMu,check_pd);
-    if(selection == "POGSglLep")   return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_POG_Mu,check_pd) || PassTriggerAndCheckStream(apply_ptcut,leps_eg,ev,TrigList_POG_EG,check_pd) ;
-    else if(selection == "Lep")    return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_Mu,check_pd) || PassTriggerAndCheckStream(apply_ptcut,leps_eg,ev,TrigList_HNL_EG,check_pd);
-    else if(selection == "HighPt") return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_HighPtMu,check_pd) || PassTriggerAndCheckStream(apply_ptcut,leps_eg,ev,TrigList_HNL_HighPtEG,check_pd);
-    else    if(selection == "Full") return  PassTriggerAndCheckStream(apply_ptcut,leps,ev,TrigList_Full_EGMu,check_pd);
+    if(selection == "Dilep")       return   PassTriggerAndCheckStream(apply_ptcut,leps,     ev,TrigList_HNL_EGMu,check_pd);
+    if(selection == "POGSglLep")   return  (PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_POG_Mu,check_pd) || 
+					    PassTriggerAndCheckStream(apply_ptcut,leps_eg,  ev,TrigList_POG_EG,check_pd)) ;
+    else if(selection == "Lep")    return  (PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_Mu,check_pd) || 
+					    PassTriggerAndCheckStream(apply_ptcut,leps_eg,  ev,TrigList_HNL_EG,check_pd));
+    else if(selection == "HighPt") return  (PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_HighPtMu,check_pd) || 
+					    PassTriggerAndCheckStream(apply_ptcut,leps_eg,  ev,TrigList_HNL_HighPtEG,check_pd));
+    else    if(selection == "Full") return  PassTriggerAndCheckStream(apply_ptcut,leps,     ev,TrigList_Full_EGMu,check_pd);
 
     else {
       cout << "[HNL_LeptonCore::PassTriggerSelection ] selection " <<  selection << " not found.." << endl;
@@ -259,11 +262,14 @@ bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event 
       if(ilep->LeptonFlavour() == Lepton::ELECTRON) leps_eg.push_back(ilep);
     }
 
-    if(selection == "Dilep")       return  PassTriggerAndCheckStream(apply_ptcut,leps,ev,TrigList_HNL_MuEG,check_pd);
-    if(selection == "POGSglLep")   return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_POG_Mu,check_pd) || PassTriggerAndCheckStream(apply_ptcut,leps_eg,ev,TrigList_POG_EG,check_pd) ;
-    else if(selection == "Lep")    return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_Mu,check_pd) || PassTriggerAndCheckStream(apply_ptcut,leps_eg,ev,TrigList_HNL_EG,check_pd);
-    else if(selection == "HighPt") return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_HighPtMu,check_pd) || PassTriggerAndCheckStream(apply_ptcut,leps_eg,ev,TrigList_HNL_HighPtEG,check_pd) ;
-    else    if(selection == "Full") return  PassTriggerAndCheckStream(apply_ptcut,leps,ev,TrigList_Full_MuEG,check_pd);
+    if(selection == "Dilep")       return   PassTriggerAndCheckStream(apply_ptcut,leps,     ev,TrigList_HNL_MuEG,check_pd);
+    if(selection == "POGSglLep")   return  (PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_POG_Mu,check_pd) || 
+				            PassTriggerAndCheckStream(apply_ptcut,leps_eg,  ev,TrigList_POG_EG,check_pd)) ;
+    else if(selection == "Lep")    return  (PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_Mu,check_pd) || 
+					    PassTriggerAndCheckStream(apply_ptcut,leps_eg,  ev,TrigList_HNL_EG,check_pd));
+    else if(selection == "HighPt") return  (PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_HighPtMu,check_pd) || 
+					    PassTriggerAndCheckStream(apply_ptcut,leps_eg,  ev,TrigList_HNL_HighPtEG,check_pd) );
+    else    if(selection == "Full") return  PassTriggerAndCheckStream(apply_ptcut,leps,     ev,TrigList_Full_MuEG,check_pd);
 
     else {
       cout << "[HNL_LeptonCore::PassTriggerSelection ] selection " <<  selection << " not found.." << endl;
@@ -294,7 +300,7 @@ double HNL_LeptonCore::GetPtCutTrigger(TString trigname, int nlep, TString flavo
     }
     else if(trigname.Contains("HLT_Mu23") ||  trigname.Contains("HLT_Mu23")) {
       if(trigname.Contains("Mu8") || trigname.Contains("TkMu8")) {
-        if(nlep==0) return 20;
+        if(nlep==0) return 25;
         if(nlep==1) return 10;
         if(nlep>1) return 0.;
       }
@@ -377,7 +383,7 @@ double HNL_LeptonCore::GetPtCutTrigger(TString trigname, int nlep, TString flavo
     if(trigname.Contains("HLT_Mu8_TrkIsoVVL_Ele23")){
       if(flavour =="Electron" && nlep==0) return 25;
       if(flavour =="Muon"&& nlep==0) return 10;
-      if(nlep>0) return 10.;
+      if(nlep>0) return 0.;
     }
 
     else if(trigname.Contains("HLT_Mu23_TrkIsoVVL_Ele8")){

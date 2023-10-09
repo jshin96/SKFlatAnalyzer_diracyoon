@@ -200,16 +200,37 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     if(run_Debug) {cout <<"RunAllControlRegions ["<< nlog<< "] passes trigger  " << endl;nlog++;}
 
 
-    if(IsData) {
+    if(!IsData) {
+      
       /// HNLZvtxSF Correction applied to EE/EMu Triggered events
 
       weight_channel *= FillWeightHist(param.Name+"_HNLZvtxSF", HNLZvtxSF(dilep_channel));
 
-      //// Apply Trigger SF			                                                                                                                                                                                                              
-      TString SFKey_Trig = param.Muon_Trigger_SF_Key;
-      if (dilep_channel == EE)   SFKey_Trig = param.Electron_Trigger_SF_Key;
-      if (dilep_channel == EMu)  SFKey_Trig = param.EMu_Trigger_SF_Key;
-      if (dilep_channel == MuE)  SFKey_Trig = param.EMu_Trigger_SF_Key;
+      //// Apply Trigger SF			                                                                                                                                                                 
+
+      TString SFKey_Trig;
+      if(dilep_channel==EE){
+	SFKey_Trig = "DiEgIso_HNL_ULID";
+	if(param.TriggerSelection == "POGSglLep") SFKey_Trig ="Default";
+      }
+      if(dilep_channel==MuMu){
+	SFKey_Trig = "DiMuIso_HNL_ULID";
+	TString trigKey=TrigList_POG_Mu[0];
+	trigKey=trigKey.ReplaceAll("HLT_","");
+	trigKey=trigKey.ReplaceAll("_v","");
+	if(param.TriggerSelection == "POGSglLep") SFKey_Trig =trigKey+"_POGTight";
+      }
+      if(dilep_channel==EMu){
+	SFKey_Trig = "EMuIso_HNL_ULID";
+	if(param.TriggerSelection == "POGSglLep") SFKey_Trig ="Default";
+      }
+      if(dilep_channel==MuE){
+	SFKey_Trig = "EMuIso_HNL_ULID";
+	TString trigKey=TrigList_POG_Mu[0];
+        trigKey=trigKey.ReplaceAll("HLT_","");
+        trigKey=trigKey.ReplaceAll("_v","");
+	if(param.TriggerSelection == "POGSglLep") SFKey_Trig =trigKey+"_POGTight";
+      }
 
       double this_trigsf =  SFKey_Trig!=""? mcCorr->GetTriggerSF(electrons, muons, SFKey_Trig, ""):1.;
 
@@ -242,6 +263,9 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       else {
 	if(IsData){
 	  weight_channel = GetFakeWeight(LepsT, param , false);
+
+	  if(HasFlag("OS_VR")) weight_OS = weight_channel;
+
 	  if(LepsT.size()==2)FillFakeWeightHist(param.Name+"_2L/FakeWeight", LepsT,param, weight_channel);
 	  if(LepsT.size()==3)FillFakeWeightHist(param.Name+"_3L/FakeWeight", LepsT,param, weight_channel);
 	  if(LepsT.size()==4)FillFakeWeightHist(param.Name+"_4L/FakeWeight", LepsT,param, weight_channel);
@@ -302,7 +326,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 
       FillEventCutflow(CutFlow_Region, weight_channel, "VV_VR", "ChannelCutFlow/"+param.DefName,param.WriteOutVerbose);
 
-      if(RunCR("CR_VV",CRs)){
+      if(RunCR("VV_VR",CRs)){
 	// LLL / LLLL 
 	if(FillZZCRPlots(  fourlep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramQuadlep, weight_channel)) passed.push_back("ZZ_CR");
 	if(FillZZ2CRPlots( fourlep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramQuadlep, weight_channel)) passed.push_back("ZZLoose_CR"); 
@@ -354,7 +378,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 	if(FillSSVBFPreselectionPlots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("SSVBFPresel");
       }
       
-      if(RunCR("CR_SS",CRs)){
+      if(RunCR("SS_CR",CRs)){
 	// 17-028 +CR                                                                                                                                                                                                  
 	// SR1 : MET Inv. || BVeto Inv.
 	if(FillHighMassSR1CRPlots(dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR1_CR");
@@ -387,7 +411,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       cutlabels.push_back("Top_CR");
       cutlabels.push_back("Top_CR2");
     }
-    if(RunCR("CR_VV",CRs)){
+    if(RunCR("VV_VR",CRs)){
       cutlabels.push_back("ZZ_CR");
       cutlabels.push_back("ZZLoose_CR");
       cutlabels.push_back("WZ_CR");
@@ -400,7 +424,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       cutlabels.push_back("WZ2_CR");
       cutlabels.push_back("WZB_CR");
     }
-    if(RunCR("CR_VG",CRs)){
+    if(RunCR("VG_VR",CRs)){
       cutlabels.push_back("WG_Method2_CR");
       cutlabels.push_back("ZG_Method2_CR");
     }
@@ -409,7 +433,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       cutlabels.push_back("SSPresel");
       cutlabels.push_back("SSVBFPresel");
     }
-    if(RunCR("CR_SS",CRs)){
+    if(RunCR("SS_CR",CRs)){
       cutlabels.push_back("HighMassSR1_CR");
       cutlabels.push_back("HighMassSR2_CR");
       cutlabels.push_back("HighMassSR3_CR");
@@ -555,8 +579,8 @@ bool HNL_RegionDefinitions::FillZNPCRPlots(HNL_LeptonCore::Channel channel, std:
 
 bool HNL_RegionDefinitions::FillZCRPlots(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto   , std::vector<Jet> JetColl, std::vector<FatJet> AK8_JetColl,  std::vector< Jet> B_JetColl,Event ev, Particle METv, AnalyzerParameter param, float w){
 
-
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
+  
 
   if (leps_veto.size() != 2) return false;
   

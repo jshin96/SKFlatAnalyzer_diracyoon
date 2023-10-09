@@ -82,31 +82,11 @@ void HNL_ControlRegionPlotter::executeEvent(){
       param_signal.Electron_ID_SF_Key = "passTightID";
       param_signal.Electron_Tight_ID  = "passPOGTight";
       param_signal.TriggerSelection   = "POGSglLep";
-
-      TString trigKey=TrigList_POG_Mu[0];
-      trigKey=trigKey.ReplaceAll("HLT_","");
-      trigKey=trigKey.ReplaceAll("_v","");
-      param_signal.Muon_Trigger_SF_Key=trigKey+"_POGTight";
     }
     
     else{
       /// Trigger Key
       param_signal.TriggerSelection   = "Dilep";
-      if(id.Contains("HNL_ULID")){
-	param_signal.Muon_Trigger_SF_Key="DiMuIso_HNL_ULID";
-	param_signal.Electron_Trigger_SF_Key="DiEgIso_HNL_ULID";
-        param_signal.EMu_Trigger_SF_Key="EMuIso_HNL_ULID";
-      }
-      if(id=="TopHNT" ) {
-	param_signal.Muon_Trigger_SF_Key="DiMuIso_HNL_ULID";
-	param_signal.Electron_Trigger_SF_Key="DiEgIso_HNL_ULID";
-        param_signal.EMu_Trigger_SF_Key="EMuIso_HNL_ULID";
-      }
-      if(id=="HNTightV2" ){
-	param_signal.Muon_Trigger_SF_Key="DiMuIso_HNL_ULID";
-	param_signal.Electron_Trigger_SF_Key="DiEgIso_HNL_ULID";
-        param_signal.EMu_Trigger_SF_Key="EMuIso_HNL_ULID";
-      }
     }
 
 
@@ -192,9 +172,10 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   // - this is done by Adding option 
   // std::vector<Muon>       MuonTightColl     = GetLepCollByRunType    ( GetMuons    ( param,Muon_ID, Min_Muon_Pt, 2.4, RunFake&&!HasFlag("OS_VR"))      ,gens,param,"");
   //std::vector<Electron>   ElectronTightColl = GetLepCollByRunType    ( GetElectrons( param,Electron_ID, Min_Electron_Pt, 2.5, RunFake&&!HasFlag("OS_VR"))  ,gens,param,"");
-
+  
   std::vector<Muon>       MuonTightCollInit     = GetMuons    ( param,Muon_ID,     Min_Muon_Pt,     2.4,RunFake); /// IF RunFake and param.FakeRateMethod == "PtCone" Pt is switched to pt code in Muon/Electron
   std::vector<Electron>   ElectronTightCollInit = GetElectrons( param,Electron_ID, Min_Electron_Pt, 2.5,RunFake);
+
 
   if(run_Debug)  cout << "HNL_ControlRegionPlotter::RunControlRegions Number of Muon Tight Coll = " << MuonTightCollInit.size() << endl;
   if(run_Debug)  cout << "HNL_ControlRegionPlotter::RunControlRegions Number of Electron Tight Coll  = " << ElectronTightCollInit.size() << endl;

@@ -31,9 +31,13 @@ if [[ $1 == "All" ]]; then
 	#SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_EMu.txt           -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_DileptonBDT &
 	#SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_SingleLepton.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_DileptonBDT &
 	#SKFlat.py -a $analyzer  -l $mcpath/MC.txt                        -n 500            --nmax ${nmax}   -e ${i}  --skim SkimTree_DileptonBDT &
-	SKFlat.py -a $analyzer  -i WGToLNuG                               -n 800            --nmax ${nmax}   -e ${i}   &
-	SKFlat.py -a $analyzer  -i ZGToLLG                                -n 800            --nmax ${nmax}   -e ${i}   &
-
+	#SKFlat.py -a $analyzer  -i WGToLNuG                               -n 800            --nmax ${nmax}   -e ${i}   &
+	#SKFlat.py -a $analyzer  -i ZGToLLG                                -n 800            --nmax ${nmax}   -e ${i}   &
+	SKFlat.py -a $analyzer  -i WWTo2L2Nu_powheg                       -n 800            --nmax ${nmax}   -e ${i}   &
+	SKFlat.py -a $analyzer  -i WWZ                       -n 800            --nmax ${nmax}   -e ${i}   &
+	SKFlat.py -a $analyzer  -i ZZZ                       -n 800            --nmax ${nmax}   -e ${i}   &
+	SKFlat.py -a $analyzer  -i WWW                       -n 800            --nmax ${nmax}   -e ${i}   &
+	
     done
 fi
 
