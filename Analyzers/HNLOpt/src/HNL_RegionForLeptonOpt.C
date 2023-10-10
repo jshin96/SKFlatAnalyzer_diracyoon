@@ -238,7 +238,7 @@ bool  HNL_RegionForLeptonOpt::PassPreselection(HNL_LeptonCore::Channel channel,H
   // VETO Z PEAK IN EE CHANNEL
 
   double mz_cut = 10.;
-  if (channel==EE  && (fabs(ll.M()-90.) < mz_cut)) return false;
+  if (channel==EE  && (fabs(ll.M()-M_Z) < mz_cut)) return false;
 
   if(ll.M() < 10) return false; // TO_CHECK: IS 20 BEST OPTION
 
@@ -371,7 +371,7 @@ TString HNL_RegionForLeptonOpt::RunSignalRegionAK4StringBDT(TString mN, HNL_Lept
 
   if (LepTColl.size() != 2) return "false";
   Particle ll =  (*LepTColl[0]) + (*LepTColl[1]);
-  if (channel==EE  && (fabs(ll.M()-90.) < 10)) return "false";
+  if (channel==EE  && (fabs(ll.M()-M_Z) < 10)) return "false";
 
   float MVAvalue = ev.HNL_MVA_Event(GetChannelString(channel)+"_"+mN);
 
@@ -522,7 +522,7 @@ TString HNL_RegionForLeptonOpt::RunSignalRegionAK4String(HNL_LeptonCore::Channel
   FillEventCutflow(HNL_LeptonCore::SR3, w, "SR3_lep_charge",param.Name,param.WriteOutVerbose);
 
   Particle ll =  (*leps[0]) + (*leps[1]);
-  if (channel==EE  && (fabs(ll.M()-90.) < 10)) {
+  if (channel==EE  && (fabs(ll.M()-M_Z) < 10)) {
     FillEventCutflow(HNL_LeptonCore::SR3Fail, w, "SR3_mll",param.Name,param.WriteOutVerbose);
     return "false";
   }

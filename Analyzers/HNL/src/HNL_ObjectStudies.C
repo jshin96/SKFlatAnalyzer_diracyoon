@@ -446,7 +446,7 @@ void HNL_ObjectStudies::executeEvent(){
 
         Particle ll =  (ElectronColl[0]) + (ElectronColl[1]);
 	
-        if (! (fabs(ll.M()-90.) < 15)) {
+        if (! (fabs(ll.M()-M_Z) < 15)) {
 	  
 	  FillHist ("SameSignDilep_"+GetChannelString(dilep_channel), 0, weight, 10, 0., 10.,"");
 	  if(SameCharge(ElectronV2Coll))                     FillHist ("SameSignDilep_"+GetChannelString(dilep_channel), 1, weight, 10, 0., 10.,"");
@@ -982,7 +982,7 @@ void HNL_ObjectStudies::RunLeptonChannel(HNL_LeptonCore::Channel channel_ID, std
   FillEventCutflow(Region1,_weight, "SS"+GetChannelString(channel_ID)+"_HEMVeto",region1);
   
 
-  if (channel_ID==EE  && (fabs(GetLLMass(LepsT)-90.) < 15)) return;
+  if (channel_ID==EE  && (fabs(GetLLMass(LepsT)-M_Z) < 15)) return;
 
   if(GetLLMass(LepsT) > 10.) {
     

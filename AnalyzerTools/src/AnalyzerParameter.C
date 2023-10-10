@@ -17,6 +17,8 @@ void AnalyzerParameter::Clear(){
   Electron_Trigger_SF_Key = "Default";
   Electron_Trigger_NameForSF = "Default";
 
+  EMu_Trigger_SF_Key = "Default";
+
   Electron_FR_ID = "Default";
   Electron_FR_Key = "Default";
   Electron_PR_Key = "Default";
@@ -71,6 +73,14 @@ void AnalyzerParameter::Clear(){
   Jet_ID = "Default";
   FatJet_ID = "Default";
 
+  Weight_LumiNorm = true;
+  Weight_SumW     = true;
+  Weight_PileUp   = true;
+  Weight_PreFire  = true;
+  Weight_kFactor  = true;
+  Weight_TriggerSF = true;
+  Weight_IDSF  = true;
+
   syst_ = Central;
 
 }
@@ -92,6 +102,7 @@ AnalyzerParameter::AnalyzerParameter(){
   Electron_ID_SF_Key = "Default";
   Electron_Trigger_NameForSF = "Default";
   Electron_Trigger_SF_Key = "Default";
+  EMu_Trigger_SF_Key = "Default";
 
 
   Tau_Tight_ID = "Default";
@@ -122,6 +133,13 @@ AnalyzerParameter::AnalyzerParameter(){
   Jet_ID = "Default";
   FatJet_ID = "Default";
 
+  Weight_LumiNorm = true;
+  Weight_SumW     = true;
+  Weight_PileUp   = true;
+  Weight_PreFire  = true;
+  Weight_kFactor  = true;
+  Weight_TriggerSF = true;
+  Weight_IDSF  = true;
   syst_ = Central;
 
 }

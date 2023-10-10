@@ -183,7 +183,7 @@ void HNL_SignalStudies::executeEvent(){
     };
     for(auto i : IDList){
       double Zmass = (Z.M() > 400) ? 399 : Z.M();
-      if(fabs(Z.M() - 90) > 10){
+      if(fabs(Z.M() - M_Z) > 10){
 	if(ElectronCollV[0].PassID(i) && ElectronCollV[1].PassID(i) )    FillHist("Mass/"+i+"_ll_mass" , Zmass , weight, 100, 0., 400);
       }
     }
@@ -199,7 +199,7 @@ void HNL_SignalStudies::executeEvent(){
     };
     for(auto i : IDList){
       double Zmass = (Z.M() > 400) ? 399 : Z.M();
-      if(fabs(Z.M() - 90) > 10){
+      if(fabs(Z.M() - M_Z) > 10){
         if(MuonCollV[0].PassID(i) && MuonCollV[1].PassID(i) )    FillHist("MuonMass/"+i+"_ll_mass" , Zmass , weight, 100, 0., 400);
       }
     }
@@ -564,7 +564,7 @@ void HNL_SignalStudies::RunLeptonChannel(HNL_LeptonCore::Channel channel_ID, std
   FillEventCutflow(Region1,_weight, "SS"+GetChannelString(channel_ID)+"_HEMVeto",region1);
   
 
-  if (channel_ID==EE  && (fabs(GetLLMass(LepsT)-90.) < 15)) return;
+  if (channel_ID==EE  && (fabs(GetLLMass(LepsT)-M_Z) < 15)) return;
 
   if(GetLLMass(LepsT) > 10.) {
     

@@ -129,7 +129,7 @@ bool  HNL_RegionDefinitions17028::PassPreselection(HNL_LeptonCore::Channel chann
   Particle ll =  (*leps[0]) + (*leps[1]);
   
   // VETO Z PEAK IN EE CHANNEL
-  if (channel==EE  && (fabs(ll.M()-90.) < 15)) return false;
+  if (channel==EE  && (fabs(ll.M()-M_Z) < 15)) return false;
 
   if(ll.M() < 10) return false; // TO_CHECK: IS 20 BEST OPTION
 
@@ -206,7 +206,7 @@ bool  HNL_RegionDefinitions17028::RunSignalRegionAK4(HNL_LeptonCore::Channel cha
 
 
   Particle ll =  (*leps[0]) + (*leps[1]);
-  if (channel==EE  && (fabs(ll.M()-90.) < 15)) return false;
+  if (channel==EE  && (fabs(ll.M()-M_Z) < 15)) return false;
 
   double ST = GetST(leps, JetColl, AK8_JetColl, METv);
   double met2_st = pow(METv.Pt(),2.)/ ST;

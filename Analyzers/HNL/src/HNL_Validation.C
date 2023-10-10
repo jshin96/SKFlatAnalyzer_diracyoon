@@ -148,8 +148,8 @@ void HNL_Validation::executeEvent(){
     std::map< TString, bool > map_Region_to_Bool;
 
     map_Region_to_Bool.clear();
-    map_Region_to_Bool["ZPeak"]     =  (BJetColl.size() == 0 && LepsT[1]->Pt() > 15 && fabs(llCand.M() - 90) < 10) && (LepsTM.size()==2);
-    map_Region_to_Bool["ZPeakPt50"] =  (BJetColl.size() == 0 && LepsT[1]->Pt() > 50 && fabs(llCand.M() - 90) < 10) && (LepsTM.size()==2);
+    map_Region_to_Bool["ZPeak"]     =  (BJetColl.size() == 0 && LepsT[1]->Pt() > 15 && fabs(llCand.M() - M_Z) < 10) && (LepsTM.size()==2);
+    map_Region_to_Bool["ZPeakPt50"] =  (BJetColl.size() == 0 && LepsT[1]->Pt() > 50 && fabs(llCand.M() - M_Z) < 10) && (LepsTM.size()==2);
     map_Region_to_Bool["BJetCR"]    =  (BJetColl.size() >= 1 && LepsT[1]->Pt() > 20 && JetColl.size() >= 2);
     
     std::map< TString, double > map_Region_to_Weight;

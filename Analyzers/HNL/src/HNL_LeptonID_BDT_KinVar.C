@@ -325,10 +325,6 @@ void HNL_LeptonID_BDT_KinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,v
     
     float weight_lep = weight;
 
-    if(SeperateFakes && HasFlag("SSWeight")){
-      bool ismuon = (lep->LeptonFlavour() == Lepton::MUON);
-      weight_lep *= ScaleLepToSS("Fake",ismuon, lep->LeptonGenType());
-    }
 
     TString lep_fake_tag= "";
     if(SeperateFakes) lep_fake_tag=  MatchGenDef(All_Gens, *lep);

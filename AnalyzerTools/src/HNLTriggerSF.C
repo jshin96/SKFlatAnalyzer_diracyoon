@@ -3,7 +3,8 @@
 float MCCorrection::GetTriggerSF(vector<Electron>& EleColl, vector<Muon>& MuColl, TString SFKey, TString Option){
 
   if(IsDATA) return 1.;
-
+  if(SFKey=="Default") return 1;
+ 
   TString NominalOpt=Option; NominalOpt.ReplaceAll("Syst","");
   bool SystRun=Option.Contains("Syst");
   float SystDir=0., RelSystData=0., RelSystMC=0., TotRelSyst=0.;
@@ -40,6 +41,7 @@ float MCCorrection::TriggerEfficiency(vector<Electron>& EleColl, vector<Muon>& M
     if     (Option.Contains("Up"))   SystDir= 1.;
     else if(Option.Contains("Down")) SystDir=-1.;
   }
+  
 
   bool SiglMuTrig=false, SiglElTrig=false, DiMuTrig=false, DiElTrig=false, EMuTrig=false, TrigSoup2L=false;
   float MinPt1=-1, MaxPt1=-1, MinPt2=-1, MaxPt2=-1, MinPt3=-1, MaxPt3=-1., MinPt4=-1, MaxPt4=-1, MaxfEta1=-1, MaxfEta2=-1;
@@ -100,12 +102,12 @@ float MCCorrection::TriggerEfficiency(vector<Electron>& EleColl, vector<Muon>& M
   }
   else if(SFKey=="EMuIso_HNL_ULID" or SFKey=="EMuIso_HNL_ULID"){
     EMuTrig=true;
-    TString SSLabel = SFKey.Contains("IDSS")? "SS":"";
+    //    TString SSLabel = SFKey.Contains("IDSS")? "SS":"";
     TString TrEl2Pt = DataEra=="2016preVFP"? "8":"12";
     MinPt1=25., MinPt2=15., MaxPt1=200., MaxPt2=200., MaxfEta1=2.5;
     MinPt3=25., MinPt4=10., MaxPt3=200., MaxPt4=200., MaxfEta2=2.4;
-    HistEff1 = map_hist_Electron["Trigger_Eff_"+StrMCorData+"_EMuIsoEl23_HNL_ULID"+SSLabel];
-    HistEff2 = map_hist_Electron["Trigger_Eff_"+StrMCorData+"_EMuIsoEl"+TrEl2Pt+"_HNL_ULID"+SSLabel];
+    HistEff1 = map_hist_Electron["Trigger_Eff_"+StrMCorData+"_EMuIsoEl23_HNL_ULID"];
+    HistEff2 = map_hist_Electron["Trigger_Eff_"+StrMCorData+"_EMuIsoEl"+TrEl2Pt+"_HNL_ULID"];
     HistEff3 = map_hist_Muon["Trigger_Eff_"+StrMCorData+"_EMuIsoMu23_HNL_ULID"];
     HistEff4 = map_hist_Muon["Trigger_Eff_"+StrMCorData+"_EMuIsoMu8_HNL_ULID"];
   }

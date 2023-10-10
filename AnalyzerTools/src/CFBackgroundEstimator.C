@@ -77,26 +77,45 @@ double CFBackgroundEstimator::GetElectronCFRate(TString ID, TString key, double 
 
   eta = fabs(eta);
   if(eta>=2.5) eta = 2.49;
+  
+  
+  if(pt < 15) pt = 15;
+  if(key.Contains("PtInv")){
+    if(pt > 500) pt = 499;
+  }
+  else{
+    if(pt > 200) pt = 199;
+  }
+  
+  TString EtaRegion = "EtaRegion1";
+  if(eta<0.8) EtaRegion = "EtaRegion1";
+  else if(eta<1.2)   EtaRegion = "EtaRegion2";
+  else if(eta<1.47) EtaRegion = "EtaRegion3";
+  else if(eta<1.9) EtaRegion = "EtaRegion4";
+  else if(eta<2.1) EtaRegion = "EtaRegion5";
+  else if(eta<2.2) EtaRegion = "EtaRegion6";
+  else if(eta<2.3) EtaRegion = "EtaRegion7";
+  else if(eta<2.4) EtaRegion = "EtaRegion8";
+  else EtaRegion = "EtaRegion9";
 
-
-  TString EtaRegion = "InnerBarrel";
-  if(eta<0.8) EtaRegion = "InnerBarrel";
-  else if(eta<1.479) EtaRegion = "OuterBarrel";
-  else EtaRegion = "EndCap";
-
+  key = key.ReplaceAll("EtaRegion",EtaRegion);
   std::map< TString, TH1D* >::const_iterator mapit;
-  mapit = map_hist_Electron.find(ID+"_"+key+"_"+EtaRegion+"_InvGenPt");
+
+  mapit = map_hist_Electron.find(key );
 
   if(mapit==map_hist_Electron.end()){
-    cout << "[CFBackgroundEstimator::GetElectronCFRate] No"<< ID+"_"+key+"_"+EtaRegion+"_InvGenPt" <<endl;
+    cout << "[CFBackgroundEstimator::GetElectronCFRate] No"<< key  <<endl;
+    if(IgnoreNoHist) return 1.;
+
     exit(ENODATA);
   }
 
-  int this_bin = (mapit->second)->FindBin(1./pt);
+  int this_bin = (key.Contains("PtInv")) ? (mapit->second)->FindBin(1./pt) : (mapit->second)->FindBin(pt);
+
   value = (mapit->second)->GetBinContent(this_bin);
   error = (mapit->second)->GetBinError(this_bin);
 
-  //cout << "[CFBackgroundEstimator::CFBackgroundEstimator] value = " << value << endl;
+  //  cout << "[CFBackgroundEstimator::CFBackgroundEstimator] value = " << value << endl;
 
   return value+double(sys)*error;
 

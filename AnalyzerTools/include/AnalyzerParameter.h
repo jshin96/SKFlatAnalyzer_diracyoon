@@ -16,7 +16,7 @@ public:
   bool MCCorrrectionIgnoreNoHist,DEBUG;
 
   TString Electron_Tight_ID, Electron_Loose_ID, Electron_Veto_ID;
-  TString Electron_ID_SF_Key, Electron_Trigger_SF_Key,Electron_Trigger_NameForSF;
+  TString Electron_ID_SF_Key, Electron_Trigger_SF_Key,Electron_Trigger_NameForSF,EMu_Trigger_SF_Key;
   TString Electron_FR_ID, Electron_FR_Key, Electron_PR_Key;
   TString Electron_CF_ID, Electron_CF_Key;
   double Electron_Tight_RelIso, Electron_Loose_RelIso, Electron_Veto_RelIso;
@@ -34,6 +34,8 @@ public:
   TString JetPUID,TriggerSelection;
   double Jet_MinPt, Jet_MaxEta ;
   double FatJet_MinPt, FatJet_MaxEta ;
+
+  bool   Weight_LumiNorm, Weight_SumW,  Weight_PileUp, Weight_PreFire ,Weight_kFactor, Weight_IDSF , Weight_TriggerSF;
 
   TString Tau_Tight_ID, Tau_Loose_ID, Tau_Veto_ID;
   

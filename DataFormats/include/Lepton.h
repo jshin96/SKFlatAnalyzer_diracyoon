@@ -157,9 +157,12 @@ public:
     else return (ptmax - 1.);
   }
 
-  inline double InvPt() const {
-    if(this->Pt() > 200) return 1/200. ;
-    else return (1/this->Pt());
+
+  
+  inline double InvPt(double shift=1.) const {
+    double ptshift = this->Pt()*shift;
+    if(ptshift > 200) return 1/200.;
+    else return (1/ptshift);
   }
 
 
