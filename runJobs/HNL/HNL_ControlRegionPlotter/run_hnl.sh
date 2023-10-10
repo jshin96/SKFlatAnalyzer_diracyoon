@@ -91,7 +91,8 @@ if [[ $1 == "CF" ]]; then
         for j in "${flag_list[@]}"
         do
             FLAG=$j
-            SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton.txt   -n $njobs   --nmax ${nmax}   -e ${i} --skim SkimTree_DileptonBDT  --userflags $FLAG,RunCF &
+            SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_EE.txt   -n $njobs   --nmax ${nmax}   -e ${i} --skim SkimTree_DileptonBDT  --userflags $FLAG,RunCF &
+            SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_EMu.txt   -n $njobs   --nmax ${nmax}   -e ${i} --skim SkimTree_DileptonBDT  --userflags $FLAG,RunCF &
 	    SKFlat.py -a $analyzer  -l $datapath/${i}_SingleLepton.txt   -n $njobs   --nmax ${nmax}   -e ${i} --skim SkimTree_DileptonBDT  --userflags $FLAG,RunCF &
         done
     done

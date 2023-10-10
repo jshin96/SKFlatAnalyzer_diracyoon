@@ -534,8 +534,26 @@ double HNL_LeptonCore::SetupWeight(Event ev, AnalyzerParameter param){
   
 }
 
+HNL_LeptonCore::Channel  HNL_LeptonCore::GetTriLeptonChannel(HNL_LeptonCore::Channel channel){
 
+  
+  if(channel == EE)   return EEE;
+  if(channel == MuMu) return MuMuMu;
+  if(channel == EMu)  return EMuL;
+  if(channel == MuE)  return MuEL;
 
+  return channel;
+}
+
+HNL_LeptonCore::Channel HNL_LeptonCore::GetQuadLeptonChannel(HNL_LeptonCore::Channel channel){
+
+  if(channel ==EE)   return EEEE;
+  if(channel == MuMu) return MuMuMuMu;
+  if(channel == EMu)  return EMuLL;
+  if(channel == MuE)  return MuELL;
+
+  return channel;
+}
 
 bool HNL_LeptonCore::CheckLeptonFlavourForChannel(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps){
   
@@ -1377,7 +1395,7 @@ bool  HNL_LeptonCore::ZmasslllWindowCheck(std::vector<Lepton *> leps){
 
     Particle lll = *leps[0] + *leps[1]+ *leps[2];
 
-    bool passZmass_lll_Window = (fabs(lll.M() - 90.1) < 15.);
+    bool passZmass_lll_Window = (fabs(lll.M() - M_Z) < 15.);
     return passZmass_lll_Window;
 
   }
@@ -1433,14 +1451,14 @@ int HNL_LeptonCore::GetIndexNonBestZ(std::vector<Lepton *> leps,double mass_diff
 
     double minOSZ=99999999999.;
     if(fabs(ll1.Charge()) == 0) {
-      if(fabs(ll1.M() - 90.1) < minOSZ) {minOSZ = fabs(ll1.M() - 90.1); index=2;}
+      if(fabs(ll1.M() - M_Z) < minOSZ) {minOSZ = fabs(ll1.M() - M_Z); index=2;}
     }
     if(fabs(ll2.Charge()) == 0) {
-      if(fabs(ll2.M() - 90.1) < minOSZ) {minOSZ = fabs(ll2.M() - 90.1);index=1;}
+      if(fabs(ll2.M() - M_Z) < minOSZ) {minOSZ = fabs(ll2.M() - M_Z);index=1;}
 
     }
     if(fabs(ll3.Charge()) == 0) {
-      if(fabs(ll3.M() - 90.1) < minOSZ) {minOSZ = fabs(ll3.M() - 90.1);index=0;}
+      if(fabs(ll3.M() - M_Z) < minOSZ) {minOSZ = fabs(ll3.M() - M_Z);index=0;}
     }
 
 
@@ -1461,7 +1479,7 @@ bool  HNL_LeptonCore::ZmassOSSFWindowCheck(std::vector<Lepton *> leps, double ma
       if(leps[i]->LeptonFlavour() != leps[j]->LeptonFlavour()) continue;
       if(leps[i]->Charge() == leps[j]->Charge() ) continue;
       Particle ll = (*leps[i]) + (*leps[j]);
-      if((fabs(ll.M() - 90.1) < mass_diff)) return true;
+      if((fabs(ll.M() - M_Z) < mass_diff)) return true;
     }
   }
 
@@ -1493,9 +1511,9 @@ double HNL_LeptonCore::GetMassBestZ(std::vector<Lepton *> leps,  bool bestZ){
           if(iel ==2 && iel2==3){ zel1=0; zel2=1;    Z2Cand = (*leps[0]) + (*leps[1]);}
 
           if(leps[zel1]->Charge() != leps[zel2]->Charge()){
-            if(( fabs(Z1Cand.M()- 90.1) + fabs(Z2Cand.M()- 90.1)) < minMZ) {
-              minMZ = fabs(Z1Cand.M()- 90.1) + fabs(Z2Cand.M()- 90.1);
-              if(fabs(Z1Cand.M()- 90.1)< fabs(Z2Cand.M()- 90.1) ){ massBestZ=Z1Cand.M(); massNonBestZ=Z2Cand.M();}
+            if(( fabs(Z1Cand.M()- M_Z) + fabs(Z2Cand.M()- M_Z)) < minMZ) {
+              minMZ = fabs(Z1Cand.M()- M_Z) + fabs(Z2Cand.M()- M_Z);
+              if(fabs(Z1Cand.M()- M_Z)< fabs(Z2Cand.M()- M_Z) ){ massBestZ=Z1Cand.M(); massNonBestZ=Z2Cand.M();}
               else{massBestZ=Z2Cand.M(); massNonBestZ=Z1Cand.M();}
             }
           }
@@ -1515,7 +1533,7 @@ double HNL_LeptonCore::GetMassBestZ(std::vector<Lepton *> leps,  bool bestZ){
       if(iel== iel2) continue;
       Z1Cand = (*leps[iel]) + (*leps[iel2]) ;
       if(leps[iel]->Charge() != leps[iel2]->Charge()){
-        if(fabs(Z1Cand.M()- 90.1) < minMZ) {minMZ = fabs(Z1Cand.M()- 90.1) ; massBestZ=Z1Cand.M();}
+        if(fabs(Z1Cand.M()- M_Z) < minMZ) {minMZ = fabs(Z1Cand.M()- M_Z) ; massBestZ=Z1Cand.M();}
       }
     }
   }
@@ -1536,9 +1554,9 @@ bool  HNL_LeptonCore::ZmassOSWindowCheck(std::vector<Lepton *> leps){
     Particle ll3 = (*leps[1]);
     ll3+= (*leps[2]);
 
-    if(ll1.Charge() == 0 && (fabs(ll1.M() - 90.1) < 15.)) passZmass_os_Window=true;
-    if(ll2.Charge() == 0 && (fabs(ll2.M() - 90.1) < 15.)) passZmass_os_Window=true;
-    if(ll3.Charge() == 0 && (fabs(ll3.M() - 90.1) < 15.)) passZmass_os_Window=true;
+    if(ll1.Charge() == 0 && (fabs(ll1.M() - M_Z) < 15.)) passZmass_os_Window=true;
+    if(ll2.Charge() == 0 && (fabs(ll2.M() - M_Z) < 15.)) passZmass_os_Window=true;
+    if(ll3.Charge() == 0 && (fabs(ll3.M() - M_Z) < 15.)) passZmass_os_Window=true;
 
   }
 

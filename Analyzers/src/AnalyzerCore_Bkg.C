@@ -232,20 +232,123 @@ double AnalyzerCore::GetCFWeightElectron(vector<double> el_pt, vector<double> el
 
 double AnalyzerCore::GetShiftCFEl(Electron el) {
 
-  //// Get Shift for  Prompt -> CF Pt response                                                                                                                                                                                                                                                                                                                                                                                           
+
+  //// Get Shift for  Prompt -> CF Pt response                                                                                                                                                                   
+
   double PtShift = 1.;
-  if(el.IsBB()){
-    if(el.Pt() < 50) PtShift = 0.995;
-    else if(el.Pt() < 100) PtShift =  0.998;
-    else  PtShift = 1;
+                                                                                                                                                                                                               
+  if(DataEra=="2016preVFP"){
+    if(el.etaRegionString() == "EB1"){
+      if(el.Pt() < 50)       PtShift = 0.995;
+      else if(el.Pt() < 100) PtShift = 0.999;
+      else if(el.Pt() < 250) PtShift = 1;
+      else                   PtShift = 1;
+    }
+    if(el.etaRegionString() == "EB2"){
+      if(el.Pt() < 50)       PtShift = 0.991;
+      else if(el.Pt() < 100) PtShift = 0.997;
+      else if(el.Pt() < 250) PtShift = 0.999;
+      else                   PtShift = 0.999;
+    }
+    if(el.etaRegionString() == "EE1"){
+      if(el.Pt() < 50)       PtShift = 0.987;
+      else if(el.Pt() < 100) PtShift = 0.994;
+      else if(el.Pt() < 250) PtShift = 0.998;
+      else                   PtShift = 0.998;
+    }
+    if(el.etaRegionString() == "EE2"){
+      if(el.Pt() < 50)       PtShift = 0.991;
+      else if(el.Pt() < 100) PtShift = 0.996;
+      else if(el.Pt() < 250) PtShift = 0.998;
+      else                   PtShift = 0.999;
+    }
+  }
+
+  if(DataEra=="2016postVFP"){
+    if(el.etaRegionString() == "EB1"){
+      if(el.Pt() < 50)       PtShift = 0.996;
+      else if(el.Pt() < 100) PtShift = 0.998;
+      else if(el.Pt() < 250) PtShift = 1;
+      else                   PtShift = 1;
+    }
+    if(el.etaRegionString() == "EB2"){
+      if(el.Pt() < 50)       PtShift = 0.989;
+      else if(el.Pt() < 100) PtShift = 0.997;
+      else if(el.Pt() < 250) PtShift = 0.998;
+      else                   PtShift = 1;
+    }
+    if(el.etaRegionString() == "EE1"){
+      if(el.Pt() < 50)       PtShift = 0.986;
+      else if(el.Pt() < 100) PtShift = 0.994;
+      else if(el.Pt() < 250) PtShift = 0.998;
+      else                   PtShift = 0.999;
+    }
+    if(el.etaRegionString() == "EE2"){
+      if(el.Pt() < 50)       PtShift = 0.991;
+      else if(el.Pt() < 100) PtShift = 0.997;
+      else if(el.Pt() < 250) PtShift = 0.999;
+      else                   PtShift = 0.999;
+    }
+  }
+
+
+  if(GetYearString() == "2017"){
+    if(el.etaRegionString() == "EB1"){
+      if(el.Pt() < 50)       PtShift = 0.978;
+      else if(el.Pt() < 100) PtShift = 0.996;
+      else if(el.Pt() < 250) PtShift = 0.999;
+      else                   PtShift = 1;
+    }
+    if(el.etaRegionString() == "EB2"){
+      if(el.Pt() < 50)       PtShift = 0.989;
+      else if(el.Pt() < 100) PtShift = 0.996;
+      else if(el.Pt() < 250) PtShift = 0.999;
+      else                   PtShift = 1;
+    }
+    if(el.etaRegionString() == "EE1"){
+      if(el.Pt() < 50)       PtShift = 0.982;
+      else if(el.Pt() < 100) PtShift = 0.993;
+      else if(el.Pt() < 250) PtShift = 0.997;
+      else                   PtShift = 0.998;
+    }
+    if(el.etaRegionString() == "EE2"){
+      if(el.Pt() < 50)       PtShift = 0.99;
+      else if(el.Pt() < 100) PtShift = 0.995;
+      else if(el.Pt() < 250) PtShift = 0.998;
+      else                   PtShift = 0.999;
+    }
 
   }
-  else{
-    if(el.Pt() < 50) PtShift = 0.987;
-    else if(el.Pt() < 100) PtShift =  0.994;
-    else if(el.Pt() < 250) PtShift =  0.997;
-    else  PtShift = 0.999;
+
+
+  if(GetYearString() == "2018"){
+    if(el.etaRegionString() == "EB1"){
+      if(el.Pt() < 50)       PtShift = 0.995;
+      else if(el.Pt() < 100) PtShift = 0.999;
+      else if(el.Pt() < 250) PtShift = 1;
+      else                   PtShift = 1;
+    }
+    if(el.etaRegionString() == "EB2"){
+      if(el.Pt() < 50)       PtShift = 0.99;
+      else if(el.Pt() < 100) PtShift = 0.996;
+      else if(el.Pt() < 250) PtShift = 0.998;
+      else                   PtShift = 1;
+    }
+    if(el.etaRegionString() == "EE1"){
+      if(el.Pt() < 50)       PtShift = 0.983;
+      else if(el.Pt() < 100) PtShift = 0.993;
+      else if(el.Pt() < 250) PtShift = 0.997;
+      else                   PtShift = 0.999;
+    }
+    if(el.etaRegionString() == "EE2"){
+      if(el.Pt() < 50)       PtShift = 0.989;
+      else if(el.Pt() < 100) PtShift = 0.995;
+      else if(el.Pt() < 250) PtShift = 0.997;
+      else                   PtShift = 0.998;
+    }
+
   }
+
 
   return PtShift;
 }

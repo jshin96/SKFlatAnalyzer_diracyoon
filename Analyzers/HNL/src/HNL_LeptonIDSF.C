@@ -179,7 +179,7 @@ void HNL_LeptonIDSF::MeasureMuonIDSF(AnalyzerParameter param){
 
   // Require 2 Probe muons in Z mass
   if(MuonCollProbe.size() != 2) return;
-  //  if(70 <  fabs(GetLLMass(MuonCollProbe)- 90.1) > 20) return;
+  //  if(70 <  fabs(GetLLMass(MuonCollProbe)- M_Z) > 20) return;
   if(70 > GetLLMass(MuonCollProbe))   return;
   if(130 < GetLLMass(MuonCollProbe))   return;
 
@@ -236,7 +236,7 @@ void HNL_LeptonIDSF::MeasureElectronIDSF(AnalyzerParameter param){
     if(!ProbeEl[1].IsPrompt()) return;
   }
 
-  if(fabs(GetLLMass(ProbeEl)- 90.1) > 20) return;
+  if(fabs(GetLLMass(ProbeEl)- M_Z) > 20) return;
 
   std::vector<Lepton *> LeptonColl      = MakeLeptonPointerVector(ProbeEl);
   if(!PassTriggerSelection(dilep_channel, ev, LeptonColl,"POG")) return;
@@ -308,7 +308,7 @@ void HNL_LeptonIDSF::MeasureIDSF(AnalyzerParameter param,HNL_LeptonCore::Channel
 
   TString channel_string = GetChannelString(dilep_channel) ;
 
-  bool TightWindowCut = ((GetLLMass(MuonColl)- 90.1) < 10) ;
+  bool TightWindowCut = ((GetLLMass(MuonColl)- M_Z) < 10) ;
 
   std::vector<Lepton *> LeptonColl      = MakeLeptonPointerVector(MuonColl);
 
@@ -399,7 +399,7 @@ void HNL_LeptonIDSF::MeasureIDSF(AnalyzerParameter param,HNL_LeptonCore::Channel
   
   TString channel_string = GetChannelString(dilep_channel) ;
 
-  bool TightWindowCut = ((GetLLMass(ElectronColl)- 90.1) < 10) ;
+  bool TightWindowCut = ((GetLLMass(ElectronColl)- M_Z) < 10) ;
 
   std::vector<Lepton *> LeptonColl      = MakeLeptonPointerVector(ElectronColl);
 
@@ -456,7 +456,7 @@ void HNL_LeptonIDSF::MeasureIDSF(AnalyzerParameter param,HNL_LeptonCore::Channel
 
   TString channel_string = GetChannelString(dilep_channel) ;
   
-  bool TightWindowCut = ((GetLLMass(ElectronColl)- 90.1) < 10) ;
+  bool TightWindowCut = ((GetLLMass(ElectronColl)- M_Z) < 10) ;
   
 
   std::vector<Lepton *> LeptonColl      = MakeLeptonPointerVector(ElectronColl);

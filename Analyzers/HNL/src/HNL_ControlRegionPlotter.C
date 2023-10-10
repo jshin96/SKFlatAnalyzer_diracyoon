@@ -17,7 +17,7 @@ void HNL_ControlRegionPlotter::executeEvent(){
   Event ev = GetEvent();
 
   vector<TString> LepIDs = {"HNL_ULID_"+GetYearString(),"HNTightV2","TopHN", "DefaultPOGTight"};
-
+  vector<HNL_LeptonCore::Channel> ChannelsToRun = {EE,MuMu,EMu,MuE};
   for (auto id: LepIDs){
 
     AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("HNL");
@@ -97,7 +97,7 @@ void HNL_ControlRegionPlotter::executeEvent(){
     if(HasFlag("SS_CR"))   CRToRun.push_back("Presel");
     if(HasFlag("VV_VR"))   CRToRun.push_back("VV_VR");
     if(HasFlag("VV_VR"))   CRToRun.push_back("VG_VR");
-    RunControlRegions(param_signal , CRToRun );
+    RunControlRegions(ChannelsToRun,param_signal , CRToRun );
     
   }
 
@@ -115,7 +115,7 @@ void HNL_ControlRegionPlotter::executeEvent(){
       param_signal.Electron_ID_SF_Key = "Default";
       param_signal.Muon_FR_ID = "HNL_ULID_Baseline";
       param_signal.Electron_FR_ID = "HNL_ULID_Baseline";
-      RunControlRegions(param_signal , {"BDTCheck"});
+      RunControlRegions(ChannelsToRun,param_signal , {"BDTCheck"});
 
       return;
     }
@@ -127,7 +127,7 @@ void HNL_ControlRegionPlotter::executeEvent(){
   
 }
 
-void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector<TString> CRs){
+void HNL_ControlRegionPlotter::RunControlRegions(vector<HNL_LeptonCore::Channel> ChannelsToRun,AnalyzerParameter param, vector<TString> CRs){
 
 
   if(_jentry==0) PrintParam(param);
@@ -222,7 +222,8 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
     if(run_Debug) cout <<"RunAllControlRegions GetElectronSFEventWeight =" << ElSFWeight << endl;
     if(run_Debug) cout <<"RunAllControlRegions GetMuonSFEventWeight     =" << MuSFWeight << endl;
   }
-  RunAllControlRegions(ElectronTightColl,ElectronVetoColl,MuonTightColl,MuonVetoColl, AK4_JetAllColl, AK4_JetColl,AK4_VBF_JetColl,AK8_JetColl, AK4_BJetColl, ev,METv, param, CRs,weight);
+  //ChannelsToRun
+  RunAllControlRegions(ChannelsToRun,ElectronTightColl,ElectronVetoColl,MuonTightColl,MuonVetoColl, AK4_JetAllColl, AK4_JetColl,AK4_VBF_JetColl,AK8_JetColl, AK4_BJetColl, ev,METv, param, CRs,weight);
   
 
 }

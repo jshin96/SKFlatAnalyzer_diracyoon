@@ -8,6 +8,8 @@ void HNL_LeptonFakeRate::initializeAnalyzer(){
   TString FilePath="/data/"+SKFlatV+"/"+GetEra()+"/FakeRate/NvtxSF/";
   NvtxSFFile = new TFile(AnalyzerPath+FilePath+"FakeRateNVtx13TeV_"+GetEra()+".root");
 
+  //// Flags available in this code
+  /// HasFlag("GetNvtxSF")
   
 
 }
@@ -186,7 +188,7 @@ void HNL_LeptonFakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon>
     blepsT.push_back(ilep.PassID(param.Muon_Tight_ID));
   }
 
-  if(param.WriteOutVerbose == 0) {
+  if(HasFlag("GetNvtxSF")){
     MakeNVertexDistPrescaledTrig(MuMu,param, ev, leps,blepsT,param.Name+channel_s,event_weight);
     return;
   }
@@ -324,7 +326,7 @@ void HNL_LeptonFakeRate::RunE( std::vector<Electron> loose_el, std::vector<Muon>
     blepsT.push_back(ilep.PassID(param.Electron_Tight_ID));
   }
 
-  if(param.WriteOutVerbose == 0) {
+  if(HasFlag("GetNvtxSF")){
     MakeNVertexDistPrescaledTrig(EE,param, ev, leps,blepsT,param.Name+channel_s,event_weight);
     return;
   }
@@ -456,7 +458,7 @@ void HNL_LeptonFakeRate::MakeDiLepPlots(HNL_LeptonCore::Channel channel, Analyze
   // Make Z peak                                                                                                                                            
   Particle Z = (*leps[0]) + (*leps[1]);
   if(leps[0]->Charge() == leps[1]->Charge()) return;
-  bool PassZMass = (fabs(90. - Z.M()) < 10.) ? true : false;
+  bool PassZMass = (fabs(M_Z - Z.M()) < 10.) ? true : false;
 
   std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
@@ -611,7 +613,7 @@ void HNL_LeptonFakeRate::MakeNVertexDistPrescaledTrig(HNL_LeptonCore::Channel ch
 
   if(BJetColl.size() > 0) return;
 
-  bool PassZMass = (fabs(90. - Z.M()) < 10.) ? true : false;
+  bool PassZMass = (fabs(M_Z - Z.M()) < 10.) ? true : false;
 
 
   // Now plot Z peak for
@@ -774,7 +776,7 @@ void HNL_LeptonFakeRate::MakePromptRatePlots(TString label, TString tag,Analyzer
 
   Particle Z = (*leps[0]) + (*leps[1]);
   if(leps[0]->Charge() == leps[1]->Charge()) return;
-  if(fabs(90. - Z.M()) > 10.) return;
+  if(fabs(M_Z - Z.M()) > 10.) return;
 
   if(blepsT[1]){
     // lep [1] is tag
@@ -796,7 +798,7 @@ void HNL_LeptonFakeRate::MakePromptRatePlots(TString label, TString tag,Analyzer
       FillHist((prefix + "_pt_eta").Data(), lep_pt, lep_eta,  weight_ptcorr, nbin_pt, ptbins, nbin_eta , etabins);
       FillHist((prefix + "_ptcone_eta").Data(), lep_pt_corr, lep_eta,  weight_ptcorr, nbin_ptcone, ptbinscone, nbin_eta , etabins);
       FillHist((prefix + "_ptratio_eta").Data(), lep_jet_ptratio, lep_eta,  weight_ptcorr, nbin_ptcone, ptbinscone, nbin_eta , etabins);
-      if(fabs(90. - Z.M()) < 5){
+      if(fabs(M_Z - Z.M()) < 5){
 	FillHist((prefix + "_TZ_pt_eta").Data(), lep_pt, lep_eta,  weight_ptcorr, nbin_pt, ptbins, nbin_eta , etabins);
 	FillHist((prefix + "_TZ_ptcone_eta").Data(), lep_pt_corr, lep_eta,  weight_ptcorr, nbin_ptcone, ptbinscone, nbin_eta , etabins);
       }
@@ -821,7 +823,7 @@ void HNL_LeptonFakeRate::MakePromptRatePlots(TString label, TString tag,Analyzer
       FillHist((prefix + "_pt_eta").Data(), lep_pt, lep_eta,  weight_ptcorr, nbin_pt, ptbins, nbin_eta , etabins);
       FillHist((prefix + "_ptcone_eta").Data(), lep_pt_corr, lep_eta,  weight_ptcorr, nbin_ptcone, ptbinscone, nbin_eta , etabins);
       FillHist((prefix + "_ptratio_eta").Data(), lep_jet_ptratio, lep_eta,  weight_ptcorr, nbin_ptcone, ptbinscone, nbin_eta , etabins);
-      if(fabs(90. - Z.M()) < 5){
+      if(fabs(M_Z - Z.M()) < 5){
 	FillHist((prefix + "_TZ_pt_eta").Data(), lep_pt, lep_eta,  weight_ptcorr, nbin_pt, ptbins, nbin_eta , etabins);
         FillHist((prefix + "_TZ_ptcone_eta").Data(), lep_pt_corr, lep_eta,  weight_ptcorr, nbin_ptcone, ptbinscone, nbin_eta , etabins);
       }

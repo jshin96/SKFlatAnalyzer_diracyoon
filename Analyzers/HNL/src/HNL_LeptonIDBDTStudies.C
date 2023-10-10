@@ -691,7 +691,7 @@ void HNL_LeptonIDBDTStudies::MakeJetDiscPlots(TString label, AnalyzerParameter p
     // Z peak 
     
 
-    if(fabs(GetLLMass(LeptonColl)- 90.1) < 10 && METv.Pt() < 30) {
+    if(fabs(GetLLMass(LeptonColl)- M_Z) < 10 && METv.Pt() < 30) {
      
       vector<Jet> JetAllColl = GetAllJets();
       TString cut = "ZJets_"+channel_string;
@@ -1154,7 +1154,7 @@ void HNL_LeptonIDBDTStudies::MakeBDTPlots(AnalyzerParameter param,HNL_LeptonCore
 
   std::vector<Jet> BJetColl  = GetHNLJets("BJetM", param);
   // use Z peak                                                                                                                              
-  if(fabs(GetLLMass(LeptonColl)- 90.1) < 10 && METv.Pt() < 30&& BJetColl.size()==0) {
+  if(fabs(GetLLMass(LeptonColl)- M_Z) < 10 && METv.Pt() < 30&& BJetColl.size()==0) {
     
     if(ElectronColl[0].PassID("passPOGTight") && ElectronColl[1].PassID("passPOGTight") ){
       AnalyzerParameter paramPOG=param;

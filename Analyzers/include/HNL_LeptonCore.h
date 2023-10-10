@@ -211,6 +211,10 @@ class HNL_LeptonCore : public AnalyzerCore {
   TString GetPtBin(bool mu, double pt);
   TString DoubleToString(double d);
 
+  HNL_LeptonCore::Channel GetTriLeptonChannel(HNL_LeptonCore::Channel channel);
+  HNL_LeptonCore::Channel GetQuadLeptonChannel(HNL_LeptonCore::Channel channel);
+
+
   /// ------ SYSTEMATICS
   vector<AnalyzerParameter::Syst> GetSystList(TString SystType);
 

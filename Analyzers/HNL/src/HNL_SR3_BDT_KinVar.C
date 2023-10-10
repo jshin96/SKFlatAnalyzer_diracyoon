@@ -225,7 +225,7 @@ void HNL_SR3_BDT_KinVar::MakeTreeSS2L(HNL_LeptonCore::Channel lep_channel,vector
   //if(!(LepTColl[0]->Pt()>20 && LepTColl[1]->Pt()>10)) return;
 
   float Mll = GetLLMass(LepTColl);
-  if (lep_channel==EE && (fabs(Mll-90.) < 10.)) return;
+  if (lep_channel==EE && (fabs(Mll-M_Z) < 10.)) return;
   
   InitializeTreeVars();
   

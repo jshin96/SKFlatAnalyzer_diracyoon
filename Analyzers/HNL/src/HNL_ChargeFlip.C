@@ -11,10 +11,10 @@ void HNL_ChargeFlip::initializeAnalyzer(){
   // HasFlag("ElCFRates")    ---> Measure rates in DY/Top MC (using Pt CF response)
   // HasFlag("ShiftEnergyZ") ---> Check mc closure  (Using only DY)
   // HasFlag("ScaleFactor")  ---> Compare Data SS vs OS weighted in BB / EC (using CF Rates) 
-
   
+  //  cfEst->IgnoreNoHist = true;
 
-
+  //  if(HasFlag("ShiftEnergy"))cfEst->IgnoreNoHist = true;
   
 }
 
@@ -24,7 +24,9 @@ void HNL_ChargeFlip::executeEvent(){
   vector<TString> LepIDs = {"HNL_ULID_"+GetYearString(),"HNTightV2","TopHN", "POGTight"};
   vector<TString> CFMethods ={};
   //"CFRate_PtInv","CFRate_Pt"};    
-  if(HasFlag("ElCFRates")){
+  if(HasFlag("ShiftEnergy")) LepIDs = { "POGTight"};
+
+  if(HasFlag("ElCFRates") || HasFlag("ShiftEnergy")){
     CFMethods.push_back("");
   }
   else{
@@ -122,29 +124,6 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
   BJetColl = SelBJets(JetColl,jtp);
 
 
-  if(HasFlag("MuonCF")){
-
-    /*
-    1. 2 muons (25,25)
-    2. 3rd lepton veto
-    3. mll > 60
-    4. anti-btag
-
-    --> mll plot in MuonCFrate/SS(OS)ij where i,j is pT bin #
-    */
-
-    //if(!IsDATA) weight *= MCweight() * ev.GetTriggerLumi("Full");
-
-    if(MuonColl.size()!=2) return;
-    if(!(MuonColl.at(0).Pt()>25&&MuonColl.at(1).Pt()>25)) return;
-    if(MuonCollVeto.size()>2) return;
-    Particle ll = MuonColl.at(0) + MuonColl.at(1) ;
-    if(ll.M()<=60) return;
-    if(BJetColl.size()>0) return;
-
-
-  }
-
 
   if(!PassHEMVeto(Leptons)) return ;
 
@@ -202,19 +181,8 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
       
       if(HasPromptConv(ElectronColl.at(i))) continue;
       
-      double PtShift = 1.;
-      if(ElectronColl.at(i).IsBB()){
-	if(ElectronColl.at(i).Pt() < 50) PtShift = 1/ 0.995;
-	else if(ElectronColl.at(i).Pt() < 100) PtShift = 1/ 0.998;
-	else  PtShift = 1;
-	
-      }
-      else{
-	if(ElectronColl.at(i).Pt() < 50) PtShift = 1/ 0.987;
-        else if(ElectronColl.at(i).Pt() < 100) PtShift = 1/ 0.994;
-        else if(ElectronColl.at(i).Pt() < 250) PtShift = 1/ 0.997;
-        else  PtShift = 1/ 0.999;
-      }
+      double PtShift = 1. / GetShiftCFEl(ElectronColl.at(i));
+
       if(HasFlag("RateNoShift")) PtShift = 1.;
       
       if(abs(ElectronColl.at(i).scEta())<0.8){
@@ -309,7 +277,10 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
       if(IsCF)     FillHist(param.Name+"/CFrate_2DPt/Num",ElectronColl.at(i).PtMaxed(500)*PtShift, ElectronColl.at(i).scEta(), EvWeight, nbin, pTbin, 10,etabins);
       
     }
+    return;
   }
+
+
   
   if(HasFlag("ShiftEnergyZ")){
     
@@ -544,72 +515,44 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
       double PtResponse  = (iel.Pt()  -  gen_pt) / gen_pt;
 
 
-      TString EtaBin = (iel.IsBB()) ? "BB" : "EC";
+      TString EtaBin = iel.etaRegionString();//(iel.IsBB()) ? "BB" : "EC";
       
-      if(bIsCF){
-	if(PtResponse > 0.8){
-	  cout << "PtResponse = " << PtResponse << " El Pt = " << iel.Pt() << "  El Eta = " << iel.Eta() << endl;
-	  cout << "Matched Lep Pt = " << truth_lep.Pt() << "  sumPt = " << PtSum << endl;
-	  cout << "iel.LeptonGenType = " << iel.LeptonGenType() << endl;
-	  cout << "Lep charge  = " << iel.Charge() << endl;
-	  PrintMatchedGen(All_Gens, Lepton(iel));
-	  cout << " " << endl;
-	  PrintGen(All_Gens);
-	}
-      }
-      double rate_cf= cfEst->GetElectronCFRate(param.Electron_Tight_ID, param.Electron_CF_Key, iel.defEta(), iel.Pt(), 0);
+      //double rate_cf= cfEst->GetElectronCFRate(param.Electron_Tight_ID, param.Electron_CF_Key, iel.defEta(), iel.Pt(), 0);
       
-      if(iel.IsPrompt() &&  bIsConv) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Conv", PtResponse , EvWeight , 200, -1,1);
-      if(iel.IsPrompt() &&  bIsCF && bIsConv) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_CFConv", PtResponse , EvWeight , 200, -1,1);
       if(bIsConv) continue;
-      if(iel.IsPrompt() && !bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Prompt", PtResponse , EvWeight ,200 , -1, 1);
-      if(iel.IsPrompt() &&  bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_CF", PtResponse , EvWeight , 200, -1,1);
 
-      if(iel.IsPrompt() && !bIsCF) FillHist(param.Name+"/EnergyShift_2D/Prompt", gen_pt, PtResponse, EvWeight, 500, 0, 500, 100, -0.5, 0.5 );
-      if(iel.IsPrompt() && bIsCF) FillHist(param.Name+"/EnergyShift_2D/CF", gen_pt, PtResponse, EvWeight, 500, 0, 500, 100, -0.5, 0.5  );
-     
-      if(truth_lep.Pt() < 50) {
-	if(iel.IsPrompt() && !bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt1_Prompt", PtResponse , EvWeight ,200 , -1, 1);
-        if(iel.IsPrompt() && !bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt1_ScaledPrompt", PtResponse , rate_cf*EvWeight ,200 , -1, 1);
+      if(truth_lep.Pt() < 30) {
 	if(iel.IsPrompt() &&  bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt1_CF", PtResponse , EvWeight , 200, -1,1);
       }
-      else  if(truth_lep.Pt() < 100) {
-	if(iel.IsPrompt() && !bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt2_Prompt", PtResponse , EvWeight ,200 , -1, 1);
-        if(iel.IsPrompt() && !bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt2_ScaledPrompt", PtResponse , rate_cf*EvWeight ,200 , -1, 1);
+      else  if(truth_lep.Pt() < 50) {
         if(iel.IsPrompt() &&  bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt2_CF", PtResponse , EvWeight , 200, -1,1);
-      } 
-      else  if(truth_lep.Pt() < 250) {
-        if(iel.IsPrompt() && !bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt3_Prompt", PtResponse , EvWeight ,200 , -1, 1);
-        if(iel.IsPrompt() && !bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt3_ScaledPrompt", PtResponse , rate_cf*EvWeight ,200 , -1, 1);
+      }
+      else  if(truth_lep.Pt() < 75) {
         if(iel.IsPrompt() &&  bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt3_CF", PtResponse , EvWeight , 200, -1,1);
       }
-      else{
-	if(iel.IsPrompt() && !bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt4_Prompt", PtResponse , EvWeight ,200 , -1, 1);
-        if(iel.IsPrompt() && !bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt4_ScaledPrompt", PtResponse , rate_cf*EvWeight ,200 , -1, 1);
+      else  if(truth_lep.Pt() < 100) {
         if(iel.IsPrompt() &&  bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt4_CF", PtResponse , EvWeight , 200, -1,1);
+      } 
+      else  if(truth_lep.Pt() < 250) {
+        if(iel.IsPrompt() &&  bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt5_CF", PtResponse , EvWeight , 200, -1,1);
+      }
+      else{
+	if(iel.IsPrompt() &&  bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt6_CF", PtResponse , EvWeight , 200, -1,1);
       }
 
-      for (unsigned int ishift = 0 ; ishift < 50; ishift++){
-	double shiftEl = 1. - double(ishift)*0.001;
+      for (unsigned int ishift = 0 ; ishift < 100; ishift++){
+	double shiftEl = 1.05 - double(ishift)*0.001;
 	TString shift_string = DoubleToString(shiftEl);
-
 	double PtResponseShift = (shiftEl*iel.Pt() - gen_pt) / (gen_pt);
 	if(iel.IsPrompt() &&  !bIsCF) {
-	  FillHist(param.Name+"/EnergyShift/"+EtaBin+"_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
-	  if(truth_lep.Pt() < 50) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt1_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
-	  else if(truth_lep.Pt() < 100) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt2_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
-	  else if(truth_lep.Pt() < 250) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt3_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
-	  else  FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt4_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
 	  
-          FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Scaled_PromptShifted_"+shift_string, PtResponseShift , rate_cf*EvWeight , 200, -1,1);
-          if(truth_lep.Pt() < 50) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt1_Scaled_PromptShifted_"+shift_string, PtResponseShift , rate_cf*EvWeight , 200, -1,1);
-          else if(truth_lep.Pt() < 100) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt2_Scaled_PromptShifted_"+shift_string, PtResponseShift , rate_cf*EvWeight , 200, -1,1);
-          else if(truth_lep.Pt() < 250) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt3_Scaled_PromptShifted_"+shift_string, PtResponseShift , rate_cf*EvWeight , 200, -1,1);
-          else  FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt4_Scaled_PromptShifted_"+shift_string, PtResponseShift , rate_cf*EvWeight , 200, -1,1);
-
+	  if(truth_lep.Pt() < 30)       FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt1_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
+	  else if(truth_lep.Pt() < 50)  FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt2_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
+	  else if(truth_lep.Pt() < 75)  FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt3_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
+	  else if(truth_lep.Pt() < 100) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt4_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
+	  else if(truth_lep.Pt() < 250) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt5_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
+	  else  FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt6_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
 	}
-
-
       }
     }
     return;

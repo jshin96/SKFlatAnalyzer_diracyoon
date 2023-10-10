@@ -105,6 +105,8 @@ double CFBackgroundEstimator::GetElectronCFRate(TString ID, TString key, double 
 
   if(mapit==map_hist_Electron.end()){
     cout << "[CFBackgroundEstimator::GetElectronCFRate] No"<< key  <<endl;
+    if(IgnoreNoHist) return 1.;
+
     exit(ENODATA);
   }
 
