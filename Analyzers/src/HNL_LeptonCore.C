@@ -625,7 +625,6 @@ bool HNL_LeptonCore::CheckLeptonFlavourForChannel(HNL_LeptonCore::Channel channe
 
 TString HNL_LeptonCore::DoubleToString(double d){
   
-  
   std::string str = std::to_string (d);
   str.erase ( str.find_last_not_of('0') + 1, std::string::npos );
   str.erase ( str.find_last_not_of('.') + 1, std::string::npos );

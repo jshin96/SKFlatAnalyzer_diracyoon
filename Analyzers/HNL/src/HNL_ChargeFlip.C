@@ -284,12 +284,8 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
   
   if(HasFlag("ShiftEnergyZ")){
     
-    
-    double pTbin[9] = {15.,30.,35.,40.,45, 50., 80.,100.,200.};
     double pTbinNeg[18] = {-200,-100,-80,-50,-45,-40,-35,-30,-15, 15.,30.,35,40.,45, 50., 80.,100.,200.};
-
-    int nbin         = 8;
-    int nbinNeg         = 17;
+    int nbinNeg      = 17;
 
     if(run_Debug) cout << "ShiftEnergyZ processing " << endl;
 
@@ -310,29 +306,20 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 	    double Zmass = ZCand.M(); 
 	    if(Zmass < 70) Zmass=70;
 	    if(Zmass > 130) Zmass=130;
+
 	    if(ElectronColl[0].IsBB() && ElectronColl[1].IsBB())  FillHist(param.Name+"/ZMass/SS_BB", Zmass , EvWeight ,70 , 130, 30);
 	    if(ElectronColl[0].IsEC() && ElectronColl[1].IsEC())  FillHist(param.Name+"/ZMass/SS_EC", Zmass , EvWeight ,70 , 130, 30);
 	    if(ElectronColl[0].IsBB() && ElectronColl[1].IsBB()) {
-	      FillHist(param.Name+"/Z/SS_BB_Lep1Pt", ElectronColl[0].PtMaxed(200) , EvWeight ,nbin, pTbin,"pT");
-	      FillHist(param.Name+"/Z/SS_BB_Lep2Pt", ElectronColl[1].PtMaxed(200) , EvWeight ,nbin, pTbin,"pT");
 	      FillHist(param.Name+"/Z/SS_BB_LepPt",  ElectronColl[0].PtMaxed(200) ,         EvWeight , nbinNeg, pTbinNeg,"pT");
 	      FillHist(param.Name+"/Z/SS_BB_LepPt", -1*ElectronColl[1].PtMaxed(200) ,      EvWeight , nbinNeg, pTbinNeg,"pT");
-
-	      FillHist(param.Name+"/Z/SS_BB_Lep1Eta", ElectronColl[0].Eta() , EvWeight, 50., -2.5, 2.5, "Eta");
-	      FillHist(param.Name+"/Z/SS_BB_Lep2Eta", ElectronColl[1].Eta() , EvWeight, 50., -2.5, 2.5, "Eta");
 	      FillHist(param.Name+"/Z/SS_BB_LepEta",  (ElectronColl[0].Eta()+2.5) , EvWeight, 100., -5., 5., "Eta");
 	      FillHist(param.Name+"/Z/SS_BB_LepEta",  -1*(ElectronColl[1].Eta()+2.5) , EvWeight, 100., -5., 5., "Eta");
 
 	    }
 	    
 	    if(ElectronColl[0].IsEC() && ElectronColl[1].IsEC()) {
-	      FillHist(param.Name+"/Z/SS_EC_Lep1Pt", ElectronColl[0].PtMaxed(200) , EvWeight ,nbin, pTbin,"pT");
-	      FillHist(param.Name+"/Z/SS_EC_Lep2Pt", ElectronColl[1].PtMaxed(200) , EvWeight ,nbin, pTbin,"pT");
               FillHist(param.Name+"/Z/SS_EC_LepPt", ElectronColl[0].PtMaxed(200) ,         EvWeight , nbinNeg, pTbinNeg,"pT");
               FillHist(param.Name+"/Z/SS_EC_LepPt", -1*ElectronColl[1].PtMaxed(200) ,      EvWeight , nbinNeg, pTbinNeg,"pT");
-
-	      FillHist(param.Name+"/Z/SS_EC_Lep1Eta", ElectronColl[0].Eta() , EvWeight, 50., -2.5, 2.5, "Eta");
-	      FillHist(param.Name+"/Z/SS_EC_Lep2Eta", ElectronColl[1].Eta() , EvWeight, 50., -2.5, 2.5, "Eta");
 	      FillHist(param.Name+"/Z/SS_EC_LepEta",  (ElectronColl[0].Eta()+2.5) , EvWeight, 100., -5., 5., "Eta");
 	      FillHist(param.Name+"/Z/SS_EC_LepEta",  -1*(ElectronColl[1].Eta()+2.5) , EvWeight, 100., -5., 5., "Eta");
 
@@ -349,31 +336,16 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 	if(ElectronColl.at(0).LeptonGenType() >= 4 || ElectronColl.at(1).LeptonGenType() >=4) return;
 	
 	//// Loop several Energy shift
-	for (unsigned int ishift = 0 ; ishift < 40; ishift++){
-	  double shiftEl1 = 1. - double(ishift)*0.001;
-	  double shiftEl2 = 1. - double(ishift)*0.001;
-	  TString shift_string = DoubleToString(shiftEl1);
-	  vector<Electron> ShiftedEl;
-	  Electron this_el1 = ElectronColl.at(0);
-	  Electron this_el2 = ElectronColl.at(1);
+	for (unsigned int ishift = 0 ; ishift < 1; ishift++){
 	  
-	  if(ishift == 21){
-	    if(ElectronColl[0].Pt() < 50) shiftEl1 = 0.996;
-	    else if(ElectronColl[0].Pt() < 100) shiftEl1 = 0.997;
-	    else if(ElectronColl[0].Pt() < 200) shiftEl1 = 0.998;
-	    else shiftEl1 = 1;
-	    if(ElectronColl[1].Pt() < 50) shiftEl2 = 0.996;
-            else if(ElectronColl[1].Pt() < 100) shiftEl2 = 0.997;
-            else if(ElectronColl[1].Pt() < 200) shiftEl2 = 0.998;
-            else shiftEl2 = 1;
-	    shift_string = "SingleElShift2";
-	    
-	  }
-	  if(ishift == 22){
-	    shiftEl1 = GetShiftCFEl(this_el1);
-	    shiftEl2 = GetShiftCFEl(this_el2);
-	    shift_string = "SingleElShift";
-	  }
+	  vector<Electron> ShiftedEl;
+          Electron this_el1 = ElectronColl.at(0);
+          Electron this_el2 = ElectronColl.at(1);
+
+	  double shiftEl1 = GetShiftCFEl(this_el1);
+	  double shiftEl2 = GetShiftCFEl(this_el2);
+	  TString shift_string = "SingleElShift";
+	  
 
 	  if(this_el1.IsBB() && !this_el2.IsBB()) this_el2*= shiftEl2;
 	  else    if(this_el2.IsBB() &&!this_el1.IsBB()) this_el1*= shiftEl1;
@@ -409,32 +381,30 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
             FillHist(param.Name+"/Z/OS_EC_Weighted_EnergyShift_Pt_"+shift_string, -1*this_el2.PtMaxed(200) , weight_shifted*EvWeight , nbinNeg, pTbinNeg,"pT");
             FillHist(param.Name+"/Z/OS_EC_Weighted_EnergyShift_Eta_"+shift_string, (this_el1.Eta()+2.5)    , weight_shifted*EvWeight ,100., -5, 5, "Eta");
             FillHist(param.Name+"/Z/OS_EC_Weighted_EnergyShift_Eta_"+shift_string, -1*(this_el2.Eta()+2.5) , weight_shifted*EvWeight ,100., -5, 5, "Eta");
-
+	    
 	  }
 	}
-	
-	for (unsigned int ishift = 0 ; ishift < 60; ishift++){
-          double shiftEl = 1. - double(ishift)*0.001;
+
+	for (unsigned int ishift = -1 ; ishift < 100; ishift++){
+          double shiftEl = 1.05 - double(ishift)*0.001;
           TString shift_string = DoubleToString(shiftEl);
           vector<Electron> ShiftedEl;
           Electron this_el1 = ElectronColl.at(0);
           Electron this_el2 = ElectronColl.at(1);
 
-	  if(ishift <= 30){
+	  if(ishift >0){
 	    this_el1*= shiftEl;
 	    this_el2*= shiftEl;
 	  }
 	  else{
-	    shiftEl = 1. - double(ishift-30)*0.001;
-	    shift_string = DoubleToString(shiftEl)+"_Slope";
-	    double cutSlope1   = ElectronColl.at(0).IsBB() ? (1-shiftEl) / (15-100) : (1-shiftEl) / (15-250) ;
-	    double cutSlope2   = ElectronColl.at(1).IsBB() ? (1-shiftEl) / (15-100) : (1-shiftEl) / (15-250) ;
-	    double ShiftFinal1 = ElectronColl.at(0).IsBB() ? std::max( shiftEl, std::min(1. , shiftEl + cutSlope1*(ElectronColl.at(0).Pt()-100) )  ) : std::max( shiftEl, std::min(1. , shiftEl + cutSlope1*(ElectronColl.at(0).Pt()-250) )  ) ;
-	    double ShiftFinal2 = ElectronColl.at(1).IsBB() ? std::max( shiftEl, std::min(1. , shiftEl + cutSlope2*(ElectronColl.at(1).Pt()-100) )  ) : std::max( shiftEl, std::min(1. , shiftEl + cutSlope2*(ElectronColl.at(1).Pt()-250) )  ) ;
-	    this_el1*= ShiftFinal1;
-            this_el2*= ShiftFinal2;
-
+	    double shiftEl1 = GetShiftCFEl(this_el1);
+	    double shiftEl2 = GetShiftCFEl(this_el2);
+	    shiftEl = (shiftEl1+shiftEl2)/2.;
+	    shift_string = "AverageSingleEl";
+	    this_el1*= shiftEl;
+            this_el2*= shiftEl;
 	  }
+
 	  Particle ZShiftedCand = this_el1+this_el2;
           double ZShiftedmass = ZShiftedCand.M();
           if(ZShiftedmass < 70) ZShiftedmass=70;
@@ -446,6 +416,7 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
           ShiftedEl.push_back(this_el1);
           ShiftedEl.push_back(this_el2);
           double weight_shifted = GetCFWeightElectron(ShiftedEl, param , false);
+
           if(ElectronColl[0].IsBB() && ElectronColl[1].IsBB()){
 	    FillHist(param.Name+"/ZMass/OS_BB_Weighted_ZEnergyShift_"+shift_string, ZShiftedmass            , weight_shifted*EvWeight ,70 , 130, 30);
             FillHist(param.Name+"/Z/OS_BB_Weighted_ZEnergyShift_Pt_"+shift_string, this_el1.PtMaxed(200)    , weight_shifted*EvWeight , nbinNeg, pTbinNeg,"pT");
