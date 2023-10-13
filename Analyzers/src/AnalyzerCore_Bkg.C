@@ -31,7 +31,7 @@ int AnalyzerCore::GetFakeLepSrcType(const Lepton& Lep, vector<Jet>& JetColl){
 
 double AnalyzerCore::GetFakeRateElectron(Electron el, AnalyzerParameter param){
 
-  //// Access individual lepton Fake Rate                                                                                                                                                                                                                                                                                                                                                                                                
+  //// Access individual lepton Fake Rate                                                                                                   
 
   double  LepEta = el.fEta();
   double  LepPt  = el.PtMaxed(80);
@@ -229,7 +229,19 @@ double AnalyzerCore::GetCFWeightElectron(vector<double> el_pt, vector<double> el
 
 
 
+double AnalyzerCore::GetZMassShift(vector<Electron> Electrons) {
 
+  if(Electrons.size() != 2) return 1;
+
+  if(Electrons[0].Charge() == Electrons[1].Charge()) return 1;
+  if(DataEra=="2017"){
+    if(Electrons[0].IsBB() && Electrons[1].IsBB())  return 0.988;
+    if(Electrons[0].IsEC() && Electrons[1].IsEC())  return 0.993;
+    return (0.988+0.993)/2.;
+  }
+  return 1;
+
+}
 double AnalyzerCore::GetShiftCFEl(Electron el) {
 
 

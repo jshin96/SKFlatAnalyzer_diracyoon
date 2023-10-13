@@ -61,7 +61,7 @@ class HNL_LeptonCore : public AnalyzerCore {
     SR,    sigmm,    sigee,    sigem,
     sigmm_17028,    sigee_17028,    sigem_17028,
     SR1Tau,    SR2Tau,    SR3Tau,  
-    ControlRegionMuMu,ControlRegionEE,ControlRegionEMu, ControlRegionMuE,
+    ControlRegion,
     ChannelDepCR1,    ChannelDepCR2,    ChannelDepCR3, CR };
 
   enum LeptonType
@@ -159,6 +159,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   void FillEventCutflowAll(TString dirname, TString histname, double weight, vector<TString> lables, TString label);
   void FillCutFlow(bool IsCentral, TString suffix, TString histname, double weight);
   void FillEventCutflow(HNL_LeptonCore::SearchRegion sr,double wt,TString cut,    TString label, int verbose_level=0);
+  void FillEventCutflow(HNL_LeptonCore::SearchRegion sr,double wt,TString cut,    TString label, AnalyzerParameter param);
   void FillEventCutflowSR(TString analysis_dir_name,HNL_LeptonCore::SearchRegion sr, double event_weight, TString label);
   void FillEventCutflowPerMass(TString dirname,HNL_LeptonCore::SearchRegion sr, double event_weight, TString region_name,   TString label);
 

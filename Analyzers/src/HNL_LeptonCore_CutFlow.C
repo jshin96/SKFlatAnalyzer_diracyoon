@@ -39,6 +39,12 @@ void HNL_LeptonCore::FillEventCutflowDef(TString analysis_dir_name,TString histn
 
 
 
+void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::SearchRegion sr, double event_weight, TString label,   TString analysis_dir_name, AnalyzerParameter param){
+  
+  FillEventCutflow(sr, event_weight, label, analysis_dir_name+"/"+param.Channel, param.WriteOutVerbose);
+  FillEventCutflow(sr, event_weight, label, analysis_dir_name+"/"+param.InclusiveChannel, param.WriteOutVerbose);
+  return;
+}
 
 
 void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::SearchRegion sr, double event_weight, TString label,   TString analysis_dir_name, int verbose_level){
@@ -223,12 +229,9 @@ void HNL_LeptonCore::FillEventCutflow(HNL_LeptonCore::SearchRegion sr, double ev
       EVhitname ="ChannelDependantCR3";
     }
 
-    if(sr == ControlRegionMuMu || sr == ControlRegionEE || sr == ControlRegionEMu|| sr==ControlRegionMuE){
+    if(sr == ControlRegion){
       labels = {"NoCut","HEMVeto","METFilter","GENMatched","LeptonFlavour","Trigger","OS_VR","VV_VR","VG_VR","SS_CR"};
-      if(sr == ControlRegionMuMu) EVhitname = "MuMu_CR";
-      if(sr == ControlRegionEE)   EVhitname = "EE_CR";
-      if(sr == ControlRegionEMu)  EVhitname = "EMu_CR";
-      if(sr == ControlRegionMuE)  EVhitname = "MuE_CR";
+      EVhitname = "ValidationRegionFlow";
 
     }
 

@@ -45,6 +45,24 @@ if [[ $1 == "Full" ]]; then
 
 fi
 
+if [[ $1 == "WZ" ]]; then
+
+    declare  -a era_list=("2017")
+    declare  -a flag_list=("VV_VR")
+
+    for i in "${era_list[@]}"
+    do
+        for j in "${flag_list[@]}"
+        do
+            FLAG=$j
+            SKFlat.py -a $analyzer  -i WZTo3LNu_amcatnlo   -n 100 --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags $FLAG,RunPrompt  &
+	    SKFlat.py -a $analyzer  -i WZTo3LNu_amcatnlo   -n 100 --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags $FLAG &
+
+        done
+    done
+fi
+
+
 if [[ $1 == "" ]]; then
 
     declare  -a era_list=("2017")

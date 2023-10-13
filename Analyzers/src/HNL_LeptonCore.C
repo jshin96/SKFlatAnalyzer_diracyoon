@@ -583,13 +583,16 @@ bool HNL_LeptonCore::CheckLeptonFlavourForChannel(HNL_LeptonCore::Channel channe
   }
 
   
-  if(channel==MuMuMu  || channel==EEE || channel==EMuL ){
+  if(channel==MuMuMu  || channel==EEE || channel==EMuL || channel==MuEL){
     
     if( leps.size() != 3) return false;
     if(channel==MuMuMu && n_mu != 3) return false;
     if(channel==EEE && n_el != 3) return false;
     if(channel==EMuL&&  (n_el == 3  || n_mu == 3)) return false;
+    if(channel==MuEL&&  (n_el == 3  || n_mu == 3)) return false;
     
+    if(channel==EMuL&&  !(leps[0]->LeptonFlavour() == Lepton::ELECTRON)) return false;
+    if(channel==MuEL&&  !(leps[0]->LeptonFlavour() == Lepton::MUON))     return false;
     
     double lep1_ptcut= (channel==MuMuMu) ?   20.  : 25.;
     double lep2_ptcut= (channel==MuMuMu) ?   10   : 10.;
@@ -600,12 +603,16 @@ bool HNL_LeptonCore::CheckLeptonFlavourForChannel(HNL_LeptonCore::Channel channe
     return true;
   }
 
-  if(channel == MuMuMuMu || channel == EEEE || channel == EMuLL ) {
+  if(channel == MuMuMuMu || channel == EEEE || channel == EMuLL || channel == MuELL ) {
 
     if( leps.size() != 4) return false;
     if( channel==MuMuMuMu && n_mu != 4) return false;
     if( channel==EEEE && n_el != 4) return false;
-    if( channel == EMuLL && (n_mu == 0 || n_mu == 4)) return false;
+    if( channel == EMuLL && (n_mu == 4 || n_mu == 4)) return false;
+    if( channel == MuELL && (n_mu == 4 || n_mu == 4)) return false;
+    if(channel==EMuLL&&  !(leps[0]->LeptonFlavour() == Lepton::ELECTRON)) return false;
+    if(channel==MuELL&&  !(leps[0]->LeptonFlavour() == Lepton::MUON))     return false;
+
     
     double lep1_ptcut= (channel==MuMuMuMu) ?   20. : 25.;
     double lep2_ptcut= (channel==MuMuMuMu) ?   10. : 10.;

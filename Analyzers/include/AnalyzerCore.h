@@ -190,7 +190,7 @@ public:
   double GetCFWeightElectron(std::vector<Lepton* > leps ,  AnalyzerParameter param,bool ApplySF=true);
   double GetCFWeightElectron(vector<double> el_pt, vector<double> el_eta ,  AnalyzerParameter param, bool ApplySF=true);
   double GetShiftCFEl(Electron el) ;
-
+  double GetZMassShift(vector<Electron> Electrons) ;
   
   //// =================  BDT Functions AnalyzerCore_IDBDT.C ================= 
 

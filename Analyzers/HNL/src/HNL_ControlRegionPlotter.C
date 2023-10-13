@@ -10,13 +10,12 @@ void HNL_ControlRegionPlotter::initializeAnalyzer(){
 
 void HNL_ControlRegionPlotter::executeEvent(){
 
-
   if(!(_jentry%10000)) run_Debug=true;
   else run_Debug=false;
 
   Event ev = GetEvent();
 
-  vector<TString> LepIDs = {"HNL_ULID_"+GetYearString(),"HNTightV2","TopHN", "DefaultPOGTight"};
+  vector<TString> LepIDs = {"HNL_ULID_"+GetYearString()};//,"HNTightV2","TopHN", "DefaultPOGTight"};
   vector<HNL_LeptonCore::Channel> ChannelsToRun = {EE,MuMu,EMu,MuE};
   for (auto id: LepIDs){
 
