@@ -21,13 +21,19 @@ void HNL_SignalStudies::executeEvent(){
   FillTimer("START_EV");
 
   //==== Gen for genmatching
-  AnalyzerParameter param  = InitialiseHNLParameter("SignalStudy","UL");
-
+  AnalyzerParameter param  = InitialiseHNLParameter("SignalStudy");
+  
   Event ev = GetEvent();
-  double weight =SetupWeight(ev,param);
+  double weight = SetupWeight(ev,param);
+
+  //  cout << "param W = " << param.EventWeight() << " weight=" << weight << endl;
+  
+  if(_jentry > 10) return;
+
   if(MCSample.Contains("WGToLNuG")) weight *= 0.5;
 
   FillHist ("ObjectCount/NoCut", 1, weight, 2, 0., 2.,"");
+  return;
 
   TString process="";
   if(!IsData){
@@ -194,7 +200,6 @@ void HNL_SignalStudies::executeEvent(){
     Particle Z = *leps_veto[0] + *leps_veto[1];
     vector<TString>  IDList = {"HNTightV2",
                                "MVAID",
-                               "HNL_ULID_LF",
                                "HNL_ULID_2017"
     };
     for(auto i : IDList){

@@ -84,7 +84,13 @@ public:
   vector<FatJet>   All_FatJets;
   vector<Muon>     All_Muons;
   vector<Electron> All_Electrons;
+  Event _Event;
+
   vector<Gen>      All_Gens;
+  vector<LHE>      All_LHES;
+  LHE lhe_p0,lhe_p1,lhe_l0,lhe_l1,lhe_j0;
+  Gen gen_p0,gen_p1,gen_l0,gen_l1,gen_l0_dressed,gen_l1_dressed,gen_l0_bare,gen_l1_bare;
+
 
   Event GetEvent();
 
@@ -309,6 +315,9 @@ public:
   bool IsCF(Muon mu, std::vector<Gen> gens);
   bool HasPromptConv(Electron el);
 
+  void GetAFBGenParticles(const vector<Gen>& gens,Gen& parton0,Gen& parton1,Gen& l0,Gen& l1,int mode);
+  void GetAFBLHEParticles(const vector<LHE>& lhes,LHE& p0,LHE& p1,LHE& l0,LHE& l1,LHE& j0);
+
   vector<TString> GetGenList();
   vector<TString> GetGenListPlot();
 
@@ -320,6 +329,11 @@ public:
   bool HasHadronicAncestor(int TruthIdx, std::vector<Gen>& TruthColl);
   bool IsFinalPhotonSt23(std::vector<Gen>& TruthColl);
   bool IsSignalPID(int pid);
+  // ------ General HNL functions (HNL_LeptonCore.C)                                                                                              
+  inline bool IsSignal() const {
+    if(MCSample.Contains("TypeI")) return true;
+    return false;
+  }
 
   TString MatchGenPID(int PID, vector<Gen> gens, Gen gen);
   TString MatchGenDef(std::vector<Gen>& gens,const Lepton& Lep,bool DEBUG=false);
@@ -464,6 +478,7 @@ public:
   bool FindHEMElectron(Electron electron);
   double GetPrefireWeight(int sys);
   double GetPileUpWeight(int N_pileup, int syst);
+  double GetZ0Weight(double valx);
 
   //=====================
   //==== Tools
@@ -607,6 +622,9 @@ public:
   bool run_Debug,  PtOrderObj, TESTBDT;
   int nLog;
   string run_timestamp;
+
+  bool IsDYSample, IsTTSample;
+
 };
 
 

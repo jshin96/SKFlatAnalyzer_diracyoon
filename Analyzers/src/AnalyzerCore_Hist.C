@@ -91,10 +91,10 @@ double AnalyzerCore::FillFakeWeightHist(TString label, vector<Lepton *> Leps,Ana
 
     if(!ilep->PassLepID())  {
 
-      double FR = (ilep->LeptonFlavour()==Lepton::MUON) ? fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, param.Muon_FR_Key , param.FakeRateMethod, ilep->fEta(), ilep->PtMaxed(60.), ilep->LeptonFakeTagger() ) :  fakeEst->GetElectronFakeRate(param.Electron_Tight_ID, param.Electron_FR_Key,param.FakeRateMethod, ilep->fEta(), ilep->PtMaxed(60.),ilep->LeptonFakeTagger() );
+      double FR = (ilep->LeptonFlavour()==Lepton::MUON) ? fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, param.k.Muon_FR , param.FakeRateMethod, ilep->fEta(), ilep->PtMaxed(60.), ilep->LeptonFakeTagger() ) :  fakeEst->GetElectronFakeRate(param.Electron_Tight_ID, param.k.Electron_FR,param.FakeRateMethod, ilep->fEta(), ilep->PtMaxed(60.),ilep->LeptonFakeTagger() );
 
 
-      double FRFlav = (ilep->LeptonFlavour()==Lepton::MUON) ? fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, param.Muon_FR_Key , param.FakeRateMethod, ilep->fEta(), ilep->PtMaxed(60.), ilep->LeptonFakeTagger(),0) :  fakeEst->GetElectronFakeRate(param.Electron_Tight_ID,param.Electron_FR_Key,param.FakeRateMethod,ilep->fEta(), ilep->PtMaxed(60.), ilep->LeptonFakeTagger(), 0);
+      double FRFlav = (ilep->LeptonFlavour()==Lepton::MUON) ? fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, param.k.Muon_FR , param.FakeRateMethod, ilep->fEta(), ilep->PtMaxed(60.), ilep->LeptonFakeTagger(),0) :  fakeEst->GetElectronFakeRate(param.Electron_Tight_ID,param.k.Electron_FR,param.FakeRateMethod,ilep->fEta(), ilep->PtMaxed(60.), ilep->LeptonFakeTagger(), 0);
 
       if(run_Debug) cout << "!Tight Lep Type = " <<ilep->LeptonFakeTagger() << "  LFvsHFMVA = " << ilep->HNL_MVA_Fake("QCD_LFvsHF_v5") << " BvsC MVA = " << ilep->HNL_MVA_Fake("QCD_BvsC_v5")   << endl;
       if(run_Debug) cout << "!Tight Pt = " << ilep->PtMaxed(60.) << " pt = " << ilep->Pt() << " eta =  " << ilep->fEta() << " FR = " << FR << " FRFlav = " << FRFlav <<  endl;

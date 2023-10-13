@@ -39,14 +39,15 @@ void HNL_ChargeFlip::executeEvent(){
       param.DefName =  id+CFMethod;
       
       //// Do not include Xsec norm since looking to Add TT/DY samples in Eff
-      param.Weight_LumiNorm = false;
-      if(HasFlag("ScaleFactor"))param.Weight_LumiNorm = true;
-      param.Weight_SumW     = true;
-      param.Weight_PileUp   = true;
-      param.Weight_PreFire  = true;
-      param.Weight_kFactor  = false;
-      param.Weight_IDSF     = true;
-      param.Weight_TriggerSF= true;
+      param.Apply_Weight_LumiNorm = false;
+      if(HasFlag("ScaleFactor"))param.Apply_Weight_LumiNorm = true;
+      param.Apply_Weight_SumW     = true;
+      param.Apply_Weight_PileUp   = true;
+      param.Apply_Weight_PreFire  = true;
+      param.Apply_Weight_kFactor  = false;
+      param.Apply_Weight_IDSF     = true;
+      param.Apply_Weight_RECOSF     = true;
+      param.Apply_Weight_TriggerSF= true;
       
       param.FakeMethod   = "DATA";
       param.CFMethod     = "DATA";
@@ -54,12 +55,11 @@ void HNL_ChargeFlip::executeEvent(){
       
       param.Electron_Tight_ID = (id == "TopHN") ? "TopHNSST" :  id;
       param.Muon_Tight_ID     = (id == "TopHN") ? "TopHNT"   :  id;
-      //param.Electron_CF_Key  = "CFRate_Pt_EtaRegion_"+id;
-      param.Electron_CF_Key  = CFMethod+"_EtaRegion_"+id;
+      param.k.Electron_CF  = CFMethod+"_EtaRegion_"+id;
       if(id =="POGTight"){
 	param.Muon_Tight_ID   =    "POGTightWithTightIso";
 	param.Electron_Tight_ID  = "passPOGTight";
-	param.Electron_CF_Key  = CFMethod+"_EtaRegion_POGTight";
+	param.k.Electron_CF  = CFMethod+"_EtaRegion_POGTight";
       }
       executeEventFromParameter(param);
     }
@@ -80,7 +80,7 @@ and compare 3-1 and 3-2
 
 void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 
-  if(_jentry==0) PrintParam(param);
+  if(_jentry==0) param.PrintParameters();
   run_Debug = (_jentry%nLog==0);
 
   if(!PassMETFilter()) return;

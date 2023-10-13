@@ -25,7 +25,7 @@ void HNL_Validation::executeEvent(){
   if((_jentry==0)){
     // Print out trigger info in HNL_LeptonCore::initializeAnalyzer                                                                                            
     TriggerPrintOut(GetEvent());
-    PrintParam(param_signal);
+    param_signal.PrintParameters();
   }
   if(run_Debug) cout << "HNL_Validation::executeEvent " << endl;
   

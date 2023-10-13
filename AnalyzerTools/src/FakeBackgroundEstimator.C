@@ -275,7 +275,7 @@ double FakeBackgroundEstimator::GetWeight(vector<Lepton *> lepptrs, AnalyzerPara
 
       double this_pt = el->Pt();
       //      if(param.Electron_UsePtCone) this_pt = el->PtCone();
-      this_fr = GetElectronFakeRate(param.Electron_FR_ID, param.Electron_FR_Key,param.FakeRateMethod, fabs(el->scEta()), this_pt, sys);
+      this_fr = GetElectronFakeRate(param.Electron_FR_ID, param.k.Electron_FR,param.FakeRateMethod, fabs(el->scEta()), this_pt, sys);
       this_weight *= -1.*this_fr/(1.-this_fr);
       FRs.push_back(this_fr);
     }
@@ -286,7 +286,7 @@ double FakeBackgroundEstimator::GetWeight(vector<Lepton *> lepptrs, AnalyzerPara
       
       double this_pt = mu->Pt();
       //if(param.Muon_UsePtCone) this_pt = mu->PtCone();
-      this_fr = GetMuonFakeRate(param.Muon_FR_ID, param.Muon_FR_Key, param.FakeRateMethod, fabs(mu->Eta()), this_pt, sys);
+      this_fr = GetMuonFakeRate(param.Muon_FR_ID, param.k.Muon_FR, param.FakeRateMethod, fabs(mu->Eta()), this_pt, sys);
       this_weight *= -1.*this_fr/(1.-this_fr);
       FRs.push_back(this_fr);
     }
@@ -318,8 +318,8 @@ double FakeBackgroundEstimator::GetFullWeight(vector<Lepton *> lepptrs, Analyzer
       isT.push_back(el->PassID(param.Electron_Tight_ID));
 
       double this_pt = el->Pt();
-      this_fr = GetElectronFakeRate(param.Electron_FR_ID, param.Electron_FR_Key,param.FakeRateMethod, fabs(el->scEta()), this_pt, sys);
-      this_pr = GetElectronPromptRate(param.Electron_FR_ID, param.Electron_FR_Key, fabs(el->scEta()), this_pt, sys);
+      this_fr = GetElectronFakeRate(param.Electron_FR_ID, param.k.Electron_FR,param.FakeRateMethod, fabs(el->scEta()), this_pt, sys);
+      this_pr = GetElectronPromptRate(param.Electron_FR_ID, param.k.Electron_FR, fabs(el->scEta()), this_pt, sys);
       //this_weight *= -1.*this_fr/(1.-this_fr);
       FRs.push_back(this_fr);
       PRs.push_back(this_pr);
@@ -330,8 +330,8 @@ double FakeBackgroundEstimator::GetFullWeight(vector<Lepton *> lepptrs, Analyzer
       isT.push_back(mu->PassID(param.Muon_Tight_ID) );
       double this_pt = mu->Pt();
       //if(param.Muon_UsePtCone) this_pt = mu->PtCone();                                                              
-      this_fr = GetMuonFakeRate(param.Muon_FR_ID, param.Muon_FR_Key, param.FakeRateMethod, fabs(mu->Eta()), this_pt, sys);
-      this_pr = GetMuonPromptRate(param.Muon_FR_ID, param.Muon_FR_Key, fabs(mu->Eta()), this_pt, sys);
+      this_fr = GetMuonFakeRate(param.Muon_FR_ID, param.k.Muon_FR, param.FakeRateMethod, fabs(mu->Eta()), this_pt, sys);
+      this_pr = GetMuonPromptRate(param.Muon_FR_ID, param.k.Muon_FR, fabs(mu->Eta()), this_pt, sys);
       //this_weight *= -1.*this_fr/(1.-this_fr);
       FRs.push_back(this_fr);
       PRs.push_back(this_pr);
