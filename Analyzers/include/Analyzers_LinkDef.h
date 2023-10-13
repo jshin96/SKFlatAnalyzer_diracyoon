@@ -21,8 +21,8 @@
 #pragma link C++ class SkimTree_DileptonBDT+;
 #pragma link C++ class SkimTree_BDT+;
 #pragma link C++ class SkimTree_EventSkim+;
+#pragma link C++ class SkimTree_EGammaTnP+;
 #pragma link C++ class SkimTree_HighPt1LJets+;
-#pragma link C++ class SkimTree_HNElectronOpt+;
 #pragma link C++ class SkimTree_HNFake+;
 #pragma link C++ class SkimTree_HNFakeBDT+;
 #pragma link C++ class SkimTree_HNMultiLep+;

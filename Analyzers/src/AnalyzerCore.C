@@ -4,14 +4,12 @@ AnalyzerCore::AnalyzerCore(){
 
   outfile = NULL;
 
-  mcCorr = new MCCorrection();
-  puppiCorr = new PuppiSoftdropMassCorr();
-
-  fakeEst = new FakeBackgroundEstimator();
-  cfEst = new CFBackgroundEstimator();
-  pdfReweight = new PDFReweight();
-
-  muonGE = new GeneralizedEndpoint();
+  mcCorr          = new MCCorrection();
+  puppiCorr       = new PuppiSoftdropMassCorr();
+  fakeEst         = new FakeBackgroundEstimator();
+  cfEst           = new CFBackgroundEstimator();
+  pdfReweight     = new PDFReweight();
+  muonGE          = new GeneralizedEndpoint();
   muonGEScaleSyst = new GEScaleSyst();
 
   JECSources = {"AbsoluteStat","AbsoluteScale","AbsoluteFlavMap","AbsoluteMPFBias","Fragmentation","SinglePionECAL","SinglePionHCAL","FlavorQCD","TimePtEta","RelativeJEREC1","RelativeJEREC2","RelativeJERHF","RelativePtBB","RelativePtEC1","RelativePtEC2","RelativePtHF","RelativeBal","RelativeSample","RelativeFSR","RelativeStatFSR","RelativeStatEC","RelativeStatHF","PileUpDataMC","PileUpPtRef","PileUpPtBB","PileUpPtEC1","PileUpPtEC2","PileUpPtHF","FlavorZJet","FlavorPhotonJet","FlavorPureGluon","FlavorPureQuark","FlavorPureCharm","FlavorPureBottom","Total"};
@@ -25,7 +23,7 @@ AnalyzerCore::AnalyzerCore(){
   TimingMap.clear();
   TimingMap["start"] = std::clock();
 
-  //  double time_elapsed_ms = 1000.0 * (c_end-c_start) / CLOCKS_PER_SEC;
+  //double time_elapsed_ms = 1000.0 * (c_end-c_start) / CLOCKS_PER_SEC;
   //std::cout << "CPU time used: " << time_elapsed_ms / 1000.0 << " s\n";
 
 
@@ -1861,11 +1859,23 @@ void AnalyzerCore::beginEvent(){
   if(Analyzer.Contains("BDT") && Analyzer.Contains("SkimTree")) PtOrderObj=false;
   else PtOrderObj=true;
 
-  if(!IsData) All_Gens = GetGens();  
+  if(!IsData)  {
+    All_Gens = GetGens();  
+    All_LHES = GetLHEs();
+    if(!IsSignal() && (MCSample.Contains("DYJets")||MCSample.Contains("TTLL"))){
+      GetAFBLHEParticles(All_LHES,lhe_p0,lhe_p1,lhe_l0,lhe_l1,lhe_j0);
+      GetAFBGenParticles(All_Gens,gen_p0,gen_p1,gen_l0,gen_l1,3);
+      GetAFBGenParticles(All_Gens,gen_p0,gen_p1,gen_l0_dressed,gen_l1_dressed,1);
+      GetAFBGenParticles(All_Gens,gen_p0,gen_p1,gen_l0_bare,gen_l1_bare,0);
+
+    }
+  }
   All_Jets      = GetAllJets();
   All_FatJets   = GetAllFatJets();
   All_Muons     = GetAllMuons();
   All_Electrons = GetAllElectrons();
+  _Event = GetEvent();
+  
 
   return;
 }

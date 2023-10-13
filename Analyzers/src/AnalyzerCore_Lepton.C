@@ -22,16 +22,16 @@ double AnalyzerCore::GetMuonSFEventWeight(std::vector<Muon> muons,AnalyzerParame
     else if(param.syst_ == AnalyzerParameter::MuonISOSFUp) SystDir_MuonISOSF  = +1;
     else if(param.syst_ == AnalyzerParameter::MuonISOSFDown) SystDir_MuonISOSF  = -1;
     
-    double this_idsf   = mcCorr->MuonID_SF (param.Muon_ID_SF_Key,  this_eta, this_pt,SystDir_MuonIDSF);
-    double this_isosf  = mcCorr->MuonISO_SF(param.Muon_ISO_SF_Key, this_eta, this_pt,SystDir_MuonISOSF);
+    double this_idsf   = mcCorr->MuonID_SF (param.k.Muon_ID_SF,  this_eta, this_pt,SystDir_MuonIDSF);
+    double this_isosf  = mcCorr->MuonISO_SF(param.k.Muon_ISO_SF, this_eta, this_pt,SystDir_MuonISOSF);
     
     if(!HasFlag("NoIDSF")) this_weight *= this_idsf*this_isosf;
     
     if(param.DEBUG) cout << "GetMuonSFEventWeight this_idsf=" << this_idsf << " this_isosf=" << this_isosf  << endl;
     
-    double reco_pt = (param.Muon_RECO_SF_Key  == "HighPtMuonRecoSF") ?  MiniAODP : this_pt;
+    double reco_pt = (param.k.Muon_RECO_SF  == "HighPtMuonRecoSF") ?  MiniAODP : this_pt;
     
-    double this_recosf = mcCorr->MuonReco_SF(param.Muon_RECO_SF_Key, this_eta, reco_pt,SystDir_MuonRecoSF);
+    double this_recosf = mcCorr->MuonReco_SF(param.k.Muon_RECO_SF, this_eta, reco_pt,SystDir_MuonRecoSF);
     
     this_weight *= this_recosf;
     
@@ -106,7 +106,7 @@ double AnalyzerCore::GetLeptonSFEventWeight(std::vector<Lepton *> leps, Analyzer
     for (auto lep: leps){
       if(lep->LeptonFlavour() == Lepton::ELECTRON){
         double this_recosf  = mcCorr->ElectronReco_SF(lep->Eta(),lep->Pt(), SystDir_ElectronRecoSF);
-        double this_idsf    = mcCorr->ElectronID_SF(param.Electron_ID_SF_Key, lep->Eta(), lep->Pt(), SystDir_ElectronIDSF);
+        double this_idsf    = mcCorr->ElectronID_SF(param.k.Electron_ID_SF, lep->Eta(), lep->Pt(), SystDir_ElectronIDSF);
 
 	this_weight *= this_recosf*this_idsf;
       }
@@ -115,14 +115,14 @@ double AnalyzerCore::GetLeptonSFEventWeight(std::vector<Lepton *> leps, Analyzer
 	double this_pt  = lep->Pt();
         double this_eta = lep->Eta();
 
-	double this_idsf   = mcCorr->MuonID_SF (param.Muon_ID_SF_Key,  this_eta, this_pt,SystDir_MuonIDSF);
-        double this_isosf  = mcCorr->MuonISO_SF(param.Muon_ISO_SF_Key, this_eta, this_pt,SystDir_MuonISOSF);
+	double this_idsf   = mcCorr->MuonID_SF (param.k.Muon_ID_SF,  this_eta, this_pt,SystDir_MuonIDSF);
+        double this_isosf  = mcCorr->MuonISO_SF(param.k.Muon_ISO_SF, this_eta, this_pt,SystDir_MuonISOSF);
 
 	this_weight *= this_idsf*this_isosf;
 
 	//double reco_pt = (param.Muon_RECO_SF_Key  == "HighPtMuonRecoSF") ?  MiniAODP : this_pt;                                                                                                                                                                                                                                                                                                                                        
         double reco_pt =this_pt;
-        double this_recosf = mcCorr->MuonReco_SF(param.Muon_RECO_SF_Key, this_eta, reco_pt,SystDir_MuonRecoSF);
+        double this_recosf = mcCorr->MuonReco_SF(param.k.Muon_RECO_SF, this_eta, reco_pt,SystDir_MuonRecoSF);
 
 	this_weight *= this_recosf;
 
@@ -157,7 +157,7 @@ double AnalyzerCore::GetElectronSFEventWeight(std::vector<Electron> electrons, A
 
       double pt = (el.Pt() < 15) ? 16 : el.Pt();
       double this_recosf  = mcCorr->ElectronReco_SF(el.scEta(),pt, SystDir_ElectronRecoSF);
-      double this_idsf    = mcCorr->ElectronID_SF(param.Electron_ID_SF_Key, el.scEta(), pt, SystDir_ElectronIDSF);
+      double this_idsf    = mcCorr->ElectronID_SF(param.k.Electron_ID_SF, el.scEta(), pt, SystDir_ElectronIDSF);
 
       this_weight *= this_recosf*this_idsf;
 

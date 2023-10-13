@@ -1158,7 +1158,7 @@ void HNL_LeptonIDBDTStudies::MakeBDTPlots(AnalyzerParameter param,HNL_LeptonCore
     
     if(ElectronColl[0].PassID("passPOGTight") && ElectronColl[1].PassID("passPOGTight") ){
       AnalyzerParameter paramPOG=param;
-      paramPOG.Electron_ID_SF_Key = "passTightID";
+      paramPOG.k.Electron_ID_SF = "passTightID";
       double POGSF = GetElectronSFEventWeight(ElectronColl,paramPOG);
       if(!IsData)  POGSF*= 0.95;
       FillHist(channel_string+"/"+ID+"/llmass_"+channel_string, GetLLMass(LeptonColl), weight_ll*POGSF, 70, 50., 120);

@@ -117,3 +117,28 @@ bool AnalyzerCore::PassMETFilter(){
   return true;
 
 }
+
+
+double AnalyzerCore::GetZ0Weight(double valx){
+  if(IsDATA) return 1.;
+  double rt=1.;
+  if(GetEra()=="2016preVFP"){
+    double data_val=TMath::Gaus(valx,2.46312e-01,3.50458e+00,true);
+    double mc_val=TMath::Gaus(valx,9.28612e-01,3.65203e+00,true);
+    rt=data_val/mc_val;
+  }else if(GetEra()=="2016postVFP"){
+    double data_val=TMath::Gaus(valx,2.41640e-01,3.63717e+00,true);
+    double mc_val=TMath::Gaus(valx,9.30108e-01,3.65454e+00,true);
+    rt=data_val/mc_val;
+  }else if(GetEra()=="2017"){
+    double data_val=TMath::Gaus(valx,3.81830e-01,3.67614e+00,true);
+    double mc_val=TMath::Gaus(valx,8.19642e-01,3.50992e+00,true);
+    rt=data_val/mc_val;
+  }else if(GetEra()=="2018"){
+    double data_val=TMath::Gaus(valx,-1.36030e-01,3.41464e+00,true);
+    double mc_val=TMath::Gaus(valx,3.58575e-02,3.50953e+00,true);
+    rt=data_val/mc_val;
+  } 
+  if(rt>2) rt=2;
+  return rt;
+}

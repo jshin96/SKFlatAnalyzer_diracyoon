@@ -32,7 +32,8 @@ if [[ $1 == "DY" ]]; then
 
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -i DYTypeI_DF_M100_private  -n 10  --nmax 500   -e ${i} --skim SkimTree_HNMultiLepBDT &
+        #SKFlat.py -a $analyzer  -i DYTypeI_DF_M100_private  -n 10  --nmax 500   -e ${i} --skim SkimTree_HNMultiLepBDT &
+	SKFlat.py -a $analyzer  -i DYJets  -n 10  --nmax 500   -e ${i} --skim SkimTree_DileptonBDT &
     done
 
 fi

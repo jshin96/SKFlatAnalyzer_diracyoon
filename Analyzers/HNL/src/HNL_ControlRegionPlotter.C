@@ -16,7 +16,7 @@ void HNL_ControlRegionPlotter::executeEvent(){
 
   Event ev = GetEvent();
 
-  vector<TString> LepIDs = {"HNL_ULID_"+GetYearString(),"HNTightV2","TopHN", "DefaultPOGTight"};
+  vector<TString> LepIDs = {"HNL_ULID_"+GetYearString(),"HNTightV2","TopHNT", "DefaultPOGTight"};
   vector<HNL_LeptonCore::Channel> ChannelsToRun = {EE,MuMu,EMu,MuE};
   for (auto id: LepIDs){
 
@@ -25,21 +25,21 @@ void HNL_ControlRegionPlotter::executeEvent(){
     param_signal.Name    =  id;
     param_signal.DefName =  id;
 
-    param_signal.Weight_LumiNorm = true;
-    param_signal.Weight_SumW     = true;
-    param_signal.Weight_PileUp   = true;
-    param_signal.Weight_PreFire  = true;
-    param_signal.Weight_kFactor  = true;
-    param_signal.Weight_IDSF     = true;
-    param_signal.Weight_TriggerSF= true;
+    param_signal.Apply_Weight_LumiNorm = true;
+    param_signal.Apply_Weight_SumW     = true;
+    param_signal.Apply_Weight_PileUp   = true;
+    param_signal.Apply_Weight_PreFire  = true;
+    param_signal.Apply_Weight_kFactor  = true;
+    param_signal.Apply_Weight_IDSF     = true;
+    param_signal.Apply_Weight_TriggerSF= true;
     
     param_signal.FakeMethod   = "DATA";
     param_signal.CFMethod     = "DATA";
     param_signal.ConvMethod   = "MC";
 
     /// IDs
-    param_signal.Electron_Tight_ID = (id == "TopHN") ? "TopHNSST" :  id;
-    param_signal.Muon_Tight_ID     = (id == "TopHN") ? "TopHNT"   :  id;
+    param_signal.Electron_Tight_ID = id;
+    param_signal.Muon_Tight_ID     = id;
     
     if(id=="HNTightV2" )        param_signal.Muon_FR_ID        = "HNLooseV1";
     if(id=="TopHN" )            param_signal.Muon_FR_ID        = "TopHNL"; 
@@ -51,44 +51,43 @@ void HNL_ControlRegionPlotter::executeEvent(){
 
     if(id=="HNTightV2" ) {
       param_signal.FakeRateMethod       = "PtCone";
-      param_signal.Muon_FR_Key          = "AwayJetPt40";
-      param_signal.Electron_FR_Key      = "AwayJetPt40";
+      param_signal.k.Muon_FR            = "AwayJetPt40";
+      param_signal.k.Electron_FR        = "AwayJetPt40";
     }
     if(id=="TopHN" ) {
       param_signal.FakeRateMethod       = "PtConeMini";
-      param_signal.Muon_FR_Key          = "FR_cent";
-      param_signal.Electron_FR_Key      = "FR_cent";
+      param_signal.k.Muon_FR            = "FR_cent";
+      param_signal.k.Electron_FR        = "FR_cent";
     }
     if(id =="DefaultPOGTight"){
       param_signal.FakeRateMethod       = "PtCone";
-      param_signal.Muon_FR_Key          = "AwayJetPt40";
-      param_signal.Electron_FR_Key      = "AwayJetPt40";
+      param_signal.k.Muon_FR            = "AwayJetPt40";
+      param_signal.k.Electron_FR        = "AwayJetPt40";
 
     }
     if(id.Contains("HNL_ULID")){
       param_signal.FakeRateMethod       = "BDTFlavour";
-      param_signal.Muon_FR_Key          = "FR_cent";
-      param_signal.Electron_FR_Key      = "FR_cent";
+      param_signal.k.Muon_FR            = "FR_cent";
+      param_signal.k.Electron_FR        = "FR_cent";
     }
     //// Correction
-    param_signal.Electron_ID_SF_Key = "pass"+id;
-    param_signal.Muon_ID_SF_Key     = "NUM_"+id;
-    param_signal.Muon_RECO_SF_Key   = "MuonRecoSF";
+    param_signal.k.Electron_ID_SF     = "pass"+id;
+    param_signal.k.Muon_ID_SF         = "NUM_"+id;
+    param_signal.k.Muon_RECO_SF       = "MuonRecoSF";
 
     if(id =="DefaultPOGTight"){
-      param_signal.Muon_ID_SF_Key  =    "NUM_TightID_DEN_TrackerMuons";
-      param_signal.Muon_ISO_SF_Key =    "NUM_TightRelIso_DEN_TightIDandIPCut";
-      param_signal.Muon_Tight_ID   =    "POGTightWithTightIso";
-      param_signal.Electron_ID_SF_Key = "passTightID";
+      param_signal.Muon_Tight_ID      =    "POGTightWithTightIso";
       param_signal.Electron_Tight_ID  = "passPOGTight";
       param_signal.TriggerSelection   = "POGSglLep";
+      
+      param_signal.k.Muon_ID_SF       =    "NUM_TightID_DEN_TrackerMuons";
+      param_signal.k.Muon_ISO_SF      =    "NUM_TightRelIso_DEN_TightIDandIPCut";
+      param_signal.k.Electron_ID_SF   = "passTightID";
     }
-    
     else{
       /// Trigger Key
       param_signal.TriggerSelection   = "Dilep";
     }
-
 
     ///// Run command
     vector<TString> CRToRun;
@@ -112,7 +111,7 @@ void HNL_ControlRegionPlotter::executeEvent(){
       param_signal.Muon_Tight_ID = id;
       param_signal.Name = param_signal_name + id;
       param_signal.DefName = param_signal_name + id;
-      param_signal.Electron_ID_SF_Key = "Default";
+      param_signal.k.Electron_ID_SF = "Default";
       param_signal.Muon_FR_ID = "HNL_ULID_Baseline";
       param_signal.Electron_FR_ID = "HNL_ULID_Baseline";
       RunControlRegions(ChannelsToRun,param_signal , {"BDTCheck"});
@@ -130,7 +129,7 @@ void HNL_ControlRegionPlotter::executeEvent(){
 void HNL_ControlRegionPlotter::RunControlRegions(vector<HNL_LeptonCore::Channel> ChannelsToRun,AnalyzerParameter param, vector<TString> CRs){
 
 
-  if(_jentry==0) PrintParam(param);
+  if(_jentry==0) param.PrintParameters();
   run_Debug = (_jentry%nLog==0);
 
   if(run_Debug) cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;

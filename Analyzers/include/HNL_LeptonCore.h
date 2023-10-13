@@ -17,16 +17,11 @@ class HNL_LeptonCore : public AnalyzerCore {
     y2016B,y2016C,y2016D,y2016E,y2016F,y2016G,y2016H,
     y2017B,y2017C,y2017D,y2017E,y2017F,
     y2018A,y2018B,y2018C,y2018D,
-    y2016MC,
-    y2017MC,
-    y2018MC,
+    y2016MC, y2017MC, y2018MC,
     yUL2016B,yUL2016C,yUL2016D,yUL2016E,yUL2016F,yUL2016Flate,yUL2016G,yUL2016H,
     yUL2017B,yUL2017C,yUL2017D,yUL2017E,yUL2017F,
     yUL2018A,yUL2018B,yUL2018C,yUL2018D,
-    yUL2016MCAPV,
-    yUL2016MCnonAPV,
-    yUL2017MC,
-  yUL2018MC
+    yUL2016MCAPV, yUL2016MCnonAPV, yUL2017MC,  yUL2018MC
   };
 
 
@@ -79,9 +74,8 @@ class HNL_LeptonCore : public AnalyzerCore {
 
 
   // ----- SETUP ANALYZER
-  AnalyzerParameter InitialiseHNLParameters( TString analysis_tag, vector<vector<TString> >  param_vec);
-  AnalyzerParameter InitialiseHNLParameter(TString s_setup="", TString tag="");  
-
+  AnalyzerParameter InitialiseHNLParameter(TString s_setup, TString tag="");  
+  AnalyzerParameter SetupHNLParameter(TString s_setup_version, TString tag="");
   
 
 
@@ -114,8 +108,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   Particle GetvMET(TString METType);
   Particle GetvCorrMET(TString METType, AnalyzerParameter param, Particle METUncorr);
 
-  
-  
+   
 
   //---- BDT Related    HNL_LeptonCore_BDT                                                                                                                                                                                           
   void initializeAnalyzer();
@@ -125,6 +118,20 @@ class HNL_LeptonCore : public AnalyzerCore {
   double HNLZvtxSF(HNL_LeptonCore::Channel ch);
   bool PassHEMVeto(std::vector<Lepton *> leps);
   
+  double GetDYWeakWeight(double mass);
+
+  // ZptWeight
+  void SetupZptWeight();
+  double GetZptWeight(double mass,double rapidity,double pt,TString opt="GYM");
+  void DeleteZptWeight();
+  TF1* fZptWeightG=NULL;
+  vector<TF1*> fZptWeightY;
+  TAxis* fZptWeightYaxis=NULL;
+  vector<TF1*> fZptWeightM;
+  TAxis* fZptWeightMaxis=NULL;
+
+
+
 
   // HNL PLOTS  HNL_LeptonCore_Plotter                                                                                                                                                            
   void FillAllMuonPlots(TString label , TString cut,  std::vector<Muon> muons, double w);
@@ -195,13 +202,8 @@ class HNL_LeptonCore : public AnalyzerCore {
   Float_t ev_bdt_M_W2_jj, ev_bdt_M_N1_l1jj, ev_bdt_M_N2_l2jj, ev_bdt_M_W1_lljj;
   Float_t w_tot;
 
-  // ------ General HNL functions (HNL_LeptonCore.C)
-  inline bool IsSignal() const { 
-    if(MCSample.Contains("TypeI")) return true; 
-    return false;
-  }
+
   double MergeMultiMC(vector<TString> vec, TString Method);
-  void PrintParam(AnalyzerParameter param); 
   void OutCutFlow(TString lab, double w);
   TString QToString(HNL_LeptonCore::ChargeType q);
   bool CheckLeptonFlavourForChannel(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps);
@@ -271,6 +273,8 @@ class HNL_LeptonCore : public AnalyzerCore {
   //================                                                                                                                                                                                        
   //==== Functions                                                                                                                                                                                          
   //================                                                                                                                                                                                        
+
+  bool    IsExists(TString filepath);
   TString GetPtLabel(Muon mu);
   TString GetEtaLabel(Muon mu);
 
@@ -343,6 +347,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   TH1D *hist_PUReweight_Down;
 
   double weight_PU, weight_PU_Up, weight_PU_Down;
+
 
 };
 
