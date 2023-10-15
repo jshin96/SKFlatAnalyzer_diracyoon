@@ -31,14 +31,14 @@ void HNL_LeptonFakeStudy::executeEvent(){
 
   
   
-  std::vector<Electron> loose_electrons     = GetElectrons( param,"HNLooseV4" , 10, 2.5,false) ;
-  std::vector<Muon>     loose_muons         = GetMuons    ( param,"HNLooseV1", 5, 2.4, false);
+  std::vector<Electron> loose_electrons     = SelectElectrons( param,"HNLooseV4" , 10, 2.5) ;
+  std::vector<Muon>     loose_muons         = SelectMuons    ( param,"HNLooseV1", 5, 2.4);
   
-  std::vector<Jet> jets_tmp     = GetJets   ( param, "tight", 30., 2.7);
+  std::vector<Jet> jets_tmp     = SelectJets   ( param, "tight", 30., 2.7);
 
   std::vector<Lepton *> leps = MakeLeptonPointerVector(loose_electrons);
 
-  Particle METv = GetvMET("PuppiT1xyULCorr");
+  Particle METv = GetvMET("PuppiT1xyULCorr",param);
 
   std::vector<Jet> jets; 
   for(unsigned int ijet =0; ijet < jets_tmp.size(); ijet++){
@@ -178,32 +178,32 @@ void HNL_LeptonFakeStudy::executeEvent(){
 	    
 	    else{
 	    
-	    if(el.CloseJet_FlavourInt()==0) FillEventCutflowAll("SSElectron", "LF_Fake_type", weight, lables,lep_fake_tag);
-	    if(el.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSElectron", "HFC_Fake_type", weight, lables,lep_fake_tag);
-	    if(el.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSElectron", "HFB_Fake_type", weight, lables,lep_fake_tag);
-	    if(el.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSElectron", "HF_Fake_type", weight, lables,lep_fake_tag);
-	    if(el.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSElectron", "HF_Fake_type", weight, lables,lep_fake_tag);
+	    if(el.CloseJet_FlavourInt()==0) FillCutflow("SSElectron", "LF_Fake_type", weight, lables,lep_fake_tag);
+	    if(el.CloseJet_FlavourInt()==4) FillCutflow("SSElectron", "HFC_Fake_type", weight, lables,lep_fake_tag);
+	    if(el.CloseJet_FlavourInt()==5) FillCutflow("SSElectron", "HFB_Fake_type", weight, lables,lep_fake_tag);
+	    if(el.CloseJet_FlavourInt()==4) FillCutflow("SSElectron", "HF_Fake_type", weight, lables,lep_fake_tag);
+	    if(el.CloseJet_FlavourInt()==5) FillCutflow("SSElectron", "HF_Fake_type", weight, lables,lep_fake_tag);
 	    
 	    if(jets.size() == 0) {
-	    if(el.CloseJet_FlavourInt()==0) FillEventCutflowAll("SSElectron0j", "LF_Fake_type", weight, lables,lep_fake_tag);
-	    if(el.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSElectron0j", "HFC_Fake_type", weight, lables,lep_fake_tag);
-	    if(el.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSElectron0j", "HFB_Fake_type", weight, lables,lep_fake_tag);
-	    if(el.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSElectron0j", "HF_Fake_type", weight, lables,lep_fake_tag);
-	    if(el.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSElectron0j", "HF_Fake_type", weight, lables,lep_fake_tag);
+	    if(el.CloseJet_FlavourInt()==0) FillCutflow("SSElectron0j", "LF_Fake_type", weight, lables,lep_fake_tag);
+	    if(el.CloseJet_FlavourInt()==4) FillCutflow("SSElectron0j", "HFC_Fake_type", weight, lables,lep_fake_tag);
+	    if(el.CloseJet_FlavourInt()==5) FillCutflow("SSElectron0j", "HFB_Fake_type", weight, lables,lep_fake_tag);
+	    if(el.CloseJet_FlavourInt()==4) FillCutflow("SSElectron0j", "HF_Fake_type", weight, lables,lep_fake_tag);
+	    if(el.CloseJet_FlavourInt()==5) FillCutflow("SSElectron0j", "HF_Fake_type", weight, lables,lep_fake_tag);
 	    }
 	    else if(jets.size() == 1) {
-	    if(el.CloseJet_FlavourInt()==0) FillEventCutflowAll("SSElectron1j", "LF_Fake_type", weight, lables,lep_fake_tag);
-	    if(el.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSElectron1j", "HFC_Fake_type", weight, lables,lep_fake_tag);
-	    if(el.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSElectron1j", "HFB_Fake_type", weight, lables,lep_fake_tag);
-	    if(el.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSElectron1j", "HF_Fake_type", weight, lables,lep_fake_tag);
-	    if(el.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSElectron1j", "HF_Fake_type", weight, lables,lep_fake_tag);
+	    if(el.CloseJet_FlavourInt()==0) FillCutflow("SSElectron1j", "LF_Fake_type", weight, lables,lep_fake_tag);
+	    if(el.CloseJet_FlavourInt()==4) FillCutflow("SSElectron1j", "HFC_Fake_type", weight, lables,lep_fake_tag);
+	    if(el.CloseJet_FlavourInt()==5) FillCutflow("SSElectron1j", "HFB_Fake_type", weight, lables,lep_fake_tag);
+	    if(el.CloseJet_FlavourInt()==4) FillCutflow("SSElectron1j", "HF_Fake_type", weight, lables,lep_fake_tag);
+	    if(el.CloseJet_FlavourInt()==5) FillCutflow("SSElectron1j", "HF_Fake_type", weight, lables,lep_fake_tag);
 	  }
 	  else{
-	  if(el.CloseJet_FlavourInt()==0) FillEventCutflowAll("SSElectron2j", "LF_Fake_type", weight, lables,lep_fake_tag);
-	  if(el.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSElectron2j", "HFC_Fake_type", weight, lables,lep_fake_tag);
-	    if(el.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSElectron2j", "HFB_Fake_type", weight, lables,lep_fake_tag);
-	    if(el.CloseJet_FlavourInt()==4) FillEventCutflowAll("SSElectron2j", "HF_Fake_type", weight, lables,lep_fake_tag);
-	    if(el.CloseJet_FlavourInt()==5) FillEventCutflowAll("SSElectron2j", "HF_Fake_type", weight, lables,lep_fake_tag);
+	  if(el.CloseJet_FlavourInt()==0) FillCutflow("SSElectron2j", "LF_Fake_type", weight, lables,lep_fake_tag);
+	  if(el.CloseJet_FlavourInt()==4) FillCutflow("SSElectron2j", "HFC_Fake_type", weight, lables,lep_fake_tag);
+	    if(el.CloseJet_FlavourInt()==5) FillCutflow("SSElectron2j", "HFB_Fake_type", weight, lables,lep_fake_tag);
+	    if(el.CloseJet_FlavourInt()==4) FillCutflow("SSElectron2j", "HF_Fake_type", weight, lables,lep_fake_tag);
+	    if(el.CloseJet_FlavourInt()==5) FillCutflow("SSElectron2j", "HF_Fake_type", weight, lables,lep_fake_tag);
 	  }
 	  
 	  if(el.IsBB()){
@@ -224,7 +224,7 @@ void HNL_LeptonFakeStudy::executeEvent(){
   
   if(useevent40){
 
-    std::vector<Jet> jets_tmp     = GetJets   ( param, "tight", 20., 5.);
+    std::vector<Jet> jets_tmp     = SelectJets   ( param, "tight", 20., 5.);
 
     JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
     std::vector<Jet> BJetColl    = SelectBJets(param, jets_tmp , param_jets);
@@ -502,11 +502,11 @@ void HNL_LeptonFakeStudy::executeEvent(){
       
       else{
 	
-	if(el.CloseJet_FlavourInt()==0) FillEventCutflowAll("QCDReg_Electron", "LF_Fake_type", weight, lables,lep_fake_tag);
-	if(el.CloseJet_FlavourInt()==4) FillEventCutflowAll("QCDReg_Electron", "HFC_Fake_type", weight, lables,lep_fake_tag);
-	if(el.CloseJet_FlavourInt()==5) FillEventCutflowAll("QCDReg_Electron", "HFB_Fake_type", weight, lables,lep_fake_tag);
-	if(el.CloseJet_FlavourInt()==4) FillEventCutflowAll("QCDReg_Electron", "HF_Fake_type", weight, lables,lep_fake_tag);
-	if(el.CloseJet_FlavourInt()==5) FillEventCutflowAll("QCDReg_Electron", "HF_Fake_type", weight, lables,lep_fake_tag);
+	if(el.CloseJet_FlavourInt()==0) FillCutflow("QCDReg_Electron", "LF_Fake_type", weight, lables,lep_fake_tag);
+	if(el.CloseJet_FlavourInt()==4) FillCutflow("QCDReg_Electron", "HFC_Fake_type", weight, lables,lep_fake_tag);
+	if(el.CloseJet_FlavourInt()==5) FillCutflow("QCDReg_Electron", "HFB_Fake_type", weight, lables,lep_fake_tag);
+	if(el.CloseJet_FlavourInt()==4) FillCutflow("QCDReg_Electron", "HF_Fake_type", weight, lables,lep_fake_tag);
+	if(el.CloseJet_FlavourInt()==5) FillCutflow("QCDReg_Electron", "HF_Fake_type", weight, lables,lep_fake_tag);
 	
 	if(el.IsBB()){
 	  FillHist( "MVA_Loose/Lepton_MVA"   , el.HNL_MVA_Fake("v4") , weight, 100, -1., 1, "BDT score");

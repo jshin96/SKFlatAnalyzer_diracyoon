@@ -47,6 +47,19 @@ public:
   ~AnalyzerCore();
 
   virtual void initializeAnalyzer(){
+    IsDYSample=false;
+    IsTTSample=false;
+    if(MCSample.Contains("DYJets")||MCSample.Contains("ZToEE")||MCSample.Contains("ZToMuMu")||MCSample.Contains(TRegexp("DY[0-9]Jets"))) IsDYSample=true;
+    if(MCSample.Contains(TRegexp("TT[LJ][LJ]"))) IsTTSample=true;
+    if(IsSignal()) IsDYSample=false;
+  
+    cout << "AnalyzerCore::initializeAnalyzer IsDYSample=" << IsDYSample << endl;
+    cout << "AnalyzerCore::initializeAnalyzer IsTTSample=" << IsTTSample << endl;
+
+    run_Debug=false;
+    TESTBDT=false;
+    nLog=50000;
+
 
   };
 
@@ -95,14 +108,7 @@ public:
   Event GetEvent();
 
   std::vector<Electron> GetAllElectrons();
-  std::vector<Electron> GetElectrons(TString id, double ptmin, double fetamax, bool vetoHEM = false);
-  std::vector<Electron> GetElectrons(AnalyzerParameter param, TString id, double ptmin, double fetamax ,bool Run_Fake=false, bool vetoHEM=false);
-  std::vector<Electron> GetElectrons(AnalyzerParameter param  ,bool Run_Fake=false, bool vetoHEM = false);
-
   std::vector<Muon> GetAllMuons();
-  std::vector<Muon> GetMuons(TString id, double ptmin, double fetamax);
-  std::vector<Muon> GetMuons(AnalyzerParameter param, TString id, double ptmin, double fetamax,bool Run_Fake=false);
-  std::vector<Muon> GetMuons(AnalyzerParameter param,bool Run_Fake=false);
 
   //==== If TightIso is set, it calculate ptcone 
   //==== If UseMini is true, Lepton::RelIso() returns MiniRelIso  
@@ -112,70 +118,21 @@ public:
   std::vector<Lepton *> MakeLeptonPointerVector(const std::vector<Electron>& electrons, double TightIso=-999, bool UseMini=false);
 
   std::vector<Tau>    GetAllTaus();
-  std::vector<Tau>    GetTaus(vector<Lepton*> leps, TString id, double ptmin, double fetamax);
-  std::vector<Tau>    GetTaus(TString id, double ptmin, double fetamax);
   std::vector<Photon> GetAllPhotons();
-  std::vector<Photon> GetPhotons(TString id, double ptmin, double fetamax);
-
   std::vector<Jet>    GetAllJets(bool applyCorr=true);
-  std::vector<Jet>    GetJets(AnalyzerParameter param);
-  std::vector<Jet>    GetJets(AnalyzerParameter param,TString ID, double ptmin, double fetamax);
-  std::vector<Jet>    GetJets(TString ID, double ptmin, double fetamax);
   std::vector<FatJet> GetAllFatJets();
-  std::vector<FatJet> GetFatJets(AnalyzerParameter param);
-  std::vector<FatJet> GetFatJets(AnalyzerParameter param,TString ID, double ptmin, double fetamax);
-  std::vector<FatJet> GetFatJets(TString id, double ptmin, double fetamax);
+
   std::vector<Gen>    GetGens();
   std::vector<LHE>    GetLHEs();
 
-  std::vector<Electron> SelectElectrons(const std::vector<Electron>& electrons, 
-					TString id, double ptmin, double fetamax, bool vetoHEM = false);
-  std::vector<Electron> SelectElectrons(const std::vector<Electron>& electrons, 
-					TString id, double ptmin, double fetamax, bool cc, double dx_b, double dx_e,double dz_b,double dz_e, double iso_b, double iso_e);
-
   std::vector<Muon>   UseTunePMuon(const std::vector<Muon>& muons);
-  std::vector<Muon>   SelectMuons(const std::vector<Muon>& muons,    TString id, double ptmin, double fetamax);
-  std::vector<Tau>    SelectTaus(const std::vector<Tau>& taus,       TString id, double ptmin, double fetamax);
-  std::vector<Jet>    SelectJets(const std::vector<Jet>& jets,       TString id, double ptmin, double fetamax);
-  std::vector<FatJet> SelectFatJets(const std::vector<FatJet>& jets, TString id, double ptmin, double fetamax);
 
-  //===== Detailed jet selection                                                                                                                                                                                                                                                           
-  vector<Jet>    SelectAK4Jets(vector<Jet> jets,
-			       double pt_cut ,  double eta_cut, 
-			       bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean,   TString pu_tag,
-			       std::vector<Lepton *> leps_veto,  vector<FatJet> fatjets);
-  vector<Jet>    SelectBJets(AnalyzerParameter param, vector<Jet> jets, JetTagging::Parameters jtp);
-  vector<Jet>    SelectLJets(AnalyzerParameter param, vector<Jet> jets, JetTagging::Parameters jtp);
-  vector<Jet>    SelectAK4Jets(vector<Jet> jets, 
-			     double pt_cut ,  double eta_cut, 
-			     bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag,
-			     vector<Electron>  veto_electrons, vector<Muon>  veto_muons, vector<FatJet> fatjets);
+  std::vector<Jet>       GetJets(TString ID, double ptmin, double fetamax);
+  std::vector<FatJet>    GetFatJets(TString ID, double ptmin, double fetamax);
+  std::vector<Muon>      GetMuons(TString ID, double ptmin, double fetamax);
+  std::vector<Electron>  GetElectrons(TString ID, double ptmin, double fetamax, bool vetoHEM=true);
+  std::vector<Tau>       GetTaus(TString ID, double ptmin, double fetamax);
 
-  vector<FatJet> SelectAK8Jetsv2(vector<FatJet> fatjets, 
-				 double pt_cut ,  double eta_cut, 
-				 bool lepton_cleaning  , double dr_lep_clean , bool apply_tau21, double tau21_cut , bool apply_masscut, double sdmass_lower_cut,  double sdmass_upper_cut, TString  WQCDTagger, 
-				 vector<Electron>veto_electrons, vector<Muon>  veto_muons);
-
-  vector<FatJet> SelectAK8Jets(vector<FatJet> fatjets, 
-			       double pt_cut ,  double eta_cut, 
-			       bool lepton_cleaning  , double dr_lep_clean , bool apply_tau21, double tau21_cut , bool apply_masscut, double sdmass_lower_cut,  double sdmass_upper_cut,
-			       vector<Electron>  veto_electrons, vector<Muon>  veto_muons);
-
-
-
-  vector<Muon>     SkimLepColl(const vector<Muon>& MuColl,     AnalyzerParameter param, TString Option);
-  vector<Electron> SkimLepColl(const vector<Electron>& ElColl, AnalyzerParameter param,TString Option);
-  vector<Electron> SkimLepColl(const vector<Electron>& ElColl, TString Option);
-  vector<Muon>     SkimLepColl(const vector<Muon>& MuColl,     TString Option);
-  vector<Jet>      SkimJetColl(const vector<Jet>& JetColl,     vector<Gen>& TruthColl, AnalyzerParameter param,TString Option);
-
-
-
-
-  //  ================= MC weight functions              AnalyzerCore_Lepton.C   =================                                                                                                           
-  double GetLeptonSFEventWeight   (std::vector<Lepton *> leps,      AnalyzerParameter param );
-  double GetMuonSFEventWeight     (std::vector<Muon> muons,         AnalyzerParameter param );
-  double GetElectronSFEventWeight (std::vector<Electron> electrons, AnalyzerParameter param );
 
 
   // =================   FR functions   AnalyzerCore_Bkg.C  ======================                                                                                                                            
@@ -186,7 +143,7 @@ public:
   double GetFakeRateElectron(Electron el , AnalyzerParameter param);
   double GetFakeRateMuon(Muon mu, AnalyzerParameter param);
   double GetFakeWeight(std::vector<Lepton *> leps,  AnalyzerParameter param, bool apply_r=false);
-  double GetIsoFromID(TString type_lep, TString id, double eta, double pt);
+  double GetIsoFromID(Lepton lep, TString id);
 
 
   /// =================  CF Functions AnalyzerCore_Bkg.C ================= 

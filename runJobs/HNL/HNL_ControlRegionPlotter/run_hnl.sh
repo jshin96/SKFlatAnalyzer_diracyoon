@@ -55,8 +55,8 @@ if [[ $1 == "WZ" ]]; then
         for j in "${flag_list[@]}"
         do
             FLAG=$j
-            SKFlat.py -a $analyzer  -i WZTo3LNu_amcatnlo   -n 100 --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags $FLAG,RunPrompt  &
-	    SKFlat.py -a $analyzer  -i WZTo3LNu_amcatnlo   -n 100 --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags $FLAG &
+            SKFlat.py -a $analyzer  -i WZTo3LNu_amcatnlo   -n 100 --nmax 600   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags $FLAG,RunPrompt  &
+	    SKFlat.py -a $analyzer  -i WZTo3LNu_amcatnlo   -n 100 --nmax 600   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags $FLAG &
 
         done
     done

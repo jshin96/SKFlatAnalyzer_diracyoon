@@ -1,23 +1,52 @@
 #include "AnalyzerCore.h"
 
 
-std::vector<Jet> AnalyzerCore::ScaleJets(const std::vector<Jet>& jets, int sys){
+std::vector<Jet> AnalyzerCore::GetJets(TString ID, double ptmin, double fetamax){
+
+  std::vector<Jet> jets = All_Jets;
 
   std::vector<Jet> out;
   for(unsigned int i=0; i<jets.size(); i++){
-    //==== jets is a const vector. So in this function, we have to copy the elements like below                                                                                                                                                                                                                                                                                                                                          
-    Jet this_jet = jets.at(i);
-
-    this_jet *= this_jet.EnShift(sys);
-
-    out.push_back( this_jet );
+    if(!( jets.at(i).Pt()>ptmin ))          continue;
+    if(!( fabs(jets.at(i).Eta())<fetamax )) continue;
+    if(!( jets.at(i).PassID(ID) ))          continue;
+    out.push_back( jets.at(i) );
   }
   std::sort(out.begin(),       out.end(),        PtComparing);
+  return out;
+}
 
+
+std::vector<FatJet> AnalyzerCore::GetFatJets(TString id, double ptmin, double fetamax){
+
+  std::vector<FatJet> jets = All_FatJets;
+  std::vector<FatJet> out;
+  for(unsigned int i=0; i<jets.size(); i++){
+    if(!( jets.at(i).Pt()>ptmin ))           continue;
+    if(!( fabs(jets.at(i).Eta())<fetamax ))  continue;
+    if(!( jets.at(i).PassID(id) ))           continue;
+    out.push_back( jets.at(i) );
+  }
+
+  std::sort(out.begin(),       out.end(),        PtComparing);
   return out;
 
 }
 
+
+std::vector<Jet> AnalyzerCore::ScaleJets(const std::vector<Jet>& jets, int sys){
+
+  std::vector<Jet> out;
+  for(unsigned int i=0; i<jets.size(); i++){
+    //==== jets is a const vector. So in this function, we have to copy the elements like below                                                                            
+    
+    Jet this_jet = jets.at(i);
+    this_jet *= this_jet.EnShift(sys);
+    out.push_back( this_jet );
+  }
+  std::sort(out.begin(),       out.end(),        PtComparing);
+  return out;
+}
 
 std::vector<Jet> AnalyzerCore::ScaleJetsIndividualSource(const std::vector<Jet>& jets, int sys, TString source){
 

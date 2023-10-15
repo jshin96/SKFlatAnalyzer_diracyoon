@@ -4,7 +4,8 @@ void AnalyzerParameter::Clear(){
 
   Name    = "Default";
   DefName = "Default";
-  Channel = "";
+  Channel = "Default";
+  CutFlowDir="CutFlow";
   hprefix = "";
 
   MCCorrrectionIgnoreNoHist = false;
@@ -31,6 +32,11 @@ void AnalyzerParameter::Clear(){
   JetPUID           = "Default";
   Jet_ID            = "Default";
   FatJet_ID         = "Default";
+  AK4JetColl        = "Default";
+  AK8JetColl        = "Default";
+  BJetColl          = "Default";
+  BTagger           = "Default";
+  BWP               = "Default";
 
   /// Keys
   k.Electron_ID_SF = "Default";
@@ -38,6 +44,7 @@ void AnalyzerParameter::Clear(){
   k.Electron_FR = "Default";
   k.Electron_PR = "Default";
   k.Electron_CF = "Default";
+  k.Electron_RECO_SF = "Default";
   k.Muon_RECO_SF = "Default";
   k.Muon_Trigger_SF = "Default";
   k.Muon_ID_SF = "Default";
@@ -71,6 +78,7 @@ void AnalyzerParameter::Clear(){
   CFMethod="MC";
   ConvMethod="MC";
 
+
   Apply_Weight_LumiNorm  = true;
   Apply_Weight_SumW      = true;
   Apply_Weight_PileUp    = true;
@@ -78,10 +86,21 @@ void AnalyzerParameter::Clear(){
   Apply_Weight_kFactor   = true;
   Apply_Weight_TriggerSF = true;
   Apply_Weight_IDSF      = true;
+  Apply_Weight_MuonTrackerSF = true;
   Apply_Weight_RECOSF    = true;
   Apply_Weight_Z0        = true;
   Apply_Weight_TopCorr   = true;
   Apply_Weight_DYCorr    = true;
+  Apply_Weight_BJetSF    = true;
+  Apply_Weight_PNETSF    = true;
+  Apply_Weight_JetPUID   = true;
+
+  Set_ElIDW=false;
+  Set_MuIDW=false;
+  Set_ElTrigW=false;
+  Set_MuTrigW=false;
+
+
 
   syst_ = Central;
 
@@ -91,7 +110,8 @@ AnalyzerParameter::AnalyzerParameter(){
 
   Name    = "Default";
   DefName = "Default";
-  Channel = "";
+  Channel = "Default";
+  CutFlowDir="CutFlow";
   hprefix = "";
 
 
@@ -113,6 +133,11 @@ AnalyzerParameter::AnalyzerParameter(){
   JetPUID          = "Default";  
   Jet_ID           = "tight";  
   FatJet_ID        = "tight";  
+  BTagger           = "Default";
+  BWP               = "Default";
+  AK4JetColl        = "Default";
+  AK8JetColl        = "Default";
+  BJetColl          = "Default";
 
   /// Keys                                                                                                                                                                                                                             
   k.Electron_ID_SF = "Default";
@@ -120,6 +145,7 @@ AnalyzerParameter::AnalyzerParameter(){
   k.Electron_FR = "Default";
   k.Electron_PR = "Default";
   k.Electron_CF = "Default";
+  k.Electron_RECO_SF = "Default";
   k.Muon_RECO_SF = "MuonRecoSF"; 
   k.Muon_Trigger_SF = "Default";
   k.Muon_ID_SF = "Default";
@@ -142,6 +168,10 @@ AnalyzerParameter::AnalyzerParameter(){
   SystDir_BTag="Default";
   FakeRateMethod="BDTFlavour";  FakeMethod="MC";   CFMethod="MC";   ConvMethod="MC";   BJet_Method="Default";
 
+  Set_ElIDW=false;
+  Set_MuIDW=false;
+  Set_ElTrigW=false;
+  Set_MuTrigW=false;
 
   /// Set weights to true by default
   Apply_Weight_LumiNorm  = true;
@@ -151,10 +181,16 @@ AnalyzerParameter::AnalyzerParameter(){
   Apply_Weight_kFactor   = true;
   Apply_Weight_TriggerSF = true;
   Apply_Weight_IDSF      = true;
+  Apply_Weight_MuonTrackerSF = true;
   Apply_Weight_RECOSF    = true;
   Apply_Weight_Z0        = true;
   Apply_Weight_TopCorr   = true;
   Apply_Weight_DYCorr    = true;
+  Apply_Weight_BJetSF    = true;
+  Apply_Weight_PNETSF    = true;
+  Apply_Weight_JetPUID   = true;
+
+
   syst_ = Central;
   
   /////////// JETS
@@ -166,7 +202,176 @@ AnalyzerParameter::AnalyzerParameter(){
   /// ---------                                                                                                                                                                                
   Electron_MinPt = 10.;  Electron_MaxEta = 2.5;
 
+}
 
+/*
+AnalyzerParameter& AnalyzerParameter::operator=(const AnalyzerParameter& p){
+  if(this != &p){
+
+    Name   = p.Name;
+    DefName= p.DefName;
+    Channel= p.Channel;
+    CutFlowDir= p.CutFlowDir;
+    hprefix= p.hprefix;
+    hpostfix= p.hpostfix;
+    MCCorrrectionIgnoreNoHist= p.MCCorrrectionIgnoreNoHist;
+    DEBUG= p.DEBUG;
+    Electron_Tight_ID= p.Electron_Tight_ID;
+    Electron_Loose_ID= p.Electron_Loose_ID;
+    Electron_Veto_ID= p.Electron_Veto_ID;
+    Electron_FR_ID= p.Electron_FR_ID;
+    Electron_CF_ID= p.Electron_CF_ID;
+    Muon_Tight_ID= p.Muon_Tight_ID;
+    Muon_Loose_ID= p.Muon_Loose_ID;
+    Muon_Veto_ID= p.Muon_Veto_ID;
+    Muon_FR_ID= p.Muon_FR_ID;
+    Muon_CF_ID= p.Muon_CF_ID;
+    JetPUID= p.JetPUID;
+    TriggerSelection= p.TriggerSelection;
+    Tau_Tight_ID= p.Tau_Tight_ID;
+    Tau_Loose_ID= p.Tau_Loose_ID;
+    Tau_Veto_ID= p.Tau_Veto_ID;
+    Jet_ID= p.Jet_ID;
+    FatJet_ID= p.FatJet_ID;
+    
+    Electron_UseMini= p.Electron_UseMini;
+    Electron_UsePtCone= p.Electron_UsePtCone;
+    Muon_UseMini= p.Muon_UseMini;
+    Muon_UsePtCone= p.Muon_UsePtCone;
+    Muon_UseTuneP= p.Muon_UseTuneP;
+
+    Electron_Tight_RelIso= p.Electron_Tight_RelIso;
+    Electron_Loose_RelIso= p.Electron_Loose_RelIso;
+    Electron_Veto_RelIso= p.Electron_Veto_RelIso;
+    Electron_MinPt= p.Electron_MinPt;
+    Electron_MaxEta= p.Electron_MaxEta;
+    Muon_Tight_RelIso= p.Muon_Tight_RelIso;
+    Muon_Loose_RelIso= p.Muon_Loose_RelIso;
+    Muon_Veto_RelIso= p.Muon_Veto_RelIso;
+    Muon_MinPt= p.Muon_MinPt;
+    Muon_MaxEta= p.Muon_MaxEta;
+    Jet_MinPt= p.Jet_MinPt;
+    Jet_MaxEta= p.Jet_MaxEta;
+    FatJet_MinPt= p.FatJet_MinPt;
+    FatJet_MaxEta= p.FatJet_MaxEta;
+
+    Apply_Weight_LumiNorm= p.Apply_Weight_LumiNorm;
+    Apply_Weight_SumW= p.Apply_Weight_SumW;
+    Apply_Weight_PileUp= p.Apply_Weight_PileUp;
+    Apply_Weight_PreFire= p.Apply_Weight_PreFire;
+    Apply_Weight_kFactor= p.Apply_Weight_kFactor;
+    Apply_Weight_IDSF= p.Apply_Weight_IDSF;
+    Apply_Weight_TriggerSF= p.Apply_Weight_TriggerSF;
+    Apply_Weight_RECOSF= p.Apply_Weight_RECOSF;
+    Apply_Weight_Z0= p.Apply_Weight_Z0;
+    Apply_Weight_TopCorr= p.Apply_Weight_TopCorr;
+    Apply_Weight_DYCorr= p.Apply_Weight_DYCorr;
+    Apply_Weight_BJetSF= p.Apply_Weight_BJetSF; 
+    Apply_Weight_PNETSF= p.Apply_Weight_PNETSF;
+    Apply_Weight_MuonTrackerSF= p.Apply_Weight_MuonTrackerSF;
+
+    SRConfig= p.SRConfig;
+    WriteOutVerbose= p.WriteOutVerbose;
+
+    SystDir_PU= p.SystDir_PU;
+    SystDir_BTag= p.SystDir_BTag;
+    BJet_Method= p.BJet_Method;
+    FakeMethod= p.FakeMethod;
+    CFMethod= p.CFMethod;
+    ConvMethod= p.ConvMethod;
+    FakeRateMethod= p.FakeRateMethod;
+    
+    w.lumiweight= p.w.lumiweight;
+    w.PUweight= p.w.PUweight;
+    w.PUweight_up= p.w.PUweight_up;
+    w.PUweight_down= p.w.PUweight_down;
+    w.prefireweight= p.w.prefireweight;
+    w.prefireweight_up= p.w.prefireweight_up;
+    w.prefireweight_down= p.w.prefireweight_down;
+    w.z0weight= p.w.z0weight;
+    w.zptweight= p.w.zptweight;
+    w.topptweight= p.w.topptweight;
+    w.weakweight= p.w.weakweight;
+    w.muonRECOSF= p.w.muonRECOSF;
+    w.electronRECOSF= p.w.electronRECOSF;
+    w.electronRECOSF_sys= p.w.electronRECOSF_sys;
+    w.electronIDSF= p.w.electronIDSF;
+    w.electronIDSF_sys= p.w.electronIDSF_sys;
+    w.muonIDSF= p.w.muonIDSF;
+    w.muonIDSF_sys= p.w.muonIDSF_sys;
+    w.muonISOSF= p.w.muonISOSF;
+    w.muonISOSF_sys= p.w.muonISOSF_sys;
+    w.muonTrackerSF= p.w.muonTrackerSF;
+    w.triggerSF= p.w.triggerSF;
+    w.triggerSF_up= p.w.triggerSF_up;
+    w.triggerSF_down= p.w.triggerSF_down;
+    w.triggerSF_sys= p.w.triggerSF_sys;
+    w.CFSF= p.w.CFSF;
+    w.CFSF_up= p.w.CFSF_up;
+    w.CFSF_down= p.w.CFSF_down;
+    w.btagSF= p.w.btagSF;
+    w.btagSF_hup= p.w.btagSF_hup;
+    w.btagSF_hdown= p.w.btagSF_hdown;
+    w.btagSF_lup= p.w.btagSF_lup;
+    w.btagSF_ldown= p.w.btagSF_ldown;
+    w.PNETSF= p.w.PNETSF;
+    
+    k.Muon_RECO_SF=p.k.Muon_RECO_SF;
+    k.Electron_RECO_SF=p.k.Electron_RECO_SF;
+    k.Electron_ID_SF=p.k.Electron_ID_SF;
+    k.Muon_ID_SF=p.k.Muon_ID_SF;
+    k.Muon_ISO_SF=p.k.Muon_ISO_SF;
+    k.Muon_FR=p.k.Muon_FR;
+    k.Muon_PR=p.k.Muon_PR;
+    k.Electron_FR=p.k.Electron_FR;
+    k.Electron_PR=p.k.Electron_PR; 
+    k.Electron_CF=p.k.Electron_CF;
+    k.EMu_Trigger_SF=p.k.EMu_Trigger_SF;
+    k.Electron_Trigger_SF=p.k.Electron_Trigger_SF;
+    k.Muon_Trigger_SF=p.k.Muon_Trigger_SF;
+    k.Muon_CF=p.k.Muon_CF;
+    k.triggerSF=p.k.triggerSF;
+    syst_=p.syst_;
+
+    Set_ElIDW=p.Set_ElIDW;
+    Set_MuIDW=p.Set_MuIDW;
+    Set_ElTrigW=p.Set_ElTrigW;
+    Set_MuTrigW=p.Set_MuTrigW;
+  }
+
+  return *this;
+}
+
+*/
+
+
+
+TString  AnalyzerParameter::ChannelDir(){
+
+  if(Channel == "Default")  return Name;
+  return Name + "/"+ Channel;
+}
+
+
+TString  AnalyzerParameter::CutFlowDirChannel(){
+
+  if(Channel == "Default")  return CutFlowDir+"/"+DefName;
+  return "Channel"+CutFlowDir+"/"+DefName+"/"+Channel;
+}
+
+TString  AnalyzerParameter::CutFlowDirIncChannel(){
+
+  if(Channel =="Default")  return CutFlowDir+"/"+DefName;
+  return "Channel"+CutFlowDir+"/"+DefName+"/"+InclusiveChannelName();
+}
+
+
+TString  AnalyzerParameter::InclusiveChannelName(){
+  
+  if (Channel == "MuMu" ||  Channel == "EE" || Channel == "EMu" || Channel == "MuE") return "LL";
+  if (Channel == "MuMuMu"||  Channel == "EEE" || Channel == "EMuL"|| Channel == "MuEL") return "LLL";
+  return "LLLL";
+  
 }
 
 double AnalyzerParameter::EventWeight(){
@@ -180,7 +385,13 @@ double AnalyzerParameter::EventWeight(){
   if(Apply_Weight_TopCorr)  EvWeight*= w.topptweight;
   if(Apply_Weight_DYCorr)   EvWeight*= w.weakweight;
   if(Apply_Weight_DYCorr)   EvWeight*= w.zptweight;
-  
+  if(Apply_Weight_RECOSF)   EvWeight*= w.electronRECOSF*w.muonRECOSF;
+  if(Apply_Weight_IDSF)     EvWeight*= w.muonIDSF*w.muonISOSF*w.electronIDSF;
+  if(Apply_Weight_TriggerSF)EvWeight*= w.triggerSF;
+  if(Apply_Weight_BJetSF)   EvWeight*= w.btagSF;
+  if(Apply_Weight_PNETSF)   EvWeight*= w.PNETSF;
+  if(Apply_Weight_MuonTrackerSF)  EvWeight*= w.muonTrackerSF;
+
   return EvWeight;
 
 }
@@ -222,6 +433,7 @@ void AnalyzerParameter::PrintParameters(){
   cout << "k.Electron_FR = " << k.Electron_FR << endl;
   cout << "k.Electron_PR = " << k.Electron_PR << endl;
   cout << "k.Electron_CF = " << k.Electron_CF << endl;
+  cout << "k.Electron_RECO_SF = " << k.Electron_RECO_SF << endl;
   cout << "k.Muon_RECO_SF = " << k.Muon_RECO_SF << endl;
   cout << "k.Muon_Trigger_SF = " << k.Muon_Trigger_SF << endl;
   cout << "k.Muon_ID_SF = " << k.Muon_ID_SF << endl;
@@ -244,6 +456,14 @@ void AnalyzerParameter::PrintParameters(){
   cout << "w.weakweight = " << w.weakweight<< endl;
   cout << "w.zptweight = " << w.zptweight<< endl;
   cout << "w.topptweight = " << w.topptweight<< endl;
+  cout << "w.muonRECOSF = " << w.muonRECOSF << endl;
+  cout << "w.electronRECOSF = " << w.electronRECOSF << endl;
+  cout << "w.electronIDSF = " << w.electronIDSF << endl;
+  cout << "w.muonIDSF = " << w.muonIDSF << endl;
+  cout << "w.muontrackerSF = " << w.muonTrackerSF << endl;
+  cout << "w.triggerSF  = " << w.triggerSF << endl;
+  cout << "w.CFSF = " << w.CFSF << endl;
+  cout << "w.btagSF = " << w.btagSF << endl;
   
 }
 

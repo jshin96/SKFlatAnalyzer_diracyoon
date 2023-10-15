@@ -21,7 +21,7 @@ void HNL_SignalMuonOpt::executeEvent(){
   OutCutFlow("CutFlow_All_Events", 1);
 
 
-  AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("HNLOpt","_UL");
+  AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("HNLOpt");
     
   //cout << "########################################################" << endl;
   
@@ -39,7 +39,7 @@ void HNL_SignalMuonOpt::executeEvent(){
   Event ev = GetEvent();
   Particle METv = GetvMET("PuppiT1xyULCorr");
 
-  std::vector<Tau> TauColl                        = GetTaus     (LepsVeto,param_signal.Tau_Veto_ID,20., 2.3);
+  std::vector<Tau> TauColl                        = SelectTaus    (LepsVeto,param_signal.Tau_Veto_ID,20., 2.3);
   
   std::vector<Jet> AllJetColl                     = GetHNLJets("NoCut_Eta3",param_signal);
   std::vector<Jet> JetCollLoose                   = GetHNLJets("Loose",param_signal);
@@ -447,8 +447,8 @@ void HNL_SignalMuonOpt::RunULAnalysis(AnalyzerParameter param, vector<Electron> 
     if(ilep.PassID(mu_ID)) MuonCollTInit.push_back(ilep);
   }
 
-  std::vector<Muon>       MuonCollT     = GetLepCollByRunType    ( MuonCollTInit,param);
-  std::vector<Electron>   ElectronCollT  =  GetLepCollByRunType   ( ElectronCollTInit,param);
+  std::vector<Muon>       MuonCollT     = GetLepCollByRunType    ( MuonCollTInit,param,weight);
+  std::vector<Electron>   ElectronCollT  =  GetLepCollByRunType   ( ElectronCollTInit,param,weight);
   
   Particle METv = GetvMET("PuppiT1xyULCorr",param); // returns MET with systematic correction                                                                                                                      
 

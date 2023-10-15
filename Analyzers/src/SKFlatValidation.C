@@ -341,7 +341,7 @@ void SKFlatValidation::executeEventFromParameter(AnalyzerParameter param){
       }
       if( Suffix.Contains("DiElectron") || Suffix.Contains("SingleElectron") || Suffix.Contains("DiPhoton") ){
         for(unsigned int i=0; i<electrons.size(); i++){
-          double this_recosf = mcCorr->ElectronReco_SF(electrons.at(i).scEta(),electrons.at(i).Pt());
+          double this_recosf = mcCorr->ElectronReco_SF("RECO_SF",electrons.at(i).scEta(),electrons.at(i).Pt());
           double this_idsf = mcCorr->ElectronID_SF(param.k.Electron_ID_SF, electrons.at(i).scEta(), electrons.at(i).Pt());
           double this_trigsf = mcCorr->ElectronTrigger_SF(param.k.Electron_Trigger_SF, TriggerNameForSF_Electron, electrons);
 

@@ -38,7 +38,7 @@ class HNL_LeptonCore : public AnalyzerCore {
     Mu=10,    MuMu=11,    MuMuMu=12,    MuMuMuMu=13,
     EMu=15,     EMuL=16,    EMuLL=17,
     MuE=18, MuEL = 19, MuELL = 20,
-    LL=21
+    LL=21,NONE=22
 
   };
   enum SearchRegion
@@ -55,7 +55,6 @@ class HNL_LeptonCore : public AnalyzerCore {
     Presel,    PreselSS,    PreselOS,
     SR,    sigmm,    sigee,    sigem,
     sigmm_17028,    sigee_17028,    sigem_17028,
-    SR1Tau,    SR2Tau,    SR3Tau,  
     ControlRegion,
     ChannelDepCR1,    ChannelDepCR2,    ChannelDepCR3, CR };
 
@@ -74,11 +73,10 @@ class HNL_LeptonCore : public AnalyzerCore {
 
 
   // ----- SETUP ANALYZER
-  AnalyzerParameter InitialiseHNLParameter(TString s_setup, TString tag="");  
-  AnalyzerParameter SetupHNLParameter(TString s_setup_version, TString tag="");
+  AnalyzerParameter InitialiseHNLParameter(TString s_setup);  
+  AnalyzerParameter InitialiseHNLParameter(TString s_setup, HNL_LeptonCore::Channel channel);  
+  AnalyzerParameter SetupHNLParameter(TString s_setup_version, TString channel_str_name);
   
-
-
   // ------ Analysis Obj   
 
   // HNL_LeptonCore_MET
@@ -89,7 +87,9 @@ class HNL_LeptonCore : public AnalyzerCore {
   map<TString, Particle> METMap(AnalyzerParameter param);
 
 
-  /// Jet Functions   HNL_LeptonCore_Jet                                                                                                                                                                                              
+  /// Jet Functions   HNL_LeptonCore_Jet                                                                                                                           
+  JetTagging::Parameters GetParamJetTagger(AnalyzerParameter param);
+  void  EvalJetWeight(std::vector<Jet>    AK4_JetColl, std::vector<FatJet> fatjets, double & w,AnalyzerParameter param); 
   TString CloseJetFlavour(std::vector<Jet> jetColl, Lepton* lep);
   TString CloseJetFlavour(std::vector<Jet> jetColl, Muon mu);
   TString CloseJetFlavour(std::vector<Jet> jetColl, Electron el);
@@ -97,9 +97,9 @@ class HNL_LeptonCore : public AnalyzerCore {
   TString CloseJetFlavourInt(std::vector<Jet> jetColl, Muon mu);
   TString CloseJetFlavourInt(std::vector<Jet> jetColl, Electron el);
 
-  std::vector<Jet> GetHNLJets(TString JetType, AnalyzerParameter param);
+  std::vector<Jet>    GetHNLJets(TString JetType, AnalyzerParameter param);
   std::vector<FatJet> GetHNLAK8Jets(TString JetType, AnalyzerParameter param);
-  std::vector<Jet> SelBJets(std::vector<Jet>& jetColl, JetTagging::Parameters jtp);
+  std::vector<Jet>    SelBJets(std::vector<Jet>& jetColl, JetTagging::Parameters jtp);
 
 
   ///// MET FUNCTIONS  HNL_LeptonCore_MET
@@ -119,6 +119,74 @@ class HNL_LeptonCore : public AnalyzerCore {
   bool PassHEMVeto(std::vector<Lepton *> leps);
   
   double GetDYWeakWeight(double mass);
+
+  //  ================= MC weight functions              HNL_LeptonCore_Lepton.C   =================                                                                                                                                                                                                                     
+  void EvalLeptonIDWeight(std::vector<Lepton *> leps,      AnalyzerParameter& param , double& d);
+  void EvalMuonIDWeight     (std::vector<Muon> muons,         AnalyzerParameter& param, double& d );
+  void EvalElectronIDWeight (std::vector<Electron> electrons, AnalyzerParameter& param, double& d );
+  double GetElectronIDWeight(std::vector<Electron> electrons,AnalyzerParameter param);
+  double GetMuonIDWeight(std::vector<Muon> muons,AnalyzerParameter param);
+
+  std::vector<Muon> SelectMuons(const std::vector<Muon>& muons,    TString id, double ptmin, double fetamax);
+  std::vector<Muon> SelectMuons(TString id, double ptmin, double fetamax);
+  std::vector<Muon> SelectMuons(AnalyzerParameter param, TString id, double ptmin, double fetamax, double& EvWeight);
+  std::vector<Muon> SelectMuons(AnalyzerParameter param, TString id, double ptmin, double fetamax);
+
+  std::vector<Electron> SelectElectrons(const std::vector<Electron>& electrons,
+					TString id, double ptmin, double fetamax, bool vetoHEM = false);
+
+  std::vector<Electron> SelectElectrons(TString id, double ptmin, double fetamax, bool vetoHEM = false);
+  std::vector<Electron> SelectElectrons(AnalyzerParameter param, TString id, double ptmin, double fetamax, double& EvWeight, bool vetoHEM=false);
+  std::vector<Electron> SelectElectrons(AnalyzerParameter param, TString id, double ptmin, double fetamax,bool vetoHEM=false);
+
+
+  std::vector<Tau>    SelectTaus(const std::vector<Tau>& taus,       TString id, double ptmin, double fetamax);
+  std::vector<Tau>    SelectTaus(vector<Lepton*> leps, TString id, double ptmin, double fetamax);
+  std::vector<Tau>    SelectTaus(TString id, double ptmin, double fetamax);
+
+
+  vector<Muon>     SkimLepColl(const vector<Muon>& MuColl,     AnalyzerParameter param, TString Option);
+  vector<Electron> SkimLepColl(const vector<Electron>& ElColl, AnalyzerParameter param,TString Option);
+  vector<Electron> SkimLepColl(const vector<Electron>& ElColl, TString Option);
+  vector<Muon>     SkimLepColl(const vector<Muon>& MuColl,     TString Option);
+
+  std::vector<Jet>    SelectJets(AnalyzerParameter param);
+  std::vector<Jet>    SelectJets(AnalyzerParameter param,TString ID, double ptmin, double fetamax);
+  std::vector<Jet>    SelectJets(TString ID, double ptmin, double fetamax);
+  std::vector<Jet>    SelectJets(const std::vector<Jet>& jets,       TString id, double ptmin, double fetamax);
+
+  std::vector<FatJet> SelectFatJets(AnalyzerParameter param);
+  std::vector<FatJet> SelectFatJets(AnalyzerParameter param,TString ID, double ptmin, double fetamax);
+  std::vector<FatJet> SelectFatJets(TString id, double ptmin, double fetamax);
+  std::vector<FatJet> SelectFatJets(const std::vector<FatJet>& jets, TString id, double ptmin, double fetamax);
+  vector<Jet>      SkimJetColl(const vector<Jet>& JetColl,     vector<Gen>& TruthColl, AnalyzerParameter param,TString Option);
+
+
+  //===== Detailed jet selection
+
+  vector<Jet>    SelectAK4Jets(vector<Jet> jets,
+                               double pt_cut ,  double eta_cut,
+                               bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean,   TString pu_tag,
+                               std::vector<Lepton *> leps_veto,  vector<FatJet> fatjets);
+  vector<Jet>    SelectBJets(AnalyzerParameter param, vector<Jet> jets, JetTagging::Parameters jtp);
+  vector<Jet>    SelectLJets(AnalyzerParameter param, vector<Jet> jets, JetTagging::Parameters jtp);
+  vector<Jet>    SelectAK4Jets(vector<Jet> jets,
+			       double pt_cut ,  double eta_cut,
+			       bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag,
+			       vector<Electron>  veto_electrons, vector<Muon>  veto_muons, vector<FatJet> fatjets);
+
+  vector<FatJet> SelectAK8Jetsv2(vector<FatJet> fatjets,
+                                 double pt_cut ,  double eta_cut,
+                                 bool lepton_cleaning  , double dr_lep_clean , bool apply_tau21, double tau21_cut , bool apply_masscut, double sdmass_lower_cut,  double sdmass_upper_cut, TString  WQCDTagger,
+                                 vector<Electron>veto_electrons, vector<Muon>  veto_muons);
+
+  vector<FatJet> SelectAK8Jets(vector<FatJet> fatjets,
+                               double pt_cut ,  double eta_cut,
+                               bool lepton_cleaning  , double dr_lep_clean , bool apply_tau21, double tau21_cut , bool apply_masscut, double sdmass_lower_cut,  double sdmass_upper_cut,
+                               vector<Electron>  veto_electrons, vector<Muon>  veto_muons);
+
+
+
 
   // ZptWeight
   void SetupZptWeight();
@@ -141,7 +209,8 @@ class HNL_LeptonCore : public AnalyzerCore {
   void FillElectronPlots(TString label , TString cut,  std::vector<Electron> els, double w);
   void FillElectronKinematicPlots(TString label , TString cut,  Electron el, double w);
   void FillLeptonKinematicPlots(TString label , TString cut,  Lepton lep, double w);
-  
+
+
   void FillLeptonPlots(std::vector<Lepton *> leps, TString this_region, double weight);
   void FillJetPlots(std::vector<Jet> jets, std::vector<FatJet> fatjets, TString this_region, double weight);
 
@@ -162,14 +231,18 @@ class HNL_LeptonCore : public AnalyzerCore {
   // === Cut flow  HNL_LeptonCore_CutFlow                                                                                                                                                                         
   void FillTypeCutflow(TString histname, double weight, vector<TString> lables, TString label1, TString label2);
   void FillFullTypeCutflow(TString histname, double weight, vector<TString> lables, TString label1, TString label2);
-  void FillEventCutflowDef(TString dirname, TString histname, double weight, vector<TString> lables, TString label);
-  void FillEventCutflowAll(TString dirname, TString histname, double weight, vector<TString> lables, TString label);
-  void FillCutFlow(bool IsCentral, TString suffix, TString histname, double weight);
-  void FillEventCutflow(HNL_LeptonCore::SearchRegion sr,double wt,TString cut,    TString label, int verbose_level=0);
-  void FillEventCutflow(HNL_LeptonCore::SearchRegion sr,double wt,TString cut,    TString label, AnalyzerParameter param);
-  void FillEventCutflowSR(TString analysis_dir_name,HNL_LeptonCore::SearchRegion sr, double event_weight, TString label);
-  void FillEventCutflowPerMass(TString dirname,HNL_LeptonCore::SearchRegion sr, double event_weight, TString region_name,   TString label);
+  
+  void FillCutflowDef(TString dirname, TString histname, double weight, vector<TString> lables, TString label);
+  void FillCutflow(TString analysis_dir_name,TString histname, double weight, vector<TString> lables, TString label);
 
+  void FillCutflow(AnalyzerParameter param,TString histname, double weight, vector<TString> lables, TString label);
+  void FillCutflow(HNL_LeptonCore::SearchRegion sr, double event_weight, TString label,  AnalyzerParameter param);
+  void FillCutflow(HNL_LeptonCore::SearchRegion sr, double event_weight, TString label,  TString hist_path);
+  void FillLimitInput(HNL_LeptonCore::SearchRegion sr, double event_weight, TString label,  TString hist_path);
+
+  vector<TString>  GetLabelsFromRegion(HNL_LeptonCore::SearchRegion sr);
+  TString GetCutFlowNameFromRegion(HNL_LeptonCore::SearchRegion sr);
+  void FillCutFlow(bool IsCentral, TString suffix, TString histname, double weight);
 
   /// BDT Variables and Functions HNL_LeptonCore_BDT                                                                                                                                                                                                                                                                                                                                                                                                                                
   vector<TString> MNStrList, NCutList, NTreeList;
@@ -216,6 +289,8 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   HNL_LeptonCore::Channel GetTriLeptonChannel(HNL_LeptonCore::Channel channel);
   HNL_LeptonCore::Channel GetQuadLeptonChannel(HNL_LeptonCore::Channel channel);
+  HNL_LeptonCore::Channel GetChannelENum(TString ch);
+
 
 
   /// ------ SYSTEMATICS
@@ -242,8 +317,8 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   vector<Muon> GetSignalLeptons(const std::vector<Muon>& MuColl, vector<Gen>& TruthColl);
   vector<Electron> GetSignalLeptons(const std::vector<Electron>& ElColl, vector<Gen>& TruthColl);
-  vector<Muon> GetLepCollByRunType(const vector<Muon>& MuColl,  AnalyzerParameter param, TString Option="");
-  vector<Electron> GetLepCollByRunType(const vector<Electron>& ElColl,AnalyzerParameter param, TString Option="");
+  vector<Muon> GetLepCollByRunType(const vector<Muon>& MuColl,  AnalyzerParameter& param,  TString Option="");
+  vector<Electron> GetLepCollByRunType(const vector<Electron>& ElColl,AnalyzerParameter& param,  TString Option="");
 
   //================== KINEMATIC HELPER
   double M_T(Particle a, Particle b);

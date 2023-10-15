@@ -1,5 +1,163 @@
 #include "HNL_LeptonCore.h"
 
+double HNL_LeptonCore::GetMuonIDWeight(std::vector<Muon> muons, AnalyzerParameter param){
+  double tmpW = 1.;
+  EvalMuonIDWeight(muons,param, tmpW);
+  return tmpW;
+}
+double HNL_LeptonCore::GetElectronIDWeight(std::vector<Electron> electrons,AnalyzerParameter param){
+  double tmpW =1.;
+  EvalElectronIDWeight(electrons,param,tmpW);
+  return tmpW;
+}
+
+void HNL_LeptonCore::EvalMuonIDWeight(std::vector<Muon> muons,AnalyzerParameter& param , double& ev_weight ){
+
+  if(param.Set_MuIDW) return;
+  if(IsDATA) return ;
+  param.Set_MuIDW=true;
+
+  double this_weight(1.);
+
+  mcCorr->IgnoreNoHist = param.MCCorrrectionIgnoreNoHist;
+
+  for (auto mu: muons){
+    double MiniAODP = sqrt( mu.MiniAODPt() * mu.MiniAODPt() + mu.Pz() * mu.Pz() );
+    double this_pt  = mu.MiniAODPt();
+    double this_eta = mu.Eta();
+
+    int SystDir_MuonIDSF(0), SystDir_MuonISOSF(0), SystDir_MuonRecoSF (0);
+    if(param.syst_ == AnalyzerParameter::MuonRecoSFUp)        SystDir_MuonRecoSF = +1;
+    else if(param.syst_ == AnalyzerParameter::MuonRecoSFDown) SystDir_MuonRecoSF = -1;
+    else if(param.syst_ == AnalyzerParameter::MuonIDSFUp)     SystDir_MuonIDSF   = +1;
+    else if(param.syst_ == AnalyzerParameter::MuonIDSFDown)   SystDir_MuonIDSF   = -1;
+    else if(param.syst_ == AnalyzerParameter::MuonISOSFUp)    SystDir_MuonISOSF  = +1;
+    else if(param.syst_ == AnalyzerParameter::MuonISOSFDown)  SystDir_MuonISOSF  = -1;
+
+    double reco_pt = (param.k.Muon_RECO_SF  == "HighPtMuonRecoSF") ?  MiniAODP : this_pt; ////                                                                                                                       
+    /// [1]   RECO ID SF   --- SHOULD BE USED ON ALL MUONS
+    if(param.k.Muon_RECO_SF  == "MuonRecoSF" && this_pt > 200)  reco_pt=MiniAODP;
+    double this_recosf = (param.Apply_Weight_RECOSF) ?  mcCorr->MuonReco_SF(param.k.Muon_RECO_SF, this_eta, reco_pt,SystDir_MuonRecoSF) : 1. ;
+    this_weight *= this_recosf;
+    FillWeightHist(param.ChannelDir()+"/RecoMuWeight_"+param.Name,this_recosf);
+    
+    /// [2]  TRACKING ID SF  (Taken from https://github.com/sansan9401/SKFlatAnalyzer/blob/Run2UltraLegacy_asym/ branch Oct 14 23)
+    double this_trackersf = (param.Apply_Weight_MuonTrackerSF) ? mcCorr->MuonTracker_SF("NUM_GlobalMuons", this_eta, reco_pt,0) : 1. ;
+    this_weight *= this_trackersf;
+    FillWeightHist(param.ChannelDir()+"/TrackerMuWeight_"+param.Name,this_trackersf);
+    
+    /// [3] ID SF needs KEY input 
+    double this_idsf   = (param.Apply_Weight_IDSF) ?  mcCorr->MuonID_SF (param.k.Muon_ID_SF,  this_eta, this_pt,SystDir_MuonIDSF) : 1.;
+    double this_isosf  = (param.Apply_Weight_IDSF) ?  mcCorr->MuonISO_SF(param.k.Muon_ISO_SF, this_eta, this_pt,SystDir_MuonISOSF) : 1. ;
+    param.w.muonIDSF  = this_idsf;
+    param.w.muonISOSF = this_isosf;
+    FillWeightHist(param.ChannelDir()+"/IDMuWeight_"+param.Name,this_idsf);
+    FillWeightHist(param.ChannelDir()+"/ISOMuWeight_"+param.Name,this_isosf);
+    this_weight *= this_idsf*this_isosf;
+    if(param.DEBUG) cout << "GetMuonSFEventWeight this_idsf=" << this_idsf << " this_isosf=" << this_isosf  << endl;
+
+  }// end of muon loop                                                                                                                                                                                                                                               
+  FillWeightHist(param.ChannelDir()+"/FullMuWeight_"+param.Name,this_weight);
+  
+  // Update ev weight using combined corr weight
+  ev_weight*=this_weight;
+  return;
+}
+
+void HNL_LeptonCore::EvalLeptonIDWeight(std::vector<Lepton *> leps, AnalyzerParameter& param , double& ev_weight ){
+
+  if(IsDATA) return;
+  
+  double this_weight(1.);
+  if(!IsDATA){
+
+    mcCorr->IgnoreNoHist = param.MCCorrrectionIgnoreNoHist;
+
+    int SystDir_MuonIDSF(0), SystDir_MuonISOSF(0), SystDir_MuonRecoSF (0);
+    if(param.syst_ == AnalyzerParameter::MuonRecoSFUp)SystDir_MuonRecoSF = +1;
+    else if(param.syst_ == AnalyzerParameter::MuonRecoSFDown)SystDir_MuonRecoSF = -1;
+    else if(param.syst_ == AnalyzerParameter::MuonIDSFUp)  SystDir_MuonIDSF = +1;
+    else if(param.syst_ == AnalyzerParameter::MuonIDSFDown)  SystDir_MuonIDSF = -1;
+    else if(param.syst_ == AnalyzerParameter::MuonISOSFUp) SystDir_MuonISOSF  = +1;
+    else if(param.syst_ == AnalyzerParameter::MuonISOSFDown) SystDir_MuonISOSF  = -1;
+
+    int SystDir_ElectronIDSF(0),SystDir_ElectronRecoSF (0);
+    if(param.syst_ == AnalyzerParameter::ElectronRecoSFUp)SystDir_ElectronRecoSF = +1;
+    else if(param.syst_ == AnalyzerParameter::ElectronRecoSFDown)SystDir_ElectronRecoSF = -1;
+    else if(param.syst_ == AnalyzerParameter::ElectronIDSFUp)  SystDir_ElectronIDSF = +1;
+    else if(param.syst_ == AnalyzerParameter::ElectronIDSFDown)  SystDir_ElectronIDSF = -1;
+
+    for (auto lep: leps){
+      if(lep->LeptonFlavour() == Lepton::ELECTRON){
+        double this_recosf  = mcCorr->ElectronReco_SF(param.k.Electron_RECO_SF,lep->Eta(),lep->Pt(), SystDir_ElectronRecoSF);
+        double this_idsf    = mcCorr->ElectronID_SF(param.k.Electron_ID_SF, lep->Eta(), lep->Pt(), SystDir_ElectronIDSF);
+
+	this_weight *= this_recosf*this_idsf;
+      }
+      if(lep->LeptonFlavour() == Lepton::MUON){
+
+	double this_pt  = lep->Pt();
+        double this_eta = lep->Eta();
+
+	double this_idsf   = mcCorr->MuonID_SF (param.k.Muon_ID_SF,  this_eta, this_pt,SystDir_MuonIDSF);
+        double this_isosf  = mcCorr->MuonISO_SF(param.k.Muon_ISO_SF, this_eta, this_pt,SystDir_MuonISOSF);
+
+	this_weight *= this_idsf*this_isosf;
+
+	//double reco_pt = (param.Muon_RECO_SF_Key  == "HighPtMuonRecoSF") ?  MiniAODP : this_pt;                                                                                                                                                                                                                                                                                                                                                                                                                                     
+        double reco_pt =this_pt;
+        double this_recosf = mcCorr->MuonReco_SF(param.k.Muon_RECO_SF, this_eta, reco_pt,SystDir_MuonRecoSF);
+
+	this_weight *= this_recosf;
+
+      } 
+    }
+  }
+  
+  ev_weight*=this_weight;
+  return;
+
+
+}
+void  HNL_LeptonCore::EvalElectronIDWeight(std::vector<Electron> electrons, AnalyzerParameter& param , double& ev_weight ){
+
+  if(param.Set_ElIDW) return;
+  if(IsDATA) return ;
+  param.Set_ElIDW=true;
+  
+  mcCorr->IgnoreNoHist = param.MCCorrrectionIgnoreNoHist;
+  double this_weight(1.);
+
+  int SystDir_ElectronIDSF(0), SystDir_ElectronRecoSF (0);
+  if(param.syst_ == AnalyzerParameter::ElectronRecoSFUp)        SystDir_ElectronRecoSF = +1;
+  else if(param.syst_ == AnalyzerParameter::ElectronRecoSFDown) SystDir_ElectronRecoSF = -1;
+  else if(param.syst_ == AnalyzerParameter::ElectronIDSFUp)     SystDir_ElectronIDSF = +1;
+  else if(param.syst_ == AnalyzerParameter::ElectronIDSFDown)   SystDir_ElectronIDSF = -1;
+
+  for (auto el: electrons){
+    
+    double pt = (el.Pt() < 15) ? 16 : el.Pt();
+
+    /// [1]   RECO ID SF   --- SHOULD BE USED ON ALL Electrons
+    double this_recosf  = (param.Apply_Weight_RECOSF) ?  mcCorr->ElectronReco_SF(param.k.Electron_RECO_SF,el.scEta(),pt, SystDir_ElectronRecoSF) : 1.;
+    this_weight *= this_recosf;
+    
+    /// [2]   ID SF   --- Needs Key dep on ID
+    double this_idsf    = (param.Apply_Weight_IDSF) ?  mcCorr->ElectronID_SF(param.k.Electron_ID_SF, el.scEta(), pt, SystDir_ElectronIDSF) : 1.;    
+    this_weight *= this_idsf;
+
+    FillWeightHist(param.Name+"/el_reco_sf_"+param.Name, this_recosf);
+    FillWeightHist(param.Name+"/el_id_sf_"+param.Name, this_idsf);
+  }
+
+  ev_weight*=this_weight;
+  
+  return;
+}
+
+
+
+
 double HNL_LeptonCore::HNLZvtxSF(HNL_LeptonCore::Channel ch){
   // See https://indico.cern.ch/event/697573/contributions/2887077/attachments/1596611/2530584/hltZVtxInefficiency.pdf                                         
 
@@ -147,41 +305,41 @@ void HNL_LeptonCore::SetupZptWeight(){
   if(MCSample.Contains("MiNNLO")) _MCSample="MiNNLO";
   TString zptpath=(TString)getenv("DATA_DIR")+"/"+GetEra()+"/SMP/ZptWeight_"+_MCSample+".root";
   if(IsExists(zptpath)){
-    cout<<"[SMPAnalyzerCore::SetupZptWeight] using file "+zptpath<<endl;
+    cout<<"[HNL_LeptonCore::SetupZptWeight] using file "+zptpath<<endl;
   }else{
-    cout<<"[SMPAnalyzerCore::SetupZptWeight] no "+zptpath<<endl;
+    cout<<"[HNL_LeptonCore::SetupZptWeight] no "+zptpath<<endl;
     return;
   }
   DeleteZptWeight();
   TFile f(zptpath);
   fZptWeightG=(TF1*)f.Get("zptweight_g");
   if(!fZptWeightG){
-    cout<<"[SMPAnalyzerCore::SetupZptWeight] no zptweight_g"<<endl;
+    cout<<"[HNL_LeptonCore::SetupZptWeight] no zptweight_g"<<endl;
     exit(ENODATA);
   }
   fZptWeightYaxis=(TAxis*)f.Get("yaxis");
   if(!fZptWeightYaxis){
-    cout<<"[SMPAnalyzerCore::SetupZptWeight] no yaxis"<<endl;
+    cout<<"[HNL_LeptonCore::SetupZptWeight] no yaxis"<<endl;
     exit(ENODATA);
   }
   fZptWeightY.resize(fZptWeightYaxis->GetNbins()+2,NULL);
   for(int i=1;i<fZptWeightYaxis->GetNbins()+1;i++){
     fZptWeightY[i]=(TF1*)f.Get(Form("zptweight_y%d",i));
     if(!fZptWeightY[i]){
-      cout<<"[SMPAnalyzerCore::SetupZptWeight] no zptweight_y"+TString(i)<<endl;
+      cout<<"[HNL_LeptonCore::SetupZptWeight] no zptweight_y"+TString(i)<<endl;
       exit(ENODATA);
     }
   }
   fZptWeightMaxis=(TAxis*)f.Get("maxis");
   if(!fZptWeightMaxis){
-    cout<<"[SMPAnalyzerCore::SetupZptWeight] no maxis"<<endl;
+    cout<<"[HNL_LeptonCore::SetupZptWeight] no maxis"<<endl;
     exit(ENODATA);
   }
   fZptWeightM.resize(fZptWeightMaxis->GetNbins()+2,NULL);
   for(int i=1;i<fZptWeightMaxis->GetNbins()+1;i++){
     fZptWeightM[i]=(TF1*)f.Get(Form("zptweight_m%d",i));
     if(!fZptWeightM[i]){
-      cout<<"[SMPAnalyzerCore::SetupZptWeight] no zptweight_m"+TString(i)<<endl;
+      cout<<"[HNL_LeptonCore::SetupZptWeight] no zptweight_m"+TString(i)<<endl;
       exit(ENODATA);
     }
   }

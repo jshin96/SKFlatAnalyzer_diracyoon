@@ -9,6 +9,7 @@ IgnoreNoHist(false)
   genFinderDY = new GenFinderForDY();
 
 }
+
 vector<TString> MCCorrection::Split(TString s,TString del){
   TObjArray* array=s.Tokenize(del);
   vector<TString> out;
@@ -16,6 +17,7 @@ vector<TString> MCCorrection::Split(TString s,TString del){
   array->Delete();
   return out;
 }
+
 void MCCorrection::ReadHistograms(){
 
   TString datapath = getenv("DATA_DIR");
@@ -3432,9 +3434,9 @@ double MCCorrection::MuonReco_SF(TString key, double eta, double p, int sys){
 
   eta = fabs(eta);
 
-  if(key=="HighPtMuonRecoSF"){
-    
-    
+  
+  if(key=="HighPtMuonRecoSF" || (key=="MuonRecoSF" && p > 200) ){
+        
     //==== XXX this histogram uses P not Pt    
 
     //==== boundaries
@@ -4682,7 +4684,9 @@ double MCCorrection::MuonReco_SF(TString key, double eta, double p, int sys){
       }
     }
   }
-  else{
+
+
+  else if(key == "MuonRecoSF"){
   
       //==== boundaries                                                                                                                                                
     if(p<10.) p = 10.;
@@ -4819,6 +4823,33 @@ double MCCorrection::MuonReco_SF(TString key, double eta, double p, int sys){
 
   return value+double(sys)*error;
 
+}
+
+double MCCorrection::MuonTracker_SF(TString ID, double eta, double pt, int sys){
+
+  if(ID=="Default") return 1.;
+  double value = 1.;  double error = 0.;
+
+  eta = fabs(eta);
+
+  if(value > 0) {
+    return value+double(sys)*error;
+  }
+  
+  TH2F *this_hist = map_hist_Muon["Tracker_SF_"+ID];
+  if(!this_hist){
+    if(IgnoreNoHist) return 1.;
+    else{
+      exit(ENODATA);
+    }
+  }
+  
+  int this_bin = this_hist->FindBin(eta,pt);
+  value = this_hist->GetBinContent(this_bin);
+  error = this_hist->GetBinError(this_bin);
+  
+  return value+double(sys)*error;
+  
 }
 
 double MCCorrection::MuonID_SF(TString ID, double eta, double pt, int sys){
@@ -5180,37 +5211,67 @@ double MCCorrection::ElectronID_SF(TString ID, double sceta, double pt, int sys)
 
 }
 
-double MCCorrection::ElectronReco_SF(double sceta, double pt, int sys){
+double MCCorrection::ElectronReco_SF(TString key, double sceta, double pt, int sys){
 
   double value = 1.;
   double error = 0.;
 
-  TString ptrange = "ptgt20";
-  if(pt<20.) ptrange = "ptlt20";
+  if(key == "Default") return 1.;
 
-  if(pt<10.) pt = 10.;
-  if(pt>=500.) pt = 499.;
-  if(sceta>=2.5) sceta = 2.49;
-  if(sceta<-2.5) sceta = -2.5;
-
-  TH2F *this_hist = map_hist_Electron["RECO_SF_"+ptrange];
-  if(!this_hist){
-    if(IgnoreNoHist) return 1.;
-    else{
-      cerr << "[MCCorrection::ElectronReco_SF] No "<<"RECO_SF_"+ptrange<<endl;
-      exit(ENODATA);
+  if(key == "RECO_SF") {
+    TString ptrange = "ptgt20";
+    if(pt<20.) ptrange = "ptlt20";
+    
+    if(pt<10.) pt = 10.;
+    if(pt>=500.) pt = 499.;
+    if(sceta>=2.5) sceta = 2.49;
+    if(sceta<-2.5) sceta = -2.5;
+    
+    TH2F *this_hist = map_hist_Electron["RECO_SF_"+ptrange];
+    if(!this_hist){
+      if(IgnoreNoHist) return 1.;
+      else{
+	cerr << "[MCCorrection::ElectronReco_SF] No "<<"RECO_SF_"+ptrange<<endl;
+	exit(ENODATA);
+      }
     }
+    int this_bin = this_hist->FindBin(sceta,pt);
+    value = this_hist->GetBinContent(this_bin);
+    error = this_hist->GetBinError(this_bin);
+    return value+double(sys)*error;
   }
 
-  //cout << "[MCCorrection::ElectronReco_SF] " << this_hist->GetBinContent(1,1) << endl;
+  if(key == "RECO_SF_AFB") {
 
-  int this_bin = this_hist->FindBin(sceta,pt);
-  value = this_hist->GetBinContent(this_bin);
-  error = this_hist->GetBinError(this_bin);
+    TString ptrange = "ptgt20";
+    if(pt<20.) ptrange = "ptlt20";
+
+    if(pt<10.) pt = 10.;
+    if(pt>=500.) pt = 499.;
+    if(sceta>=2.5) sceta = 2.49;
+    if(sceta<-2.5) sceta = -2.5;
+
+    TH2F *this_hist = map_hist_Electron["RECO_SF_"+ptrange];
+    if(!this_hist){
+      if(IgnoreNoHist) return 1.;
+      else{
+        cerr << "[MCCorrection::ElectronReco_SF] No "<<"RECO_SF_"+ptrange<<endl;
+        exit(ENODATA);
+      }
+    }
+
+
+    int this_bin = this_hist->FindBin(sceta,pt);
+    value = this_hist->GetBinContent(this_bin);
+    error = this_hist->GetBinError(this_bin);
+
+    return value+double(sys)*error;
+  }
+
 
   return value+double(sys)*error;
-
-  }
+  
+}
 
 double MCCorrection::ElectronTrigger_Eff(TString ID, TString trig, int DataOrMC, double sceta, double pt, int sys){
 

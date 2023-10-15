@@ -18,7 +18,7 @@ void HNL_LeptonIDSF::executeEvent(){
     TriggerPrintOut(GetEvent());
   }
  
-  AnalyzerParameter param =  HNL_LeptonCore::InitialiseHNLParameter("MVAUL","");
+  AnalyzerParameter param =  HNL_LeptonCore::InitialiseHNLParameter("MVAUL");
 
   //  MeasureElectronEfficiencies(param);
   // MeasureMuonEfficiencies(param);

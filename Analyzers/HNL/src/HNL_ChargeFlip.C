@@ -34,7 +34,7 @@ void HNL_ChargeFlip::executeEvent(){
   }
   for (auto id: LepIDs){
     for (auto CFMethod : CFMethods){
-      AnalyzerParameter param = InitialiseHNLParameter("SignalStudy","HNL");
+      AnalyzerParameter param = InitialiseHNLParameter("SignalStudy");
       param.Name    =  id+CFMethod;
       param.DefName =  id+CFMethod;
       

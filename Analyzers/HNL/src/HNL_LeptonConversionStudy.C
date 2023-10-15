@@ -1,19 +1,19 @@
-#include "HNL_ConversionStudy.h"
+#include "HNL_LeptonConversionStudy.h"
 
-void HNL_ConversionStudy::initializeAnalyzer(){
+void HNL_LeptonConversionStudy::initializeAnalyzer(){
 
   HNL_LeptonCore::initializeAnalyzer();
 
 }
 
 
-void HNL_ConversionStudy::executeEvent(){
+void HNL_LeptonConversionStudy::executeEvent(){
 
 
  
   Event ev = GetEvent();
 
-  AnalyzerParameter param = HNL_LeptonCore::InitialiseHNLParameter("HNL","_UL");
+  AnalyzerParameter param = HNL_LeptonCore::InitialiseHNLParameter("HNL");
   double weight =SetupWeight(ev,param);
 
   vector<TString> MCMergeList = {"DY","WG"};
@@ -161,8 +161,8 @@ void HNL_ConversionStudy::executeEvent(){
   // 1) Fakes/ CF are done by data and Conv done my MC
   // - in this case if MC should remove Fake lep and CF leps
   // - this is done by Adding option 
-  std::vector<Muon>       MuonCollT     = SkimLepColl    ( GetMuons    ( param,mu_ID, muon_pt,     2.4, RunFake) ,param,"NHConv");
-  std::vector<Electron>   ElectronCollT = SkimLepColl    ( GetElectrons( param,el_ID, electron_pt, 2.5, RunFake) ,param,"NHConv");
+  std::vector<Muon>       MuonCollT     = SkimLepColl    ( SelectMuons    ( param,mu_ID, muon_pt,     2.4) ,param,"NHConv");
+  std::vector<Electron>   ElectronCollT = SkimLepColl    ( SelectElectrons( param,el_ID, electron_pt, 2.5) ,param,"NHConv");
 
   
   // Creat Lepton vector to have lepton blind codes                                                                                                          
@@ -247,11 +247,11 @@ void HNL_ConversionStudy::executeEvent(){
 
 
 
-HNL_ConversionStudy::HNL_ConversionStudy(){
+HNL_LeptonConversionStudy::HNL_LeptonConversionStudy(){
 
 
 }
  
-HNL_ConversionStudy::~HNL_ConversionStudy(){
+HNL_LeptonConversionStudy::~HNL_LeptonConversionStudy(){
 
 }

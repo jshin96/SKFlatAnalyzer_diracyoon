@@ -129,12 +129,12 @@ void HNL_LeptonFakeRate::executeEventFromParameter(AnalyzerParameter param, TStr
   if(!PassMETFilter()) return;
 
   
-  std::vector<Electron> loose_electrons     = GetElectrons( param,param.Electron_Loose_ID, 9.5, 2.5, false) ;
-  std::vector<Muon>     loose_muons         = GetMuons    ( param,param.Muon_Loose_ID,     5,   2.4, false);
+  std::vector<Electron> loose_electrons     = SelectElectrons( param,param.Electron_Loose_ID, 9.5, 2.5) ;
+  std::vector<Muon>     loose_muons         = SelectMuons    ( param,param.Muon_Loose_ID,     5,   2.4);
   
   //cout << "loose_electrons = " << loose_electrons.size() << " loose_muons " << loose_muons.size() << endl;
 
-  std::vector<Jet> jets_tmp     = GetJets   ( param, "tight", 30., 2.7);
+  std::vector<Jet> jets_tmp     = SelectJets   ( param, "tight", 30., 2.7);
   std::vector<Jet> jets; 
   for(unsigned int ijet =0; ijet < jets_tmp.size(); ijet++){
     bool jetok=true;
@@ -460,7 +460,7 @@ void HNL_LeptonFakeRate::MakeDiLepPlots(HNL_LeptonCore::Channel channel, Analyze
   if(leps[0]->Charge() == leps[1]->Charge()) return;
   bool PassZMass = (fabs(M_Z - Z.M()) < 10.) ? true : false;
 
-  std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
+  std::vector<Jet> jets_tmp     = SelectJets   ( param, param.Jet_ID, 20., 5.);
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
   std::vector<Jet> BJetColl    = SelectBJets(param, jets_tmp , param_jets);
   double sf_btag               = GetBJetSF(param, jets_tmp, param_jets);
@@ -605,7 +605,7 @@ void HNL_LeptonFakeRate::MakeNVertexDistPrescaledTrig(HNL_LeptonCore::Channel ch
 
   // remove b jet 
 
-  std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
+  std::vector<Jet> jets_tmp     = SelectJets   ( param, param.Jet_ID, 20., 5.);
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
   std::vector<Jet> BJetColl    = SelectBJets(param, jets_tmp , param_jets);
   double sf_btag               = GetBJetSF(param, jets_tmp, param_jets);
@@ -1059,7 +1059,7 @@ void HNL_LeptonFakeRate::GetFakeRates(std::vector<Lepton *> leps,std::vector<boo
   TString lepRegion     = (leps[0]->IsBB()) ? "BB" : "EC";
 
   float weight_ptcorr=event_weight;
-  float weight_pt=event_weight;
+
   TString L_prefix = "Fake_Loose"+tag;
   TString T_prefix =  "Fake_Tight"+tag;
 
@@ -1124,7 +1124,7 @@ void HNL_LeptonFakeRate::GetFakeRates(std::vector<Lepton *> leps,std::vector<boo
   }
 
 
-  std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
+  std::vector<Jet> jets_tmp     = SelectJets   ( param, param.Jet_ID, 20., 5.);
 
 
   double ptmin    = IsMuon ? 10 : 10;

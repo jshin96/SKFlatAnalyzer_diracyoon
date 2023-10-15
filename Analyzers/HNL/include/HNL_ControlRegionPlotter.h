@@ -14,7 +14,7 @@ class HNL_ControlRegionPlotter : public HNL_RegionDefinitions {
   HNL_ControlRegionPlotter();
   ~HNL_ControlRegionPlotter();
 
-  void RunControlRegions(vector<HNL_LeptonCore::Channel> ChannelsToRun,AnalyzerParameter param, vector<TString> CRs);
+  void RunControlRegions(AnalyzerParameter param, vector<TString> CRs);
 
 
 };

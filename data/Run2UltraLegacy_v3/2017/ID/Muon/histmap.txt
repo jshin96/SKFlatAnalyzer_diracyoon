@@ -33,3 +33,4 @@ Trigger  Eff_DATA  EMuIsoMu23_HNTopID                      TrigMu23_TopHNT_TopHN
 Trigger  Eff_MC    EMuIsoMu23_HNTopID                      TrigMu23_TopHNT_TopHNSST_2017.root                                    hEff_TrigMu23_MC_ALL
 Trigger  Eff_DATA  EMuIsoMu8_HNTopID                       TrigMu8_TopHNT_TopHNSST_2017.root                                     hEff_TrigMu8_Data_ALL
 Trigger  Eff_MC    EMuIsoMu8_HNTopID                       TrigMu8_TopHNT_TopHNSST_2017.root                                     hEff_TrigMu8_MC_ALL
+Tracker  SF        NUM_GlobalMuons                         2018_GlobalMuon_v17.root                                              sim
