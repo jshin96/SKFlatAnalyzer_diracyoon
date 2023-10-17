@@ -35,7 +35,10 @@ TH3D* AnalyzerCore::GetHist3D(TString histname){
 
 double AnalyzerCore::FillWeightHist(TString label, double _weight){
 
-  if(run_Debug) cout << "AnalyzerCore::FillWeightHist ["+label+"]  corr.=" <<   _weight << endl;
+  int szst = 50 - std::string(label).size();
+  TString empty_st = "";
+  for(int i = 0 ; i < szst; i++) empty_st+= " ";
+  if(run_Debug) cout << "AnalyzerCore::FillWeightHist ["+label+"] " <<  empty_st<< "  correction =" <<   _weight << endl;
 
   double max_x_range = 5.;
   if(label.Contains("Lumi")) max_x_range = 5.+ 2*(fabs(_weight));

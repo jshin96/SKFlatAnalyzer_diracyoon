@@ -24,19 +24,60 @@ void HNL_LeptonCore::initializeAnalyzer(){
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets));
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Tight, JetTagging::incl, JetTagging::mujets));
 
-
   SetupTriggerLists();
   
   if(IsDYSample) SetupZptWeight();
 
+  //==== MCCorrection                                                                                                                                       
 
-  //--- Method 1d using JetTagging::iterativefit needs csv file changing in histmap to run                                                   
-  // jtps.push_back( JetTagging::Parameters(JetTagging::DeepCSV, JetTagging::Medium, JetTagging::iterativefit, JetTagging::iterativefit) );  
-  mcCorr->SetJetTaggingParameters(jtps);
+  ///// Set up Jet Tagger
+  mcCorr->SetJetTaggingParameters(jtps);                                                                                                                             
+  mcCorr->SetMCSample(MCSample);
+  mcCorr->SetEra(GetEra());
+  mcCorr->SetIsDATA(IsDATA);
+  mcCorr->SetEventInfo(run, lumi, event);
+  mcCorr->SetIsFastSim(IsFastSim);
+  if(!IsDATA){
+    mcCorr->ReadHistograms();
+    mcCorr->SetupJetTagging();
+  }
 
+  puppiCorr->SetEra(GetEra());
+  puppiCorr->ReadHistograms();
+
+  //==== FakeBackgroundEstimator                                                                                                                                            
+  if(RunFake){
+    fakeEst->SetEra(GetEra());
+    fakeEst->ReadHistograms();
+  }
+
+  //==== CFBackgroundEstimator                                                                                                                                              
+  if(RunCF){
+    cfEst->SetEra(GetEra());
+    cfEst->ReadHistograms();
+  }
 
   SetupIDMVAReaderDefault();
 
+}
+
+void HNL_LeptonCore::SetupEvMVA(){
+
+  TMVA::Tools::Instance();
+  cout << "Create Reader class " << endl;
+  MVAReaderMM = new TMVA::Reader();
+  MVAReaderEE = new TMVA::Reader();
+  MVAReaderEM = new TMVA::Reader();
+  cout << MVAReaderMM << "  " << MVAReaderEE <<" " << MVAReaderEM << endl;
+
+}
+
+void HNL_LeptonCore::DeleteEvMVA(){
+  
+  cout << MVAReaderMM << "  " << MVAReaderEE << " " << MVAReaderEM << endl;
+  delete MVAReaderMM;
+  delete MVAReaderEE;
+  delete MVAReaderEM;
 
 }
 
@@ -59,7 +100,25 @@ void HNL_LeptonCore::OutCutFlow(TString lab, double w){
 
 }
 
+TString HNL_LeptonCore::SetLeptonID(TString lep, AnalyzerParameter p){
 
+  if(lep=="Electron"){
+    TString ID = (RunFake) ?  p.Electron_FR_ID  : p.Electron_Tight_ID ;
+    if(p.FakeMethod == "MC")  ID =p.Electron_Tight_ID;
+    return ID;
+  }
+  else if(lep=="Muon"){
+    TString ID = (RunFake) ?  p.Muon_FR_ID  : p.Muon_Tight_ID ;
+    if(p.FakeMethod == "MC")  ID = p.Muon_Tight_ID;
+    return ID;
+  }
+  else {
+    cout << "[HNL_LeptonCore::InitialiseHNLParameters ] ID not found.." << endl;
+    exit(EXIT_FAILURE);
+  }
+
+  return "";
+}
 
 double HNL_LeptonCore::MergeMultiMC(vector<TString> vec, TString Method){
 
@@ -204,7 +263,10 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup_version
 AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup_version, HNL_LeptonCore::Channel channel){
   
   AnalyzerParameter p = SetupHNLParameter(s_setup_version,GetChannelString(channel));
-  if(_jentry== 1 ) p.PrintParameters();
+  if(_jentry== 1 ){
+    cout << "HNL_LeptonCore::InitialiseHNLParameter SetupHNLParameter Event " << event << endl;
+    p.PrintParameters();
+  }
   return p;  
 }
 
@@ -243,18 +305,19 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
   param.MCCorrrectionIgnoreNoHist = true;
 
   /// Lepton ID DEFAULT
-  param.k.Electron_RECO_SF   = "RecoSF";  // RecoSF_AFB is alternative SF 
+  param.k.Electron_RECO_SF   = "RECO_SF";  // RECO_SF_AFB is alternative SF 
   param.k.Muon_RECO_SF   = "HighPtMuonRecoSF";
   param.Muon_Veto_ID     = "HNVetoMVA";  param.Muon_Tight_ID     = "HNVetoMVA";
   param.Electron_Veto_ID = "HNVetoMVA";  param.Electron_Tight_ID = "MVAID";
 
   param.Tau_Veto_ID      = "JetVLElVLMuVL";
-  param.Muon_MinPt = 10.;   param.Muon_MaxEta = 2.4;
-  /// ---------                                                                                                                             
+  /// ---------                                                                                                                
+  param.Muon_MinPt = 5.;       param.Muon_MaxEta = 2.4;            
   param.Electron_MinPt = 10.;  param.Electron_MaxEta = 2.5;
   /// JET ID DEFAULT
   param.Jet_ID                     = "tight";
-  param.Jet_MinPt = 10.;  param.Jet_MaxEta = 5.;
+  param.Jet_MinPt                  = 10.;
+  param.Jet_MaxEta                 = 5.;
   param.BJet_Method                = "1a";
   /// ---------
   param.FatJet_ID                  = "tight";
@@ -265,23 +328,34 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
 
   param.BTagger = "DeepJet"; 
   param.BWP ="M"; 
-  param.JetPUID = "";
+  param.JetPUID = "None";
   param.AK4JetColl       = "Tight";
-  param.AK8JetColl       = "HNL_PNL";
+  param.AK8JetColl       = "HNL_PN";
+  //param.AK8JetColl       = "HNL";
   param.BJetColl         = "Tight";
 
   //// Weights
   param.w.lumiweight= 1;
-  param.w.PUweight=1;       param.w.PUweight_up=1;       param.w.PUweight_down=1;
-  param.w.prefireweight=1;  param.w.prefireweight_up=1;  param.w.prefireweight_down=1;
-  param.w.z0weight=1;  param.w.zptweight=1;   param.w.weakweight=1;
+  param.w.PUweight=1;   
+  param.w.PUweight_up=1; 
+  param.w.PUweight_down=1;
+  param.w.prefireweight=1; 
+  param.w.prefireweight_up=1; 
+  param.w.prefireweight_down=1;
+  param.w.z0weight=1; 
+  param.w.zptweight=1; 
+  param.w.weakweight=1;
   param.w.topptweight=1;
-  param.w.muonRECOSF=1;  param.w.electronRECOSF=1;
+  param.w.muonRECOSF=1;
+  param.w.electronRECOSF=1;
   param.w.electronIDSF=1;
-  param.w.muonIDSF=1;   param.w.muonISOSF=1; 
+  param.w.muonIDSF=1; 
+  param.w.muonISOSF=1; 
   param.w.triggerSF=1;
   param.w.CFSF=1;
-  param.w.btagSF=1;  param.w.PNETSF=1;
+  param.w.btagSF=1; 
+  param.w.PNETSF=1;
+  param.w.JetPU = 1;
 
   if(!IsDATA){
     param.w.lumiweight*= MCweight()*_Event.GetTriggerLumi("Full");
@@ -327,6 +401,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.Muon_Tight_ID    = "HNTightV2";     param.Electron_Tight_ID = "HNTightV2";
     param.Muon_FR_ID       = "HNLooseV1";     param.Electron_FR_ID    = "HNLooseV4";
 
+    param.k.Electron_CF          = "CF_"+s_setup_version;
     param.FakeRateMethod       = "PtCone";
     param.k.Muon_FR            = "AwayJetPt40";
     param.k.Electron_FR        = "AwayJetPt40";
@@ -335,7 +410,11 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.k.Muon_RECO_SF       = "MuonRecoSF";
 
     param.TriggerSelection = "Dilep";
-
+    if(channel_st.Contains("EE"))   param.k.Electron_Trigger_SF = "DiElIso_HNL_ULID";
+    if(channel_st.Contains("MuMu")) param.k.Muon_Trigger_SF = "DiMuIso_HNL_ULID";
+    if(channel_st.Contains("EMu"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
+    if(channel_st.Contains("MuE"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
+  
     return param;
   }
   else if (s_setup_version=="TopHN"){
@@ -358,8 +437,12 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.k.Muon_ID_SF         = "NUM_TopHN";
     param.k.Muon_RECO_SF       = "MuonRecoSF";
 
+    param.k.Electron_CF          = "CF_"+s_setup_version;
     param.TriggerSelection = "Dilep";
-
+    if(channel_st.Contains("EE"))   param.k.Electron_Trigger_SF = "DiElIso_HNL_ULID";
+    if(channel_st.Contains("MuMu")) param.k.Muon_Trigger_SF = "DiMuIso_HNL_ULID";
+    if(channel_st.Contains("EMu"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
+    if(channel_st.Contains("MuE"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
     return param;
   }
   else if (s_setup_version=="HNL_ULID"){
@@ -383,8 +466,12 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.k.Muon_ISO_SF     = "Default";
     param.k.Electron_ID_SF  = "passHNL_ULID_"+GetYearString();
 
+    param.k.Electron_CF       = "CF_"+s_setup_version;
     param.TriggerSelection = "Dilep";
-
+    if(channel_st.Contains("EE"))   param.k.Electron_Trigger_SF = "DiElIso_HNL_ULID";
+    if(channel_st.Contains("MuMu")) param.k.Muon_Trigger_SF = "DiMuIso_HNL_ULID";
+    if(channel_st.Contains("EMu"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
+    if(channel_st.Contains("MuE"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
     return param;
   }
   else if (s_setup_version=="POGTight"){
@@ -406,6 +493,29 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.FakeRateMethod       = "PtCone";
     param.k.Muon_FR            = "AwayJetPt40";
     param.k.Electron_FR        = "AwayJetPt40";
+    param.k.Electron_CF       = "CF_"+s_setup_version;
+
+    if(channel_st.Contains("EE"))   param.k.Electron_Trigger_SF = "Default";
+    if(channel_st.Contains("MuMu")) {
+      TString trigKey=TrigList_POG_Mu[0];
+      trigKey=trigKey.ReplaceAll("HLT_","");
+      trigKey=trigKey.ReplaceAll("_v","");
+      param.k.Muon_Trigger_SF=trigKey+"_POGTight";
+    }
+    if(channel_st.Contains("EMu"))  {
+      TString trigKey=TrigList_POG_Mu[0];
+      trigKey=trigKey.ReplaceAll("HLT_","");
+      trigKey=trigKey.ReplaceAll("_v","");
+      param.k.Muon_Trigger_SF=trigKey+"_POGTight";
+      param.k.Electron_Trigger_SF = "Default";
+    }
+    if(channel_st.Contains("MuE")) {
+      TString trigKey=TrigList_POG_Mu[0];
+      trigKey=trigKey.ReplaceAll("HLT_","");
+      trigKey=trigKey.ReplaceAll("_v","");
+      param.k.Muon_Trigger_SF=trigKey+"_POGTight";
+      param.k.Electron_Trigger_SF = "Default";
+    }
     return param;
   }
   else if (s_setup_version=="HNL_Opt"){
@@ -1471,8 +1581,6 @@ int HNL_LeptonCore::GetIndexNonBestZ(std::vector<Lepton *> leps,double mass_diff
   int     index=-1;
 
   if (leps.size() == 3){
-
-
     Particle ll1 = (*leps[0]);
     ll1+= (*leps[1]);
     Particle ll2 = (*leps[0]);

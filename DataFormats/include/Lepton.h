@@ -27,6 +27,20 @@ public:
     else return "NULL";
   }
 
+  inline TString sLepGenType() const {
+    if((j_LeptonType>=4 || j_LeptonType<-4 )) return  "Conv";
+    if( (j_LeptonType<0 && j_LeptonType>=-4)) {
+      if(j_lep_jetflavour == 5) return "FakeHF_B";
+      if(j_lep_jetflavour == 4) return "FakeHF_C";
+      if(j_lep_jetflavour == 0) return "FakeLF";
+    }
+    if(j_LeptonIsCF) return "CF";
+    if(j_LeptonType==1) return "Prompt";
+    if( j_LeptonType==2) return "Signal";
+    if( j_LeptonType==3) return "Tau";
+    return "";
+    
+  }
 
   inline bool IsPrompt() const {
     if((j_LeptonType==1 || j_LeptonType==2 || j_LeptonType==3)) return true;

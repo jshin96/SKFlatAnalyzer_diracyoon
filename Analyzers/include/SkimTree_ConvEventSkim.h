@@ -1,9 +1,9 @@
 #ifndef SkimTree_ConvEventSkim_h
 #define SkimTree_ConvEventSkim_h
 
-#include "AnalyzerCore.h"
+#include "HNL_LeptonCore.h"
 
-class SkimTree_ConvEventSkim : public AnalyzerCore {
+class SkimTree_ConvEventSkim : public HNL_LeptonCore {
 
 public:
 

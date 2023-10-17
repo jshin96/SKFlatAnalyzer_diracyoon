@@ -5,6 +5,7 @@ SkimTree_EGammaTnP::SkimTree_EGammaTnP(){
 SkimTree_EGammaTnP::~SkimTree_EGammaTnP(){
 }
 void SkimTree_EGammaTnP::initializeAnalyzer(){
+  
   HNL_LeptonCore::initializeAnalyzer(); 
   outfile->cd();
 

@@ -191,7 +191,7 @@ void HNL_ObjectStudies::executeEvent(){
     std::vector<Jet>    AllAK4Jets       = SelectJets   ( param, param.Jet_ID, 10., 5.);
 
     std::vector<FatJet> AllAK8Jets       = SelectFatJets(param, param.FatJet_ID, 200., 5.);
-    std::vector<FatJet> AK8_JetColl      = SelectAK8Jets(AllAK8Jets, 200., 5., true,  1., false, -999, false, 0., 20000., ElectronCollV, MuonCollV);
+    std::vector<FatJet> AK8_JetColl      = SelectAK8Jets(AllAK8Jets, 200., 5., true,  1., false, -999, false, 0., 20000.,"", ElectronCollV, MuonCollV);
     std::vector<Jet>    JetCollLoose     = SelectAK4Jets(AllAK4Jets,     15., 4.7, true,  0.4,0.8, "",   ElectronCollV,MuonCollV, AK8_JetColl);
 
     TString PUIDWP="";
@@ -870,7 +870,7 @@ void HNL_ObjectStudies::RunLeptonChannel(HNL_LeptonCore::Channel channel_ID, std
 
   // UL ANALYSIS                                                                                                                
   
-  Fill_RegionPlots(channel_ID, 0, param.Name,"SSInclusive" ,  VBFJetColl, FatjetColl, LepsT,  METv, nPV, _weight);
+  Fill_RegionPlots(param,"SSInclusive" ,  VBFJetColl, FatjetColl, LepsT,  METv, nPV, _weight);
 
 
   // UL ANALYSIS

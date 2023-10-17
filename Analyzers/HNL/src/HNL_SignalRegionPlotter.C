@@ -23,7 +23,6 @@ void HNL_SignalRegionPlotter::executeEvent(){
   AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("HNL_ULID");
   TString param_signal_name = param_signal.Name;
   RunULAnalysis(param_signal);
-  
 
   return;
 
@@ -53,33 +52,13 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
   Event ev = GetEvent();
   double weight =SetupWeight(ev,param);
 
-  ///// MERGE WJet samples for more stats                                                                                                                                      
-  //if(MCSample.Contains("WJet")){
-  //  vector<TString> vec = {"WJet"};
-  //  double merge_weight = MergeMultiMC( vec, "" );
-  //  weight*= merge_weight;
-  // }
-
-  /// Merge DY samples for more stats                                                                                                                                        
-  //if(MCSample.Contains("DYJets_MG")){
-  //  vector<TString> vec = {"DYMG"};
-  //  double merge_weight = MergeMultiMC( vec, "" );
-  //  weight*= merge_weight;
-  // }
-
-
   
   // HL ID
   std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5); 
   std::vector<Muon>       MuonCollV     = GetMuons    (param.Muon_Veto_ID, 5., 2.4);
   
-
-  TString el_ID = (RunFake) ?  param.Electron_FR_ID : param.Electron_Tight_ID ;
-  TString mu_ID = (RunFake) ?  param.Muon_FR_ID :  param.Muon_Tight_ID ;
-  if(param.FakeMethod == "MC"){
-    el_ID =param.Electron_Tight_ID;
-    mu_ID = param.Muon_Tight_ID;
-  }
+  TString el_ID = SetLeptonID("Electron",param);
+  TString mu_ID = SetLeptonID("Muon", param);
 
   double Min_Muon_Pt     = (RunFake) ? 3. : 5.;
   double Min_Electron_Pt = (RunFake) ? 7. : 10.;
@@ -127,19 +106,13 @@ void HNL_SignalRegionPlotter::RunULAnalysis(AnalyzerParameter param){
 HNL_SignalRegionPlotter::HNL_SignalRegionPlotter(){
 
   cout << "HNL_SignalRegionPlotter::HNL_SignalRegionPlotter  TMVA::Tools::Instance() " << endl;
-  TMVA::Tools::Instance();
-  cout << "Create Reader class " << endl;
-  MVAReaderMM = new TMVA::Reader();
-  MVAReaderEE = new TMVA::Reader();
-  MVAReaderEM = new TMVA::Reader();
+  SetupEvMVA();
   
 }
  
 HNL_SignalRegionPlotter::~HNL_SignalRegionPlotter(){
 
-  delete MVAReaderMM;
-  delete MVAReaderEE;
-  delete MVAReaderEM;
+  DeleteEvMVA();
 
 }
 

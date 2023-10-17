@@ -148,7 +148,7 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
     */
     
     ///// Apply Trigger and Trigger SF
-    if (! (  PassMultiTriggerSelection(dilep_channel, ev, leps,"Dilep", "HighPt") || PassMultiTriggerSelection(dilep_channel, ev, leps,"Dilep", "Lep"))) return ;
+    if (! (  PassMultiDatasetTriggerSelection(dilep_channel, ev, leps,"Dilep", "HighPt") || PassMultiDatasetTriggerSelection(dilep_channel, ev, leps,"Dilep", "Lep"))) return ;
     FillCutflow(HNL_LeptonCore::ChannelDepTrigger, weight_channel, GetChannelString(dilep_channel) +"_MultiTrigger", param_channel);
 
     if (!PassTriggerSelection(dilep_channel, ev, leps,"Dilep")) return ;
@@ -214,9 +214,9 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
 
 	}
 	else{
-	  if(JetColl.size() == 0)Fill_RegionPlots(dilep_channel, 0, param_channel.Name,"FailZeroJet" ,  TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, weight_channel,param_channel.WriteOutVerbose);
-	  if(JetColl.size() == 1)Fill_RegionPlots(dilep_channel, 0, param_channel.Name,"Fail1Jet" ,  TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, weight_channel,param_channel.WriteOutVerbose);
-	  if(JetColl.size() > 1)Fill_RegionPlots(dilep_channel, 0, param_channel.Name,"FailDiJet" ,  JetColl, AK8_JetColl, leps,  METv, nPV, weight_channel,param_channel.WriteOutVerbose);
+	  if(JetColl.size() == 0)Fill_RegionPlots(param,"FailZeroJet" ,  TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, weight_channel);
+	  if(JetColl.size() == 1)Fill_RegionPlots(param,"Fail1Jet" ,  TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, weight_channel);
+	  if(JetColl.size() > 1)Fill_RegionPlots(param,"FailDiJet" ,  JetColl, AK8_JetColl, leps,  METv, nPV, weight_channel);
 	  
 	  
 	  if(JetColl.size() == 0) FillCutflow(HNL_LeptonCore::ChannelDepFAILSR3, weight_channel, GetChannelString(dilep_channel) +"_SR3Fail_0j",param_channel);
@@ -252,7 +252,7 @@ bool  HNL_RegionDefinitions::PassPreselection(HNL_LeptonCore::Channel channel,HN
   // Make sure correct leptons are used                                                                                                                                      
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
 
-  if (! (  PassMultiTriggerSelection(channel, ev, leps,"Dilep", "HighPt") || PassMultiTriggerSelection(channel, ev, leps,"Dilep", "Lep"))) return false;
+  if (! (  PassMultiDatasetTriggerSelection(channel, ev, leps,"Dilep", "HighPt") || PassMultiDatasetTriggerSelection(channel, ev, leps,"Dilep", "Lep"))) return false;
   
   FillCutflow(HNL_LeptonCore::ChannelDepTrigger, w, GetChannelString(channel) +"_MultiTrigger",param);
   
@@ -276,7 +276,7 @@ bool  HNL_RegionDefinitions::PassPreselection(HNL_LeptonCore::Channel channel,HN
   // REMOVE 0 Jet EVENTS
   //int njets     = JetColl.size() + AK8_JetColl.size() + VBF_JetColl.size();
    
-  Fill_RegionPlots(channel, 0, param.Name,"Preselection" , TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w,param.WriteOutVerbose);
+  Fill_RegionPlots(param,"Preselection" , TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w);
   FillCutflow(HNL_LeptonCore::ChannelDepPresel, w, GetChannelString(channel) +"_Presel",param);
   
   return true;
@@ -339,7 +339,7 @@ TString HNL_RegionDefinitions::RunSignalRegionAK8String(HNL_LeptonCore::Channel 
   
   TString signal_region1 = "HNL_SR1";
   
-  Fill_RegionPlots(channel, 0, param.Name,"InclusiveSR1" , TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w,param.WriteOutVerbose);
+  Fill_RegionPlots(param,"InclusiveSR1" , TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w);
 
   if(PassHMMet)FillCutflow(HNL_LeptonCore::SR1, w, "SR1_MET",param);
 
@@ -424,7 +424,7 @@ TString HNL_RegionDefinitions::RunSignalRegionAK8String(HNL_LeptonCore::Channel 
       
   FillHist( param.Name+"/LimitShape_SR1/N1Mass_Central",  MN1,  w, 4, ml1jbins, "Reco M_{l1jj}");
   
-  Fill_RegionPlots(channel, 0, param.Name,"FinalSR1" ,  TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w,param.WriteOutVerbose);
+  Fill_RegionPlots(param,"FinalSR1" ,  TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w);
   
   for(int ibin=1; ibin < nSRbins; ibin++){
     if(MN1 < ml1jbins[ibin]) return "SR1_MNbin"+to_string(ibin+2);
@@ -499,7 +499,7 @@ TString HNL_RegionDefinitions::RunSignalRegionWWString(HNL_LeptonCore::Channel c
 
   if(!PassVBF(JetColl,leps,750., true)) return "false";
 
-  Fill_RegionPlots(channel, 0, param.Name,"InclusiveSR2" ,  TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w,param.WriteOutVerbose);
+  Fill_RegionPlots(param,"InclusiveSR2" ,  TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w);
 
   FillCutflow(HNL_LeptonCore::SR2, w, "SR2_VBF",param);
 
@@ -509,7 +509,7 @@ TString HNL_RegionDefinitions::RunSignalRegionWWString(HNL_LeptonCore::Channel c
   for(auto ij : JetColl) HT += ij.Pt();
   
 
-  Fill_RegionPlots(channel, 0, param.Name,"PassSR2" ,  TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w,param.WriteOutVerbose);
+  Fill_RegionPlots(param,"PassSR2" ,  TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w);
 
 
   double htltcut = 2.;
@@ -615,7 +615,7 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4String(HNL_LeptonCore::Channel 
   if(!CheckLeptonFlavourForChannel(channel, leps)) return "false";
   FillCutflow(HNL_LeptonCore::SR3, w, "SR3_lep_pt",param);
 
-  Fill_RegionPlots(channel, 0, param.Name,"InclusiveSR3" ,TauColl,  JetColl, AK8_JetColl, leps,  METv, nPV, w,param.WriteOutVerbose);
+  Fill_RegionPlots(param,"InclusiveSR3" ,TauColl,  JetColl, AK8_JetColl, leps,  METv, nPV, w);
 
   if (leps_veto.size() != 2) return "false";
 
@@ -626,7 +626,7 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4String(HNL_LeptonCore::Channel 
 
   Particle ll =  (*leps[0]) + (*leps[1]);
   if (channel==EE  && (fabs(ll.M()-M_Z) < 10)) {
-    Fill_RegionPlots(channel, 0, param.Name,"SR3ZPeak" ,TauColl,  JetColl, AK8_JetColl, leps,  METv, nPV, w,param.WriteOutVerbose);
+    Fill_RegionPlots(param,"SR3ZPeak" ,TauColl,  JetColl, AK8_JetColl, leps,  METv, nPV, w);
     return "false";
   }
 
@@ -636,13 +636,11 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4String(HNL_LeptonCore::Channel 
   double met2_st = pow(METv.Pt(),2.)/ ST;
   bool PassHMMet    = (met2_st < 15);
 
-  double LowerMassSR3WmassCut = 50.;   double UpperMassSR3WmassCut = 120.;
-  
   int  NB_JetColl      =  B_JetColl.size();
 
   if(NB_JetColl==0 && PassHMMet){
-    if(JetColl.size()==0)  Fill_RegionPlots(channel, 0, param.Name,"ZeroJetSR3" ,TauColl,  JetColl, AK8_JetColl, leps,  METv, nPV, w,param.WriteOutVerbose);
-    if(JetColl.size()==1)  Fill_RegionPlots(channel, 0, param.Name,"OneJetSR3" ,  TauColl,JetColl, AK8_JetColl, leps,  METv, nPV, w,param.WriteOutVerbose);
+    if(JetColl.size()==0)  Fill_RegionPlots(param,"ZeroJetSR3" ,TauColl,  JetColl, AK8_JetColl, leps,  METv, nPV, w);
+    if(JetColl.size()==1)  Fill_RegionPlots(param,"OneJetSR3" ,  TauColl,JetColl, AK8_JetColl, leps,  METv, nPV, w);
   }
 
   
@@ -682,7 +680,7 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4String(HNL_LeptonCore::Channel 
 
   if(NB_JetColl>  0)   return "false";
   
-  Fill_RegionPlots(channel, 0, param.Name,"DiJetSR3" ,TauColl,  JetColl, AK8_JetColl, leps,  METv, nPV, w,param.WriteOutVerbose);
+  Fill_RegionPlots(param,"DiJetSR3" ,TauColl,  JetColl, AK8_JetColl, leps,  METv, nPV, w);
 
   FillCutflow(HNL_LeptonCore::SR3, w, "SR3_bveto",param);
 

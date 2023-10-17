@@ -3,8 +3,7 @@
 
 void HNL_LeptonCore::SetupTriggerLists(){
 
-  // clear Trig vect                                                                                                                                                                         
-
+  // clear Trig vect
   TrigList_HNL_HighPtMu.clear();
   TrigList_HNL_DblMu.clear();
   TrigList_HNL_Mu.clear();
@@ -28,49 +27,40 @@ void HNL_LeptonCore::SetupTriggerLists(){
   TrigList_Full_EGMu.clear();
 
   if(GetEraShort()=="2016a"){
-
-    // Lumi = 19.5 fb-1                                                                                                                                                                      
-    //2016a run period 278808                                                                                                                                                                
-    // MU                                                                                                                                                                                    
-    TrigList_HNL_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v",
-                          "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v"};
-
+    // Lumi = 19.5 fb-1                                      
+    //2016a run period 278808 
+    // MU  
+    TrigList_HNL_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v",     "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v"};
     TrigList_HNL_MuEG  = {"HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v"};
     TrigList_POG_MuEG  = {"HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v"};
-
     TrigList_HNL_EGMu  = {"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v"};
     TrigList_POG_EGMu  = {"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v"};
-
-
-    // 278806 and 278807 should be removed frmo thsi dataset                                                                                                                                 
-    // REF https://twiki.cern.ch/twiki/bin/view/CMS/PdmVDatasetsUL2016                                                                                                                       
-    // Run Range Bver2 [273150] - F [278770]                                                                                                                                                 
+    
+    // 278806 and 278807 should be removed frmo thsi dataset 
+    // REF https://twiki.cern.ch/twiki/bin/view/CMS/PdmVDatasetsUL2016
+    // Run Range Bver2 [273150] - F [278770]                                                                      
+    
   }
   if(GetEraShort()=="2016b"){
 
-    // Lumi=16.8 /fb.                                                                                                                                                                        
-    // MU                                                                                                                                                                                    
-    TrigList_HNL_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
-                          "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"};// "HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"};                                                                        
-
+    // Lumi=16.8 /fb.
+    // MU 
+    TrigList_HNL_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"};// "HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"};               
     TrigList_HNL_MuEG  = {"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
     TrigList_POG_MuEG  = {"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
-
     TrigList_HNL_EGMu  = {"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v"};
     TrigList_POG_EGMu  = {"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v"};
 
-    //https://twiki.cern.ch/twiki/bin/view/CMS/MuonHLT2016                                                                                                                                   
-    // Do we include HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v which is only in periodH                                                                                                      
-    // Do we include HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v in perfiod F + G                                                                             
+    //https://twiki.cern.ch/twiki/bin/view/CMS/MuonHLT2016                                                                                                                     
+    // Do we include HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v which is only in periodH                                                                                         
+    // Do we include HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v in perfiod F + G                                                              
   }
   if(DataYear==2016){
-
-    // Mu};                                                                                                                                                                                  
 
     TrigList_POG_Mu = {    "HLT_IsoMu24_v",   "HLT_IsoTkMu24_v",};
     TrigList_HNL_HighPtMu = {"HLT_Mu50_v",   "HLT_TkMu50_v"};
     TrigList_HNL_Mu = {    "HLT_IsoMu24_v",   "HLT_IsoTkMu24_v",};
-    // EG                                                                                                                                                                                    
+    // EG
     TrigList_HNL_DblEG = {  "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v","HLT_Photon175_v"};
     TrigList_HNL_EG    = {  "HLT_Ele27_WPTight_Gsf_v" ,
                             "HLT_Ele25_eta2p1_WPTight_Gsf_v" ,
@@ -82,25 +72,23 @@ void HNL_LeptonCore::SetupTriggerLists(){
                             "HLT_Photon175_v",
                             "HLT_DoubleEle33_CaloIdL_MW_v",
                             "HLT_DoubleEle37_Ele27_CaloIdL_GsfTrkIdVL_v"};
-    //https://twiki.cern.ch/twiki/bin/view/CMS/EgHLTRunIISummary                                                                                                                             
+    //https://twiki.cern.ch/twiki/bin/view/CMS/EgHLTRunIISummary 
     TrigList_HNL_HighPtEG = {"HLT_Photon175_v","HLT_DoublePhoton60_v"};
     TrigList_POG_EG    = {  "HLT_Ele27_WPTight_Gsf_v" ,"HLT_Photon175_v"};
 
-    //https://twiki.cern.ch/twiki/bin/view/CMS/EgHLTPathDetails                                                                                                                              
-
-
+    //https://twiki.cern.ch/twiki/bin/view/CMS/EgHLTPathDetails                                                                                                             
+    
   }  // END OF 2016 Triggers   
 
   else if(DataYear==2017){
 
 
     TrigList_HNL_DblMu = { "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
-                           "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v",
+			   "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v",
                            "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v" };
     TrigList_HNL_Mu = {  "HLT_IsoMu27_v"};
     TrigList_POG_Mu = {  "HLT_IsoMu27_v"};
     TrigList_HNL_HighPtMu = {"HLT_Mu50_v"};
-
 
     TrigList_HNL_DblEG = { "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v","HLT_Photon200_v"};
     TrigList_HNL_EG = { "HLT_Ele32_WPTight_Gsf_v",
@@ -151,36 +139,26 @@ void HNL_LeptonCore::SetupTriggerLists(){
   for(auto itrig : TrigList_HNL_DblMu)    TrigList_Full_Mu.push_back(itrig);
   for(auto itrig : TrigList_HNL_Mu)       TrigList_Full_Mu.push_back(itrig);
   for(auto itrig : TrigList_HNL_HighPtMu) TrigList_Full_Mu.push_back(itrig);
-
   for(auto itrig : TrigList_HNL_DblEG)    TrigList_Full_EG.push_back(itrig);
   for(auto itrig : TrigList_HNL_EG)       TrigList_Full_EG.push_back(itrig);
   for(auto itrig : TrigList_HNL_HighPtEG) TrigList_Full_EG.push_back(itrig);
-
   for(auto itrig : TrigList_HNL_MuEG)     TrigList_Full_MuEG.push_back(itrig);
   for(auto itrig : TrigList_Full_Mu)      TrigList_Full_MuEG.push_back(itrig);
   for(auto itrig : TrigList_Full_EG)      TrigList_Full_MuEG.push_back(itrig);
   for(auto itrig : TrigList_HNL_EGMu)     TrigList_Full_EGMu.push_back(itrig);
 
-
-  for(auto itrig : TrigList_Full_Mu){
-    cout << "TrigList_Full_Mu  : "<< itrig << endl;
-  }
-  for(auto itrig : TrigList_Full_EG){
-    cout << "TrigList_Full_EG  : "<< itrig << endl;
-  }
-
+  for(auto itrig : TrigList_Full_Mu)   cout << "TrigList_Full_Mu  : "<< itrig << endl;
+  for(auto itrig : TrigList_Full_EG)   cout << "TrigList_Full_EG  : "<< itrig << endl;
+  
   return;
-
-
+  
+  
 }
 
+bool HNL_LeptonCore::PassMultiDatasetTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selectionMain, TString selectionOR){
 
-
-bool HNL_LeptonCore::PassMultiTriggerSelection(HNL_LeptonCore::Channel channel,Event ev, std::vector<Lepton *> leps, TString selectionMain, TString selectionOR){
-
-
-  bool PassTrigger  = PassTriggerSelection(channel, ev,leps, selectionMain, true);
-  bool PassTrigger2  = PassTriggerSelection(channel, ev,leps, selectionOR, true);
+  bool PassTrigger       = PassTriggerSelection(channel, ev,leps, selectionMain, true);
+  bool PassTrigger2      = PassTriggerSelection(channel, ev,leps, selectionOR, true);
   bool PassTriggerAllPD  = PassTriggerSelection(channel, ev,leps, selectionMain, false);
 
   if(!IsData) return (PassTrigger || PassTrigger2);
@@ -198,6 +176,7 @@ bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event 
   bool PassTrigger(false);
   bool apply_ptcut(true);
 
+
   std::vector<Lepton *> leps_eg;
   std::vector<Lepton *> leps_muon;
 
@@ -205,12 +184,13 @@ bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event 
     for(auto ilep : leps) {
       if(ilep->LeptonFlavour() == Lepton::MUON) leps_muon.push_back(ilep);
     }
+    bool passTrig=false;
 
-    if(selection == "Dilep")            return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_DblMu,check_pd);
-    else  if(selection == "Lep")        return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_Mu,check_pd);
-    else  if(selection == "POGSglLep")  return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_POG_Mu,check_pd);
-    else  if(selection == "HighPt")     return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_HighPtMu,check_pd);
-    else  if(selection == "Full")       return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_Full_Mu,check_pd);
+    if(selection == "Dilep")            return PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_DblMu,check_pd);
+    else  if(selection == "Lep")        return PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_Mu,check_pd);
+    else  if(selection == "POGSglLep")  return PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_POG_Mu,check_pd);
+    else  if(selection == "HighPt")     return PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_HighPtMu,check_pd);
+    else  if(selection == "Full")       return PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_Full_Mu,check_pd);
     else {
       cout << "[HNL_LeptonCore::PassTriggerSelection ] selection " << selection <<  "not found.." << endl;
       exit(EXIT_FAILURE);
@@ -240,19 +220,14 @@ bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event 
       if(ilep->LeptonFlavour() == Lepton::ELECTRON) leps_eg.push_back(ilep);
     }
 
-    if(selection == "Dilep")       return   PassTriggerAndCheckStream(apply_ptcut,leps,     ev,TrigList_HNL_EGMu,check_pd);
-    if(selection == "POGSglLep")   return  (PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_POG_Mu,check_pd) || 
-					    PassTriggerAndCheckStream(apply_ptcut,leps_eg,  ev,TrigList_POG_EG,check_pd)) ;
-    else if(selection == "Lep")    return  (PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_Mu,check_pd) || 
-					    PassTriggerAndCheckStream(apply_ptcut,leps_eg,  ev,TrigList_HNL_EG,check_pd));
-    else if(selection == "HighPt") return  (PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_HighPtMu,check_pd) || 
-					    PassTriggerAndCheckStream(apply_ptcut,leps_eg,  ev,TrigList_HNL_HighPtEG,check_pd));
-    else    if(selection == "Full") return  PassTriggerAndCheckStream(apply_ptcut,leps,     ev,TrigList_Full_EGMu,check_pd);
+    if(selection == "Dilep")     return  PassTriggerAndCheckStream(apply_ptcut,leps,     ev,TrigList_HNL_EGMu,check_pd);
+    if(selection == "POGSglEl")  return  PassTriggerAndCheckStream(apply_ptcut,leps_eg,  ev,TrigList_POG_EG,check_pd);
+    if(selection == "POGSglMu")  return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_POG_Mu,check_pd);
+    if(selection == "Full") return  PassTriggerAndCheckStream(apply_ptcut,leps,     ev,TrigList_Full_EGMu,check_pd);
 
-    else {
-      cout << "[HNL_LeptonCore::PassTriggerSelection ] selection " <<  selection << " not found.." << endl;
-      exit(EXIT_FAILURE);
-    }
+    cout << "[HNL_LeptonCore::PassTriggerSelection ] selection " <<  selection << " not found.." << endl;
+    exit(EXIT_FAILURE);
+  
   }
 
   if (channel == MuE){
@@ -263,12 +238,9 @@ bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event 
     }
 
     if(selection == "Dilep")       return   PassTriggerAndCheckStream(apply_ptcut,leps,     ev,TrigList_HNL_MuEG,check_pd);
-    if(selection == "POGSglLep")   return  (PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_POG_Mu,check_pd) || 
-				            PassTriggerAndCheckStream(apply_ptcut,leps_eg,  ev,TrigList_POG_EG,check_pd)) ;
-    else if(selection == "Lep")    return  (PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_Mu,check_pd) || 
-					    PassTriggerAndCheckStream(apply_ptcut,leps_eg,  ev,TrigList_HNL_EG,check_pd));
-    else if(selection == "HighPt") return  (PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_HNL_HighPtMu,check_pd) || 
-					    PassTriggerAndCheckStream(apply_ptcut,leps_eg,  ev,TrigList_HNL_HighPtEG,check_pd) );
+    if(selection == "POGSglEl")    return   PassTriggerAndCheckStream(apply_ptcut,leps_eg,  ev,TrigList_POG_EG,check_pd);
+    if(selection == "POGSglMu")    return   PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_POG_Mu,check_pd);
+
     else    if(selection == "Full") return  PassTriggerAndCheckStream(apply_ptcut,leps,     ev,TrigList_Full_MuEG,check_pd);
 
     else {
@@ -276,10 +248,6 @@ bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event 
       exit(EXIT_FAILURE);
     }
   }
-
-
-
-
 
   return PassTrigger;
 }
@@ -494,3 +462,38 @@ bool HNL_LeptonCore::PassTriggerAndCheckStream(bool apply_ptcut,vector<Lepton*> 
   return trig_passed;
 }
 
+
+void HNL_LeptonCore::EvalTrigWeight(HNL_LeptonCore::Channel channel, vector<Muon> muons, vector<Electron> electrons, AnalyzerParameter& p, double& w) {
+  
+  if(IsData) return;
+
+  double trigW = HNLZvtxSF(channel);
+  w*=trigW;
+  FillWeightHist(p.ChannelDir()+"/HNLZvtxSF", trigW);
+  
+  if(!p.Apply_Weight_TriggerSF) {
+    p.w.triggerSF =trigW;
+    return;
+  }
+    
+  TString SFKey_Trig = "Default";
+  if(p.TriggerSelection == "Dilep"){
+    if(channel == MuMu)    SFKey_Trig = p.k.Muon_Trigger_SF;
+    else if(channel == EE) SFKey_Trig = p.k.Electron_Trigger_SF;
+    else SFKey_Trig = p.k.EMu_Trigger_SF;
+  }
+  else{
+    if(channel == EMu)  SFKey_Trig = p.k.Electron_Trigger_SF;
+    if(channel == MuE)  SFKey_Trig = p.k.Muon_Trigger_SF;
+  }
+
+  double this_trigsf =  SFKey_Trig!=""? mcCorr->GetTriggerSF(electrons, muons, SFKey_Trig, ""):1.;
+  FillWeightHist(p.ChannelDir()+"/Trig_SF", this_trigsf);
+
+  w*=(this_trigsf);
+  p.w.triggerSF =trigW*this_trigsf;
+  
+  return;
+  
+
+}

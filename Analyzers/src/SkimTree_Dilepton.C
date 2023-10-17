@@ -6,6 +6,9 @@ void SkimTree_Dilepton::initializeAnalyzer(){
   cout << "[SkimTree_Dilepton::initializeAnalyzer()] gDirectory = " << gDirectory->GetName() << endl;
   newtree = fChain->CloneTree(0);
 
+  HNL_LeptonCore::initializeAnalyzer();
+
+
   double_triggers.clear();
   single_electron_triggers.clear();
   single_muon_triggers.clear();

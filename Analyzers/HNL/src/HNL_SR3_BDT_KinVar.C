@@ -163,7 +163,7 @@ void HNL_SR3_BDT_KinVar::executeEvent(){
     std::vector<Jet>    jets_tmp       = GetJets("tight", 15., 5);
 
     std::vector<Jet>    AK4_JetAllColl = GetJets("NoID", 10., 3.0);
-    std::vector<FatJet> AK8_JetColl    = SelectAK8Jets(fatjets_tmp, 200., 2.7, true, 1., false, -999, false, 40., 130., ElectronCollV, MuonCollV);
+    std::vector<FatJet> AK8_JetColl    = SelectAK8Jets(fatjets_tmp, 200., 2.7, true, 1., false, -999, false, 40., 130., "", ElectronCollV, MuonCollV);
     std::vector<Jet>    AK4_JetColl    = SelectAK4Jets(jets_tmp,     20., 2.7, true, 0.4, 0.8, "", ElectronCollV, MuonCollV, AK8_JetColl);
     std::vector<Jet>    AK4_JetVBFColl = SelectAK4Jets(jets_tmp,     30., 4.7, true, 0.4, 0.8, "", ElectronCollV, MuonCollV, AK8_JetColl);
 

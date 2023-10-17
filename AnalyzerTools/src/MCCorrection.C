@@ -4830,11 +4830,8 @@ double MCCorrection::MuonTracker_SF(TString ID, double eta, double pt, int sys){
   if(ID=="Default") return 1.;
   double value = 1.;  double error = 0.;
 
-  eta = fabs(eta);
-
-  if(value > 0) {
-    return value+double(sys)*error;
-  }
+  if (pt < 25) pt = 25.1;
+  if (pt > 65) pt = 64.1;
   
   TH2F *this_hist = map_hist_Muon["Tracker_SF_"+ID];
   if(!this_hist){
@@ -5215,7 +5212,7 @@ double MCCorrection::ElectronReco_SF(TString key, double sceta, double pt, int s
 
   double value = 1.;
   double error = 0.;
-
+  
   if(key == "Default") return 1.;
 
   if(key == "RECO_SF") {
@@ -5238,24 +5235,24 @@ double MCCorrection::ElectronReco_SF(TString key, double sceta, double pt, int s
     int this_bin = this_hist->FindBin(sceta,pt);
     value = this_hist->GetBinContent(this_bin);
     error = this_hist->GetBinError(this_bin);
+
     return value+double(sys)*error;
   }
 
   if(key == "RECO_SF_AFB") {
 
     TString ptrange = "ptgt20";
-    if(pt<20.) ptrange = "ptlt20";
 
-    if(pt<10.) pt = 10.;
+    if(pt<20.) pt = 20.;
     if(pt>=500.) pt = 499.;
     if(sceta>=2.5) sceta = 2.49;
     if(sceta<-2.5) sceta = -2.5;
 
-    TH2F *this_hist = map_hist_Electron["RECO_SF_"+ptrange];
+    TH2F *this_hist = map_hist_Electron["RECO_AFB_SF_"+ptrange];
     if(!this_hist){
       if(IgnoreNoHist) return 1.;
       else{
-        cerr << "[MCCorrection::ElectronReco_SF] No "<<"RECO_SF_"+ptrange<<endl;
+        cerr << "[MCCorrection::ElectronReco_SF] No "<<"RECO_AFB_SF_"+ptrange<<endl;
         exit(ENODATA);
       }
     }

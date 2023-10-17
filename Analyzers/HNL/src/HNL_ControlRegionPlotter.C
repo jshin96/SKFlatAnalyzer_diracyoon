@@ -63,7 +63,7 @@ void HNL_ControlRegionPlotter::executeEvent(){
 void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector<TString> CRs){
 
 
-  if(_jentry==0) param.PrintParameters();
+  //  if(_jentry==0) param.PrintParameters();
   run_Debug = (_jentry%nLog==0);
 
   if(run_Debug) cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
@@ -73,49 +73,30 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   /// SetupWeight applies w_GenNorm=1., w_BR=1., w_PU  w_Pref  
   double weight =SetupWeight(ev,param);
   
-  if(run_Debug) cout << "HNL_ControlRegionPlotter::RunControlRegions Gen*Lumi Weight = " << weight << endl;
-  if(run_Debug) cout << "HNL_ControlRegionPlotter::RunControlRegions ParamWeight = " << param.EventWeight() << endl; 
+  if(run_Debug) cout << "[0] HNL_ControlRegionPlotter::RunControlRegions Gen*Lumi Weight = " << weight << endl;
+  if(run_Debug) cout << "[0] HNL_ControlRegionPlotter::RunControlRegions ParamWeight = " << param.EventWeight() << endl;
+
 
   // HL ID                                                                                                                                                   
   std::vector<Electron>   ElectronVetoColl = GetElectrons(param.Electron_Veto_ID, 10.,  2.5);
   std::vector<Muon>       MuonVetoColl     = GetMuons    (param.Muon_Veto_ID,     10.,  2.4);
 
   /// IF ruunning fake then use FR_ID not Tight
-  TString Electron_ID = (RunFake) ?  param.Electron_FR_ID  : param.Electron_Tight_ID ;
-  TString Muon_ID     = (RunFake) ?  param.Muon_FR_ID      : param.Muon_Tight_ID ;
-  if(param.FakeMethod == "MC"){
-    Electron_ID =param.Electron_Tight_ID;
-    Muon_ID = param.Muon_Tight_ID;
-  }
+  TString Electron_ID = SetLeptonID("Electron",param);
+  TString Muon_ID     = SetLeptonID("Muon", param);
 
   double Min_Muon_Pt     = RunFake ? 7  : 10.;
   double Min_Electron_Pt = RunFake ? 10 : 15;
 
-  if(run_Debug) cout << "HNL_ControlRegionPlotter::RunControlRegions Min_Muon_Pt = " << Min_Muon_Pt << endl;
-  if(run_Debug) cout << "HNL_ControlRegionPlotter::RunControlRegions Min_Electron_Pt = " << Min_Electron_Pt << endl;
-
-
-  // 3 Methods to run MC
-  // 1) Fakes/ CF are done by data and Conv done my MC
-  // - in this case if MC should remove Fake lep and CF leps
-  // - this is done by Adding option 
 
   std::vector<Muon>       MuonTightCollInit     = SelectMuons    ( param,Muon_ID,     Min_Muon_Pt,     2.4,weight); 
   std::vector<Electron>   ElectronTightCollInit = SelectElectrons( param,Electron_ID, Min_Electron_Pt, 2.5,weight);
+  if(run_Debug) cout << "Nlep = " << MuonTightCollInit.size() << " " << ElectronTightCollInit.size() << endl;
+  if(run_Debug) cout << "[1] HNL_ControlRegionPlotter::RunControlRegions Gen*Lumi Weight = " << weight << endl;
+  if(run_Debug) cout << "[1] HNL_ControlRegionPlotter::RunControlRegions ParamWeight = " << param.EventWeight() << endl;
 
-  if(run_Debug)  cout << "HNL_ControlRegionPlotter::RunControlRegions Number of Muon Tight Coll = " << MuonTightCollInit.size() << endl;
-  if(run_Debug)  cout << "HNL_ControlRegionPlotter::RunControlRegions Number of Electron Tight Coll  = " << ElectronTightCollInit.size() << endl;
-  
   std::vector<Muon>       MuonTightColl      =  GetLepCollByRunType    (MuonTightCollInit,    param);  
   std::vector<Electron>   ElectronTightColl  =  GetLepCollByRunType    (ElectronTightCollInit,param);
-  std::vector<Lepton *>   Leps_Veto          =  MakeLeptonPointerVector(MuonVetoColl,ElectronVetoColl);
-
-  if(run_Debug) {
-    cout << "HNL_ControlRegionPlotter::RunControlRegions Number of GenMatched Tight Muons = "     << MuonTightColl.size() << endl;
-    cout << "HNL_ControlRegionPlotter::RunControlRegions Number of GenMatched Tight Electrons = " << ElectronTightColl.size() << endl;
-  }
-
-  // Creat Lepton vector to have lepton blind codes                                                                                                          
 
   Particle METv = GetvMET("PuppiT1xyULCorr",param); // returns MET with systematic correction                                                                      
 
@@ -125,10 +106,17 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   std::vector<Jet>    AK4_JetCollLoose            = GetHNLJets("Loose",     param);
   std::vector<Jet>    AK4_VBF_JetColl             = GetHNLJets("VBFTight",  param);
   std::vector<Jet>    AK4_BJetColl                = GetHNLJets("BJet", param);
+  
+  if(run_Debug) cout << "[2] HNL_ControlRegionPlotter::RunControlRegions Gen*Lumi Weight = " << weight << endl;
+  if(run_Debug) cout << "[2] HNL_ControlRegionPlotter::RunControlRegions ParamWeight = " << param.EventWeight() << endl;
 
   EvalJetWeight(AK4_JetColl, AK8_JetColl, weight, param);
   
-  RunAllControlRegions(ElectronTightColl,ElectronVetoColl,MuonTightColl,MuonVetoColl, AK4_JetAllColl, AK4_JetColl,AK4_VBF_JetColl,AK8_JetColl, AK4_BJetColl, ev,METv, param, CRs,weight);
+  if(run_Debug) cout << "[3] HNL_ControlRegionPlotter::RunControlRegions Gen*Lumi Weight = " << weight << endl;
+  if(run_Debug) cout << "[3] HNL_ControlRegionPlotter::RunControlRegions ParamWeight = " << param.EventWeight() << endl;
+  RunAllControlRegions(ElectronTightColl,ElectronVetoColl,MuonTightColl,MuonVetoColl, 
+		       AK4_JetAllColl, AK4_JetColl,AK4_VBF_JetColl,AK8_JetColl, AK4_BJetColl, 
+		       ev,METv, param, CRs,weight);
   
 
 }
@@ -138,9 +126,10 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
 
 HNL_ControlRegionPlotter::HNL_ControlRegionPlotter(){
 
-
+  SetupEvMVA();
 }
  
 HNL_ControlRegionPlotter::~HNL_ControlRegionPlotter(){
 
+  DeleteEvMVA();
 }

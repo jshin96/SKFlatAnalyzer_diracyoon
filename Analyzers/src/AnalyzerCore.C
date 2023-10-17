@@ -12,25 +12,10 @@ AnalyzerCore::AnalyzerCore(){
   muonGE          = new GeneralizedEndpoint();
   muonGEScaleSyst = new GEScaleSyst();
 
-  JECSources = {"AbsoluteStat","AbsoluteScale","AbsoluteFlavMap","AbsoluteMPFBias","Fragmentation","SinglePionECAL","SinglePionHCAL","FlavorQCD","TimePtEta","RelativeJEREC1","RelativeJEREC2","RelativeJERHF","RelativePtBB","RelativePtEC1","RelativePtEC2","RelativePtHF","RelativeBal","RelativeSample","RelativeFSR","RelativeStatFSR","RelativeStatEC","RelativeStatHF","PileUpDataMC","PileUpPtRef","PileUpPtBB","PileUpPtEC1","PileUpPtEC2","PileUpPtHF","FlavorZJet","FlavorPhotonJet","FlavorPureGluon","FlavorPureQuark","FlavorPureCharm","FlavorPureBottom","Total"};
-
   iSetupLeptonBDTv5=false;
   iSetupLeptonBDTv4=false;
-  
-  TimeTagMatcher.clear();
-  TimerMap.clear();
-  TimerMap["LATEST"] = std::clock();
-  TimingMap.clear();
-  TimingMap["start"] = std::clock();
-
-  //double time_elapsed_ms = 1000.0 * (c_end-c_start) / CLOCKS_PER_SEC;
-  //std::cout << "CPU time used: " << time_elapsed_ms / 1000.0 << " s\n";
-
-
-  nLog=50000;
-
-  /// TESTBDT couts comparison of branches and Function 
-  TESTBDT=false;
+  IsDYSample=false;
+  IsTTSample=false;
     
 }
 
@@ -97,6 +82,28 @@ AnalyzerCore::~AnalyzerCore(){
 
 }
 
+void AnalyzerCore::initializeAnalyzer(){
+
+  IsDYSample=false;
+  IsTTSample=false;
+  if(MCSample.Contains("DYJets")||MCSample.Contains("ZToEE")||MCSample.Contains("ZToMuMu")||MCSample.Contains(TRegexp("DY[0-9]Jets"))) IsDYSample=true;
+  if(MCSample.Contains(TRegexp("TT[LJ][LJ]"))) IsTTSample=true;
+  if(IsSignal()) IsDYSample=false;
+
+  cout << "AnalyzerCore::initializeAnalyzer IsDYSample=" << IsDYSample << endl;
+  cout << "AnalyzerCore::initializeAnalyzer IsTTSample=" << IsTTSample << endl;
+
+  run_Debug=false;  TESTBDT=false;  nLog=50000;
+
+  TimeTagMatcher.clear();  TimerMap.clear();
+  TimerMap["LATEST"] = std::clock();
+  TimingMap.clear();
+  TimingMap["start"] = std::clock();
+
+  JECSources = {"AbsoluteStat","AbsoluteScale","AbsoluteFlavMap","AbsoluteMPFBias","Fragmentation","SinglePionECAL","SinglePionHCAL","FlavorQCD","TimePtEta","RelativeJEREC1","RelativeJEREC2","RelativeJERHF","RelativePtBB","RelativePtEC1","RelativePtEC2","RelativePtHF","RelativeBal","RelativeSample","RelativeFSR","RelativeStatFSR","RelativeStatEC","RelativeStatHF","PileUpDataMC","PileUpPtRef","PileUpPtBB","PileUpPtEC1","PileUpPtEC2","PileUpPtHF","FlavorZJet","FlavorPhotonJet","FlavorPureGluon","FlavorPureQuark","FlavorPureCharm","FlavorPureBottom","Total"};
+  
+
+};
 
 
 
@@ -1206,31 +1213,7 @@ void AnalyzerCore::beginEvent(){
 }
 void AnalyzerCore::initializeAnalyzerTools(){
 
-  //==== MCCorrection
-  mcCorr->SetMCSample(MCSample);
-  mcCorr->SetEra(GetEra());
-  mcCorr->SetIsDATA(IsDATA);
-  mcCorr->SetEventInfo(run, lumi, event);
-  mcCorr->SetIsFastSim(IsFastSim);
-  if(!IsDATA){
-    mcCorr->ReadHistograms();
-    mcCorr->SetupJetTagging();
-  }
-
-  puppiCorr->SetEra(GetEra());
-  puppiCorr->ReadHistograms();
-
-  //==== FakeBackgroundEstimator
-
-  fakeEst->SetEra(GetEra());
-  fakeEst->ReadHistograms();
-  //==== CFBackgroundEstimator
-  
-  cfEst->SetEra(GetEra());
-  cfEst->ReadHistograms();
-  
-
-  /*                                                                                                                                                                                                                                                                          
+  /*                                                                                                                                                                                                                                                                         
                                                                                                                                                                                                                                                                               
     // In your analyser code add this line to constructor to fill map with JEC source values.                                                                                                                                                                                 
     for(auto jec_source : JECSources)   SetupJECUncertainty(jec_source, "AK4PFchs");                                                                                                                                                                                          

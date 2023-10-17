@@ -40,12 +40,14 @@ void HNL_LeptonCore::EvalMuonIDWeight(std::vector<Muon> muons,AnalyzerParameter&
     double this_recosf = (param.Apply_Weight_RECOSF) ?  mcCorr->MuonReco_SF(param.k.Muon_RECO_SF, this_eta, reco_pt,SystDir_MuonRecoSF) : 1. ;
     this_weight *= this_recosf;
     FillWeightHist(param.ChannelDir()+"/RecoMuWeight_"+param.Name,this_recosf);
+    param.w.muonRECOSF=this_recosf;
     
     /// [2]  TRACKING ID SF  (Taken from https://github.com/sansan9401/SKFlatAnalyzer/blob/Run2UltraLegacy_asym/ branch Oct 14 23)
     double this_trackersf = (param.Apply_Weight_MuonTrackerSF) ? mcCorr->MuonTracker_SF("NUM_GlobalMuons", this_eta, reco_pt,0) : 1. ;
     this_weight *= this_trackersf;
     FillWeightHist(param.ChannelDir()+"/TrackerMuWeight_"+param.Name,this_trackersf);
-    
+    param.w.muonTrackerSF =this_trackersf;
+
     /// [3] ID SF needs KEY input 
     double this_idsf   = (param.Apply_Weight_IDSF) ?  mcCorr->MuonID_SF (param.k.Muon_ID_SF,  this_eta, this_pt,SystDir_MuonIDSF) : 1.;
     double this_isosf  = (param.Apply_Weight_IDSF) ?  mcCorr->MuonISO_SF(param.k.Muon_ISO_SF, this_eta, this_pt,SystDir_MuonISOSF) : 1. ;
@@ -55,11 +57,12 @@ void HNL_LeptonCore::EvalMuonIDWeight(std::vector<Muon> muons,AnalyzerParameter&
     FillWeightHist(param.ChannelDir()+"/ISOMuWeight_"+param.Name,this_isosf);
     this_weight *= this_idsf*this_isosf;
     if(param.DEBUG) cout << "GetMuonSFEventWeight this_idsf=" << this_idsf << " this_isosf=" << this_isosf  << endl;
-
+    
   }// end of muon loop                                                                                                                                                                                                                                               
   FillWeightHist(param.ChannelDir()+"/FullMuWeight_"+param.Name,this_weight);
   
   // Update ev weight using combined corr weight
+  if(param.DEBUG) cout << "EvalMuonIDWeight  = " <<  this_weight << endl;
   ev_weight*=this_weight;
   return;
 }
@@ -140,15 +143,18 @@ void  HNL_LeptonCore::EvalElectronIDWeight(std::vector<Electron> electrons, Anal
 
     /// [1]   RECO ID SF   --- SHOULD BE USED ON ALL Electrons
     double this_recosf  = (param.Apply_Weight_RECOSF) ?  mcCorr->ElectronReco_SF(param.k.Electron_RECO_SF,el.scEta(),pt, SystDir_ElectronRecoSF) : 1.;
+
     this_weight *= this_recosf;
-    
+    param.w.electronRECOSF = this_recosf;
+
     /// [2]   ID SF   --- Needs Key dep on ID
     double this_idsf    = (param.Apply_Weight_IDSF) ?  mcCorr->ElectronID_SF(param.k.Electron_ID_SF, el.scEta(), pt, SystDir_ElectronIDSF) : 1.;    
     this_weight *= this_idsf;
-
-    FillWeightHist(param.Name+"/el_reco_sf_"+param.Name, this_recosf);
-    FillWeightHist(param.Name+"/el_id_sf_"+param.Name, this_idsf);
+    param.w.electronIDSF =this_idsf;
+    FillWeightHist(param.ChannelDir()+"/el_reco_sf_"+param.Name, this_recosf);
+    FillWeightHist(param.ChannelDir()+"/el_id_sf_"+param.Name, this_idsf);
   }
+  if(param.DEBUG)  cout << "EvalElIDWeight  = " <<  this_weight << endl;
 
   ev_weight*=this_weight;
   
@@ -157,6 +163,16 @@ void  HNL_LeptonCore::EvalElectronIDWeight(std::vector<Electron> electrons, Anal
 
 
 
+double HNL_LeptonCore::HNLZvtxSF(TString  ch){
+  
+  if(IsData) return 1.;
+  if(ch.Contains("MuMu")) return 1.;
+  if(DataYear==2016) return 1.;
+  if(DataYear==2018) return 1.;
+  if(DataYear==2017) return 0.991;
+
+  return 1.;
+}
 
 double HNL_LeptonCore::HNLZvtxSF(HNL_LeptonCore::Channel ch){
   // See https://indico.cern.ch/event/697573/contributions/2887077/attachments/1596611/2530584/hltZVtxInefficiency.pdf                                         
@@ -369,4 +385,36 @@ void HNL_LeptonCore::DeleteZptWeight(){
   fZptWeightM.clear();
 }
 
+
+
+double HNL_LeptonCore::GetPileUpWeight(int N_pileup, int syst){
+  if(IsDATA) return 1.;
+  else return mcCorr->GetPileUpWeight(N_pileup, syst);
+}
+
+
+
+double HNL_LeptonCore::GetZ0Weight(double valx){
+  if(IsDATA) return 1.;
+  double rt=1.;
+  if(GetEra()=="2016preVFP"){
+    double data_val=TMath::Gaus(valx,2.46312e-01,3.50458e+00,true);
+    double mc_val=TMath::Gaus(valx,9.28612e-01,3.65203e+00,true);
+    rt=data_val/mc_val;
+  }else if(GetEra()=="2016postVFP"){
+    double data_val=TMath::Gaus(valx,2.41640e-01,3.63717e+00,true);
+    double mc_val=TMath::Gaus(valx,9.30108e-01,3.65454e+00,true);
+    rt=data_val/mc_val;
+  }else if(GetEra()=="2017"){
+    double data_val=TMath::Gaus(valx,3.81830e-01,3.67614e+00,true);
+    double mc_val=TMath::Gaus(valx,8.19642e-01,3.50992e+00,true);
+    rt=data_val/mc_val;
+  }else if(GetEra()=="2018"){
+    double data_val=TMath::Gaus(valx,-1.36030e-01,3.41464e+00,true);
+    double mc_val=TMath::Gaus(valx,3.58575e-02,3.50953e+00,true);
+    rt=data_val/mc_val;
+  }
+  if(rt>2) rt=2;
+  return rt;
+}
 

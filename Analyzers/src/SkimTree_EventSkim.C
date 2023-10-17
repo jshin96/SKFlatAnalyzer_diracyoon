@@ -6,7 +6,6 @@ void SkimTree_EventSkim::initializeAnalyzer(){
   cout << "[SkimTree_EventSkim::initializeAnalyzer()] gDirectory = " << gDirectory->GetName() << endl;
   newtree = fChain->CloneTree(0);
 
-
 }
 
 void SkimTree_EventSkim::executeEvent(){

@@ -6,7 +6,8 @@ void SkimTree_HNMultiLepBDT::initializeAnalyzer(){
   cout << "[SkimTree_HNMultiLepBDT::initializeAnalyzer()] gDirectory = " << gDirectory->GetName() << endl;
   newtree = fChain->CloneTree(0);
 
-  SetupIDMVAReaderDefault();
+  HNL_LeptonCore::initializeAnalyzer();
+
   InitialiseLeptonBDTSKFlat();
 
 

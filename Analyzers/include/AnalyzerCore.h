@@ -38,6 +38,7 @@
 
 #define M_Z 91.1876
 #define M_W 80.379
+#define M_CUT_LL 10
 
 class AnalyzerCore: public SKFlatNtuple {
 
@@ -46,22 +47,7 @@ public:
   AnalyzerCore();
   ~AnalyzerCore();
 
-  virtual void initializeAnalyzer(){
-    IsDYSample=false;
-    IsTTSample=false;
-    if(MCSample.Contains("DYJets")||MCSample.Contains("ZToEE")||MCSample.Contains("ZToMuMu")||MCSample.Contains(TRegexp("DY[0-9]Jets"))) IsDYSample=true;
-    if(MCSample.Contains(TRegexp("TT[LJ][LJ]"))) IsTTSample=true;
-    if(IsSignal()) IsDYSample=false;
-  
-    cout << "AnalyzerCore::initializeAnalyzer IsDYSample=" << IsDYSample << endl;
-    cout << "AnalyzerCore::initializeAnalyzer IsTTSample=" << IsTTSample << endl;
-
-    run_Debug=false;
-    TESTBDT=false;
-    nLog=50000;
-
-
-  };
+  virtual void initializeAnalyzer();
 
   virtual void executeEvent(){
 
@@ -240,7 +226,6 @@ public:
 
   // =================   FR functions   AnalyzerCore_Jet.C  ======================  
   
-  double GetJetPileupIDSF(vector<Jet> jets , TString WP, AnalyzerParameter param);
   Jet GetCorrectedJetCloseToLepton(Lepton lep, Jet jet);
   Jet GetCorrectedJetCloseToLepton(Muon lep, Jet jet);
   Jet GetCorrectedJetCloseToLepton(Electron lep, Jet jet);
@@ -260,10 +245,6 @@ public:
   double  JetLeptonPtRatioLepAware( Muon lep, bool CorrLep=false);
   double  JetLeptonPtRatioLepAware( Electron lep);
 
-  double GetEventFatJetSF(vector<FatJet> fatjets, TString label, int dir);
-  double GetFatJetSF(FatJet fatjet, TString tag,  int dir);
-
-  double  GetBJetSF(AnalyzerParameter param,vector<Jet> jets, JetTagging::Parameters jtp);
 
   // =================   FR functions   AnalyzerCore_GEN.C  ======================                                                                                                                                                                                                         
   bool ConversionSplitting(std::vector<Lepton *> leps, bool RunConvMode, int nlep);
@@ -434,8 +415,6 @@ public:
   bool PassMETFilter();
   bool FindHEMElectron(Electron electron);
   double GetPrefireWeight(int sys);
-  double GetPileUpWeight(int N_pileup, int syst);
-  double GetZ0Weight(double valx);
 
   //=====================
   //==== Tools

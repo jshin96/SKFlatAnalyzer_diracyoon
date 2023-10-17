@@ -118,7 +118,7 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
     std::vector<FatJet> fatjets_tmp  = SelectFatJets(param, param.FatJet_ID, 200., 5.);
     
     // 
-    std::vector<FatJet> FatjetColl_1                  = SelectAK8Jetsv2(fatjets_tmp, 200., 2.7, true,  1., true, -999, true, 40., 130.,"", ElectronCollV, MuonCollV);
+    std::vector<FatJet> FatjetColl_1                  = SelectAK8Jets(fatjets_tmp, 200., 2.7, true,  1., true, -999, true, 40., 130.,"", ElectronCollV, MuonCollV);
 
     vector<double> etabins = {};//{2.7,4.7};
     vector<bool> LepVeto = {true, false};
@@ -288,7 +288,7 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
   //// NOW make some jet selection to use in other studies
 
   std::vector<FatJet> AK8Jet_TMP  = SelectFatJets(param, param.FatJet_ID, 200., 5.);
-  std::vector<FatJet> AK8Jet                  = SelectAK8Jetsv2(AK8Jet_TMP, 200., 2.7, true,  1., true, -999, true, 40., 130.,"", ElectronCollV, MuonCollV);
+  std::vector<FatJet> AK8Jet                  = SelectAK8Jets(AK8Jet_TMP, 200., 2.7, true,  1., true, -999, true, 40., 130.,"", ElectronCollV, MuonCollV);
   std::vector<Jet> AK4Jet_TMP     = SelectJets   ( param, param.Jet_ID, 20., 5.);
 
   std::vector<Jet> AllJetColl                      = SelectJets   (param, "NoID",10, 3.);

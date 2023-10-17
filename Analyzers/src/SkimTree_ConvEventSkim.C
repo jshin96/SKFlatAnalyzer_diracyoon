@@ -5,7 +5,7 @@ void SkimTree_ConvEventSkim::initializeAnalyzer(){
   outfile->cd();
   cout << "[SkimTree_ConvEventSkim::initializeAnalyzer()] gDirectory = " << gDirectory->GetName() << endl;
   newtree = fChain->CloneTree(0);
-
+  HNL_LeptonCore::initializeAnalyzer();
 
 }
 

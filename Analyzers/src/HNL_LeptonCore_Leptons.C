@@ -31,14 +31,14 @@ std::vector<Muon> HNL_LeptonCore::SelectMuons(TString id, double ptmin, double f
 }
 
 
-std::vector<Muon> HNL_LeptonCore::SelectMuons(AnalyzerParameter param, TString id, double ptmin, double fetamax, double& EvWeight){
+std::vector<Muon> HNL_LeptonCore::SelectMuons(AnalyzerParameter& param, TString id, double ptmin, double fetamax, double& EvWeight){
   
   std::vector<Muon> muons = SelectMuons(param, id, ptmin, fetamax);
   if(!IsData) EvalMuonIDWeight(muons  , param, EvWeight);
   return muons;
 }
 
-std::vector<Muon> HNL_LeptonCore::SelectMuons(AnalyzerParameter param, TString id, double ptmin, double fetamax){
+std::vector<Muon> HNL_LeptonCore::SelectMuons(AnalyzerParameter& param, TString id, double ptmin, double fetamax){
 
   std::vector<Muon> this_AllMuons =  All_Muons;
   std::vector<Muon> muons ;
@@ -122,14 +122,14 @@ std::vector<Electron> HNL_LeptonCore::SelectElectrons(TString id, double ptmin, 
 
 }
 
-std::vector<Electron> HNL_LeptonCore::SelectElectrons(AnalyzerParameter param, TString id, double ptmin, double fetamax, double& EvWeight,bool vetoHEM){
+std::vector<Electron> HNL_LeptonCore::SelectElectrons(AnalyzerParameter& param, TString id, double ptmin, double fetamax, double& EvWeight,bool vetoHEM){
 
   std::vector<Electron> electrons = SelectElectrons(param, id, ptmin, fetamax, vetoHEM);
   if(!IsData) EvalElectronIDWeight(electrons, param, EvWeight);
   return electrons;
 }
 
-std::vector<Electron> HNL_LeptonCore::SelectElectrons(AnalyzerParameter param, TString id, double ptmin, double fetamax, bool vetoHEM){
+std::vector<Electron> HNL_LeptonCore::SelectElectrons(AnalyzerParameter& param, TString id, double ptmin, double fetamax, bool vetoHEM){
 
   std::vector<Electron> this_AllElectrons = All_Electrons;
   std::vector<Electron> electrons ;

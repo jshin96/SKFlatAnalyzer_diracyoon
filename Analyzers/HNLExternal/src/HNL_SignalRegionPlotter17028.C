@@ -57,7 +57,7 @@ void HNL_SignalRegionPlotter17028::RunEXO17028Analysis(AnalyzerParameter param){
 
   
   std::vector<FatJet> fatjets_tmp                 = SelectFatJets(param, param.FatJet_ID, 200., 5.);
-  std::vector<FatJet> AK8_JetColl                  = SelectAK8Jets(fatjets_tmp, 200., 5., true,  1., true, -999, true, 60., 130., ElectronCollV, MuonCollV);
+  std::vector<FatJet> AK8_JetColl                  = SelectAK8Jets(fatjets_tmp, 200., 5., true,  1., true, -999, true, 60., 130., "",ElectronCollV, MuonCollV);
     
   
   // AK4 JET                                                                                                                                                                              

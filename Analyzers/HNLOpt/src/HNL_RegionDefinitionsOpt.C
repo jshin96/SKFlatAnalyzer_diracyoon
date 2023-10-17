@@ -283,18 +283,18 @@ bool  HNL_RegionDefinitionsOpt::PassPreselection(HNL_LeptonCore::Channel channel
   // Make sure events contain 2 leps                                                                                                       
   // Make sure correct leptons are used                                                                                                                                      
 
-  if (! (  PassMultiTriggerSelection(channel, ev, leps,"Dilep", "HighPt") || PassMultiTriggerSelection(channel, ev, leps,"Dilep", "Lep"))) return false;
+  if (! (  PassMultiDatasetTriggerSelection(channel, ev, leps,"Dilep", "HighPt") || PassMultiDatasetTriggerSelection(channel, ev, leps,"Dilep", "Lep"))) return false;
   
   FillCutflow(HNL_LeptonCore::ChannelDepTrigger, w, GetChannelString(channel) +"_MultiTrigger", param);//Def
   
   if(param.SRConfig.Contains("Trig1OR")){
-    if( !(PassMultiTriggerSelection(channel, ev, leps,"Dilep","HighPt")))  return false;
+    if( !(PassMultiDatasetTriggerSelection(channel, ev, leps,"Dilep","HighPt")))  return false;
   }
   else if(param.SRConfig.Contains("Trig2OR")){
-    if(!(PassMultiTriggerSelection(channel, ev, leps,"Dilep","Lep")))  return false;
+    if(!(PassMultiDatasetTriggerSelection(channel, ev, leps,"Dilep","Lep")))  return false;
   }
   else if(param.SRConfig.Contains("Trig3OR")){
-    if( !((PassMultiTriggerSelection(channel, ev, leps,"Dilep","Lep")) || PassMultiTriggerSelection(channel, ev, leps,"Dilep", "HighPt"))) return false;
+    if( !((PassMultiDatasetTriggerSelection(channel, ev, leps,"Dilep","Lep")) || PassMultiDatasetTriggerSelection(channel, ev, leps,"Dilep", "HighPt"))) return false;
   }
   else      if (!PassTriggerSelection(channel, ev, leps,"Dilep")) return false;
   
@@ -346,7 +346,7 @@ bool  HNL_RegionDefinitionsOpt::PassPreselection(HNL_LeptonCore::Channel channel
   //int njets     = JetColl.size() + AK8_JetColl.size() + VBF_JetColl.size();
  
 
-  Fill_RegionPlots(channel, 0, param.Name,"Preselection" , TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w,param.WriteOutVerbose);
+  Fill_RegionPlots(param,"Preselection" , TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w);
 
   FillCutflow(HNL_LeptonCore::ChannelDepPresel, w, GetChannelString(channel) +"_Presel", param);//Def
   
@@ -431,7 +431,7 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK8String(TString mass, HNL_Lep
   
   TString signal_region1 = "HNL_SR1";
   
-  Fill_RegionPlots(channel, 0, PNMass,"InclusiveR1" , TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w,param.WriteOutVerbose);
+  Fill_RegionPlots(param,"InclusiveR1" , TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w); ///// MASS DEP????
   
   double dPhil2_l = fabs(TVector2::Phi_mpi_pi( ( (AK8_JetColl[0] + *leps[1]).Phi() - (leps[0]->Phi() ))));
   
@@ -502,7 +502,7 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK8String(TString mass, HNL_Lep
     
   
   FillCutflow(HNL_LeptonCore::SR1, w, "SR1_HTPt",PNMass);
-  Fill_RegionPlots(channel, 0, PNMass,"InclusiveSRHM1" , TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w,param.WriteOutVerbose);
+  Fill_RegionPlots(param,"InclusiveSRHM1" , TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w);
   
 
   if(Modifier.Contains("Binning_Version3")){
@@ -998,7 +998,7 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionWWString(HNL_LeptonCore::Channe
 
   FillCutflow(HNL_LeptonCore::SR2, w, "SR2_lep_pt",param);
 
-  Fill_RegionPlots(channel, 0, param.Name,"InclusiveSR2" ,  TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w,param.WriteOutVerbose);
+  Fill_RegionPlots(param,"InclusiveSR2" ,  TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w);
 
   if (param.SRConfig.Contains("VBFLeadJet")){
 
@@ -1297,7 +1297,7 @@ TString HNL_RegionDefinitionsOpt::RunSignalRegionAK4String(HNL_LeptonCore::Chann
   if(leps[0]->Pt() < pt_bin2) return "SR3_bin3";
   FillCutflow(HNL_LeptonCore::SR3, w, "SR3_LepPt",param);
 
-  Fill_RegionPlots(channel, 0, param.Name,"InclusiveSRHM3" , TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w,param.WriteOutVerbose);
+  Fill_RegionPlots(param,"InclusiveSRHM3" , TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w);
 
   //double PhiComp = fabs(TVector2::Phi_mpi_pi( ( (NCand.Phi() - Wlep.Phi() ))));
   /// < 1.5 ? > 1.5

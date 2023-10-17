@@ -6,6 +6,8 @@ void SkimTree_HNFake::initializeAnalyzer(){
   cout << "[SkimTree_HNFake::initializeAnalyzer()] gDirectory = " << gDirectory->GetName() << endl;
   newtree = fChain->CloneTree(0);
 
+  HNL_LeptonCore::initializeAnalyzer();
+
   triggers.clear();
 
 

@@ -19,7 +19,6 @@ void AnalyzerParameter::Clear(){
   Electron_Loose_ID = "Default";
   Electron_Veto_ID  = "Default";
   Electron_FR_ID    = "Default";
-  Electron_CF_ID    = "Default";
   Tau_Tight_ID      = "Default";
   Tau_Loose_ID      = "Default";
   Tau_Veto_ID       = "Default";
@@ -119,7 +118,6 @@ AnalyzerParameter::AnalyzerParameter(){
   Electron_Loose_ID = "Default";
   Electron_Veto_ID  = "Default";
   Electron_FR_ID    = "Default";
-  Electron_CF_ID    = "Default";
   Tau_Tight_ID      = "Default";
   Tau_Loose_ID      = "Default";
   Tau_Veto_ID       = "Default";
@@ -161,7 +159,7 @@ AnalyzerParameter::AnalyzerParameter(){
   DEBUG = false;
 
   WriteOutVerbose = 0;
-  SRConfig="";
+  SRConfig="NULL";
 
 
   SystDir_PU=0;
@@ -345,11 +343,20 @@ AnalyzerParameter& AnalyzerParameter::operator=(const AnalyzerParameter& p){
 */
 
 
+TString  AnalyzerParameter::ChannelType(){
+
+  if(Channel == "EE"   || Channel =="MuMu"       || Channel == "EMu"   || Channel == "MuE" ) return "Dilepton";
+  if(Channel == "EEE"  || Channel =="MuMuMu"     || Channel == "EMuL"  || Channel == "MuEL" ) return "Trilepton";
+  if(Channel == "EEEE" || Channel =="MuMuMuMu"   || Channel == "EMuLL" || Channel == "MuELL" ) return "Quadlepton";
+
+  return "Lepton";
+
+}
 
 TString  AnalyzerParameter::ChannelDir(){
 
-  if(Channel == "Default")  return Name;
-  return Name + "/"+ Channel;
+  if(Channel == "Default")  return DefName;
+  return DefName + "/"+ Channel;
 }
 
 
@@ -400,11 +407,11 @@ void AnalyzerParameter::PrintParameters(){
 
   cout << "\n PrintParameters:" <<endl;
   cout << "--------------------------------------" << endl;
-  cout << "Name    = " << Name << endl;
-  cout << "DefName    = " << DefName << endl;
-  cout << "Channel    = " << Channel << endl;
-  cout << "hprefix    = " << hprefix << endl;
-  cout << "SRConfig    = " << SRConfig << endl;
+  cout << "Name     = " << Name << endl;
+  cout << "DefName  = " << DefName << endl;
+  cout << "Channel  = " << Channel << endl;
+  cout << "hprefix  = " << hprefix << endl;
+  cout << "SRConfig = " << SRConfig << endl;
 
   cout << "\n IDs:" <<endl;
   cout << "--------------------------------------" << endl;
@@ -413,7 +420,6 @@ void AnalyzerParameter::PrintParameters(){
   cout << "Electron_Loose_ID = " << Electron_Loose_ID << endl;
   cout << "Electron_Veto_ID  = " << Electron_Veto_ID << endl;
   cout << "Electron_FR_ID    = " << Electron_FR_ID << endl;
-  cout << "Electron_CF_ID    = " << Electron_CF_ID << endl;
   cout << "Tau_Tight_ID      = " << Tau_Tight_ID << endl;
   cout << "Tau_Loose_ID      = " << Tau_Loose_ID << endl;
   cout << "Tau_Veto_ID       = " << Tau_Veto_ID << endl;
@@ -426,45 +432,69 @@ void AnalyzerParameter::PrintParameters(){
   cout << "JetPUID           = " << JetPUID << endl;
   cout << "Jet_ID            = " << Jet_ID << endl;
   cout << "FatJet_ID         = " << FatJet_ID << endl;
+  cout << "AK4JetColl        = " << AK4JetColl << endl;
+  cout << "AK8JetColl        = " << AK8JetColl << endl;
+  cout << "BJetColl          = " << BJetColl << endl;
+  cout << "BTagger           = " << BTagger << endl;
+  cout << "BWP               = " << BWP << endl;
+
   cout << "\n Keys:" <<endl;
   cout << "--------------------------------------" << endl;
-  cout << "k.Electron_ID_SF = " << k.Electron_ID_SF << endl;
+  cout << "k.Electron_ID_SF      = " << k.Electron_ID_SF << endl;
   cout << "k.Electron_Trigger_SF = " << k.Electron_Trigger_SF << endl;
-  cout << "k.Electron_FR = " << k.Electron_FR << endl;
-  cout << "k.Electron_PR = " << k.Electron_PR << endl;
-  cout << "k.Electron_CF = " << k.Electron_CF << endl;
-  cout << "k.Electron_RECO_SF = " << k.Electron_RECO_SF << endl;
-  cout << "k.Muon_RECO_SF = " << k.Muon_RECO_SF << endl;
-  cout << "k.Muon_Trigger_SF = " << k.Muon_Trigger_SF << endl;
-  cout << "k.Muon_ID_SF = " << k.Muon_ID_SF << endl;
-  cout << "k.Muon_ISO_SF = " << k.Muon_ISO_SF << endl;
-  cout << "k.Muon_Trigger_SF = " << k.Muon_Trigger_SF << endl;
-  cout << "k.Muon_FR = " << k.Muon_FR << endl;
-  cout << "k.Muon_PR = " << k.Muon_PR << endl;
-  cout << "k.Muon_CF = " << k.Muon_CF << endl;
-  cout << "k.EMu_Trigger_SF = " << k.EMu_Trigger_SF << endl;
+  cout << "k.Electron_FR         = " << k.Electron_FR << endl;
+  cout << "k.Electron_PR         = " << k.Electron_PR << endl;
+  cout << "k.Electron_CF         = " << k.Electron_CF << endl;
+  cout << "k.Electron_RECO_SF    = " << k.Electron_RECO_SF << endl;
+  cout << "k.Muon_RECO_SF        = " << k.Muon_RECO_SF << endl;
+  cout << "k.Muon_Trigger_SF     = " << k.Muon_Trigger_SF << endl;
+  cout << "k.Muon_ID_SF          = " << k.Muon_ID_SF << endl;
+  cout << "k.Muon_ISO_SF         = " << k.Muon_ISO_SF << endl;
+  cout << "k.Muon_Trigger_SF     = " << k.Muon_Trigger_SF << endl;
+  cout << "k.Muon_FR             = " << k.Muon_FR << endl;
+  cout << "k.Muon_PR             = " << k.Muon_PR << endl;
+  cout << "k.Muon_CF             = " << k.Muon_CF << endl;
+  cout << "k.EMu_Trigger_SF      = " << k.EMu_Trigger_SF << endl;
   cout << "\n Weights:" << endl;
   cout << "--------------------------------------" << endl;
-  cout << "w.lumiweight  = " << w.lumiweight << endl;
-  cout << "w.PUweight =" << w.PUweight << endl;
-  cout << "w.PUweight_up =" << w.PUweight_up<< endl;
-  cout << "w.PUweight_down = " << w.PUweight_down << endl;
-  cout << "w.prefireweight "<< w.prefireweight << endl;  
-  cout << "w.prefireweight_up = " << w.prefireweight_up << endl; 
-  cout << "w.prefireweight_down = " << w.prefireweight_down<< endl;
-  cout << "w.z0weight = " << w.z0weight<< endl;
-  cout << "w.weakweight = " << w.weakweight<< endl;
-  cout << "w.zptweight = " << w.zptweight<< endl;
-  cout << "w.topptweight = " << w.topptweight<< endl;
-  cout << "w.muonRECOSF = " << w.muonRECOSF << endl;
-  cout << "w.electronRECOSF = " << w.electronRECOSF << endl;
-  cout << "w.electronIDSF = " << w.electronIDSF << endl;
-  cout << "w.muonIDSF = " << w.muonIDSF << endl;
-  cout << "w.muontrackerSF = " << w.muonTrackerSF << endl;
-  cout << "w.triggerSF  = " << w.triggerSF << endl;
-  cout << "w.CFSF = " << w.CFSF << endl;
-  cout << "w.btagSF = " << w.btagSF << endl;
-  
+  cout << "w.lumiweight          = " << w.lumiweight << endl;
+  cout << "w.PUweight            = " << w.PUweight << endl;
+  cout << "w.PUweight_up         = " << w.PUweight_up<< endl;
+  cout << "w.PUweight_down       = " << w.PUweight_down << endl;
+  cout << "w.prefireweight       = "<< w.prefireweight << endl;  
+  cout << "w.prefireweight_up    = " << w.prefireweight_up << endl; 
+  cout << "w.prefireweight_down  = " << w.prefireweight_down<< endl;
+  cout << "w.z0weight            = " << w.z0weight<< endl;
+  cout << "w.weakweight          = " << w.weakweight<< endl;
+  cout << "w.zptweight           = " << w.zptweight<< endl;
+  cout << "w.topptweight         = " << w.topptweight<< endl;
+  cout << "w.muonRECOSF          = " << w.muonRECOSF << endl;
+  cout << "w.electronRECOSF      = " << w.electronRECOSF << endl;
+  cout << "w.electronIDSF        = " << w.electronIDSF << endl;
+  cout << "w.muonIDSF            = " << w.muonIDSF << endl;
+  cout << "w.muontrackerSF       = " << w.muonTrackerSF << endl;
+  cout << "w.triggerSF           = " << w.triggerSF << endl;
+  cout << "w.CFSF                = " << w.CFSF << endl;
+  cout << "w.btagSF              = " << w.btagSF << endl;
+  cout << "w.PNETSF              = " << w.PNETSF << endl;
+  cout << "w.JetPU               = " << w.JetPU << endl;
+
+  cout << "Apply_Weight_LumiNorm  = " <<  Apply_Weight_LumiNorm  << endl;
+  cout << "Apply_Weight_SumW      = " << Apply_Weight_SumW      << endl;
+  cout << "Apply_Weight_PileUp    = " << Apply_Weight_PileUp    << endl;
+  cout << "Apply_Weight_PreFire   = " << Apply_Weight_PreFire   << endl;
+  cout << "Apply_Weight_kFactor   = " << Apply_Weight_kFactor   << endl;
+  cout << "Apply_Weight_TriggerSF = " << Apply_Weight_TriggerSF << endl;
+  cout << "Apply_Weight_IDSF      = " << Apply_Weight_IDSF      << endl;
+  cout << "Apply_Weight_MuonTrackerSF = " << Apply_Weight_MuonTrackerSF << endl;
+  cout << "Apply_Weight_RECOSF    = " << Apply_Weight_RECOSF    << endl;
+  cout << "Apply_Weight_Z0        = " << Apply_Weight_Z0        << endl;
+  cout << "Apply_Weight_TopCorr   = " << Apply_Weight_TopCorr   << endl;
+  cout << "Apply_Weight_DYCorr    = " << Apply_Weight_DYCorr    << endl;
+  cout << "Apply_Weight_BJetSF    = " << Apply_Weight_BJetSF    << endl;
+  cout << "Apply_Weight_PNETSF    = " << Apply_Weight_PNETSF    << endl;
+  cout << "Apply_Weight_JetPUID   = " << Apply_Weight_JetPUID   << endl;
+  return;
 }
 
 TString AnalyzerParameter::GetSystType(){
