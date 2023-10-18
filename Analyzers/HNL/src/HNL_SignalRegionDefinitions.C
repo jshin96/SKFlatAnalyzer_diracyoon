@@ -343,7 +343,7 @@ TString HNL_RegionDefinitions::RunSignalRegionAK8String(HNL_LeptonCore::Channel 
 
   if(PassHMMet)FillCutflow(HNL_LeptonCore::SR1, w, "SR1_MET",param);
 
-  if(GetMass(signal_region1,JetColl, AK8_JetColl,  leps) < LowerMassSR1WmassCut ) return "false";
+  if(GetRecoObjMass(signal_region1,JetColl, AK8_JetColl,  leps) < LowerMassSR1WmassCut ) return "false";
   FillCutflow(HNL_LeptonCore::SR1, w, "SR1_Wmass",param); 
   
   if(!(PassHMMet&&PassBJetMVeto)) return "false";

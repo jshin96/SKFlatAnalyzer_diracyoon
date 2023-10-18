@@ -175,7 +175,7 @@ bool  HNL_RegionDefinitions17028::RunSignalRegionAK8(HNL_LeptonCore::Channel cha
   FillWeightHist(param.Name+"/fatjet_ak8_type1_sf_"+param.Name,FatJetTau21_SF);
   if(!IsData)w*=  FatJetTau21_SF;
   
-  if (GetMass(signal_region1,JetColl, AK8_JetColl,  leps) < UpperMassSR1WmassCut) {
+  if (GetRecoObjMass(signal_region1,JetColl, AK8_JetColl,  leps) < UpperMassSR1WmassCut) {
     
     
     
@@ -221,7 +221,7 @@ bool  HNL_RegionDefinitions17028::RunSignalRegionAK4(HNL_LeptonCore::Channel cha
 
   if(JetColl.size() < 2) return false;
 
-  if(!(GetMass("HNL_SR3", JetColl, AK8_JetColl,leps) < UpperMassSR3WmassCut && GetMass("HNL_SR3", JetColl, AK8_JetColl,leps) > LowerMassSR3WmassCut)) {
+  if(!(GetRecoObjMass("HNL_SR3", JetColl, AK8_JetColl,leps) < UpperMassSR3WmassCut && GetRecoObjMass("HNL_SR3", JetColl, AK8_JetColl,leps) > LowerMassSR3WmassCut)) {
     return false;
   }
 							   

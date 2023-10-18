@@ -356,18 +356,17 @@ nvtx,  double w);
   double GetLLMass(std::vector<Electron> leps);
 
   double GetMassBestZ(std::vector<Lepton *> leps,  bool bestZ);
-  double  GetMass(TString type , std::vector<Jet> jets, std::vector<FatJet> fatjets, vector<Lepton*> leps);
+  double GetRecoObjMass(TString type , std::vector<Jet> jets, std::vector<FatJet> fatjets, vector<Lepton*> leps);
+
+  pair<int,int> LeptonPairBestZCand(std::vector<Lepton *> leps);
+  double LeptonMassBestZ(std::vector<Lepton *> leps, pair<int,int> Zind);
+  double LeptonMassNonZ(std::vector<Lepton *> leps, pair<int,int> Zind);
 
   //================                                                                                                                                                                                        
   //==== Functions                                                                                                                                                                                          
   //================                                                                                                                                                                                        
 
   bool    IsExists(TString filepath);
-  TString GetPtLabel(Muon mu);
-  TString GetEtaLabel(Muon mu);
-
-  TString GetElTypeTString(Electron el);
-  TString GetLepTypeTString(const Lepton& lep);
 
   //==== LEPTON CHARGE                                                                                                                                                                                           
   bool SameCharge(vector<Electron> els, int ch=0);

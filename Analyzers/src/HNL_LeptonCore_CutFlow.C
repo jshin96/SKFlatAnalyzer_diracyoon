@@ -34,6 +34,7 @@ void HNL_LeptonCore::FillCutflowDef(TString cutflow_dirname,TString cutflow_hist
 
 void HNL_LeptonCore::FillCutflow(TString analysis_dir_name,TString histname, double weight, vector<TString> lables, TString label){
   FillCutflowDef(analysis_dir_name,histname, weight,lables, label);
+  FillCutflowDef(analysis_dir_name,histname+"_unweighted", 1,lables, label);
 }
 
 
@@ -42,6 +43,9 @@ void HNL_LeptonCore::FillCutflow(AnalyzerParameter param,TString histname, doubl
   FillCutflowDef(param.CutFlowDirChannel(),   histname, weight,lables, label);
   if(param.Channel!="Default")FillCutflowDef(param.CutFlowDirIncChannel(),histname, weight,lables, label);
   
+  FillCutflowDef(param.CutFlowDirChannel(),   histname+"_unweighted",1,lables, label);
+  if(param.Channel!="Default")FillCutflowDef(param.CutFlowDirIncChannel(),histname+"_unweighted", 1,lables, label);
+
 }
 
 void HNL_LeptonCore::FillLimitInput(HNL_LeptonCore::SearchRegion sr, double event_weight, TString label,  TString hist_path){
@@ -50,6 +54,7 @@ void HNL_LeptonCore::FillLimitInput(HNL_LeptonCore::SearchRegion sr, double even
   TString histname = GetCutFlowNameFromRegion(sr);
 
   FillCutflowDef(hist_path,   histname, event_weight,lables, label);
+  FillCutflowDef(hist_path,   histname+"_unweighted", 1,lables, label);
 
 }
 void HNL_LeptonCore::FillCutflow(HNL_LeptonCore::SearchRegion sr, double event_weight, TString label,  TString hist_path){
@@ -58,6 +63,7 @@ void HNL_LeptonCore::FillCutflow(HNL_LeptonCore::SearchRegion sr, double event_w
   TString histname = GetCutFlowNameFromRegion(sr);
 
   FillCutflowDef(hist_path,   histname, event_weight,lables, label);
+  FillCutflowDef(hist_path,   histname+"_unweighted", 1,lables, label);
 
 }
 
@@ -70,7 +76,11 @@ void HNL_LeptonCore::FillCutflow(HNL_LeptonCore::SearchRegion sr, double event_w
   TString histname = GetCutFlowNameFromRegion(sr);
   FillCutflowDef(OutputDir,   histname, event_weight,lables, label);
   if(param.Channel!="Default") FillCutflowDef(param.CutFlowDirIncChannel(),   histname, event_weight,lables, label);
-  
+
+  FillCutflowDef(OutputDir,   histname+"_unweighted", 1,lables, label);
+  if(param.Channel!="Default") FillCutflowDef(param.CutFlowDirIncChannel(),   histname+"_unweighted", 1,lables, label);
+
+
   return;
 }
 

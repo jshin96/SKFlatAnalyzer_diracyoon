@@ -217,6 +217,7 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
   if(leps.size() < 2) return;
 
   for(auto ilep : leps){
+
     map<TString, double> lep_bdt_map = ilep->MAPBDT();
     for(auto i : lep_bdt_map)     FillHist( plot_dir+ lepregion+ "/Lepton_mva_"+i.first , i.second, w, 100, -1., 1., "MVA");
     FillHist( plot_dir+ lepregion+ "/Lepton_mva_HF" , ilep->LepMVA(), w, 100, -1., 1., "MVA");
@@ -379,7 +380,7 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
       if(DrawSyst)FillHist( plot_dir+ region+ "/"+LepType+"_Lep_pt", PTLep  ,  w, nPtbins, Pt1bins,"l_{1} p_{T} GeV");
       if(DrawSyst)FillHist( plot_dir+ region+ "/"+LepType+"_Lep_eta", il->fEta()  , w, 60, 0.,  3.,"l_{2} #eta");
 
-      map<TString, double> lep_bdt_map = ilep->MAPBDT();
+      map<TString, double> lep_bdt_map = il->MAPBDT();
       for(auto i : lep_bdt_map)  {
 	if(!i.first.Contains("v5")) continue;
 	if(il->IsBB())FillHist( plot_dir+lepregion+ "/"+LepType+"_Lepton_BB_mva_"+i.first + "_"+region , i.second, w, 100, -1., 1., "MVA");
@@ -447,6 +448,7 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
   if(threelep) {
     if(DrawAll)FillHist( plot_dir+ region+ "/M_lll", lllCand.M() , w, 200, 0., 800.,"M(lll) GeV");
     if(GetIndexNonMinOSSF(leps)> 0 && DrawAll)FillHist( plot_dir+ region+ "/Mt_minOSSF", MT(*leps[GetIndexNonMinOSSF(leps)], met) , w, 200, 0., 800.,"M(T) non MinOS GeV");
+    if(GetIndexNonBestZ(leps,M_ZWINDOW)> 0 && DrawAll)FillHist( plot_dir+ region+ "/Mt_nonZLep", MT(*leps[GetIndexNonBestZ(leps,M_ZWINDOW)], met) , w, 200, 0., 800.,"M(T) non Z GeV");
     if(DrawAll)FillHist( plot_dir+ region+ "/M_minOSSF", GetMassMinOSSF(leps), w, 200, 0., 800.,"M non MinOS GeV");
     if(DrawAll)FillHist( plot_dir+ region+ "/M_minSSSF", GetMassMinSSSF(leps), w, 200, 0., 800.,"M(T) non MinSS GeV");
     if(GetIndexNonMinSSSF(leps) > 0 && DrawAll)FillHist( plot_dir+ region+ "/Mt_minSSSF", MT(*leps[GetIndexNonMinSSSF(leps)], met) , w, 200, 0., 800.,"M non MinSS GeV");
@@ -455,6 +457,9 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
   if(fourlep) {
     Particle llllCand = *leps[0] + *leps[1] + *leps[2] + *leps[3] ;
     if(DrawAll)FillHist( plot_dir+ region+ "/M_llll", llllCand.M() , w, 200, 0., 800.,"M(llll) GeV");
+    FillHist( plot_dir+ region+ "/M_BestZ", LeptonMassBestZ(leps,LeptonPairBestZCand(leps)) , w, 200, 0., 800.,"M(Z1) GeV");
+    FillHist( plot_dir+ region+ "/M_OtherZ", LeptonMassNonZ(leps,LeptonPairBestZCand(leps)) , w, 200, 0., 800.,"M(Z1) GeV");
+    FillHist( plot_dir+ region+ "/M_BestZAlt", GetMassBestZ(leps,true) , w, 200, 0., 800.,"M(Z1) GeV");
   }
 
   Event ev = GetEvent();

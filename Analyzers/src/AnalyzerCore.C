@@ -1194,7 +1194,7 @@ void AnalyzerCore::beginEvent(){
   if(!IsData)  {
     All_Gens = GetGens();  
     All_LHES = GetLHEs();
-    if(!IsSignal() && (MCSample.Contains("DYJets")||MCSample.Contains("TTLL"))){
+    if(!IsSignal() && (IsDYSample||MCSample.Contains("TTLL"))){
       GetAFBLHEParticles(All_LHES,lhe_p0,lhe_p1,lhe_l0,lhe_l1,lhe_j0);
       GetAFBGenParticles(All_Gens,gen_p0,gen_p1,gen_l0,gen_l1,3);
       GetAFBGenParticles(All_Gens,gen_p0,gen_p1,gen_l0_dressed,gen_l1_dressed,1);

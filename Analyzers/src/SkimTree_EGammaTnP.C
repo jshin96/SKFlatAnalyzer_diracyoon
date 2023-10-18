@@ -102,7 +102,7 @@ void SkimTree_EGammaTnP::executeEvent(){
 
   if(!IsDATA||DataStream.Contains("SingleElectron")||DataStream.Contains("EGamma")){
 
-    Event ev;
+    Event ev = GetEvent();
     vector<Electron> electrons= GetAllElectrons();
     
     AnalyzerParameter p = HNL_LeptonCore::InitialiseHNLParameter("Basic");

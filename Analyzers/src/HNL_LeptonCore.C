@@ -1158,48 +1158,13 @@ double HNL_LeptonCore::GetFilterEffType1(TString SigProcess, int mass){
 
 double HNL_LeptonCore::GetXsec(TString SigProcess, int mass){
 
-
-
   return 0.;
 }
 
 
+double  HNL_LeptonCore::GetRecoObjMass(TString METHOD , std::vector<Jet> jets, std::vector<FatJet> fatjets,vector<Lepton*> leps){
 
-int HNL_LeptonCore::GetIndexNonMinOSSF(std::vector<Lepton *> leps){
-
-  int     index=-1;
-
-  if (leps.size() == 3){
-
-    Particle ll1 = (*leps[0]);
-    ll1+= (*leps[1]);
-    Particle ll2 = (*leps[0]);
-    ll2+= (*leps[2]);
-    Particle ll3 = (*leps[1]);
-    ll3+= (*leps[2]);
-
-    double minOS=99999999999.;
-    if(ll1.Charge() == 0) {
-      if(ll1.M()  < minOS) { minOS=ll1.M(); index=2;}
-    }
-    if(ll2.Charge() == 0) {
-      if(ll2.M()  < minOS) { minOS=ll2.M(); index=1;}
-    }
-    if(ll3.Charge() == 0) {
-      if(ll3.M()  < minOS) { minOS=ll3.M(); index=0;}
-    }
-
-  }
-
-  return index;
-
-}
-
-
-
-double  HNL_LeptonCore::GetMass(TString type , std::vector<Jet> jets, std::vector<FatJet> fatjets,vector<Lepton*> leps){
-
-  if (type=="HNL_SR3"){
+  if (METHOD=="HNL_SR3"){
 
     if(jets.size() < 2) return 0.;
     double dijetmass_tmp=9999.;
@@ -1210,10 +1175,8 @@ double  HNL_LeptonCore::GetMass(TString type , std::vector<Jet> jets, std::vecto
     for(UInt_t emme=0; emme<jets.size(); emme++){
       ST += jets[emme].Pt();
       for(UInt_t enne=1; enne<jets.size(); enne++) {
-
         dijetmass_tmp = (jets[emme]+jets[enne]).M();
         if(emme == enne) continue;
-
         if ( fabs(dijetmass_tmp-M_W) < fabs(dijetmass-M_W) ) {
           dijetmass = dijetmass_tmp;
           m = emme;
@@ -1225,7 +1188,7 @@ double  HNL_LeptonCore::GetMass(TString type , std::vector<Jet> jets, std::vecto
     return Wcand.M();
   }
 
-  if (type=="HNL_SR3_NLL"){
+  if (METHOD=="HNL_SR3_NLL"){
 
     if(jets.size() < 2) return 0.;
     if(leps.size() != 2) return 0.;
@@ -1252,7 +1215,7 @@ double  HNL_LeptonCore::GetMass(TString type , std::vector<Jet> jets, std::vecto
     Particle Wcand = jets[m] + jets[n]+*leps[0] + *leps[1];
     return Wcand.M();
   }
-  if (type=="HNL_SR3_N1L"){
+  if (METHOD=="HNL_SR3_N1L"){
 
     if(jets.size() < 2) return 0.;
     if(leps.size() != 2) return 0.;
@@ -1282,7 +1245,7 @@ double  HNL_LeptonCore::GetMass(TString type , std::vector<Jet> jets, std::vecto
 
 
 
-  if (type=="HNL_SR1"){
+  if (METHOD=="HNL_SR1"){
     if(fatjets.size() ==0 )  return 0.;
     if(leps.size() != 2) return 0.;
     double dijetmass_tmp=999.;
@@ -1299,7 +1262,7 @@ double  HNL_LeptonCore::GetMass(TString type , std::vector<Jet> jets, std::vecto
     return W.M();
   }
 
-  if (type=="HNL_SR2_17028"){
+  if (METHOD=="HNL_SR2_17028"){
     if(fatjets.size() ==0 )  return 0.;
     if(leps.size() != 2) return 0.;
     double dijetmass_tmp=999.;
@@ -1466,417 +1429,8 @@ vector<Electron> HNL_LeptonCore::GetLepCollByRunType(const vector<Electron>& ElC
   return ReturnVec;
 }
 
-
-double HNL_LeptonCore::GetLT(std::vector<Lepton *> leps){
-
-  double lt(0.);
-  for(auto ilep : leps) lt +=  ilep->Pt();
-
-  return lt;
-
-}
-
-double HNL_LeptonCore::GetLLMass(std::vector<Muon> leps){
-
-  return GetLLMass(MakeLeptonPointerVector(leps));
-}
-
-double HNL_LeptonCore::GetLLMass(std::vector<Electron> leps){
-
-  return GetLLMass(MakeLeptonPointerVector(leps));
-}
-
-double HNL_LeptonCore::GetLLMass(std::vector<Lepton *> leps){
-
-  if(leps.size() != 2) return -1.;
-
-  Particle ll = (*leps[0]) + (*leps[1]);
-  return ll.M();
-}
-
-double HNL_LeptonCore::GetMassMinOSSF(std::vector<Lepton *> leps){
-
-
-  double minOS=99999999999.;
-
-  for(unsigned int i = 0; i < leps.size(); i++){
-    for(unsigned int j = i+1;  j <leps.size(); j++){
-      if(leps[i]->LeptonFlavour() != leps[j]->LeptonFlavour()) continue;
-      if(leps[i]->Charge() == leps[j]->Charge() ) continue;
-      Particle ll = (*leps[i]) + (*leps[j]);
-      if(ll.M() < minOS) minOS=ll.M();
-    }
-  }
-
-
-
-  return minOS;
-
-}
-
-double  HNL_LeptonCore::GetMassMinSSSF(std::vector<Lepton *> leps){
-
-  double minSS=99999999999.;
-
-  for(unsigned int i = 0; i < leps.size(); i++){
-    for(unsigned int j = i+1;  j <leps.size(); j++){
-      if(leps[i]->LeptonFlavour() != leps[j]->LeptonFlavour()) continue;
-      if(leps[i]->Charge() != leps[j]->Charge() ) continue;
-      Particle ll = (*leps[i]) + (*leps[j]);
-      if(ll.M() < minSS) minSS=ll.M();
-    }
-  }
-  if(minSS < 0 ) cout << "minSS = " << minSS << " " << endl;
-  return minSS;
-
-}
-bool  HNL_LeptonCore::ZmasslllWindowCheck(std::vector<Lepton *> leps){
-
-  if (leps.size() == 3){
-
-    Particle lll = *leps[0] + *leps[1]+ *leps[2];
-
-    bool passZmass_lll_Window = (fabs(lll.M() - M_Z) < 15.);
-    return passZmass_lll_Window;
-
-  }
-
-  return true;
-}
-
-
-int HNL_LeptonCore::GetIndexNonMinSSSF(std::vector<Lepton *> leps){
-
-  int     index=-1;
-
-  if (leps.size() == 3){
-
-
-    Particle ll1 = (*leps[0]);
-    ll1+= (*leps[1]);
-    Particle ll2 = (*leps[0]);
-    ll2+= (*leps[2]);
-    Particle ll3 = (*leps[1]);
-    ll3+= (*leps[2]);
-
-    double minOS=99999999999.;
-    if(fabs(ll1.Charge()) == 2) {
-      if(ll1.M()  < minOS) { minOS=ll1.M(); index=2;}
-    }
-    if(fabs(ll2.Charge()) == 2) {
-      if(ll2.M()  < minOS) { minOS=ll2.M(); index=1;}
-    }
-    if(fabs(ll3.Charge()) == 2) {
-      if(ll3.M()  < minOS) { minOS=ll3.M(); index=0;}
-    }
-
-  }
-
-  return index;
-
-}
-
-int HNL_LeptonCore::GetIndexNonBestZ(std::vector<Lepton *> leps,double mass_diff){
-
-  int     index=-1;
-
-  if (leps.size() == 3){
-    Particle ll1 = (*leps[0]);
-    ll1+= (*leps[1]);
-    Particle ll2 = (*leps[0]);
-    ll2+= (*leps[2]);
-    Particle ll3 = (*leps[1]);
-    ll3+= (*leps[2]);
-
-    double minOSZ=99999999999.;
-    if(fabs(ll1.Charge()) == 0) {
-      if(fabs(ll1.M() - M_Z) < minOSZ) {minOSZ = fabs(ll1.M() - M_Z); index=2;}
-    }
-    if(fabs(ll2.Charge()) == 0) {
-      if(fabs(ll2.M() - M_Z) < minOSZ) {minOSZ = fabs(ll2.M() - M_Z);index=1;}
-
-    }
-    if(fabs(ll3.Charge()) == 0) {
-      if(fabs(ll3.M() - M_Z) < minOSZ) {minOSZ = fabs(ll3.M() - M_Z);index=0;}
-    }
-
-
-    if(minOSZ < mass_diff) return index;
-  }
-  return -1;
-
-}
-
-
-
-
-
-bool  HNL_LeptonCore::ZmassOSSFWindowCheck(std::vector<Lepton *> leps, double mass_diff){
-
-  for(unsigned int i = 0; i < leps.size(); i++){
-    for(unsigned int j = i+1;  j <leps.size(); j++){
-      if(leps[i]->LeptonFlavour() != leps[j]->LeptonFlavour()) continue;
-      if(leps[i]->Charge() == leps[j]->Charge() ) continue;
-      Particle ll = (*leps[i]) + (*leps[j]);
-      if((fabs(ll.M() - M_Z) < mass_diff)) return true;
-    }
-  }
-
-  return false;
-}
-
-double HNL_LeptonCore::GetMassBestZ(std::vector<Lepton *> leps,  bool bestZ){
-
-  double minMZ = 99999999.;
-  double massNonBestZ(-9999.), massBestZ(-9999);
-  if(leps.size()==4){
-
-    Particle Z1Cand;
-    Particle Z2Cand;
-
-
-    for(unsigned int iel =0; iel < leps.size() ; iel++){
-      for(unsigned int iel2 =iel+1; iel2 < leps.size() ; iel2++){
-        if(iel== iel2) continue;
-        Z1Cand = (*leps[iel]) + (*leps[iel2]) ;
-        if(leps[iel]->Charge() != leps[iel2]->Charge()){
-
-          int zel1(-9), zel2(-9);
-          if(iel ==0 && iel2==1){ zel1=2; zel2=3;    Z2Cand = (*leps[2]) + (*leps[3]);}
-          if(iel ==0 && iel2==2){ zel1=1; zel2=3;    Z2Cand = (*leps[1]) + (*leps[3]);}
-          if(iel ==0 && iel2==3){ zel1=1; zel2=2;    Z2Cand = (*leps[1]) + (*leps[2]);}
-          if(iel ==1 && iel2==2){ zel1=0; zel2=3;    Z2Cand = (*leps[0]) + (*leps[3]);}
-          if(iel ==1 && iel2==3){ zel1=0; zel2=2;    Z2Cand = (*leps[0]) + (*leps[2]);}
-          if(iel ==2 && iel2==3){ zel1=0; zel2=1;    Z2Cand = (*leps[0]) + (*leps[1]);}
-
-          if(leps[zel1]->Charge() != leps[zel2]->Charge()){
-            if(( fabs(Z1Cand.M()- M_Z) + fabs(Z2Cand.M()- M_Z)) < minMZ) {
-              minMZ = fabs(Z1Cand.M()- M_Z) + fabs(Z2Cand.M()- M_Z);
-              if(fabs(Z1Cand.M()- M_Z)< fabs(Z2Cand.M()- M_Z) ){ massBestZ=Z1Cand.M(); massNonBestZ=Z2Cand.M();}
-              else{massBestZ=Z2Cand.M(); massNonBestZ=Z1Cand.M();}
-            }
-          }
-        }
-      }
-    }
-
-
-    if(bestZ) return massBestZ;
-    return massNonBestZ;
-  }
-  Particle Z1Cand;
-
-  for(unsigned int iel =0; iel < leps.size() ; iel++){
-
-    for(unsigned int iel2 =iel+1; iel2 < leps.size() ; iel2++){
-      if(iel== iel2) continue;
-      Z1Cand = (*leps[iel]) + (*leps[iel2]) ;
-      if(leps[iel]->Charge() != leps[iel2]->Charge()){
-        if(fabs(Z1Cand.M()- M_Z) < minMZ) {minMZ = fabs(Z1Cand.M()- M_Z) ; massBestZ=Z1Cand.M();}
-      }
-    }
-  }
-  return massBestZ;
-
-}
-
-bool  HNL_LeptonCore::ZmassOSWindowCheck(std::vector<Lepton *> leps){
-
-  bool passZmass_os_Window=false;
-
-  if (leps.size() == 3){
-
-    Particle ll1 = (*leps[0]);
-    ll1+= (*leps[1]);
-    Particle ll2 = (*leps[0]);
-    ll2+= (*leps[2]);
-    Particle ll3 = (*leps[1]);
-    ll3+= (*leps[2]);
-
-    if(ll1.Charge() == 0 && (fabs(ll1.M() - M_Z) < 15.)) passZmass_os_Window=true;
-    if(ll2.Charge() == 0 && (fabs(ll2.M() - M_Z) < 15.)) passZmass_os_Window=true;
-    if(ll3.Charge() == 0 && (fabs(ll3.M() - M_Z) < 15.)) passZmass_os_Window=true;
-
-  }
-
-  return passZmass_os_Window;
-}
-
-
-double HNL_LeptonCore::GetST( std::vector<Electron> electrons, std::vector<Muon> muons, std::vector<Jet> jets, std::vector<FatJet> fatjets,  Particle met){
-
-
-  double _st(0.);
-  for(unsigned int i=0; i<jets.size(); i++)_st += jets.at(i).Pt();
-  for(unsigned int i=0; i<fatjets.size(); i++)_st += fatjets.at(i).Pt();
-  for(unsigned int i=0; i<muons.size(); i++) _st +=  muons[i].Pt();
-  for(unsigned int i=0; i<electrons.size(); i++) _st +=  electrons[i].Pt();
-  _st += met.Pt();
-  return _st;
-
-}
-
-double HNL_LeptonCore::GetST( std::vector<Electron> electrons, std::vector<Muon> muons, std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev){
-
-  double _st(0.);
-  for(unsigned int i=0; i<jets.size(); i++)_st += jets.at(i).Pt();
-  for(unsigned int i=0; i<fatjets.size(); i++)_st += fatjets.at(i).Pt();
-  for(unsigned int i=0; i<muons.size(); i++) _st +=  muons[i].Pt();
-  for(unsigned int i=0; i<electrons.size(); i++) _st +=  electrons[i].Pt();
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
-
-  _st += METv.Pt();
-
-  return _st;
-}
-
-
-double HNL_LeptonCore::GetST( std::vector<Lepton *> leps, std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev){
-
-  double _st(0.);
-  for(unsigned int i=0; i<jets.size(); i++)_st += jets.at(i).Pt();
-  for(unsigned int i=0; i<fatjets.size(); i++)_st += fatjets.at(i).Pt();
-  for(auto ilep: leps) _st +=ilep->Pt();
-
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
-
-  _st += METv.Pt();
-
-  return _st;
-}
-double HNL_LeptonCore::GetST( std::vector<Lepton *> leps, std::vector<Jet> jets, std::vector<FatJet> fatjets,  Particle met){
-
-
-  double _st(0.);
-  for(unsigned int i=0; i<jets.size(); i++)_st += jets.at(i).Pt();
-  for(unsigned int i=0; i<fatjets.size(); i++)_st += fatjets.at(i).Pt();
-  for(auto ilep : leps) _st +=  ilep->Pt();
-  _st += met.Pt();
-  return _st;
-
-}
-
-
-
-double HNL_LeptonCore::M_T(Particle a, Particle b){
-  double dphi = a.DeltaPhi(b);
-
-  return TMath::Sqrt( 2.*a.Pt()*b.Pt()*(1.- TMath::Cos(dphi) ) );
-
-}
-
-double HNL_LeptonCore::GetHT(std::vector<Jet> jets, std::vector<FatJet> fatjets){
-
-  double _ht(0.);
-  for(unsigned int i=0; i<jets.size(); i++)_ht += jets.at(i).Pt();
-  for(unsigned int i=0; i<fatjets.size(); i++)_ht += fatjets.at(i).Pt();
-  return _ht;
-
-}
-
-
-
-TString HNL_LeptonCore::GetPtLabel(Muon mu){
-
-
-  if (mu.Pt() < 10.) return "pt_5_10";
-  if (mu.Pt() < 15.) return "pt_10_15";
-  if (mu.Pt() < 20.) return "pt_15_20";
-  if (mu.Pt() < 30.) return "pt_20_30";
-  if (mu.Pt() < 40.) return "pt_30_40";
-  if (mu.Pt() < 50.) return "pt_40_50";
-  if (mu.Pt() < 100.) return "pt_50_100";
-  if (mu.Pt() < 2000.) return "pt_100_2000";
-
-  return "";
-
-
-}
-
-
-TString HNL_LeptonCore::GetEtaLabel(Muon mu){
-  if(fabs(mu.Eta()) < 0.8 ) return "eta1";
-  if(fabs(mu.Eta()) < 1.5 ) return "eta2";
-  if(fabs(mu.Eta()) < 2.5 ) return "eta3";
-  return "";
-}
-
-
-bool HNL_LeptonCore::PassGenMatchFilter(vector<Lepton *> leps, AnalyzerParameter param){
-
-  /// Function to split Prompt/Conv/CF/Fake IF code uses RunPrompt etc.... 
-  /// If code does not use Run* to sepeate MC samples then function should return true
-
-  /// If user used Data driven method for Fake/CF then function returns for Fake/F bkf true for data and false for MC 
-  /// If user used Data driven method for Fake/CF then for Conv function requires at least one conv lepton is present 
-
-  if(IsData) return true;
-  if(RunFake && param.FakeMethod != "MC") return false;
-  if(RunCF   && param.CFMethod   != "MC") return false;
-  if(RunConv && param.ConvMethod != "MC") return false;
-
-  if(MCSample.Contains("Type")) return true;
-
-  //// Function filters events when using MC based on if they are Fake/CF/Conv
-  
-  int nConv(0);
-  int nCF=(0);
-  int nFake=(0);                                         
-  unsigned int nPrompt(0);
-  for(auto ilep: leps){
-    //int LepType= GetLeptonType_JH(*ilep, gens);
-    if( ilep->IsConv())     nConv++;
-    if( ilep->LeptonIsCF()) nCF++;
-    if( ilep->IsFake())     nFake++;
-    if( ilep->IsPrompt())   nPrompt++;
-  }
-  
-  if(RunPrompt && (nPrompt == leps.size())) return true;
-  if(RunPrompt && (nPrompt != leps.size())) return false;
-
-
-  if( (RunFake || RunConv || RunCF )){
-
-    if(RunFake  && nFake > 0)  return true;
-    if(!RunFake && nFake > 0)  return false;
-    
-    if(RunCF    && nCF   > 0)  return true;
-    if(!RunCF   && nCF > 0)    return false;
-
-    if(RunConv  && nConv > 0)  return true;
-    if(!RunConv && nConv > 0) return false;
-    
-    return false;
-  }
-  
-  return true;
-
-}
-
-
-TString HNL_LeptonCore::GetElTypeTString(Electron el){
-  if(IsDATA) return "";
-  TString tag = "";
-
-  if(GetLeptonType(el, All_Gens) < 0) tag = "Minus";
-  tag+=TString::Itoa(fabs( el.LeptonGenType()), 10);
-  return tag;
-}
-
-TString HNL_LeptonCore::GetLepTypeTString(const Lepton& lep){
-  if(IsDATA) return "";
-  TString tag = "";
-  if(GetLeptonType(lep, All_Gens) < 0) tag = "Minus";
-  tag+=TString::Itoa(fabs(lep.LeptonGenType()), 10);
-  return tag;
-}
-
 bool HNL_LeptonCore::SameCharge(vector<Muon> mus, int ch){
-
   if(mus.size() != 2) return false;
-
   int sumQ=mus[0].Charge()+mus[1].Charge();
   if(ch==0){
     if(fabs(sumQ) == 2) return true;
@@ -1885,21 +1439,16 @@ bool HNL_LeptonCore::SameCharge(vector<Muon> mus, int ch){
   else if(ch==1){
     if(sumQ == 2) return true;
     return false;
-
   }
   else if(ch==-1){
     if(sumQ == -2) return true;
     return false;
-
   }
   return false;
-
 }
 
 bool HNL_LeptonCore::SameCharge(vector<Electron> els, int ch){
-
   if(els.size() != 2) return false;
-
   int sumQ=els[0].Charge()+els[1].Charge();
   if(ch==0){
     if(fabs(sumQ) == 2) return true;
@@ -1908,12 +1457,10 @@ bool HNL_LeptonCore::SameCharge(vector<Electron> els, int ch){
   else if(ch==1){
     if(sumQ == 2) return true;
     return false;
-
   }
   else if(ch==-1){
     if(sumQ == -2) return true;
     return false;
-
   }
   return false;
 }
@@ -1932,12 +1479,10 @@ bool HNL_LeptonCore::SameCharge(vector<Electron> els, vector<Muon> mus,int ch){
   else if(ch==1){
     if(sumQ == 2) return true;
     return false;
-
   }
   else if(ch==-1){
     if(sumQ == -2) return true;
     return false;
-
   }
   return false;
 }
@@ -1960,41 +1505,8 @@ bool HNL_LeptonCore::SameCharge(std::vector<Lepton *> leps, int ch){
   else if(ch==-1){
     if(sumQ == -2) return true;
     return false;
-
   }
-
   return false;
-}
-
-
-
-TString HNL_LeptonCore::Category(Electron el){
-
-
-  TString eta_label="El";
-  if(fabs(el.Eta()) < 0.8) eta_label = "_BB";
-  else if(fabs(el.Eta()) < 1.5) eta_label = "_EB";
-  else eta_label = "_EE";
-
-  return eta_label;
-
-
-}
-
-
-
-
-
-TString HNL_LeptonCore::GetPtBin(bool muon, double pt){
-  TString pt_label="";
-  
-  if(pt< 20) pt_label = "_ptbin1"; 
-  else if(pt < 50) pt_label = "_ptbin2"; 
-  else if(pt < 100) pt_label = "_ptbin3";
-  else pt_label = "_ptbin4";                                                               
-
-  return pt_label;
-
 }
 
 
