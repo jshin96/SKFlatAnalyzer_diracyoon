@@ -330,9 +330,8 @@ TString HNL_RegionDefinitions::RunSignalRegionAK8String(HNL_LeptonCore::Channel 
   
   FillCutflow(HNL_LeptonCore::SR1, w, "SR1_dilep_mass",param);
 
-  double ST = GetST(leps, JetColl, AK8_JetColl, METv);
-  double HT = GetHT(JetColl, AK8_JetColl);
-  double met2_st = pow(METv.Pt(),2.)/ ST;
+  double met2_st = GetMET2ST(leps, JetColl, AK8_JetColl, METv);
+  double HT      = GetHT(JetColl, AK8_JetColl);
   bool PassHMMet    = (met2_st < 15);
   bool PassBJetMVeto = (B_JetColl.size()==0);
   double LowerMassSR1WmassCut = 500.;
@@ -514,8 +513,7 @@ TString HNL_RegionDefinitions::RunSignalRegionWWString(HNL_LeptonCore::Channel c
 
   double htltcut = 2.;
 
-  double ST = GetST( leps, JetColl, AK8_JetColl, METv);
-  double met2_st = pow(METv.Pt(),2.)/ ST;
+  double met2_st = GetMET2ST(leps, JetColl, AK8_JetColl, METv);
   bool PassHMMet    = (met2_st < 12);  ////// An option to add since we have MET in SR1/3
   
   if(PassHMMet) {
@@ -586,8 +584,7 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4StringBDT(bool isSR, TString mN
   if(isSR)FillHist(param.Name+"/LimitShape_SR3BDT/SignalBins_M"+mN+"_NCut"+NCut+"_NTree"+NTree, MVAvalue, w, 40, -1., 1.);
 
   std::vector<FatJet> FatJetColl;
-  double ST = GetST( LepTColl, JetColl, FatJetColl, METv);
-  double met2_st = pow(METv.Pt(),2.)/ ST;
+  double met2_st = GetMET2ST(LepTColl, JetColl, FatJetColl, METv);
   bool PassHMMet    = (met2_st < 15);
   
   TString LabelPrefix = (isSR) ? "SR3" : "CR3";
@@ -632,9 +629,8 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4String(HNL_LeptonCore::Channel 
 
   FillCutflow(HNL_LeptonCore::SR3, w, "SR3_dilep_mass",param);
 
-  double ST = GetST(leps, JetColl, AK8_JetColl, METv);
-  double met2_st = pow(METv.Pt(),2.)/ ST;
-  bool PassHMMet    = (met2_st < 15);
+  double met2_st  = GetMET2ST(leps, JetColl, AK8_JetColl, METv);
+  bool PassHMMet  = (met2_st < 15);
 
   int  NB_JetColl      =  B_JetColl.size();
 

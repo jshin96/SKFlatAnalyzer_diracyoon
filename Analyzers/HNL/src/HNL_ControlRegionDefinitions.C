@@ -3,7 +3,6 @@
 
 void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> JetAllColl, std::vector<Jet> JetColl, std::vector<Jet> VBF_JetColl,   std::vector<FatJet> AK8_JetColl, std::vector<Jet> B_JetColl,  Event ev, Particle METv, AnalyzerParameter param, vector<TString> CRs, float weight_ll ){
   
-
   vector<HNL_LeptonCore::Channel> channels = {GetChannelENum(param.Channel)};
  
   if(GetChannelENum(param.Channel) == HNL_LeptonCore::NONE){
@@ -61,10 +60,10 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     //// Make Trilep/4 lep param
     AnalyzerParameter paramTrilep  = param;
     AnalyzerParameter paramQuadlep = param;
-    paramTrilep.Channel = GetChannelString(trilep_channel);
-    paramTrilep.Name  = GetChannelString(trilep_channel)  + "/" + param.DefName ;
-    paramQuadlep.Channel= GetChannelString(fourlep_channel);
-    paramQuadlep.Name = GetChannelString(fourlep_channel) + "/" + param.DefName ;
+    paramTrilep.Channel  = GetChannelString(trilep_channel);
+    paramTrilep.Name     = GetChannelString(trilep_channel)  + "/" + param.DefName ;
+    paramQuadlep.Channel = GetChannelString(fourlep_channel);
+    paramQuadlep.Name    = GetChannelString(fourlep_channel) + "/" + param.DefName ;
     
     double weight_channel = weight_ll;
    
@@ -163,58 +162,52 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       }      
       return;
     }
-
+    
 
     vector<TString> passed;
-
     if(HasFlag("OS_VR")){
-
       //// OS L+L-
       
       FillCutflow(CutFlow_Region, weight_OS, "OS_VR",param);
-
-      if(RunCR("CR_OS_ZAk8",CRs)    && PassTight && FillZAK8CRPlots  (dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_OS)) passed.push_back("ZAK8_CR");
-      if(RunCR("CR_OS_TopAK8",CRs)  && PassTight && FillTopAK8CRPlots(dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_OS)) passed.push_back("TopAK8_CR");
-      if(RunCR("CR_OS_Z",CRs)       && PassTight && FillZCRPlots     (dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_OS)) passed.push_back("Z_CR");
-      if(RunCR("CR_OS_Top",CRs)     && PassTight && FillTopCRPlots   (dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_OS)) passed.push_back("Top_CR");
-      if(RunCR("CR_OS_Top2",CRs)    && PassTight && FillTopCR2Plots (dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_OS)) passed.push_back("Top_CR2");
+      
+      if(PassTight && FillZAK8CRPlots  (dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_OS)) passed.push_back("ZAK8_CR");
+      if(PassTight && FillTopAK8CRPlots(dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_OS)) passed.push_back("TopAK8_CR");
+      if(PassTight && FillZCRPlots     (dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_OS)) passed.push_back("Z_CR");
+      if(PassTight && FillTopCRPlots   (dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_OS)) passed.push_back("Top_CR");
+      if(PassTight && FillTopCR2Plots (dilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_OS))  passed.push_back("Top_CR2");
+      
     }
-    
-    if(HasFlag("VV_VR")){
-
+      
+    if(HasFlag("LLL_VR")){
+	
       FillCutflow(CutFlow_Region, weight_channel, "VV_VR",param);
+      
+      // LLL / LLLL 
+      if(FillZZCRPlots (fourlep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramQuadlep, weight_channel)) passed.push_back("ZZ_CR");
+      if(FillZZ2CRPlots(fourlep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramQuadlep, weight_channel)) passed.push_back("ZZLoose_CR"); 
+      if(FillWZCRPlots (trilep_channel,  LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel))  passed.push_back("WZ_CR");
 
-      if(RunCR("VV_VR",CRs)){
-	// LLL / LLLL 
-	if(FillZZCRPlots (fourlep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramQuadlep, weight_channel)) passed.push_back("ZZ_CR");
-	if(FillZZ2CRPlots(fourlep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramQuadlep, weight_channel)) passed.push_back("ZZLoose_CR"); 
-	if(FillWZCRPlots (trilep_channel,  LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel))   passed.push_back("WZ_CR");
-	if(FillZNPCRPlots(trilep_channel,  LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel))   passed.push_back("ZNP_CR"); 
-	if(FillWWCR1Plots(dilep_channel,   LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel))      passed.push_back("WpWp_CR1");
-	if(FillWWCR2Plots (dilep_channel,  LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel))      passed.push_back("WpWp_CR2");
-	if(FillWWCRNPPlots(dilep_channel,  LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel))      passed.push_back("WpWp_CRNP");
-	if(FillWWCRNP2Plots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel))      passed.push_back("WpWp_CRNP2");
-	if(FillWWCRNP3Plots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel))      passed.push_back("WpWp_CRNP3");
-	if(FillWZ2CRPlots (trilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel))passed.push_back("WZ2_CR");
-	if(FillWZBCRPlots (trilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel))passed.push_back("WZB_CR");
+      if(ConversionSplitting(LepsT,RunConv,3)){
+	FillCutflow(CutFlow_Region, weight_channel, "VG_VR",param);
+	if(FillWGCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("WG_CR");
+	if(FillZGCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("ZG_CR");
       }
-      if(RunCR("VG_VR",CRs)){
-	if(ConversionSplitting(LepsT,RunConv,3)){
-
-	  FillCutflow(CutFlow_Region, weight_channel, "VG_VR",param);
-	  AnalyzerParameter paramTMP=param;
-	  paramTMP.Name=param.Name+"_ConvMethodPt";
-	  if(FillWGCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTMP, weight_channel)) passed.push_back("WG_Method2_CR");
-	  if(FillZGCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTMP, weight_channel)) passed.push_back("ZG_Method2_CR");
-	}
-      }
+      if(FillWZ2CRPlots      (trilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("WZ2_CR");
+      if(FillWZBCRPlots      (trilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("WZB_CR");
+      if(FillZ_ElNPCRPlots   (trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel))     passed.push_back("ZNPEl_CR");
+      if(FillZ_MuonNPCRPlots (trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel))     passed.push_back("ZNPMu_CR");
+      if(FillTopNPCRPlots    (trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel))     passed.push_back("TopNP_CR");
     }
+  
+    
+    if(HasFlag("SS_CR") || HasFlag("VBF_CR")){
 
-    if(HasFlag("SS_CR")){
+      if(HasFlag("SS_CR"))  FillCutflow(CutFlow_Region, weight_channel, "SS_CR",param);
+      if(HasFlag("VBF_CR")) FillCutflow(CutFlow_Region, weight_channel, "VBF_CR",param);
       
       if(RunCF){    
 	if(LepsT.size() == 2){
-	  if(dilep_channel == MuMu) continue;
+	  if(dilep_channel == MuMu)       continue;
 	  if(IsData && SameCharge(LepsT)) continue;
 	  if(IsData){
 	    weight_channel = GetCFWeightElectron(LepsT, param);
@@ -228,40 +221,29 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 	if(!SameCharge(LepsT)) continue;
       }
       
-      FillCutflow(CutFlow_Region, weight_channel, "SS_CR",param);
-     
-
-      if(RunCR("Presel",CRs)){
-	if(FillSSPreselectionPlots(dilep_channel,    LepsT, LepsV, JetColl,     AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("SSPresel");
-	if(FillSSVBFPreselectionPlots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("SSVBFPresel");
-      }
-      
-      if(RunCR("SS_CR",CRs)){
-	// 17-028 +CR                                                                                                                                                                                                  
-	// SR1 : MET Inv. || BVeto Inv.
-	if(FillHighMassSR1CRPlots(dilep_channel, LepsT, LepsV, JetColl,     AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR1_CR");
-	
-	// SR2 : MET Inv. || BVeto Inv.
-	if(FillHighMassSR2CRPlots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR2_CR");
-	
-	// SR3 : MET Inv. || BVeto Inv.
-	if(FillHighMassSR3CRPlots(dilep_channel, LepsT, LepsV, JetColl,     AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR3_CR");
-	
-	FillHighMassSR3BDTCRPlots(dilep_channel, LepsT, LepsV, JetAllColl,  JetColl,VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel);
-	
-	
-	if(FillHighMass1JetCRPlots(dilep_channel, LepsT, LepsV, JetColl,    AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMass1Jet_CR");
-	
-	if(FillHighMassBJetCRPlots(dilep_channel, LepsT, LepsV, JetColl,    AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassBJet_CR");
-	
-	// 0 Jet : 2 SS lep dphi > 2.5
-	if(FillHighMassNPCRPlots(dilep_channel, LepsT, LepsV, JetColl,      AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassNP_CR");
-	
-      }
     }
     
+    if(HasFlag("VBF_CR")){
+      if(FillWWCR1Plots  (dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel))      passed.push_back("WpWp_CR1");
+      if(FillWWCR2Plots  (dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel))      passed.push_back("WpWp_CR2");
+      if(FillWWCRNPPlots (dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel))      passed.push_back("WpWp_CRNP");
+      if(FillWWCRNP2Plots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel))      passed.push_back("WpWp_CRNP2");
+      if(FillWWCRNP3Plots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel))      passed.push_back("WpWp_CRNP3");
+    }
+    if(HasFlag("SS_CR")){
+      FillHighMassSR3BDTCRPlots(dilep_channel, LepsT, LepsV, JetAllColl,  JetColl,VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel);
+      if(FillSSPreselectionPlots(dilep_channel,    LepsT, LepsV, JetColl,     AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("SSPresel");
+      if(FillHighMassSR1CRPlots(dilep_channel, LepsT, LepsV, JetColl,     AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR1_CR");
+      if(FillHighMassSR2CRPlots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR2_CR");
+      if(FillHighMassSR3CRPlots(dilep_channel, LepsT, LepsV, JetColl,     AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR3_CR");
+      if(FillHighMass1JetCRPlots(dilep_channel, LepsT, LepsV, JetColl,    AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMass1Jet_CR");
+      if(FillHighMassBJetCRPlots(dilep_channel, LepsT, LepsV, JetColl,    AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassBJet_CR");
+      if(FillHighMassNPCRPlots(dilep_channel, LepsT, LepsV, JetColl,      AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassNP_CR");
+    }
+        
     TString ControlLabel = "";
     vector<TString> cutlabels = {};
+    
     if(HasFlag("OS_VR")){
       cutlabels.push_back("ZAK8_CR");
       cutlabels.push_back("TopAK8_CR");
@@ -270,38 +252,39 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       cutlabels.push_back("Top_CR2");
       ControlLabel+="OS_VR";
     }
-    if(RunCR("VV_VR",CRs)){
+    
+    if(HasFlag("LLL_VR")) {
       cutlabels.push_back("ZZ_CR");
-      cutlabels.push_back("ZZLoose_CR");
+      cutlabels.push_back("ZZOffshell_CR");
       cutlabels.push_back("WZ_CR");
-      cutlabels.push_back("ZNP_CR");
-      cutlabels.push_back("WpWp_CR1");
-      cutlabels.push_back("WpWp_CR2");
-      cutlabels.push_back("WpWp_CRNP");
-      cutlabels.push_back("WpWp_CRNP2");
-      cutlabels.push_back("WpWp_CRNP3");
+      cutlabels.push_back("WG_CR");
+      cutlabels.push_back("ZG_CR");
       cutlabels.push_back("WZ2_CR");
       cutlabels.push_back("WZB_CR");
-    }
-    if(RunCR("VG_VR",CRs)){
-      cutlabels.push_back("WG_Method2_CR");
-      cutlabels.push_back("ZG_Method2_CR");
-      ControlLabel+="VV";
+      cutlabels.push_back("ZNPEl_CR");
+      cutlabels.push_back("ZNPMu_CR");
+      cutlabels.push_back("TopNP_CR");
+      ControlLabel+="LLL";
     }
 
-    if(RunCR("Presel",CRs)){
+    if(HasFlag("SS_CR")) {
       cutlabels.push_back("SSPresel");
-      cutlabels.push_back("SSVBFPresel");
-    }
-    if(RunCR("SS_CR",CRs)){
       cutlabels.push_back("HighMassSR1_CR");
       cutlabels.push_back("HighMassSR2_CR");
       cutlabels.push_back("HighMassSR3_CR");
       cutlabels.push_back("HighMass1Jet_CR");
       cutlabels.push_back("HighMassBJet_CR");
       cutlabels.push_back("HighMassNP_CR");
-
       ControlLabel+="SS";
+    }
+
+    if(HasFlag("VBF_CR")){
+      cutlabels.push_back("WpWp_CR1");
+      cutlabels.push_back("WpWp_CR2");
+      cutlabels.push_back("WpWp_CRNP");
+      cutlabels.push_back("WpWp_CRNP2");
+      cutlabels.push_back("WpWp_CRNP3");
+      ControlLabel+="SSVBF";
     }
     
     //    FillCutflow(CutFlow_Region, weight_channel, "NoCut",param);
@@ -339,7 +322,6 @@ bool HNL_RegionDefinitions::FillTopCRPlots(HNL_LeptonCore::Channel channel, std:
   if(run_Debug){
     cout << "HNL_TopAK8_TwoLepton_CR " << event << endl;
     for(auto ilep: leps) cout << "HNL_TopAK8_TwoLepton_CR Type " <<  ilep->LeptonGenType() << endl;
-    //PrintGen(gens);                                                                                                                                                                                                                                                         
   }
 
   if(RunFake) {
@@ -415,8 +397,57 @@ bool HNL_RegionDefinitions::FillTopAK8CRPlots(HNL_LeptonCore::Channel channel, s
 }
 
 
+bool HNL_RegionDefinitions::FillTopNPCRPlots(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto   , std::vector<Jet> JetColl, std::vector<FatJet> AK8_JetColl, std::vector<Jet> B_JetColl,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
-bool HNL_RegionDefinitions::FillZNPCRPlots(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto   , std::vector<Jet> JetColl, std::vector<FatJet> AK8_JetColl, std::vector<Jet> B_JetColl,  Event ev, Particle METv, AnalyzerParameter param, float w){
+
+  if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
+
+  if(!HasOSSFPair(leps)) return false;
+  if(fabs(GetMassBestZ(leps,true) -M_Z) < 15)  return false;
+
+  Particle lll = (*leps[0]) + (*leps[1])+ (*leps[2]);
+  bool InZmass_lll_Window = (fabs(lll.M() - M_Z) < 15);
+  if(InZmass_lll_Window) return false;
+  
+  if(B_JetColl.size() == 0) return false;
+
+  if(HasLowMassOSSF(leps,M_CUT_LL))  return false;
+
+  Fill_RegionPlots(param,"HNL_TopNP_ThreeLepton_CR" ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+
+  return true;
+
+}
+
+
+bool HNL_RegionDefinitions::FillZ_MuonNPCRPlots(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto   , std::vector<Jet> JetColl, std::vector<FatJet> AK8_JetColl, std::vector<Jet> B_JetColl,  Event ev, Particle METv, AnalyzerParameter param, float w){
+
+  if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
+
+  double metcut = 30.;
+  double mtcut  = 30.;
+
+  if(METv.Pt() > metcut) return false;
+  if(!ZmassOSSFWindowCheck(leps,M_ZWINDOW_CR)) return false;
+  
+  if(GetIndexNonBestZ(leps,M_ZWINDOW_CR) < 0) return false;
+  if(M_T((*leps[GetIndexNonBestZ(leps,M_ZWINDOW_CR)]), METv) > mtcut) return false;
+  
+  Lepton* noZLep = leps[GetIndexNonBestZ(leps,M_ZWINDOW_CR)];
+  if(noZLep->LeptonFlavour() != Lepton::MUON) return false;
+
+  if(run_Debug){
+    cout << "HNL_ZNP_ThreeLepton_CR " << param.Name << " " << event  << endl;
+    for(auto ilep: leps) cout << "HNL_ZNP_ThreeLepton_CR Type " <<  ilep->LeptonGenType() << endl;
+  }
+
+  Fill_RegionPlots(param,"HNL_ZNPMu_ThreeLepton_CR" ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+
+  return true;
+
+}
+
+bool HNL_RegionDefinitions::FillZ_ElNPCRPlots(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto   , std::vector<Jet> JetColl, std::vector<FatJet> AK8_JetColl, std::vector<Jet> B_JetColl,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
 
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
@@ -426,15 +457,20 @@ bool HNL_RegionDefinitions::FillZNPCRPlots(HNL_LeptonCore::Channel channel, std:
 
 
   if(METv.Pt() > metcut) return false;
-  if(GetIndexNonBestZ(leps,15.) < 0) return false;
-  if(M_T((*leps[GetIndexNonBestZ(leps,15.)]), METv) > mtcut) return false;
+  if(!ZmassOSSFWindowCheck(leps,15)) return false;
+
+  if(GetIndexNonBestZ(leps,M_ZWINDOW_CR) < 0) return false;
+  if(M_T((*leps[GetIndexNonBestZ(leps,M_ZWINDOW_CR)]), METv) > mtcut) return false;
+
+  Lepton* noZLep = leps[GetIndexNonBestZ(leps,M_ZWINDOW_CR)];
+  if(noZLep->LeptonFlavour() == Lepton::MUON) return false;
 
   if(run_Debug){
     cout << "HNL_ZNP_ThreeLepton_CR " << param.Name << " " << event  << endl;
     for(auto ilep: leps) cout << "HNL_ZNP_ThreeLepton_CR Type " <<  ilep->LeptonGenType() << endl;
   }
 
-  Fill_RegionPlots(param,"HNL_ZNP_ThreeLepton_CR" ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  Fill_RegionPlots(param,"HNL_ZNPEl_ThreeLepton_CR" ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
   return true;
 
@@ -443,7 +479,7 @@ bool HNL_RegionDefinitions::FillZNPCRPlots(HNL_LeptonCore::Channel channel, std:
 bool HNL_RegionDefinitions::FillZCRPlots(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto   , std::vector<Jet> JetColl, std::vector<FatJet> AK8_JetColl,  std::vector< Jet> B_JetColl,Event ev, Particle METv, AnalyzerParameter param, float w){
 
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
-  
+ 
 
   if (leps_veto.size() != 2)        return false;
   
@@ -583,8 +619,7 @@ bool HNL_RegionDefinitions::FillWWCR2Plots(HNL_LeptonCore::Channel channel, std:
   if(!(j1.Pt() > 30.) && (j2.Pt() > 30.)) return false;
   if ( ll.M() < M_CUT_LL) return false;
 
-  double ST = GetST(leps, jets_eta5, AK8_JetColl, METv);
-  double met2_st = pow(METv.Pt(),2.)/ ST;
+  double met2_st = GetMET2ST(leps, jets_eta5, AK8_JetColl, METv);
   if(met2_st > 15) return false;
 
 
@@ -812,8 +847,7 @@ bool HNL_RegionDefinitions::FillHighMassSR1CRPlots(HNL_LeptonCore::Channel chann
   if (channel==EE  && (fabs(ll.M()-M_Z) < M_ZWINDOW_VETO)) return false;
   if(ll.M() < M_CUT_LL) return false;
 
-  double ST = GetST(leps, JetColl, AK8_JetColl, ev);
-  double met2_st = pow(METv.Pt(),2.)/ ST;
+  double met2_st = GetMET2ST(leps, JetColl, AK8_JetColl, METv);
   bool PassHMMet    = (met2_st < 20);
 
 
@@ -935,9 +969,8 @@ bool HNL_RegionDefinitions::FillHighMassSR3BDTCRPlots(HNL_LeptonCore::Channel ch
 
   if(ll.M() < M_CUT_LL) return false;
 
-  double ST = GetST(leps, JetColl, AK8_JetColl, ev);
-  double met2_st = pow(METv.Pt(),2.)/ ST;
-  bool PassHMMet    = (met2_st < 20);
+  double met2_st = GetMET2ST(leps, JetColl, AK8_JetColl, METv);
+  bool PassHMMet = (met2_st < 20);
 
   if(PassHMMet && NB_JetColl==0) return false;
 
@@ -961,7 +994,6 @@ bool HNL_RegionDefinitions::FillHighMassSR3CRPlots(HNL_LeptonCore::Channel chann
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
   if (leps_veto.size() != 2) return false;
 
-
   int NB_JetColl = B_JetColl.size();
 
   Particle ll =  (*leps[0]) + (*leps[1]);
@@ -970,9 +1002,9 @@ bool HNL_RegionDefinitions::FillHighMassSR3CRPlots(HNL_LeptonCore::Channel chann
 
   if(ll.M() < M_CUT_LL) return false;
 
-  double ST = GetST(leps, JetColl, AK8_JetColl, ev);
-  double met2_st = pow(METv.Pt(),2.)/ ST;
-  bool PassHMMet    = (met2_st < 20);
+
+  double met2_st = GetMET2ST(leps, JetColl, AK8_JetColl, METv);
+  bool PassHMMet = (met2_st < 20);
 
   if(PassHMMet && NB_JetColl==0) return false;
 
@@ -981,11 +1013,9 @@ bool HNL_RegionDefinitions::FillHighMassSR3CRPlots(HNL_LeptonCore::Channel chann
 
   if(AK8_JetColl.size() > 0) return false;
 
-
   if(JetColl.size() == 0 && leps[1]->Pt() > 80.) FillHist( "ControlSR3/"+param.Name+"/SignalBins",   0.5, w, 16, 0, 16., "Signalbins");
   if(JetColl.size() == 1 && leps[1]->Pt() > 80.) FillHist( "ControlSR3/"+param.Name+"/SignalBins",   1.5, w, 16, 0, 16., "Signalbins");
-  
-  if (JetColl.size() < 2 && leps[1]->Pt() > 80.) Fill_RegionPlots(param,"HNL_HighMassSR3b_TwoLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  if(JetColl.size() < 2 && leps[1]->Pt() > 80.) Fill_RegionPlots(param,"HNL_HighMassSR3b_TwoLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
   Fill_RegionPlots(param,"HNL_HighMassSR3_TwoLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
@@ -1087,17 +1117,18 @@ bool HNL_RegionDefinitions::FillHighMassSR3CRPlots(HNL_LeptonCore::Channel chann
 bool HNL_RegionDefinitions::FillHighMassSR2CRPlots(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto   , std::vector<Jet> JetColl, std::vector<FatJet> AK8_JetColl, std::vector<Jet> B_JetColl,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
+
   if (leps_veto.size() != 2) return false;
   if (leps.size() != 2) return false;
 
-
   int NB_JetColl = B_JetColl.size();
+
   Particle ll    =  (*leps[0]) + (*leps[1]);
   if (channel==EE  && (fabs(ll.M()-M_Z) < M_ZWINDOW_VETO)) return false;
-  if(ll.M() < M_CUT_LL) return false;
+  if (ll.M() < M_CUT_LL) return false;
 
-  double ST      = GetST(leps, JetColl, AK8_JetColl, ev);
-  double met2_st = pow(METv.Pt(),2.)/ ST;
+
+  double met2_st = GetMET2ST(leps, JetColl, AK8_JetColl, METv);
   bool PassHMMet = (met2_st < 20);
 
   if(PassHMMet && NB_JetColl==0) return false;
@@ -1126,6 +1157,7 @@ bool HNL_RegionDefinitions::FillWZ2CRPlots(HNL_LeptonCore::Channel channel, std:
 
 
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
+  if(!HasOSSFPair(leps)) return false;
 
   if(jets_eta5.size() < 2) return false;
 
@@ -1149,7 +1181,7 @@ bool HNL_RegionDefinitions::FillWZ2CRPlots(HNL_LeptonCore::Channel channel, std:
       }
     }
   }
-  if(GetIndexNonBestZ(leps,15.) < 0) return false;
+  if(GetIndexNonBestZ(leps,M_ZWINDOW_CR) < 0) return false;
   if(GetMassMinOSSF(leps)  < 20.) return false;
   if(((*leps[0])+ (*leps[1]) + (*leps[2])).M() <  trilep_masscut) return false;
 
@@ -1171,7 +1203,7 @@ bool HNL_RegionDefinitions::FillWZ2CRPlots(HNL_LeptonCore::Channel channel, std:
   if (zeppenfeld > 1.00) return false;
 
   Fill_RegionPlots(param,"HNL_WZ2_ThreeLepton_CR" ,  jets_eta5,  AK8_JetColl,  leps,  METv, nPV, w);
-
+  OutCutFlow("HNL_WZ2_ThreeLepton_CR",w);
 
   return true;
 
@@ -1180,17 +1212,16 @@ bool HNL_RegionDefinitions::FillWZ2CRPlots(HNL_LeptonCore::Channel channel, std:
 bool HNL_RegionDefinitions::FillWZBCRPlots(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto   , std::vector<Jet> jets_eta5, std::vector<FatJet> AK8_JetColl, std::vector<Jet> B_JetColl,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
+  if(!HasOSSFPair(leps)) return false;
 
   if(jets_eta5.size() < 2) return false;
 
   double metcut = 30.;
   double trilep_masscut=105.;
 
-
-  std::vector<Jet> JetColl                  = SelectAK4Jets(jets_eta5, 20., 2.5, true,  0.4,0.8,"",    leps_veto,AK8_JetColl);
+  std::vector<Jet> JetColl   = SelectAK4Jets(jets_eta5, 20., 2.5, true,  0.4,0.8,"",    leps_veto,AK8_JetColl);
   int NB_JetColl = B_JetColl.size();
   //file:///Users/john/Downloads/AN2019_089_v7.pdf SSWW +WZ  + AN2020_045                                                                                                                                          
-
 
   if(jets_eta5.size() < 2) return false;
   double maxDiJetDeta=0.;
@@ -1206,7 +1237,7 @@ bool HNL_RegionDefinitions::FillWZBCRPlots(HNL_LeptonCore::Channel channel, std:
     }
   }
 
-  if(GetIndexNonBestZ(leps,15.) < 0) return false;
+  if(GetIndexNonBestZ(leps,M_ZWINDOW_CR) < 0) return false;
   if(((*leps[0])+ (*leps[1]) + (*leps[2])).M() <  trilep_masscut) return false;
 
   Jet j1 = jets_eta5[ijet1] ;
@@ -1216,6 +1247,9 @@ bool HNL_RegionDefinitions::FillWZBCRPlots(HNL_LeptonCore::Channel channel, std:
   if (NB_JetColl==0) return false;
   if ((j1+j2).M() < 500.) return false;
   if (maxDiJetDeta<2.5) return false;
+
+  if(!ZmassOSSFWindowCheck(leps,M_ZWINDOW_CR)) return false;
+
 
   double Av_JetEta= 0.5*(jets_eta5[ijet1].Eta()+ jets_eta5[ijet2].Eta());
   double zeppenfeld = TMath::Max((*leps[0]).Eta()  - Av_JetEta , (*leps[1]).Eta()  - Av_JetEta ) /maxDiJetDeta;
@@ -1227,6 +1261,7 @@ bool HNL_RegionDefinitions::FillWZBCRPlots(HNL_LeptonCore::Channel channel, std:
 
   Fill_RegionPlots(param,"HNL_WZB_ThreeLepton_CR" ,  jets_eta5,  AK8_JetColl,  leps,  METv, nPV, w);
 
+  OutCutFlow("HNL_WZB_ThreeLepton_CR",w);
 
   return true;
 
@@ -1238,6 +1273,9 @@ bool HNL_RegionDefinitions::FillZZCRPlots(HNL_LeptonCore::Channel channel, std::
 
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
 
+  int sumQ = leps[0]->Charge() + leps[1]->Charge() +leps[2]->Charge() +leps[3]->Charge() ;
+  if(sumQ != 0) return false;
+
   int NB_JetColl=B_JetColl.size();
 
   if(NB_JetColl  > 0 ) return false;
@@ -1249,9 +1287,8 @@ bool HNL_RegionDefinitions::FillZZCRPlots(HNL_LeptonCore::Channel channel, std::
   for(unsigned int iel =0; iel < leps.size() ; iel++){
     for(unsigned int iel2 =iel+1; iel2 < leps.size() ; iel2++){
       if(iel== iel2) continue;
-      Z1Cand = (*leps[iel]) + (*leps[iel2]) ;
-      if(leps[iel]->Charge() != leps[iel2]->Charge()){
-
+      if(IsOSSF(leps[iel], leps[iel2])){
+	Z1Cand = (*leps[iel]) + (*leps[iel2]) ;
         int zel1(-9), zel2(-9);
         if(iel ==0 && iel2==1){ zel1=2; zel2=3;    Z2Cand = (*leps[2]) + (*leps[3]);}
         if(iel ==0 && iel2==2){ zel1=1; zel2=3;    Z2Cand = (*leps[1]) + (*leps[3]);}
@@ -1259,10 +1296,10 @@ bool HNL_RegionDefinitions::FillZZCRPlots(HNL_LeptonCore::Channel channel, std::
         if(iel ==1 && iel2==2){ zel1=0; zel2=3;    Z2Cand = (*leps[0]) + (*leps[3]);}
         if(iel ==1 && iel2==3){ zel1=0; zel2=2;    Z2Cand = (*leps[0]) + (*leps[2]);}
         if(iel ==2 && iel2==3){ zel1=0; zel2=1;    Z2Cand = (*leps[0]) + (*leps[1]);}
-
-        if(leps[zel1]->Charge() != leps[zel2]->Charge()){
-          if(fabs(Z1Cand.M() - M_Z) < 15.){
-	    if(fabs(Z2Cand.M() - M_Z) < 15.){
+	
+	if(IsOSSF(leps[zel1], leps[zel2])){
+          if(fabs(Z1Cand.M() - M_Z) < M_ZWINDOW_CR){
+	    if(fabs(Z2Cand.M() - M_Z) < M_ZWINDOW_CR){
 	      z_cr_pass=true;
 	    }
           }
@@ -1272,6 +1309,7 @@ bool HNL_RegionDefinitions::FillZZCRPlots(HNL_LeptonCore::Channel channel, std::
   }
   if(!z_cr_pass)  return false;
   Fill_RegionPlots(param,"HNL_ZZ_FourLepton_CR" ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  OutCutFlow("HNL_ZZ_FourLepton_CR",w);
 
   return true;
 }
@@ -1281,39 +1319,30 @@ bool HNL_RegionDefinitions::FillZZ2CRPlots(HNL_LeptonCore::Channel channel, std:
 
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
 
-  int NB_JetColl=B_JetColl.size();
+  int sumQ = leps[0]->Charge() + leps[1]->Charge() +leps[2]->Charge() +leps[3]->Charge() ;
+  if(sumQ != 0) return false;
 
-  if(NB_JetColl  > 0 ) return false;
-  bool z_cr_pass(false);
+  if(B_JetColl.size()  > 0 ) return false;
 
-  Particle Z1Cand;
-  Particle Z2Cand;
+  //// Select Best Z candidate indices
+  pair<int,int> BestZCand = LeptonPairBestZCand(leps);
+  if(BestZCand.first == -1) return false;
 
+  Particle Z1Cand =  (*leps[BestZCand.first]) + (*leps[BestZCand.second]);
+  vector<int> Z2ind;
   for(unsigned int iel =0; iel < leps.size() ; iel++){
-    for(unsigned int iel2 =iel+1; iel2 < leps.size() ; iel2++){
-      if(iel== iel2) continue;
-      Z1Cand = (*leps[iel]) + (*leps[iel2]) ;
-      if(leps[iel]->Charge() != leps[iel2]->Charge()){
-
-        int zel1(-9), zel2(-9);
-        if(iel ==0 && iel2==1){ zel1=2; zel2=3;    Z2Cand = (*leps[2]) + (*leps[3]);}
-        if(iel ==0 && iel2==2){ zel1=1; zel2=3;    Z2Cand = (*leps[1]) + (*leps[3]);}
-        if(iel ==0 && iel2==3){ zel1=1; zel2=2;    Z2Cand = (*leps[1]) + (*leps[2]);}
-        if(iel ==1 && iel2==2){ zel1=0; zel2=3;    Z2Cand = (*leps[0]) + (*leps[3]);}
-        if(iel ==1 && iel2==3){ zel1=0; zel2=2;    Z2Cand = (*leps[0]) + (*leps[2]);}
-        if(iel ==2 && iel2==3){ zel1=0; zel2=1;    Z2Cand = (*leps[0]) + (*leps[1]);}
-
-        if(leps[zel1]->Charge() != leps[zel2]->Charge()){
-          if(fabs(Z1Cand.M() - M_Z) < 15.){
-            if(Z2Cand.M() > 12.)  z_cr_pass=true;
-	  }
-        }
-      }
-    }
+    if(int(iel) == BestZCand.first) continue;
+    if(int(iel) == BestZCand.second) continue;
+    Z2ind.push_back(iel);
   }
-  
-  if(!z_cr_pass)  return false;
+  if(Z2ind.size() != 2) return false;
+  if(!IsOSSF(leps[Z2ind[0]],leps[Z2ind[1]])) return false;
+
+  Particle Z2Cand = (*leps[Z2ind[0]]) + (*leps[Z2ind[1]]);
+  if(Z2Cand.M() < M_CUT_LL) return false;
+
   Fill_RegionPlots(param,"HNL_ZZLoose_FourLepton_CR" ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  OutCutFlow("HNL_ZZLoose_FourLepton_CR",w);
 
   return true;
 }
@@ -1324,30 +1353,18 @@ bool HNL_RegionDefinitions::FillZGCRPlots(HNL_LeptonCore::Channel channel, std::
   //if(MCSample.Contains("DY")) return false;
 
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
+  if(!HasOSSFPair(leps)) return false;
 
   double metcut       = 50.;
-  double ZMASS_WINDOW = 15.;
   int NB_JetColl      = B_JetColl.size();
 
-  Particle lll = (*leps[0]) + (*leps[1])+ (*leps[2]);
-  bool passZmass_lll_Window = (fabs(lll.M() - M_Z) < ZMASS_WINDOW);
-  if(!passZmass_lll_Window) return false;
-
-  bool RemoveLowOSSFMass=false;
-  for(unsigned int i = 0; i < leps.size(); i++){
-    for(unsigned int j = i+1;  j <leps.size(); j++){
-      if(leps[i]->LeptonFlavour() != leps[j]->LeptonFlavour()) continue;
-      if(leps[i]->Charge() == leps[j]->Charge() )              continue;
-      Particle OSSFll = *leps[i] + *leps[j];
-      if(OSSFll.M() < M_CUT_LL)                  RemoveLowOSSFMass=true;
-    }
-  }
+  if(!ZmasslllWindowCheck(leps,M_ZWINDOW_CR)) return false;
   
-  if(RemoveLowOSSFMass) return false;
+  if(HasLowMassOSSF(leps,M_CUT_LL))       return false;
 
   FillHist(  "HNL_ZG_ThreeLepton_CR/"+param.Name+"/FillZGCRPlots_3",   1,  w, 14, 0, 14., "FillZGCRPlots");
 
-  if(ZmassOSSFWindowCheck(leps,ZMASS_WINDOW)) return false;
+  if(ZmassOSSFWindowCheck(leps,M_ZWINDOW_CR)) return false;
 
   FillHist(  "HNL_ZG_ThreeLepton_CR/"+param.Name+"/FillZGCRPlots_5",   1,  w, 14, 0, 14., "FillZGCRPlots");
 
@@ -1356,6 +1373,7 @@ bool HNL_RegionDefinitions::FillZGCRPlots(HNL_LeptonCore::Channel channel, std::
   if(METv.Pt() > metcut) return false;
 
   Fill_RegionPlots(param,"HNL_ZG_ThreeLepton_CR" ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  OutCutFlow("HNL_ZG_ThreeLepton_CR",w);
 
   return true;
 
@@ -1367,24 +1385,17 @@ bool HNL_RegionDefinitions::FillWGCRPlots(HNL_LeptonCore::Channel channel, std::
 
 
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
-
+  if(!HasOSSFPair(leps))    return false;
   if(HasLowMassMeson(leps)) return false;
 
   double metcut = 30.;
   double mt_cut = 30.;
+
   int NB_JetColl=B_JetColl.size();
 
-  Particle ll1 = (*leps[0]);
-  ll1+= (*leps[1]);
-  Particle ll2 = (*leps[0]);
-  ll2+= (*leps[2]);
-  Particle ll3 = (*leps[1]);
-  ll3+= (*leps[2]);
-  bool passlos_ll_mass=false;
-  if(ll1.Charge() == 0 && (ll1.M() < 4.)) passlos_ll_mass=true;
-  if(ll2.Charge() == 0 && (ll2.M() < 4.)) passlos_ll_mass=true;
-  if(ll3.Charge() == 0 && (ll3.M() < 4.)) passlos_ll_mass=true;
-  if(!passlos_ll_mass) return false;
+  double MassMinOSSF = GetMassMinOSSF(leps);
+  if(MassMinOSSF > 4)  return false;
+  
   Particle lll = (*leps[0]) + (*leps[1])+ (*leps[2]);
   double MT_lll = M_T(METv,lll);
 
@@ -1393,6 +1404,7 @@ bool HNL_RegionDefinitions::FillWGCRPlots(HNL_LeptonCore::Channel channel, std::
   if(METv.Pt() < metcut)return false;
 
   Fill_RegionPlots(param,"HNL_WG_ThreeLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  OutCutFlow("HNL_WG_ThreeLepton_CR",w);
 
   return true;
 }
@@ -1400,11 +1412,10 @@ bool HNL_RegionDefinitions::FillWGCRPlots(HNL_LeptonCore::Channel channel, std::
 
 bool HNL_RegionDefinitions::FillWZCRPlots(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto, std::vector<Jet> JetColl, std::vector<FatJet> AK8_JetColl, std::vector<Jet> B_JetColl,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
-  //  cout << "FillWZCRPlots " << param.Name << " " << leps.size() << endl;
-
   if(leps_veto.size() != 3) return false;
 
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
+  if(!HasOSSFPair(leps)) return false;
 
   double metcut  = 50.;
   double mtcut   = 20.;
@@ -1421,52 +1432,22 @@ bool HNL_RegionDefinitions::FillWZCRPlots(HNL_LeptonCore::Channel channel, std::
   
   if(NB_JetColl > 0) return false;
   
-  if(GetIndexNonBestZ(leps,15.) < 0) return false;
+  if(GetIndexNonBestZ(leps,M_ZWINDOW_CR) < 0) return false;
+  
+  if(M_T((*leps[GetIndexNonBestZ(leps,M_ZWINDOW_CR)]), METv)  < mtcut) return false;
 
-  if(M_T((*leps[GetIndexNonBestZ(leps,15.)]), METv)  < mtcut) return false;
-
-  if(GetMassMinOSSF(leps)  < 10.) return false;
+  if(HasLowMassOSSF(leps,M_CUT_LL)) return false;
 
   if(((*leps[0])+ (*leps[1]) + (*leps[2])).M() <  trilep_masscut) return false;
   
+  OutCutFlow("HNL_WZ_ThreeLepton_CR",w);
   Fill_RegionPlots(param,"HNL_WZ_ThreeLepton_CR" ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
   
   return true;
 }
 
 
-
-
-
-/*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-  CR Functions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
-  -----------------------------------                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
-  * RunAllControlRegions Run ALL following CRs                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
-  ** RunElectronChannelCR                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
-  ** RunMuonChannelCR                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
-  ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-  1- FillTopCRPlots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-%% 2 leptons (OS/SS) + MET > 50 + Nb > 0 +                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-  %% -validate B tagging eff + SF                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-  ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-  2- FillZNPCRPlots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-  %% 3Lep +  MET < 30 + MZ  + MTnonZlep < 30                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-  %% Validate Fakes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-  ===============================================================y                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-  3- FillZCRPlots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-%% 2 Lep + MET < 30 + Nb(0) + NAK8(>0) + MZ                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
-  %% Check in SR1 like region with low met and 0 b jet                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
-  ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-  4- FillWWCR1Plots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-%% SSlep +  VBFJ(2) + MJJ(>500) + JPt(30) + Nb(0) JJEta(>2.5) + Zepp(<0.75) + MZ + llDphi(<2.)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-%% - region frmo Peking, SR w/Reverse dphi cut                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-  ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-  5- FillWWCR2Plots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-%% SSlep +  VBFJ(2) + MJJ(>500) + JPt(30) + Nb(0) JJEta(>2.5) + Zepp(<0.75) + MZ + MET2ST(>15)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-  %% - SR2 BUT with HIgh met                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-  ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-  6- FillWWCRNPPlots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-%% SSlep +  VBFJ(2) + MET > 30 + Nb(>0) + JJEta(>2.5) + MZ +  MJJ(>500) same as AN2020_045 Table 15 Nonprompt                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+/*                                                                                                                                                                                                                 CR Functions                                                                                                                                                                                                     -----------------------------------                                                                                                                                                                              * RunAllControlRegions Run ALL following CRs                                                                                                                                                                     ** RunElectronChannelCR                                                                                                                                                                                          ** RunMuonChannelCR                                                                                                                                                                                              ===============================================================                                                                                                                                                  1- FillTopCRPlots                                                                                                                                                                                              %% 2 leptons (OS/SS) + MET > 50 + Nb > 0 +                                                                                                                                                                         %% -validate B tagging eff + SF                                                                                                                                                                                  ===============================================================                                                                                                                                                  2- FillZNPCRPlots                                                                                                                                                                                                %% 3Lep +  MET < 30 + MZ  + MTnonZlep < 30                                                                                                                                                                       %% Validate Fakes                                                                                                                                                                                                ===============================================================y                                                                                                                                                 3- FillZCRPlots                                                                                                                                                                                                %% 2 Lep + MET < 30 + Nb(0) + NAK8(>0) + MZ                                                                                                                                                                        %% Check in SR1 like region with low met and 0 b jet                                                                                                                                                             ===============================================================                                                                                                                                                  4- FillWWCR1Plots                                                                                                                                                                                              %% SSlep +  VBFJ(2) + MJJ(>500) + JPt(30) + Nb(0) JJEta(>2.5) + Zepp(<0.75) + MZ + llDphi(<2.)                                                                                                                   %% - region frmo Peking, SR w/Reverse dphi cut                                                                                                                                                                     ===============================================================                                                                                                                                                  5- FillWWCR2Plots                                                                                                                                                                                              %% SSlep +  VBFJ(2) + MJJ(>500) + JPt(30) + Nb(0) JJEta(>2.5) + Zepp(<0.75) + MZ + MET2ST(>15)                                                                                                                     %% - SR2 BUT with HIgh met                                                                                                                                                                                       ===============================================================                                                                                                                                                  6- FillWWCRNPPlots                                                                                                                                                                                             %% SSlep +  VBFJ(2) + MET > 30 + Nb(>0) + JJEta(>2.5) + MZ +  MJJ(>500) same as AN2020_045 Table 15 Nonprompt                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
   %%  SR2 BUT with HIgh met and bjet                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
   ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
   7- FillWWCRNP2Plots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       

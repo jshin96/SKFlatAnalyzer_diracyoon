@@ -67,7 +67,7 @@ fi
 if [[ $1 == "WZ" ]]; then
 
     declare  -a era_list=("2017")
-    declare  -a flag_list=("VV_VR")
+    declare  -a flag_list=("LLL_VR" "SS_CR" "VBF_CR")
 
     for i in "${era_list[@]}"
     do
@@ -75,7 +75,7 @@ if [[ $1 == "WZ" ]]; then
         do
             FLAG=$j
             SKFlat.py -a $analyzer  -i WZTo3LNu_amcatnlo   -n 100 --nmax 600   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags $FLAG,RunPrompt  &
-	    SKFlat.py -a $analyzer  -i WZTo3LNu_amcatnlo   -n 100 --nmax 600   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags $FLAG &
+
 
         done
     done

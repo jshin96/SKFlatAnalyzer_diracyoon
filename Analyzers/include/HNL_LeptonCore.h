@@ -336,13 +336,12 @@ nvtx,  double w);
   double M_T(Particle a, Particle b);
   double GetLT(std::vector<Lepton *> leps);
   double GetHT( std::vector<Jet> jets, std::vector<FatJet> fatjets);
-  double GetST( std::vector<Electron> electrons, std::vector<Muon> muons, std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev);
   double GetST( std::vector<Electron> electrons, std::vector<Muon> muons, std::vector<Jet> jets, std::vector<FatJet> fatjets, Particle met);
-  double GetST( std::vector<Lepton *> leps, std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev);
   double GetST( std::vector<Lepton *> leps, std::vector<Jet> jets, std::vector<FatJet> fatjets, Particle met);
+  double GetMET2ST( std::vector<Lepton *> leps, std::vector<Jet> jets, std::vector<FatJet> fatjets, Particle met);
 
-  bool  ZmasslllWindowCheck(std::vector<Lepton *> leps);
-  bool  ZmassOSWindowCheck(std::vector<Lepton *> leps);
+  bool  IsOSSF(Lepton * leps1, Lepton * leps2);
+  bool  ZmasslllWindowCheck(std::vector<Lepton *> leps, double MassCut);
   bool  ZmassOSSFWindowCheck(std::vector<Lepton *> leps, double mass_diff);
 
   double GetMassMinOSSF(std::vector<Lepton *> leps);
@@ -361,6 +360,9 @@ nvtx,  double w);
   pair<int,int> LeptonPairBestZCand(std::vector<Lepton *> leps);
   double LeptonMassBestZ(std::vector<Lepton *> leps, pair<int,int> Zind);
   double LeptonMassNonZ(std::vector<Lepton *> leps, pair<int,int> Zind);
+
+  bool HasLowMassOSSF(std::vector<Lepton *> leps, double MassCut);
+  bool HasOSSFPair(std::vector<Lepton *> leps);
 
   //================                                                                                                                                                                                        
   //==== Functions                                                                                                                                                                                          

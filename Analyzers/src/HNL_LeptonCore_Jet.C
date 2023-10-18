@@ -284,6 +284,7 @@ vector<Jet>   HNL_LeptonCore::SelectBJets(AnalyzerParameter param,vector<Jet> je
 
   for(unsigned int ijet =0; ijet < jetColl.size(); ijet++){
     if(fabs(jetColl.at(ijet).Eta()) > 2.4) continue;
+    
     if( jetColl[ijet].GetTaggerResult(jtp.j_Tagger) <= mcCorr->GetJetTaggingCutValue(jtp.j_Tagger, jtp.j_WP) ) continue;
     output_jets.push_back( jetColl.at(ijet) );
   }

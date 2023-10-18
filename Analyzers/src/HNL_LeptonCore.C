@@ -741,11 +741,10 @@ bool HNL_LeptonCore::CheckLeptonFlavourForChannel(HNL_LeptonCore::Channel channe
     if( leps.size() != 4) return false;
     if( channel==MuMuMuMu && n_mu != 4) return false;
     if( channel==EEEE && n_el != 4) return false;
-    if( channel == EMuLL && (n_mu == 4 || n_mu == 4)) return false;
-    if( channel == MuELL && (n_mu == 4 || n_mu == 4)) return false;
+    if( channel == EMuLL && !(n_mu == 2 && n_mu == 2)) return false;
+    if( channel == MuELL && !(n_mu == 2 && n_mu == 2)) return false;
     if(channel==EMuLL&&  !(leps[0]->LeptonFlavour() == Lepton::ELECTRON)) return false;
     if(channel==MuELL&&  !(leps[0]->LeptonFlavour() == Lepton::MUON))     return false;
-
     
     double lep1_ptcut= (channel==MuMuMuMu) ?   20. : 25.;
     double lep2_ptcut= (channel==MuMuMuMu) ?   10. : 10.;

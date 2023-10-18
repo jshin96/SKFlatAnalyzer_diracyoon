@@ -18,18 +18,18 @@ void HNL_ControlRegionPlotter::executeEvent(){
 
   vector<TString> LepIDs = {"HNL_ULID"};//,"HNTightV2","TopHN", "DefaultPOGTight"};
 
-  vector<HNL_LeptonCore::Channel> ChannelsToRun = {EE,MuMu,EMu,MuE};
+  vector<HNL_LeptonCore::Channel> ChannelsToRun = {EE};//,MuMu,EMu,MuE};
   for (auto id: LepIDs){
     for(auto channel : ChannelsToRun){
       AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter(id,channel);
       
       ///// Run command
       vector<TString> CRToRun;
-      if(HasFlag("OS_VR"))   CRToRun = {"CR_OS_Z","CR_OS_Top","CR_OS_Top2","CR_OS_ZAk8","CR_OS_TopAK8"};
+      if(HasFlag("OS_VR"))   CRToRun.push_back("OS_VR");
+      if(HasFlag("LLL_VR"))  CRToRun.push_back("LLL_VR");
       if(HasFlag("SS_CR"))   CRToRun.push_back("SS_CR");
-      if(HasFlag("SS_CR"))   CRToRun.push_back("Presel");
-      if(HasFlag("VV_VR"))   CRToRun.push_back("VV_VR");
-      if(HasFlag("VV_VR"))   CRToRun.push_back("VG_VR");
+      if(HasFlag("VBF_CR"))  CRToRun.push_back("VBF_CR");
+
       RunControlRegions(param_signal , CRToRun );
     }
   }
@@ -54,14 +54,13 @@ void HNL_ControlRegionPlotter::executeEvent(){
     }
   }
 
-
-
   return;
   
 }
 
 void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector<TString> CRs){
 
+  if(CRs.size() == 0) return;
 
   //  if(_jentry==0) param.PrintParameters();
   run_Debug = (_jentry%nLog==0);
@@ -114,6 +113,7 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   
   if(run_Debug) cout << "[3] HNL_ControlRegionPlotter::RunControlRegions Gen*Lumi Weight = " << weight << endl;
   if(run_Debug) cout << "[3] HNL_ControlRegionPlotter::RunControlRegions ParamWeight = " << param.EventWeight() << endl;
+
   RunAllControlRegions(ElectronTightColl,ElectronVetoColl,MuonTightColl,MuonVetoColl, 
 		       AK4_JetAllColl, AK4_JetColl,AK4_VBF_JetColl,AK8_JetColl, AK4_BJetColl, 
 		       ev,METv, param, CRs,weight);
