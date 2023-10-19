@@ -10,7 +10,8 @@ void HNL_SignalStudies::initializeAnalyzer(){
   for(auto jec_source : JECSources){
     SetupJECUncertainty(jec_source);
   }
-  
+
+  SetupIDMVAReaderDefault(false,true);  
 }
 
 
@@ -21,7 +22,7 @@ void HNL_SignalStudies::executeEvent(){
   FillTimer("START_EV");
 
   //==== Gen for genmatching
-  AnalyzerParameter param  = InitialiseHNLParameter("SignalStudy");
+  AnalyzerParameter param  = InitialiseHNLParameter("HNL_ULID");
   
   Event ev = GetEvent();
   double weight = SetupWeight(ev,param);
@@ -33,7 +34,7 @@ void HNL_SignalStudies::executeEvent(){
   if(MCSample.Contains("WGToLNuG")) weight *= 0.5;
 
   FillHist ("ObjectCount/NoCut", 1, weight, 2, 0., 2.,"");
-  return;
+
 
   TString process="";
   if(!IsData){
@@ -90,14 +91,19 @@ void HNL_SignalStudies::executeEvent(){
   
   std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5);
   std::vector<Muon>       MuonCollV     = GetMuons    (param.Muon_Veto_ID, 5., 2.4);
-  
+
+  for(auto el : ElectronCollV){
+    double Conv = GetBDTScoreEl_EtaDependant(el,AnalyzerCore::Conv,  "BDTGv5");
+    cout << "Conv MVA = " << Conv << " el conv=" << el.HNL_MVA_Conv("EDv5") << endl;
+  }
+
   FillHist ("ObjectCount/NVetoMuon", MuonCollV.size(), weight, 4, 0., 4.,"");
   FillHist ("ObjectCount/NVetoElectron", ElectronCollV.size(), weight, 4, 0., 4.,"");
   
   std::vector<Lepton *> leps_veto  = MakeLeptonPointerVector(MuonCollV,ElectronCollV);
 
 
-  std::vector<Electron>   ElectronColl = GetElectrons("HNL_ULID_2017_OPT", 10., 2.5);
+  std::vector<Electron>   ElectronColl = GetElectrons("HNL_ULID_2017", 10., 2.5);
   std::vector<Muon>       MuonColl     = GetMuons    ("HNL_ULID_2016", 10., 2.4);
  
   std::vector<Lepton *> leps_tight  = MakeLeptonPointerVector(MuonColl,ElectronColl);
