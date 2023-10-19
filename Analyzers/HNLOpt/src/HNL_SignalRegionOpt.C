@@ -108,7 +108,7 @@ void HNL_SignalRegionOpt::RunULAnalysis(AnalyzerParameter param){
 
   
   /// Get MET for PUPPPI TYPE 1
-  Particle METv = GetvMET("PuppiT1xyCorr"); // returns MET with systematic correction
+  Particle METv = GetMiniAODvMET("PuppiT1xyCorr"); // returns MET with systematic correction
 
   
   

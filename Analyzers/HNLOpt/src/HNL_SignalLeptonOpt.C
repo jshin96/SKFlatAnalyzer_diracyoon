@@ -36,7 +36,7 @@ void HNL_SignalLeptonOpt::executeEvent(){
   std::vector<FatJet> FatjetColl                  = GetHNLAK8Jets("HNL_PNL",param_signal);
 
   Event ev = GetEvent();
-  Particle METv = GetvMET("PuppiT1xyULCorr");
+  Particle METv = GetMiniAODvMET("PuppiT1xyULCorr");
 
 
   ///// Initialise non lepton obj

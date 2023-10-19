@@ -56,7 +56,7 @@ Particle HNL_LeptonCore::GetvMET(TString METType, AnalyzerParameter param,bool P
 
   bool ApplySyst      = (!IsDATA) && (param.syst_ != AnalyzerParameter::Central);
 
-  Particle vStandMET = GetvMET(METType);
+  Particle vStandMET = GetMiniAODvMET(METType);
   if(!ApplySyst && !PropSmearing) return vStandMET;  //// This function calls central values stored in MINMIAOD OR POG COrrected                                                                                                                                                                                              
   if(!ApplySyst && PropSmearing)  return GetvCorrMET(METType,param,vStandMET);
 
@@ -107,7 +107,7 @@ Particle HNL_LeptonCore::GetvMET(TString METType, AnalyzerParameter param,
 
   bool ApplySyst      = (!IsDATA) && (param.syst_ != AnalyzerParameter::Central);
 
-  Particle vStandMET = GetvMET(METType);
+  Particle vStandMET = GetMiniAODvMET(METType);
   if(!ApplySyst && !PropSmearing) return vStandMET;  //// This function calls central values stored in MINMIAOD OR POG COrrected                                                                                                                                                                                              
   if(!ApplySyst && PropSmearing)  return GetvCorrMET(METType,param,vStandMET);
 
@@ -439,12 +439,12 @@ map<TString, Particle> HNL_LeptonCore::METMap( AnalyzerParameter param){
                            "T1xyULCorr"};
 
 
-  Particle METv      = GetvMET("T1xyCorr");
-  Particle PuppiMETv = GetvMET("PuppiT1xyCorr");
-  Particle METvNoPhi = GetvMET("T1");
-  Particle PuppiMETvNoPhi = GetvMET("PuppiT1");
-  Particle PuppiMETvULPhiCorr = GetvMET("PuppiT1xyULCorr");
-  Particle METvULPhiCorr = GetvMET("T1xyULCorr");
+  Particle METv      = GetMiniAODvMET("T1xyCorr");
+  Particle PuppiMETv = GetMiniAODvMET("PuppiT1xyCorr");
+  Particle METvNoPhi = GetMiniAODvMET("T1");
+  Particle PuppiMETvNoPhi = GetMiniAODvMET("PuppiT1");
+  Particle PuppiMETvULPhiCorr = GetMiniAODvMET("PuppiT1xyULCorr");
+  Particle METvULPhiCorr = GetMiniAODvMET("T1xyULCorr");
   map<TString, Particle> mapmet;
   for(auto i : vmets) {
     mapmet[i] = GetvMET(i,param);
@@ -456,7 +456,7 @@ map<TString, Particle> HNL_LeptonCore::METMap( AnalyzerParameter param){
   return mapmet;
 }
 
-Particle HNL_LeptonCore::GetvMET(TString METType){
+Particle HNL_LeptonCore::GetMiniAODvMET(TString METType){
   //PuppiT1xyULCorr
   bool IsType1      = METType.Contains("T1");
   bool IsxyCorr     = METType.Contains("xyCorr");

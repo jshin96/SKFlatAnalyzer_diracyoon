@@ -247,7 +247,7 @@ void SkimTree_HNFakeBDT::executeEvent(){
   double mu_pt = (IsData) ? 4: 25;
   double el_pt = (IsData) ? 8: 25;
 
-  Particle METv = GetvMET("PuppiT1xyULCorr");
+  Particle METv = GetMiniAODvMET("PuppiT1xyULCorr");
   if(METv.Pt() > 40.) return;
 
   vector<Muon> allmuons = GetMuons("HNLoosest", mu_pt, 2.4);

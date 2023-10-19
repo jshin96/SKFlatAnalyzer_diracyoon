@@ -111,7 +111,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   ///// MET FUNCTIONS  HNL_LeptonCore_MET
   Particle GetvMET(TString METType, AnalyzerParameter param, std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Muon> muons, std::vector<Electron> electrons, bool propsmear=true);
   Particle GetvMET(TString METType, AnalyzerParameter param, bool propsmear=true);
-  Particle GetvMET(TString METType);
+  Particle GetMiniAODvMET(TString METType);
   Particle GetvCorrMET(TString METType, AnalyzerParameter param, Particle METUncorr);
 
    

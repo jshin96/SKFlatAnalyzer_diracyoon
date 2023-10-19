@@ -37,7 +37,7 @@ void HNL_SignalMuonOpt::executeEvent(){
   std::vector<FatJet> FatjetColl                  = GetHNLAK8Jets("HNL_PNL",param_signal);
 
   Event ev = GetEvent();
-  Particle METv = GetvMET("PuppiT1xyULCorr");
+  Particle METv = GetMiniAODvMET("PuppiT1xyULCorr");
 
   std::vector<Tau> TauColl                        = SelectTaus    (LepsVeto,param_signal.Tau_Veto_ID,20., 2.3);
   

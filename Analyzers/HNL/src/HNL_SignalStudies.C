@@ -86,7 +86,7 @@ void HNL_SignalStudies::executeEvent(){
     
   }
 
-  Particle METv = GetvMET("PuppiT1xyCorr"); // returns MET with systematic correction                                                                                                    
+  Particle METv = GetMiniAODvMET("PuppiT1xyCorr"); // returns MET with systematic correction                                                                                                    
   
   std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5);
   std::vector<Muon>       MuonCollV     = GetMuons    (param.Muon_Veto_ID, 5., 2.4);
@@ -424,7 +424,7 @@ void HNL_SignalStudies::RunLeptonChannel(HNL_LeptonCore::Channel channel_ID, std
   if(channel_ID == EE) {  Region1 = sigee;   Region2 = sigee_17028;}
   if(channel_ID == EMu){ Region1 = sigem; Region2 = sigem_17028;}
   
-  Particle METv =GetvMET("PuppiT1xyULCorr");
+  Particle METv =GetMiniAODvMET("PuppiT1xyULCorr");
 
   //CheckHEMIssue(channel_ID, LepsT, LepsV,  JetColl, METv, _weight, param.Name, "");
 

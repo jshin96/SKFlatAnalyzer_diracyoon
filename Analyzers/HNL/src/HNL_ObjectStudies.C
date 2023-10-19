@@ -838,7 +838,7 @@ void HNL_ObjectStudies::RunLeptonChannel(HNL_LeptonCore::Channel channel_ID, std
   if(channel_ID == EE) {  Region1 = sigee; };//  Region2 = sigee_17028;}
   if(channel_ID == EMu){ Region1 = sigem; }//Region2 = sigem_17028;}
   
-  Particle METv =GetvMET("PuppiT1xyULCorr");
+  Particle METv = GetMiniAODvMET("PuppiT1xyULCorr");
 
   //CheckHEMIssue(channel_ID, LepsT, LepsV,  JetColl, METv, _weight, param.Name, "");
 

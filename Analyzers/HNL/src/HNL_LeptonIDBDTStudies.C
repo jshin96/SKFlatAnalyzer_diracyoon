@@ -432,7 +432,7 @@ void HNL_LeptonIDBDTStudies::MakeJetDiscPlots(TString label, AnalyzerParameter p
     if(SameCharge(LeptonColl)) return;
   }
 
-  Particle METv = GetvMET("PuppiT1xyCorr"); // reyturns MET with systematic correction                                                                                                 
+  Particle METv = GetMiniAODvMET("PuppiT1xyCorr"); // reyturns MET with systematic correction                                                                                                 
 
   std::vector<Jet>      JetColl     = GetHNLJets("Tight", param);
   std::vector<Jet> BJetColl  = GetHNLJets("BJetM", param);                                                                                                                
@@ -455,14 +455,14 @@ void HNL_LeptonIDBDTStudies::MakeJetDiscPlots(TString label, AnalyzerParameter p
 	      vector<Jet> JetAllColl = GetAllJets();
 	      TString cut = "TopJets_TightMu";
 	      
-	      FillHist(cut +"/MET_"+channel_string, GetvMET("PuppiT1xyCorr").Pt(), weight_ll, 200, 0., 200);
+	      FillHist(cut +"/MET_"+channel_string, GetMiniAODvMET("PuppiT1xyCorr").Pt(), weight_ll, 200, 0., 200);
 	      if(JetColl.size() < 6) FillHist(cut +"/NJet_"+channel_string, JetColl.size(), weight_ll, 8, 0., 8);
 	      else FillHist(cut +"/NJet_"+channel_string, 6., weight_ll, 8, 0., 8);
 
 	      FillHist(cut +"/MuonPt_"+channel_string+"_"+label, MuonColl[0].Pt(), weight_ll, 40, 0., 200);
 	      FillHist(cut +"/ElectronPt_"+channel_string+"_"+label, ElectronColl[0].Pt(), weight_ll, 40, 0., 200);
 	      
-              FillHist(cut +"/MET_"+channel_string+"_"+label, GetvMET("PuppiT1xyCorr").Pt(), weight_ll, 200, 0., 200);
+              FillHist(cut +"/MET_"+channel_string+"_"+label, GetMiniAODvMET("PuppiT1xyCorr").Pt(), weight_ll, 200, 0., 200);
               if(JetColl.size() < 6) FillHist(cut +"/NJet_"+channel_string+"_"+label, JetColl.size(), weight_ll, 8, 0., 8);
               else FillHist(cut +"/NJet_"+channel_string+"_"+label, 6., weight_ll, 8, 0., 8);
 
@@ -553,13 +553,13 @@ void HNL_LeptonIDBDTStudies::MakeJetDiscPlots(TString label, AnalyzerParameter p
 	      vector<Jet> JetAllColl = GetAllJets();
 	      TString cut = "TopJets_TightEl";
 
-	      FillHist(cut +"/MET_"+channel_string, GetvMET("PuppiT1xyCorr").Pt(), weight_ll, 200, 0., 200);
+	      FillHist(cut +"/MET_"+channel_string, GetMiniAODvMET("PuppiT1xyCorr").Pt(), weight_ll, 200, 0., 200);
 	      if(JetColl.size() < 6) FillHist(cut +"/NJet_"+channel_string, JetColl.size(), weight_ll, 8, 0., 8);
 	      else FillHist(cut +"/NJet_"+channel_string, 6., weight_ll, 8, 0., 8);
 
 	      FillHist(cut +"/MuonPt_"+channel_string+"_"+label, MuonColl[0].Pt(), weight_ll, 40, 0., 200);
 	      FillHist(cut +"/ElectronPt_"+channel_string+"_"+label, ElectronColl[0].Pt(), weight_ll, 40, 0., 200);
-	      FillHist(cut +"/MET_"+channel_string+"_"+label, GetvMET("PuppiT1xyCorr").Pt(), weight_ll, 200, 0., 200);
+	      FillHist(cut +"/MET_"+channel_string+"_"+label, GetMiniAODvMET("PuppiT1xyCorr").Pt(), weight_ll, 200, 0., 200);
               if(JetColl.size() < 6) FillHist(cut +"/NJet_"+channel_string+"_"+label, JetColl.size(), weight_ll, 8, 0., 8);
               else FillHist(cut +"/NJet_"+channel_string+"_"+label, 6., weight_ll, 8, 0., 8);
 
@@ -686,12 +686,12 @@ void HNL_LeptonIDBDTStudies::MakeJetDiscPlots(TString label, AnalyzerParameter p
       if(dilep_channel==MuMu)FillHist(cut +"/MuonPt_"+channel_string+"_"+label, MuonColl[1].Pt(), weight_ll, 40, 0., 200);
       if(dilep_channel==EE)  FillHist(cut +"/ElectronPt_"+channel_string+"_"+label, ElectronColl[1].Pt(), weight_ll, 40, 0., 200);
 
-      FillHist(cut +"/MET_"+channel_string, GetvMET("PuppiT1xyCorr").Pt(), weight_ll, 200, 0., 200);
+      FillHist(cut +"/MET_"+channel_string, GetMiniAODvMET("PuppiT1xyCorr").Pt(), weight_ll, 200, 0., 200);
       if(JetColl.size() < 6) FillHist(cut +"/NJet_"+channel_string, JetColl.size(), weight_ll, 8, 0., 8);
       else FillHist(cut +"/NJet_"+channel_string, 6., weight_ll, 8, 0., 8);
 
 
-      FillHist(cut +"/MET_"+channel_string+"_"+label, GetvMET("PuppiT1xyCorr").Pt(), weight_ll, 200, 0., 200);
+      FillHist(cut +"/MET_"+channel_string+"_"+label, GetMiniAODvMET("PuppiT1xyCorr").Pt(), weight_ll, 200, 0., 200);
       if(JetColl.size() < 6) FillHist(cut +"/NJet_"+channel_string+"_"+label, JetColl.size(), weight_ll, 8, 0., 8);
       else FillHist(cut +"/NJet_"+channel_string+"_"+label, 6., weight_ll, 8, 0., 8);
 
@@ -1137,7 +1137,7 @@ void HNL_LeptonIDBDTStudies::MakeBDTPlots(AnalyzerParameter param,HNL_LeptonCore
 
   if(LeptonColl.size() != 2) return;
  
-  Particle METv = GetvMET("PuppiT1xyCorr"); // reyturns MET with systematic correction                                            
+  Particle METv = GetMiniAODvMET("PuppiT1xyCorr"); // reyturns MET with systematic correction                                            
 
   std::vector<Jet> BJetColl  = GetHNLJets("BJetM", param);
   // use Z peak                                                                                                                              
@@ -1151,7 +1151,7 @@ void HNL_LeptonIDBDTStudies::MakeBDTPlots(AnalyzerParameter param,HNL_LeptonCore
 
       FillHist(channel_string+"/"+ID+"/llmass_"+channel_string, GetLLMass(LeptonColl), weight_ll*POGSF, 70, 50., 120);
       FillHist(channel_string+"/"+ID+"/NVTX_"+channel_string, nPileUp, weight_ll*POGSF, 100, 0., 100);
-      FillHist(channel_string+"/"+ID+"/MET_"+channel_string, GetvMET("PuppiT1xyCorr").Pt(), weight_ll*POGSF, 100, 0., 100);
+      FillHist(channel_string+"/"+ID+"/MET_"+channel_string, GetMiniAODvMET("PuppiT1xyCorr").Pt(), weight_ll*POGSF, 100, 0., 100);
     }
     
     for(auto iel : ElectronColl) {
@@ -1191,7 +1191,7 @@ void HNL_LeptonIDBDTStudies::MakeBDTPlots(AnalyzerParameter param,HNL_LeptonCore
     
     std::vector<Tau> TauColl;
 
-    Fill_RegionPlots(param,"ZPeak" ,  TauColl, JetColl, AK8_JetColl, LeptonColl,  GetvMET("PuppiT1xyCorr"), nPV, weight_ll);
+    Fill_RegionPlots(param,"ZPeak" ,  TauColl, JetColl, AK8_JetColl, LeptonColl,  GetMiniAODvMET("PuppiT1xyCorr"), nPV, weight_ll);
   }
 
   return;

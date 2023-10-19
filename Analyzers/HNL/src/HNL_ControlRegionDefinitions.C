@@ -1015,7 +1015,6 @@ bool HNL_RegionDefinitions::FillHighMassSR3CRPlots(HNL_LeptonCore::Channel chann
 
   if(JetColl.size() == 0 && leps[1]->Pt() > 80.) FillHist( "ControlSR3/"+param.Name+"/SignalBins",   0.5, w, 16, 0, 16., "Signalbins");
   if(JetColl.size() == 1 && leps[1]->Pt() > 80.) FillHist( "ControlSR3/"+param.Name+"/SignalBins",   1.5, w, 16, 0, 16., "Signalbins");
-  if(JetColl.size() < 2 && leps[1]->Pt() > 80.) Fill_RegionPlots(param,"HNL_HighMassSR3b_TwoLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
   Fill_RegionPlots(param,"HNL_HighMassSR3_TwoLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
