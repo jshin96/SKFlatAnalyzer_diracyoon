@@ -4,57 +4,41 @@ AnalyzerCore::AnalyzerCore(){
 
   outfile = NULL;
 
-  mcCorr          = new MCCorrection();
-  puppiCorr       = new PuppiSoftdropMassCorr();
-  fakeEst         = new FakeBackgroundEstimator();
-  cfEst           = new CFBackgroundEstimator();
-  pdfReweight     = new PDFReweight();
+  //// MUON SCALE OBJ
   muonGE          = new GeneralizedEndpoint();
   muonGEScaleSyst = new GEScaleSyst();
 
+  /// GLABAL VARIABLES
   iSetupLeptonBDTv5=false;
   iSetupLeptonBDTv4=false;
   IsDYSample=false;
   IsTTSample=false;
-    
+
+  /// SETUP PREDEFINED HIST VARIABLE BINNINGS
+  SetHistBins();
 }
 
 AnalyzerCore::~AnalyzerCore(){
 
   //=== hist maps
   
-  for(std::map< TString, TH1D* >::iterator mapit = maphist_TH1D.begin(); mapit!=maphist_TH1D.end(); mapit++){
-    delete mapit->second;
-  }
+  for(std::map< TString, TH1D* >::iterator mapit = maphist_TH1D.begin(); mapit!=maphist_TH1D.end(); mapit++)   delete mapit->second;
   maphist_TH1D.clear();
 
-  for(std::map< TString, TH2D* >::iterator mapit = maphist_TH2D.begin(); mapit!=maphist_TH2D.end(); mapit++){
-
-    //cout << "Deleting TH2D " << mapit->first << endl;
-    delete mapit->second;
-  }
+  for(std::map< TString, TH2D* >::iterator mapit = maphist_TH2D.begin(); mapit!=maphist_TH2D.end(); mapit++)  delete mapit->second;
   maphist_TH2D.clear();
 
-  for(std::map< TString, TH3D* >::iterator mapit = maphist_TH3D.begin(); mapit!=maphist_TH3D.end(); mapit++){
-    delete mapit->second;
-  }
+  for(std::map< TString, TH3D* >::iterator mapit = maphist_TH3D.begin(); mapit!=maphist_TH3D.end(); mapit++)  delete mapit->second;
   maphist_TH3D.clear();
   
   //==== output rootfile
 
   if(outfile){
-    outfile->Close();
-    delete outfile;
+    outfile->Close();    delete outfile;
   }
 
   //==== Tools
 
-  if(mcCorr) delete mcCorr;
-  if(puppiCorr) delete puppiCorr;
-  if(fakeEst) delete fakeEst;
-  if(cfEst) delete cfEst;
-  if(pdfReweight) delete pdfReweight;
-  
   if(muonGE) delete muonGE;
   if(muonGEScaleSyst) delete muonGEScaleSyst;
 
@@ -62,7 +46,6 @@ AnalyzerCore::~AnalyzerCore(){
   AK4PUPPIJECUncMap.clear();
   AK8CHSJECUncMap.clear();
   AK8PUPPIJECUncMap.clear();
-
   
   if(iSetupLeptonBDTv5){
 
@@ -600,144 +583,6 @@ std::vector<Tau> AnalyzerCore::GetAllTaus(){
   std::sort(out.begin(),       out.end(),        PtComparing);
 
   return out;
-
-}
-
-
-double AnalyzerCore::GetIsoFromID(Lepton lep, TString id){
-  
-  double pt = lep.Pt();
-  double eta = lep.Eta();
-
-  if (lep.IsMuon()) {
-    
-    if (id == "TopHNT")        return 0.1;
-    if (id == "TopHN")         return 0.1;
-    if (id == "HNTight_17028") return 0.07;
-    if (id == "HNTightV1")     return 0.07;
-    if (id == "HNTightV2")     return 0.07;
-    if (id == "POGTightPFIsoVeryVeryTight") return 0.05;
-    if (id.Contains("TightPFIsoVeryVeryTight")) return 0.05;
-    if (id.Contains("TightPFIsoVeryTight")) return 0.1;
-    if (id.Contains("TightPFIsoTight")) return 0.15;
-    if (id.Contains("TightWithTightIso")) return 0.15;
-    if (id.Contains("TightStandardPFIsoTight")) return 0.15;
-    if (id.Contains("PFIsoMedium")) return 0.2;
-    if (id.Contains("PFIsoLoose")) return 0.25;
-    if (id.Contains("PFIsoVeto")) return 0.4;
-    if (id == "POGHighPtTight") return 0.1;
-    if (id == "POGHighPtMixTight") return 0.1;
-    if (id.Contains("HNMVA_")) return 0.1;
-  }
-  else {
-    if( id == "TopHNSST" ) return 0.1;
-    if( id == "HNTight_17028") return 0.08;
-    if( id.Contains("HNTightV")) {
-      if(fabs(eta) < 1.479) return (0.0287 + (0.506/pt));
-      else  return (0.0445 + (0.963/pt));
-    }
-    if( id == "HN2016") {
-      if(fabs(eta) < 1.479) return 0.1;
-      else  return (0.06);
-    }
-    if( id == "HN2017") {
-      if(fabs(eta) < 1.479) return 0.085;
-      else  return (0.05);
-    }
-    if( id == "HN2018") {
-      if(fabs(eta) < 1.479) return 0.095;
-      else  return (0.07);
-    }
-    if( id == "HNRelaxedIP2016") {
-      if(fabs(eta) < 1.479) return 0.1;
-      else  return (0.05);
-    }
-    if( id == "HNRelaxedIP2017") {
-      if(fabs(eta) < 1.479) return 0.1;
-      else  return (0.05);
-    }
-    if( id == "HNRelaxedIP2018") {
-      if(fabs(eta) < 1.479) return 0.095;
-      else  return (0.07);
-    }
-    if( id == "passTightID_nocc") {
-      if(fabs(eta) < 1.479) return (0.0287 + (0.506/pt));
-      else  return (0.0445 + (0.963/pt));
-    }
-    if( id.Contains("passPOGTight")){
-      if(fabs(eta) < 1.479) return (0.0287 + (0.506/pt));
-      else  return (0.0445 + (0.963/pt));
-
-    }
-    if( id.Contains("passPOGMedium")){
-      if(fabs(eta) < 1.479) return (0.0478 + (0.506/pt));
-      else  return (0.0658 + (0.963/pt));
-    }
-    if( id == "passTightID") {
-      if(fabs(eta) < 1.479) return (0.0287 + (0.506/pt));
-      else  return (0.0445 + (0.963/pt));
-    }
-    if( id.Contains("HNMediumV")) {
-      if(fabs(eta) < 1.479) return (0.0478 + (0.506/pt));
-      else  return (0.0658 + (0.963/pt));
-    }
-    if( id == "passMediumID") {
-      if(fabs(eta) < 1.479) return (0.0478 + (0.506/pt));
-      else  return (0.0658 + (0.963/pt));
-    }
-    if( id == "HN2016POG") {
-      if(fabs(eta) < 1.479) return (0.0287 + (0.506/pt));
-      else  return (0.0445 + (0.963/pt));
-    }
-
-    if( id == "Iso1") {
-      if(fabs(eta) < 1.479) return  0.08;
-      else  return 0.08;
-    }
-    if( id == "Iso2") {
-      if(fabs(eta) < 1.479) return  0.09;
-      else  return 0.08;
-    }
-    if( id == "Iso3") {
-      if(fabs(eta) < 1.479) return  0.1;
-      else  return 0.08;
-    }
-    if( id == "Iso4") {
-      if(fabs(eta) < 1.479) return  0.12;
-      else  return 0.08;
-    }
-    if( id == "Iso5") {
-      if(fabs(eta) < 1.479) return  0.09;
-      else  return 0.09;
-    }
-    if( id == "Iso6") {
-      if(fabs(eta) < 1.479) return  0.1;
-      else  return 0.1;
-    }
-    if( id == "Iso7") {
-      if(fabs(eta) < 1.479) return  0.12;
-      else  return 0.12;
-    }
-
-    
-    if( id.Contains("HNTight_Opt")) return 0.08;
-
-    if( id.Contains("HN2016MVA")) return 0.08;   
-    if( id.Contains("HN2016POG")) return 0.08;   
-    if( id == "passMVAID_noIso_WP90V16") return 0.05;
-    if( id == "passMVAID_noIso_WP80") return 0.08;
-    if( id == "passMVAID_noIso_WP90") return 0.08;
-    if( id == "passMVAID_Iso_WP80") return 999.0;
-    if( id == "passMVAID_Iso_WP90") return 999.0;
-
-    if (id.Contains("HNMVA_")) return 0.1;
-
-
-  }
-  cout << "[AnalyzerCore::GetIsoFromID ] ID not found.." << id<< endl;
-  exit(EXIT_FAILURE);
-
-  return -999999999.;
 
 }
 

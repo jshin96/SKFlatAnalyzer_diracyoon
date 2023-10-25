@@ -2,6 +2,8 @@
 
 void SKFlatValidation::initializeAnalyzer(){
 
+  HNL_LeptonCore::initializeAnalyzer();
+
 
   //==== Triggers
 
@@ -427,7 +429,7 @@ void SKFlatValidation::executeEventFromParameter(AnalyzerParameter param){
           FillHist(this_region+"/Jet_"+this_itoa+"_DeepCSV_Scaled_"+this_region, this_discr, weight*btagWeight_1d, 120, 0., 1.2);
         }
 
-        FillLeptonPlots(leps, this_region, weight);
+        FillLeptonPlots(param,leps, this_region, weight);
 
         if(n_lepton==1){
           FillHist(this_region+"/MT_"+this_region, this_MT, weight, 500, 0., 500.);

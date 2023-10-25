@@ -264,7 +264,7 @@ void HNL_LeptonIDBDTStudies::executeEvent(){
       
       if(i.Contains("IsFake") && HasBjet) continue;
 
-      if(imuon.PassID("HNL_ULID_"+GetYearString()))FillMuonKinematicPlots("TightUL_"+imuon.GetFlavour()+i,"Tight"+imuon.GetFlavour(), imuon, weight);
+      if(imuon.PassID("HNL_ULID_"+GetYearString()))FillMuonKinematicPlots( param, "Tight"+imuon.GetFlavour(), imuon, weight);
       
       map<TString, double> mapBDT = imuon.MAPBDT();
       for(auto imap : mapBDT )  {
@@ -335,8 +335,8 @@ void HNL_LeptonIDBDTStudies::executeEvent(){
       if(i.Contains("IsFake") && HasBjet) continue;
       
 
-      if(iel.PassID("HNL_ULID_"+GetYearString()))FillElectronKinematicPlots("TightUL_"+iel.GetFlavour()+i,"Tight"+iel.GetFlavour(), iel, weight);
-      FillElectronKinematicPlots("LooseUL_"+iel.GetFlavour()+i,"Tight"+iel.GetFlavour(), iel, weight);
+      if(iel.PassID("HNL_ULID_"+GetYearString()))FillElectronKinematicPlots(param, "Tight"+iel.GetFlavour(), iel, weight);
+      FillElectronKinematicPlots(param,"LooseUL_"+iel.GetFlavour()+i , iel, weight);
 
       
       map<TString, double> mapBDT = iel.MAPBDT();
@@ -1097,8 +1097,8 @@ void HNL_LeptonIDBDTStudies::CheckSSFakeBreakDown(AnalyzerParameter param,HNL_Le
     return;
     if(!SameCharge(LeptonColl))return;
 
-    FillAllMuonPlots("SS_FakeMuon","MC"+channel_string,MuonCollFake,weight_ll);
-    FillAllMuonPlots("SS_PromptMuon","MC"+channel_string,MuonCollPrompt,weight_ll);
+    FillMuonCollPlots(param,"SS_FakeMuon_"+channel_string,MuonCollFake,weight_ll);
+    FillMuonCollPlots(param,"SS_PromptMuon_"+channel_string,MuonCollPrompt,weight_ll);
         
   }
   
@@ -1117,16 +1117,16 @@ void HNL_LeptonIDBDTStudies::MakeBDTPlots(AnalyzerParameter param,HNL_LeptonCore
   if(!IsData){
 
     vector<Electron> ElectronCollFake     = SkimLepColl(ElectronColl, param, "HFake");
-    FillAllElectronPlots("FakeElectron","MC"+channel_string,ElectronCollFake,weight_ll);
+    FillAllElectronPlots(param,"FakeElectron_"+channel_string,ElectronCollFake,weight_ll);
 
     vector<Electron> ElectronCollCF     = SkimLepColl(ElectronColl,  param, "CF");
-    FillAllElectronPlots("CFElectron","MC"+channel_string,ElectronCollCF,weight_ll);
+    FillAllElectronPlots(param,"CFElectron_"+channel_string,ElectronCollCF,weight_ll);
 
     vector<Electron> ElectronCollConv     = SkimLepColl(ElectronColl, param, "NHConv");
-    FillAllElectronPlots("ConvElectron","MC"+channel_string,ElectronCollConv,weight_ll);
+    FillAllElectronPlots(param,"ConvElectron_"+channel_string,ElectronCollConv,weight_ll);
 
     vector<Electron> ElectronCollPrompt   = SkimLepColl(ElectronColl, param, "PromptNoCF");
-    FillAllElectronPlots("PromptElectron","MC"+channel_string,ElectronCollPrompt,weight_ll);
+    FillAllElectronPlots(param,"PromptElectron_"+channel_string,ElectronCollPrompt,weight_ll);
   }
   
 
@@ -1173,7 +1173,7 @@ void HNL_LeptonIDBDTStudies::MakeBDTPlots(AnalyzerParameter param,HNL_LeptonCore
     if(METv.Pt() > 30) return;
     if(!ZmassOSSFWindowCheck(LeptonColl, 10.)) return;
 
-    FillAllElectronPlots("OSElectron","Z",ElectronColl,weight_ll);
+    FillAllElectronPlots(param,"OSElectronZ",ElectronColl,weight_ll);
 
     vector<Electron> ElectronCollDATATight;
     vector<Electron> ElectronCollDATAFake;
@@ -1181,8 +1181,8 @@ void HNL_LeptonIDBDTStudies::MakeBDTPlots(AnalyzerParameter param,HNL_LeptonCore
       if(iel.IsGsfCtfScPixChargeConsistent() && iel.SIP3D() < 3) ElectronCollDATATight.push_back(iel);
       if( iel.SIP3D() > 5) ElectronCollDATAFake.push_back(iel);
     }
-    FillAllElectronPlots("OSElectron","ZTight",ElectronCollDATATight,weight_ll);
-    FillAllElectronPlots("OSElectron","ZFake" ,ElectronCollDATAFake,weight_ll);
+    FillAllElectronPlots(param,"OSElectron_ZTight",ElectronCollDATATight,weight_ll);
+    FillAllElectronPlots(param,"OSElectron_ZFake" ,ElectronCollDATAFake,weight_ll);
 
     
     std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5);

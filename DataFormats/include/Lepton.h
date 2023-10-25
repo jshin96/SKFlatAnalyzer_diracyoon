@@ -176,6 +176,18 @@ public:
     if (this->Pt() < 50.) return "pt_40_50";
     if (this->Pt() < 100.) return "pt_50_100";
     if (this->Pt() < 2000.) return "pt_100_2000";
+    return "pt_100_2000";
+ }
+  
+  inline TString GetMotherPtLabel(){
+    double MotherPt = this->Pt()/ j_lep_jetptratio;
+    if (MotherPt < 15.) return "Mpt_10_15";
+    if (MotherPt < 20.) return "Mpt_15_20";
+    if (MotherPt < 30.) return "Mpt_20_30";
+    if (MotherPt < 40.) return "Mpt_30_40";
+    if (MotherPt < 50.) return "Mpt_40_50";
+    if (MotherPt < 100.) return "Mpt_50_100";
+    if (MotherPt < 2000.) return "Mpt_100_2000";
     return "";
   }
 
@@ -464,6 +476,12 @@ public:
     return "Pileup";
   }
 
+  inline double MotherJetPt()const{
+    
+    return this->Pt()/ j_lep_jetptratio;
+  }
+  
+
   inline TString MotherJetFlavour()  const {
     if(j_lep_jetflavour >= 4) return "HF";
     if(j_lep_jetflavour == 0) return "LF";
@@ -577,6 +595,20 @@ public:
   }
   inline double CalcPtCone(double this_reliso, double Tight_reliso){
     return ( this->Pt() ) * ( 1. + max(0., (this_reliso-Tight_reliso)) );
+  }
+  inline double CalcMVACone(double this_mva, double Tight_mva){
+    this_mva=this_mva+1;
+    Tight_mva=Tight_mva+1;
+    
+    if(this_mva > Tight_mva) return this->Pt();
+    
+    double mva_diff  = 1- this_mva/Tight_mva;
+    double PtMPtDiff = (this->Pt()/j_lep_jetptratio) - this->Pt();
+    if(PtMPtDiff < 0 ) PtMPtDiff = 0;
+
+    double var = (mva_diff * PtMPtDiff) + this->Pt() ;
+    if((mva_diff * PtMPtDiff) > 1.4) return 1.4*this->Pt();
+    return var;
   }
 
   virtual void Print();

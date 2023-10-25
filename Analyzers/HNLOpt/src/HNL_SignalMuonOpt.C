@@ -458,8 +458,8 @@ void HNL_SignalMuonOpt::RunULAnalysis(AnalyzerParameter param, vector<Electron> 
   if(param.Name== "HNLOpt_ULHNTightV2") OutCutFlow(param.Name+"_pre", weight);
 
   if(param.Name.Contains("HNL_ULID_2018")){
-    for(auto iel: ElectronCollT) FillElectronKinematicPlots(el_ID + "_"+iel.GetFlavour(),"Tight"+iel.GetFlavour(), iel, weight);
-    for(auto imu: MuonCollT)     FillMuonKinematicPlots(mu_ID + "_"+imu.GetFlavour(),"Tight"+imu.GetFlavour(), imu, weight);
+    for(auto iel: ElectronCollT) FillElectronKinematicPlots(param,el_ID + "_Tight"+iel.GetFlavour(), iel, weight);
+    for(auto imu: MuonCollT)     FillMuonKinematicPlots(param,mu_ID + "_Tight"+imu.GetFlavour(), imu, weight);
   }
 
   RunAllSignalRegions(Inclusive, ElectronCollT,ElectronCollV,MuonCollT,MuonCollV, TauColl, AllJetColl,JetCollLoose, JetColl, VBF_JetColl,AK8_JetColl , B_JetColl,B_JetCollSR1, ev,METv, param,weight);

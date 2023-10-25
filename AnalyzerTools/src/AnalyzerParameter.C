@@ -7,7 +7,8 @@ void AnalyzerParameter::Clear(){
   Channel = "Default";
   CutFlowDir="CutFlow";
   hprefix = "";
-
+  hpostfix = "";
+  SplitPlot = "NULL";
   MCCorrrectionIgnoreNoHist = false;
   DEBUG = false;
 
@@ -78,6 +79,7 @@ void AnalyzerParameter::Clear(){
   ConvMethod="MC";
 
 
+  Apply_Weight_Norm1pb   = true;
   Apply_Weight_LumiNorm  = true;
   Apply_Weight_SumW      = true;
   Apply_Weight_PileUp    = true;
@@ -172,6 +174,7 @@ AnalyzerParameter::AnalyzerParameter(){
   Set_MuTrigW=false;
 
   /// Set weights to true by default
+  Apply_Weight_Norm1pb   = true;
   Apply_Weight_LumiNorm  = true;
   Apply_Weight_SumW      = true;
   Apply_Weight_PileUp    = true;
@@ -378,6 +381,16 @@ TString  AnalyzerParameter::InclusiveChannelName(){
   if (Channel == "MuMu" ||  Channel == "EE" || Channel == "EMu" || Channel == "MuE") return "LL";
   if (Channel == "MuMuMu"||  Channel == "EEE" || Channel == "EMuL"|| Channel == "MuEL") return "LLL";
   return "LLLL";
+  
+}
+
+double AnalyzerParameter::Weight(TString wkey){
+
+  if(wkey == "Full") return w.lumiweight*w.PUweight* w.prefireweight*w.electronRECOSF*w.muonRECOSF*w.muonIDSF*w.muonISOSF*w.electronIDSF*w.triggerSF;
+
+  if(wkey == "NoLumi") return w.PUweight* w.prefireweight*w.electronRECOSF*w.muonRECOSF*w.muonIDSF*w.muonISOSF*w.electronIDSF*w.triggerSF;
+  
+  return 1.;
   
 }
 

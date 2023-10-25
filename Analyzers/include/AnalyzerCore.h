@@ -124,25 +124,6 @@ public:
 
 
 
-  // =================   FR functions   AnalyzerCore_Bkg.C  ======================                                                                                                                            
-  double GetFakeWeightMuon(std::vector<Muon> muons , AnalyzerParameter param);
-  double GetFakeWeightMuon(std::vector<Muon> muons , std::vector<TString> vtrig, AnalyzerParameter param);
-  double GetFakeWeightElectron(std::vector<Electron> electrons , vector<TString> trigs, AnalyzerParameter param);
-  double GetFakeWeightElectron(std::vector<Electron> electrons , AnalyzerParameter param);
-  double GetFakeRateElectron(Electron el , AnalyzerParameter param);
-  double GetFakeRateMuon(Muon mu, AnalyzerParameter param);
-  double GetFakeWeight(std::vector<Lepton *> leps,  AnalyzerParameter param, bool apply_r=false);
-  double GetIsoFromID(Lepton lep, TString id);
-
-
-  /// =================  CF Functions AnalyzerCore_Bkg.C ================= 
-
-  double GetCFSF(AnalyzerParameter param, std::vector<Electron> electrons) ; 
-  double GetCFWeightElectron(std::vector<Electron> electrons ,  AnalyzerParameter param,bool ApplySF=true);
-  double GetCFWeightElectron(std::vector<Lepton* > leps ,  AnalyzerParameter param,bool ApplySF=true);
-  double GetCFWeightElectron(vector<double> el_pt, vector<double> el_eta ,  AnalyzerParameter param, bool ApplySF=true);
-  double GetShiftCFEl(Electron el) ;
-  double GetZMassShift(vector<Electron> Electrons) ;
   
   //// =================  BDT Functions AnalyzerCore_IDBDT.C ================= 
 
@@ -299,7 +280,6 @@ public:
   int  GetLeptonType_JH(int TruthIdx, std::vector<Gen>& TruthColl);
   int  GetLeptonType_JH(const Lepton& Lep, std::vector<Gen>& TruthColl);
   int  GetPhotonType_JH(int PhotonIdx, std::vector<Gen>& TruthColl);
-  int  GetFakeLepSrcType(const Lepton& Lep, vector<Jet>& JetColl);
 
 
   // ================= MET Functions AnalyzerCore_MET.C  ===================
@@ -323,10 +303,18 @@ public:
   double FillWeightHist(TString label, double _weight);
   double FillFakeWeightHist(TString label, vector<Lepton *> Leps,AnalyzerParameter param,  double _weight);
 
-  // === HIST settings/filling                                                                                                                                                                                                                                                             
+  // === HIST settings/filling                                                                                                             
+  vector<double> GetHistBins(TString k);
+  int GetHistNBins(TString k);
+  void SetHistBins();
+  map<TString, int> map_hist_nbins;
+  map<TString, vector<double> > map_hist_bins;                                                                                                                                                
+  void AddHistBinning(TString mkey, vector<double> mbins);
 
+  void FillHist(TString histname, double value, double weight, TString BinLabel,  TString label);
   void FillHist(TString histname, double value, double weight, int n_bin, double x_min, double x_max, TString label="");
   void FillHist(TString histname, double value, double weight, int n_bin, double *xbins, TString label="");
+  void FillHist(TString histname, double value, double weight, int n_bin, vector<double> xbins, TString label="");
 
   void FillHist(TString histname,
                 double value_x, double value_y,
@@ -425,10 +413,6 @@ public:
 
   //===== Estimators
 
-  MCCorrection *mcCorr=NULL;
-  PuppiSoftdropMassCorr *puppiCorr=NULL;
-  FakeBackgroundEstimator *fakeEst=NULL;
-  CFBackgroundEstimator *cfEst=NULL;
   void initializeAnalyzerTools();
 
   //==== MCweight

@@ -1,9 +1,9 @@
 #ifndef SkimTree_Dilepton_h
 #define SkimTree_Dilepton_h
 
-#include "HNL_LeptonCore.h"
+#include "AnalyzerCore.h"
 
-class SkimTree_Dilepton : public HNL_LeptonCore {
+class SkimTree_Dilepton : public AnalyzerCore {
 
 public:
 

@@ -2,10 +2,11 @@
 
 void SkimTree_FakeEventSkim::initializeAnalyzer(){
 
+  AnalyzerCore::initializeAnalyzer();
+
   outfile->cd();
   cout << "[SkimTree_FakeEventSkim::initializeAnalyzer()] gDirectory = " << gDirectory->GetName() << endl;
   newtree = fChain->CloneTree(0);
-  HNL_LeptonCore::initializeAnalyzer();
  
 
 }

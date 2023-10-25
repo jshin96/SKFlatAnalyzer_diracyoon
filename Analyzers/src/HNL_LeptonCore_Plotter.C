@@ -1,6 +1,5 @@
 #include "HNL_LeptonCore.h"
 
-
 /*------------------------------------------------------------------------------------------------------------                                           
 ------------------------------------------------------------------------------------------------------------  
 //                                                                                                          
@@ -568,52 +567,45 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
 
 
 /// FillMuonPlots Fills all kinamatics                                                                                                                                                                                                                                          
-void HNL_LeptonCore::FillMuonPlots(TString label , TString cut,  std::vector<Muon> muons, double w){
+void HNL_LeptonCore::FillMuonCollPlots(bool passSel, TString SelSt, AnalyzerParameter param, TString cut,  std::vector<Muon> muons, double w){
 
-  for(auto imu: muons)   FillMuonKinematicPlots("muon"+label, cut, imu, w);
+  for(auto imu: muons)   FillMuonPlots(passSel, SelSt, param, cut, imu, w);
 
   return;
 }
+void HNL_LeptonCore::FillMuonCollPlots(AnalyzerParameter param, TString cut,  std::vector<Muon> muons, double w){
+  for(auto imu: muons)   FillMuonPlots(true, "", param, cut, imu, w);
+  return;
+}
 
-/// FillAllMuonPlots Fills all kinamatics in pt/eta bins                                                                                                                                                                                                                        
+/// FillAllMuonPlots Fills all kinamatics in pt/eta bins                                                                              
+void HNL_LeptonCore::FillMuonPlots(AnalyzerParameter param, TString cut,  Muon muon, double w){
+  FillMuonPlots(true, "", param, cut, muon, w);
+}                                                                                                                                      
+    
 
-void HNL_LeptonCore::FillAllMuonPlots(TString label , TString cut,  std::vector<Muon> muons, double w){
+void HNL_LeptonCore::FillMuonPlots(bool passSel, TString SelSt, AnalyzerParameter param, TString cut,  Muon muon, double w){
+  
+  if(!passSel) return;
 
-  for(unsigned int i=0; i <  muons.size(); i++){
-    TString eta_label="";
-    if(fabs(muons.at(i).Eta()) < 1.5) eta_label = "_BB";
-    else eta_label = "_EC";
+  cut = "MuonPlots/"+cut;
 
-    TString pt_label=GetPtBin(true,muons.at(i).Pt());
-
-    int LepType= muons.at(i).LeptonGenType();
-
-    TString gen_label = "";
-    if (LepType >= 0) gen_label = to_string(LepType);
-    else gen_label = "Minus_"+to_string(fabs(LepType));
-
-    //if(Analyzer == "HNL_LeptonIDBDTStudies"){                                                                                                                                                                                                                                 
-    //  if(GenTypeMatched(MatchGenDef(All_Gens,muons[i]))){/                                                                                                                                                                                                                    
-    //  if(label.Contains("Fake")) FillMuonKinematicPlots("muon"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,muons[i]), cut, muons.at(i), w);                                                                                                             
-    // }                                                                                                                                                                                                                                                                        
-
-    //if(muons[i].HNL_MVA_Fake("EDv4") < -0.5) FillMuonKinematicPlots("muon_lowMVAv4_"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,muons[i]), cut, muons.at(i), w);                                                                                       
-    //  if(muons[i].HNL_MVA_Fake("EDv4") > 0.5) FillMuonKinematicPlots("muon_highMVAv4_"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);                                                                                                                        
-    //  if(muons[i].MVA() < -0.5) FillMuonKinematicPlots("muon_lowMVAHF_"+label+"_"+muons.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,muons[i]), cut, muons.at(i), w);                                                                                                    
-    //  if(muons[i].MVA() > 0.5) FillMuonKinematicPlots("muon_highMVAHF_"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);                                                                                                                                       
-
-    //}                                                                                                                                                                                                                                                                         
-    //FillMuonKinematicPlots("muon"+label+"_"+muons.at(i).CloseJet_Flavour(), cut, muons.at(i), w);                                                                                                                                                                             
-    FillMuonKinematicPlots("muon"+label, cut, muons.at(i), w);
-
+  if(SelSt != "") {
+    cut = cut + "_"+SelSt;
+    TString Option = ""; 
+    if(param.SplitPlot == "PtBin_Type_")    FillMuonKinematicPlots(param,cut +"/"+muon.GetPtLabel() +"_"+muon.sLepGenType(), muon, w);
+    if(param.SplitPlot.Contains("PtBin_"))  FillMuonKinematicPlots(param,cut +"/"+muon.GetPtLabel() ,  muon, w);
+    if(param.SplitPlot.Contains("Type_"))   FillMuonKinematicPlots(param,cut +"/"+muon.sLepGenType(),  muon, w);
   }
-
+    
+  else FillMuonKinematicPlots(param, cut, muon, w);
+  
   return;
 }
 
 
 
-void HNL_LeptonCore::FillLeptonKinematicPlots(TString label , TString cut,  Lepton lep, double w){
+void HNL_LeptonCore::FillLeptonKinematicPlots(AnalyzerParameter param, TString cut,  Lepton lep, double w){
 
   vector<Jet> JetAllColl = All_Jets;
 
@@ -624,7 +616,8 @@ void HNL_LeptonCore::FillLeptonKinematicPlots(TString label , TString cut,  Lept
   double maxDphi=-999;
   double PtRatioAwayJet(-999.);
   double Jet_Disc(-1);
-
+  
+  TString label = param.hpostfix;
 
   for(unsigned int ij=0; ij<JetAllColl.size(); ij++){
 
@@ -638,6 +631,8 @@ void HNL_LeptonCore::FillLeptonKinematicPlots(TString label , TString cut,  Lept
 
   TString label_lep = (lep.LeptonFlavour()==Lepton::ELECTRON) ? "Electron": "Muon";
   double Pt_Lep = (lep.Pt() > 2000) ? 1999 : lep.Pt();
+
+  label += label_lep;
 
   /// Kinematics                                                                                                                                                                                                                                                                
   FillHist( cut+ "/Lepton_Pt_"+label   , lep.Pt() , w, 5000, 0., 10000., label_lep+"p_{T} GeV");
@@ -660,6 +655,17 @@ void HNL_LeptonCore::FillLeptonKinematicPlots(TString label , TString cut,  Lept
   // Lep/Jet                                                                                                                                                                                                                                                                    
   FillHist( cut+ "/Lepton_PtRel_"+label         , JetLeptonPtRelLepAware( lep), w, 500, 0., 100., "");
   FillHist( cut+ "/Lepton_PtRatio_"+label       , JetLeptonPtRatioLepAware(lep), w, 500, 0., 2., "");
+  double MotherPt = lep.Pt() /  lep.CloseJet_Ptratio();
+  if(MotherPt > 200) MotherPt=200;
+  double OnepIso = 1. + lep.RelIso();
+  double v1 = 0.2*( lep.HNL_MVA_Fake("HFTop") +1.);
+  double MVAToIso = 0.4 - std::max( 0., std::min(0.4 ,v1));
+  double MPtOverMVA = MotherPt / ( (1+MVAToIso) * lep.Pt());
+  double MPtOverIso = MotherPt / (OnepIso*lep.Pt());
+  FillHist( cut+ "/Lepton_MotherJetPt_"+label,  MotherPt, w, 100, 0., 200);
+  FillHist( cut+ "/Lepton_MotherJetPtOverIso_"+label,      MPtOverIso , w, 500, 0., 5);
+  FillHist( cut+ "/Lepton_MotherJetPtOverMVA_"+label,      MPtOverMVA , w, 500, 0., 5);
+  FillHist( cut+ "/Lepton_MotherFlavour_"+label , lep.CloseJet_FlavourInt(), w, 10, 0., 10);
 
   if(IdxMatchJet != -1 ){
     FillHist( cut+ "/Lepton_CHFracCJ_"+label      , JetAllColl.at(IdxMatchJet).ChargedHadEnergyFraction(), w, 100, 0., 1., "");
@@ -671,32 +677,41 @@ void HNL_LeptonCore::FillLeptonKinematicPlots(TString label , TString cut,  Lept
   }
 
   map<TString, double> lep_bdt_map = lep.MAPBDT();
-  for(auto i : lep_bdt_map)     FillHist( cut+ "/Lepton_mva_"+i.first+label  , i.second, w, 100, -1., 1., "MVA");
+  for(auto i : lep_bdt_map){
+    FillHist( cut+ "/Lepton_mva_"+i.first+label  , i.second, w, 100, -1., 1., "MVA");
+    FillHist( cut+ "/Lepton_MotherJetPtVsMVA_"+label,  lep.CloseJet_Ptratio(), i.second, w, 100, 0., 2., 100, -1., 1.);
+    FillHist( cut+ "/Lepton_RelIsoVsMVA_"+label,  lep.RelIso() ,  i.second, w, 200, 0., 0.4, 100, -1., 1);
+  }
 
-  // Isolation                                                                                                                                                                                                                                                                  
-
+  // Isolation                                                                                                                                                                                                                                                              
+  FillHist( cut+ "/Lepton_MotherJetPtVRelIso_"+label,  lep.CloseJet_Ptratio(), lep.RelIso(),  w, 100, 0., 2., 200, 0., 0.4);
   FillHist( cut+ "/Lepton_MiniReliso_"+label , lep.MiniRelIso() , w, 500, 0., 2., "R_{ISO} GeV");
   FillHist( cut+ "/Lepton_Reliso_el_"+label , lep.RelIso() , w, 200, 0., 0.4, "R_{ISO} GeV");
 
 }
 
 
-void HNL_LeptonCore::FillMuonKinematicPlots(TString label , TString cut,  Muon lep, double w){
+void HNL_LeptonCore::FillMuonKinematicPlots(AnalyzerParameter param, TString cut,  Muon lep, double w){
 
-  FillLeptonKinematicPlots(label, cut, Lepton(lep),w);
+  FillLeptonKinematicPlots(param, cut, Lepton(lep),w);
 
-  FillHist( cut+ "/Muon_Mva_"+label  , lep.MVA(), w, 600, -1., 1., "MVA");
-  FillHist( cut+ "/Muon_Pt_mva_"+label , lep.Pt() , lep.MVA(), fabs(w), 200, 0., 1000., 600, -1., 2.);
-  FillHist( cut+ "/Muon_Chi2_"+label  , lep.Chi2(), w, 200,0., 20., "chi2");
+  TString label = param.hpostfix;
+  
+  FillHist( cut+ "/Muon_Mva_"+label    , lep.MVA(), w, 600, -1., 1., "MVA");
+  FillHist( cut+ "/Muon_Chi2_"+label   , lep.Chi2(), w, 200,0., 20., "chi2");
   FillHist( cut+ "/Muon_Validhits_"+label  , lep.ValidMuonHits(), w, 100,0., 100., "");
   FillHist( cut+ "/Muon_Matched_stations_"+label  , lep.MatchedStations(), w, 10,0., 10., "");
   FillHist( cut+ "/Muon_Pixel_hits_"+label  , lep.PixelHits(), w, 10,0., 10., "");
   FillHist( cut+ "/Muon_Tracker_layers_"+label  , lep.TrackerLayers(), w, 50,0., 50., "");
 
-  vector<TString> IDs ={"HNTightV2"};
+  vector<TString> IDs ={"HNTightV2","POGLoose","POGMedium","POGTight"};
   for (auto ID : IDs){
     if(lep.PassID(ID)) FillHist( cut+ "/Muon_Pass_"+ID+label  , 1, w, 4, 0., 4., "Pass " + ID);
     else FillHist( cut+ "/Muon_Pass_"+ID+label  , 0, w, 4, 0., 4., "Pass " + ID);
+
+    if(lep.PassID(ID)) FillHist( cut+ "/Muon_Pass_"+ID+label  , 1, w, 4, 0., 4., "Pass " + ID);
+    else FillHist( cut+ "/Muon_Pass_"+ID+label  , 0, w, 4, 0., 4., "Pass " + ID);
+
   }
 
   return;
@@ -704,16 +719,17 @@ void HNL_LeptonCore::FillMuonKinematicPlots(TString label , TString cut,  Muon l
 
 
 
-void HNL_LeptonCore::FillElectronPlots(TString label , TString cut,  std::vector<Electron> ElectronColl, double w){
+void HNL_LeptonCore::FillElectronPlots(AnalyzerParameter param , TString cut,  std::vector<Electron> ElectronColl, double w){
 
-  for(auto iel : ElectronColl)   FillElectronKinematicPlots("Electron_"+label, cut, iel, w);
+  for(auto iel : ElectronColl)   FillElectronKinematicPlots(param, cut, iel, w);
 
   return;
 }
 
-void HNL_LeptonCore::FillAllElectronPlots(TString label , TString cut,  std::vector<Electron> ElectronColl, double w){
+void HNL_LeptonCore::FillAllElectronPlots(AnalyzerParameter param , TString cut,  std::vector<Electron> ElectronColl, double w){
 
-  if(MCSample.Contains("Type")) w=1;
+  TString label  = param.hpostfix;
+
 
   FillHist( cut+ "/nelectrons"+label , size(ElectronColl) , w, 5, 0., 5., "n_{el}");
 
@@ -733,18 +749,20 @@ void HNL_LeptonCore::FillAllElectronPlots(TString label , TString cut,  std::vec
     if(Analyzer== "HNL_LeptonIDBDTStudies"){
 
       if(GenTypeMatched(MatchGenDef(All_Gens,ElectronColl.at(i)))){
-
-if(label.Contains("Fake")) FillElectronKinematicPlots("Electron_"+label+"_"+ ElectronColl.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,ElectronColl[i]), cut, ElectronColl.at(i), w);
+	
+	if(label.Contains("Fake")) FillElectronKinematicPlots( param,"Electron_"+label+"_"+ ElectronColl.at(i).CloseJet_Flavour()+"_"+MatchGenDef(All_Gens,ElectronColl[i])+"_"+ cut, ElectronColl.at(i), w);
       }
     }
-    FillElectronKinematicPlots("Electron_"+label+"_"+ ElectronColl.at(i).CloseJet_Flavour() , cut, ElectronColl.at(i), w);
+    FillElectronKinematicPlots(param, "Electron_"+label+"_"+ ElectronColl.at(i).CloseJet_Flavour() + cut, ElectronColl.at(i), w);
   }
   return;
 }
 
-void HNL_LeptonCore::FillElectronKinematicPlots(TString label , TString cut,  Electron lep, double w){
+void HNL_LeptonCore::FillElectronKinematicPlots(AnalyzerParameter param , TString cut,  Electron lep, double w){
+  
+  FillLeptonKinematicPlots(param, cut, Lepton(lep),w);
 
-  FillLeptonKinematicPlots(label, cut, Lepton(lep),w);
+  TString label = param.hpostfix;
 
   FillHist( cut+ "/Electron_SCEta_"+label  , lep.scEta() , w, 60, -3., 3.,"electron #eta");
   FillHist( cut+ "/Electron_SCPhi_"+label  , lep.scPhi() , w, 70, -3.5, 3.5,"electron #phi");
@@ -847,8 +865,8 @@ void HNL_LeptonCore::Fill_SigRegionPlots4(HNL_LeptonCore::Channel channel, TStri
 
 }
 
-void HNL_LeptonCore::FillLeptonPlots(std::vector<Lepton *> leps, TString this_region, double weight){
-
+void HNL_LeptonCore::FillLeptonPlots(AnalyzerParameter param,std::vector<Lepton *> leps, TString this_region, double weight){
+  
   for(unsigned int i=0; i<leps.size(); i++){
 
     TString this_itoa = TString::Itoa(i,10);
@@ -886,7 +904,7 @@ void HNL_LeptonCore::FillLeptonPlots(std::vector<Lepton *> leps, TString this_re
 
 }
 
-void HNL_LeptonCore::FillJetPlots(std::vector<Jet> jets, std::vector<FatJet> fatjets, TString this_region, double weight){
+void HNL_LeptonCore::FillJetPlots(AnalyzerParameter param,std::vector<Jet> jets, std::vector<FatJet> fatjets, TString this_region, double weight){
 
   for(unsigned int i=0; i<jets.size(); i++){
 
@@ -910,4 +928,99 @@ void HNL_LeptonCore::FillJetPlots(std::vector<Jet> jets, std::vector<FatJet> fat
   }
 
 }
+
+double HNL_LeptonCore::FillWeightHist(TString label, double _weight){
+
+  int szst = 50 - std::string(label).size();
+  TString empty_st = "";
+  for(int i = 0 ; i < szst; i++) empty_st+= " ";
+  if(run_Debug) cout << "HNL_LeptonCore::FillWeightHist ["+label+"] " <<  empty_st<< "  correction =" <<   _weight << endl;
+
+  double max_x_range = 5.;
+  if(label.Contains("Lumi")) max_x_range = 5.+ 2*(fabs(_weight));
+
+  if(!label.Contains("Syst_"))   FillHist( "weights/"+ label , _weight ,1., 200, -1.*max_x_range, max_x_range,"ev weight");
+
+  return _weight;
+}
+
+
+double HNL_LeptonCore::FillFakeWeightHist(TString label, vector<Lepton *> Leps,AnalyzerParameter param,  double _weight){
+
+
+  if(run_Debug) cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << endl;
+  if(run_Debug) {
+    for(auto i: Leps) {
+      if(i->LeptonFlavour()==Lepton::MUON) cout << "Muon " << endl;
+      else cout<< "Electron " << endl;
+    }
+  }
+
+  if(run_Debug) cout << "nLep = " << Leps.size() << endl;
+  if(run_Debug) cout << "Weight = " << _weight << endl;
+
+  TString TLType="";
+  for(auto i: Leps) {
+    if(i->PassLepID())TLType+="T";
+    else TLType+="L";
+  }
+  if(run_Debug) cout << "TLType = " << TLType << endl;
+
+  //  if(Leps.size() > 0) cout << "LepTightIDName = " << Leps[0]->LepTightIDName() << endl;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+  // cout << "TLType = " << TLType <<  " Weight = " << _weight << endl;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+
+  FillHist( "FakeWeights/"+ label , _weight ,1., 200, -5., 5,"ev weight");
+
+  if(Leps.size() == 2){
+
+    bool T1 = Leps[0]->PassLepID();
+    bool T2 = Leps[1]->PassLepID();
+    if(T1&&T2)         FillHist( "FakeStudy/TLSplit/TightLoose"+ label , 1, _weight , 5, 0., 5);
+    if(T1&&!T2)        FillHist( "FakeStudy/TLSplit/TightLoose"+ label , 2, _weight , 5, 0., 5);
+    if(!T1&&T2)        FillHist( "FakeStudy/TLSplit/TightLoose"+ label , 3, _weight , 5, 0., 5);
+    if(!T1&&!T2)       FillHist( "FakeStudy/TLSplit/TightLoose"+ label , 4, _weight , 5, 0., 5);
+    if(run_Debug) cout << "FillFakeWeightHist Lepton Types T1T2 = " << T1 << " "  << T2 << endl;
+  }
+
+  for(auto ilep : Leps) {
+    FillHist( "FakeStudy/MVAPlots/QCD_LFvsHF_v5_"+label, ilep->HNL_MVA_Fake("QCD_LFvsHF_v5"), 1, 100, -1., 1.);
+
+    if(ilep->HNL_MVA_Fake("QCD_LFvsHF_v5") > 0) FillHist( "FakeStudy/MVAPlots/QCD_BvsC_v5_LF_"+label, ilep->HNL_MVA_Fake("QCD_BvsC_v5"), 1, 100, -1., 1);
+    else  FillHist( "FakeStudy/MVAPlots/QCD_BvsC_v5_HF_"+label, ilep->HNL_MVA_Fake("QCD_BvsC_v5"), 1, 100, -1., 1.);
+
+
+    if(!ilep->PassLepID())  {
+
+      double FR = (ilep->LeptonFlavour()==Lepton::MUON) ? fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, param.k.Muon_FR , param.FakeRateMethod, ilep->fEta(), ilep->PtMaxed(60.), ilep->LeptonFakeTagger() ) :  fakeEst->GetElectronFakeRate(param.Electron_Tight_ID, param.k.Electron_FR,param.FakeRateMethod, ilep->fEta(), ilep->PtMaxed(60.),ilep->LeptonFakeTagger() );
+
+
+      double FRFlav = (ilep->LeptonFlavour()==Lepton::MUON) ? fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, param.k.Muon_FR , param.FakeRateMethod, ilep->fEta(), ilep->PtMaxed(60.), ilep->LeptonFakeTagger(),0) :  fakeEst->GetElectronFakeRate(param.Electron_Tight_ID,param.k.Electron_FR,param.FakeRateMethod,ilep->fEta(), ilep->PtMaxed(60.), ilep->LeptonFakeTagger(), 0);
+
+      if(run_Debug) cout << "!Tight Lep Type = " <<ilep->LeptonFakeTagger() << "  LFvsHFMVA = " << ilep->HNL_MVA_Fake("QCD_LFvsHF_v5") << " BvsC MVA = " << ilep->HNL_MVA_Fake("QCD_BvsC_v5")   << endl;
+      if(run_Debug) cout << "!Tight Pt = " << ilep->PtMaxed(60.) << " pt = " << ilep->Pt() << " eta =  " << ilep->fEta() << " FR = " << FR << " FRFlav = " << FRFlav <<  endl;
+
+
+      FillHist( "FakeStudy/Rates/"+ilep->LepTightIDName()+"/Loose_"+ label , FR, 1 , 1000, 0., 5);
+      FillHist( "FakeStudy/Rates/"+ilep->LepTightIDName()+"/Loose_VsPt"+ label , ilep->PtMaxed(60.), FR, 1 , 60, 0, 60, 1000, 0., 5);
+      FillHist( "FakeStudy/Rates/"+ilep->LepTightIDName()+"/Loose_"+ilep->sEtaRegion()+"_"+ label , FR, 1 , 1000, 0., 5);
+
+    }
+
+  }
+
+
+  if(Leps.size() == 2){
+    bool T1 = Leps[0]->PassLepID();
+    bool T2 = Leps[1]->PassLepID();
+    double FW = GetFakeWeight(Leps, param, false);
+    if(T1&&T2)FillHist( "FakeStudy/EventWeight/TT_"+ label , FW, _weight , 100, 0., 5);
+    if(T1&&!T2)FillHist( "FakeStudy/EventWeight/TL_"+ label , FW, _weight , 100, 0., 5);
+    if(!T1&&T2)FillHist( "FakeStudy/EventWeight/LT_"+ label , FW, _weight , 100, 0., 5);
+    if(!T1&&!T2)FillHist( "FakeStudy/EventWeight/LL_"+ label , FW, _weight , 100, 0., 5);
+    if(run_Debug) cout << "EventWeight = " << FW << endl;
+  }
+
+  return _weight;
+}
+
 

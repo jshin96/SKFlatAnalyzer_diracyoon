@@ -12,6 +12,7 @@ class AnalyzerParameter{
   TString Name;
   TString DefName; 
   TString Channel;
+  TString SplitPlot;
   TString CutFlowDir;
   TString hprefix;
   TString hpostfix;
@@ -39,7 +40,7 @@ class AnalyzerParameter{
   double FatJet_MinPt, FatJet_MaxEta ;
 
   /// Weights
-  bool   Apply_Weight_LumiNorm, Apply_Weight_SumW,  Apply_Weight_PileUp, Apply_Weight_PreFire ,Apply_Weight_kFactor, Apply_Weight_IDSF , Apply_Weight_TriggerSF, Apply_Weight_RECOSF, Apply_Weight_Z0, Apply_Weight_TopCorr,Apply_Weight_DYCorr, Apply_Weight_BJetSF, Apply_Weight_PNETSF,Apply_Weight_MuonTrackerSF,Apply_Weight_JetPUID;
+  bool   Apply_Weight_LumiNorm,Apply_Weight_Norm1pb, Apply_Weight_SumW,  Apply_Weight_PileUp, Apply_Weight_PreFire ,Apply_Weight_kFactor, Apply_Weight_IDSF , Apply_Weight_TriggerSF, Apply_Weight_RECOSF, Apply_Weight_Z0, Apply_Weight_TopCorr,Apply_Weight_DYCorr, Apply_Weight_BJetSF, Apply_Weight_PNETSF,Apply_Weight_MuonTrackerSF,Apply_Weight_JetPUID;
 
 
   /// Other
@@ -123,6 +124,7 @@ class AnalyzerParameter{
   void PrintParameters();
 
   double EventWeight();
+  double Weight(TString wkey);
 
 
   TString ChannelType();

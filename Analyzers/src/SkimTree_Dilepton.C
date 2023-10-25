@@ -2,12 +2,11 @@
 
 void SkimTree_Dilepton::initializeAnalyzer(){
 
+  AnalyzerCore::initializeAnalyzer();
+
   outfile->cd();
   cout << "[SkimTree_Dilepton::initializeAnalyzer()] gDirectory = " << gDirectory->GetName() << endl;
   newtree = fChain->CloneTree(0);
-
-  HNL_LeptonCore::initializeAnalyzer();
-
 
   double_triggers.clear();
   single_electron_triggers.clear();

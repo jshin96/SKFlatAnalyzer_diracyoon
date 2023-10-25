@@ -1,9 +1,9 @@
 #ifndef SkimTree_CFEventSkim_h
 #define SkimTree_CFEventSkim_h
 
-#include "HNL_LeptonCore.h"
+#include "AnalyzerCore.h"
 
-class SkimTree_CFEventSkim : public HNL_LeptonCore {
+class SkimTree_CFEventSkim : public AnalyzerCore {
 
 public:
 

@@ -161,22 +161,22 @@ void HNL_ObjectStudies::executeEvent(){
 	  ElectronCollCF = SkimLepColl(ElectronColl, param, "CF");
 	  ElectronCollPrompt = SkimLepColl(ElectronColl, param, "PromptNoCF");
 	  
-	  FillAllElectronPlots("Prompt", "Electrons"  , ElectronCollPrompt , weight);
-	  FillAllElectronPlots("Fake", "Electrons"  , ElectronCollFake , weight);
-	  FillAllElectronPlots("Conv", "Electrons"  , ElectronCollConv , weight);
-	  FillAllElectronPlots("CF", "Electrons"  , ElectronCollCF , weight);
+	  FillAllElectronPlots(param,"Prompt_Electrons"  , ElectronCollPrompt , weight);
+	  FillAllElectronPlots(param,"Fake_Electrons"  , ElectronCollFake , weight);
+	  FillAllElectronPlots(param,"Conv_Electrons"  , ElectronCollConv , weight);
+	  FillAllElectronPlots(param,"CF_Electrons"  , ElectronCollCF , weight);
 	  
 	  MuonCollFake = SkimLepColl(MuonColl, param, "HFake");
 	  MuonCollConv = SkimLepColl(MuonColl, param, "NHConv");
 	  MuonCollPrompt = SkimLepColl(MuonColl, param, "Prompt");
-	  FillAllMuonPlots("Prompt", "Muons"  , MuonCollPrompt , weight);
-	  FillAllMuonPlots("Fake", "Muons"  , MuonCollFake , weight);
-	  FillAllMuonPlots("Conv", "Muons"  , MuonCollConv , weight);
+	  FillMuonCollPlots(param,"Prompt_Muons"  , MuonCollPrompt , weight);
+	  FillMuonCollPlots(param,"Fake_Muons"  , MuonCollFake , weight);
+	  FillMuonCollPlots(param,"Conv_Muons"  , MuonCollConv , weight);
 	  
 	}
 	else{
-	  FillAllMuonPlots("Signal", "Muons"  , MuonColl , weight);
-	  FillAllElectronPlots("Signal", "Electrons"  , ElectronColl , weight);
+	  FillMuonCollPlots(param,"Signal_Muons"  , MuonColl , weight);
+	  FillAllElectronPlots(param,"Signal_Electrons"  , ElectronColl , weight);
 	}      
       }
       continue;
@@ -574,8 +574,8 @@ void HNL_ObjectStudies::executeEvent(){
     if(SameCharge(LepsAll)) {
 
       
-      FillAllMuonPlots("SS", "Muons"  , MuonColl , weight);                                                                                                                                                  
-      FillAllElectronPlots("SS", "Electrons"  , ElectronColl , weight);                                                                                                                                 
+      FillMuonCollPlots(param,"SS_Muons"  , MuonColl , weight);                                                                                                                                                  
+      FillAllElectronPlots(param,"SS_Electrons"  , ElectronColl , weight);                                                                                                                                 
 
 
       for(auto ilep : LepsAll){
@@ -705,34 +705,34 @@ void HNL_ObjectStudies::executeEvent(){
     
     if(!IsData){
       
-      FillAllMuonPlots("TypeM6", "Muons"  , MuonCollTypeM6 , weight);
-      FillAllMuonPlots("TypeM5", "Muons"  , MuonCollTypeM5 , weight);
-      FillAllMuonPlots("TypeM4", "Muons"  , MuonCollTypeM4 , weight);
-      FillAllMuonPlots("TypeM3", "Muons"  , MuonCollTypeM3 , weight);
-      FillAllMuonPlots("TypeM2", "Muons"  , MuonCollTypeM2 , weight);
-      FillAllMuonPlots("TypeM1", "Muons"  , MuonCollTypeM1 , weight);
-      FillAllMuonPlots("Type0", "Muons"  , MuonCollType0 , weight);
-      FillAllMuonPlots("Type1", "Muons"  , MuonCollType1 , weight);
-      FillAllMuonPlots("Type2", "Muons"  , MuonCollType2 , weight);
-      FillAllMuonPlots("Type3", "Muons"  , MuonCollType3 , weight);
-      FillAllMuonPlots("Type4", "Muons"  , MuonCollType4 , weight);
-      FillAllMuonPlots("Type5", "Muons"  , MuonCollType5 , weight);
-      FillAllMuonPlots("Type6", "Muons"  , MuonCollType6 , weight);
-      FillAllElectronPlots("TypeM6", "Electrons"  , ElectronCollTypeM6 , weight);
-      FillAllElectronPlots("TypeM5", "Electrons"  , ElectronCollTypeM5 , weight);
-      FillAllElectronPlots("TypeM4", "Electrons"  , ElectronCollTypeM4 , weight);
-      FillAllElectronPlots("TypeM3", "Electrons"  , ElectronCollTypeM3 , weight);
-      FillAllElectronPlots("TypeM2", "Electrons"  , ElectronCollTypeM2 , weight);
-      FillAllElectronPlots("TypeM1", "Electrons"  , ElectronCollTypeM1 , weight);
-      FillAllElectronPlots("Type0", "Electrons"  , ElectronCollType0 , weight);
-      FillAllElectronPlots("Type1", "Electrons"  , ElectronCollType1 , weight);
-      FillAllElectronPlots("Type2", "Electrons"  , ElectronCollType2 , weight);
-      FillAllElectronPlots("Type3", "Electrons"  , ElectronCollType3 , weight);
-      FillAllElectronPlots("Type4", "Electrons"  , ElectronCollType4 , weight);
-      FillAllElectronPlots("Type5", "Electrons"  , ElectronCollType5 , weight);
-      FillAllElectronPlots("Type6", "Electrons"  , ElectronCollType6 , weight);
+      FillMuonCollPlots(param,"TypeM6_Muons"  , MuonCollTypeM6 , weight);
+      FillMuonCollPlots(param,"TypeM5_Muons"  , MuonCollTypeM5 , weight);
+      FillMuonCollPlots(param,"TypeM4_Muons"  , MuonCollTypeM4 , weight);
+      FillMuonCollPlots(param,"TypeM3_Muons"  , MuonCollTypeM3 , weight);
+      FillMuonCollPlots(param,"TypeM2_Muons"  , MuonCollTypeM2 , weight);
+      FillMuonCollPlots(param,"TypeM1_Muons"  , MuonCollTypeM1 , weight);
+      FillMuonCollPlots(param,"Type0_Muons"  , MuonCollType0 , weight);
+      FillMuonCollPlots(param,"Type1_Muons"  , MuonCollType1 , weight);
+      FillMuonCollPlots(param,"Type2_Muons"  , MuonCollType2 , weight);
+      FillMuonCollPlots(param,"Type3_Muons"  , MuonCollType3 , weight);
+      FillMuonCollPlots(param,"Type4_Muons"  , MuonCollType4 , weight);
+      FillMuonCollPlots(param,"Type5_Muons"  , MuonCollType5 , weight);
+      FillMuonCollPlots(param,"Type6_Muons"  , MuonCollType6 , weight);
+      FillAllElectronPlots(param,"TypeM6_Electrons"  , ElectronCollTypeM6 , weight);
+      FillAllElectronPlots(param,"TypeM5_Electrons"  , ElectronCollTypeM5 , weight);
+      FillAllElectronPlots(param,"TypeM4_Electrons"  , ElectronCollTypeM4 , weight);
+      FillAllElectronPlots(param,"TypeM3_Electrons"  , ElectronCollTypeM3 , weight);
+      FillAllElectronPlots(param,"TypeM2_Electrons"  , ElectronCollTypeM2 , weight);
+      FillAllElectronPlots(param,"TypeM1_Electrons"  , ElectronCollTypeM1 , weight);
+      FillAllElectronPlots(param,"Type0_Electrons"  , ElectronCollType0 , weight);
+      FillAllElectronPlots(param,"Type1_Electrons"  , ElectronCollType1 , weight);
+      FillAllElectronPlots(param,"Type2_Electrons"  , ElectronCollType2 , weight);
+      FillAllElectronPlots(param,"Type3_Electrons"  , ElectronCollType3 , weight);
+      FillAllElectronPlots(param,"Type4_Electrons"  , ElectronCollType4 , weight);
+      FillAllElectronPlots(param,"Type5_Electrons"  , ElectronCollType5 , weight);
+      FillAllElectronPlots(param,"Type6_Electrons"  , ElectronCollType6 , weight);
     }
-    if(SameCharge(ElectronCollHNL))FillAllElectronPlots("HNL", "Electrons"  , ElectronCollHNL , weight);
+    if(SameCharge(ElectronCollHNL))FillAllElectronPlots(param,"HNL_Electrons"  , ElectronCollHNL , weight);
     
     map<double , std::vector<Muon> > MuonVecMap;
     MuonVecMap[0.] = MuonColl;
@@ -798,8 +798,8 @@ void HNL_ObjectStudies::executeEvent(){
       }
 
       
-      FillAllMuonPlots("LightFlavour", "Muons"  , LMuons , weight);
-      FillAllMuonPlots("HeavyFlavour", "Muons"  , HMuons , weight);
+      FillMuonCollPlots(param,"LightFlavour_Muons"  , LMuons , weight);
+      FillMuonCollPlots(param,"HeavyFlavour_Muons"  , HMuons , weight);
       
     }
     else{
@@ -816,8 +816,8 @@ void HNL_ObjectStudies::executeEvent(){
       }
 
 
-      FillAllElectronPlots("LightFlavour", "Electrons"  , LElectrons , weight);
-      FillAllElectronPlots("HeavyFlavour", "Electrons"  , HElectrons , weight);
+      FillAllElectronPlots(param,"LightFlavour_Electrons"  , LElectrons , weight);
+      FillAllElectronPlots(param,"HeavyFlavour_Electrons"  , HElectrons , weight);
 
 
       

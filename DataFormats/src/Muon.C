@@ -806,7 +806,7 @@ bool Muon::passIDHN(int ID, double dxy_b, double dxy_e, double dz_b,double dz_e,
 
 bool Muon::Pass_LepMVAID() const {
 
-  if(this->Pt() < 10)     return false;
+  if(this->Pt() < 5)     return false;
   if(this->fEta() > 2.4)  return false;
   if(MiniRelIso() > 0.4)  return false;
   if(SIP3D() > 8)         return false;

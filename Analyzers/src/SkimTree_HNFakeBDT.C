@@ -6,7 +6,7 @@ void SkimTree_HNFakeBDT::initializeAnalyzer(){
   cout << "[SkimTree_HNFakeBDT::initializeAnalyzer()] gDirectory = " << gDirectory->GetName() << endl;
   newtree = fChain->CloneTree(0);
 
-  HNL_LeptonCore::initializeAnalyzer();
+  HNL_LeptonCore::initializeAnalyzer(false,true);
   InitialiseLeptonBDTSKFlat();
 
   ///// ELECTRON BRANCHES                                                                                                                                                                                                                                                                                                     
@@ -244,8 +244,8 @@ void SkimTree_HNFakeBDT::executeEvent(){
   //// NOW Apply skim
   
 
-  double mu_pt = (IsData) ? 4: 25;
-  double el_pt = (IsData) ? 8: 25;
+  double mu_pt = (IsData) ? 4: 4;
+  double el_pt = (IsData) ? 8: 8;
 
   Particle METv = GetMiniAODvMET("PuppiT1xyULCorr");
   if(METv.Pt() > 40.) return;

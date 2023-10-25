@@ -149,8 +149,8 @@ void HNL_SignalStudies::executeEvent(){
       if(i.Contains("LF") && !i.Contains("IsFake")) continue;
       if(i.Contains("HF") && !i.Contains("IsFake")) continue;
       
-      if(SSMuMu)FillMuonKinematicPlots(i,"Muon_SS",ilep,weight);
-      FillMuonKinematicPlots(i,"Muon",ilep,weight);
+      if(SSMuMu)FillMuonKinematicPlots(param,i+"_Muon_SS",ilep,weight);
+      FillMuonKinematicPlots(param,i+"_Muon",ilep,weight);
      }
   }
   for(auto ilep : ElectronColl){
@@ -174,8 +174,8 @@ void HNL_SignalStudies::executeEvent(){
       if(i.Contains("LF") && !i.Contains("IsFake")) continue;
       if(i.Contains("HF") && !i.Contains("IsFake")) continue;
       
-      if(SSEE)FillElectronKinematicPlots(i,"Electron_SS",ilep,weight);
-      FillElectronKinematicPlots(i, "Electron",ilep,weight);
+      if(SSEE)FillElectronKinematicPlots(param,i+"_Electron_SS",ilep,weight);
+      FillElectronKinematicPlots(param,i+ "_Electron",ilep,weight);
     }
   }
 

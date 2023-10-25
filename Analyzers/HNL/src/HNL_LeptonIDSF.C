@@ -49,7 +49,7 @@ void HNL_LeptonIDSF::MeasureMuonEfficiencies(AnalyzerParameter param){
   if (!PassTriggerSelection(dilep_channel, ev, LeptonColl,"POG")) return;
 
 
-  FillMuonPlots("MuonEff" , "Muon", MuonCollProbePrompt, weight);
+  FillMuonCollPlots(param,"MuonEff", MuonCollProbePrompt, weight);
 
   vector<TString> IDs = {"HNL_Peking", "HNTightV2","HNL_HN3L","MVAID","MVALoose","HNL_ULID_2016","HNL_ULID_2017","HNTightPFIsoTight",};
   for(auto ID : IDs) PlotIDEfficiency(param,dilep_channel, MuonCollProbePrompt ,  ID,  weight);
@@ -85,7 +85,7 @@ void HNL_LeptonIDSF::MeasureElectronEfficiencies(AnalyzerParameter param){
 
   std::vector<Lepton *> LeptonColl      = MakeLeptonPointerVector(ProbeEl);
   
-  FillElectronPlots("ElEff" , "Electron",  ElectronCollProbePrompt, weight);
+  FillElectronPlots(param,"ElEff" ,  ElectronCollProbePrompt, weight);
 
   vector<TString> IDs = {"HNL_ULID_Baseline",
 			 "HNTightV2", 

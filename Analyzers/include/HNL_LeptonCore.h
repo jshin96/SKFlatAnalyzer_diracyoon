@@ -115,9 +115,28 @@ class HNL_LeptonCore : public AnalyzerCore {
   Particle GetvCorrMET(TString METType, AnalyzerParameter param, Particle METUncorr);
 
    
+  //------ BKG
+
+  double GetFakeWeightMuon(std::vector<Muon> muons , AnalyzerParameter param);
+  double GetFakeWeightMuon(std::vector<Muon> muons , std::vector<TString> vtrig, AnalyzerParameter param);
+  double GetFakeWeightElectron(std::vector<Electron> electrons , vector<TString> trigs, AnalyzerParameter param);
+  double GetFakeWeightElectron(std::vector<Electron> electrons , AnalyzerParameter param);
+  double GetFakeRateElectron(Electron el , AnalyzerParameter param);
+  double GetFakeRateMuon(Muon mu, AnalyzerParameter param);
+  double GetFakeWeight(std::vector<Lepton *> leps,  AnalyzerParameter param, bool apply_r=false);
+  double GetIsoFromID(Lepton lep, TString id);
+  double GetCFSF(AnalyzerParameter param, std::vector<Electron> electrons) ;
+  double GetCFWeightElectron(std::vector<Electron> electrons ,  AnalyzerParameter param,bool ApplySF=true);
+  double GetCFWeightElectron(std::vector<Lepton* > leps ,  AnalyzerParameter param,bool ApplySF=true);
+  double GetCFWeightElectron(vector<double> el_pt, vector<double> el_eta ,  AnalyzerParameter param, bool ApplySF=true);
+  double GetShiftCFEl(Electron el) ;
+  double GetZMassShift(vector<Electron> Electrons) ;
+
+  int  GetFakeLepSrcType(const Lepton& Lep, vector<Jet>& JetColl);
+
 
   //---- BDT Related    HNL_LeptonCore_BDT                                                                                                                                                                                           
-  void initializeAnalyzer();
+  void initializeAnalyzer(bool READBKGHISTS=true, bool SETUPIDBDT=true);
   void SetupEventMVAReader(bool ee=true, bool mm=true, bool emu=true);
   void SetupEvMVA();
   void DeleteEvMVA();
@@ -210,19 +229,37 @@ class HNL_LeptonCore : public AnalyzerCore {
 
 
 
+  //=====================                                                                                                                                                                                           
+  //==== Tools                                                                                                                                                                                                      
+  //====================                                                                                                                                                                                            
 
-  // HNL PLOTS  HNL_LeptonCore_Plotter                                                                                                                                                            
-  void FillAllMuonPlots(TString label , TString cut,  std::vector<Muon> muons, double w);
-  void FillMuonPlots(TString label , TString cut,  std::vector<Muon> muons, double w);
-  void FillMuonKinematicPlots(TString label , TString cut,  Muon mu, double w);
-  void FillAllElectronPlots(TString label , TString cut,  std::vector<Electron> els, double w);
-  void FillElectronPlots(TString label , TString cut,  std::vector<Electron> els, double w);
-  void FillElectronKinematicPlots(TString label , TString cut,  Electron el, double w);
-  void FillLeptonKinematicPlots(TString label , TString cut,  Lepton lep, double w);
+  //===== Estimators                                                                                                                                                                                               
 
-  void FillLeptonPlots(std::vector<Lepton *> leps, TString this_region, double weight);
-  void FillJetPlots(std::vector<Jet> jets, std::vector<FatJet> fatjets, TString this_region, double weight);
+  MCCorrection *mcCorr=NULL;
+  PuppiSoftdropMassCorr *puppiCorr=NULL;
+  FakeBackgroundEstimator *fakeEst=NULL;
+  CFBackgroundEstimator *cfEst=NULL;
 
+
+  // HNL PLOTS  HNL_LeptonCore_Plotter                                                                                                                                     
+
+  void FillMuonCollPlots     (bool passSel, TString sel, AnalyzerParameter param, TString cut,  std::vector<Muon> muons, double w);
+  void FillMuonCollPlots     (AnalyzerParameter param, TString cut,  std::vector<Muon> muons, double w);
+  void FillMuonPlots         (bool passSel, TString sel, AnalyzerParameter param, TString cut,  Muon muon, double w);
+  void FillMuonPlots         (AnalyzerParameter param, TString cut,  Muon muon, double w);
+  void FillMuonKinematicPlots(AnalyzerParameter param, TString cut,  Muon mu, double w);
+  void FillAllElectronPlots  (AnalyzerParameter param, TString cut,  std::vector<Electron> els, double w);
+  void FillElectronPlots     (AnalyzerParameter param, TString cut,  std::vector<Electron> els, double w);
+  void FillElectronKinematicPlots(AnalyzerParameter param, TString cut,  Electron el, double w);
+  void FillLeptonKinematicPlots  (AnalyzerParameter param, TString cut,  Lepton lep, double w);
+
+  void FillLeptonPlots(AnalyzerParameter param,std::vector<Lepton *> leps, TString this_region, double weight);
+  void FillJetPlots   (AnalyzerParameter param,std::vector<Jet> jets, std::vector<FatJet> fatjets, TString this_region, double weight);
+ 
+  double FillWeightHist(TString label, double _weight);
+  double FillFakeWeightHist(TString label, vector<Lepton *> Leps,AnalyzerParameter param,  double _weight);
+
+  
 
   //// ===============================  SR PLOTS =============================== ////                                                                                                                                                                                                                                                                                                       
   void Fill_RegionPlots(AnalyzerParameter param, TString plot_dir,  std::vector<Jet> jets,    std::vector<FatJet> fatjets, std::vector<Lepton *> leps , Particle  met, double nvtx,  double w); 

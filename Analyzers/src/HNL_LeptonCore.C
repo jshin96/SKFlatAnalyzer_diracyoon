@@ -1,8 +1,17 @@
 #include "HNL_LeptonCore.h"
 
-void HNL_LeptonCore::initializeAnalyzer(){
+void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
 
   AnalyzerCore::initializeAnalyzer();
+
+
+  /// SETUP BKG OBJ
+  mcCorr          = new MCCorrection();
+  puppiCorr       = new PuppiSoftdropMassCorr();
+  fakeEst         = new FakeBackgroundEstimator();
+  cfEst           = new CFBackgroundEstimator();
+  pdfReweight     = new PDFReweight();
+
 
   //=== VERBOSE                                                                                                                                        
   run_Debug = HasFlag("DEBUG");
@@ -25,18 +34,22 @@ void HNL_LeptonCore::initializeAnalyzer(){
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Tight, JetTagging::incl, JetTagging::mujets));
 
   SetupTriggerLists();
-  
+
+
   if(IsDYSample) SetupZptWeight();
 
   //==== MCCorrection                                                                                                                                       
 
   ///// Set up Jet Tagger
   mcCorr->SetJetTaggingParameters(jtps);                                                                                                                             
+  
   mcCorr->SetMCSample(MCSample);
   mcCorr->SetEra(GetEra());
   mcCorr->SetIsDATA(IsDATA);
   mcCorr->SetEventInfo(run, lumi, event);
   mcCorr->SetIsFastSim(IsFastSim);
+
+  //// Read Histograms Moved from Initialise Tools
   if(!IsDATA){
     mcCorr->ReadHistograms();
     mcCorr->SetupJetTagging();
@@ -46,18 +59,18 @@ void HNL_LeptonCore::initializeAnalyzer(){
   puppiCorr->ReadHistograms();
 
   //==== FakeBackgroundEstimator                                                                                                                                            
-  if(RunFake){
+  if(RunFake&&READBKGHISTS){
     fakeEst->SetEra(GetEra());
     fakeEst->ReadHistograms();
   }
 
   //==== CFBackgroundEstimator                                                                                                                                              
-  if(RunCF){
+  if(RunCF&&READBKGHISTS){
     cfEst->SetEra(GetEra());
     cfEst->ReadHistograms();
   }
 
-  SetupIDMVAReaderDefault();
+  if(SETUPIDBDT) SetupIDMVAReaderDefault();
 
 }
 
@@ -284,6 +297,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
   param.hprefix  = "";
   param.hpostfix = "";
 
+  param.Apply_Weight_Norm1pb  = true;
   param.Apply_Weight_LumiNorm = true;
   param.Apply_Weight_SumW     = true;
   param.Apply_Weight_PileUp   = true;
@@ -328,7 +342,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
 
   param.BTagger = "DeepJet"; 
   param.BWP ="M"; 
-  param.JetPUID = "None";
+  param.JetPUID = "Loose";
   param.AK4JetColl       = "Tight";
   param.AK8JetColl       = "HNL_PN";
   //param.AK8JetColl       = "HNL";
@@ -382,13 +396,26 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
   if (s_setup_version=="") return param;
   if (s_setup_version=="Basic") return param;
 
+  if (s_setup_version == "FakeRate" ){
+    param.Apply_Weight_LumiNorm = false;
+    return param;  }
+
   if (s_setup_version=="SignalStudy"){                                                                                                      
     param.FakeMethod = "MC"; 
     param.CFMethod   = "MC"; 
     param.ConvMethod = "MC"; 
-    return param;                                                                                                                            
-  }                       
-  else if (s_setup_version=="HNTightV2"){
+    return param;                                                                                                                          
+  }
+  if (s_setup_version=="MCStudy"){
+    param.FakeMethod = "MC";
+    param.CFMethod   = "MC";
+    param.ConvMethod = "MC";
+    param.Muon_Tight_ID     = "HNL_ULID_"+GetYearString();
+    param.Electron_Tight_ID = "HNL_ULID_"+GetYearString();
+    return param;
+  }
+
+  if (s_setup_version=="HNTightV2"){
 
     //// Trun on SF weights
     param.Apply_Weight_IDSF     = true;
@@ -631,7 +658,7 @@ double HNL_LeptonCore::SetupWeight(Event ev, AnalyzerParameter param){
     FillWeightHist(param.ChannelDir()+"/PileupWeight",pileup_weight);
   }
 
-  double this_mc_weight =  MCweight(param.Apply_Weight_SumW, param.Apply_Weight_LumiNorm);
+  double this_mc_weight =  MCweight(param.Apply_Weight_SumW, param.Apply_Weight_Norm1pb);
   FillWeightHist(param.ChannelDir()+"/MCWeight",    this_mc_weight);
   
   if(param.Apply_Weight_LumiNorm) FillWeightHist(param.ChannelDir()+"/LumiWeight",  ev.GetTriggerLumi("Full"));
@@ -797,11 +824,16 @@ HNL_LeptonCore::~HNL_LeptonCore(){
   for(std::map< TString, double >::iterator mapit = cfmap.begin(); mapit!=cfmap.end(); mapit++){
     cout << "Cutflow key = " <<  mapit->first << " = " << mapit->second << endl;
   }
+
+  //==== Tools                         
+  if(mcCorr) delete mcCorr;
+  if(puppiCorr) delete puppiCorr;
+  if(fakeEst) delete fakeEst;
+  if(cfEst) delete cfEst;
+  if(pdfReweight) delete pdfReweight;
+
   cfmap.clear();
-
-
-
-  
+ 
   delete rand_;
   
   DeleteZptWeight();
