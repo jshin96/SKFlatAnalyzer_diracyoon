@@ -38,9 +38,10 @@ void AnalyzerCore::SetHistBins(){
   map_hist_nbins.clear();
 
   AddHistBinning("Pt", {10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,2000.});
+  AddHistBinning("Eta4", {0.,0.8,  1.479, 2.,  2.5});
 
-  AddHistBinning("FR_pt", {10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,2000.});
-  AddHistBinning("FR_ptcone", {10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,2000.});
+  AddHistBinning("PR_pt", {10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,2000.});
+  AddHistBinning("PR_ptcone", {10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,2000.});
   AddHistBinning("FR_eta", {0.,0.8,  1.479, 2.,  2.5});
   AddHistBinning("FR_Muon_pt", {10., 15.,20.,25.,30.,35.,40.,50.,60.,100});
   AddHistBinning("FR_Muon_ptcone",{6.,10., 15.,20.,25.,30.,35.,40.,50., 60.,100.});
@@ -52,6 +53,7 @@ void AnalyzerCore::SetHistBins(){
   AddHistBinning("FR_Electron_LF",{10., 20.,25.,30., 35.,40.,50.,60.});
   AddHistBinning("FR_Electron_HF",{10., 15.,20.,25.,30., 35.,40.,50});
   
+
 
   vector<double> mvabinsTMP;
   for(int ib =0 ; ib < 50+1; ib++) mvabinsTMP.push_back(ib*0.02);
@@ -109,13 +111,43 @@ void AnalyzerCore::FillHist(TString histname, double value, double weight, int n
 
 }
 
-void AnalyzerCore::FillHist(TString histname, double value, double weight, TString BinLabel,  TString label){
-
-  FillHist(histname, value, weight, GetHistNBins(BinLabel), GetHistBins(BinLabel), label);
+void AnalyzerCore::FillHistogram(TString histname, double value, double weight, TString BinLabel,  TString label){
+  
+  FillHistogram(histname, value, weight, GetHistNBins(BinLabel), GetHistBins(BinLabel), label);
   return ;
 }
 
-void AnalyzerCore::FillHist(TString histname, double value, double weight, int n_bin, vector<double> xbins, TString label){
+void AnalyzerCore::FillHistogram(TString histname, double value_x,double value_y,  double weight, TString BinLabelx, TString BinLabely, TString label){
+
+  FillHistogram(histname, value_x, value_y, weight, GetHistNBins(BinLabelx), GetHistBins(BinLabelx), GetHistNBins(BinLabely), GetHistBins(BinLabely));
+  return ;
+}
+
+void AnalyzerCore::FillHistogram(TString histname, double value_x, double value_y, double weight, int n_binx, vector<double> xbins, int n_biny, vector<double> ybins, TString label){
+
+  TH2D *this_hist = GetHist2D(histname);
+  if( !this_hist ){
+    
+    double arrx_bins [n_binx+1];
+    std::copy(xbins.begin(), xbins.end(), arrx_bins);
+
+    double arry_bins [n_biny+1];
+    std::copy(ybins.begin(), ybins.end(), arry_bins);
+
+    this_hist = new TH2D(histname, "", n_binx, arrx_bins, n_biny, arry_bins);
+    this_hist->SetDirectory(NULL);
+    maphist_TH2D[histname] = this_hist;
+  }
+
+  this_hist->Fill(value_x, value_y, weight);
+
+  return ;
+
+}
+
+
+
+void AnalyzerCore::FillHistogram(TString histname, double value, double weight, int n_bin, vector<double> xbins, TString label){
 
   TH1D *this_hist = GetHist1D(histname);
   if( !this_hist ){
@@ -339,9 +371,29 @@ void AnalyzerCore::JSFillHist(TString suffix, TString histname,
 }
 
 
+void AnalyzerCore::DeleteHistMaps(){
+
+  for(std::map< TString, TH1D* >::iterator mapit = maphist_TH1D.begin(); mapit!=maphist_TH1D.end(); mapit++)   delete mapit->second;
+  maphist_TH1D.clear();
+
+  for(std::map< TString, TH2D* >::iterator mapit = maphist_TH2D.begin(); mapit!=maphist_TH2D.end(); mapit++)  delete mapit->second;
+  maphist_TH2D.clear();
+
+  for(std::map< TString, TH3D* >::iterator mapit = maphist_TH3D.begin(); mapit!=maphist_TH3D.end(); mapit++)  delete mapit->second;
+  maphist_TH3D.clear();
+
+  return;
+}
+
+
+
+
 void AnalyzerCore::WriteHist(){
 
   outfile->cd();
+
+  WriteProfile();
+
   for(std::map< TString, TH1D* >::iterator mapit = maphist_TH1D.begin(); mapit!=maphist_TH1D.end(); mapit++){
     TString this_fullname=mapit->second->GetName();
     TString this_name=this_fullname(this_fullname.Last('/')+1,this_fullname.Length());

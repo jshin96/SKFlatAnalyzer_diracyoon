@@ -284,6 +284,101 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup_version
 }
 
 
+AnalyzerParameter HNL_LeptonCore::SetupFakeParameter(HNL_LeptonCore::Channel channel, TString  s_setup_version, TString PNAME, TString IDT, TString IDL){
+
+  AnalyzerParameter param  ;
+  param.Clear();
+  param.Channel  = GetChannelString(channel);
+  param.Name     = GetChannelString(channel)+"_"+PNAME;
+  param.DefName  = PNAME;
+  param.CutFlowDir = "CutFlowDir";
+  param.hprefix  = "";
+  param.hpostfix = "";
+
+  param.Apply_Weight_Norm1pb  = true;
+  param.Apply_Weight_LumiNorm = true;
+  param.Apply_Weight_SumW     = true;
+  param.Apply_Weight_PileUp   = true;
+  param.Apply_Weight_PreFire  = true;
+  param.Apply_Weight_kFactor  = true;
+  param.Apply_Weight_RECOSF   = true;
+  param.Apply_Weight_MuonTrackerSF = true;
+  param.Apply_Weight_BJetSF   = true;
+  param.Apply_Weight_PNETSF   = true;
+  param.Apply_Weight_JetPUID   = true;
+
+  //// By default dont apply ID/Trigger SF                                                                           
+  param.Apply_Weight_IDSF     = false;
+  param.Apply_Weight_TriggerSF= false;
+
+  // Default settings if NOT s_setup_version is set                                                                                                                                                       
+
+  param.syst_ = AnalyzerParameter::Central;
+  param.MCCorrrectionIgnoreNoHist = true;
+
+  /// Lepton ID DEFAULT                                                                                                                                                                                   
+  param.k.Electron_RECO_SF   = "RECO_SF";  // RECO_SF_AFB is alternative SF                                                                                                                               
+  param.k.Muon_RECO_SF   = "HighPtMuonRecoSF";
+  param.Muon_Veto_ID     = "HNVetoMVA"; 
+  param.Electron_Veto_ID = "HNVetoMVA"; 
+  if(channel == MuMu)  {
+    param.Electron_Loose_ID = "HNVetoMVA";
+    param.Electron_Tight_ID = "HNVetoMVA";
+    param.Muon_Loose_ID = IDL;
+    param.Muon_Tight_ID = IDT;
+  }
+  else  {
+    param.Muon_Tight_ID = "HNVetoMVA";
+    param.Muon_Loose_ID = "HNVetoMVA";
+    param.Electron_Loose_ID = IDL;
+    param.Electron_Tight_ID = IDT;
+  }
+
+  param.Tau_Veto_ID      = "JetVLElVLMuVL";
+  /// ---------                                                                                                                                                                                           
+  param.Muon_MinPt = 5.;       param.Muon_MaxEta = 2.4;
+  param.Electron_MinPt = 10.;  param.Electron_MaxEta = 2.5;
+  /// JET ID DEFAULT                                                                                                                                                                                      
+  param.Jet_ID                     = "tight";
+  param.Jet_MinPt                  = 30.;
+  param.Jet_MaxEta                 = 5.;
+  /// ---------                                                                                                                                                                                           
+  param.FatJet_ID                  = "tight";
+  param.FatJet_MinPt = 200.;  param.FatJet_MaxEta = 5.;
+
+  param.TriggerSelection = "Fake";
+  param.BTagger = "DeepJet";  param.BWP ="M";
+  param.JetPUID = "Loose";
+
+  param.AK4JetColl       = "Tight";
+  param.AK8JetColl       = "HNL_PN";
+  param.BJetColl         = "Tight";
+
+  //// Weights                                                                                                                                              
+  param.w.lumiweight= 1;  param.w.PUweight=1;  param.w.PUweight_up=1;  param.w.PUweight_down=1;  param.w.prefireweight=1;
+  param.w.prefireweight_up=1;  param.w.prefireweight_down=1;  param.w.z0weight=1;  param.w.zptweight=1;param.w.weakweight=1;
+  param.w.topptweight=1;  param.w.muonRECOSF=1;  param.w.electronRECOSF=1;  param.w.electronIDSF=1;  param.w.muonIDSF=1;
+  param.w.muonISOSF=1;  param.w.triggerSF=1;  param.w.CFSF=1;param.w.btagSF=1;  param.w.PNETSF=1;param.w.JetPU = 1;
+
+  if(!IsDATA){
+    param.w.lumiweight*= MCweight()*_Event.GetTriggerLumi("Full");
+    param.w.PUweight      = GetPileUpWeight(nPileUp,0);
+    param.w.PUweight_up   = GetPileUpWeight(nPileUp,1);
+    param.w.PUweight_down = GetPileUpWeight(nPileUp,-1);
+    param.w.prefireweight =  GetPrefireWeight(0);
+    param.w.prefireweight_up= GetPrefireWeight(1);
+    param.w.prefireweight_down =GetPrefireWeight(-1);
+    param.w.z0weight=GetZ0Weight(vertex_Z);
+  }
+
+  param.FakeMethod = "DATA";
+  param.CFMethod   = "DATA";
+  if (s_setup_version=="MCFakes")    param.FakeMethod = "MC";
+    
+  return param;
+
+}
+
 AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TString channel_st){
   
   /// This functions sets up AnalyzerParameter class for different types of Analyser
@@ -325,7 +420,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
   param.Electron_Veto_ID = "HNVetoMVA";  param.Electron_Tight_ID = "MVAID";
 
   param.Tau_Veto_ID      = "JetVLElVLMuVL";
-  /// ---------                                                                                                                
+  /// ---------                                                                                           
   param.Muon_MinPt = 5.;       param.Muon_MaxEta = 2.4;            
   param.Electron_MinPt = 10.;  param.Electron_MaxEta = 2.5;
   /// JET ID DEFAULT

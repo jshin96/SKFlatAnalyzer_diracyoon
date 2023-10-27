@@ -9,7 +9,7 @@ class HNL_LeptonFakeRate  : public HNL_LeptonCore {
  public:
 
   void initializeAnalyzer();
-  void executeEventFromParameter(AnalyzerParameter param, TString El_ID, HNL_LeptonCore::Channel channel);
+  void executeEventFromParameter(AnalyzerParameter param);
   void RunE(std::vector<Electron> electrons, std::vector<Muon> muons, std::vector<Jet> jets,AnalyzerParameter param,  float w);
   void RunM(std::vector<Electron> electrons, std::vector<Muon> muons, std::vector<Jet> jets, AnalyzerParameter param,  float w);
 

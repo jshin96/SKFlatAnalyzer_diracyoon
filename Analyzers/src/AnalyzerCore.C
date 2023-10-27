@@ -22,15 +22,9 @@ AnalyzerCore::~AnalyzerCore(){
 
   //=== hist maps
   
-  for(std::map< TString, TH1D* >::iterator mapit = maphist_TH1D.begin(); mapit!=maphist_TH1D.end(); mapit++)   delete mapit->second;
-  maphist_TH1D.clear();
+  DeleteHistMaps();
+  DeleteProfileMaps();
 
-  for(std::map< TString, TH2D* >::iterator mapit = maphist_TH2D.begin(); mapit!=maphist_TH2D.end(); mapit++)  delete mapit->second;
-  maphist_TH2D.clear();
-
-  for(std::map< TString, TH3D* >::iterator mapit = maphist_TH3D.begin(); mapit!=maphist_TH3D.end(); mapit++)  delete mapit->second;
-  maphist_TH3D.clear();
-  
   //==== output rootfile
 
   if(outfile){

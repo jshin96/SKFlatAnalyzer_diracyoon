@@ -802,7 +802,7 @@ void HNL_LeptonCore::FillElectronKinematicPlots(AnalyzerParameter param , TStrin
   FillHist( cut+ "/Electron_HoverE_"+label  , lep.HoverE(), w, 500, 0., 1., "");
   FillHist( cut+ "/Electron_TrkIso_"+label  , lep.TrkIso(), w, 1000, 0., 100, "");
   FillHist( cut+ "/Electron_isEcalDriven_"+label  , lep.isEcalDriven(), w, 2, 0., 2., "");
-  FillHist( cut+ "/Electron_InvEminusInvP_"+label  , fabs(lep.InvEminusInvP()), w, 100., 0., 0.2);
+  FillHist( cut+ "/Electron_InvEminusInvP_"+label  , fabs(lep.InvEminusInvP()), w, 100, 0., 0.2);
 
 
   // COnv MVA                                                                                                                                                                                                                                                                   
