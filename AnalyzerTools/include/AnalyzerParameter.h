@@ -32,6 +32,7 @@ class AnalyzerParameter{
   bool   Electron_UseMini, Electron_UsePtCone;
   bool   Muon_UseMini, Muon_UsePtCone, Muon_UseTuneP;
 
+  double isocut;
   double Electron_Tight_RelIso, Electron_Loose_RelIso, Electron_Veto_RelIso;
   double Electron_MinPt, Electron_MaxEta ;
   double Muon_Tight_RelIso, Muon_Loose_RelIso, Muon_Veto_RelIso;
@@ -48,7 +49,8 @@ class AnalyzerParameter{
   int SystDir_PU,WriteOutVerbose;
 
   std::string SystDir_BTag,  BJet_Method,   FakeMethod,CFMethod,  ConvMethod;
-  
+
+  vector<TString> Jobs;
   TString FakeRateMethod;
   TString BTagger;
   TString BWP;
@@ -88,12 +90,9 @@ class AnalyzerParameter{
 
   Key k;
   Weight w;
-
-
-
-
   enum Syst{
     Central,
+    FRAJ30,FRAJ50,FRAJ60,
     JetResUp, JetResDown,    JetEnUp, JetEnDown,
     JetMassUp,JetMassDown,    JetMassSmearUp,JetMassSmearDown,
     MuonRecoSFUp,MuonRecoSFDown,    MuonEnUp,MuonEnDown,    MuonIDSFUp,MuonIDSFDown,    MuonISOSFUp,MuonISOSFDown,
@@ -133,6 +132,8 @@ class AnalyzerParameter{
   TString CutFlowDirChannel();
   TString CutFlowDirIncChannel();
   TString ChannelDir();
+  
+  bool  HasFlag(TString JobName) ;
 
   bool Set_ElIDW;
   bool Set_MuIDW;

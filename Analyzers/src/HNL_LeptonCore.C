@@ -284,7 +284,7 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup_version
 }
 
 
-AnalyzerParameter HNL_LeptonCore::SetupFakeParameter(HNL_LeptonCore::Channel channel, TString  s_setup_version, TString PNAME, TString IDT, TString IDL){
+AnalyzerParameter HNL_LeptonCore::SetupFakeParameter(AnalyzerParameter::Syst SystType, HNL_LeptonCore::Channel channel, vector<TString>  s_jobs, TString PNAME, TString IDT, TString IDL){
 
   AnalyzerParameter param  ;
   param.Clear();
@@ -294,7 +294,7 @@ AnalyzerParameter HNL_LeptonCore::SetupFakeParameter(HNL_LeptonCore::Channel cha
   param.CutFlowDir = "CutFlowDir";
   param.hprefix  = "";
   param.hpostfix = "";
-
+  param.Jobs = s_jobs;
   param.Apply_Weight_Norm1pb  = true;
   param.Apply_Weight_LumiNorm = true;
   param.Apply_Weight_SumW     = true;
@@ -304,16 +304,28 @@ AnalyzerParameter HNL_LeptonCore::SetupFakeParameter(HNL_LeptonCore::Channel cha
   param.Apply_Weight_RECOSF   = true;
   param.Apply_Weight_MuonTrackerSF = true;
   param.Apply_Weight_BJetSF   = true;
-  param.Apply_Weight_PNETSF   = true;
-  param.Apply_Weight_JetPUID   = true;
+  param.Apply_Weight_PNETSF   = false;
+  param.Apply_Weight_JetPUID   = false;
 
   //// By default dont apply ID/Trigger SF                                                                           
   param.Apply_Weight_IDSF     = false;
   param.Apply_Weight_TriggerSF= false;
 
+
+  if(param.HasFlag("MCFakeRates")) {
+    param.Apply_Weight_LumiNorm = false;
+    param.Apply_Weight_Norm1pb  = false;
+  }
+  if(param.HasFlag("MCFakes")) {
+    param.Apply_Weight_LumiNorm = false;
+    param.Apply_Weight_Norm1pb  = false;
+  }
+  if(param.HasFlag("MakeRegionPlots"))     param.Apply_Weight_LumiNorm = false;
+
+
   // Default settings if NOT s_setup_version is set                                                                                                                                                       
 
-  param.syst_ = AnalyzerParameter::Central;
+  param.syst_ = SystType;
   param.MCCorrrectionIgnoreNoHist = true;
 
   /// Lepton ID DEFAULT                                                                                                                                                                                   
@@ -373,8 +385,8 @@ AnalyzerParameter HNL_LeptonCore::SetupFakeParameter(HNL_LeptonCore::Channel cha
 
   param.FakeMethod = "DATA";
   param.CFMethod   = "DATA";
-  if (s_setup_version=="MCFakes")    param.FakeMethod = "MC";
-    
+  if (PNAME.Contains("MCFakes"))    param.FakeMethod = "MC";
+  
   return param;
 
 }

@@ -107,7 +107,9 @@ public:
   std::vector<Lepton *> MakeLeptonPointerVector(const std::vector<Muon>& muons,const std::vector<Electron>& electrons, double TightIso=-999, bool UseMini=false);
   std::vector<Lepton *> MakeLeptonPointerVector(const std::vector<Muon>& muons,const std::vector<Electron>& electrons, AnalyzerParameter param, double TightIso=-999, bool UseMini=false);
   std::vector<Lepton *> MakeLeptonPointerVector(const std::vector<Muon>& muons, double TightIso=-999, bool UseMini=false);
+  std::vector<Lepton *> MakeLeptonPointerVector(const std::vector<Muon>& muons,AnalyzerParameter param, double TightIso=-999, bool UseMini=false);
   std::vector<Lepton *> MakeLeptonPointerVector(const std::vector<Electron>& electrons, double TightIso=-999, bool UseMini=false);
+  std::vector<Lepton *> MakeLeptonPointerVector(const std::vector<Electron>& electrons, AnalyzerParameter param,double TightIso=-999, bool UseMini=false);
 
   std::vector<Tau>    GetAllTaus();
   std::vector<Photon> GetAllPhotons();

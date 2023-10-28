@@ -580,7 +580,32 @@ std::vector<Tau> AnalyzerCore::GetAllTaus(){
 
 }
 
+std::vector<Lepton *> AnalyzerCore::MakeLeptonPointerVector(const std::vector<Muon>& muons,AnalyzerParameter param_, double TightIso, bool UseMini){
 
+  std::vector<Lepton *> out;
+  for(unsigned int i=0; i<muons.size(); i++){
+    Lepton *l = (Lepton *)(&muons.at(i));
+    if( !(l->LeptonFlavour() == Lepton::MUON) ){
+      cout << "[AnalyzerCore::MakeLeptonPointerVector(std::vector<Muon>& muons)] Not muon.." << endl;
+      exit(EXIT_FAILURE);
+    }
+    if(TightIso>0){
+
+      double this_RelIso = l->RelIso();
+      if(UseMini) this_RelIso = l->MiniRelIso();
+      double ptcone = l->CalcPtCone(this_RelIso, TightIso);
+      l->SetPtCone( ptcone );
+
+    }
+    l->SetPassID(muons[i].PassID(param_.Muon_Tight_ID), param_.Muon_Tight_ID);
+
+    out.push_back(l);
+  }
+  std::sort(out.begin(),     out.end(),     PtComparingPtr);
+
+  return out;
+
+}
 std::vector<Lepton *> AnalyzerCore::MakeLeptonPointerVector(const std::vector<Muon>& muons, double TightIso, bool UseMini){
 
   std::vector<Lepton *> out;
@@ -601,6 +626,33 @@ std::vector<Lepton *> AnalyzerCore::MakeLeptonPointerVector(const std::vector<Mu
 
     out.push_back(l);
   }
+  std::sort(out.begin(),     out.end(),     PtComparingPtr);
+
+  return out;
+
+}
+std::vector<Lepton *> AnalyzerCore::MakeLeptonPointerVector(const std::vector<Electron>& electrons, AnalyzerParameter param_,double TightIso, bool UseMini){
+
+  std::vector<Lepton *> out;
+  for(unsigned int i=0; i<electrons.size(); i++){
+    Lepton *l = (Lepton *)(&electrons.at(i));
+    if( !(l->LeptonFlavour() == Lepton::ELECTRON) ){
+      cout << "[AnalyzerCore::MakeLeptonPointerVector(std::vector<ELECTRON>& electrons)] Not electron.." << endl;
+      exit(EXIT_FAILURE);
+    }
+    if(TightIso>0){
+
+      double this_RelIso = l->RelIso();
+      if(UseMini) this_RelIso = l->MiniRelIso();
+      double ptcone = l->CalcPtCone(this_RelIso, TightIso);
+      l->SetPtCone( ptcone );
+
+    }
+    l->SetPassID(electrons[i].PassID(param_.Electron_Tight_ID), param_.Electron_Tight_ID);
+
+    out.push_back(l);
+  }
+
   std::sort(out.begin(),     out.end(),     PtComparingPtr);
 
   return out;
@@ -632,7 +684,6 @@ std::vector<Lepton *> AnalyzerCore::MakeLeptonPointerVector(const std::vector<El
   return out;
 
 }
-
 std::vector<Lepton *> AnalyzerCore::MakeLeptonPointerVector(const std::vector<Muon>& muons, const std::vector<Electron>& electrons,double TightIso, bool UseMini){
 
   std::vector<Lepton *> out;

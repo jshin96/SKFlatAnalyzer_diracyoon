@@ -101,6 +101,12 @@ public:
     else return "EE2";
   }
 
+  inline TString sRegion() const {
+    double eta = fabs(defEta());
+    if( eta < 0.8 ) return "Eta1";
+    else if( eta < 1.479 ) return "Eta2";
+    else return "Eta3";
+  }
 
   inline int Region() const {
     double eta = fabs(defEta());

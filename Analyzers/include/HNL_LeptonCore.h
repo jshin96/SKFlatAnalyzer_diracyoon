@@ -73,7 +73,7 @@ class HNL_LeptonCore : public AnalyzerCore {
 
 
   // ----- SETUP ANALYZER
-  AnalyzerParameter SetupFakeParameter(HNL_LeptonCore::Channel channel, TString s_setup_version,TString PNAME, TString IDT, TString IDL);
+  AnalyzerParameter SetupFakeParameter(AnalyzerParameter::Syst SystType,HNL_LeptonCore::Channel channel, vector<TString> s_jobs,TString PNAME, TString IDT, TString IDL);
   AnalyzerParameter InitialiseHNLParameter(TString s_setup);  
   AnalyzerParameter InitialiseHNLParameter(TString s_setup, HNL_LeptonCore::Channel channel);  
   AnalyzerParameter SetupHNLParameter(TString s_setup_version, TString channel_str_name);

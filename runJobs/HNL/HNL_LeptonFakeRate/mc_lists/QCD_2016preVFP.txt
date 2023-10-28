@@ -1,5 +1,4 @@
 QCD_Pt-120to170_EMEnriched
-QCD_Pt-15to20_EMEnriched
 QCD_Pt-170to300_EMEnriched
 QCD_Pt-20to30_EMEnriched
 QCD_Pt-300toInf_EMEnriched

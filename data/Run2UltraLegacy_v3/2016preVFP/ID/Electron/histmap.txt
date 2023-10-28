@@ -8,8 +8,12 @@ ID	SF	passTightID		egammaEffi.txt_Ele_Tight_preVFP_EGM2D.root		EGamma_SF2D	TH2F
 ID	SF	passMediumID		egammaEffi.txt_Ele_Medium_preVFP_EGM2D.root		EGamma_SF2D	TH2F
 ID	SF	passLooseID		egammaEffi.txt_Ele_Loose_preVFP_EGM2D.root		EGamma_SF2D	TH2F
 ID	SF	passVetoID		egammaEffi.txt_Ele_Veto_preVFP_EGM2D.root		EGamma_SF2D	TH2F
+ID      SF        passHNL_ULID_2016    ID_HNL_ULID_2016b.root					sf              TH2F
+ID      SF      passHNTightV2      	HNL_LeptonIDSF_Electron_2016preVFP_Eta_Pt16.root        Data_MC_SF_Eta_Pt16_HNTightV2     TH2F
+Trigger Eff_DATA  DiElIsoEl23_HNL_ULID  Ele23_HNL_ULID_2016b.root                        	data            TH2F
+Trigger Eff_MC    DiElIsoEl23_HNL_ULID  Ele23_HNL_ULID_2016b.root                        	sim             TH2F
+Trigger Eff_DATA  DiElIsoEl12_HNL_ULID  Ele12_HNL_ULID_2016b.root                        	data            TH2F
+Trigger Eff_MC    DiElIsoEl12_HNL_ULID  Ele12_HNL_ULID_2016b.root                        	sim             TH2F
 RECO	SF	ptgt20			egammaEffi_ptAbove20.txt_EGM2D_UL2016preVFP.root	EGamma_SF2D	TH2F
 RECO	SF	ptlt20			egammaEffi_ptBelow20.txt_EGM2D_UL2016preVFP.root	EGamma_SF2D	TH2F
-ID      SF      passHNTightV2      	HNL_LeptonIDSF_Electron_2016preVFP_Eta_Pt16.root        Data_MC_SF_Eta_Pt16_HNTightV2     TH2F
-ID      SF      passHNL_ULID_Run2  	HNL_LeptonIDSF_Electron_2016preVFP_Eta_Pt16.root        Data_MC_SF_Eta_Pt16_HNL_ULID_Run2 TH2F
-RECO_AFB SF     ptgt20             	2016a_RECO_v17.root   					sf   				  TH2F
+RECO_AFB SF     ptgt20             	2016a_RECO_v17.root   					sf   		TH2F

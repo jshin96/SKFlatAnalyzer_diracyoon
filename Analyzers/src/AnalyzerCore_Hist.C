@@ -37,11 +37,13 @@ void AnalyzerCore::SetHistBins(){
   map_hist_bins.clear();
   map_hist_nbins.clear();
 
-  AddHistBinning("Pt", {10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,2000.});
+  AddHistBinning("Pt", {10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,500.});
   AddHistBinning("Eta4", {0.,0.8,  1.479, 2.,  2.5});
 
-  AddHistBinning("PR_pt", {10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,2000.});
-  AddHistBinning("PR_ptcone", {10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,2000.});
+  AddHistBinning("PR_pt", {10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,500.});
+  AddHistBinning("PR_ptcone", {10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,500.});
+  AddHistBinning("FR_pt", {10., 15.,20.,25.,30.,35.,40.,50.,60.,100});
+
   AddHistBinning("FR_eta", {0.,0.8,  1.479, 2.,  2.5});
   AddHistBinning("FR_Muon_pt", {10., 15.,20.,25.,30.,35.,40.,50.,60.,100});
   AddHistBinning("FR_Muon_ptcone",{6.,10., 15.,20.,25.,30.,35.,40.,50., 60.,100.});
@@ -53,6 +55,7 @@ void AnalyzerCore::SetHistBins(){
   AddHistBinning("FR_Electron_LF",{10., 20.,25.,30., 35.,40.,50.,60.});
   AddHistBinning("FR_Electron_HF",{10., 15.,20.,25.,30., 35.,40.,50});
   
+  AddHistBinning("PrescaledTriggerPt",{0.,5., 10., 20., 30., 50., 200. });
 
 
   vector<double> mvabinsTMP;
@@ -77,7 +80,7 @@ vector<double>   AnalyzerCore::GetHistBins(TString k){
 
   map<TString, vector<double> >::iterator it = map_hist_bins.find(k);
   if ( it == map_hist_bins.end() ) {
-    cout << "Error in GetBins" << endl;
+    cout << "Error in GetBins " << k << endl;
     exit(EXIT_FAILURE);
   }
 
