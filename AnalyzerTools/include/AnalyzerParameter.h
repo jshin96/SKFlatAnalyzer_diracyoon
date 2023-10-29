@@ -82,6 +82,7 @@ class AnalyzerParameter{
     double btagSF=1,btagSF_hup=1,btagSF_hdown=1,btagSF_lup=1,btagSF_ldown=1;
     double JetPU=1;
     double PNETSF=1;
+    double EventSetupWeight=1;
   };
   struct Key{
     TString Muon_RECO_SF,Electron_RECO_SF,Electron_ID_SF,Muon_ID_SF, Muon_ISO_SF,Muon_FR,Muon_PR, Electron_FR,Electron_PR, Electron_CF,EMu_Trigger_SF,Electron_Trigger_SF,Muon_Trigger_SF,Muon_CF;

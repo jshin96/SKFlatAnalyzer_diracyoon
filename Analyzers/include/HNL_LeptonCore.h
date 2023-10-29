@@ -333,7 +333,7 @@ nvtx,  double w);
   bool CheckLeptonFlavourForChannel(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps);
   bool PassGenMatchFilter(vector<Lepton *> leps,AnalyzerParameter param);
   bool HasLowMassMeson(std::vector<Lepton *> leps);
-  double SetupWeight(Event ev, AnalyzerParameter param);
+  double SetupWeight(Event ev, AnalyzerParameter& param);
   TString GetPtBin(bool mu, double pt);
   TString DoubleToString(double d);
 

@@ -504,7 +504,9 @@ void AnalyzerParameter::PrintParameters(){
   cout << "w.btagSF              = " << w.btagSF << endl;
   cout << "w.PNETSF              = " << w.PNETSF << endl;
   cout << "w.JetPU               = " << w.JetPU << endl;
+  cout << "w.EventSetupWeight     = " << w.EventSetupWeight << endl;
 
+  cout << "Apply_Weight_Norm1pb   = " <<  Apply_Weight_Norm1pb  << endl;
   cout << "Apply_Weight_LumiNorm  = " <<  Apply_Weight_LumiNorm  << endl;
   cout << "Apply_Weight_SumW      = " << Apply_Weight_SumW      << endl;
   cout << "Apply_Weight_PileUp    = " << Apply_Weight_PileUp    << endl;

@@ -371,7 +371,7 @@ AnalyzerParameter HNL_LeptonCore::SetupFakeParameter(AnalyzerParameter::Syst Sys
   param.w.prefireweight_up=1;  param.w.prefireweight_down=1;  param.w.z0weight=1;  param.w.zptweight=1;param.w.weakweight=1;
   param.w.topptweight=1;  param.w.muonRECOSF=1;  param.w.electronRECOSF=1;  param.w.electronIDSF=1;  param.w.muonIDSF=1;
   param.w.muonISOSF=1;  param.w.triggerSF=1;  param.w.CFSF=1;param.w.btagSF=1;  param.w.PNETSF=1;param.w.JetPU = 1;
-
+  param.w.EventSetupWeight=1;
   if(!IsDATA){
     param.w.lumiweight*= MCweight()*_Event.GetTriggerLumi("Full");
     param.w.PUweight      = GetPileUpWeight(nPileUp,0);
@@ -477,7 +477,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
   param.w.btagSF=1; 
   param.w.PNETSF=1;
   param.w.JetPU = 1;
-
+  param.w.EventSetupWeight=1;
   if(!IsDATA){
     param.w.lumiweight*= MCweight()*_Event.GetTriggerLumi("Full");
     param.w.PUweight      = GetPileUpWeight(nPileUp,0);
@@ -744,7 +744,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
 
   
 
-double HNL_LeptonCore::SetupWeight(Event ev, AnalyzerParameter param){
+double HNL_LeptonCore::SetupWeight(Event ev, AnalyzerParameter& param){
 
   //=== Apply MC weight                                                                                                                                                                                    
   if(IsDATA) return 1.;
@@ -776,9 +776,6 @@ double HNL_LeptonCore::SetupWeight(Event ev, AnalyzerParameter param){
   if(param.Apply_Weight_PileUp)   this_mc_weight *= pileup_weight;
   if(param.Apply_Weight_PreFire)  this_mc_weight *= prefire_weight;
          
-  //cout << "SetupWeight prefire_weight=" <<prefire_weight << endl;
-  //cout << "SetupWeight pileup_weight=" << pileup_weight << endl;
-  //cout << "SetupWeight lumniW=" <<MCweight(param.Apply_Weight_SumW, param.Apply_Weight_LumiNorm) * ev.GetTriggerLumi("Full")<< endl;
   
   if(param.Apply_Weight_Z0)      this_mc_weight *= GetZ0Weight(vertex_Z);
   if(param.Apply_Weight_TopCorr) this_mc_weight *= mcCorr->GetTopPtReweight(All_Gens);
@@ -786,7 +783,8 @@ double HNL_LeptonCore::SetupWeight(Event ev, AnalyzerParameter param){
   if(param.Apply_Weight_DYCorr)  this_mc_weight *= param.w.weakweight;
 
   FillWeightHist(param.ChannelDir()+"/MCFullWeight_" , this_mc_weight);
-
+  
+  param.w.EventSetupWeight = this_mc_weight;
   return this_mc_weight;
   
 }
