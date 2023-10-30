@@ -5185,6 +5185,8 @@ double MCCorrection::ElectronID_SF(TString ID, double sceta, double pt, int sys)
   }
   else{
 
+    if(ID.Contains("HN") && pt < 15.)  pt = 15.1;
+
     TH2F *this_hist = map_hist_Electron["ID_SF_"+ID];
     if(!this_hist){
       if(IgnoreNoHist) return 1.;

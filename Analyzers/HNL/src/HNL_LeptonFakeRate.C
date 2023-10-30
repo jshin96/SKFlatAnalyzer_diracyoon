@@ -75,30 +75,30 @@ void HNL_LeptonFakeRate::executeEventFromParameter(AnalyzerParameter param){
 
   if(!PassMETFilter()) return;
   
-  std::vector<Electron> loose_electrons     = SelectElectrons( param,param.Electron_Loose_ID, 10, 2.5) ;
-  std::vector<Muon>     loose_muons         = SelectMuons    ( param,param.Muon_Loose_ID,     5,   2.4);
+  std::vector<Electron> Initial_loose_electrons     = SelectElectrons( param,param.Electron_Loose_ID, 10, 2.5) ;
+  std::vector<Muon>     Initial_loose_muons         = SelectMuons    ( param,param.Muon_Loose_ID,     5,   2.4);
 
   std::vector<Electron> Loose_Electrons;
   std::vector<Muon>     Loose_Muons;
   if(param.HasFlag("MCFakes") || param.HasFlag("MCProfile")) {
-    for(auto ilep : loose_electrons) if(ilep.IsFake()) Loose_Electrons.push_back(ilep);
-    for(auto ilep : loose_muons)     if(ilep.IsFake()) Loose_Muons.push_back(ilep);
+    for(auto ilep : Initial_loose_electrons) if(ilep.IsFake()) Loose_Electrons.push_back(ilep);
+    for(auto ilep : Initial_loose_muons)     if(ilep.IsFake()) Loose_Muons.push_back(ilep);
   }
   else{
-    for(auto ilep : loose_electrons) Loose_Electrons.push_back(ilep);
-    for(auto ilep : loose_muons)   Loose_Muons.push_back(ilep);
+    for(auto ilep : Initial_loose_electrons) Loose_Electrons.push_back(ilep);
+    for(auto ilep : Initial_loose_muons)   Loose_Muons.push_back(ilep);
   }
 
   std::vector<Jet> jets_tmp     = SelectJets   ( param, "tight", 30., 2.7);
   std::vector<Jet> jets; 
   for(unsigned int ijet =0; ijet < jets_tmp.size(); ijet++){
     bool jetok=true;
-    for(unsigned int iel=0 ; iel < loose_electrons.size(); iel++)   { if(jets_tmp[ijet].DeltaR(loose_electrons[iel]) < 0.4) jetok = false;}
-    for(unsigned int iel=0 ; iel < loose_muons.size(); iel++)       { if(jets_tmp[ijet].DeltaR(loose_muons[iel]) < 0.4)     jetok = false;}
+    for(unsigned int iel=0 ; iel < Initial_loose_electrons.size(); iel++)   { if(jets_tmp[ijet].DeltaR(Initial_loose_electrons[iel]) < 0.4) jetok = false;}
+    for(unsigned int iel=0 ; iel < Initial_loose_muons.size(); iel++)       { if(jets_tmp[ijet].DeltaR(Initial_loose_muons[iel]) < 0.4)     jetok = false;}
     if(jetok) jets.push_back(jets_tmp[ijet]);
   }
-  if(param.Channel=="EE")   RunE(loose_electrons,loose_muons, jets,  param, weight);
-  if(param.Channel=="MuMu") RunM(loose_electrons,loose_muons,  jets, param, weight);
+  if(param.Channel=="EE")   RunE(Loose_Electrons,Loose_Muons, jets,  param, weight);
+  if(param.Channel=="MuMu") RunM(Loose_Electrons,Loose_Muons,  jets, param, weight);
   
 }
 
@@ -129,9 +129,9 @@ void HNL_LeptonFakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon>
   if(param.HasFlag("MCFakes")) {
     for(unsigned int i = 0 ; i < loose_mu.size() ; i++){
 
-      for(int imva=0 ; imva < 50 ; imva++){
+      for(int imva=0 ; imva < 60 ; imva++){
 	
-	double mva_d=  -1 + double(imva)*.03;
+	double mva_d=  -1 + double(imva)*.01;
 	TString mvaTS= DoubleToString(mva_d);
 	
 	if(loose_mu[i].HNL_MVA_Fake("HFTop") < mva_d) continue;
