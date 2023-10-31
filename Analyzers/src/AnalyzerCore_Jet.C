@@ -1,23 +1,52 @@
 #include "AnalyzerCore.h"
 
 
-std::vector<Jet> AnalyzerCore::ScaleJets(const std::vector<Jet>& jets, int sys){
+std::vector<Jet> AnalyzerCore::GetJets(TString ID, double ptmin, double fetamax){
+
+  std::vector<Jet> jets = All_Jets;
 
   std::vector<Jet> out;
   for(unsigned int i=0; i<jets.size(); i++){
-    //==== jets is a const vector. So in this function, we have to copy the elements like below                                                                                                                                                                                                                                                                                                                                          
-    Jet this_jet = jets.at(i);
-
-    this_jet *= this_jet.EnShift(sys);
-
-    out.push_back( this_jet );
+    if(!( jets.at(i).Pt()>ptmin ))          continue;
+    if(!( fabs(jets.at(i).Eta())<fetamax )) continue;
+    if(!( jets.at(i).PassID(ID) ))          continue;
+    out.push_back( jets.at(i) );
   }
   std::sort(out.begin(),       out.end(),        PtComparing);
+  return out;
+}
 
+
+std::vector<FatJet> AnalyzerCore::GetFatJets(TString id, double ptmin, double fetamax){
+
+  std::vector<FatJet> jets = All_FatJets;
+  std::vector<FatJet> out;
+  for(unsigned int i=0; i<jets.size(); i++){
+    if(!( jets.at(i).Pt()>ptmin ))           continue;
+    if(!( fabs(jets.at(i).Eta())<fetamax ))  continue;
+    if(!( jets.at(i).PassID(id) ))           continue;
+    out.push_back( jets.at(i) );
+  }
+
+  std::sort(out.begin(),       out.end(),        PtComparing);
   return out;
 
 }
 
+
+std::vector<Jet> AnalyzerCore::ScaleJets(const std::vector<Jet>& jets, int sys){
+
+  std::vector<Jet> out;
+  for(unsigned int i=0; i<jets.size(); i++){
+    //==== jets is a const vector. So in this function, we have to copy the elements like below                                                                            
+    
+    Jet this_jet = jets.at(i);
+    this_jet *= this_jet.EnShift(sys);
+    out.push_back( this_jet );
+  }
+  std::sort(out.begin(),       out.end(),        PtComparing);
+  return out;
+}
 
 std::vector<Jet> AnalyzerCore::ScaleJetsIndividualSource(const std::vector<Jet>& jets, int sys, TString source){
 
@@ -144,83 +173,6 @@ std::vector<FatJet> AnalyzerCore::SmearSDMassFatJets(const std::vector<FatJet>& 
   return out;
 
 }
-
-
-double AnalyzerCore::GetEventFatJetSF(vector<FatJet> fatjets, TString label, int dir){
-
-  double FatJetTau21_SF(1);
-  for (auto ifj : fatjets){
-    FatJetTau21_SF*=GetFatJetSF(ifj, label,dir);
-  }
-  return FatJetTau21_SF;
-
-}
-
-double AnalyzerCore::GetFatJetSF(FatJet fatjet, TString tag,  int dir){
-
-  if(IsDATA) return 1.;
-  double fsys = -1;
-  if(dir > 0) fsys =1;
-  if(dir==0) fsys=0.;
-
-
-  double loose_sf(1.);
-  if(tag.Contains("HP")){
-    if(DataYear==2016) loose_sf = 0.99  + fsys*0.11;
-    if(DataYear==2017) loose_sf = 0.974 + fsys*0.029;
-    if(DataYear==2018) loose_sf = 0.980 + fsys*0.019;
-    return loose_sf;
-  }
-  else if(tag.Contains("LP")){
-
-    if(DataYear==2016) loose_sf = 1.03 + fsys*0.14;
-
-    else if(DataYear==2017) {
-      if (fatjet.PuppiTau21() < 0.45) loose_sf = 0.974 + fsys*0.029;
-      else if (fatjet.PuppiTau21() < 0.75)    loose_sf = 1.136 + fsys*0.162;
-    }
-
-    else if(DataYear==2018) {
-      if (fatjet.PuppiTau21() <0.45) loose_sf = 0.980 + fsys*0.019;
-      else if (fatjet.PuppiTau21() < 0.75)  loose_sf = 1.20 + fsys*0.194;
-    }
-    return loose_sf;
-  }
-
-  return 1.;
-
-}
-
-
-
-double  AnalyzerCore::GetBJetSF(AnalyzerParameter param,vector<Jet> jets, JetTagging::Parameters jtp){
-
-  if(IsData) return 1.;
-  string syst = "";
-  if(param.syst_ == AnalyzerParameter::BTagSFHTagUp) syst="SystHTagUp";
-  else if (param.syst_ == AnalyzerParameter::BTagSFHTagDown) syst="SystHTagDown";
-  else if (param.syst_ == AnalyzerParameter::BTagSFLTagUp) syst="SystLTagUp";
-  else if (param.syst_ == AnalyzerParameter::BTagSFLTagDown) syst="SystLTagDown";
-
-  return mcCorr->GetBTaggingReweight_1a(jets, jtp, syst);
-}
-
-
-double AnalyzerCore::GetJetPileupIDSF(vector<Jet> jets , TString WP, AnalyzerParameter param){
-
-  if(IsData) return 1.;
-  if(WP=="") return 1.;
-
-  double JPU_W=1.;
-  for(auto ij: jets){
-    if(param.syst_ == AnalyzerParameter::JetPUIDUp)   JPU_W*= mcCorr->JetPileUpSF(ij, WP,1 );
-    else if(param.syst_ == AnalyzerParameter::JetPUIDDown)   JPU_W*= mcCorr->JetPileUpSF(ij, WP,-1 );
-    else JPU_W*= mcCorr->JetPileUpSF(ij, WP,0 );
-  }
-
-  return JPU_W;
-}
-
 
 double AnalyzerCore::GetJECUncertainty(TString source, TString JetType, double eta, double pt, int sys){
 

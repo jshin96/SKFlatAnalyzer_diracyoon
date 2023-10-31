@@ -8,7 +8,7 @@
 #pragma link C++ class HNL_LeptonFakeRate+;
 #pragma link C++ class HNL_LeptonFakeStudy+;
 #pragma link C++ class HNL_ChargeFlip+;
-#pragma link C++ class HNL_ConversionStudy+;
+#pragma link C++ class HNL_LeptonConversionStudy+;
 #pragma link C++ class HNL_LeptonIDBDTStudies+;
 #pragma link C++ class HNL_LeptonIDSF+;
 #pragma link C++ class HNL_RegionDefinitions+;

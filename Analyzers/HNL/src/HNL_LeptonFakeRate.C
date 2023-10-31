@@ -8,6 +8,13 @@ void HNL_LeptonFakeRate::initializeAnalyzer(){
   TString FilePath="/data/"+SKFlatV+"/"+GetEra()+"/FakeRate/NvtxSF/";
   NvtxSFFile = new TFile(AnalyzerPath+FilePath+"FakeRateNVtx13TeV_"+GetEra()+".root");
 
+  //// Flags available in this code
+  /// HasFlag("GetNvtxSF")
+
+  /*
+    Method 1
+    
+   */
   
 
 }
@@ -16,144 +23,83 @@ void HNL_LeptonFakeRate::executeEvent(){
 
   Event ev = GetEvent();
 
-  AnalyzerParameter param;
-
   //************************************************///
-  // setup list of IDs
-  //************************************************///
-  vector<pair<TString, TString> > MuIDs; vector<pair<TString, TString> > ELIDs;
-  vector<HNL_LeptonCore::Channel> channel;
-  vector<TString> paramnames;
-  
-  // Loose ID has no loose IP
-  // HNTight_17028 :  PassMVA(0.9, 0.825, 0.5)) && fabs(dXY())<0.01 && fabs(dZ())<0.04 && fabs(IP3D()/IP3Derr())<4. RelIso()<0.08
-  //                  PassConversionVeto() IsGsfCtfScPixChargeConsistent Pass_TriggerEmulation
-  // HNLoose_17028 : Pass_HNLoose2016(0.6, 0.2, 0.1, 10.) && MVA(-0.1, 0.1, -0.1) PassConversionVeto() IsGsfCtfScPixChargeConsistent Pass_TriggerEmulation
+  // setup list of IDs and jobs
 
-  ELIDs.push_back(make_pair("HNL_ULID_"+ GetYearString(), "HNL_ULID_FO_"+GetYearString()));
-  paramnames.push_back("HNL_ULID_"+GetYearString()  );                                                                                                                    
-  ELIDs.push_back(make_pair("HNTightV2",    "HNLooseV4")); 
-  paramnames.push_back("HNTightV2"      );
-  
+  vector<AnalyzerParameter> VParameters;
+  if(!IsData&& HasFlag("CheckProfile"))   VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,{"MCProfile"},"HNL_ID_MC"         ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO"));
+  if(IsData&& HasFlag("CheckProfile"))   VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,{"DATAProfile"},"HNL_ID_DATA"         ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO"));
 
-  for (auto i: ELIDs) {
-    channel.push_back(EE);
-    MuIDs.push_back(make_pair("HNVetoMVA","HNLoose_17028"));
+  if(HasFlag("MCFakes")){
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,{"MCFakes"},"HNL_ID"         ,"HNL_ULID_"+GetYearString(), "HNL_ULID_NoPOGM_FO"));
   }
-    
-  MuIDs.push_back(make_pair("HNL_ULID_"+GetYearString(), "HNL_ULID_FO"));
-  paramnames.push_back("HNL_ULID_"+GetYearString()  );
-  MuIDs.push_back(make_pair("HNTightV2","HNLooseV1"));
-  paramnames.push_back("HNTightV2");
-
-
-  int iel= MuIDs.size() - channel.size();
-  for (int i =0; i < iel; i++){
-    channel.push_back(MuMu);
-    ELIDs.push_back(make_pair("HNVetoMVA","HNLoose_17028"));
+  
+  if(HasFlag("RunRates")){
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,{"FR","PR"},"HNL_POGM_ID"        ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO"));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,{"FR","PR"},"HNL_ID"             ,"HNL_ULID_"+GetYearString(), "HNL_ULID_NoPOGM_FO"));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,{"FR","PR"},"HNL_TriLep_ID"      ,"HNL_ULID_"+GetYearString(), "HNL_ULID_v2_FO_"+GetYearString()));
+    //MCFakeRates
+    //MCProfile
+    //MCFakes
+    goto RunJobs;
+  }
+  if(HasFlag("GetNvtxSF")){
+    VParameters.clear();
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,{"NvtxSF"},"HNL_ID"         ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO"));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,{"NvtxSF"},"HNL_LNoPOGM_ID" ,"HNL_ULID_"+GetYearString(), "HNL_ULID_NoPOGM_FO"));
+    goto RunJobs;
+  }
+  if(HasFlag("MakeRegionPlots")){
+    VParameters.clear();
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,{"MakeDiLeptonPlots"}    ,"HNL_ID_MakeDiLeptonPlots"         ,"HNL_ULID_"+GetYearString(), "HNL_ULID_NoPOGM_FO"));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,{"MakeSingleLeptonPlots"},"HNL_ID_MakeSingleLeptonPlots"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_NoPOGM_FO"));
   }
 
-  if( paramnames.size() != ELIDs.size()) return;
 
-
-  for(unsigned int it_id=0; it_id<ELIDs.size(); it_id++){
-    
-    //************************************************///
-    // setup leptton veto/loose/tight 
-    //************************************************///
-
-    TString MuonTightID      = MuIDs[it_id].first;
-    TString MuonLooseID      = MuIDs[it_id].second;
-    TString ElectronTightID  = ELIDs[it_id].first;
-    TString ElectronLooseID  = ELIDs[it_id].second;
-
-    TString FakeRateID       = (channel[it_id] == MuMu) ? MuonLooseID :  ElectronLooseID;
-    TString Tight_ID         = (channel[it_id] == MuMu) ? MuonTightID :  ElectronTightID;
-    
-    param.Clear();
+ RunJobs:
   
-    param.syst_ = AnalyzerParameter::Central;
-    param.Name = paramnames[it_id];
-    param.MCCorrrectionIgnoreNoHist = false;
-
-   
-    //==== Muon IDparam.Muon_Loose_ID
-    param.Muon_Tight_ID        = MuonTightID;
-    param.Muon_Loose_ID        = MuonLooseID;
-
-    //==== Electron ID
-    param.Electron_Tight_ID       = ElectronTightID;
-    param.Electron_Loose_ID       = ElectronLooseID;
-
-    //==== Jet ID
-    param.Jet_ID    = "tight";
-
-    //    param.WriteOutVerbose = -1;  Run All IDs and make All Region plots
-    //    param.WriteOutVerbose = -2;  Run All IDs and make only FR
-    //    param.WriteOutVerbose = -3;  Run All IDs and make only FR + PR
-    //     param.WriteOutVerbose = 1;  Run Main ID and make All Region plots
-    //     param.WriteOutVerbose = 2;  Run Main ID and make  only FR 
-    //     param.WriteOutVerbose = 3;  Run Main ID and make  only FR + PR
-    //     param.WriteOutVerbose = 0;  makes NVertx plots
-    param.WriteOutVerbose= 2; // 0 means only make FR  1 means FR+PR  2 means SR+PR + CR plots  3 means makes NVertx plots
-       
-    //    if(param.WriteOutVerbose >=0){
-    //  if (channel[it_id]==MuMu && MuonTightID != "HNL_ULID_"+GetYearString()) continue;
-    //  if (channel[it_id]==EE   && ElectronTightID != "HNL_ULID_"+GetYearString()) continue;
-    // }
-    
-    param.Name = GetChannelString(channel[it_id]) + "_"+ paramnames[it_id];
-    
-    //************************************************///
-    // run event
-    //************************************************///
-    
-    executeEventFromParameter(param, Tight_ID, channel[it_id]);
-  } 
+  for(auto param : VParameters)  executeEventFromParameter(param);
+  
 }
 
-void HNL_LeptonFakeRate::executeEventFromParameter(AnalyzerParameter param, TString El_ID, HNL_LeptonCore::Channel channel){
-
-  
-  //cout << "executeEventFromParameter " << GetChannelString(channel) << " " << El_ID  << endl;
-
+void HNL_LeptonFakeRate::executeEventFromParameter(AnalyzerParameter param){
+   
   //************************************************///
   // setup event level objects
   Event ev = GetEvent();
 
-  double weight = SetupWeight(ev, param) / ev.GetTriggerLumi("Full");
+  double weight = SetupWeight(ev, param);
   if(IsData) weight = 1;
-  
+ 
+  if(_jentry== 1 )   param.PrintParameters();
+
   if(!PassMETFilter()) return;
-
   
-  std::vector<Electron> loose_electrons     = GetElectrons( param,param.Electron_Loose_ID, 9.5, 2.5, false) ;
-  std::vector<Muon>     loose_muons         = GetMuons    ( param,param.Muon_Loose_ID,     5,   2.4, false);
-  
-  //cout << "loose_electrons = " << loose_electrons.size() << " loose_muons " << loose_muons.size() << endl;
+  std::vector<Electron> Initial_loose_electrons     = SelectElectrons( param,param.Electron_Loose_ID, 10, 2.5) ;
+  std::vector<Muon>     Initial_loose_muons         = SelectMuons    ( param,param.Muon_Loose_ID,     5,   2.4);
 
-  std::vector<Jet> jets_tmp     = GetJets   ( param, "tight", 30., 2.7);
+  std::vector<Electron> Loose_Electrons;
+  std::vector<Muon>     Loose_Muons;
+  if(param.HasFlag("MCFakes") || param.HasFlag("MCProfile")) {
+    for(auto ilep : Initial_loose_electrons) if(ilep.IsFake()) Loose_Electrons.push_back(ilep);
+    for(auto ilep : Initial_loose_muons)     if(ilep.IsFake()) Loose_Muons.push_back(ilep);
+  }
+  else{
+    for(auto ilep : Initial_loose_electrons) Loose_Electrons.push_back(ilep);
+    for(auto ilep : Initial_loose_muons)   Loose_Muons.push_back(ilep);
+  }
+
+  std::vector<Jet> jets_tmp     = SelectJets   ( param, "tight", 30., 2.7);
   std::vector<Jet> jets; 
   for(unsigned int ijet =0; ijet < jets_tmp.size(); ijet++){
     bool jetok=true;
-    
-    for(unsigned int iel=0 ; iel < loose_electrons.size(); iel++){
-      if(jets_tmp[ijet].DeltaR(loose_electrons[iel]) < 0.4) jetok = false;
-    }
-    for(unsigned int iel=0 ; iel < loose_muons.size(); iel++){
-      if(jets_tmp[ijet].DeltaR(loose_muons[iel]) < 0.4) jetok = false;
-    }
+    for(unsigned int iel=0 ; iel < Initial_loose_electrons.size(); iel++)   { if(jets_tmp[ijet].DeltaR(Initial_loose_electrons[iel]) < 0.4) jetok = false;}
+    for(unsigned int iel=0 ; iel < Initial_loose_muons.size(); iel++)       { if(jets_tmp[ijet].DeltaR(Initial_loose_muons[iel]) < 0.4)     jetok = false;}
     if(jetok) jets.push_back(jets_tmp[ijet]);
   }
-
-  if(channel==EE) {
-
-    RunE(loose_electrons,loose_muons, jets,  param, weight);
-    
-  }
-  if(channel==MuMu){
-    RunM(loose_electrons,loose_muons,  jets, param, weight);
-  }
+  if(param.Channel=="EE")   RunE(Loose_Electrons,Loose_Muons, jets,  param, weight);
+  if(param.Channel=="MuMu") RunM(Loose_Electrons,Loose_Muons,  jets, param, weight);
+  
 }
 
 
@@ -165,41 +111,117 @@ void HNL_LeptonFakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon>
     if(this->DataStream == "EGamma") return;
   }
 
-  TString label    = param.Name;
-  TString channel_s="_MuMu";
   Event ev = GetEvent();
-
-  Particle METv = GetvMET("PuppiT1xyULCorr");
 
   if(loose_mu.size() == 0) return;
 
-  
   // remove if muon                                                                                                                          
   if(loose_el.size() > 0) return;
 
-
-  //double isocut = GetIsoFromID("Muon", param.Muon_Tight_ID,loose_mu[0].Eta(), loose_mu[0].Pt());
+  std::vector<Lepton *> leps = MakeLeptonPointerVector(loose_mu,param);
+  std::vector<bool>    blepsT;
+  for(auto ilep : loose_mu)   blepsT.push_back(ilep.PassID(param.Muon_Tight_ID));
   
-  std::vector<Lepton *> leps = MakeLeptonPointerVector(loose_mu);
-  std::vector<bool> blepsT;
-  for(auto ilep : loose_mu) {
-    blepsT.push_back(ilep.PassID(param.Muon_Tight_ID));
+  Particle METv = GetvMET("PuppiT1xyULCorr",param);
+
+  if(param.HasFlag("NvtxSF"))   MakeNVertexDistPrescaledTrig(MuMu,param, ev, leps,blepsT,param.Name+param.Channel,event_weight);   
+  
+  if(param.HasFlag("MCFakes")) {
+    for(unsigned int i = 0 ; i < loose_mu.size() ; i++){
+
+      for(int imva=0 ; imva < 60 ; imva++){
+	
+	double mva_d=  -1 + double(imva)*.01;
+	TString mvaTS= DoubleToString(mva_d);
+	
+	if(loose_mu[i].HNL_MVA_Fake("HFTop") < mva_d) continue;
+	
+	/// 2 Bin pnly
+        FillHist(("MCFakeOpt/"+mvaTS+"/"+loose_mu[i].sRegion()+"_"+param.Name +"_Loose").Data(), 1,  event_weight, 2, 0 , 2);
+        if(loose_mu[i].PassID(param.Muon_Tight_ID))        FillHist(("MCFakeOpt/"+mvaTS+"/"+loose_mu[i].sRegion()+"_"+param.Name +"_Tight").Data(), 1,  event_weight, 2, 0 , 2);
+	FillHist(("MCFakeOpt/"+mvaTS+"/"+loose_mu[i].MotherJetFlavour()+"_"+loose_mu[i].sRegion()+"_"+param.Name +"_Loose").Data(), 1,  event_weight, 2, 0 , 2);
+	if(loose_mu[i].PassID(param.Muon_Tight_ID))       FillHist(("MCFakeOpt/"+mvaTS+"/"+loose_mu[i].MotherJetFlavour()+"_"+loose_mu[i].sRegion()+"_"+param.Name +"_Tight").Data(), 1,  event_weight, 2, 0 , 2);
+
+	double PTPartonSF =1;
+	if(DataYear == 2016)  PTPartonSF = 0.75;
+	if(DataYear == 2017)  PTPartonSF = 0.714;
+	if(DataYear == 2018)  PTPartonSF = 0.755;
+	double MVACut = 0.72;
+	if(GetYearString() == "2017" || GetYearString() =="2018") MVACut = 0.64;
+	TString MVAKey = "HFTop";
+	if((leps[0]->LeptonFlavour() != Lepton::MUON)) MVAKey = "EDv5";
+
+	double lep_ptparton   =  (leps[0]->PtParton(PTPartonSF, MVACut,MVACut) < 80) ?  leps[0]->PtParton(PTPartonSF, MVACut,MVACut) : 79;
+	double lep_pt         =  loose_mu[i].PtMaxed(80.);
+	double lep_Mpt        =  (loose_mu[i].MotherJetPt() < 80 ) ?  loose_mu[i].MotherJetPt()  : 79;
+	double lep_ptcorr    = (leps[0]->CalcMVACone(leps[0]->HNL_MVA_Fake(MVAKey), MVACut)  < 80) ? leps[0]->CalcMVACone(leps[0]->HNL_MVA_Fake(MVAKey), MVACut)  : 79;
+
+	vector<TString> PtName = {"Pt" , "MotherPt","PtParton","PtCorr"};
+	vector<double> PtVal = { lep_pt, lep_Mpt, lep_ptparton, lep_ptcorr};
+
+	for(int ip = 0 ; ip < 4; ip++){
+	  FillHist(("MCFakeOpt/"+mvaTS+"/"+loose_mu[i].sRegion()+"_"+PtName[ip]+"_"+param.Name +"_Loose").Data(), PtVal[ip],  event_weight, 10, 0 , 100);
+	  FillHist(("MCFakeOpt/"+mvaTS+"/"+loose_mu[i].MotherJetFlavour()+"_"+loose_mu[i].sRegion()+"_"+PtName[ip]+"_"+param.Name +"_Loose").Data(), PtVal[ip],  event_weight, 10, 0 , 100);
+	  if(loose_mu[i].PassID(param.Muon_Tight_ID)){
+	    FillHist(("MCFakeOpt/"+mvaTS+"/"+loose_mu[i].sRegion()+"_"+PtName[ip]+"_"+param.Name +"_Tight").Data(), PtVal[ip],  event_weight, 10, 0 , 100);
+	    FillHist(("MCFakeOpt/"+mvaTS+"/"+loose_mu[i].MotherJetFlavour()+"_"+loose_mu[i].sRegion()+"_"+PtName[ip]+"_"+param.Name +"_Tight").Data(), PtVal[ip],  event_weight, 10, 0 , 100);
+	  }
+	}
+      }
+    }
   }
 
-  if(param.WriteOutVerbose == 0) {
-    MakeNVertexDistPrescaledTrig(MuMu,param, ev, leps,blepsT,param.Name+channel_s,event_weight);
+  if(param.HasFlag("MCFakes"))  for(unsigned int i = 0 ; i < leps.size() ; i++) GetFakeRates("Pt", {leps.at(i)},{blepsT.at(i)}, param, jets, "MCFake_J40" ,  event_weight);
+  if(param.HasFlag("MCFakes"))  for(unsigned int i = 0 ; i < leps.size() ; i++) GetFakeRates("PtParton", {leps.at(i)},{blepsT.at(i)}, param, jets, "MCFake_J40" ,  event_weight);
+  if(param.HasFlag("MCFakes"))  for(unsigned int i = 0 ; i < leps.size() ; i++) GetFakeRates("MotherPt", {leps.at(i)},{blepsT.at(i)}, param, jets, "MCFake_J40" ,  event_weight);
+  if(param.HasFlag("MCFakes"))  for(unsigned int i = 0 ; i < leps.size() ; i++) GetFakeRates("PtCorr", {leps.at(i)},{blepsT.at(i)}, param, jets, "MCFake_J40" ,  event_weight);
+  
+  if(param.HasFlag("MCProfile")){
+    double MVACut = 0.72;
+    if(GetYearString() == "2017" || GetYearString() =="2018") MVACut = 0.64;
+    for(auto ilep : leps){
+      double PtPartonUncorr = ilep->PtParton(1,MVACut,MVACut);
+      double W = event_weight;
+      
+      FillHist(("MCProfile/"+param.Name + "_FakeCR"+param.GetSystType()+"_MVA").Data(), ilep->HNL_MVA_Fake("HFTop"),  W, 100, -1, 1);
+      FillHist(("MCProfile/"+param.Name + "_FakeCR"+param.GetSystType()+"_PtPartonUncorr").Data(),PtPartonUncorr, W, 100,0., 200.);
+      FillProf(("MCProfile/"+param.Name + "_FakeCR"+param.GetSystType()+"_MVA_PtPartonUncorr").Data(), ilep->HNL_MVA_Fake("HFTop"), PtPartonUncorr, W, 100, -1, 1);
+      FillProf(("MCProfile/"+param.Name + "_FakeCR"+param.GetSystType()+"_MVA_"+ilep->etaRegionString()+"_PtPartonUncorr").Data(), ilep->HNL_MVA_Fake("HFTop"), PtPartonUncorr, W, 100, -1, 1);
+
+    }
+    return;
+  }
+  if(param.HasFlag("DATAProfile")){
+    
+    if(leps.size() != 1) return;
+    
+    double prescale_lep = GetPrescale(leps);
+    if(prescale_lep == 0) return;
+    event_weight*= prescale_lep;
+    
+    if(UseEvent(leps , jets, 40., METv, event_weight)){
+      
+      double MVACut = 0.72;
+      if(GetYearString() == "2017" || GetYearString() =="2018") MVACut = 0.64;
+      for(auto ilep : leps){
+	double PtPartonUncorr = ilep->PtParton(1,MVACut,MVACut);
+	double W = event_weight;
+	if(!IsData) {
+	  if(!leps[0]->IsPrompt()) return ;
+	  W=W* -1.;
+	}
+	FillProf(("DATAProfile/"+param.Name + "_FakeCR"+param.GetSystType()+"_MVA_PtPartonUncorr").Data(), ilep->HNL_MVA_Fake("HFTop"), PtPartonUncorr, W, 100, -1, 1);
+      }
+    }
     return;
   }
 
+
+  if(param.HasFlag("FR") || param.HasFlag("PR"))   GetFakeRateAndPromptRates(param, leps,blepsT,jets,param.Name+param.Channel,event_weight);   
   
-  if(fabs(param.WriteOutVerbose) > 1 ){
-    GetFakeRateAndPromptRates(param, leps,blepsT,jets,param.Name+channel_s,event_weight,-999.);
-    return;
-  }
-
-  //  if (param.Muon_Tight_ID != "HNTightV2") return;
-
-  MakeDiLepPlots(MuMu,param, ev, leps,blepsT,param.Name+channel_s,event_weight);
+  if(param.HasFlag("MakeDiLeptonPlots"))  MakeDiLepPlots(MuMu,param, ev, leps,blepsT,param.Name+param.Channel,event_weight);
+  
+  if(!param.HasFlag("MakeSingleLeptonPlots")) return;
 
   if(loose_mu.size() != 1) return;
   
@@ -207,23 +229,20 @@ void HNL_LeptonFakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon>
   for(unsigned int ij=0; ij < jets.size(); ij++){
     if(jets.at(ij).Pt() < 40.) continue;
     float dphi =fabs(TVector2::Phi_mpi_pi(loose_mu[0].Phi()- jets.at(ij).Phi()));
-    if(dphi > 2.5){
-      has_away_jet=true;
-    }
+    if(dphi > 2.5)      has_away_jet=true;
   }
 
   /// Make plots to check control of prompt leptons and to plot Loose and Tight Samples
   /// Only run when not running MANY IDs so param.WriteOutVerbose is set to 2
 
-  // prescale_trigger is to to weight of trigger prescalee depedning on the pt
+  // prescale_trigger is to set weight of trigger prescale depending on the lepton pt
   float prescale_trigger = GetPrescale(leps);
   if(prescale_trigger == 0.) return;
   event_weight*=prescale_trigger;
 
-
   bool truth_match= false;
   if(!IsDATA) {
-    if(loose_mu.at(0).LeptonGenType() > 0 ) truth_match=true;
+    if(loose_mu.at(0).IsPrompt()) truth_match=true;
   }
   else truth_match=true;
 
@@ -265,8 +284,7 @@ void HNL_LeptonFakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon>
 	  
 	  if (isPrompt) FillRegionPlots("MuMu","SingleTightMu_promptCR2_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
 	  if (isPrompt&&has_away_jet) FillRegionPlots("MuMu","SingleTightMuAwayJet_promptCR2_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
-	}
-	
+	}	
       }
     }
   }
@@ -294,6 +312,7 @@ void HNL_LeptonFakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon>
 
 void HNL_LeptonFakeRate::RunE( std::vector<Electron> loose_el, std::vector<Muon> loose_mu, std::vector<Jet> jets, AnalyzerParameter param,  float event_weight){
 
+  return;
   if(IsData){
     if(this->DataStream == "DoubleMuon") return;
     if(this->DataStream == "SingleMuon") return;
@@ -303,7 +322,7 @@ void HNL_LeptonFakeRate::RunE( std::vector<Electron> loose_el, std::vector<Muon>
   TString label = param.Name;
   Event ev = GetEvent();
 
-  Particle METv = GetvMET("PuppiT1xyULCorr");
+  Particle METv = GetMiniAODvMET("PuppiT1xyULCorr");
   
   if(loose_el.size() == 0) return;
  
@@ -317,20 +336,19 @@ void HNL_LeptonFakeRate::RunE( std::vector<Electron> loose_el, std::vector<Muon>
   // remove if muon 
   if(loose_mu.size() > 0) return;
 
-  //double isocut = GetIsoFromID("Electron", param.Electron_Tight_ID,loose_el[0].Eta(), loose_el[0].Pt());
-  std::vector<Lepton *> leps = MakeLeptonPointerVector(loose_el);
+  std::vector<Lepton *> leps = MakeLeptonPointerVector(loose_el,param);
   std::vector<bool> blepsT;
   for(auto ilep : loose_el) {
     blepsT.push_back(ilep.PassID(param.Electron_Tight_ID));
   }
 
-  if(param.WriteOutVerbose == 0) {
+  if(HasFlag("GetNvtxSF")){
     MakeNVertexDistPrescaledTrig(EE,param, ev, leps,blepsT,param.Name+channel_s,event_weight);
     return;
   }
 
   if(fabs(param.WriteOutVerbose) > 1) {
-    GetFakeRateAndPromptRates(param, leps,blepsT,jets,param.Name+channel_s,event_weight,-999.);
+    GetFakeRateAndPromptRates(param, leps,blepsT,jets,param.Name+channel_s,event_weight);
     return;
   }
 
@@ -446,6 +464,7 @@ double HNL_LeptonFakeRate::ApplyNvtxReweight(int NPV, TString Key){
 
 void HNL_LeptonFakeRate::MakeDiLepPlots(HNL_LeptonCore::Channel channel, AnalyzerParameter param, Event ev, std::vector<Lepton *> leps,std::vector<bool> blepsT,  TString label, float event_weight){
 
+  double d_event_weight = event_weight;
   if(leps.size() != 2) return;
   if(!blepsT[0] || !blepsT[1]) return;
 
@@ -456,18 +475,16 @@ void HNL_LeptonFakeRate::MakeDiLepPlots(HNL_LeptonCore::Channel channel, Analyze
   // Make Z peak                                                                                                                                            
   Particle Z = (*leps[0]) + (*leps[1]);
   if(leps[0]->Charge() == leps[1]->Charge()) return;
-  bool PassZMass = (fabs(90. - Z.M()) < 10.) ? true : false;
+  bool PassZMass = (fabs(M_Z - Z.M()) < 10.) ? true : false;
 
-  std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
-  JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
-  std::vector<Jet> BJetColl    = SelectBJets(param, jets_tmp , param_jets);
-  double sf_btag               = GetBJetSF(param, jets_tmp, param_jets);
-  if(!IsData )event_weight*= sf_btag;
+  std::vector<Jet>    AK4_JetColl                 = GetHNLJets(param.AK4JetColl,     param);
+  std::vector<Jet>    AK4_BJetColl                = GetHNLJets("BJet", param); 
+  std::vector<FatJet> AK8_JetColl                 = GetHNLAK8Jets(param.AK8JetColl,param);
 
-  if(BJetColl.size() > 0) return;
+  EvalJetWeight(AK4_JetColl, AK8_JetColl, d_event_weight, param);
 
-  int nbin_pt    =6;
-  double bins_pt[nbin_pt+1] = {0.,5., 10., 20., 30., 50., 200. };
+  if(AK4_BJetColl.size() > 0) return;
+
 
   if(channel == MuMu){
 
@@ -493,9 +510,9 @@ void HNL_LeptonFakeRate::MakeDiLepPlots(HNL_LeptonCore::Channel channel, Analyze
         double prescale_weight  =  (IsDATA) ? 1. : ev.GetTriggerLumi(triggerslist_3)*NVxt_Mu3;
 	
         if(PassZMass) {
-	  for(auto ilep : leps)FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_3 + "_LepPt").Data(), ilep->Pt() , event_weight*prescale_weight,nbin_pt, bins_pt);
+	  for(auto ilep : leps)FillHistogram(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_3 + "_LepPt").Data(), ilep->Pt() , d_event_weight*prescale_weight,"PrescaledTriggerPt");
         }
-        FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_3 + "_LLMass").Data(), Z.M() , event_weight*prescale_weight, 100., 0., 200);
+        FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_3 + "_LLMass").Data(), Z.M() , d_event_weight*prescale_weight, 100., 0., 200);
       }
     }
     
@@ -504,9 +521,9 @@ void HNL_LeptonFakeRate::MakeDiLepPlots(HNL_LeptonCore::Channel channel, Analyze
         double prescale_weight  =  (IsDATA) ? 1. : ev.GetTriggerLumi(triggerslist_8)*NVxt_Mu8;
 	
         if(PassZMass){
-	  for(auto ilep : leps)FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_8 + "_LepPt").Data(), ilep->Pt() , event_weight*prescale_weight,nbin_pt, bins_pt);
+	  for(auto ilep : leps)FillHistogram(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_8 + "_LepPt").Data(), ilep->Pt() , d_event_weight*prescale_weight,"PrescaledTriggerPt");
         }
-        FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_8 + "_LLMass").Data(), Z.M() , event_weight*prescale_weight, 100., 0., 200);
+        FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_8 + "_LLMass").Data(), Z.M() , d_event_weight*prescale_weight, 100., 0., 200);
 
       }
     }
@@ -514,9 +531,9 @@ void HNL_LeptonFakeRate::MakeDiLepPlots(HNL_LeptonCore::Channel channel, Analyze
       if(leps[1]->Pt() > 20){
         double prescale_weight  =  (IsDATA) ? 1. : ev.GetTriggerLumi(triggerslist_17)*NVxt_Mu17;
         if(PassZMass){
-          for(auto ilep : leps)FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_17 + "_LepPt").Data(), ilep->Pt() , event_weight*prescale_weight,nbin_pt, bins_pt);
+          for(auto ilep : leps)FillHistogram(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_17 + "_LepPt").Data(), ilep->Pt() , d_event_weight*prescale_weight,"PrescaledTriggerPt");
         }
-        FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_17 + "_LLMass").Data(), Z.M() , event_weight*prescale_weight, 100., 0., 200);
+        FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_17 + "_LLMass").Data(), Z.M() , d_event_weight*prescale_weight, 100., 0., 200);
       }
     }
   }
@@ -545,9 +562,9 @@ void HNL_LeptonFakeRate::MakeDiLepPlots(HNL_LeptonCore::Channel channel, Analyze
       if(leps[1]->Pt() > 10){
         double prescale_weight  =  (IsDATA) ? 1. : ev.GetTriggerLumi(triggerslist_8)*NVxt_El8;
         if(PassZMass){
-          for(auto ilep : leps)FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_8 + "_LepPt").Data(), ilep->Pt() , event_weight*prescale_weight,nbin_pt, bins_pt);
+          for(auto ilep : leps)FillHistogram(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_8 + "_LepPt").Data(), ilep->Pt() , d_event_weight*prescale_weight,"PrescaledTriggerPt");
         }
-        FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_8 + "_LLMass").Data(), Z.M() , event_weight*prescale_weight, 100., 0., 200);
+        FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_8 + "_LLMass").Data(), Z.M() , d_event_weight*prescale_weight, 100., 0., 200);
 
       }
     }
@@ -555,9 +572,9 @@ void HNL_LeptonFakeRate::MakeDiLepPlots(HNL_LeptonCore::Channel channel, Analyze
       if(leps[1]->Pt() > 14){
         double prescale_weight  =  (IsDATA) ? 1. : ev.GetTriggerLumi(triggerslist_12)*NVxt_El12;
         if(PassZMass){
-          for(auto ilep : leps)FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_12 + "_LepPt").Data(), ilep->Pt() , event_weight*prescale_weight,nbin_pt, bins_pt);
+          for(auto ilep : leps)FillHistogram(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_12 + "_LepPt").Data(), ilep->Pt() , d_event_weight*prescale_weight,"PrescaledTriggerPt");
         }
-        FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_12 + "_LLMass").Data(), Z.M() , event_weight*prescale_weight, 100., 0., 200);
+        FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_12 + "_LLMass").Data(), Z.M() , d_event_weight*prescale_weight, 100., 0., 200);
       }
     }
 
@@ -565,18 +582,18 @@ void HNL_LeptonFakeRate::MakeDiLepPlots(HNL_LeptonCore::Channel channel, Analyze
       if(leps[1]->Pt() > 20){
         double prescale_weight  =  (IsDATA) ? 1. : ev.GetTriggerLumi(triggerslist_17)*NVxt_El12;
         if(PassZMass){
-          for(auto ilep : leps)FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_17 + "_LepPt").Data(), ilep->Pt() , event_weight*prescale_weight,nbin_pt, bins_pt);
+          for(auto ilep : leps)FillHistogram(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_17 + "_LepPt").Data(), ilep->Pt() , d_event_weight*prescale_weight,"PrescaledTriggerPt");
         }
-        FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_17 + "_LLMass").Data(), Z.M() , event_weight*prescale_weight, 100., 0., 200);
+        FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_17 + "_LLMass").Data(), Z.M() , d_event_weight*prescale_weight, 100., 0., 200);
       }
     }
     if(pass_23){
       if(leps[1]->Pt() > 25){
         double prescale_weight  =  (IsDATA) ? 1. : ev.GetTriggerLumi(triggerslist_23)*NVxt_El23;
         if(PassZMass){
-          for(auto ilep : leps)FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_23 + "_LepPt").Data(), ilep->Pt() , event_weight*prescale_weight,nbin_pt, bins_pt);
+          for(auto ilep : leps)FillHistogram(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_23 + "_LepPt").Data(), ilep->Pt() , d_event_weight*prescale_weight,"PrescaledTriggerPt");
         }
-        FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_23 + "_LLMass").Data(), Z.M() , event_weight*prescale_weight, 100., 0., 200);
+        FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_23 + "_LLMass").Data(), Z.M() , d_event_weight*prescale_weight, 100., 0., 200);
       }
     }
   }
@@ -603,7 +620,7 @@ void HNL_LeptonFakeRate::MakeNVertexDistPrescaledTrig(HNL_LeptonCore::Channel ch
 
   // remove b jet 
 
-  std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
+  std::vector<Jet> jets_tmp     = SelectJets   ( param, param.Jet_ID, 20., 5.);
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
   std::vector<Jet> BJetColl    = SelectBJets(param, jets_tmp , param_jets);
   double sf_btag               = GetBJetSF(param, jets_tmp, param_jets);
@@ -611,7 +628,7 @@ void HNL_LeptonFakeRate::MakeNVertexDistPrescaledTrig(HNL_LeptonCore::Channel ch
 
   if(BJetColl.size() > 0) return;
 
-  bool PassZMass = (fabs(90. - Z.M()) < 10.) ? true : false;
+  bool PassZMass = (fabs(M_Z - Z.M()) < 10.) ? true : false;
 
 
   // Now plot Z peak for
@@ -730,101 +747,69 @@ void HNL_LeptonFakeRate::MakeNVertexDistPrescaledTrig(HNL_LeptonCore::Channel ch
   
 
 }
-void HNL_LeptonFakeRate::GetFakeRateAndPromptRates(AnalyzerParameter param, std::vector<Lepton *> leps,std::vector<bool> blepsT, std::vector<Jet>    jetCollTight, TString label, float event_weight, float isocut){
+void HNL_LeptonFakeRate::GetFakeRateAndPromptRates(AnalyzerParameter param, std::vector<Lepton *> leps,std::vector<bool> blepsT, std::vector<Jet>    jetCollTight, TString label, float event_weight){
 						      
   if (leps.size()<1) return;
   
   Event ev = GetEvent();
-  Particle METv = GetvMET("PuppiT1xyULCorr");
-
+  Particle METv = GetvMET("PuppiT1xyULCorr",param);
   
-  if(leps.size()==1){
-    MakeFakeRatePlots("", label, param,leps,blepsT,  jetCollTight,   event_weight, isocut, METv);
-  }
+  if(param.HasFlag("FR") && leps.size()==1)  MakeFakeRatePlots("", label, param,leps,blepsT,  jetCollTight,   event_weight, METv);
 
-  if(fabs(param.WriteOutVerbose) < 3) return;
-
-  if(leps.size()==2){
+  if(leps.size()==2 && param.HasFlag("PR")){
     TString dilep_triggerslist = (leps[0]->LeptonFlavour() == Lepton::MUON) ?   "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v" : "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v";
     if(DataYear==2017) dilep_triggerslist = (leps[0]->LeptonFlavour() == Lepton::MUON) ?   "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v" : "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v";
-
-    if(DataYear==2018) dilep_triggerslist = (leps[0]->LeptonFlavour() == Lepton::MUON) ?   "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v" : "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v";
-
-    
-
+    if(DataYear==2018) dilep_triggerslist = (leps[0]->LeptonFlavour() == Lepton::MUON) ?   "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v" : "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v";    
     if(IsDATA&& !(ev.IsPDForTrigger(dilep_triggerslist, this->DataStream) )) return;
-    if(ev.PassTrigger(dilep_triggerslist))    MakePromptRatePlots("", label, param,leps,blepsT,  jetCollTight,   event_weight, isocut, METv);
+    if(ev.PassTrigger(dilep_triggerslist))    MakePromptRatePlots("", label, param,leps,blepsT,  jetCollTight,   event_weight, METv);
   }
   return;
 }
 
 
-void HNL_LeptonFakeRate::MakePromptRatePlots(TString label, TString tag,AnalyzerParameter param,  std::vector<Lepton *> leps , std::vector<bool> blepsT , std::vector<Jet> jets,  float event_weight, float isocut, Particle MET){
+void HNL_LeptonFakeRate::MakePromptRatePlots(TString label, TString tag,AnalyzerParameter param,  std::vector<Lepton *> leps , std::vector<bool> blepsT , std::vector<Jet> jets,  float event_weight, Particle MET){
   
-  int nbin_ptcone=11;
-  int nbin_pt    =11;
-  int nbin_eta   =4;
-  double ptbinscone[nbin_ptcone+1] = { 10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,2000.};
-  double ptbins    [nbin_pt    +1] = { 10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,2000.};
-  double etabins   [nbin_eta+1   ] = { 0.,0.8,  1.479, 2.,  2.5};
-
   Event ev = GetEvent();
 
   if(leps.size() != 2) return;
 
   Particle Z = (*leps[0]) + (*leps[1]);
-  if(leps[0]->Charge() == leps[1]->Charge()) return;
-  if(fabs(90. - Z.M()) > 10.) return;
+  if(leps[0]->Charge() == leps[1]->Charge()) event_weight = -1;
+
+  if(fabs(M_Z - Z.M()) > 10.) return;
+
+  TString L_prefix = "PrompRate/Prompt_Loose"+tag ;
+  TString T_prefix = "PrompRate/Prompt_Tight"+tag;
+  float weight_ptcorr=event_weight;
 
   if(blepsT[1]){
     // lep [1] is tag
     int ilep=0;
-    float lep_pt = leps[ilep]->Pt();
-    float lep_pt_corr =  leps[ilep]->CalcPtCone(leps[ilep]->RelIso(), isocut);
+    float lep_pt  = leps[ilep]->Pt();
     float lep_eta = fabs(leps[ilep]->Eta());
-    if(lep_pt_corr > 2000.) lep_pt_corr = 1999.;
-
-    float lep_jet_ptratio = lep_pt/leps[ilep]->CloseJet_Ptratio();
-    
-    float weight_ptcorr=event_weight;
-    TString L_prefix = "Prompt_Loose"+tag ;
-    TString T_prefix = "Prompt_Tight"+tag;
+    if(lep_pt > 500.) lep_pt = 499.;
 
     for(int Tlep = 0 ; Tlep < 2; Tlep++)  {
       TString prefix = (Tlep==0) ? L_prefix : T_prefix;
       if((Tlep==1) && ! (blepsT[ilep])) continue;
-      FillHist((prefix + "_pt_eta").Data(), lep_pt, lep_eta,  weight_ptcorr, nbin_pt, ptbins, nbin_eta , etabins);
-      FillHist((prefix + "_ptcone_eta").Data(), lep_pt_corr, lep_eta,  weight_ptcorr, nbin_ptcone, ptbinscone, nbin_eta , etabins);
-      FillHist((prefix + "_ptratio_eta").Data(), lep_jet_ptratio, lep_eta,  weight_ptcorr, nbin_ptcone, ptbinscone, nbin_eta , etabins);
-      if(fabs(90. - Z.M()) < 5){
-	FillHist((prefix + "_TZ_pt_eta").Data(), lep_pt, lep_eta,  weight_ptcorr, nbin_pt, ptbins, nbin_eta , etabins);
-	FillHist((prefix + "_TZ_ptcone_eta").Data(), lep_pt_corr, lep_eta,  weight_ptcorr, nbin_ptcone, ptbinscone, nbin_eta , etabins);
-      }
+      FillHistogram((prefix + "_pt_eta").Data(),      lep_pt,         lep_eta,  weight_ptcorr, "PR_pt", "Eta4");
+      if(fabs(M_Z - Z.M()) < 5)	FillHistogram((prefix + "_TZ_pt_eta").Data(), lep_pt, lep_eta,  weight_ptcorr, "PR_pt", "Eta4");
     }
   }
   if(blepsT[0]){
     // lep [0] is tag                                                                                                                                                             
     int ilep=1;
     float lep_pt = leps[ilep]->Pt();
-    float lep_pt_corr =  leps[ilep]->CalcPtCone(leps[ilep]->RelIso(), isocut);
     float lep_eta = fabs(leps[ilep]->Eta());
-    float lep_jet_ptratio = leps[ilep]->CloseJet_Ptratio();
 
-    if(lep_pt_corr > 2000.) lep_pt_corr = 1999.;
-    float weight_ptcorr=event_weight;
-    TString L_prefix = "Prompt_Loose"+tag ;
-    TString T_prefix = "Prompt_Tight"+tag;
+    if(lep_pt > 500.) lep_pt = 499.;
 
     for(int Tlep = 0 ; Tlep < 2; Tlep++)  {
       TString prefix = (Tlep==0) ? L_prefix : T_prefix;
       if((Tlep==1) && ! (blepsT[ilep])) continue;
-      FillHist((prefix + "_pt_eta").Data(), lep_pt, lep_eta,  weight_ptcorr, nbin_pt, ptbins, nbin_eta , etabins);
-      FillHist((prefix + "_ptcone_eta").Data(), lep_pt_corr, lep_eta,  weight_ptcorr, nbin_ptcone, ptbinscone, nbin_eta , etabins);
-      FillHist((prefix + "_ptratio_eta").Data(), lep_jet_ptratio, lep_eta,  weight_ptcorr, nbin_ptcone, ptbinscone, nbin_eta , etabins);
-      if(fabs(90. - Z.M()) < 5){
-	FillHist((prefix + "_TZ_pt_eta").Data(), lep_pt, lep_eta,  weight_ptcorr, nbin_pt, ptbins, nbin_eta , etabins);
-        FillHist((prefix + "_TZ_ptcone_eta").Data(), lep_pt_corr, lep_eta,  weight_ptcorr, nbin_ptcone, ptbinscone, nbin_eta , etabins);
-      }
+      FillHistogram((prefix + "_pt_eta").Data(), lep_pt, lep_eta,  weight_ptcorr, "PR_pt", "Eta4");
+      if(fabs(M_Z - Z.M()) < 5) 	FillHistogram((prefix + "_TZ_pt_eta").Data(), lep_pt, lep_eta,  weight_ptcorr, "PR_pt", "Eta4");
+
     }
   }
 
@@ -873,6 +858,8 @@ float HNL_LeptonFakeRate::GetPrescale(std::vector<Lepton *>   leps  ){
       if(pass_3)prescale_trigger =  (IsDATA) ? 1. : ev.GetTriggerLumi(triggerslist_3)*NVxt_Mu3 ; //// 20 + GeV bins                                                                             
       else return 0 ;
     }      
+    else return 0 ;
+
     if(prescale_trigger == 0.) return 0.;
     if(leps.at(0)->Pt() < 5.) return 0.;
     
@@ -925,34 +912,45 @@ float HNL_LeptonFakeRate::GetPrescale(std::vector<Lepton *>   leps  ){
 }
  
 
-void HNL_LeptonFakeRate::MakeFakeRatePlots(TString label, TString mutag,AnalyzerParameter param,  std::vector<Lepton *> leps , std::vector<bool> blepsT ,  std::vector<Jet> jets,  float event_weight, float isocut, Particle MET){
+void HNL_LeptonFakeRate::MakeFakeRatePlots(TString label, TString mutag,AnalyzerParameter param,  std::vector<Lepton *> leps , std::vector<bool> blepsT ,  std::vector<Jet> jets,  float event_weight,  Particle MET){
 				
   /// FOR FAKE RATE SUBTRACTION NEED ONLY PROMPT MUONS                                                                                                                                                  
   bool truth_match= true;
 
   if(!IsDATA && leps.size() > 0) truth_match = leps[0]->IsPrompt() ;
 
+  if(param.HasFlag("MCFakeRates")) truth_match = leps[0]->IsFake();
+
   if(!truth_match) return;
 
-  bool useevent20 = UseEvent(leps , jets, 20.,  MET, event_weight);
-  bool useevent30 = UseEvent(leps , jets, 30.,  MET, event_weight);
-  bool useevent40 = UseEvent(leps , jets, 40.,  MET, event_weight);
-  bool useevent60 = UseEvent(leps , jets, 60.,  MET, event_weight);
+  double prescale_lep = GetPrescale(leps);
+  if(prescale_lep == 0) return;
+  event_weight*= prescale_lep;
 
+
+  double AWJPt = -1;
+  if(param.syst_ == AnalyzerParameter::Central) AWJPt = 40;
+  if(param.syst_ == AnalyzerParameter::FRAJ30)  AWJPt = 30;
+  if(param.syst_ == AnalyzerParameter::FRAJ50)  AWJPt = 50;
+  if(param.syst_ == AnalyzerParameter::FRAJ60)  AWJPt = 60;
+  
+  
+  bool useevent = UseEvent(leps , jets,  AWJPt,  MET, event_weight);
 
   label= mutag;
   if(jets.size() >= 1){
-    if(useevent20)GetFakeRates(leps, blepsT, param, label, jets,  label+"_20",(event_weight),isocut);
-    if(useevent30)GetFakeRates(leps, blepsT, param, label, jets,  label+"_30",(event_weight),isocut);
-    if(useevent40)GetFakeRates(leps, blepsT, param, label, jets,  label+"_40",(event_weight),isocut);
-    if(useevent60)GetFakeRates(leps, blepsT, param, label, jets,  label+"_60",(event_weight),isocut);
+    if(useevent){
+      GetFakeRates("Pt",leps, blepsT, param,  jets,        label+"_"+param.GetSystType(),(event_weight));
+      GetFakeRates("PtCorr",leps, blepsT, param,  jets,    label+"_"+param.GetSystType(),(event_weight));
+      GetFakeRates("PtParton",leps, blepsT, param,  jets,  label+"_"+param.GetSystType(),(event_weight));
+      GetFakeRates("MotherPt",leps, blepsT, param,  jets,  label+"_"+param.GetSystType(),(event_weight));
+    }
   }
   return;
 }
 
 
 bool HNL_LeptonFakeRate::UseEvent(std::vector<Lepton *> leps ,  std::vector< Jet> jets, float awayjetcut, Particle MET, float wt){
-
 
   bool useevent = false;
   if(leps.size() != 1) return false;
@@ -984,70 +982,108 @@ bool HNL_LeptonFakeRate::UseEvent(std::vector<Lepton *> leps ,  std::vector< Jet
 }
 
 
-void HNL_LeptonFakeRate::GetFakeRates(std::vector<Lepton *> leps,std::vector<bool> blepsT,  AnalyzerParameter param,TString tightlabel,  std::vector<Jet> jets,  TString tag,float event_weight, float isocut){
-					 
-  bool IsMuon=(leps[0]->LeptonFlavour() == Lepton::MUON);
-  int nbin_ptcone=  IsMuon ? 10 : 8;
-
-
-  int nbin_pt       = IsMuon ? 9 : 9;
-  int nbin_pt_LF    = IsMuon ? 8 : 7;
-  int nbin_pt_HF    = IsMuon ? 7 : 7;
-
-  int nbin_eta   = 4; 
+void HNL_LeptonFakeRate::GetFakeRates(TString Method, std::vector<Lepton *> leps,std::vector<bool> blepsT,  AnalyzerParameter param,  std::vector<Jet> jets,  TString tag,float event_weight){
   
-  double ptbinscone  [nbin_ptcone+1];
-  double ptbins      [nbin_pt+1];
-  double ptbinsLF    [nbin_pt_LF+1];
-  double ptbinsHF    [nbin_pt_HF+1];
+  double isocut (0);
 
-  double etabins     [nbin_eta+1   ] =  { 0.,0.8,  1.479,  2.,  2.5};
+  if(Method == "PtCone") isocut=   param.Channel == "MuMu" ? GetIsoFromID(*leps[0], param.Muon_Tight_ID) : GetIsoFromID(*leps[0], param.Electron_Tight_ID);    
+					 
+  /// METHOD 1  Pt vs Eta
 
-  if(IsMuon){
-    vector<double> vptbinscone = {6.,10., 15.,20.,25.,30.,35.,40.,50., 60.,100. } ;
-    vector<double> vptbins =   { 10., 15.,20.,25.,30.,35.,40.,50.,60.,100} ; 
-    vector<double> vptbinsLF = { 10., 15.,20.,25.,30.,35.,40.,50.,60.} ;
-    vector<double> vptbinsHF = { 10., 15.,20.,25.,30.,35.,40.,50.} ;
+  bool IsMuon=(leps[0]->LeptonFlavour() == Lepton::MUON);
 
-    std::copy(vptbinscone.begin(), vptbinscone.end(), ptbinscone);
-    std::copy(vptbins.begin(), vptbins.end(), ptbins);
-    std::copy(vptbinsLF.begin(), vptbinsLF.end(), ptbinsLF);
-    std::copy(vptbinsHF.begin(), vptbinsHF.end(), ptbinsHF);
-
-  }
-  else{
-    vector<double> vptbinscone = { 10., 15.,23.,30.,35., 40.,50.,60.,100.};
-    vector<double> vptbins     = { 10., 15.,20.,25.,30., 35.,40.,50.,60.,100.};
-    vector<double> vptbinsLF   = { 10., 20.,25.,30., 35.,40.,50.,60.};
-    vector<double> vptbinsHF   = { 10., 15.,20.,25.,30., 35.,40.,50};
-
-    std::copy(vptbinscone.begin(), vptbinscone.end(), ptbinscone);
-    std::copy(vptbins.begin(), vptbins.end(), ptbins);
-    std::copy(vptbinsLF.begin(), vptbinsLF.end(), ptbinsLF);
-    std::copy(vptbinsHF.begin(), vptbinsHF.end(), ptbinsHF);
-
-
-  }
-
-
-  int nbin_mva   = 100;
-  double mvabins [nbin_mva+1];
-
-  vector<double> mvabinsTMP;
-  for(int ib =0 ; ib < nbin_mva+1; ib++) mvabinsTMP.push_back(ib*0.02);
-  std::copy(mvabinsTMP.begin(), mvabinsTMP.end(), mvabins);
+  double MVACut = 0.72;
+  if(GetYearString() == "2017" || GetYearString() =="2018") MVACut = 0.64;
 
 
   Event ev = GetEvent();
 
-  float lep_pt      =  (leps[0]->Pt() < 100) ?  leps[0]->Pt() : 99;
-  float lep_pt_LF      =  (leps[0]->Pt() < 60) ?  leps[0]->Pt() : 59;
-  float lep_pt_HF      =  (leps[0]->Pt() < 50) ?  leps[0]->Pt() : 49;
+  float lep_pt (0);
+  float lep_pt_LF (0);
+  float lep_pt_HF (0);
+
+  int Pt_Bin = 0;
+  if(IsMuon){
+    if(leps.at(0)->Pt() < 10) Pt_Bin = 1;
+    else  if(leps.at(0)->Pt() < 20) Pt_Bin = 2;
+    else Pt_Bin = 3;
+  }
+
+  float weight_ptcorr=event_weight;
+  TString MVAKey = "HFTop";
+  if(!IsMuon) MVAKey = "EDv5";
+  if(Method == "Pt"){
+    lep_pt      =  (leps[0]->Pt() < 80) ?  leps[0]->Pt() : 79;
+    lep_pt_LF   =  (leps[0]->Pt() < 60) ?  leps[0]->Pt() : 59;
+    lep_pt_HF   =  (leps[0]->Pt() < 50) ?  leps[0]->Pt() : 49;
+  }
+  if(Method == "PtParton"){
+    
+    double PTPartonSF =1;
+    /// 2017 
+    if(DataYear == 2016)  PTPartonSF = 0.75;
+    if(DataYear == 2017)  PTPartonSF = 0.714;
+    if(DataYear == 2018)  PTPartonSF = 0.755;
+        
+    lep_pt      =  (leps[0]->PtParton(PTPartonSF, MVACut,MVACut) < 80) ?  leps[0]->PtParton(PTPartonSF, MVACut,MVACut) : 79;
+    
+    FillProf((param.Name + "_FakeCR40_MVA_PtParton").Data(), leps[0]->HNL_MVA_Fake("HFTop"), lep_pt, event_weight, 100, -1, 1);
+
+    lep_pt_LF   =  (lep_pt < 60) ?  lep_pt : 59;
+    lep_pt_HF   =  (lep_pt < 50) ?  lep_pt : 49;
+    if(lep_pt > 30){
+      if(leps[0]->Pt() < 20) return;
+    }
+    else if(lep_pt > 15){
+      if( leps[0]->Pt() < 10) return;
+    }
+    else if(lep_pt > 5){
+      if( leps[0]->Pt() < 5) return;
+    }
+    else return ;
+
+  }
+  if(Method == "PtCorr"){
+    lep_pt      = (leps[0]->CalcMVACone(leps[0]->HNL_MVA_Fake(MVAKey), MVACut)  < 80) ? leps[0]->CalcMVACone(leps[0]->HNL_MVA_Fake(MVAKey), MVACut)  : 79;
+    lep_pt_LF   =  (lep_pt < 60) ?  lep_pt : 59;
+    lep_pt_HF   =  (lep_pt < 50) ?  lep_pt : 49;
+    if(lep_pt > 30){
+      if(leps[0]->Pt() < 20) return;
+    }
+    else if(lep_pt > 15){
+      if( leps[0]->Pt() < 10) return;
+    }
+    else if(lep_pt > 5){
+      if( leps[0]->Pt() < 5) return;
+    }
+    else return ;
+    
+  }
+  if(Method == "MotherPt"){
+    lep_pt      = leps[0]->MotherJetPt();
+    lep_pt_LF   =  (lep_pt < 60) ?  lep_pt : 59;
+    lep_pt_HF   =  (lep_pt < 50) ?  lep_pt : 49;
+    // Muon
+    if(lep_pt > 30){
+      if(leps[0]->Pt() < 20) return;
+    }
+    else if(lep_pt > 15){
+      if( leps[0]->Pt() < 10) return;
+    }
+    else if(lep_pt > 5){
+      if( leps[0]->Pt() < 5) return;
+    }
+    else return;
+  }
+
+  TString Ptlab = "p_{T} (GeV)";
+  if(Pt_Bin==1) FillHistogram((Method+"_PtBin1_pt").Data(), lep_pt,  weight_ptcorr, "Pt", Ptlab);
+  if(Pt_Bin==2) FillHistogram((Method+"_PtBin2_pt").Data(), lep_pt,  weight_ptcorr, "Pt", Ptlab);
+  if(Pt_Bin==3) FillHistogram((Method+"_PtBin3_pt").Data(), lep_pt,  weight_ptcorr, "Pt", Ptlab);
+  
+
   float lep_eta     = leps[0]->fEta(); /// returns |eta| OR for el |scEta|
   float lep_reliso  = leps[0]->RelIso();
-  float lep_ip3d    = leps[0]->SIP3D();
-  float lep_mva     = leps[0]->LepMVA();
-  float lep_dxy     = leps[0]->fdXY();
   float lep_mva_lfvshf  = leps[0]->HNL_MVA_Fake("QCD_LFvsHF_v5");
   float lep_mva_bvsc    = leps[0]->HNL_MVA_Fake("QCD_BvsC_v5");
   float lep_blscore     = leps[0]->CloseJet_BScore();
@@ -1056,159 +1092,57 @@ void HNL_LeptonFakeRate::GetFakeRates(std::vector<Lepton *> leps,std::vector<boo
   TString lepEtaRegion  = leps[0]->etaRegionString();
   TString lepRegion     = (leps[0]->IsBB()) ? "BB" : "EC";
 
-  float weight_ptcorr=event_weight;
-  float weight_pt=event_weight;
-  TString L_prefix = "Fake_Loose"+tag;
-  TString T_prefix =  "Fake_Tight"+tag;
-
-  double prescale_lep (1.);
-
-  bool fill_plot=false;
-
-
-  if(IsMuon){
-    TString triggerslist_3="HLT_Mu3_PFJet40_v";
-    TString triggerslist_8="HLT_Mu8_TrkIsoVVL_v";
-    TString triggerslist_17="HLT_Mu17_TrkIsoVVL_v";
-    bool Mu3PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_3, this->DataStream) ));
-    bool Mu8PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_8, this->DataStream) ));
-    bool Mu17PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_17, this->DataStream) ));
-    
-    if(lep_pt < 5) return;
-    else if(lep_pt <10){
-      if(Mu3PD&&ev.PassTrigger(triggerslist_3)) { fill_plot=true; if(!IsDATA)weight_ptcorr = event_weight * ev.GetTriggerLumi(triggerslist_3);}
-      else { fill_plot=false;weight_ptcorr = 0.;	}
-    }
-    else  if(lep_pt < 20) {
-      if(Mu8PD&&ev.PassTrigger(triggerslist_8)) {  fill_plot=true;if(!IsDATA)weight_ptcorr= event_weight * ev.GetTriggerLumi(triggerslist_8); }
-      else{ fill_plot=false;weight_ptcorr = 0.;      }
-    }
-    else {
-      if(Mu17PD && ev.PassTrigger(triggerslist_17)) {  fill_plot=true; if(!IsDATA) weight_ptcorr= event_weight * ev.GetTriggerLumi(triggerslist_17);}
-      else{ fill_plot=false;weight_ptcorr = 0.;      }
-    }
-    
-    /// Get precale weiht for normal pt bins
-    prescale_lep = GetPrescale(leps);
-  } 
-  else{
-    
-    TString triggerslist_8="HLT_Ele8_CaloIdL_TrackIdL_IsoVL_PFJet30_v";   /// -> tighter cut in lepton ID form tighter trigger emulation cut                    
-    TString triggerslist_12="HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30_v";
-    TString triggerslist_17="HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30_v";
-    TString triggerslist_23="HLT_Ele23_CaloIdL_TrackIdL_IsoVL_PFJet30_v";
-
-    bool El8PD=  (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_8, this->DataStream) ));
-    bool El12PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_12, this->DataStream) ));
-    bool El23PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_23, this->DataStream) ));
-
-
-    if(lep_pt < 10) return;
-    else if(lep_pt < 15) {
-      if(El8PD && ev.PassTrigger(triggerslist_8)) { fill_plot=true;if(!IsDATA)weight_ptcorr = event_weight * ev.GetTriggerLumi(triggerslist_8);}
-      else{fill_plot=false;weight_ptcorr = 0.;}
-    }
-    
-    else if(lep_pt < 25) {
-      
-      if(El12PD&&ev.PassTrigger(triggerslist_12)) {  fill_plot=true;if(!IsDATA)weight_ptcorr = event_weight * ev.GetTriggerLumi(triggerslist_12);}
-      else{ fill_plot=false;weight_ptcorr = 0.;}
-    }
-    else{
-      if(El23PD&&ev.PassTrigger(triggerslist_23)) {fill_plot=true;if(!IsDATA)weight_ptcorr = event_weight * ev.GetTriggerLumi(triggerslist_23);}
-      else{fill_plot=false;	  weight_ptcorr = 0.;}
-    }// end ptbin check
-    prescale_lep = GetPrescale(leps);
-  }
-
-
-  std::vector<Jet> jets_tmp     = GetJets   ( param, param.Jet_ID, 20., 5.);
-
-
-  double ptmin    = IsMuon ? 10 : 10;
+  TString L_prefix = "Fake_"+Method+"_Loose"+tag;
+  TString T_prefix = "Fake_"+Method+"_Tight"+tag;
 
   for(int ilep = 0 ; ilep < 2; ilep++)  {
 
     TString prefix = (ilep==0) ? L_prefix : T_prefix;
     if((ilep==1) && !(blepsT[0])) continue;
+    
+    prefix = Method + "/"+prefix;
 
-    if(fill_plot && lep_pt > ptmin){
-      FillHist((prefix + "_reliso").Data(), lep_reliso, weight_ptcorr, 50, 0., 1.);
-      FillHist((prefix + "_dXY").Data(),    lep_dxy,    weight_ptcorr, 50, 0., 1.);
-      FillHist((prefix + "_IP3D").Data(),   lep_ip3d,   weight_ptcorr, 50, 0., 10.);
-      FillHist((prefix + "_mva").Data(),    lep_mva,    weight_ptcorr, 50, -1., 1.);
+    if(lep_pt >10){
+      
+      FillHistogram((prefix + "_pt").Data(),                 lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_pt", Ptlab);
+      FillHistogram((prefix + "_pt_"+ lepEtaRegion).Data(),  lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_pt", Ptlab);
+      FillHistogram((prefix + "_pt_"+ lepRegion).Data(),     lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_pt", Ptlab);
+      FillHistogram((prefix + "_eta").Data(),                lep_eta, weight_ptcorr ,"FR_eta","#eta");
+      FillHist((prefix + "_eta_fine").Data(),           lep_eta, weight_ptcorr , 50, 0, 2.5,"#eta");
+      FillHist((prefix + "_lep_mva_lfvshf").Data(),   lep_mva_lfvshf,  weight_ptcorr, 50, -1., 1.);
+      FillHist((prefix + "_lep_mva_bvsc").Data(),   lep_mva_bvsc,  weight_ptcorr, 50, -1., 1.);
       FillHist((prefix + "_blscore").Data(), lep_blscore,    weight_ptcorr, 50, -1., 1.);
       FillHist((prefix + "_cbscore").Data(), lep_cbscore,    weight_ptcorr, 50, -1., 1.);
       FillHist((prefix + "_clscore").Data(), lep_clscore,    weight_ptcorr, 50, -1., 1.);
-      FillHist((prefix + "_pt").Data(),     lep_pt,     weight_ptcorr, nbin_pt, ptbins, "p_{T} (GeV)");
-      FillHist((prefix + "_pt_"+ lepEtaRegion).Data(),     lep_pt,     weight_ptcorr, nbin_pt, ptbins, "p_{T} (GeV)");
-      FillHist((prefix + "_pt_"+ lepRegion).Data(),     lep_pt,     weight_ptcorr, nbin_pt, ptbins, "p_{T} (GeV)");
-      FillHist((prefix + "_eta").Data(),    lep_eta, weight_ptcorr , nbin_eta, etabins,"#eta");
-      FillHist((prefix + "_eta_fine").Data(),    lep_eta, weight_ptcorr , 50, 0, 2.5,"#eta");
-      FillHist((prefix + "_lep_mva_lfvshf").Data(),   lep_mva_lfvshf,  weight_ptcorr, 50, -1., 1.);
-      FillHist((prefix + "_lep_mva_bvsc").Data(),   lep_mva_bvsc,  weight_ptcorr, 50, -1., 1.);
-      FillHist((prefix + "_pt_eta").Data(), lep_pt, lep_eta,  weight_ptcorr, nbin_pt, ptbins, nbin_eta , etabins);
-      FillHist((prefix + "_pt_LFvsHF").Data(), lep_pt, lep_mva_lfvshf,  weight_ptcorr, nbin_pt, ptbins, nbin_mva, mvabins);
-      FillHist((prefix + "_pt_BvsC").Data(), lep_pt, lep_mva_bvsc,  weight_ptcorr, nbin_pt, ptbins, nbin_mva, mvabins);
 
-      if(lep_mva_lfvshf > 0){
-	FillHist((prefix + "_LF_pt").Data(),     lep_pt_LF,     weight_ptcorr, nbin_pt_LF, ptbinsLF, "p_{T} (GeV)");
-	FillHist((prefix + "_LF_pt_"+ lepEtaRegion).Data(),     lep_pt_LF,     weight_ptcorr, nbin_pt_LF, ptbinsLF, "p_{T} (GeV)");
-	FillHist((prefix + "_LF_pt_"+ lepRegion).Data(),     lep_pt_LF,     weight_ptcorr, nbin_pt_LF, ptbinsLF, "p_{T} (GeV)");
-	FillHist((prefix + "_LF_eta").Data(),    lep_eta,    weight_ptcorr , nbin_eta, etabins,"#eta");
-	FillHist((prefix + "_LF_eta_fine").Data(),    lep_eta, weight_ptcorr , 50, -2.5, 2.5,"#eta");
-	FillHist((prefix + "_LF_mva").Data(),    lep_mva,    weight_ptcorr, 50, -1., 1.);
-	FillHist((prefix + "_LF_pt_eta").Data(), lep_pt_LF, lep_eta,  weight_ptcorr, nbin_pt_LF, ptbinsLF, nbin_eta , etabins);
-	FillHist((prefix + "_LF_pt_LFvsHF").Data(), lep_pt_LF, lep_mva_lfvshf,  weight_ptcorr, nbin_pt_LF, ptbinsLF, nbin_mva, mvabins);
-	FillHist((prefix + "_LF_pt_BvsC").Data(), lep_pt_LF, lep_mva_bvsc,  weight_ptcorr, nbin_pt_LF, ptbinsLF, nbin_mva, mvabins);
-	FillHist((prefix + "_LF_blscore").Data(), lep_blscore,    weight_ptcorr, 50, -1., 1.);
-	FillHist((prefix + "_LF_cbscore").Data(), lep_cbscore,    weight_ptcorr, 50, -1., 1.);
-	FillHist((prefix + "_LF_clscore").Data(), lep_clscore,    weight_ptcorr, 50, -1., 1.);
-
+      if(lep_mva_lfvshf > 0.8){
+	FillHistogram((prefix + "_LF_pt").Data(),                 lep_pt_LF,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_pt", Ptlab);
+	FillHistogram((prefix + "_LF_pt_"+ lepEtaRegion).Data(),  lep_pt_LF,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_pt", Ptlab);
+	FillHistogram((prefix + "_LF_pt_"+ lepRegion).Data(),     lep_pt_LF,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_pt", Ptlab);
+	FillHistogram((prefix + "_LF_eta").Data(),                lep_eta, weight_ptcorr ,"FR_eta","#eta");
+	FillHist((prefix + "_LF_eta_fine").Data(),           lep_eta, weight_ptcorr , 50, 0, 2.5,"#eta");
       }
       else{
-	FillHist((prefix + "_HF_pt").Data(),     lep_pt_HF,     weight_ptcorr, nbin_pt_HF, ptbinsHF, "p_{T} (GeV)");
-	FillHist((prefix + "_HF_pt_"+ lepEtaRegion).Data(),     lep_pt_HF,     weight_ptcorr, nbin_pt_HF, ptbinsHF, "p_{T} (GeV)");
-	FillHist((prefix + "_HF_pt_"+ lepRegion).Data(),     lep_pt_HF,     weight_ptcorr, nbin_pt_HF, ptbinsHF, "p_{T} (GeV)");
-        FillHist((prefix + "_HF_eta").Data(),    lep_eta,    weight_ptcorr , nbin_eta, etabins,"#eta");
-	FillHist((prefix + "_HF_eta_fine").Data(),    lep_eta, weight_ptcorr , 50, -2.5, 2.5,"#eta");
-	FillHist((prefix + "_HF_mva").Data(),    lep_mva,    weight_ptcorr, 50, -1., 1.);
-	FillHist((prefix + "_HF_pt_eta").Data(), lep_pt_HF, lep_eta,  weight_ptcorr, nbin_pt_HF, ptbinsHF, nbin_eta , etabins);
-	FillHist((prefix + "_HF_pt_LFvsHF").Data(), lep_pt_HF, lep_mva_lfvshf,  weight_ptcorr, nbin_pt_HF, ptbinsHF, nbin_mva, mvabins);
-	FillHist((prefix + "_HF_pt_BvsC").Data(), lep_pt_HF, lep_mva_bvsc,  weight_ptcorr, nbin_pt_HF, ptbinsHF, nbin_mva, mvabins);
-        FillHist((prefix + "_HF_blscore").Data(), lep_blscore,    weight_ptcorr, 50, -1., 1.);
-        FillHist((prefix + "_HF_cbscore").Data(), lep_cbscore,    weight_ptcorr, 50, -1., 1.);
-        FillHist((prefix + "_HF_clscore").Data(), lep_clscore,    weight_ptcorr, 50, -1., 1.);
-
-	if(lep_mva_bvsc > 0){
-	  FillHist((prefix + "_HFB_pt").Data(),     lep_pt_HF,     weight_ptcorr, nbin_pt_HF, ptbinsHF, "p_{T} (GeV)");
-	  FillHist((prefix + "_HFB_pt_"+ lepEtaRegion).Data(),     lep_pt_HF,     weight_ptcorr, nbin_pt_HF, ptbinsHF, "p_{T} (GeV)");
-	  FillHist((prefix + "_HFB_pt_"+ lepRegion).Data(),     lep_pt_HF,     weight_ptcorr, nbin_pt_HF, ptbinsHF, "p_{T} (GeV)");
-	  FillHist((prefix + "_HFB_eta").Data(),    lep_eta,    weight_ptcorr , nbin_eta, etabins,"#eta");
-	  FillHist((prefix + "_HFB_eta_fine").Data(),    lep_eta, weight_ptcorr , 50, -2.5, 2.5,"#eta");
-	  FillHist((prefix + "_HFB_mva").Data(),    lep_mva,    weight_ptcorr, 50, -1., 1.);
-	  FillHist((prefix + "_HFB_pt_eta").Data(), lep_pt_HF, lep_eta,  weight_ptcorr, nbin_pt_HF, ptbinsHF, nbin_eta , etabins);
-	  FillHist((prefix + "_HFB_pt_LFvsHF").Data(), lep_pt_HF, lep_mva_lfvshf,  weight_ptcorr, nbin_pt_HF, ptbinsHF, nbin_mva, mvabins);
-	  FillHist((prefix + "_HFB_pt_BvsC").Data(), lep_pt_HF, lep_mva_bvsc,  weight_ptcorr, nbin_pt_HF, ptbinsHF, nbin_mva, mvabins);
-	  FillHist((prefix + "_HFB_blscore").Data(), lep_blscore,    weight_ptcorr, 50, -1., 1.);
-	  FillHist((prefix + "_HFB_cbscore").Data(), lep_cbscore,    weight_ptcorr, 50, -1., 1.);
-	  FillHist((prefix + "_HFB_clscore").Data(), lep_clscore,    weight_ptcorr, 50, -1., 1.);
-
+	if(lep_mva_bvsc > 0.6){
+	  FillHistogram((prefix + "_HF1_pt").Data(),                 lep_pt_HF,   weight_ptcorr,        "FR_"+leps[0]->GetFlavour()+"_pt", Ptlab);
+	  FillHistogram((prefix + "_HF1_pt_"+ lepEtaRegion).Data(),  lep_pt_HF,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_pt", Ptlab);
+	  FillHistogram((prefix + "_HF1_pt_"+ lepRegion).Data(),     lep_pt_HF,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_pt", Ptlab);
+	  FillHistogram((prefix + "_HF1_eta").Data(),    lep_eta,             weight_ptcorr ,"FR_eta","#eta");
+	  FillHist((prefix + "_HF1_eta_fine").Data(),    lep_eta, weight_ptcorr , 50, 0, 2.5,"#eta");
+	}
+	else if(lep_mva_bvsc > -0.4){
+          FillHistogram((prefix + "_HF2_pt").Data(),                 lep_pt_HF,   weight_ptcorr,        "FR_"+leps[0]->GetFlavour()+"_pt", Ptlab);
+          FillHistogram((prefix + "_HF2_pt_"+ lepEtaRegion).Data(),  lep_pt_HF,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_pt", Ptlab);
+          FillHistogram((prefix + "_HF2_pt_"+ lepRegion).Data(),     lep_pt_HF,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_pt", Ptlab);
+          FillHistogram((prefix + "_HF2_eta").Data(),    lep_eta,             weight_ptcorr ,"FR_eta","#eta");
+          FillHist((prefix + "_HF2_eta_fine").Data(),    lep_eta, weight_ptcorr , 50, 0, 2.5,"#eta");
 	}
 	else{
-	  FillHist((prefix + "_HFC_pt").Data(),     lep_pt_HF,     weight_ptcorr, nbin_pt_HF, ptbinsHF, "p_{T} (GeV)");
-	  FillHist((prefix + "_HFC_pt_"+ lepEtaRegion).Data(),     lep_pt_HF,     weight_ptcorr, nbin_pt_HF, ptbinsHF, "p_{T} (GeV)");
-	  FillHist((prefix + "_HFC_pt_"+ lepRegion).Data(),     lep_pt_HF,     weight_ptcorr, nbin_pt_HF, ptbinsHF, "p_{T} (GeV)");
-	  FillHist((prefix + "_HFC_eta").Data(),    lep_eta,    weight_ptcorr , nbin_eta, etabins,"#eta");
-	  FillHist((prefix + "_HFC_eta_fine").Data(),    lep_eta, weight_ptcorr , 50, -2.5, 2.5,"#eta");
-	  FillHist((prefix + "_HFC_mva").Data(),    lep_mva,    weight_ptcorr, 50, -1., 1.);
-	  FillHist((prefix + "_HFC_pt_eta").Data(), lep_pt_HF, lep_eta,  weight_ptcorr, nbin_pt_HF, ptbinsHF, nbin_eta , etabins);
-	  FillHist((prefix + "_HFC_pt_LFvsHF").Data(), lep_pt_HF, lep_mva_lfvshf,  weight_ptcorr, nbin_pt_HF, ptbinsHF, nbin_mva, mvabins);
-	  FillHist((prefix + "_HFC_pt_BvsC").Data(), lep_pt_HF, lep_mva_bvsc,  weight_ptcorr, nbin_pt_HF, ptbinsHF, nbin_mva, mvabins);
-	  FillHist((prefix + "_HFC_blscore").Data(), lep_blscore,    weight_ptcorr, 50, -1., 1.);
-	  FillHist((prefix + "_HFC_cbscore").Data(), lep_cbscore,    weight_ptcorr, 50, -1., 1.);
-	  FillHist((prefix + "_HFC_clscore").Data(), lep_clscore,    weight_ptcorr, 50, -1., 1.);
-
+	  FillHistogram((prefix + "_HF3_pt").Data(),                 lep_pt_HF,   weight_ptcorr,        "FR_"+leps[0]->GetFlavour()+"_pt", Ptlab);
+	  FillHistogram((prefix + "_HF3_pt_"+ lepEtaRegion).Data(),  lep_pt_HF,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_pt", Ptlab);
+	  FillHistogram((prefix + "_HF3_pt_"+ lepRegion).Data(),     lep_pt_HF,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_pt", Ptlab);
+	  FillHistogram((prefix + "_HF3_eta").Data(),    lep_eta,             weight_ptcorr ,"FR_eta","#eta");
+	  FillHist((prefix + "_HF3_eta_fine").Data(),    lep_eta, weight_ptcorr , 50, 0, 2.5,"#eta");
 	}
       }
     }
@@ -1231,9 +1165,6 @@ HNL_LeptonFakeRate::~HNL_LeptonFakeRate(){
 
 }
 
-
-
-
 void HNL_LeptonFakeRate::FillRegionPlots( TString plot_dir, TString region,  std::vector<Jet> jets,  std::vector<Electron> els, std::vector<Muon> mus, Particle  met,  double w){
   
   if((els.size()+ mus.size()) != 1) return;
@@ -1241,10 +1172,7 @@ void HNL_LeptonFakeRate::FillRegionPlots( TString plot_dir, TString region,  std
   if(els.size()==1) lep1=els[0];
   else lep1 = mus[0];
 
-  int nbin_pt    =11;
-  double ptbins    [nbin_pt    +1] = { 0.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,2000.};
-
-  FillHist( plot_dir +  "/RegionPlots_"+ region+ "/Lep1_binned_pt", lep1.Pt()  , w, nbin_pt, ptbins,"p_{T} GeV");
+  FillHistogram( plot_dir +  "/RegionPlots_"+ region+ "/Lep1_binned_pt", lep1.Pt()  , w, "FR_pt","p_{T} GeV");
   FillHist( plot_dir +  "/RegionPlots_"+ region+ "/Lep1_pt", lep1.Pt()  , w, 400, 0., 2000.,"p_{T} GeV");
   FillHist( plot_dir +  "/RegionPlots_"+ region+ "/Lep1_eta", lep1.Eta()  , w, 30, -3., 3,"#eta");
   FillHist( plot_dir +  "/RegionPlots_"+ region+ "/Lep1_CloseJet_Ptrel", lep1.CloseJet_Ptrel(), w, 50., 0., 2.,"PtRel");

@@ -16,17 +16,37 @@ public:
   inline TString LepGenTypeString() const {
     //// return TString based on Gen type
     if(j_LeptonIsCF) {
-      if((j_LeptonType==1 || j_LeptonType==2)) return "IsPromptCF";
+      if((j_LeptonType==1 || j_LeptonType==2))         return "IsPromptCF";
       else if ((j_LeptonType>=4 || j_LeptonType<-4 ))  return "IsConvCF";
       else return "IsFakeCF";
     }
-    if((j_LeptonType==1 || j_LeptonType==2)) return "IsPrompt";
+    if((j_LeptonType==1 || j_LeptonType==2))  return "IsPrompt";
     if( (j_LeptonType<0 && j_LeptonType>=-4)) return "IsFake";
     if(j_LeptonType==3) return "IsEWtau";
     if((j_LeptonType>=4 || j_LeptonType<-4 )) return "IsConv";
     else return "NULL";
   }
 
+  inline TString sLepGenType() const {
+    if((j_LeptonType>=4 || j_LeptonType<-4 )) return  "Conv";
+    if( (j_LeptonType<0 && j_LeptonType>=-4)) {
+      if(j_lep_jetflavour == 5) return "FakeHF_B";
+      if(j_lep_jetflavour == 4) return "FakeHF_C";
+      if(j_lep_jetflavour == 0) return "FakeLF";
+    }
+    if(j_LeptonIsCF) return "CF";
+    if(j_LeptonType==1) return "Prompt";
+    if( j_LeptonType==2) return "Signal";
+    if( j_LeptonType==3) return "Tau";
+    return "";
+    
+  }
+
+  inline TString GetLeptonTypeTString(){
+    
+    if(j_LeptonType < 0) return "Minus"+TString::Itoa(fabs(j_LeptonType), 10);
+    return "Plus"+TString::Itoa(fabs(j_LeptonType), 10);
+  }
 
   inline bool IsPrompt() const {
     if((j_LeptonType==1 || j_LeptonType==2 || j_LeptonType==3)) return true;
@@ -81,6 +101,12 @@ public:
     else return "EE2";
   }
 
+  inline TString sRegion() const {
+    double eta = fabs(defEta());
+    if( eta < 0.8 ) return "Eta1";
+    else if( eta < 1.479 ) return "Eta2";
+    else return "Eta3";
+  }
 
   inline int Region() const {
     double eta = fabs(defEta());
@@ -113,38 +139,72 @@ public:
     }    
   }
 
-  inline TString sPtRegion(TString Year) const {
-    if(j_LeptonFlavour==MUON){
-      if( this->Pt() > 10 && this->Pt() < 15 ) return "PtBin1";
-      else  if( this->Pt()  < 20 ) return "PtBin2";
-      else  if( this->Pt()  < 25 ) return "PtBin3";
-      else  if( this->Pt()  < 30 ) return "PtBin4";
-      else  if( this->Pt()  < 40 ) return "PtBin5";
-      else  if( this->Pt()  < 50 ) return "PtBin6";
-      else  if( this->Pt()  < 60 ) return "PtBin7";
-      else   return "PtBin8";
-
-    }
-    else{
-      if(Year=="2016"){
-	if( this->Pt() > 10 && this->Pt() < 20 ) return "PtBin1";
-	else  if( this->Pt()  < 35 ) return "PtBin2";
-	else  if( this->Pt()  < 50 ) return "PtBin3";
-	else  if( this->Pt()  < 100 ) return "PtBin4";
-	else   return "PtBin5";
+  inline TString sPtRegion(TString Year, TString Analyzer="CF") const {
+    if(Analyzer=="CF"){
+      if(j_LeptonFlavour==MUON){
+	if( this->Pt() > 10 && this->Pt() < 15 ) return "PtBin1";
+	else  if( this->Pt()  < 20 ) return "PtBin2";
+	else  if( this->Pt()  < 25 ) return "PtBin3";
+	else  if( this->Pt()  < 30 ) return "PtBin4";
+	else  if( this->Pt()  < 40 ) return "PtBin5";
+	else  if( this->Pt()  < 50 ) return "PtBin6";
+	else  if( this->Pt()  < 60 ) return "PtBin7";
+	else   return "PtBin8";
+	
       }
       else{
-	if( this->Pt() > 10 && this->Pt() < 20 ) return "PtBin1";
-        else  if( this->Pt()  < 35 ) return "PtBin2";
-        else  if( this->Pt()  < 50 ) return "PtBin3";
-        else  if( this->Pt()  < 100 ) return "PtBin4";
-        else  if( this->Pt()  < 200 ) return "PtBin5";
-        else   return "Pt6";
-
+	if(Year=="2016"){
+	  if( this->Pt() > 10 && this->Pt() < 20 ) return "PtBin1";
+	  else  if( this->Pt()  < 35 ) return "PtBin2";
+	  else  if( this->Pt()  < 50 ) return "PtBin3";
+	  else  if( this->Pt()  < 100 ) return "PtBin4";
+	  else   return "PtBin5";
+	}
+	else{
+	  if( this->Pt() > 10 && this->Pt() < 20 ) return "PtBin1";
+	  else  if( this->Pt()  < 35 ) return "PtBin2";
+	  else  if( this->Pt()  < 50 ) return "PtBin3";
+	  else  if( this->Pt()  < 100 ) return "PtBin4";
+	  else  if( this->Pt()  < 200 ) return "PtBin5";
+	  else   return "Pt6";
+	}
       }
     }
+    return "PtNULL";
+  }
+  
+  inline TString GetPtLabel(){
+    if (this->Pt() < 10.) return "pt_5_10";
+    if (this->Pt() < 15.) return "pt_10_15";
+    if (this->Pt() < 20.) return "pt_15_20";
+    if (this->Pt() < 30.) return "pt_20_30";
+    if (this->Pt() < 40.) return "pt_30_40";
+    if (this->Pt() < 50.) return "pt_40_50";
+    if (this->Pt() < 100.) return "pt_50_100";
+    if (this->Pt() < 2000.) return "pt_100_2000";
+    return "pt_100_2000";
+ }
+  
+  inline TString GetMotherPtLabel(){
+    double MotherPt = this->Pt()/ j_lep_jetptratio;
+    if (MotherPt < 15.) return "Mpt_10_15";
+    if (MotherPt < 20.) return "Mpt_15_20";
+    if (MotherPt < 30.) return "Mpt_20_30";
+    if (MotherPt < 40.) return "Mpt_30_40";
+    if (MotherPt < 50.) return "Mpt_40_50";
+    if (MotherPt < 100.) return "Mpt_50_100";
+    if (MotherPt < 2000.) return "Mpt_100_2000";
+    return "";
   }
 
+  inline TString GetEtaLabel(){
+    double eta = defEta();
+    if(fabs(eta) < 0.8 ) return "eta1";
+    if(fabs(eta) < 1.5 ) return "eta2";
+    if(fabs(eta) < 2.5 ) return "eta3";
+    return "";
+
+  }
 
   inline bool IsIB() const { return (Region() == 1); }
   inline bool IsOB() const { return (Region() == 2); }
@@ -422,6 +482,12 @@ public:
     return "Pileup";
   }
 
+  inline double MotherJetPt()const{
+    
+    return this->Pt()/ j_lep_jetptratio;
+  }
+  
+
   inline TString MotherJetFlavour()  const {
     if(j_lep_jetflavour >= 4) return "HF";
     if(j_lep_jetflavour == 0) return "LF";
@@ -535,6 +601,20 @@ public:
   }
   inline double CalcPtCone(double this_reliso, double Tight_reliso){
     return ( this->Pt() ) * ( 1. + max(0., (this_reliso-Tight_reliso)) );
+  }
+  inline double CalcMVACone(double this_mva, double Tight_mva){
+    this_mva=this_mva+1;
+    Tight_mva=Tight_mva+1;
+    
+    if(this_mva > Tight_mva) return this->Pt();
+    
+    double mva_diff  = 1- this_mva/Tight_mva;
+    double PtMPtDiff = (this->Pt()/j_lep_jetptratio) - this->Pt();
+    if(PtMPtDiff < 0 ) PtMPtDiff = 0;
+
+    double var = (mva_diff * PtMPtDiff) + this->Pt() ;
+    if((mva_diff * PtMPtDiff) > 1.4) return 1.4*this->Pt();
+    return var;
   }
 
   virtual void Print();

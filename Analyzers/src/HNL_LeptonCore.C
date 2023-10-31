@@ -1,10 +1,20 @@
 #include "HNL_LeptonCore.h"
 
-void HNL_LeptonCore::initializeAnalyzer(){
+void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
+
+  AnalyzerCore::initializeAnalyzer();
+
+
+  /// SETUP BKG OBJ
+  mcCorr          = new MCCorrection();
+  puppiCorr       = new PuppiSoftdropMassCorr();
+  fakeEst         = new FakeBackgroundEstimator();
+  cfEst           = new CFBackgroundEstimator();
+  pdfReweight     = new PDFReweight();
+
 
   //=== VERBOSE                                                                                                                                        
   run_Debug = HasFlag("DEBUG");
-
 
   //=== bkg flags                                                                                                                                      
   RunPrompt = HasFlag("RunPrompt");
@@ -18,27 +28,75 @@ void HNL_LeptonCore::initializeAnalyzer(){
   RunSyst = HasFlag("RunSyst");
   HEM1516 = HasFlag("HEM1516");
 
-
   std::vector<JetTagging::Parameters> jtps;
-  jtps.push_back( JetTagging::Parameters(JetTagging::DeepCSV, JetTagging::Loose, JetTagging::incl, JetTagging::comb) );
-  jtps.push_back( JetTagging::Parameters(JetTagging::DeepCSV, JetTagging::Medium, JetTagging::incl, JetTagging::comb) );
-  jtps.push_back( JetTagging::Parameters(JetTagging::DeepCSV, JetTagging::Tight, JetTagging::incl, JetTagging::comb) );
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Loose, JetTagging::incl, JetTagging::mujets));
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets));
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Tight, JetTagging::incl, JetTagging::mujets));
 
-
   SetupTriggerLists();
 
 
-  //--- Method 1d using JetTagging::iterativefit needs csv file changing in histmap to run                                                   
-  // jtps.push_back( JetTagging::Parameters(JetTagging::DeepCSV, JetTagging::Medium, JetTagging::iterativefit, JetTagging::iterativefit) );  
-  mcCorr->SetJetTaggingParameters(jtps);
+  if(IsDYSample) SetupZptWeight();
 
+  //==== MCCorrection                                                                                                                                       
 
-  SetupIDMVAReaderDefault();
+  ///// Set up Jet Tagger
+  mcCorr->SetJetTaggingParameters(jtps);                                                                                                                             
+  
+  mcCorr->SetMCSample(MCSample);
+  mcCorr->SetEra(GetEra());
+  mcCorr->SetIsDATA(IsDATA);
+  mcCorr->SetEventInfo(run, lumi, event);
+  mcCorr->SetIsFastSim(IsFastSim);
 
+  //// Read Histograms Moved from Initialise Tools
+  if(!IsDATA){
+    mcCorr->ReadHistograms();
+    mcCorr->SetupJetTagging();
+  }
 
+  puppiCorr->SetEra(GetEra());
+  puppiCorr->ReadHistograms();
+
+  //==== FakeBackgroundEstimator                                                                                                                                            
+  if(RunFake&&READBKGHISTS){
+    fakeEst->SetEra(GetEra());
+    fakeEst->ReadHistograms();
+  }
+
+  //==== CFBackgroundEstimator                                                                                                                                              
+  if(RunCF&&READBKGHISTS){
+    cfEst->SetEra(GetEra());
+    cfEst->ReadHistograms();
+  }
+
+  if(SETUPIDBDT) SetupIDMVAReaderDefault();
+
+}
+
+void HNL_LeptonCore::SetupEvMVA(){
+
+  TMVA::Tools::Instance();
+  cout << "Create Reader class " << endl;
+  MVAReaderMM = new TMVA::Reader();
+  MVAReaderEE = new TMVA::Reader();
+  MVAReaderEM = new TMVA::Reader();
+  cout << MVAReaderMM << "  " << MVAReaderEE <<" " << MVAReaderEM << endl;
+
+}
+
+void HNL_LeptonCore::DeleteEvMVA(){
+  
+  cout << MVAReaderMM << "  " << MVAReaderEE << " " << MVAReaderEM << endl;
+  delete MVAReaderMM;
+  delete MVAReaderEE;
+  delete MVAReaderEM;
+
+}
+
+bool HNL_LeptonCore::IsExists(TString filepath){
+  ifstream fcheck(filepath);
+  return fcheck.good();
 }
 
 void HNL_LeptonCore::OutCutFlow(TString lab, double w){
@@ -55,7 +113,25 @@ void HNL_LeptonCore::OutCutFlow(TString lab, double w){
 
 }
 
+TString HNL_LeptonCore::SetLeptonID(TString lep, AnalyzerParameter p){
 
+  if(lep=="Electron"){
+    TString ID = (RunFake) ?  p.Electron_FR_ID  : p.Electron_Tight_ID ;
+    if(p.FakeMethod == "MC")  ID =p.Electron_Tight_ID;
+    return ID;
+  }
+  else if(lep=="Muon"){
+    TString ID = (RunFake) ?  p.Muon_FR_ID  : p.Muon_Tight_ID ;
+    if(p.FakeMethod == "MC")  ID = p.Muon_Tight_ID;
+    return ID;
+  }
+  else {
+    cout << "[HNL_LeptonCore::InitialiseHNLParameters ] ID not found.." << endl;
+    exit(EXIT_FAILURE);
+  }
+
+  return "";
+}
 
 double HNL_LeptonCore::MergeMultiMC(vector<TString> vec, TString Method){
 
@@ -191,205 +267,472 @@ vector<AnalyzerParameter::Syst> HNL_LeptonCore::GetSystList(TString SystType){
 //====================================================/====================================================
 //====================================================/====================================================
 
+AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup_version){
+  AnalyzerParameter p = SetupHNLParameter(s_setup_version,"Default");
+  return p;
 
-AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TString tag){
+}
+
+AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup_version, HNL_LeptonCore::Channel channel){
+  
+  AnalyzerParameter p = SetupHNLParameter(s_setup_version,GetChannelString(channel));
+  if(_jentry== 1 ){
+    cout << "HNL_LeptonCore::InitialiseHNLParameter SetupHNLParameter Event " << event << endl;
+    p.PrintParameters();
+  }
+  return p;  
+}
+
+
+AnalyzerParameter HNL_LeptonCore::SetupFakeParameter(AnalyzerParameter::Syst SystType, HNL_LeptonCore::Channel channel, vector<TString>  s_jobs, TString PNAME, TString IDT, TString IDL){
+
+  AnalyzerParameter param  ;
+  param.Clear();
+  param.Channel  = GetChannelString(channel);
+  param.Name     = GetChannelString(channel)+"_"+PNAME;
+  param.DefName  = PNAME;
+  param.CutFlowDir = "CutFlowDir";
+  param.hprefix  = "";
+  param.hpostfix = "";
+  param.Jobs = s_jobs;
+  param.Apply_Weight_Norm1pb  = true;
+  param.Apply_Weight_LumiNorm = true;
+  param.Apply_Weight_SumW     = true;
+  param.Apply_Weight_PileUp   = true;
+  param.Apply_Weight_PreFire  = true;
+  param.Apply_Weight_kFactor  = true;
+  param.Apply_Weight_RECOSF   = true;
+  param.Apply_Weight_MuonTrackerSF = true;
+  param.Apply_Weight_BJetSF   = true;
+  param.Apply_Weight_PNETSF   = false;
+  param.Apply_Weight_JetPUID   = false;
+
+  //// By default dont apply ID/Trigger SF                                                                           
+  param.Apply_Weight_IDSF     = false;
+  param.Apply_Weight_TriggerSF= false;
+
+
+  if(param.HasFlag("MCFakeRates")) {
+    param.Apply_Weight_LumiNorm = false;
+    param.Apply_Weight_Norm1pb  = false;
+  }
+  if(param.HasFlag("MCFakes")) {
+    param.Apply_Weight_LumiNorm = false;
+    param.Apply_Weight_Norm1pb  = false;
+  }
+  if(param.HasFlag("MakeRegionPlots"))     param.Apply_Weight_LumiNorm = false;
+
+
+  // Default settings if NOT s_setup_version is set                                                                                                                                                       
+
+  param.syst_ = SystType;
+  param.MCCorrrectionIgnoreNoHist = true;
+
+  /// Lepton ID DEFAULT                                                                                                                                                                                   
+  param.k.Electron_RECO_SF   = "RECO_SF";  // RECO_SF_AFB is alternative SF                                                                                                                               
+  param.k.Muon_RECO_SF   = "HighPtMuonRecoSF";
+  param.Muon_Veto_ID     = "HNVetoMVA"; 
+  param.Electron_Veto_ID = "HNVetoMVA"; 
+  if(channel == MuMu)  {
+    param.Electron_Loose_ID = "HNVetoMVA";
+    param.Electron_Tight_ID = "HNVetoMVA";
+    param.Muon_Loose_ID = IDL;
+    param.Muon_Tight_ID = IDT;
+  }
+  else  {
+    param.Muon_Tight_ID = "HNVetoMVA";
+    param.Muon_Loose_ID = "HNVetoMVA";
+    param.Electron_Loose_ID = IDL;
+    param.Electron_Tight_ID = IDT;
+  }
+
+  param.Tau_Veto_ID      = "JetVLElVLMuVL";
+  /// ---------                                                                                                                                                                                           
+  param.Muon_MinPt = 5.;       param.Muon_MaxEta = 2.4;
+  param.Electron_MinPt = 10.;  param.Electron_MaxEta = 2.5;
+  /// JET ID DEFAULT                                                                                                                                                                                      
+  param.Jet_ID                     = "tight";
+  param.Jet_MinPt                  = 30.;
+  param.Jet_MaxEta                 = 5.;
+  /// ---------                                                                                                                                                                                           
+  param.FatJet_ID                  = "tight";
+  param.FatJet_MinPt = 200.;  param.FatJet_MaxEta = 5.;
+
+  param.TriggerSelection = "Fake";
+  param.BTagger = "DeepJet";  param.BWP ="M";
+  param.JetPUID = "Loose";
+
+  param.AK4JetColl       = "Tight";
+  param.AK8JetColl       = "HNL_PN";
+  param.BJetColl         = "Tight";
+
+  //// Weights                                                                                                                                              
+  param.w.lumiweight= 1;  param.w.PUweight=1;  param.w.PUweight_up=1;  param.w.PUweight_down=1;  param.w.prefireweight=1;
+  param.w.prefireweight_up=1;  param.w.prefireweight_down=1;  param.w.z0weight=1;  param.w.zptweight=1;param.w.weakweight=1;
+  param.w.topptweight=1;  param.w.muonRECOSF=1;  param.w.electronRECOSF=1;  param.w.electronIDSF=1;  param.w.muonIDSF=1;
+  param.w.muonISOSF=1;  param.w.triggerSF=1;  param.w.CFSF=1;param.w.btagSF=1;  param.w.PNETSF=1;param.w.JetPU = 1;
+  param.w.EventSetupWeight=1;
+  if(!IsDATA){
+    param.w.lumiweight*= MCweight()*_Event.GetTriggerLumi("Full");
+    param.w.PUweight      = GetPileUpWeight(nPileUp,0);
+    param.w.PUweight_up   = GetPileUpWeight(nPileUp,1);
+    param.w.PUweight_down = GetPileUpWeight(nPileUp,-1);
+    param.w.prefireweight =  GetPrefireWeight(0);
+    param.w.prefireweight_up= GetPrefireWeight(1);
+    param.w.prefireweight_down =GetPrefireWeight(-1);
+    param.w.z0weight=GetZ0Weight(vertex_Z);
+  }
+
+  param.FakeMethod = "DATA";
+  param.CFMethod   = "DATA";
+  if (PNAME.Contains("MCFakes"))    param.FakeMethod = "MC";
+  
+  return param;
+
+}
+
+AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TString channel_st){
   
   /// This functions sets up AnalyzerParameter class for different types of Analyser
   
   AnalyzerParameter param  ;
   param.Clear();
+  param.Channel  = channel_st;
+  param.Name     = s_setup_version;
+  param.DefName  = s_setup_version;
+  param.CutFlowDir = "CutFlowDir";
+  param.hprefix  = "";
+  param.hpostfix = "";
 
-  param.Name     = s_setup+tag;
-  param.DefName  = s_setup+tag;
+  param.Apply_Weight_Norm1pb  = true;
+  param.Apply_Weight_LumiNorm = true;
+  param.Apply_Weight_SumW     = true;
+  param.Apply_Weight_PileUp   = true;
+  param.Apply_Weight_PreFire  = true;
+  param.Apply_Weight_kFactor  = true;
+  param.Apply_Weight_RECOSF   = true;
+  param.Apply_Weight_MuonTrackerSF = true;
+  param.Apply_Weight_BJetSF   = true;
+  param.Apply_Weight_PNETSF   = true;
+  param.Apply_Weight_JetPUID   = true;
 
-  // Default settings
+  //// By default dont apply ID/Trigger SF
+  param.Apply_Weight_IDSF     = false;
+  param.Apply_Weight_TriggerSF= false;
+
+  // Default settings if NOT s_setup_version is set
+
   param.syst_ = AnalyzerParameter::Central;
   param.MCCorrrectionIgnoreNoHist = true;
-  param.FakeMethod = "DATA";
-  param.CFMethod   = "DATA";
-  param.ConvMethod = "MC";
 
-  /// By default use tight Jets 
+  /// Lepton ID DEFAULT
+  param.k.Electron_RECO_SF   = "RECO_SF";  // RECO_SF_AFB is alternative SF 
+  param.k.Muon_RECO_SF   = "HighPtMuonRecoSF";
+  param.Muon_Veto_ID     = "HNVetoMVA";  param.Muon_Tight_ID     = "HNVetoMVA";
+  param.Electron_Veto_ID = "HNVetoMVA";  param.Electron_Tight_ID = "MVAID";
+
+  param.Tau_Veto_ID      = "JetVLElVLMuVL";
+  /// ---------                                                                                           
+  param.Muon_MinPt = 5.;       param.Muon_MaxEta = 2.4;            
+  param.Electron_MinPt = 10.;  param.Electron_MaxEta = 2.5;
+  /// JET ID DEFAULT
   param.Jet_ID                     = "tight";
-  param.Jet_MinPt = 10.;
-  param.Jet_MaxEta = 5.;
+  param.Jet_MinPt                  = 10.;
+  param.Jet_MaxEta                 = 5.;
   param.BJet_Method                = "1a";
   /// ---------
   param.FatJet_ID                  = "tight";
-  param.FatJet_MinPt = 200.;
-  param.FatJet_MaxEta = 5.;
-  /// ---------
-  param.Muon_MinPt = 10.;
-  param.Muon_MaxEta = 2.4;
-  /// ---------                                                                                                                             
-  param.Electron_MinPt = 10.;
-  param.Electron_MaxEta = 2.5;
-  /// Lepton IDs
-  param.Muon_Veto_ID     = "HNVetoMVA";
-  param.Electron_Veto_ID = "HNVetoMVA";
-  param.Tau_Veto_ID      = "JetVLElVLMuVL";
-  /// Fakes
-  param.FakeRateMethod   = "PtCone";
-  param.Muon_FR_Key      = "AwayJetPt40";
-  param.Electron_FR_Key  = "AwayJetPt40";
-  /// Defaul Corrections                                                                                                                    
-  param.Muon_ID_SF_Key   = "NUM_TightID_DEN_TrackerMuons";
-  param.Muon_ISO_SF_Key  = "NUM_TightRelIso_DEN_TightIDandIPCut";
-  param.Muon_Tight_ID    = "POGTightWithTightIso";
-  param.Muon_RECO_SF_Key = "MuonRecoSF";
-  /// ---------                                                                                                                             
-  param.Electron_ID_SF_Key = "passTightID";
-  param.Electron_Tight_ID  = "passPOGTight";
+  param.FatJet_MinPt = 200.;  param.FatJet_MaxEta = 5.;
 
-  TString trigKey=TrigList_POG_Mu[0];
-  trigKey=trigKey.ReplaceAll("HLT_","");
-  trigKey=trigKey.ReplaceAll("_v","");
-  param.Muon_Trigger_SF_Key = "POGTight";
-  param.Muon_Trigger_NameForSF = trigKey;
+  /// Default Trigger
+  param.TriggerSelection = "Dilep";
 
-  param.Muon_FR_ID     = "HNLooseV1";
-  param.Electron_FR_ID = "HNLoosePOG";
+  param.BTagger = "DeepJet"; 
+  param.BWP ="M"; 
+  param.JetPUID = "Loose";
+  param.AK4JetColl       = "Tight";
+  param.AK8JetColl       = "HNL_PN";
+  //param.AK8JetColl       = "HNL";
+  param.BJetColl         = "Tight";
 
-  if (s_setup=="") return param;
+  //// Weights
+  param.w.lumiweight= 1;
+  param.w.PUweight=1;   
+  param.w.PUweight_up=1; 
+  param.w.PUweight_down=1;
+  param.w.prefireweight=1; 
+  param.w.prefireweight_up=1; 
+  param.w.prefireweight_down=1;
+  param.w.z0weight=1; 
+  param.w.zptweight=1; 
+  param.w.weakweight=1;
+  param.w.topptweight=1;
+  param.w.muonRECOSF=1;
+  param.w.electronRECOSF=1;
+  param.w.electronIDSF=1;
+  param.w.muonIDSF=1; 
+  param.w.muonISOSF=1; 
+  param.w.triggerSF=1;
+  param.w.CFSF=1;
+  param.w.btagSF=1; 
+  param.w.PNETSF=1;
+  param.w.JetPU = 1;
+  param.w.EventSetupWeight=1;
+  if(!IsDATA){
+    param.w.lumiweight*= MCweight()*_Event.GetTriggerLumi("Full");
+    param.w.PUweight      = GetPileUpWeight(nPileUp,0);
+    param.w.PUweight_up   = GetPileUpWeight(nPileUp,1);
+    param.w.PUweight_down = GetPileUpWeight(nPileUp,-1);
+    param.w.prefireweight =  GetPrefireWeight(0);
+    param.w.prefireweight_up= GetPrefireWeight(1);
+    param.w.prefireweight_down =GetPrefireWeight(-1);
+    param.w.z0weight=GetZ0Weight(vertex_Z);
 
-
-  if (s_setup=="SignalStudy"){
-    param.CFMethod   = "MC";
-    param.Muon_Tight_ID = "HNTightV2";
-    param.Electron_Tight_ID = "HNTightV2";
-    param.Muon_FR_ID = "HNLooseV1";
-    param.Electron_FR_ID = "HNLooseV4";
-    return param;
+    if(IsDYSample){
+      if((abs(lhe_l0.ID())==11||abs(lhe_l0.ID())==13)) {
+	TLorentzVector genZ=(gen_l0+gen_l1);
+	param.w.zptweight =GetZptWeight(genZ.M(),genZ.Rapidity(),genZ.Pt());
+	param.w.weakweight=GetDYWeakWeight(genZ.M());
+      }
+      else param.hprefix+="tau_";
+    }
+    
+    if(IsTTSample)   param.w.topptweight=mcCorr->GetTopPtReweight(All_Gens);
   }
-  else if (s_setup=="HNL"){
-    param.FakeMethod = "DATA";
-    param.CFMethod         = "MC"; ///////// -> TMP
-    param.Muon_Tight_ID    = "HNL_ULID_"+GetYearString();
-    param.Muon_ID_SF_Key   = "NUM_HNL_ULID_"+GetYearString();
-    param.Muon_ISO_SF_Key  = "Default";
-    param.Muon_FR_ID       = "HNL_ULID_FO";
-    param.Muon_RECO_SF_Key =  "MuonRecoSF";
-    param.Electron_Tight_ID  = "HNL_ULID_"+GetYearString();
-    param.Electron_ID_SF_Key = "passHNL_ULID_"+GetYearString();
-    param.Electron_FR_ID     = "HNL_ULID_FO_"+GetYearString();
-    return param;
+
+  if (s_setup_version=="") return param;
+  if (s_setup_version=="Basic") return param;
+
+  if (s_setup_version == "FakeRate" ){
+    param.Apply_Weight_LumiNorm = false;
+    return param;  }
+
+  if (s_setup_version=="SignalStudy"){                                                                                                      
+    param.FakeMethod = "MC"; 
+    param.CFMethod   = "MC"; 
+    param.ConvMethod = "MC"; 
+    return param;                                                                                                                          
   }
-  else if (s_setup=="HNLOpt"){
+  if (s_setup_version=="MCStudy"){
     param.FakeMethod = "MC";
     param.CFMethod   = "MC";
     param.ConvMethod = "MC";
-    param.Muon_Tight_ID = "HNTightV2";
-    param.Electron_Tight_ID = "HNTightV2";
-    param.Electron_ID_SF_Key = "NUM_HNTightV2";
-    param.Muon_ID_SF_Key = "NUM_HNTightV2";
-    param.Muon_FR_ID = "HNLooseV1";
-    param.Electron_FR_ID = "HNLooseV4";
-    param.Muon_RECO_SF_Key = "MuonRecoSF";
+    param.Muon_Tight_ID     = "HNL_ULID_"+GetYearString();
+    param.Electron_Tight_ID = "HNL_ULID_"+GetYearString();
     return param;
   }
-  else if (s_setup=="HNLSROpt"){
+
+  if (s_setup_version=="HNTightV2"){
+
+    //// Trun on SF weights
+    param.Apply_Weight_IDSF     = true;
+    param.Apply_Weight_TriggerSF= true;
+
+    /// Set Bkg config
+    param.FakeMethod = "DATA";    param.CFMethod   = "DATA";    param.ConvMethod = "MC";
+    /// ID config
+    param.Muon_Veto_ID     = "HNVeto_17028";   param.Electron_Veto_ID  = "HNVeto";         
+    param.Muon_Tight_ID    = "HNTightV2";     param.Electron_Tight_ID = "HNTightV2";
+    param.Muon_FR_ID       = "HNLooseV1";     param.Electron_FR_ID    = "HNLooseV4";
+
+    param.k.Electron_CF          = "CF_"+s_setup_version;
+    param.FakeRateMethod       = "PtCone";
+    param.k.Muon_FR            = "AwayJetPt40";
+    param.k.Electron_FR        = "AwayJetPt40";
+    param.k.Electron_ID_SF     = "passHNTightV2";
+    param.k.Muon_ID_SF         = "NUM_HNTightV2";
+    param.k.Muon_RECO_SF       = "MuonRecoSF";
+
+    param.TriggerSelection = "Dilep";
+    if(channel_st.Contains("EE"))   param.k.Electron_Trigger_SF = "DiElIso_HNL_ULID";
+    if(channel_st.Contains("MuMu")) param.k.Muon_Trigger_SF = "DiMuIso_HNL_ULID";
+    if(channel_st.Contains("EMu"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
+    if(channel_st.Contains("MuE"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
+  
+    return param;
+  }
+  else if (s_setup_version=="TopHN"){
+    param.Apply_Weight_IDSF     = true;
+    param.Apply_Weight_TriggerSF= true;
+
+    param.FakeMethod = "DATA";
+    param.CFMethod   = "DATA";
+    param.ConvMethod = "MC";
+    param.Muon_Veto_ID     = "HNVeto_17028";  param.Muon_Tight_ID     = "TopHN";
+    param.Electron_Veto_ID = "HNVeto";        param.Electron_Tight_ID = "TopHN";
+    param.Muon_FR_ID        = "TopHNL";
+    param.Electron_FR_ID    = "TopHNSSL_"+GetEraShort();
+
+    param.FakeRateMethod       = "PtConeMini";
+    param.k.Muon_FR            = "FR_cent";
+    param.k.Electron_FR        = "FR_cent";
+
+    param.k.Electron_ID_SF     = "passTopHN";
+    param.k.Muon_ID_SF         = "NUM_TopHN";
+    param.k.Muon_RECO_SF       = "MuonRecoSF";
+
+    param.k.Electron_CF          = "CF_"+s_setup_version;
+    param.TriggerSelection = "Dilep";
+    if(channel_st.Contains("EE"))   param.k.Electron_Trigger_SF = "DiElIso_HNL_ULID";
+    if(channel_st.Contains("MuMu")) param.k.Muon_Trigger_SF = "DiMuIso_HNL_ULID";
+    if(channel_st.Contains("EMu"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
+    if(channel_st.Contains("MuE"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
+    return param;
+  }
+  else if (s_setup_version=="HNL_ULID"){
+    param.Apply_Weight_IDSF     = true;
+    param.Apply_Weight_TriggerSF= true;
+
+    param.FakeMethod = "DATA";
+    param.CFMethod   = "DATA";
+    param.ConvMethod = "MC";
+
+    param.Muon_Veto_ID     = "HNVetoMVA";   
+    param.Muon_Tight_ID     = "HNL_ULID_"+GetYearString();
+    param.Electron_Veto_ID     = "HNVetoMVA";  
+    param.Electron_Tight_ID = "HNL_ULID_"+GetYearString();
+    param.Muon_FR_ID        = "HNL_ULID_FO";
+    param.Electron_FR_ID    = "HNL_ULID_FO_"+GetYearString();
+    param.FakeRateMethod       = "BDTFlavour";
+    param.k.Muon_FR            = "FR_cent";
+    param.k.Electron_FR        = "FR_cent";
+    param.k.Muon_ID_SF      = "NUM_HNL_ULID_"+GetYearString();
+    param.k.Muon_ISO_SF     = "Default";
+    param.k.Electron_ID_SF  = "passHNL_ULID_"+GetYearString();
+
+    param.k.Electron_CF       = "CF_"+s_setup_version;
+    param.TriggerSelection = "Dilep";
+    if(channel_st.Contains("EE"))   param.k.Electron_Trigger_SF = "DiElIso_HNL_ULID";
+    if(channel_st.Contains("MuMu")) param.k.Muon_Trigger_SF = "DiMuIso_HNL_ULID";
+    if(channel_st.Contains("EMu"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
+    if(channel_st.Contains("MuE"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
+    return param;
+  }
+  else if (s_setup_version=="POGTight"){
+    param.Apply_Weight_IDSF     = true;
+    param.Apply_Weight_TriggerSF= true;
+    
+    param.FakeMethod = "DATA";
+    param.CFMethod   = "DATA";
+    param.ConvMethod = "MC";
+
+    param.Muon_Tight_ID      = "POGTightWithTightIso";
+    param.Electron_Tight_ID  = "passPOGTight";
+    param.Muon_FR_ID     = "HNLooseV1";
+    param.Electron_FR_ID = "HNLoosePOG";
+    param.TriggerSelection   = "POGSglLep";
+    param.k.Muon_ID_SF       = "NUM_TightID_DEN_TrackerMuons";
+    param.k.Muon_ISO_SF      = "NUM_TightRelIso_DEN_TightIDandIPCut";
+    param.k.Electron_ID_SF   = "passTightID";
+    param.FakeRateMethod       = "PtCone";
+    param.k.Muon_FR            = "AwayJetPt40";
+    param.k.Electron_FR        = "AwayJetPt40";
+    param.k.Electron_CF       = "CF_"+s_setup_version;
+
+    if(channel_st.Contains("EE"))   param.k.Electron_Trigger_SF = "Default";
+    if(channel_st.Contains("MuMu")) {
+      TString trigKey=TrigList_POG_Mu[0];
+      trigKey=trigKey.ReplaceAll("HLT_","");
+      trigKey=trigKey.ReplaceAll("_v","");
+      param.k.Muon_Trigger_SF=trigKey+"_POGTight";
+    }
+    if(channel_st.Contains("EMu"))  {
+      TString trigKey=TrigList_POG_Mu[0];
+      trigKey=trigKey.ReplaceAll("HLT_","");
+      trigKey=trigKey.ReplaceAll("_v","");
+      param.k.Muon_Trigger_SF=trigKey+"_POGTight";
+      param.k.Electron_Trigger_SF = "Default";
+    }
+    if(channel_st.Contains("MuE")) {
+      TString trigKey=TrigList_POG_Mu[0];
+      trigKey=trigKey.ReplaceAll("HLT_","");
+      trigKey=trigKey.ReplaceAll("_v","");
+      param.k.Muon_Trigger_SF=trigKey+"_POGTight";
+      param.k.Electron_Trigger_SF = "Default";
+    }
+    return param;
+  }
+  else if (s_setup_version=="HNL_Opt"){
+    param.Apply_Weight_TriggerSF = false;
+    param.Apply_Weight_IDSF      = false;
+    param.FakeMethod = "MC";
     param.CFMethod   = "MC";
     param.ConvMethod = "MC";
-    param.Muon_Tight_ID = "HNTightV2";
+    param.Muon_Tight_ID     = "HNTightV2";
     param.Electron_Tight_ID = "HNTightV2";
-    param.Electron_ID_SF_Key = "NUM_HNTightV2";
-    param.Muon_ID_SF_Key = "NUM_HNTightV2";
-    param.Muon_FR_ID = "HNLooseV1";
+    param.k.Electron_ID_SF  = "NUM_HNTightV2";
+    param.k.Muon_ID_SF      = "NUM_HNTightV2";
+    param.Muon_FR_ID        = "HNLooseV1";
     param.Electron_FR_ID = "HNLooseV4";
-    param.Muon_RECO_SF_Key = "MuonRecoSF";
     return param;
   }
-  else if (s_setup=="BDT"){
+  else if (s_setup_version=="BDT"){
+    param.Apply_Weight_TriggerSF = false;
+    param.Apply_Weight_IDSF      = false;
     param.FakeMethod = "MC";
     param.CFMethod   = "MC";
     param.ConvMethod = "MC";
     param.Muon_Tight_ID = "MVAID";
     param.Electron_Tight_ID = "MVAID";
-    param.Electron_ID_SF_Key = "NUM_HNTightV2";
-    param.Muon_ID_SF_Key = "NUM_HNTightV2";
+    param.k.Electron_ID_SF = "NUM_HNTightV2";
+    param.k.Muon_ID_SF = "NUM_HNTightV2";
     param.Muon_FR_ID = "HNLooseV1";
     param.Electron_FR_ID = "HNLooseV4";
-    param.Muon_RECO_SF_Key = "MuonRecoSF";
     return param;
   }
-  else if (s_setup=="MVAUL"){
-    param.FakeMethod = "DATA";
-    param.CFMethod   = "MC";
-    param.ConvMethod = "MC";
-    param.Muon_Tight_ID = "HNL_ULID_"+GetYearString();
-    param.Electron_Tight_ID = "HNL_ULID_"+GetYearString();
-    param.Electron_ID_SF_Key = "TmpHNL_ULID_"+GetYearString();
-    param.Muon_ID_SF_Key = "TmpHNL_ULID_"+GetYearString();
-    param.Muon_FR_ID = "HNL_ULID_FO_"+GetYearString();
-    param.Electron_FR_ID = "HNL_ULID_FO_"+GetYearString();
-    param.Muon_RECO_SF_Key = "MuonRecoSF";
+  else if (s_setup_version=="MVAUL"){
+    param.FakeMethod = "DATA";    param.CFMethod   = "DATA";    param.ConvMethod = "MC";
+    param.Muon_Tight_ID      = "HNL_ULID_"+GetYearString();
+    param.Electron_Tight_ID  = "HNL_ULID_"+GetYearString();
+    param.k.Electron_ID_SF = "TmpHNL_ULID_"+GetYearString();
+    param.k.Muon_ID_SF     = "TmpHNL_ULID_"+GetYearString();
+    param.Muon_FR_ID         = "HNL_ULID_FO_"+GetYearString();
+    param.Electron_FR_ID     = "HNL_ULID_FO_"+GetYearString();
     return param;
   }
 
-  else if (s_setup=="BDTTop"){
-    param.FakeMethod = "MC";
-    param.CFMethod   = "MC";
-    param.ConvMethod = "MC";
-    param.Muon_Tight_ID = "MVAID";
-    param.Electron_Tight_ID = "TopMVAID";
-    param.Electron_ID_SF_Key = "NUM_HNTightV2";
-    param.Muon_ID_SF_Key = "NUM_HNTightV2";
-    param.Muon_FR_ID = "HNLooseV1";
-    param.Electron_FR_ID = "HNLooseV4";
-    param.Muon_RECO_SF_Key = "MuonRecoSF";
+  else if (s_setup_version=="EXO17028"){
+    param.Apply_Weight_TriggerSF = false;
+    param.Apply_Weight_IDSF      = false;
+    param.CFMethod           = "MC";
+    param.FakeMethod   = "MC";
+    param.ConvMethod   = "MC";
+    param.Muon_Tight_ID      = "HNTight_17028";
+    param.Electron_Tight_ID  = "HNTight_17028";
+    param.Muon_FR_ID         = "HNLoose_17028";
+    param.Electron_FR_ID     = "HNLoose_17028";
     return param;
   }
-  else if (s_setup=="EXO17028"){
-    param.CFMethod   = "MC";
-    param.Muon_Tight_ID = "HNTight_17028";
-    param.Electron_Tight_ID = "HNTight_17028";
-    param.Electron_ID_SF_Key = "TmpHNTight_17028";
-    param.Muon_ID_SF_Key = "TmpHNTight_17028";
-    param.Muon_FR_ID = "HNLoose_17028";
-    param.Electron_FR_ID = "HNLoose_17028";
-    return param;
-  }
-  else if (s_setup=="Peking"){
+  else if (s_setup_version=="Peking"){
+    param.Apply_Weight_TriggerSF = false;
+    param.Apply_Weight_IDSF      = false;
     param.CFMethod     = "MC";
     param.FakeMethod   = "MC";
     param.ConvMethod   = "MC";
     param.Muon_Tight_ID = "HNL_Peking";
     param.Electron_Tight_ID = "HNL_Peking_"+GetYearString();
-    param.Electron_ID_SF_Key = "-";
-    param.Muon_ID_SF_Key = "-";
     return param;
   }
-  else if (s_setup=="POG"){
-    param.CFMethod   = "MC";
-    param.FakeMethod = "MC";
-    param.Electron_ID_SF_Key = "passTightID";
-    param.Electron_Tight_ID = "passPOGTight";
-    param.Muon_ID_SF_Key = "NUM_TightID_DEN_TrackerMuons";
-    param.Muon_ISO_SF_Key = "NUM_TightRelIso_DEN_TightIDandIPCut";
-    param.Muon_Tight_ID = "POGTightWithTightIso";
-    param.Muon_RECO_SF_Key = "MuonRecoSF";
-    TString trigKey=TrigList_POG_Mu[0];
-    trigKey=trigKey.ReplaceAll("HLT_","");
-    trigKey=trigKey.ReplaceAll("_v","");
-    param.Muon_Trigger_SF_Key = "POGTight";
-    param.Muon_Trigger_NameForSF = trigKey;
-    param.Muon_FR_ID = "HNLooseV1";
-    param.Electron_FR_ID = "HNLoosePOG";
-    return param;
-  }
-  else if (s_setup=="POGCR"){
-    param.CFMethod   = "MC";
+  else if (s_setup_version=="POGTight"){
+
+    param.Apply_Weight_IDSF     = true;
+    param.Apply_Weight_TriggerSF= true;
+
     param.FakeMethod = "DATA";
-    param.Electron_ID_SF_Key = "passTightID";
-    param.Electron_Tight_ID = "passPOGTight";
-    param.Muon_ID_SF_Key = "NUM_TightID_DEN_TrackerMuons";
-    param.Muon_ISO_SF_Key = "NUM_TightRelIso_DEN_TightIDandIPCut";
-    param.Muon_Tight_ID = "POGTightWithTightIso";
-    param.Muon_RECO_SF_Key = "MuonRecoSF";
-    param.Muon_Trigger_SF_Key = "Default";
-    param.Muon_Trigger_NameForSF = "Default";
-    param.Muon_FR_ID = "HNLooseV1";
+    param.CFMethod   = "DATA";
+    param.ConvMethod = "MC";
+
+    param.Muon_Tight_ID      = "POGTightWithTightIso";
+    param.Electron_Tight_ID  = "passPOGTight";
+    param.Muon_FR_ID     = "HNLooseV1";
     param.Electron_FR_ID = "HNLoosePOG";
+    param.TriggerSelection   = "POGSglLep";
+    param.k.Muon_ID_SF       = "NUM_TightID_DEN_TrackerMuons";
+    param.k.Muon_ISO_SF      = "NUM_TightRelIso_DEN_TightIDandIPCut";
+    param.k.Electron_ID_SF   = "passTightID";
+    param.FakeRateMethod       = "PtCone";
+    param.k.Muon_FR            = "AwayJetPt40";
+    param.k.Electron_FR        = "AwayJetPt40";
     return param;
   }
 
@@ -399,143 +742,83 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup, TStrin
   
 }
 
-AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameters( TString param_name, vector<vector<TString> >  hnl_run_param){
-
-  AnalyzerParameter param  ;
-  param.Clear();
-
-  param.syst_ = AnalyzerParameter::Central;
-  param.Name  = param_name;
-  param.DefName  = param_name;
-
-  param.MCCorrrectionIgnoreNoHist = false;
-
   
-  //==== Muon ID                                                                                                                                                                                                                                                                              
-  param.Muon_Tight_ID             = hnl_run_param[1][1];
-  param.Muon_Loose_ID             = hnl_run_param[1][2];
-  param.Muon_Veto_ID              = hnl_run_param[1][3];
-  param.Muon_FR_ID                = hnl_run_param[1][2];
-  param.Muon_UsePtCone            = false;
 
-
-  param.Muon_ID_SF_Key             = hnl_run_param[3][1];
-  param.Muon_ISO_SF_Key            = hnl_run_param[3][2];
-  param.Muon_Trigger_SF_Key        = hnl_run_param[3][3];
-  param.Muon_Trigger_NameForSF     = hnl_run_param[3][4];
-  param.Muon_RECO_SF_Key           = hnl_run_param[3][5];
-  param.Muon_FR_Key                = hnl_run_param[3][6];
-  //==== Electron ID                                                                                                                                                                                                                                                                          
-  param.Electron_Tight_ID          = hnl_run_param[0][1];
-  param.Electron_Loose_ID          = hnl_run_param[0][2];
-  param.Electron_Veto_ID           = hnl_run_param[0][3];
-  param.Electron_FR_ID             = hnl_run_param[0][2];
-
-  param.Electron_ID_SF_Key         = hnl_run_param[2][1];
-  param.Electron_Trigger_SF_Key    = hnl_run_param[2][2];
-  param.Electron_Trigger_NameForSF = hnl_run_param[2][3];
-  param.Electron_FR_Key            = hnl_run_param[2][4];
-
-  param.Electron_UsePtCone         = false;
-
-  //==== Jet ID                                                                                                                                                                                                                                                                               
-  param.Jet_ID                     = hnl_run_param[4][1];
-  param.FatJet_ID                  = hnl_run_param[4][2];
-  param.BJet_Method                = "2a";
-
-  return param;
-}
-
-
-
-  
-void HNL_LeptonCore::PrintParam(AnalyzerParameter param){
-
-  cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << endl;
-  cout << "--------NEW PARAMETER SETUP --------------------------------" << endl;
-  cout << "------------------------------------------------------------" << endl;
-  cout << "param name = " << param.Name << endl;
-  cout << "param Default name = " << param.DefName << endl;
-  
-  cout << "----- BKG PARAMETERS------------------------------------" << endl;
-
-  cout << "param.FakeMethod = " << param.FakeMethod << endl;
-  cout << "param.CFMethod   = " << param.CFMethod << endl;
-  cout << "param.ConvMethod = " << param.ConvMethod << endl;
-  cout << "param.FakeRateMethod = " << param.FakeRateMethod << endl;
-  cout << "param.TriggerSelection = " << param.TriggerSelection << endl;
-  cout << "param.Electron_CF_Key = " << param.Electron_CF_Key << endl;
-  cout << "-----ELECTRON PARAMETERS------------------------------------" << endl;
-  
-  cout << "Electron_Tight_ID = " << param.Electron_Tight_ID << endl;
-  cout << "Electron_Loose_ID = " << param.Electron_Loose_ID << endl;
-  cout << "Electron_Veto_ID = " << param.Electron_Veto_ID << endl;
-  cout << "Electron_ID_SF_Key = " << param.Electron_ID_SF_Key << endl;
-  cout << "Electron_Trigger_SF_Key = " << param.Electron_Trigger_SF_Key << endl;
-  cout << "Electron_FR_ID = " << param.Electron_FR_ID << endl;
-  cout << "Electron_FR_Key = " << param.Electron_FR_Key << endl;
-
-  cout << "-----MUON PARAMETERS---------------------------------------" << endl;
-
-  cout << "Muon_Tight_ID = " << param.Muon_Tight_ID << endl;
-  cout << "Muon_Loose_ID = " << param.Muon_Loose_ID << endl;
-  cout << "Muon_Veto_ID = " << param.Muon_Veto_ID << endl;
-  cout << "Muon_RECO_SF_Key = " << param.Muon_RECO_SF_Key << endl;
-  cout << "Muon_ID_SF_Key = " << param.Muon_ID_SF_Key << endl;
-  cout << "Muon_ISO_SF_Key = " << param.Muon_ISO_SF_Key << endl;
-  cout << "Muon_Trigger_SF_Key = " << param.Muon_Trigger_SF_Key << endl;
-  cout << "Muon_FR_ID = " << param.Muon_FR_ID << endl;
-
-  cout << "-----JET PARAMETERS----------------------------------------" << endl;
-  cout << "Jet_ID = " << param.Jet_ID << endl;
-  cout << "FatJet_ID = " << param.FatJet_ID << endl;
-  
-  return;
-  
-}
-
-double HNL_LeptonCore::SetupWeight(Event ev, AnalyzerParameter param){
+double HNL_LeptonCore::SetupWeight(Event ev, AnalyzerParameter& param){
 
   //=== Apply MC weight                                                                                                                                                                                    
   if(IsDATA) return 1.;
 
   double prefire_weight = 1.;
-  if(param.Weight_PreFire){
+  if(param.Apply_Weight_PreFire){
     if(param.syst_ == AnalyzerParameter::PrefireUp) prefire_weight = GetPrefireWeight(1);
     else if(param.syst_ == AnalyzerParameter::PrefireDown)  prefire_weight = GetPrefireWeight(-1);
     else  prefire_weight = GetPrefireWeight(0);
-    FillWeightHist(param.Name+"/PrefireWeight" ,prefire_weight);
+    FillWeightHist(param.ChannelDir()+"/PrefireWeight" ,prefire_weight);
   }
 
   double pileup_weight(1.);
-  if(param.Weight_PileUp){
+  if(param.Apply_Weight_PileUp){
     if(param.syst_ == AnalyzerParameter::PUUp) pileup_weight= GetPileUpWeight(nPileUp,1);
     else if(param.syst_ == AnalyzerParameter::PUDown) pileup_weight= GetPileUpWeight(nPileUp,-1);
     else pileup_weight= GetPileUpWeight(nPileUp,0);
-    FillWeightHist(param.Name+"/PileupWeight",pileup_weight);
+    FillWeightHist(param.ChannelDir()+"/PileupWeight",pileup_weight);
   }
 
-  double this_mc_weight =  MCweight(param.Weight_SumW, param.Weight_LumiNorm);
-  FillWeightHist(param.Name+"/MCWeight",    this_mc_weight);
+  double this_mc_weight =  MCweight(param.Apply_Weight_SumW, param.Apply_Weight_Norm1pb);
+  FillWeightHist(param.ChannelDir()+"/MCWeight",    this_mc_weight);
   
-  if(param.Weight_LumiNorm) FillWeightHist(param.Name+"/LumiWeight",  ev.GetTriggerLumi("Full"));
-  if(param.Weight_kFactor)  FillWeightHist(param.Name+"/KFactor",     GetKFactor());
+  if(param.Apply_Weight_LumiNorm) FillWeightHist(param.ChannelDir()+"/LumiWeight",  ev.GetTriggerLumi("Full"));
+  if(param.Apply_Weight_kFactor)  FillWeightHist(param.ChannelDir()+"/KFactor",     GetKFactor());
 
+  if(param.Apply_Weight_LumiNorm) this_mc_weight *= ev.GetTriggerLumi("Full");
+  if(param.Apply_Weight_kFactor)  this_mc_weight *= GetKFactor();
+  if(param.Apply_Weight_PileUp)   this_mc_weight *= pileup_weight;
+  if(param.Apply_Weight_PreFire)  this_mc_weight *= prefire_weight;
+         
+  
+  if(param.Apply_Weight_Z0)      this_mc_weight *= GetZ0Weight(vertex_Z);
+  if(param.Apply_Weight_TopCorr) this_mc_weight *= mcCorr->GetTopPtReweight(All_Gens);
+  if(param.Apply_Weight_DYCorr)  this_mc_weight *= param.w.zptweight;
+  if(param.Apply_Weight_DYCorr)  this_mc_weight *= param.w.weakweight;
 
-  if(param.Weight_LumiNorm) this_mc_weight *= ev.GetTriggerLumi("Full");
-  if(param.Weight_kFactor)  this_mc_weight *= GetKFactor();
-  if(param.Weight_PileUp)   this_mc_weight *= pileup_weight;
-  if(param.Weight_PreFire)  this_mc_weight *= prefire_weight;
-     
-     
-  FillWeightHist(param.Name+"/MCFullWeight_" , this_mc_weight);
-
+  FillWeightHist(param.ChannelDir()+"/MCFullWeight_" , this_mc_weight);
+  
+  param.w.EventSetupWeight = this_mc_weight;
   return this_mc_weight;
   
 }
 
+HNL_LeptonCore::Channel  HNL_LeptonCore::GetChannelENum(TString ch){
+  
+  if(ch == "EE")   return EE;
+  if(ch == "MuMu") return MuMu;
+  if(ch == "EMu")  return EMu;
+  if(ch == "MuE")  return MuE;
 
+  return NONE;
+}
 
+HNL_LeptonCore::Channel  HNL_LeptonCore::GetTriLeptonChannel(HNL_LeptonCore::Channel channel){
+
+  
+  if(channel == EE)   return EEE;
+  if(channel == MuMu) return MuMuMu;
+  if(channel == EMu)  return EMuL;
+  if(channel == MuE)  return MuEL;
+
+  return channel;
+}
+
+HNL_LeptonCore::Channel HNL_LeptonCore::GetQuadLeptonChannel(HNL_LeptonCore::Channel channel){
+
+  if(channel ==EE)   return EEEE;
+  if(channel == MuMu) return MuMuMuMu;
+  if(channel == EMu)  return EMuLL;
+  if(channel == MuE)  return MuELL;
+
+  return channel;
+}
 
 bool HNL_LeptonCore::CheckLeptonFlavourForChannel(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps){
   
@@ -565,13 +848,16 @@ bool HNL_LeptonCore::CheckLeptonFlavourForChannel(HNL_LeptonCore::Channel channe
   }
 
   
-  if(channel==MuMuMu  || channel==EEE || channel==EMuL ){
+  if(channel==MuMuMu  || channel==EEE || channel==EMuL || channel==MuEL){
     
     if( leps.size() != 3) return false;
     if(channel==MuMuMu && n_mu != 3) return false;
     if(channel==EEE && n_el != 3) return false;
     if(channel==EMuL&&  (n_el == 3  || n_mu == 3)) return false;
+    if(channel==MuEL&&  (n_el == 3  || n_mu == 3)) return false;
     
+    if(channel==EMuL&&  !(leps[0]->LeptonFlavour() == Lepton::ELECTRON)) return false;
+    if(channel==MuEL&&  !(leps[0]->LeptonFlavour() == Lepton::MUON))     return false;
     
     double lep1_ptcut= (channel==MuMuMu) ?   20.  : 25.;
     double lep2_ptcut= (channel==MuMuMu) ?   10   : 10.;
@@ -582,12 +868,15 @@ bool HNL_LeptonCore::CheckLeptonFlavourForChannel(HNL_LeptonCore::Channel channe
     return true;
   }
 
-  if(channel == MuMuMuMu || channel == EEEE || channel == EMuLL ) {
+  if(channel == MuMuMuMu || channel == EEEE || channel == EMuLL || channel == MuELL ) {
 
     if( leps.size() != 4) return false;
     if( channel==MuMuMuMu && n_mu != 4) return false;
     if( channel==EEEE && n_el != 4) return false;
-    if( channel == EMuLL && (n_mu == 0 || n_mu == 4)) return false;
+    if( channel == EMuLL && !(n_mu == 2 && n_mu == 2)) return false;
+    if( channel == MuELL && !(n_mu == 2 && n_mu == 2)) return false;
+    if(channel==EMuLL&&  !(leps[0]->LeptonFlavour() == Lepton::ELECTRON)) return false;
+    if(channel==MuELL&&  !(leps[0]->LeptonFlavour() == Lepton::MUON))     return false;
     
     double lep1_ptcut= (channel==MuMuMuMu) ?   20. : 25.;
     double lep2_ptcut= (channel==MuMuMuMu) ?   10. : 10.;
@@ -606,7 +895,6 @@ bool HNL_LeptonCore::CheckLeptonFlavourForChannel(HNL_LeptonCore::Channel channe
 
 
 TString HNL_LeptonCore::DoubleToString(double d){
-  
   
   std::string str = std::to_string (d);
   str.erase ( str.find_last_not_of('0') + 1, std::string::npos );
@@ -641,13 +929,20 @@ HNL_LeptonCore::~HNL_LeptonCore(){
   for(std::map< TString, double >::iterator mapit = cfmap.begin(); mapit!=cfmap.end(); mapit++){
     cout << "Cutflow key = " <<  mapit->first << " = " << mapit->second << endl;
   }
+
+  //==== Tools                         
+  if(mcCorr) delete mcCorr;
+  if(puppiCorr) delete puppiCorr;
+  if(fakeEst) delete fakeEst;
+  if(cfEst) delete cfEst;
+  if(pdfReweight) delete pdfReweight;
+
   cfmap.clear();
-
-
-
-  
+ 
   delete rand_;
   
+  DeleteZptWeight();
+
 }
 
 
@@ -999,48 +1294,13 @@ double HNL_LeptonCore::GetFilterEffType1(TString SigProcess, int mass){
 
 double HNL_LeptonCore::GetXsec(TString SigProcess, int mass){
 
-
-
   return 0.;
 }
 
 
+double  HNL_LeptonCore::GetRecoObjMass(TString METHOD , std::vector<Jet> jets, std::vector<FatJet> fatjets,vector<Lepton*> leps){
 
-int HNL_LeptonCore::GetIndexNonMinOSSF(std::vector<Lepton *> leps){
-
-  int     index=-1;
-
-  if (leps.size() == 3){
-
-    Particle ll1 = (*leps[0]);
-    ll1+= (*leps[1]);
-    Particle ll2 = (*leps[0]);
-    ll2+= (*leps[2]);
-    Particle ll3 = (*leps[1]);
-    ll3+= (*leps[2]);
-
-    double minOS=99999999999.;
-    if(ll1.Charge() == 0) {
-      if(ll1.M()  < minOS) { minOS=ll1.M(); index=2;}
-    }
-    if(ll2.Charge() == 0) {
-      if(ll2.M()  < minOS) { minOS=ll2.M(); index=1;}
-    }
-    if(ll3.Charge() == 0) {
-      if(ll3.M()  < minOS) { minOS=ll3.M(); index=0;}
-    }
-
-  }
-
-  return index;
-
-}
-
-
-
-double  HNL_LeptonCore::GetMass(TString type , std::vector<Jet> jets, std::vector<FatJet> fatjets,vector<Lepton*> leps){
-
-  if (type=="HNL_SR3"){
+  if (METHOD=="HNL_SR3"){
 
     if(jets.size() < 2) return 0.;
     double dijetmass_tmp=9999.;
@@ -1051,11 +1311,9 @@ double  HNL_LeptonCore::GetMass(TString type , std::vector<Jet> jets, std::vecto
     for(UInt_t emme=0; emme<jets.size(); emme++){
       ST += jets[emme].Pt();
       for(UInt_t enne=1; enne<jets.size(); enne++) {
-
         dijetmass_tmp = (jets[emme]+jets[enne]).M();
         if(emme == enne) continue;
-
-        if ( fabs(dijetmass_tmp-80.4) < fabs(dijetmass-80.4) ) {
+        if ( fabs(dijetmass_tmp-M_W) < fabs(dijetmass-M_W) ) {
           dijetmass = dijetmass_tmp;
           m = emme;
           n = enne;
@@ -1066,7 +1324,7 @@ double  HNL_LeptonCore::GetMass(TString type , std::vector<Jet> jets, std::vecto
     return Wcand.M();
   }
 
-  if (type=="HNL_SR3_NLL"){
+  if (METHOD=="HNL_SR3_NLL"){
 
     if(jets.size() < 2) return 0.;
     if(leps.size() != 2) return 0.;
@@ -1093,7 +1351,7 @@ double  HNL_LeptonCore::GetMass(TString type , std::vector<Jet> jets, std::vecto
     Particle Wcand = jets[m] + jets[n]+*leps[0] + *leps[1];
     return Wcand.M();
   }
-  if (type=="HNL_SR3_N1L"){
+  if (METHOD=="HNL_SR3_N1L"){
 
     if(jets.size() < 2) return 0.;
     if(leps.size() != 2) return 0.;
@@ -1123,7 +1381,7 @@ double  HNL_LeptonCore::GetMass(TString type , std::vector<Jet> jets, std::vecto
 
 
 
-  if (type=="HNL_SR1"){
+  if (METHOD=="HNL_SR1"){
     if(fatjets.size() ==0 )  return 0.;
     if(leps.size() != 2) return 0.;
     double dijetmass_tmp=999.;
@@ -1140,7 +1398,7 @@ double  HNL_LeptonCore::GetMass(TString type , std::vector<Jet> jets, std::vecto
     return W.M();
   }
 
-  if (type=="HNL_SR2_17028"){
+  if (METHOD=="HNL_SR2_17028"){
     if(fatjets.size() ==0 )  return 0.;
     if(leps.size() != 2) return 0.;
     double dijetmass_tmp=999.;
@@ -1166,7 +1424,7 @@ double  HNL_LeptonCore::GetMass(TString type , std::vector<Jet> jets, std::vecto
 
 
 
-vector<Muon> HNL_LeptonCore::GetLepCollByRunType(const std::vector<Muon>& MuColl, AnalyzerParameter param, TString Option){
+vector<Muon> HNL_LeptonCore::GetLepCollByRunType(const std::vector<Muon>& MuColl, AnalyzerParameter& param,TString Option){
 
 
   /// Empty Option means  param is used to configure
@@ -1178,7 +1436,7 @@ vector<Muon> HNL_LeptonCore::GetLepCollByRunType(const std::vector<Muon>& MuColl
 
   if(RunPromptTLRemoval) Option == "NHIntConv";
 
-  ///cout << "AnalyzerCore::GetLepCollByRunType  Muon Option = " << Option << endl;                                                                                                                                                                                                                   
+  ///cout << "AnalyzerCore::LepCollByRunType  Muon Option = " << Option << endl;                                                                                                                                                                                                                   
 
   bool GetHadFake=false,  GetNHIntConv=false, GetNHExtConv=false;
 
@@ -1263,7 +1521,7 @@ vector<Muon> HNL_LeptonCore::GetSignalLeptons(const std::vector<Muon>& MuColl, v
 
 
 
-vector<Electron> HNL_LeptonCore::GetLepCollByRunType(const vector<Electron>& ElColl, AnalyzerParameter param, TString Option){
+vector<Electron> HNL_LeptonCore::GetLepCollByRunType(const vector<Electron>& ElColl, AnalyzerParameter& param, TString Option){
 
 
   if(Option == ""){
@@ -1307,419 +1565,8 @@ vector<Electron> HNL_LeptonCore::GetLepCollByRunType(const vector<Electron>& ElC
   return ReturnVec;
 }
 
-
-double HNL_LeptonCore::GetLT(std::vector<Lepton *> leps){
-
-  double lt(0.);
-  for(auto ilep : leps) lt +=  ilep->Pt();
-
-  return lt;
-
-}
-
-double HNL_LeptonCore::GetLLMass(std::vector<Muon> leps){
-
-  return GetLLMass(MakeLeptonPointerVector(leps));
-}
-
-double HNL_LeptonCore::GetLLMass(std::vector<Electron> leps){
-
-  return GetLLMass(MakeLeptonPointerVector(leps));
-}
-
-double HNL_LeptonCore::GetLLMass(std::vector<Lepton *> leps){
-
-  if(leps.size() != 2) return -1.;
-
-  Particle ll = (*leps[0]) + (*leps[1]);
-  return ll.M();
-}
-
-double HNL_LeptonCore::GetMassMinOSSF(std::vector<Lepton *> leps){
-
-
-  double minOS=99999999999.;
-
-  for(unsigned int i = 0; i < leps.size(); i++){
-    for(unsigned int j = i+1;  j <leps.size(); j++){
-      if(leps[i]->LeptonFlavour() != leps[j]->LeptonFlavour()) continue;
-      if(leps[i]->Charge() == leps[j]->Charge() ) continue;
-      Particle ll = (*leps[i]) + (*leps[j]);
-      if(ll.M() < minOS) minOS=ll.M();
-    }
-  }
-
-
-
-  return minOS;
-
-}
-
-double  HNL_LeptonCore::GetMassMinSSSF(std::vector<Lepton *> leps){
-
-  double minSS=99999999999.;
-
-  for(unsigned int i = 0; i < leps.size(); i++){
-    for(unsigned int j = i+1;  j <leps.size(); j++){
-      if(leps[i]->LeptonFlavour() != leps[j]->LeptonFlavour()) continue;
-      if(leps[i]->Charge() != leps[j]->Charge() ) continue;
-      Particle ll = (*leps[i]) + (*leps[j]);
-      if(ll.M() < minSS) minSS=ll.M();
-    }
-  }
-  if(minSS < 0 ) cout << "minSS = " << minSS << " " << endl;
-  return minSS;
-
-}
-bool  HNL_LeptonCore::ZmasslllWindowCheck(std::vector<Lepton *> leps){
-
-  if (leps.size() == 3){
-
-    Particle lll = *leps[0] + *leps[1]+ *leps[2];
-
-    bool passZmass_lll_Window = (fabs(lll.M() - 90.1) < 15.);
-    return passZmass_lll_Window;
-
-  }
-
-  return true;
-}
-
-
-int HNL_LeptonCore::GetIndexNonMinSSSF(std::vector<Lepton *> leps){
-
-  int     index=-1;
-
-  if (leps.size() == 3){
-
-
-    Particle ll1 = (*leps[0]);
-    ll1+= (*leps[1]);
-    Particle ll2 = (*leps[0]);
-    ll2+= (*leps[2]);
-    Particle ll3 = (*leps[1]);
-    ll3+= (*leps[2]);
-
-    double minOS=99999999999.;
-    if(fabs(ll1.Charge()) == 2) {
-      if(ll1.M()  < minOS) { minOS=ll1.M(); index=2;}
-    }
-    if(fabs(ll2.Charge()) == 2) {
-      if(ll2.M()  < minOS) { minOS=ll2.M(); index=1;}
-    }
-    if(fabs(ll3.Charge()) == 2) {
-      if(ll3.M()  < minOS) { minOS=ll3.M(); index=0;}
-    }
-
-  }
-
-  return index;
-
-}
-
-int HNL_LeptonCore::GetIndexNonBestZ(std::vector<Lepton *> leps,double mass_diff){
-
-  int     index=-1;
-
-  if (leps.size() == 3){
-
-
-    Particle ll1 = (*leps[0]);
-    ll1+= (*leps[1]);
-    Particle ll2 = (*leps[0]);
-    ll2+= (*leps[2]);
-    Particle ll3 = (*leps[1]);
-    ll3+= (*leps[2]);
-
-    double minOSZ=99999999999.;
-    if(fabs(ll1.Charge()) == 0) {
-      if(fabs(ll1.M() - 90.1) < minOSZ) {minOSZ = fabs(ll1.M() - 90.1); index=2;}
-    }
-    if(fabs(ll2.Charge()) == 0) {
-      if(fabs(ll2.M() - 90.1) < minOSZ) {minOSZ = fabs(ll2.M() - 90.1);index=1;}
-
-    }
-    if(fabs(ll3.Charge()) == 0) {
-      if(fabs(ll3.M() - 90.1) < minOSZ) {minOSZ = fabs(ll3.M() - 90.1);index=0;}
-    }
-
-
-    if(minOSZ < mass_diff) return index;
-  }
-  return -1;
-
-}
-
-
-
-
-
-bool  HNL_LeptonCore::ZmassOSSFWindowCheck(std::vector<Lepton *> leps, double mass_diff){
-
-  for(unsigned int i = 0; i < leps.size(); i++){
-    for(unsigned int j = i+1;  j <leps.size(); j++){
-      if(leps[i]->LeptonFlavour() != leps[j]->LeptonFlavour()) continue;
-      if(leps[i]->Charge() == leps[j]->Charge() ) continue;
-      Particle ll = (*leps[i]) + (*leps[j]);
-      if((fabs(ll.M() - 90.1) < mass_diff)) return true;
-    }
-  }
-
-  return false;
-}
-
-double HNL_LeptonCore::GetMassBestZ(std::vector<Lepton *> leps,  bool bestZ){
-
-  double minMZ = 99999999.;
-  double massNonBestZ(-9999.), massBestZ(-9999);
-  if(leps.size()==4){
-
-    Particle Z1Cand;
-    Particle Z2Cand;
-
-
-    for(unsigned int iel =0; iel < leps.size() ; iel++){
-      for(unsigned int iel2 =iel+1; iel2 < leps.size() ; iel2++){
-        if(iel== iel2) continue;
-        Z1Cand = (*leps[iel]) + (*leps[iel2]) ;
-        if(leps[iel]->Charge() != leps[iel2]->Charge()){
-
-          int zel1(-9), zel2(-9);
-          if(iel ==0 && iel2==1){ zel1=2; zel2=3;    Z2Cand = (*leps[2]) + (*leps[3]);}
-          if(iel ==0 && iel2==2){ zel1=1; zel2=3;    Z2Cand = (*leps[1]) + (*leps[3]);}
-          if(iel ==0 && iel2==3){ zel1=1; zel2=2;    Z2Cand = (*leps[1]) + (*leps[2]);}
-          if(iel ==1 && iel2==2){ zel1=0; zel2=3;    Z2Cand = (*leps[0]) + (*leps[3]);}
-          if(iel ==1 && iel2==3){ zel1=0; zel2=2;    Z2Cand = (*leps[0]) + (*leps[2]);}
-          if(iel ==2 && iel2==3){ zel1=0; zel2=1;    Z2Cand = (*leps[0]) + (*leps[1]);}
-
-          if(leps[zel1]->Charge() != leps[zel2]->Charge()){
-            if(( fabs(Z1Cand.M()- 90.1) + fabs(Z2Cand.M()- 90.1)) < minMZ) {
-              minMZ = fabs(Z1Cand.M()- 90.1) + fabs(Z2Cand.M()- 90.1);
-              if(fabs(Z1Cand.M()- 90.1)< fabs(Z2Cand.M()- 90.1) ){ massBestZ=Z1Cand.M(); massNonBestZ=Z2Cand.M();}
-              else{massBestZ=Z2Cand.M(); massNonBestZ=Z1Cand.M();}
-            }
-          }
-        }
-      }
-    }
-
-
-    if(bestZ) return massBestZ;
-    return massNonBestZ;
-  }
-  Particle Z1Cand;
-
-  for(unsigned int iel =0; iel < leps.size() ; iel++){
-
-    for(unsigned int iel2 =iel+1; iel2 < leps.size() ; iel2++){
-      if(iel== iel2) continue;
-      Z1Cand = (*leps[iel]) + (*leps[iel2]) ;
-      if(leps[iel]->Charge() != leps[iel2]->Charge()){
-        if(fabs(Z1Cand.M()- 90.1) < minMZ) {minMZ = fabs(Z1Cand.M()- 90.1) ; massBestZ=Z1Cand.M();}
-      }
-    }
-  }
-  return massBestZ;
-
-}
-
-bool  HNL_LeptonCore::ZmassOSWindowCheck(std::vector<Lepton *> leps){
-
-  bool passZmass_os_Window=false;
-
-  if (leps.size() == 3){
-
-    Particle ll1 = (*leps[0]);
-    ll1+= (*leps[1]);
-    Particle ll2 = (*leps[0]);
-    ll2+= (*leps[2]);
-    Particle ll3 = (*leps[1]);
-    ll3+= (*leps[2]);
-
-    if(ll1.Charge() == 0 && (fabs(ll1.M() - 90.1) < 15.)) passZmass_os_Window=true;
-    if(ll2.Charge() == 0 && (fabs(ll2.M() - 90.1) < 15.)) passZmass_os_Window=true;
-    if(ll3.Charge() == 0 && (fabs(ll3.M() - 90.1) < 15.)) passZmass_os_Window=true;
-
-  }
-
-  return passZmass_os_Window;
-}
-
-
-double HNL_LeptonCore::GetST( std::vector<Electron> electrons, std::vector<Muon> muons, std::vector<Jet> jets, std::vector<FatJet> fatjets,  Particle met){
-
-
-  double _st(0.);
-  for(unsigned int i=0; i<jets.size(); i++)_st += jets.at(i).Pt();
-  for(unsigned int i=0; i<fatjets.size(); i++)_st += fatjets.at(i).Pt();
-  for(unsigned int i=0; i<muons.size(); i++) _st +=  muons[i].Pt();
-  for(unsigned int i=0; i<electrons.size(); i++) _st +=  electrons[i].Pt();
-  _st += met.Pt();
-  return _st;
-
-}
-
-double HNL_LeptonCore::GetST( std::vector<Electron> electrons, std::vector<Muon> muons, std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev){
-
-  double _st(0.);
-  for(unsigned int i=0; i<jets.size(); i++)_st += jets.at(i).Pt();
-  for(unsigned int i=0; i<fatjets.size(); i++)_st += fatjets.at(i).Pt();
-  for(unsigned int i=0; i<muons.size(); i++) _st +=  muons[i].Pt();
-  for(unsigned int i=0; i<electrons.size(); i++) _st +=  electrons[i].Pt();
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
-
-  _st += METv.Pt();
-
-  return _st;
-}
-
-
-double HNL_LeptonCore::GetST( std::vector<Lepton *> leps, std::vector<Jet> jets, std::vector<FatJet> fatjets,  Event ev){
-
-  double _st(0.);
-  for(unsigned int i=0; i<jets.size(); i++)_st += jets.at(i).Pt();
-  for(unsigned int i=0; i<fatjets.size(); i++)_st += fatjets.at(i).Pt();
-  for(auto ilep: leps) _st +=ilep->Pt();
-
-  Particle METUnsmearedv = ev.GetMETVector();
-  Particle METv =UpdateMETSmearedJet(METUnsmearedv, jets);
-
-  _st += METv.Pt();
-
-  return _st;
-}
-double HNL_LeptonCore::GetST( std::vector<Lepton *> leps, std::vector<Jet> jets, std::vector<FatJet> fatjets,  Particle met){
-
-
-  double _st(0.);
-  for(unsigned int i=0; i<jets.size(); i++)_st += jets.at(i).Pt();
-  for(unsigned int i=0; i<fatjets.size(); i++)_st += fatjets.at(i).Pt();
-  for(auto ilep : leps) _st +=  ilep->Pt();
-  _st += met.Pt();
-  return _st;
-
-}
-
-
-
-double HNL_LeptonCore::M_T(Particle a, Particle b){
-  double dphi = a.DeltaPhi(b);
-
-  return TMath::Sqrt( 2.*a.Pt()*b.Pt()*(1.- TMath::Cos(dphi) ) );
-
-}
-
-double HNL_LeptonCore::GetHT(std::vector<Jet> jets, std::vector<FatJet> fatjets){
-
-  double _ht(0.);
-  for(unsigned int i=0; i<jets.size(); i++)_ht += jets.at(i).Pt();
-  for(unsigned int i=0; i<fatjets.size(); i++)_ht += fatjets.at(i).Pt();
-  return _ht;
-
-}
-
-
-
-TString HNL_LeptonCore::GetPtLabel(Muon mu){
-
-
-  if (mu.Pt() < 10.) return "pt_5_10";
-  if (mu.Pt() < 15.) return "pt_10_15";
-  if (mu.Pt() < 20.) return "pt_15_20";
-  if (mu.Pt() < 30.) return "pt_20_30";
-  if (mu.Pt() < 40.) return "pt_30_40";
-  if (mu.Pt() < 50.) return "pt_40_50";
-  if (mu.Pt() < 100.) return "pt_50_100";
-  if (mu.Pt() < 2000.) return "pt_100_2000";
-
-  return "";
-
-
-}
-
-
-TString HNL_LeptonCore::GetEtaLabel(Muon mu){
-  if(fabs(mu.Eta()) < 0.8 ) return "eta1";
-  if(fabs(mu.Eta()) < 1.5 ) return "eta2";
-  if(fabs(mu.Eta()) < 2.5 ) return "eta3";
-  return "";
-}
-
-
-bool HNL_LeptonCore::PassGenMatchFilter(vector<Lepton *> leps, AnalyzerParameter param){
-
-  /// Function to split Prompt/Conv/CF/Fake IF code uses RunPrompt etc.... 
-  /// If code does not use Run* to sepeate MC samples then function should return true
-
-  /// If user used Data driven method for Fake/CF then function returns for Fake/F bkf true for data and false for MC 
-  /// If user used Data driven method for Fake/CF then for Conv function requires at least one conv lepton is present 
-
-  if(IsData) return true;
-  if(RunFake && param.FakeMethod != "MC") return false;
-  if(RunCF   && param.CFMethod   != "MC") return false;
-  if(RunConv && param.ConvMethod != "MC") return false;
-
-  if(MCSample.Contains("Type")) return true;
-
-  //// Function filters events when using MC based on if they are Fake/CF/Conv
-  
-  int nConv(0);
-  int nCF=(0);
-  int nFake=(0);                                         
-  unsigned int nPrompt(0);
-  for(auto ilep: leps){
-    //int LepType= GetLeptonType_JH(*ilep, gens);
-    if( ilep->IsConv())     nConv++;
-    if( ilep->LeptonIsCF()) nCF++;
-    if( ilep->IsFake())     nFake++;
-    if( ilep->IsPrompt())   nPrompt++;
-  }
-  
-  if(RunPrompt && (nPrompt == leps.size())) return true;
-  if(RunPrompt && (nPrompt != leps.size())) return false;
-
-
-  if( (RunFake || RunConv || RunCF )){
-
-    if(RunFake  && nFake > 0)  return true;
-    if(!RunFake && nFake > 0)  return false;
-    
-    if(RunCF    && nCF   > 0)  return true;
-    if(!RunCF   && nCF > 0)    return false;
-
-    if(RunConv  && nConv > 0)  return true;
-    if(!RunConv && nConv > 0) return false;
-    
-    return false;
-  }
-  
-  return true;
-
-}
-
-
-TString HNL_LeptonCore::GetElTypeTString(Electron el){
-  if(IsDATA) return "";
-  TString tag = "";
-
-  if(GetLeptonType(el, All_Gens) < 0) tag = "Minus";
-  tag+=TString::Itoa(fabs( el.LeptonGenType()), 10);
-  return tag;
-}
-
-TString HNL_LeptonCore::GetLepTypeTString(const Lepton& lep){
-  if(IsDATA) return "";
-  TString tag = "";
-  if(GetLeptonType(lep, All_Gens) < 0) tag = "Minus";
-  tag+=TString::Itoa(fabs(lep.LeptonGenType()), 10);
-  return tag;
-}
-
 bool HNL_LeptonCore::SameCharge(vector<Muon> mus, int ch){
-
   if(mus.size() != 2) return false;
-
   int sumQ=mus[0].Charge()+mus[1].Charge();
   if(ch==0){
     if(fabs(sumQ) == 2) return true;
@@ -1728,21 +1575,16 @@ bool HNL_LeptonCore::SameCharge(vector<Muon> mus, int ch){
   else if(ch==1){
     if(sumQ == 2) return true;
     return false;
-
   }
   else if(ch==-1){
     if(sumQ == -2) return true;
     return false;
-
   }
   return false;
-
 }
 
 bool HNL_LeptonCore::SameCharge(vector<Electron> els, int ch){
-
   if(els.size() != 2) return false;
-
   int sumQ=els[0].Charge()+els[1].Charge();
   if(ch==0){
     if(fabs(sumQ) == 2) return true;
@@ -1751,12 +1593,10 @@ bool HNL_LeptonCore::SameCharge(vector<Electron> els, int ch){
   else if(ch==1){
     if(sumQ == 2) return true;
     return false;
-
   }
   else if(ch==-1){
     if(sumQ == -2) return true;
     return false;
-
   }
   return false;
 }
@@ -1775,12 +1615,10 @@ bool HNL_LeptonCore::SameCharge(vector<Electron> els, vector<Muon> mus,int ch){
   else if(ch==1){
     if(sumQ == 2) return true;
     return false;
-
   }
   else if(ch==-1){
     if(sumQ == -2) return true;
     return false;
-
   }
   return false;
 }
@@ -1803,41 +1641,8 @@ bool HNL_LeptonCore::SameCharge(std::vector<Lepton *> leps, int ch){
   else if(ch==-1){
     if(sumQ == -2) return true;
     return false;
-
   }
-
   return false;
-}
-
-
-
-TString HNL_LeptonCore::Category(Electron el){
-
-
-  TString eta_label="El";
-  if(fabs(el.Eta()) < 0.8) eta_label = "_BB";
-  else if(fabs(el.Eta()) < 1.5) eta_label = "_EB";
-  else eta_label = "_EE";
-
-  return eta_label;
-
-
-}
-
-
-
-
-
-TString HNL_LeptonCore::GetPtBin(bool muon, double pt){
-  TString pt_label="";
-  
-  if(pt< 20) pt_label = "_ptbin1"; 
-  else if(pt < 50) pt_label = "_ptbin2"; 
-  else if(pt < 100) pt_label = "_ptbin3";
-  else pt_label = "_ptbin4";                                                               
-
-  return pt_label;
-
 }
 
 

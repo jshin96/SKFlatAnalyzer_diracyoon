@@ -32,98 +32,72 @@ TH3D* AnalyzerCore::GetHist3D(TString histname){
 }
 
 
+void AnalyzerCore::SetHistBins(){
 
-double AnalyzerCore::FillWeightHist(TString label, double _weight){
+  map_hist_bins.clear();
+  map_hist_nbins.clear();
 
-  if(run_Debug) cout << "AnalyzerCore::FillWeightHist ["+label+"]  corr.=" <<   _weight << endl;
+  AddHistBinning("Pt", {10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,500.});
+  AddHistBinning("Eta4", {0.,0.8,  1.479, 2.,  2.5});
 
-  double max_x_range = 5.;
-  if(label.Contains("Lumi")) max_x_range = 5.+ 2*(fabs(_weight));
+  AddHistBinning("PR_pt", {10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,500.});
+  AddHistBinning("PR_ptcone", {10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,500.});
+  AddHistBinning("FR_pt", {10., 15.,20.,25.,30.,35.,40.,50.,60.,100});
 
-  if(!label.Contains("Syst_"))   FillHist( "weights/"+ label , _weight ,1., 200, -1.*max_x_range, max_x_range,"ev weight");
+  AddHistBinning("FR_eta", {0.,0.8,  1.479, 2.,  2.5});
+  AddHistBinning("FR_Muon_pt", {10., 15.,20.,25.,30.,35.,40.,50.,60.,100});
+  AddHistBinning("FR_Muon_ptcone",{6.,10., 15.,20.,25.,30.,35.,40.,50., 60.,100.});
+  AddHistBinning("FR_Muon_LF",{10., 15.,20.,25.,30.,35.,40.,50.,60.});
+  AddHistBinning("FR_Muon_HF",{10., 15.,20.,25.,30.,35.,40.,50.});
 
-  return _weight;
+  AddHistBinning("FR_Electron_ptcone",{10., 15.,23.,30.,35., 40.,50.,60.,100.});
+  AddHistBinning("FR_Electron_pt",{10., 15.,20.,25.,30., 35.,40.,50.,60.,100.});
+  AddHistBinning("FR_Electron_LF",{10., 20.,25.,30., 35.,40.,50.,60.});
+  AddHistBinning("FR_Electron_HF",{10., 15.,20.,25.,30., 35.,40.,50});
+  
+  AddHistBinning("PrescaledTriggerPt",{0.,5., 10., 20., 30., 50., 200. });
+
+
+  vector<double> mvabinsTMP;
+  for(int ib =0 ; ib < 50+1; ib++) mvabinsTMP.push_back(ib*0.02);
+  AddHistBinning("MVABins", mvabinsTMP);
+
+  return;
+
 }
 
-double AnalyzerCore::FillFakeWeightHist(TString label, vector<Lepton *> Leps,AnalyzerParameter param,  double _weight){
+void AnalyzerCore::AddHistBinning(TString mkey, vector<double> vbins){
+  
+  int nbin = vbins.size();
 
-
-  if(run_Debug) cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << endl;
-  if(run_Debug) {
-    for(auto i: Leps) {
-      if(i->LeptonFlavour()==Lepton::MUON) cout << "Muon " << endl;
-      else cout<< "Electron " << endl;
-    }
-  }
-
-  if(run_Debug) cout << "nLep = " << Leps.size() << endl;
-  if(run_Debug) cout << "Weight = " << _weight << endl;
-
-  TString TLType="";
-  for(auto i: Leps) {
-    if(i->PassLepID())TLType+="T";
-    else TLType+="L";
-  }
-  if(run_Debug) cout << "TLType = " << TLType << endl;
-
-  //  if(Leps.size() > 0) cout << "LepTightIDName = " << Leps[0]->LepTightIDName() << endl;
-  // cout << "TLType = " << TLType <<  " Weight = " << _weight << endl;
-
-  FillHist( "FakeWeights/"+ label , _weight ,1., 200, -5., 5,"ev weight");
-
-  if(Leps.size() == 2){
-
-    bool T1 = Leps[0]->PassLepID();
-    bool T2 = Leps[1]->PassLepID();
-    if(T1&&T2)         FillHist( "FakeStudy/TLSplit/TightLoose"+ label , 1, _weight , 5, 0., 5);
-    if(T1&&!T2)        FillHist( "FakeStudy/TLSplit/TightLoose"+ label , 2, _weight , 5, 0., 5);
-    if(!T1&&T2)        FillHist( "FakeStudy/TLSplit/TightLoose"+ label , 3, _weight , 5, 0., 5);
-    if(!T1&&!T2)       FillHist( "FakeStudy/TLSplit/TightLoose"+ label , 4, _weight , 5, 0., 5);
-    if(run_Debug) cout << "FillFakeWeightHist Lepton Types T1T2 = " << T1 << " "  << T2 << endl;
-  }
-
-  for(auto ilep : Leps) {
-    FillHist( "FakeStudy/MVAPlots/QCD_LFvsHF_v5_"+label, ilep->HNL_MVA_Fake("QCD_LFvsHF_v5"), 1, 100, -1., 1.);
-
-    if(ilep->HNL_MVA_Fake("QCD_LFvsHF_v5") > 0) FillHist( "FakeStudy/MVAPlots/QCD_BvsC_v5_LF_"+label, ilep->HNL_MVA_Fake("QCD_BvsC_v5"), 1, 100, -1., 1);
-    else  FillHist( "FakeStudy/MVAPlots/QCD_BvsC_v5_HF_"+label, ilep->HNL_MVA_Fake("QCD_BvsC_v5"), 1, 100, -1., 1.);
-
-
-    if(!ilep->PassLepID())  {
-
-      double FR = (ilep->LeptonFlavour()==Lepton::MUON) ? fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, param.Muon_FR_Key , param.FakeRateMethod, ilep->fEta(), ilep->PtMaxed(60.), ilep->LeptonFakeTagger() ) :  fakeEst->GetElectronFakeRate(param.Electron_Tight_ID, param.Electron_FR_Key,param.FakeRateMethod, ilep->fEta(), ilep->PtMaxed(60.),ilep->LeptonFakeTagger() );
-
-
-      double FRFlav = (ilep->LeptonFlavour()==Lepton::MUON) ? fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, param.Muon_FR_Key , param.FakeRateMethod, ilep->fEta(), ilep->PtMaxed(60.), ilep->LeptonFakeTagger(),0) :  fakeEst->GetElectronFakeRate(param.Electron_Tight_ID,param.Electron_FR_Key,param.FakeRateMethod,ilep->fEta(), ilep->PtMaxed(60.), ilep->LeptonFakeTagger(), 0);
-
-      if(run_Debug) cout << "!Tight Lep Type = " <<ilep->LeptonFakeTagger() << "  LFvsHFMVA = " << ilep->HNL_MVA_Fake("QCD_LFvsHF_v5") << " BvsC MVA = " << ilep->HNL_MVA_Fake("QCD_BvsC_v5")   << endl;
-      if(run_Debug) cout << "!Tight Pt = " << ilep->PtMaxed(60.) << " pt = " << ilep->Pt() << " eta =  " << ilep->fEta() << " FR = " << FR << " FRFlav = " << FRFlav <<  endl;
-
-
-      FillHist( "FakeStudy/Rates/"+ilep->LepTightIDName()+"/Loose_"+ label , FR, 1 , 1000, 0., 5);
-      FillHist( "FakeStudy/Rates/"+ilep->LepTightIDName()+"/Loose_VsPt"+ label , ilep->PtMaxed(60.), FR, 1 , 60, 0, 60, 1000, 0., 5);
-      FillHist( "FakeStudy/Rates/"+ilep->LepTightIDName()+"/Loose_"+ilep->sEtaRegion()+"_"+ label , FR, 1 , 1000, 0., 5);
-
-    }
-
-  }
-
-
-  if(Leps.size() == 2){
-    bool T1 = Leps[0]->PassLepID();
-    bool T2 = Leps[1]->PassLepID();
-    double FW = GetFakeWeight(Leps, param, false);
-    if(T1&&T2)FillHist( "FakeStudy/EventWeight/TT_"+ label , FW, _weight , 100, 0., 5);
-    if(T1&&!T2)FillHist( "FakeStudy/EventWeight/TL_"+ label , FW, _weight , 100, 0., 5);
-    if(!T1&&T2)FillHist( "FakeStudy/EventWeight/LT_"+ label , FW, _weight , 100, 0., 5);
-    if(!T1&&!T2)FillHist( "FakeStudy/EventWeight/LL_"+ label , FW, _weight , 100, 0., 5);
-    if(run_Debug) cout << "EventWeight = " << FW << endl;
-  }
-
-  return _weight;
+  map_hist_bins[mkey]     = vbins;
+  map_hist_nbins[mkey]    = nbin-1;
+  
+  return;
 }
 
+vector<double>   AnalyzerCore::GetHistBins(TString k){
 
+  map<TString, vector<double> >::iterator it = map_hist_bins.find(k);
+  if ( it == map_hist_bins.end() ) {
+    cout << "Error in GetBins " << k << endl;
+    exit(EXIT_FAILURE);
+  }
+
+  return it->second;
+
+}
+
+int AnalyzerCore::GetHistNBins(TString k){
+
+  auto it = map_hist_nbins.find(k);
+  if ( it == map_hist_nbins.end() ) {
+    cout << "Error in GetBins" << endl;
+    exit(EXIT_FAILURE);
+  }
+  return it->second;
+
+}
 
 
 void AnalyzerCore::FillHist(TString histname, double value, double weight, int n_bin, double x_min, double x_max , TString label){
@@ -140,11 +114,69 @@ void AnalyzerCore::FillHist(TString histname, double value, double weight, int n
 
 }
 
+void AnalyzerCore::FillHistogram(TString histname, double value, double weight, TString BinLabel,  TString label){
+  
+  FillHistogram(histname, value, weight, GetHistNBins(BinLabel), GetHistBins(BinLabel), label);
+  return ;
+}
 
-void AnalyzerCore::FillHist(TString histname, double value, double weight, int n_bin, double *xbins, TString label){
+void AnalyzerCore::FillHistogram(TString histname, double value_x,double value_y,  double weight, TString BinLabelx, TString BinLabely, TString label){
+
+  FillHistogram(histname, value_x, value_y, weight, GetHistNBins(BinLabelx), GetHistBins(BinLabelx), GetHistNBins(BinLabely), GetHistBins(BinLabely));
+  return ;
+}
+
+void AnalyzerCore::FillHistogram(TString histname, double value_x, double value_y, double weight, int n_binx, vector<double> xbins, int n_biny, vector<double> ybins, TString label){
+
+  TH2D *this_hist = GetHist2D(histname);
+  if( !this_hist ){
+    
+    double arrx_bins [n_binx+1];
+    std::copy(xbins.begin(), xbins.end(), arrx_bins);
+
+    double arry_bins [n_biny+1];
+    std::copy(ybins.begin(), ybins.end(), arry_bins);
+
+    this_hist = new TH2D(histname, "", n_binx, arrx_bins, n_biny, arry_bins);
+    this_hist->SetDirectory(NULL);
+    maphist_TH2D[histname] = this_hist;
+  }
+
+  this_hist->Fill(value_x, value_y, weight);
+
+  return ;
+
+}
+
+
+
+void AnalyzerCore::FillHistogram(TString histname, double value, double weight, int n_bin, vector<double> xbins, TString label){
 
   TH1D *this_hist = GetHist1D(histname);
   if( !this_hist ){
+
+    double arrx_bins [n_bin+1];
+    std::copy(xbins.begin(), xbins.end(), arrx_bins);
+
+    this_hist = new TH1D(histname, "", n_bin, arrx_bins);
+    this_hist->SetDirectory(NULL);
+    this_hist->GetXaxis()->SetTitle(label);
+
+    maphist_TH1D[histname] = this_hist;
+  }
+
+  this_hist->Fill(value, weight);
+  return ;
+
+}
+
+
+void AnalyzerCore::FillHist(TString histname, double value, double weight, int n_bin, double *xbins, TString label){
+  
+
+  TH1D *this_hist = GetHist1D(histname);
+  if( !this_hist ){
+
     this_hist = new TH1D(histname, "", n_bin, xbins);
     this_hist->SetDirectory(NULL);
     this_hist->GetXaxis()->SetTitle(label);
@@ -153,6 +185,7 @@ void AnalyzerCore::FillHist(TString histname, double value, double weight, int n
   }
 
   this_hist->Fill(value, weight);
+  return ;
 
 }
 
@@ -170,6 +203,7 @@ void AnalyzerCore::FillHist(TString histname,
   }
 
   this_hist->Fill(value_x, value_y, weight);
+  return ;
 
 }
 
@@ -184,7 +218,6 @@ void AnalyzerCore::FillHist(TString histname,
     this_hist = new TH2D(histname, "", n_binx, xbins, n_biny, ybins);
     this_hist->SetDirectory(NULL);
     maphist_TH2D[histname] = this_hist;
-    //cout << "CReating TH2D " <<  histname << endl;                                                                                                                                                                                                                                                                                                                        
   }
 
   this_hist->Fill(value_x, value_y, weight);
@@ -341,9 +374,29 @@ void AnalyzerCore::JSFillHist(TString suffix, TString histname,
 }
 
 
+void AnalyzerCore::DeleteHistMaps(){
+
+  for(std::map< TString, TH1D* >::iterator mapit = maphist_TH1D.begin(); mapit!=maphist_TH1D.end(); mapit++)   delete mapit->second;
+  maphist_TH1D.clear();
+
+  for(std::map< TString, TH2D* >::iterator mapit = maphist_TH2D.begin(); mapit!=maphist_TH2D.end(); mapit++)  delete mapit->second;
+  maphist_TH2D.clear();
+
+  for(std::map< TString, TH3D* >::iterator mapit = maphist_TH3D.begin(); mapit!=maphist_TH3D.end(); mapit++)  delete mapit->second;
+  maphist_TH3D.clear();
+
+  return;
+}
+
+
+
+
 void AnalyzerCore::WriteHist(){
 
   outfile->cd();
+
+  WriteProfile();
+
   for(std::map< TString, TH1D* >::iterator mapit = maphist_TH1D.begin(); mapit!=maphist_TH1D.end(); mapit++){
     TString this_fullname=mapit->second->GetName();
     TString this_name=this_fullname(this_fullname.Last('/')+1,this_fullname.Length());

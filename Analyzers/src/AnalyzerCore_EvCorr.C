@@ -16,10 +16,6 @@ double AnalyzerCore::GetPrefireWeight(int sys){
 
 }
 
-double AnalyzerCore::GetPileUpWeight(int N_pileup, int syst){
-  if(IsDATA) return 1.;
-  else return mcCorr->GetPileUpWeight(N_pileup, syst);
-}
 
 double AnalyzerCore::GetPDFWeight(LHAPDF::PDF* pdf_){
 
@@ -117,3 +113,5 @@ bool AnalyzerCore::PassMETFilter(){
   return true;
 
 }
+
+

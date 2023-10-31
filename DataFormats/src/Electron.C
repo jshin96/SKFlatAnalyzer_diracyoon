@@ -724,23 +724,6 @@ int  Electron::PassIDStudy(TString ID) const{
   }
 
 
-
-  if(ID == "HNL_ULID_Conv_2016" ){
-    
-    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,80,-0.8,0.2) , GetPtSlopeCut(20,80,-0.8,0.2) ,   "conv_v5")) return 0;
-    return 1;
-
-
-  }
-  if(ID == "HNL_ULID_Conv_2017" || ID == "HNL_ULID_Conv_2018" || ID == "HNL_ULID_Conv_Run2"){
-    
-    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,80,-0.8,0.3) , GetPtSlopeCut(20,80,-0.8,0.3) ,   "conv_v5")) return 0;
-    
-    return 1;
-  }
-
-
-
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   //////   *OPT* IDs are IDs that are tested, based off scans of MVAs in BB/EC
@@ -1851,6 +1834,60 @@ int  Electron::PassIDTight(TString ID) const{
   }
 
 
+  ////////////// SINGLE MVA [Split for ID SF]
+
+
+  if(ID == "HNL_ULID_Conv_2016" ){
+    if(!PassMVABaseLine()) return 0;
+    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,60, -0.7,0.) , GetPtSlopeCut(20,60,-0.7,0.) ,   "Conv_v5")) return 0;
+    return 1;
+  }
+  if(ID == "HNL_ULID_CF_2016" ){
+    if(!PassMVABaseLine()) return 0;
+    if(!Pass_MVA_BBEC("CF_EDv5",   0.6,  0.6,   "CF_v5"))   return 0;
+    return 1;
+  }
+  if(ID == "HNL_ULID_Fake_2016" ){
+    if(!PassMVABaseLine()) return 0;
+    if(!Pass_MVA_BBEC("Fake_EDv5", 0.25, 0.5,   "Fake_v5")) return 0;
+    return 1;
+  }
+
+  if(ID == "HNL_ULID_Conv_2017" ){
+    if(!PassMVABaseLine()) return 0;
+    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.4,0.) , GetPtSlopeCut(20,50,-0.4,0.2) ,   "Conv_v5")) return 0;
+    return 1;
+  }
+  if(ID == "HNL_ULID_CF_2017" ){
+    if(!PassMVABaseLine()) return 0;
+    if(!Pass_MVA_BBEC("CF_EDv5",     0.6, 0.6,    "CF_v5"))   return 0;
+    return 1;
+  }
+
+
+  if(ID == "HNL_ULID_Fake_2017" ){
+    if(!PassMVABaseLine()) return 0;
+    if(!Pass_MVA_BBEC("Fake_EDv5",   0.4, 0.45,   "Fake_v5")) return 0;
+    return 1;
+  }
+
+  if(ID == "HNL_ULID_Conv_2018" ){
+    if(!PassMVABaseLine()) return 0;
+    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.4,0.2) , GetPtSlopeCut(20,50,-0.4,0.2) ,   "Conv_v5")) return 0;
+    return 1;
+  }
+  if(ID == "HNL_ULID_CF_2018" ){
+    if(!PassMVABaseLine()) return 0;
+    if(!Pass_MVA_BBEC("CF_EDv5",   0.6 ,0.6 , "CF_v5")) return 0;
+    return 1;
+  }
+  if(ID == "HNL_ULID_Fake_2018" ){
+    if(!PassMVABaseLine()) return 0;
+    if(!Pass_MVA_BBEC("Fake_EDv5", 0.4 ,0.5 ,   "Fake_v5")) return 0;
+    return 1;
+  }
+
+
   //////////////////////////////////////////////////////////////////////////////////// 
   //// OTHER ANALYSES IDs / POG IDs
   //////////////////////////////////////////////////////////////////////////////////// 
@@ -1892,7 +1929,7 @@ int  Electron::PassIDTight(TString ID) const{
   }
 
   
-  if(ID=="TopHNSST"){
+  if(ID=="TopHNT"){
     if(! passMVAID_noIso_WP90()          ) return false;
     if(! (MiniRelIso()<0.1)              ) return false;
     if(! (SIP3D()<4)                     ) return false;

@@ -4,74 +4,35 @@ AnalyzerCore::AnalyzerCore(){
 
   outfile = NULL;
 
-  mcCorr = new MCCorrection();
-  puppiCorr = new PuppiSoftdropMassCorr();
-
-  fakeEst = new FakeBackgroundEstimator();
-  cfEst = new CFBackgroundEstimator();
-  pdfReweight = new PDFReweight();
-
-  muonGE = new GeneralizedEndpoint();
+  //// MUON SCALE OBJ
+  muonGE          = new GeneralizedEndpoint();
   muonGEScaleSyst = new GEScaleSyst();
 
-  JECSources = {"AbsoluteStat","AbsoluteScale","AbsoluteFlavMap","AbsoluteMPFBias","Fragmentation","SinglePionECAL","SinglePionHCAL","FlavorQCD","TimePtEta","RelativeJEREC1","RelativeJEREC2","RelativeJERHF","RelativePtBB","RelativePtEC1","RelativePtEC2","RelativePtHF","RelativeBal","RelativeSample","RelativeFSR","RelativeStatFSR","RelativeStatEC","RelativeStatHF","PileUpDataMC","PileUpPtRef","PileUpPtBB","PileUpPtEC1","PileUpPtEC2","PileUpPtHF","FlavorZJet","FlavorPhotonJet","FlavorPureGluon","FlavorPureQuark","FlavorPureCharm","FlavorPureBottom","Total"};
-
+  /// GLABAL VARIABLES
   iSetupLeptonBDTv5=false;
   iSetupLeptonBDTv4=false;
-  
-  TimeTagMatcher.clear();
-  TimerMap.clear();
-  TimerMap["LATEST"] = std::clock();
-  TimingMap.clear();
-  TimingMap["start"] = std::clock();
+  IsDYSample=false;
+  IsTTSample=false;
 
-  //  double time_elapsed_ms = 1000.0 * (c_end-c_start) / CLOCKS_PER_SEC;
-  //std::cout << "CPU time used: " << time_elapsed_ms / 1000.0 << " s\n";
-
-
-  nLog=10000;
-
-  /// TESTBDT couts comparison of branches and Function 
-  TESTBDT=false;
-    
+  /// SETUP PREDEFINED HIST VARIABLE BINNINGS
+  SetHistBins();
 }
 
 AnalyzerCore::~AnalyzerCore(){
 
   //=== hist maps
   
-  for(std::map< TString, TH1D* >::iterator mapit = maphist_TH1D.begin(); mapit!=maphist_TH1D.end(); mapit++){
-    delete mapit->second;
-  }
-  maphist_TH1D.clear();
+  DeleteHistMaps();
+  DeleteProfileMaps();
 
-  for(std::map< TString, TH2D* >::iterator mapit = maphist_TH2D.begin(); mapit!=maphist_TH2D.end(); mapit++){
-
-    //cout << "Deleting TH2D " << mapit->first << endl;
-    delete mapit->second;
-  }
-  maphist_TH2D.clear();
-
-  for(std::map< TString, TH3D* >::iterator mapit = maphist_TH3D.begin(); mapit!=maphist_TH3D.end(); mapit++){
-    delete mapit->second;
-  }
-  maphist_TH3D.clear();
-  
   //==== output rootfile
 
   if(outfile){
-    outfile->Close();
-    delete outfile;
+    outfile->Close();    delete outfile;
   }
 
   //==== Tools
 
-  if(mcCorr) delete mcCorr;
-  if(puppiCorr) delete puppiCorr;
-  if(fakeEst) delete fakeEst;
-  if(cfEst) delete cfEst;
-  if(pdfReweight) delete pdfReweight;
-  
   if(muonGE) delete muonGE;
   if(muonGEScaleSyst) delete muonGEScaleSyst;
 
@@ -79,7 +40,6 @@ AnalyzerCore::~AnalyzerCore(){
   AK4PUPPIJECUncMap.clear();
   AK8CHSJECUncMap.clear();
   AK8PUPPIJECUncMap.clear();
-
   
   if(iSetupLeptonBDTv5){
 
@@ -99,6 +59,28 @@ AnalyzerCore::~AnalyzerCore(){
 
 }
 
+void AnalyzerCore::initializeAnalyzer(){
+
+  IsDYSample=false;
+  IsTTSample=false;
+  if(MCSample.Contains("DYJets")||MCSample.Contains("ZToEE")||MCSample.Contains("ZToMuMu")||MCSample.Contains(TRegexp("DY[0-9]Jets"))) IsDYSample=true;
+  if(MCSample.Contains(TRegexp("TT[LJ][LJ]"))) IsTTSample=true;
+  if(IsSignal()) IsDYSample=false;
+
+  cout << "AnalyzerCore::initializeAnalyzer IsDYSample=" << IsDYSample << endl;
+  cout << "AnalyzerCore::initializeAnalyzer IsTTSample=" << IsTTSample << endl;
+
+  run_Debug=false;  TESTBDT=false;  nLog=50000;
+
+  TimeTagMatcher.clear();  TimerMap.clear();
+  TimerMap["LATEST"] = std::clock();
+  TimingMap.clear();
+  TimingMap["start"] = std::clock();
+
+  JECSources = {"AbsoluteStat","AbsoluteScale","AbsoluteFlavMap","AbsoluteMPFBias","Fragmentation","SinglePionECAL","SinglePionHCAL","FlavorQCD","TimePtEta","RelativeJEREC1","RelativeJEREC2","RelativeJERHF","RelativePtBB","RelativePtEC1","RelativePtEC2","RelativePtHF","RelativeBal","RelativeSample","RelativeFSR","RelativeStatFSR","RelativeStatEC","RelativeStatHF","PileUpDataMC","PileUpPtRef","PileUpPtBB","PileUpPtEC1","PileUpPtEC2","PileUpPtHF","FlavorZJet","FlavorPhotonJet","FlavorPureGluon","FlavorPureQuark","FlavorPureCharm","FlavorPureBottom","Total"};
+  
+
+};
 
 
 
@@ -300,91 +282,6 @@ std::vector<Muon> AnalyzerCore::GetAllMuons(){
   return out;
 
 }
-
-
-
-std::vector<Muon> AnalyzerCore::GetMuons(TString id, double ptmin, double fetamax){
-
-  std::vector<Muon> muons =  All_Muons;
-  std::vector<Muon> out;
-  for(unsigned int i=0; i<muons.size(); i++){
-    if(!( muons.at(i).Pt()>ptmin )){
-      //cout << "Fail Pt : pt = " << muons.at(i).Pt() << ", cut = " << ptmin << endl;
-      continue;
-    }
-    if(!( fabs(muons.at(i).Eta())<fetamax )){
-      //cout << "Fail Eta : eta = " << fabs(muons.at(i).Eta()) << ", cut = " << fetamax << endl;
-      continue;
-    }
-    if(!( muons.at(i).PassID(id) )){
-      //cout << "Fail ID" << endl;
-      continue;
-    }
-    out.push_back( muons.at(i) );
-  }
-
-  std::sort(out.begin(),       out.end(),        PtComparing);
-
-  return out;
-
-}
-
-std::vector<Muon> AnalyzerCore::GetMuons(AnalyzerParameter param, bool Run_Fake){
-  return GetMuons(param, param.Muon_Tight_ID, param.Muon_MinPt, param.Muon_MaxEta, Run_Fake);
-}
-
-std::vector<Muon> AnalyzerCore::GetMuons(AnalyzerParameter param, TString id, double ptmin, double fetamax, bool Run_Fake){
-
-  std::vector<Muon> this_AllMuons =  All_Muons;
-  std::vector<Muon> muons ;
-
-  if(param.syst_ == AnalyzerParameter::MuonEnUp)    muons = ScaleMuons( this_AllMuons, +1 );
-  else if(param.syst_ == AnalyzerParameter::MuonEnDown)    muons = ScaleMuons( this_AllMuons, -1 );
-  else muons = this_AllMuons;
-
-  std::vector<Muon> out;
-  for(unsigned int i=0; i<muons.size(); i++){
-    if(!( muons.at(i).Pt()> ptmin )){
-      //cout << "Fail Pt : pt = " << muons.at(i).Pt() << ", cut = " << ptmin << endl;                                                     
-      continue;
-    }
-    if(!( fabs(muons.at(i).Eta())< fetamax )){
-      // cout << "Fail Eta : eta = " << fabs(muons.at(i).Eta()) << ", cut = " << fetamax << endl;                                          
-      continue;
-    }
-    if(!( muons.at(i).PassID(id) )){
-      // cout << "Fail ID" << endl;                                                                                                        
-      continue;
-    }
- 
-    if(Run_Fake){
-      
-      Muon this_muon = muons.at(i);
-      
-      if(param.FakeRateMethod == "PtCone"){
-	double isocut_mu = GetIsoFromID("Muon", param.Muon_Tight_ID,muons.at(i).Eta(), muons.at(i).Pt());
-	this_muon.SetPtEtaPhiM( muons.at(i).CalcPtCone(muons.at(i).RelIso(), isocut_mu), muons.at(i).Eta(), muons.at(i).Phi(), muons.at(i).M() );
-      }
-      if(param.FakeRateMethod == "PtConeMini"){
-        double isocut_mu = GetIsoFromID("Muon", param.Muon_Tight_ID,muons.at(i).Eta(), muons.at(i).Pt());
-        this_muon.SetPtEtaPhiM( muons.at(i).CalcPtCone(muons.at(i).MiniRelIso(), isocut_mu), muons.at(i).Eta(), muons.at(i).Phi(), muons.at(i).M() );
-      }
-      if(param.FakeRateMethod == "PtCorr"){
-	this_muon.SetPtEtaPhiM( muons.at(i).PtParton(0.697,0.64,0.64),muons.at(i).Eta(), muons.at(i).Phi(), muons.at(i).M() );
-      } 
-      
-      out.push_back( this_muon);
-
-    }
-    else   out.push_back( muons.at(i) );
-  }
-
-  std::sort(out.begin(),       out.end(),        PtComparing);
-
-  return out;
-
-}
-
 
 
 std::vector<Electron> AnalyzerCore::GetAllElectrons(){
@@ -657,98 +554,6 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
 }
 
 
-std::vector<Electron> AnalyzerCore::GetElectrons(AnalyzerParameter param,  bool run_fake, bool vetoHEM){
-  return GetElectrons(param, param.Electron_Tight_ID, param.Electron_MinPt, param.Electron_MaxEta, run_fake, vetoHEM);
-}
-
-std::vector<Electron> AnalyzerCore::GetElectrons(AnalyzerParameter param, TString id, double ptmin, double fetamax, bool run_fake, bool vetoHEM){
-  
-  std::vector<Electron> this_AllElectrons = All_Electrons;
-  std::vector<Electron> electrons ;
-
-  if(param.syst_ == AnalyzerParameter::ElectronResUp)   electrons = SmearElectrons( this_AllElectrons, +1 );
-  else if(param.syst_ == AnalyzerParameter::ElectronResDown)   electrons = SmearElectrons( this_AllElectrons, -1 );
-  else if(param.syst_ == AnalyzerParameter::ElectronEnUp)    electrons = ScaleElectrons( this_AllElectrons, +1 );
-  else if(param.syst_ == AnalyzerParameter::ElectronEnDown)    electrons = ScaleElectrons( this_AllElectrons, -1 );
-  else electrons = this_AllElectrons;
-  
-  std::vector<Electron> out;
-  for(unsigned int i=0; i<electrons.size(); i++){
-
-    if(!( electrons.at(i).Pt()> ptmin )){
-      continue;
-    }
-    if(!( fabs(electrons.at(i).scEta())< fetamax )){
-      continue;
-    }
-    if(!( electrons.at(i).PassID(id) )){
-      //cout << "Fail " << id << endl;
-      continue;
-    }
-    if(vetoHEM){
-      
-      if ( FindHEMElectron (electrons.at(i)) ){
-        continue;
-      }
-    }
-
-    if(run_fake){
-
-      Electron this_electron = electrons.at(i);     
-      if(param.FakeRateMethod == "PtCone"){
-	double isocut_el = GetIsoFromID("Electron",param.Electron_Tight_ID,electrons.at(i).Eta(), electrons.at(i).Pt());   
-	this_electron.SetPtEtaPhiM( electrons.at(i).CalcPtCone(electrons.at(i).RelIso(), isocut_el), electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() );
-      }
-      if(param.FakeRateMethod == "PtConeMini"){
-        double isocut_el = GetIsoFromID("Electron",param.Electron_Tight_ID,electrons.at(i).Eta(), electrons.at(i).Pt());
-        this_electron.SetPtEtaPhiM( electrons.at(i).CalcPtCone(electrons.at(i).MiniRelIso(), isocut_el), electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() );
-      }
-      if(param.FakeRateMethod == "PtCorr"){
-	this_electron.SetPtEtaPhiM( electrons.at(i).PtParton(1,0.15,0.2),  electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() );
-	
-      }
-      out.push_back( this_electron);
-    }
-    else   out.push_back( electrons.at(i) );
-  }
-  
-  std::sort(out.begin(),       out.end(),        PtComparing);
-
-  return out;
-
-}
-
-std::vector<Electron> AnalyzerCore::GetElectrons(TString id, double ptmin, double fetamax, bool vetoHEM){
-
-  std::vector<Electron> electrons = All_Electrons;
-
-  std::vector<Electron> out;
-  for(unsigned int i=0; i<electrons.size(); i++){
-    if(!( electrons.at(i).Pt()>ptmin )){
-      continue;
-    }
-    if(!( fabs(electrons.at(i).scEta())<fetamax )){
-      continue;
-    }
-    if(!( electrons.at(i).PassID(id) )){
-      continue;
-    }
-    if(vetoHEM){
-      if ( FindHEMElectron (electrons.at(i)) ){
-        continue;
-      }
-    }
-
-    out.push_back( electrons.at(i) );
-  }
-
-  std::sort(out.begin(),       out.end(),        PtComparing);
-
-  return out;
-
-}
-
-
 std::vector<Tau> AnalyzerCore::GetAllTaus(){
 
   std::vector<Tau> out;
@@ -775,195 +580,32 @@ std::vector<Tau> AnalyzerCore::GetAllTaus(){
 
 }
 
+std::vector<Lepton *> AnalyzerCore::MakeLeptonPointerVector(const std::vector<Muon>& muons,AnalyzerParameter param_, double TightIso, bool UseMini){
 
-std::vector<Tau> AnalyzerCore::GetTaus(std::vector<Lepton* > leps,TString id, double ptmin, double fetamax){
-
-  std::vector<Tau> Taus = GetTaus(id, ptmin, fetamax);
-  std::vector<Tau> out;
-  for(auto tau : Taus){
-    for(auto lep : leps){
-      if(lep->DeltaR(tau) > 0.4)  out.push_back(tau);
+  std::vector<Lepton *> out;
+  for(unsigned int i=0; i<muons.size(); i++){
+    Lepton *l = (Lepton *)(&muons.at(i));
+    if( !(l->LeptonFlavour() == Lepton::MUON) ){
+      cout << "[AnalyzerCore::MakeLeptonPointerVector(std::vector<Muon>& muons)] Not muon.." << endl;
+      exit(EXIT_FAILURE);
     }
+    if(TightIso>0){
+
+      double this_RelIso = l->RelIso();
+      if(UseMini) this_RelIso = l->MiniRelIso();
+      double ptcone = l->CalcPtCone(this_RelIso, TightIso);
+      l->SetPtCone( ptcone );
+
+    }
+    l->SetPassID(muons[i].PassID(param_.Muon_Tight_ID), param_.Muon_Tight_ID);
+
+    out.push_back(l);
   }
-  std::sort(out.begin(),       out.end(),        PtComparing);
-
-  return out;
-}
-
-std::vector<Tau> AnalyzerCore::GetTaus(TString id, double ptmin, double fetamax){
-
-  std::vector<Tau> taus = GetAllTaus();
-  std::vector<Tau> out;
-
-  for(unsigned int i=0; i<taus.size(); i++){
-    if(!( taus.at(i).Pt()>ptmin )){
-      continue;
-    }
-    if(!( fabs(taus.at(i).Eta())<fetamax )){
-      continue;
-    }
-    if(!( taus.at(i).PassID(id) )){
-      continue;
-    }
-    out.push_back( taus.at(i) );
-  }
-
-  std::sort(out.begin(),       out.end(),        PtComparing);
+  std::sort(out.begin(),     out.end(),     PtComparingPtr);
 
   return out;
 
 }
-
-
-double AnalyzerCore::GetIsoFromID(TString  lep_type, TString id, double eta, double pt){
-
-  if (lep_type == "Muon") {
-    
-    if (id == "TopHNT") return 0.1;
-
-    if (id == "HNTight_17028") return 0.07;
-    if (id == "HNTightV1") return 0.07;
-    if (id == "HNTightV2") return 0.07;
-
-    if (id == "POGTightPFIsoVeryVeryTight") return 0.05;
-    if (id.Contains("TightPFIsoVeryVeryTight")) return 0.05;
-    if (id.Contains("TightPFIsoVeryTight")) return 0.1;
-    if (id.Contains("TightPFIsoTight")) return 0.15;
-    if (id.Contains("TightWithTightIso")) return 0.15;
-    if (id.Contains("TightStandardPFIsoTight")) return 0.15;
-    if (id.Contains("PFIsoMedium")) return 0.2;
-    if (id.Contains("PFIsoLoose")) return 0.25;
-    if (id.Contains("PFIsoVeto")) return 0.4;
-
-    if (id.Contains("Iso05")) return 0.05;
-    if (id.Contains("Iso06")) return 0.06;
-    if (id.Contains("Iso07")) return 0.07;
-    if (id.Contains("Iso08")) return 0.08;
-    if (id.Contains("Iso09")) return 0.09;
-    if (id.Contains("Iso10")) return 0.1;
-
-    
-
-    if (id == "POGHighPtTight") return 0.1;
-    if (id == "POGHighPtMixTight") return 0.1;
-    if (id.Contains("HNMVA_")) return 0.1;
-  }
-  else if(lep_type == "Electron"){
-
-    if( id == "TopHNSST" ) return 0.1;
-
-    if( id == "HNTight_17028") return 0.08;
-
-    if( id.Contains("HNTightV")) {
-      if(fabs(eta) < 1.479) return (0.0287 + (0.506/pt));
-      else  return (0.0445 + (0.963/pt));
-    }
-    if( id == "HN2016") {
-      if(fabs(eta) < 1.479) return 0.1;
-      else  return (0.06);
-    }
-    if( id == "HN2017") {
-      if(fabs(eta) < 1.479) return 0.085;
-      else  return (0.05);
-    }
-    if( id == "HN2018") {
-      if(fabs(eta) < 1.479) return 0.095;
-      else  return (0.07);
-    }
-    if( id == "HNRelaxedIP2016") {
-      if(fabs(eta) < 1.479) return 0.1;
-      else  return (0.05);
-    }
-    if( id == "HNRelaxedIP2017") {
-      if(fabs(eta) < 1.479) return 0.1;
-      else  return (0.05);
-    }
-    if( id == "HNRelaxedIP2018") {
-      if(fabs(eta) < 1.479) return 0.095;
-      else  return (0.07);
-    }
-    if( id == "passTightID_nocc") {
-      if(fabs(eta) < 1.479) return (0.0287 + (0.506/pt));
-      else  return (0.0445 + (0.963/pt));
-    }
-    if( id.Contains("passPOGTight")){
-      if(fabs(eta) < 1.479) return (0.0287 + (0.506/pt));
-      else  return (0.0445 + (0.963/pt));
-
-    }
-    if( id.Contains("passPOGMedium")){
-      if(fabs(eta) < 1.479) return (0.0478 + (0.506/pt));
-      else  return (0.0658 + (0.963/pt));
-    }
-    if( id == "passTightID") {
-      if(fabs(eta) < 1.479) return (0.0287 + (0.506/pt));
-      else  return (0.0445 + (0.963/pt));
-    }
-    if( id.Contains("HNMediumV")) {
-      if(fabs(eta) < 1.479) return (0.0478 + (0.506/pt));
-      else  return (0.0658 + (0.963/pt));
-    }
-    if( id == "passMediumID") {
-      if(fabs(eta) < 1.479) return (0.0478 + (0.506/pt));
-      else  return (0.0658 + (0.963/pt));
-    }
-    if( id == "HN2016POG") {
-      if(fabs(eta) < 1.479) return (0.0287 + (0.506/pt));
-      else  return (0.0445 + (0.963/pt));
-    }
-
-    if( id == "Iso1") {
-      if(fabs(eta) < 1.479) return  0.08;
-      else  return 0.08;
-    }
-    if( id == "Iso2") {
-      if(fabs(eta) < 1.479) return  0.09;
-      else  return 0.08;
-    }
-    if( id == "Iso3") {
-      if(fabs(eta) < 1.479) return  0.1;
-      else  return 0.08;
-    }
-    if( id == "Iso4") {
-      if(fabs(eta) < 1.479) return  0.12;
-      else  return 0.08;
-    }
-    if( id == "Iso5") {
-      if(fabs(eta) < 1.479) return  0.09;
-      else  return 0.09;
-    }
-    if( id == "Iso6") {
-      if(fabs(eta) < 1.479) return  0.1;
-      else  return 0.1;
-    }
-    if( id == "Iso7") {
-      if(fabs(eta) < 1.479) return  0.12;
-      else  return 0.12;
-    }
-
-    
-    if( id.Contains("HNTight_Opt")) return 0.08;
-
-    if( id.Contains("HN2016MVA")) return 0.08;   
-    if( id.Contains("HN2016POG")) return 0.08;   
-    if( id == "passMVAID_noIso_WP90V16") return 0.05;
-    if( id == "passMVAID_noIso_WP80") return 0.08;
-    if( id == "passMVAID_noIso_WP90") return 0.08;
-    if( id == "passMVAID_Iso_WP80") return 999.0;
-    if( id == "passMVAID_Iso_WP90") return 999.0;
-
-    if (id.Contains("HNMVA_")) return 0.1;
-
-
-  }
-  cout << "[AnalyzerCore::GetIsoFromID ] ID not found.." << id<< endl;
-  exit(EXIT_FAILURE);
-
-  return -999999999.;
-
-}
-
-
 std::vector<Lepton *> AnalyzerCore::MakeLeptonPointerVector(const std::vector<Muon>& muons, double TightIso, bool UseMini){
 
   std::vector<Lepton *> out;
@@ -984,6 +626,33 @@ std::vector<Lepton *> AnalyzerCore::MakeLeptonPointerVector(const std::vector<Mu
 
     out.push_back(l);
   }
+  std::sort(out.begin(),     out.end(),     PtComparingPtr);
+
+  return out;
+
+}
+std::vector<Lepton *> AnalyzerCore::MakeLeptonPointerVector(const std::vector<Electron>& electrons, AnalyzerParameter param_,double TightIso, bool UseMini){
+
+  std::vector<Lepton *> out;
+  for(unsigned int i=0; i<electrons.size(); i++){
+    Lepton *l = (Lepton *)(&electrons.at(i));
+    if( !(l->LeptonFlavour() == Lepton::ELECTRON) ){
+      cout << "[AnalyzerCore::MakeLeptonPointerVector(std::vector<ELECTRON>& electrons)] Not electron.." << endl;
+      exit(EXIT_FAILURE);
+    }
+    if(TightIso>0){
+
+      double this_RelIso = l->RelIso();
+      if(UseMini) this_RelIso = l->MiniRelIso();
+      double ptcone = l->CalcPtCone(this_RelIso, TightIso);
+      l->SetPtCone( ptcone );
+
+    }
+    l->SetPassID(electrons[i].PassID(param_.Electron_Tight_ID), param_.Electron_Tight_ID);
+
+    out.push_back(l);
+  }
+
   std::sort(out.begin(),     out.end(),     PtComparingPtr);
 
   return out;
@@ -1015,7 +684,6 @@ std::vector<Lepton *> AnalyzerCore::MakeLeptonPointerVector(const std::vector<El
   return out;
 
 }
-
 std::vector<Lepton *> AnalyzerCore::MakeLeptonPointerVector(const std::vector<Muon>& muons, const std::vector<Electron>& electrons,double TightIso, bool UseMini){
 
   std::vector<Lepton *> out;
@@ -1150,26 +818,6 @@ std::vector<Photon> AnalyzerCore::GetAllPhotons(){
   
 }
 
-std::vector<Photon> AnalyzerCore::GetPhotons(TString id, double ptmin, double fetamax){
-
-  std::vector<Photon> photons = GetAllPhotons();
-  std::vector<Photon> out;
-  for(unsigned int i=0; i<photons.size(); i++){
-    if(!( photons.at(i).Pt()>ptmin )){
-      continue;
-    }
-    if(!( fabs(photons.at(i).scEta())<fetamax )){
-      continue;
-    }
-    if(!( photons.at(i).PassID(id) )){
-      continue;
-    }
-    out.push_back( photons.at(i) );
-  }
-  return out;
-}
-
-
 
 std::vector<Jet> AnalyzerCore::GetAllJets(bool applySmear){
 
@@ -1219,74 +867,6 @@ std::vector<Jet> AnalyzerCore::GetAllJets(bool applySmear){
   }
 
   //if(PtOrderObj)  std::sort(out.begin(),       out.end(),        PtComparing);
-
-  return out;
-
-}
-
-std::vector<Jet> AnalyzerCore::GetJets(TString ID, double ptmin, double fetamax){
-
-  std::vector<Jet> jets = All_Jets;
-
-  std::vector<Jet> out;
-  for(unsigned int i=0; i<jets.size(); i++){
-    if(!( jets.at(i).Pt()>ptmin )){
-      continue;
-    }
-    if(!( fabs(jets.at(i).Eta())<fetamax )){
-      //cout << "Fail Eta : eta = " << fabs(jets.at(i).Eta()) << ", cut = " << fetamax << endl;                                           
-      continue;
-    }
-    if(!( jets.at(i).PassID(ID) )){
-      //cout << "Fail ID" << endl;                                                                                                        
-      continue;
-    }
-    out.push_back( jets.at(i) );
-  }
-
-  
-  
-  std::sort(out.begin(),       out.end(),        PtComparing);
-  
-  return out;
-  
-}
-    
-
-std::vector<Jet> AnalyzerCore::GetJets(AnalyzerParameter param){
-
-  return GetJets(param, param.Jet_ID, param.Jet_MinPt, param.Jet_MaxEta);
-
-}
-std::vector<Jet> AnalyzerCore::GetJets(AnalyzerParameter param,TString id, double ptmin, double fetamax){
-
-  std::vector<Jet> jets_uncorr = All_Jets;
-  std::vector<Jet> jets;
-  if(param.syst_ == AnalyzerParameter::JetEnUp)            jets    = ScaleJets( jets_uncorr, +1 );
-  else if(param.syst_ == AnalyzerParameter::JetEnDown)     jets    = ScaleJets( jets_uncorr, -1 );
-  else if(param.syst_ == AnalyzerParameter::JetResUp)      jets    = SmearJets(jets_uncorr, +1 );
-  else if(param.syst_ == AnalyzerParameter::JetResDown)    jets    = SmearJets(jets_uncorr, -1 );
-  else jets =jets_uncorr;
-
-  
-  std::vector<Jet> out;
-  for(unsigned int i=0; i<jets.size(); i++){
-    if(!( jets.at(i).Pt()> ptmin )){
-      if(param.DEBUG) cout << "Fail Pt : pt = " << jets.at(i).Pt() << ", cut = " << ptmin << endl;
-      continue;
-    }
-    if(!( fabs(jets.at(i).Eta() )< fetamax )){
-      if(param.DEBUG)cout << "Fail Eta : eta = " << fabs(jets.at(i).Eta()) << ", cut = " << fetamax << endl;
-      continue;
-    }
-    if(!( jets.at(i).PassID( id) )){
-      if(param.DEBUG) cout << "Fail ID" << endl;
-      continue;
-    }
-    out.push_back( jets.at(i) );
-  }
-
-  std::sort(out.begin(),       out.end(),        PtComparing);
 
   return out;
 
@@ -1343,72 +923,6 @@ std::vector<FatJet> AnalyzerCore::GetAllFatJets(){
 
 }
 
-std::vector<FatJet> AnalyzerCore::GetFatJets(TString id, double ptmin, double fetamax){
-
-  std::vector<FatJet> jets = All_FatJets;
-  std::vector<FatJet> out;
-  for(unsigned int i=0; i<jets.size(); i++){
-    if(!( jets.at(i).Pt()>ptmin )){
-      //cout << "Fail Pt : pt = " << jets.at(i).Pt() << ", cut = " << ptmin << endl;
-      continue;
-    }
-    if(!( fabs(jets.at(i).Eta())<fetamax )){
-      //cout << "Fail Eta : eta = " << fabs(jets.at(i).Eta()) << ", cut = " << fetamax << endl;
-      continue;
-    }
-    if(!( jets.at(i).PassID(id) )){
-      //cout << "Fail ID" << endl;
-      continue;
-    }
-    out.push_back( jets.at(i) );
-  }
-
-  std::sort(out.begin(),       out.end(),        PtComparing);
-  return out;
-
-}
-
-std::vector<FatJet> AnalyzerCore::GetFatJets(AnalyzerParameter param){
-  
-  return GetFatJets(param, param.FatJet_ID, param.FatJet_MinPt, param.FatJet_MaxEta);
-
-}
-std::vector<FatJet> AnalyzerCore::GetFatJets(AnalyzerParameter param,TString id, double ptmin, double fetamax){
-
-  std::vector<FatJet> jets_pc = puppiCorr->Correct(All_FatJets);
-  std::vector<FatJet> jets;
-  if(param.syst_ == AnalyzerParameter::JetEnUp)            jets    = ScaleFatJets( jets_pc, +1 );
-  else if(param.syst_ == AnalyzerParameter::JetEnDown)     jets    = ScaleFatJets( jets_pc, -1 );
-  else if(param.syst_ == AnalyzerParameter::JetResUp)      jets    = SmearFatJets(jets_pc, +1 );
-  else if(param.syst_ == AnalyzerParameter::JetResDown)    jets    = SmearFatJets(jets_pc, -1 );
-  else if(param.syst_ == AnalyzerParameter::JetMassUp)     jets    = ScaleSDMassFatJets( jets_pc, +1 );
-  else if(param.syst_ == AnalyzerParameter::JetMassDown)   jets    = ScaleSDMassFatJets( jets_pc, -1 );
-  else if(param.syst_ == AnalyzerParameter::JetMassSmearUp)     jets    = SmearSDMassFatJets( jets_pc, +1 );
-  else if(param.syst_ == AnalyzerParameter::JetMassSmearDown)   jets    = SmearSDMassFatJets( jets_pc, -1 );
-  else jets = jets_pc;
-
-
-  std::vector<FatJet> out;
-  for(unsigned int i=0; i<jets.size(); i++){
-    if(!( jets.at(i).Pt()>  ptmin )){
-      if(param.DEBUG) cout << "Fail Pt : pt = " << jets.at(i).Pt() << ", cut = " << ptmin << endl;                                                      
-      continue;
-    }
-    if(!( fabs(jets.at(i).Eta())< fetamax )){
-      if(param.DEBUG) cout << "Fail Eta : eta = " << fabs(jets.at(i).Eta()) << ", cut = " << fetamax << endl;                                           
-      continue;
-    }
-    if(!( jets.at(i).PassID(id) )){
-      if(param.DEBUG) cout << "Fail ID" << endl;                                                                                                        
-      continue;
-    }
-    out.push_back( jets.at(i) );
-  }
-
-  std::sort(out.begin(),       out.end(),        PtComparing);
-  return out;
-
-}
 
 
 std::vector<Gen> AnalyzerCore::GetGens(){
@@ -1559,300 +1073,6 @@ std::vector<Muon> AnalyzerCore::UseTunePMuon(const std::vector<Muon>& muons){
 
 }
 
-std::vector<Muon> AnalyzerCore::SelectMuons(const std::vector<Muon>& muons, TString id, double ptmin, double fetamax){
-
-  std::vector<Muon> out;
-  for(unsigned int i=0; i<muons.size(); i++){
-    if(!( muons.at(i).Pt()>ptmin )){
-      //cout << "Fail Pt : pt = " << muons.at(i).Pt() << ", cut = " << ptmin << endl;
-      continue;
-    }
-    if(!( fabs(muons.at(i).Eta())<fetamax )){
-      //cout << "Fail Eta : eta = " << fabs(muons.at(i).Eta()) << ", cut = " << fetamax << endl;
-      continue;
-    }
-    if(!( muons.at(i).PassID(id) )){
-      //cout << "Fail ID" << endl;
-      continue;
-    }
-    out.push_back( muons.at(i) );
-  }
-
-  std::sort(out.begin(),       out.end(),        PtComparing);
-  
-  return out;
-
-}
-
-std::vector<Electron> AnalyzerCore::SelectElectrons(const std::vector<Electron>& electrons, TString id, double ptmin, double fetamax, bool vetoHEM){
-
-  std::vector<Electron> out;
-  for(unsigned int i=0; i<electrons.size(); i++){
-    if(!( electrons.at(i).Pt()>ptmin )){
-      //cout << "Fail Pt : pt = " << electrons.at(i).Pt() << ", cut = " << ptmin << endl;
-      continue;
-    }
-    if(!( fabs(electrons.at(i).scEta())<fetamax )){
-      //cout << "Fail Eta : eta = " << fabs(electrons.at(i).scEta()) << ", cut = " << fetamax << endl;
-      continue;
-    }
-    if(!( electrons.at(i).PassID(id) )){
-      //cout << "Fail ID" << endl;
-      continue;
-    }
-    if(vetoHEM){
-      if ( FindHEMElectron (electrons.at(i)) ){
-        continue;
-      }
-    }
-
-    out.push_back(electrons.at(i));
-  }
-  std::sort(out.begin(),       out.end(),        PtComparing);
-
-  return out;
-
-}
-
-
-std::vector<Tau> AnalyzerCore::SelectTaus(const std::vector<Tau>& taus, TString id, double ptmin, double fetamax){
-
-  std::vector<Tau> out;
-  for(unsigned int i=0; i<taus.size(); i++){
-    if(!( taus.at(i).Pt()>ptmin )){
-
-      continue;
-    }
-    if(!( fabs(taus.at(i).Eta())<fetamax )){
-
-      continue;
-    }
-    if(!( taus.at(i).PassID(id) )){
-      continue;
-    }
-    out.push_back( taus.at(i) );
-  }
-  std::sort(out.begin(),       out.end(),        PtComparing);
-
-  return out;
-
-}
-
-std::vector<Jet> AnalyzerCore::SelectJets(const std::vector<Jet>& jets, TString id, double ptmin, double fetamax){
-
-  std::vector<Jet> out;
-  for(unsigned int i=0; i<jets.size(); i++){
-    if(!( jets.at(i).Pt()>ptmin )){
-      //cout << "Fail Pt : pt = " << jets.at(i).Pt() << ", cut = " << ptmin << endl;
-      continue;
-    }
-    if(!( fabs(jets.at(i).Eta())<fetamax )){
-      //cout << "Fail Eta : eta = " << fabs(jets.at(i).Eta()) << ", cut = " << fetamax << endl;
-      continue;
-    }
-    if(!( jets.at(i).PassID(id) )){
-      //cout << "Fail ID" << endl;
-      continue;
-    }
-    out.push_back( jets.at(i) );
-  }
-  std::sort(out.begin(),       out.end(),        PtComparing);
-
-  return out;
-
-}
-
-std::vector<FatJet> AnalyzerCore::SelectFatJets(const std::vector<FatJet>& jets, TString id, double ptmin, double fetamax){
-
-  std::vector<FatJet> out;
-  for(unsigned int i=0; i<jets.size(); i++){
-    if(!( jets.at(i).Pt()>ptmin )){
-      //cout << "Fail Pt : pt = " << jets.at(i).Pt() << ", cut = " << ptmin << endl;
-      continue;
-    }
-    if(!( fabs(jets.at(i).Eta())<fetamax )){
-      //cout << "Fail Eta : eta = " << fabs(jets.at(i).Eta()) << ", cut = " << fetamax << endl;
-      continue;
-    }
-    if(!( jets.at(i).PassID(id) )){
-      //cout << "Fail ID" << endl;
-      continue;
-    }
-    out.push_back( jets.at(i) );
-  }
-  std::sort(out.begin(),       out.end(),        PtComparing);
-
-  return out;
-
-}
-
-
-
-
-vector<Jet>   AnalyzerCore::SelectBJets(AnalyzerParameter param,vector<Jet> jetColl, JetTagging::Parameters jtp){
-
-  vector<Jet> output_jets;
-
-  for(unsigned int ijet =0; ijet < jetColl.size(); ijet++){
-    if( jetColl[ijet].GetTaggerResult(jtp.j_Tagger) <= mcCorr->GetJetTaggingCutValue(jtp.j_Tagger, jtp.j_WP) ) continue;  
-    output_jets.push_back( jetColl.at(ijet) );
-  }
-  std::sort(output_jets.begin(),       output_jets.end(),        PtComparing);
-  return output_jets;
-
-}
-
-vector<Jet>   AnalyzerCore::SelectLJets(AnalyzerParameter param,vector<Jet> jetColl, JetTagging::Parameters jtp){
-
-  vector<Jet> output_jets;
-
-  for(unsigned int ijet =0; ijet < jetColl.size(); ijet++){
-    if( jetColl[ijet].GetTaggerResult(jtp.j_Tagger) > mcCorr->GetJetTaggingCutValue(jtp.j_Tagger, jtp.j_WP) ) continue;
-    output_jets.push_back( jetColl.at(ijet) );
-  }
-  std::sort(output_jets.begin(),       output_jets.end(),        PtComparing);
-  return output_jets;
-
-}
-
-
-
-vector<Jet>   AnalyzerCore::SelectAK4Jets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag,std::vector<Lepton *> leps_veto,  vector<FatJet> fatjets){
-
-  vector<Jet> output_jets;
-  for(unsigned int ijet =0; ijet < jets.size(); ijet++){
-    bool jetok=true;
-
-    if(fabs(jets[ijet].Eta()) > eta_cut) continue;
-    if(jets[ijet].Pt() < pt_cut)continue;
-
-    for(auto ilep : leps_veto){
-      if(ilep->DeltaR(jets[ijet]) < dr_lep_clean) jetok = false;
-    }
-
-    for(unsigned int ifjet =0; ifjet < fatjets.size(); ifjet++){
-      if(jets[ijet].DeltaR(fatjets[ifjet]) <dr_ak8_clean) jetok = false;
-    }
-
-    if(lepton_cleaning&&!jetok) continue;
-    if(pu_tag=="")output_jets.push_back(jets[ijet]);
-    else {
-      if(jets[ijet].PassPileupMVA(pu_tag,GetEra())) output_jets.push_back(jets[ijet]);
-    }
-  }
-
-  std::sort(output_jets.begin(),       output_jets.end(),        PtComparing);
-
-  return output_jets;
-
-}
-
-
-
-vector<Jet>   AnalyzerCore::SelectAK4Jets(vector<Jet> jets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean, double dr_ak8_clean, TString pu_tag, vector<Electron>  veto_electrons, vector<Muon>  veto_muons, vector<FatJet> fatjets){
-
-  vector<Jet> output_jets;
-  for(unsigned int ijet =0; ijet < jets.size(); ijet++){
-    bool jetok=true;
-
-    if(fabs(jets[ijet].Eta()) > eta_cut) continue;
-    if(jets[ijet].Pt() < pt_cut)continue;
-
-    for(unsigned int iel=0 ; iel < veto_electrons.size(); iel++){
-      if(jets[ijet].DeltaR(veto_electrons[iel]) < dr_lep_clean) jetok = false;
-    }
-
-    for(unsigned int iel=0 ; iel < veto_muons.size(); iel++){
-      if(jets[ijet].DeltaR(veto_muons[iel]) < dr_lep_clean) jetok = false;
-    }
-    for(unsigned int ifjet =0; ifjet < fatjets.size(); ifjet++){
-      if(jets[ijet].DeltaR(fatjets[ifjet]) <dr_ak8_clean) jetok = false;
-    }
-
-    if(lepton_cleaning&&!jetok) continue;
-    if(pu_tag=="")output_jets.push_back(jets[ijet]);
-    else if(jets[ijet].PassPileupMVA(pu_tag,GetEra())) output_jets.push_back(jets[ijet]);
-  }
-  std::sort(output_jets.begin(),       output_jets.end(),        PtComparing);
-
-  return output_jets;
-}
-
-
-
-
-vector<FatJet>  AnalyzerCore::SelectAK8Jets(vector<FatJet> fatjets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean , bool apply_tau21, double tau21_cut , bool apply_masscut, double sdmass_lower_cut,  double sdmass_upper_cut, vector<Electron>  veto_electrons, vector<Muon>  veto_muons){
-
-  return SelectAK8Jetsv2(fatjets,pt_cut,eta_cut, lepton_cleaning, dr_lep_clean,apply_tau21, tau21_cut,apply_masscut,sdmass_lower_cut,sdmass_upper_cut, "", veto_electrons,veto_muons);
-}
-
-vector<FatJet>  AnalyzerCore::SelectAK8Jetsv2(vector<FatJet> fatjets, double pt_cut ,  double eta_cut, bool lepton_cleaning  , double dr_lep_clean , bool apply_tau21, double tau21_cut , bool apply_masscut, double sdmass_lower_cut,  double sdmass_upper_cut, TString  tagger,  vector<Electron>  veto_electrons, vector<Muon>  veto_muons){
-
-
-  vector<FatJet> output_fatjets;
-  for(unsigned int ijet =0; ijet < fatjets.size(); ijet++){
-
-    bool jetok=true;
-
-    for(unsigned int iel=0 ; iel < veto_electrons.size(); iel++){
-      if(fatjets[ijet].DeltaR(veto_electrons[iel]) < dr_lep_clean) jetok = false;
-    }
-
-    for(unsigned int iel=0 ; iel < veto_muons.size(); iel++){
-      if(fatjets[ijet].DeltaR(veto_muons[iel]) < dr_lep_clean) jetok = false;
-    }
-
-    if( tagger != ""){
-      if (!fatjets[ijet].PassTagger(JetTagging::StringToTagger(string(tagger)), DataEra)) continue;
-    }
-
-    double lower_sd_mass_cut=sdmass_lower_cut;
-    double upper_sd_mass_cut=sdmass_upper_cut;
-    if(sdmass_lower_cut < 0.){
-      lower_sd_mass_cut = 40.;
-      upper_sd_mass_cut = 130.;
-      if(DataYear==2017){
-        lower_sd_mass_cut=65.;
-        upper_sd_mass_cut=105.;
-      }
-    }
-    // tau21 cut has SF so need to apply SD mass for 2017                                                                                        
-    if(apply_tau21) {
-      if(DataYear==2017) {
-        lower_sd_mass_cut  = 65.;
-        upper_sd_mass_cut  = 105.;
-      }
-    }
-
-    double tau_21_cut = tau21_cut;
-    if(tau21_cut > 0.){
-      if(DataYear==2016) tau_21_cut = 0.55;
-      if(DataYear==2017) tau_21_cut = 0.75;
-      if(DataYear==2018) tau_21_cut = 0.75;
-    }
-    else{
-      if(DataYear==2016) tau_21_cut = 0.35;
-      if(DataYear==2017) tau_21_cut = 0.45;
-      if(DataYear==2018) tau_21_cut = 0.45;
-    }
-    if( fabs(fatjets[ijet].Eta()) > eta_cut)    continue;
-    if( fabs(fatjets[ijet].Pt())  < pt_cut)    continue;
-
-    if(lepton_cleaning && !jetok)  continue;
-    if(apply_tau21 && !fatjets[ijet].PassPuppiTau21(tau_21_cut))  continue;
-    if(apply_masscut && !fatjets[ijet].PassSDMassrange(lower_sd_mass_cut,upper_sd_mass_cut)) continue;
-
-
-    output_fatjets.push_back(fatjets[ijet]);
-  }
-
-
-  std::sort(output_fatjets.begin(),       output_fatjets.end(),        PtComparing);
-
-  return output_fatjets;
-}
-
-
 
 
 void AnalyzerCore::beginEvent(){
@@ -1861,41 +1081,29 @@ void AnalyzerCore::beginEvent(){
   if(Analyzer.Contains("BDT") && Analyzer.Contains("SkimTree")) PtOrderObj=false;
   else PtOrderObj=true;
 
-  if(!IsData) All_Gens = GetGens();  
+  if(!IsData)  {
+    All_Gens = GetGens();  
+    All_LHES = GetLHEs();
+    if(!IsSignal() && (IsDYSample||MCSample.Contains("TTLL"))){
+      GetAFBLHEParticles(All_LHES,lhe_p0,lhe_p1,lhe_l0,lhe_l1,lhe_j0);
+      GetAFBGenParticles(All_Gens,gen_p0,gen_p1,gen_l0,gen_l1,3);
+      GetAFBGenParticles(All_Gens,gen_p0,gen_p1,gen_l0_dressed,gen_l1_dressed,1);
+      GetAFBGenParticles(All_Gens,gen_p0,gen_p1,gen_l0_bare,gen_l1_bare,0);
+
+    }
+  }
   All_Jets      = GetAllJets();
   All_FatJets   = GetAllFatJets();
   All_Muons     = GetAllMuons();
   All_Electrons = GetAllElectrons();
+  _Event = GetEvent();
+  
 
   return;
 }
 void AnalyzerCore::initializeAnalyzerTools(){
 
-  //==== MCCorrection
-  mcCorr->SetMCSample(MCSample);
-  mcCorr->SetEra(GetEra());
-  mcCorr->SetIsDATA(IsDATA);
-  mcCorr->SetEventInfo(run, lumi, event);
-  mcCorr->SetIsFastSim(IsFastSim);
-  if(!IsDATA){
-    mcCorr->ReadHistograms();
-    mcCorr->SetupJetTagging();
-  }
-
-  puppiCorr->SetEra(GetEra());
-  puppiCorr->ReadHistograms();
-
-  //==== FakeBackgroundEstimator
-
-  fakeEst->SetEra(GetEra());
-  fakeEst->ReadHistograms();
-  //==== CFBackgroundEstimator
-  
-  cfEst->SetEra(GetEra());
-  cfEst->ReadHistograms();
-  
-
-  /*                                                                                                                                                                                                                                                                          
+  /*                                                                                                                                                                                                                                                                         
                                                                                                                                                                                                                                                                               
     // In your analyser code add this line to constructor to fill map with JEC source values.                                                                                                                                                                                 
     for(auto jec_source : JECSources)   SetupJECUncertainty(jec_source, "AK4PFchs");                                                                                                                                                                                          
@@ -2051,137 +1259,6 @@ std::vector<Muon> AnalyzerCore::MuonWithoutGap(const std::vector<Muon>& muons){
 }
 
 
-vector<Muon> AnalyzerCore::SkimLepColl(const vector<Muon>& MuColl,  AnalyzerParameter param, TString Option){
-
-  bool GetPrompt=false, GetHadFake=false, GetEWtau=false, GetNHIntConv=false, GetNHExtConv=false;
-
-  if(Option.Contains("Prompt"))          GetPrompt    =true;
-  if(Option.Contains("HFake"))           GetHadFake   =true;
-  if(Option.Contains("EWtau"))           GetEWtau     =true;
-  if(Option.Contains("NHConv"))         {GetNHIntConv =true; GetNHExtConv=true;}
-  else{ 
-    if(Option.Contains("NHIntConv")) GetNHIntConv =true;
-    if(Option.Contains("NHExtConv")) GetNHExtConv =true; 
-  }
-  if(     Option=="Fake"     )          {GetHadFake   =true; GetNHExtConv=true;}
-
-
-
-  vector<Muon> ReturnVec;
-  for(unsigned int i=0; i<MuColl.size(); i++){
-
-    if(IsData) ReturnVec.push_back(MuColl.at(i));
-    else {
-      int LepType= MuColl.at(i).LeptonGenType(); 
-      bool PassSel=false;
-      
-      if( GetPrompt    && (LepType==1 || LepType==2) ) PassSel=true;
-      if( GetHadFake   && (LepType<0 && LepType>=-4) ) PassSel=true;
-      if( GetEWtau     &&         LepType==3         ) PassSel=true;
-      if( GetNHIntConv &&         LepType>=4         ) PassSel=true;
-      if( GetNHExtConv &&         LepType<-4         ) PassSel=true;
-      if( PassSel ) ReturnVec.push_back(MuColl.at(i));
-    }
-  }
-
-  return ReturnVec;
-}
-
-
-
-vector<Electron> AnalyzerCore::SkimLepColl(const vector<Electron>& ElColl, AnalyzerParameter param,TString Option){
-
-  bool GetPrompt=false, GetHadFake=false, GetEWtau=false, GetNHIntConv=false, GetNHExtConv=false, GetCF=false;
-  //CFHFakeNHConv
-  if(Option.Contains("Prompt"))          GetPrompt    =true;
-  if(Option.Contains("CF"))              GetCF        =true;
-  if(Option.Contains("HFake"))           GetHadFake   =true;
-  if(Option.Contains("EWtau"))           GetEWtau     =true;
-  if(Option.Contains("NHConv"))         {GetNHIntConv =true; GetNHExtConv=true;}
-  else{ if(Option.Contains("NHIntConv")) GetNHIntConv =true;
-    if(Option.Contains("NHExtConv")) GetNHExtConv =true; }
-  if(     Option=="Fake"     )          {GetHadFake   =true; GetNHExtConv=true;}
-
-
-  vector<Electron> ReturnVec;
-  for(unsigned int i=0; i<ElColl.size(); i++){
-    if(IsData) ReturnVec.push_back(ElColl.at(i));
-    else {
-      int LepType= ElColl.at(i).LeptonGenType();
-      bool PassSel=false;
-      
-      if( GetPrompt    && (LepType==1 || LepType==2) ) PassSel=true;
-      if( GetHadFake   && (LepType<0 && LepType>=-4) ) PassSel=true;
-      if( GetEWtau     &&         LepType==3         ) PassSel=true;
-      if( GetNHIntConv &&         LepType>=4         ) PassSel=true;
-      if( GetNHExtConv &&         LepType<-4         ) PassSel=true;
-      if( GetCF        &&         ElColl.at(i).LeptonIsCF() ) PassSel=true;
-      if( Option.Contains("NoCF") && ElColl.at(i).LeptonIsCF()) PassSel=false;
-      if( PassSel ) ReturnVec.push_back(ElColl.at(i));
-    }
-  }
-
-  return ReturnVec;
-}
-
-
-
-vector<Electron> AnalyzerCore::SkimLepColl(const vector<Electron>& ElColl, TString Option){
-  
-  vector<Electron> ReturnColl;
-
-  bool Barrel1=false, Barrel2=false, Endcap=false;
-  if(Option.Contains("B1")) Barrel1=true;
-  if(Option.Contains("B2")) Barrel2=true;
-  if(Option.Contains("E"))  Endcap =true;
-
-  for(unsigned int i=0; i<ElColl.size(); i++){
-    bool PassSel=false; double fEta=fabs(ElColl.at(i).Eta());
-    if( Barrel1 && fEta <0.8               ) PassSel=true;
-    if( Barrel2 && fEta>=0.8 && fEta<1.479 ) PassSel=true;
-    if( Endcap  && fEta>=1.479 && fEta<2.5 ) PassSel=true;
-    if( PassSel ) ReturnColl.push_back(ElColl.at(i));
-  }
-
-  return ReturnColl;
-}
-
-
-vector<Muon> AnalyzerCore::SkimLepColl(const vector<Muon>& MuColl,  TString Option){
-  
-  vector<Muon> ReturnColl;
-  bool Barrel=false, Overlap=false, Endcap=false;
-  if(Option.Contains("MB")) Barrel =true;
-  if(Option.Contains("MO")) Overlap=true;
-  if(Option.Contains("ME")) Endcap =true;
-
-  for(unsigned int i=0; i<MuColl.size(); i++){
-    bool PassSel=false; double fEta=fabs(MuColl.at(i).Eta());
-    if( Barrel  && fEta <0.9               ) PassSel=true;
-    if( Overlap && fEta>=0.9 && fEta<1.6   ) PassSel=true;
-    if( Endcap  && fEta>=1.6 && fEta<2.4   ) PassSel=true;
-    if( PassSel ) ReturnColl.push_back(MuColl.at(i));
-  }
-
-  return ReturnColl;
-}
-
-
-vector<Jet> AnalyzerCore::SkimJetColl(const vector<Jet>& JetColl, vector<Gen>& TruthColl, AnalyzerParameter param,TString Option){
-
-  bool GetPrLepCleanJet=false;
-  TString Criteria="";
-  if(Option.Contains("NoPr"))  GetPrLepCleanJet =true;
-  if(Option.Contains("NoTau")) Criteria="InclTau";
-
-  vector<Jet> ReturnVec;
-  for(unsigned int i=0; i<JetColl.size(); i++){
-    bool HasEWLep=HasEWLepInJet(JetColl.at(i), TruthColl, Criteria);
-    if( GetPrLepCleanJet && (!HasEWLep) ) ReturnVec.push_back(JetColl.at(i));
-  }
-
-  return ReturnVec;
-}
 
 
 bool AnalyzerCore::HasEWLepInJet(Jet Jet, vector<Gen>& TruthColl, TString Option){

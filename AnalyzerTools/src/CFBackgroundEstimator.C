@@ -105,6 +105,8 @@ double CFBackgroundEstimator::GetElectronCFRate(TString ID, TString key, double 
 
   if(mapit==map_hist_Electron.end()){
     cout << "[CFBackgroundEstimator::GetElectronCFRate] No"<< key  <<endl;
+    if(IgnoreNoHist) return 1.;
+
     exit(ENODATA);
   }
 
@@ -201,14 +203,14 @@ double CFBackgroundEstimator::GetWeight(vector<Lepton *> lepptrs, AnalyzerParame
 
       Electron *el = (Electron *)( lepptrs.at(i) );
 
-      this_cf = GetElectronCFRate(param.Electron_CF_ID, param.Electron_CF_Key, fabs(el->scEta()), el->Pt(), sys);
+      this_cf = GetElectronCFRate(param.Electron_CF_ID, param.k.Electron_CF, fabs(el->scEta()), el->Pt(), sys);
 
     }
     else{
 
       Muon *mu = (Muon *)( lepptrs.at(i) );
 
-      this_cf = GetMuonCFRate(param.Muon_CF_ID, param.Muon_CF_Key, fabs(mu->Eta()), mu->Pt(), sys);
+      this_cf = GetMuonCFRate(param.Muon_CF_ID, param.k.Muon_CF, fabs(mu->Eta()), mu->Pt(), sys);
 
     }
 

@@ -11,10 +11,10 @@ void HNL_ChargeFlip::initializeAnalyzer(){
   // HasFlag("ElCFRates")    ---> Measure rates in DY/Top MC (using Pt CF response)
   // HasFlag("ShiftEnergyZ") ---> Check mc closure  (Using only DY)
   // HasFlag("ScaleFactor")  ---> Compare Data SS vs OS weighted in BB / EC (using CF Rates) 
-
   
+  //  cfEst->IgnoreNoHist = true;
 
-
+  //  if(HasFlag("ShiftEnergy"))cfEst->IgnoreNoHist = true;
   
 }
 
@@ -24,7 +24,9 @@ void HNL_ChargeFlip::executeEvent(){
   vector<TString> LepIDs = {"HNL_ULID_"+GetYearString(),"HNTightV2","TopHN", "POGTight"};
   vector<TString> CFMethods ={};
   //"CFRate_PtInv","CFRate_Pt"};    
-  if(HasFlag("ElCFRates")){
+  //if(HasFlag("ShiftEnergy")) LepIDs = { "POGTight"};
+
+  if(HasFlag("ElCFRates") || HasFlag("ShiftEnergy")){
     CFMethods.push_back("");
   }
   else{
@@ -32,19 +34,20 @@ void HNL_ChargeFlip::executeEvent(){
   }
   for (auto id: LepIDs){
     for (auto CFMethod : CFMethods){
-      AnalyzerParameter param = InitialiseHNLParameter("SignalStudy","HNL");
+      AnalyzerParameter param = InitialiseHNLParameter("SignalStudy");
       param.Name    =  id+CFMethod;
       param.DefName =  id+CFMethod;
       
       //// Do not include Xsec norm since looking to Add TT/DY samples in Eff
-      param.Weight_LumiNorm = false;
-      if(HasFlag("ScaleFactor"))param.Weight_LumiNorm = true;
-      param.Weight_SumW     = true;
-      param.Weight_PileUp   = true;
-      param.Weight_PreFire  = true;
-      param.Weight_kFactor  = false;
-      param.Weight_IDSF     = true;
-      param.Weight_TriggerSF= true;
+      param.Apply_Weight_LumiNorm = false;
+      if(HasFlag("ScaleFactor"))param.Apply_Weight_LumiNorm = true;
+      param.Apply_Weight_SumW     = true;
+      param.Apply_Weight_PileUp   = true;
+      param.Apply_Weight_PreFire  = true;
+      param.Apply_Weight_kFactor  = false;
+      param.Apply_Weight_IDSF     = true;
+      param.Apply_Weight_RECOSF     = true;
+      param.Apply_Weight_TriggerSF= true;
       
       param.FakeMethod   = "DATA";
       param.CFMethod     = "DATA";
@@ -52,12 +55,11 @@ void HNL_ChargeFlip::executeEvent(){
       
       param.Electron_Tight_ID = (id == "TopHN") ? "TopHNSST" :  id;
       param.Muon_Tight_ID     = (id == "TopHN") ? "TopHNT"   :  id;
-      //param.Electron_CF_Key  = "CFRate_Pt_EtaRegion_"+id;
-      param.Electron_CF_Key  = CFMethod+"_EtaRegion_"+id;
+      param.k.Electron_CF  = CFMethod+"_EtaRegion_"+id;
       if(id =="POGTight"){
 	param.Muon_Tight_ID   =    "POGTightWithTightIso";
 	param.Electron_Tight_ID  = "passPOGTight";
-	param.Electron_CF_Key  = CFMethod+"_EtaRegion_POGTight";
+	param.k.Electron_CF  = CFMethod+"_EtaRegion_POGTight";
       }
       executeEventFromParameter(param);
     }
@@ -78,7 +80,7 @@ and compare 3-1 and 3-2
 
 void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 
-  if(_jentry==0) PrintParam(param);
+  if(_jentry==0) param.PrintParameters();
   run_Debug = (_jentry%nLog==0);
 
   if(!PassMETFilter()) return;
@@ -121,29 +123,6 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
   jtp = JetTagging::Parameters(JetTagging::DeepCSV, JetTagging::Medium, JetTagging::incl, JetTagging::comb);
   BJetColl = SelBJets(JetColl,jtp);
 
-
-  if(HasFlag("MuonCF")){
-
-    /*
-    1. 2 muons (25,25)
-    2. 3rd lepton veto
-    3. mll > 60
-    4. anti-btag
-
-    --> mll plot in MuonCFrate/SS(OS)ij where i,j is pT bin #
-    */
-
-    //if(!IsDATA) weight *= MCweight() * ev.GetTriggerLumi("Full");
-
-    if(MuonColl.size()!=2) return;
-    if(!(MuonColl.at(0).Pt()>25&&MuonColl.at(1).Pt()>25)) return;
-    if(MuonCollVeto.size()>2) return;
-    Particle ll = MuonColl.at(0) + MuonColl.at(1) ;
-    if(ll.M()<=60) return;
-    if(BJetColl.size()>0) return;
-
-
-  }
 
 
   if(!PassHEMVeto(Leptons)) return ;
@@ -202,19 +181,8 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
       
       if(HasPromptConv(ElectronColl.at(i))) continue;
       
-      double PtShift = 1.;
-      if(ElectronColl.at(i).IsBB()){
-	if(ElectronColl.at(i).Pt() < 50) PtShift = 1/ 0.995;
-	else if(ElectronColl.at(i).Pt() < 100) PtShift = 1/ 0.998;
-	else  PtShift = 1;
-	
-      }
-      else{
-	if(ElectronColl.at(i).Pt() < 50) PtShift = 1/ 0.987;
-        else if(ElectronColl.at(i).Pt() < 100) PtShift = 1/ 0.994;
-        else if(ElectronColl.at(i).Pt() < 250) PtShift = 1/ 0.997;
-        else  PtShift = 1/ 0.999;
-      }
+      double PtShift = 1. / GetShiftCFEl(ElectronColl.at(i));
+
       if(HasFlag("RateNoShift")) PtShift = 1.;
       
       if(abs(ElectronColl.at(i).scEta())<0.8){
@@ -309,16 +277,15 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
       if(IsCF)     FillHist(param.Name+"/CFrate_2DPt/Num",ElectronColl.at(i).PtMaxed(500)*PtShift, ElectronColl.at(i).scEta(), EvWeight, nbin, pTbin, 10,etabins);
       
     }
+    return;
   }
+
+
   
   if(HasFlag("ShiftEnergyZ")){
     
-    
-    double pTbin[9] = {15.,30.,35.,40.,45, 50., 80.,100.,200.};
-    double pTbinNeg[18] = {-200,-100,-80,-50,-45,-40,-35,-30,-15, 15.,30.,35,40.,45, 50., 80.,100.,200.};
-
-    int nbin         = 8;
-    int nbinNeg         = 17;
+    int nbinNeg= 17;
+    double pTbinNeg[nbinNeg+1] = {-200,-100,-80,-50,-45,-40,-35,-30,-15, 15.,30.,35,40.,45, 50., 80.,100.,200.};
 
     if(run_Debug) cout << "ShiftEnergyZ processing " << endl;
 
@@ -339,29 +306,20 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 	    double Zmass = ZCand.M(); 
 	    if(Zmass < 70) Zmass=70;
 	    if(Zmass > 130) Zmass=130;
+
 	    if(ElectronColl[0].IsBB() && ElectronColl[1].IsBB())  FillHist(param.Name+"/ZMass/SS_BB", Zmass , EvWeight ,70 , 130, 30);
 	    if(ElectronColl[0].IsEC() && ElectronColl[1].IsEC())  FillHist(param.Name+"/ZMass/SS_EC", Zmass , EvWeight ,70 , 130, 30);
 	    if(ElectronColl[0].IsBB() && ElectronColl[1].IsBB()) {
-	      FillHist(param.Name+"/Z/SS_BB_Lep1Pt", ElectronColl[0].PtMaxed(200) , EvWeight ,nbin, pTbin,"pT");
-	      FillHist(param.Name+"/Z/SS_BB_Lep2Pt", ElectronColl[1].PtMaxed(200) , EvWeight ,nbin, pTbin,"pT");
 	      FillHist(param.Name+"/Z/SS_BB_LepPt",  ElectronColl[0].PtMaxed(200) ,         EvWeight , nbinNeg, pTbinNeg,"pT");
 	      FillHist(param.Name+"/Z/SS_BB_LepPt", -1*ElectronColl[1].PtMaxed(200) ,      EvWeight , nbinNeg, pTbinNeg,"pT");
-
-	      FillHist(param.Name+"/Z/SS_BB_Lep1Eta", ElectronColl[0].Eta() , EvWeight, 50., -2.5, 2.5, "Eta");
-	      FillHist(param.Name+"/Z/SS_BB_Lep2Eta", ElectronColl[1].Eta() , EvWeight, 50., -2.5, 2.5, "Eta");
 	      FillHist(param.Name+"/Z/SS_BB_LepEta",  (ElectronColl[0].Eta()+2.5) , EvWeight, 100., -5., 5., "Eta");
 	      FillHist(param.Name+"/Z/SS_BB_LepEta",  -1*(ElectronColl[1].Eta()+2.5) , EvWeight, 100., -5., 5., "Eta");
 
 	    }
 	    
 	    if(ElectronColl[0].IsEC() && ElectronColl[1].IsEC()) {
-	      FillHist(param.Name+"/Z/SS_EC_Lep1Pt", ElectronColl[0].PtMaxed(200) , EvWeight ,nbin, pTbin,"pT");
-	      FillHist(param.Name+"/Z/SS_EC_Lep2Pt", ElectronColl[1].PtMaxed(200) , EvWeight ,nbin, pTbin,"pT");
               FillHist(param.Name+"/Z/SS_EC_LepPt", ElectronColl[0].PtMaxed(200) ,         EvWeight , nbinNeg, pTbinNeg,"pT");
               FillHist(param.Name+"/Z/SS_EC_LepPt", -1*ElectronColl[1].PtMaxed(200) ,      EvWeight , nbinNeg, pTbinNeg,"pT");
-
-	      FillHist(param.Name+"/Z/SS_EC_Lep1Eta", ElectronColl[0].Eta() , EvWeight, 50., -2.5, 2.5, "Eta");
-	      FillHist(param.Name+"/Z/SS_EC_Lep2Eta", ElectronColl[1].Eta() , EvWeight, 50., -2.5, 2.5, "Eta");
 	      FillHist(param.Name+"/Z/SS_EC_LepEta",  (ElectronColl[0].Eta()+2.5) , EvWeight, 100., -5., 5., "Eta");
 	      FillHist(param.Name+"/Z/SS_EC_LepEta",  -1*(ElectronColl[1].Eta()+2.5) , EvWeight, 100., -5., 5., "Eta");
 
@@ -371,42 +329,29 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
       } //// END OF Prompt + CF
     }
     else {
+
       //// Now plot OS * CF rate [Energy Shifted] to compare
       if(ElectronColl.at(0).IsPrompt() && !ElectronColl.at(0).LeptonIsCF()  && ElectronColl.at(1).IsPrompt() && !ElectronColl.at(0).LeptonIsCF() ){
-	
+
 	if(HasPromptConv(ElectronColl.at(0))  || HasPromptConv(ElectronColl.at(1))) return;
 	if(ElectronColl.at(0).LeptonGenType() >= 4 || ElectronColl.at(1).LeptonGenType() >=4) return;
 	
-	//// Loop several Energy shift
-	for (unsigned int ishift = 0 ; ishift < 40; ishift++){
-	  double shiftEl1 = 1. - double(ishift)*0.001;
-	  double shiftEl2 = 1. - double(ishift)*0.001;
-	  TString shift_string = DoubleToString(shiftEl1);
-	  vector<Electron> ShiftedEl;
-	  Electron this_el1 = ElectronColl.at(0);
-	  Electron this_el2 = ElectronColl.at(1);
-	  
-	  if(ishift == 21){
-	    if(ElectronColl[0].Pt() < 50) shiftEl1 = 0.996;
-	    else if(ElectronColl[0].Pt() < 100) shiftEl1 = 0.997;
-	    else if(ElectronColl[0].Pt() < 200) shiftEl1 = 0.998;
-	    else shiftEl1 = 1;
-	    if(ElectronColl[1].Pt() < 50) shiftEl2 = 0.996;
-            else if(ElectronColl[1].Pt() < 100) shiftEl2 = 0.997;
-            else if(ElectronColl[1].Pt() < 200) shiftEl2 = 0.998;
-            else shiftEl2 = 1;
-	    shift_string = "SingleElShift2";
-	    
-	  }
-	  if(ishift == 22){
-	    shiftEl1 = GetShiftCFEl(this_el1);
-	    shiftEl2 = GetShiftCFEl(this_el2);
-	    shift_string = "SingleElShift";
-	  }
 
-	  if(this_el1.IsBB() && !this_el2.IsBB()) this_el2*= shiftEl2;
-	  else    if(this_el2.IsBB() &&!this_el1.IsBB()) this_el1*= shiftEl1;
-	  else  if( (this_el1.Pt() - this_el2.Pt() ) > 50) this_el1*= shiftEl1;
+	//// Loop several Energy shift
+	for (unsigned int ishift = 0 ; ishift < 1; ishift++){
+	  
+	  
+	  vector<Electron> ShiftedEl;
+          Electron this_el1 = ElectronColl.at(0);
+          Electron this_el2 = ElectronColl.at(1);
+
+	  double shiftEl1 = GetShiftCFEl(this_el1);
+	  double shiftEl2 = GetShiftCFEl(this_el2);
+	  TString shift_string = "SingleElShift";
+	  
+	  if(this_el1.IsBB() && !this_el2.IsBB())        this_el2*= shiftEl2;
+	  else if(this_el2.IsBB() &&!this_el1.IsBB())    this_el1*= shiftEl1;
+	  else if((this_el1.Pt() - this_el2.Pt() ) > 50) this_el1*= shiftEl1;
 	  else if(this_el1.HNL_MVA_CF("EDv5") < this_el2.HNL_MVA_CF("EDv5")) this_el1*= shiftEl1;
 	  else this_el2*= shiftEl2;
 	  
@@ -421,15 +366,12 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 	  ShiftedEl.push_back(this_el1);
 	  ShiftedEl.push_back(this_el2);
 	  double weight_shifted = GetCFWeightElectron(ShiftedEl, param , false);
-	  
           if(ElectronColl[0].IsBB() && ElectronColl[1].IsBB()){
-	    
 	    FillHist(param.Name+"/ZMass/OS_BB_Weighted_EnergyShift_"+shift_string,  ZShiftedmass             , weight_shifted*EvWeight ,70 , 130, 30);
 	    FillHist(param.Name+"/Z/OS_BB_Weighted_EnergyShift_Pt_"+shift_string,   this_el1.PtMaxed(200)    , weight_shifted*EvWeight , nbinNeg, pTbinNeg,"pT");
 	    FillHist(param.Name+"/Z/OS_BB_Weighted_EnergyShift_Pt_"+shift_string,   -1*this_el2.PtMaxed(200) , weight_shifted*EvWeight , nbinNeg, pTbinNeg,"pT");
             FillHist(param.Name+"/Z/OS_BB_Weighted_EnergyShift_Eta_"+shift_string,  (this_el1.Eta()+2.5)     , weight_shifted*EvWeight ,100., -5, 5, "Eta");
             FillHist(param.Name+"/Z/OS_BB_Weighted_EnergyShift_Eta_"+shift_string,  -1*(this_el2.Eta()+2.5)  , weight_shifted*EvWeight ,100., -5, 5, "Eta");
-
 
 	  }
           if(ElectronColl[0].IsEC() && ElectronColl[1].IsEC()){
@@ -438,32 +380,41 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
             FillHist(param.Name+"/Z/OS_EC_Weighted_EnergyShift_Pt_"+shift_string, -1*this_el2.PtMaxed(200) , weight_shifted*EvWeight , nbinNeg, pTbinNeg,"pT");
             FillHist(param.Name+"/Z/OS_EC_Weighted_EnergyShift_Eta_"+shift_string, (this_el1.Eta()+2.5)    , weight_shifted*EvWeight ,100., -5, 5, "Eta");
             FillHist(param.Name+"/Z/OS_EC_Weighted_EnergyShift_Eta_"+shift_string, -1*(this_el2.Eta()+2.5) , weight_shifted*EvWeight ,100., -5, 5, "Eta");
-
 	  }
 	}
-	
-	for (unsigned int ishift = 0 ; ishift < 60; ishift++){
-          double shiftEl = 1. - double(ishift)*0.001;
+
+	for (unsigned int ishift = 0 ; ishift < 101; ishift++){
+
+          double shiftEl = 1.0 - double(ishift)*0.001;
           TString shift_string = DoubleToString(shiftEl);
           vector<Electron> ShiftedEl;
           Electron this_el1 = ElectronColl.at(0);
           Electron this_el2 = ElectronColl.at(1);
 
-	  if(ishift <= 30){
+	  if(ishift <50){
 	    this_el1*= shiftEl;
 	    this_el2*= shiftEl;
 	  }
-	  else{
-	    shiftEl = 1. - double(ishift-30)*0.001;
-	    shift_string = DoubleToString(shiftEl)+"_Slope";
-	    double cutSlope1   = ElectronColl.at(0).IsBB() ? (1-shiftEl) / (15-100) : (1-shiftEl) / (15-250) ;
-	    double cutSlope2   = ElectronColl.at(1).IsBB() ? (1-shiftEl) / (15-100) : (1-shiftEl) / (15-250) ;
-	    double ShiftFinal1 = ElectronColl.at(0).IsBB() ? std::max( shiftEl, std::min(1. , shiftEl + cutSlope1*(ElectronColl.at(0).Pt()-100) )  ) : std::max( shiftEl, std::min(1. , shiftEl + cutSlope1*(ElectronColl.at(0).Pt()-250) )  ) ;
-	    double ShiftFinal2 = ElectronColl.at(1).IsBB() ? std::max( shiftEl, std::min(1. , shiftEl + cutSlope2*(ElectronColl.at(1).Pt()-100) )  ) : std::max( shiftEl, std::min(1. , shiftEl + cutSlope2*(ElectronColl.at(1).Pt()-250) )  ) ;
-	    this_el1*= ShiftFinal1;
-            this_el2*= ShiftFinal2;
+	  else   if(ishift <100){
+	    shiftEl = 1.0 - double(ishift-50)*0.001;
+	    shift_string = DoubleToString(shiftEl)+"_sloped";
 
+	    double ShiftSlope  = (1-(shiftEl)) / (250-15);
+	    double ShiftFinal1 = std::max( shiftEl, std::min(1. , shiftEl + ShiftSlope*(this_el1.Pt()-15.)) );
+	    double ShiftFinal2 = std::max( shiftEl, std::min(1. , shiftEl + ShiftSlope*(this_el2.Pt()-15.)) );
+
+            this_el1*= ShiftFinal1;
+            this_el2*= ShiftFinal2;
+          }
+	  else{
+	    double shiftEl1 = GetShiftCFEl(this_el1);
+	    double shiftEl2 = GetShiftCFEl(this_el2);
+	    shiftEl = (shiftEl1+shiftEl2)/2.;
+	    shift_string = "AverageSingleEl";
+	    this_el1*= shiftEl;
+            this_el2*= shiftEl;
 	  }
+
 	  Particle ZShiftedCand = this_el1+this_el2;
           double ZShiftedmass = ZShiftedCand.M();
           if(ZShiftedmass < 70) ZShiftedmass=70;
@@ -475,6 +426,7 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
           ShiftedEl.push_back(this_el1);
           ShiftedEl.push_back(this_el2);
           double weight_shifted = GetCFWeightElectron(ShiftedEl, param , false);
+
           if(ElectronColl[0].IsBB() && ElectronColl[1].IsBB()){
 	    FillHist(param.Name+"/ZMass/OS_BB_Weighted_ZEnergyShift_"+shift_string, ZShiftedmass            , weight_shifted*EvWeight ,70 , 130, 30);
             FillHist(param.Name+"/Z/OS_BB_Weighted_ZEnergyShift_Pt_"+shift_string, this_el1.PtMaxed(200)    , weight_shifted*EvWeight , nbinNeg, pTbinNeg,"pT");
@@ -544,72 +496,55 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
       double PtResponse  = (iel.Pt()  -  gen_pt) / gen_pt;
 
 
-      TString EtaBin = (iel.IsBB()) ? "BB" : "EC";
+      TString EtaBin = iel.etaRegionString();//(iel.IsBB()) ? "BB" : "EC";
       
-      if(bIsCF){
-	if(PtResponse > 0.8){
-	  cout << "PtResponse = " << PtResponse << " El Pt = " << iel.Pt() << "  El Eta = " << iel.Eta() << endl;
-	  cout << "Matched Lep Pt = " << truth_lep.Pt() << "  sumPt = " << PtSum << endl;
-	  cout << "iel.LeptonGenType = " << iel.LeptonGenType() << endl;
-	  cout << "Lep charge  = " << iel.Charge() << endl;
-	  PrintMatchedGen(All_Gens, Lepton(iel));
-	  cout << " " << endl;
-	  PrintGen(All_Gens);
-	}
-      }
-      double rate_cf= cfEst->GetElectronCFRate(param.Electron_Tight_ID, param.Electron_CF_Key, iel.defEta(), iel.Pt(), 0);
+      //double rate_cf= cfEst->GetElectronCFRate(param.Electron_Tight_ID, param.Electron_CF_Key, iel.defEta(), iel.Pt(), 0);
       
-      if(iel.IsPrompt() &&  bIsConv) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Conv", PtResponse , EvWeight , 200, -1,1);
-      if(iel.IsPrompt() &&  bIsCF && bIsConv) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_CFConv", PtResponse , EvWeight , 200, -1,1);
       if(bIsConv) continue;
-      if(iel.IsPrompt() && !bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Prompt", PtResponse , EvWeight ,200 , -1, 1);
-      if(iel.IsPrompt() &&  bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_CF", PtResponse , EvWeight , 200, -1,1);
-
-      if(iel.IsPrompt() && !bIsCF) FillHist(param.Name+"/EnergyShift_2D/Prompt", gen_pt, PtResponse, EvWeight, 500, 0, 500, 100, -0.5, 0.5 );
-      if(iel.IsPrompt() && bIsCF) FillHist(param.Name+"/EnergyShift_2D/CF", gen_pt, PtResponse, EvWeight, 500, 0, 500, 100, -0.5, 0.5  );
-     
-      if(truth_lep.Pt() < 50) {
-	if(iel.IsPrompt() && !bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt1_Prompt", PtResponse , EvWeight ,200 , -1, 1);
-        if(iel.IsPrompt() && !bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt1_ScaledPrompt", PtResponse , rate_cf*EvWeight ,200 , -1, 1);
-	if(iel.IsPrompt() &&  bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt1_CF", PtResponse , EvWeight , 200, -1,1);
-      }
-      else  if(truth_lep.Pt() < 100) {
-	if(iel.IsPrompt() && !bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt2_Prompt", PtResponse , EvWeight ,200 , -1, 1);
-        if(iel.IsPrompt() && !bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt2_ScaledPrompt", PtResponse , rate_cf*EvWeight ,200 , -1, 1);
-        if(iel.IsPrompt() &&  bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt2_CF", PtResponse , EvWeight , 200, -1,1);
-      } 
-      else  if(truth_lep.Pt() < 250) {
-        if(iel.IsPrompt() && !bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt3_Prompt", PtResponse , EvWeight ,200 , -1, 1);
-        if(iel.IsPrompt() && !bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt3_ScaledPrompt", PtResponse , rate_cf*EvWeight ,200 , -1, 1);
-        if(iel.IsPrompt() &&  bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt3_CF", PtResponse , EvWeight , 200, -1,1);
+      
+      if(iel.IsEC()){
+	if(gen_pt < 30) {
+	  if(iel.IsPrompt() &&  bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt1_CF", PtResponse , EvWeight , 200, -1,1);
+	}
+	else  if(gen_pt < 50) {
+	  if(iel.IsPrompt() &&  bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt2_CF", PtResponse , EvWeight , 200, -1,1);
+	}
+	else  if(gen_pt< 75) {
+	  if(iel.IsPrompt() &&  bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt3_CF", PtResponse , EvWeight , 200, -1,1);
+	}
+	else  if(gen_pt< 100) {
+	  if(iel.IsPrompt() &&  bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt4_CF", PtResponse , EvWeight , 200, -1,1);
+	} 
+	else if(iel.IsPrompt() &&  bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt5_CF", PtResponse , EvWeight , 200, -1,1);
       }
       else{
-	if(iel.IsPrompt() && !bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt4_Prompt", PtResponse , EvWeight ,200 , -1, 1);
-        if(iel.IsPrompt() && !bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt4_ScaledPrompt", PtResponse , rate_cf*EvWeight ,200 , -1, 1);
-        if(iel.IsPrompt() &&  bIsCF) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt4_CF", PtResponse , EvWeight , 200, -1,1);
+	if(gen_pt< 50) {
+	  if(iel.IsPrompt() &&  bIsCF) FillHist(param.Name+"/EnergyShift/BB_Pt1_CF", PtResponse , EvWeight , 200, -1,1);
+        }
+        else  if(gen_pt< 100) {
+          if(iel.IsPrompt() &&  bIsCF) FillHist(param.Name+"/EnergyShift/BB_Pt2_CF", PtResponse , EvWeight , 200, -1,1);
+        }
+        else if(iel.IsPrompt() &&  bIsCF) FillHist(param.Name+"/EnergyShift/BB_Pt3_CF", PtResponse , EvWeight , 200, -1,1);
       }
 
-      for (unsigned int ishift = 0 ; ishift < 50; ishift++){
-	double shiftEl = 1. - double(ishift)*0.001;
+      for (unsigned int ishift = 0 ; ishift < 150; ishift++){
+	double shiftEl = 1.05 - double(ishift)*0.001;
 	TString shift_string = DoubleToString(shiftEl);
-
 	double PtResponseShift = (shiftEl*iel.Pt() - gen_pt) / (gen_pt);
 	if(iel.IsPrompt() &&  !bIsCF) {
-	  FillHist(param.Name+"/EnergyShift/"+EtaBin+"_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
-	  if(truth_lep.Pt() < 50) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt1_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
-	  else if(truth_lep.Pt() < 100) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt2_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
-	  else if(truth_lep.Pt() < 250) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt3_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
-	  else  FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt4_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
-	  
-          FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Scaled_PromptShifted_"+shift_string, PtResponseShift , rate_cf*EvWeight , 200, -1,1);
-          if(truth_lep.Pt() < 50) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt1_Scaled_PromptShifted_"+shift_string, PtResponseShift , rate_cf*EvWeight , 200, -1,1);
-          else if(truth_lep.Pt() < 100) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt2_Scaled_PromptShifted_"+shift_string, PtResponseShift , rate_cf*EvWeight , 200, -1,1);
-          else if(truth_lep.Pt() < 250) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt3_Scaled_PromptShifted_"+shift_string, PtResponseShift , rate_cf*EvWeight , 200, -1,1);
-          else  FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt4_Scaled_PromptShifted_"+shift_string, PtResponseShift , rate_cf*EvWeight , 200, -1,1);
-
+	  if(iel.IsEC()){
+	    if(gen_pt< 30)       FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt1_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
+	    else if(gen_pt< 50)  FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt2_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
+	    else if(gen_pt< 75)  FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt3_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
+	    else if(gen_pt< 100) FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt4_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
+	    else  FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt5_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
+	  }
+	  else{
+	    if(gen_pt< 50)       FillHist(param.Name+"/EnergyShift/BB_Pt1_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
+            else if(gen_pt< 100) FillHist(param.Name+"/EnergyShift/BB_Pt2_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
+            else  FillHist(param.Name+"/EnergyShift/BB_Pt3_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
+	  }
 	}
-
-
       }
     }
     return;
@@ -679,11 +614,12 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
     }
     
     
-    double X = 1.;
+    double X = GetZMassShift(ElectronColl);;
   
     if(ElectronColl[0].IsBB() && ElectronColl[1].IsBB()){
       if(DataYear==2017) {
-	if(HasFlag("FLATSF")) X = 0.982;
+	
+	if(HasFlag("FLATSF")) X = 0.988;
 	else {
 	  if(ElectronColl[0].Pt() < 50 && ElectronColl[1].Pt() < 50) X = 0.993;
 	  else if(ElectronColl[0].Pt() < 100 && ElectronColl[1].Pt() < 50) X = 0.994;

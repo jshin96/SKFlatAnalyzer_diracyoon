@@ -65,6 +65,7 @@ public:
 
 
   double JetPileUpSF(Jet j, TString WP, int sys=0);
+  double MuonTracker_SF(TString key, double eta, double p, int sys=0);
   double MuonReco_SF(TString key, double eta, double p, int sys=0);
   double MuonID_SF(TString ID, double eta, double pt, int sys=0);
   double MuonISO_SF(TString ID, double eta, double pt, int sys=0);
@@ -78,7 +79,7 @@ public:
 
   std::map< TString, TH2F* > map_hist_Muon;
 
-  double ElectronReco_SF(double sceta, double pt, int sys=0);
+  double ElectronReco_SF(TString key, double sceta, double pt, int sys=0);
   double ElectronID_SF(TString ID, double sceta, double pt, int sys=0);
   double ElectronTrigger_Eff(TString ID, TString trig, int DataOrMC, double eta, double pt, int sys=0);
 

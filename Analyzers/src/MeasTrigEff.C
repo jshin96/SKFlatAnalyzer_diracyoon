@@ -2,6 +2,9 @@
 
 void MeasTrigEff::initializeAnalyzer(){
 
+  HNL_LeptonCore::initializeAnalyzer();
+
+
   ElEl=false, MuMu=false, ElMu=false, SystRun=false; 
   DiMuTrig_DZ=false, DiElTrig_DZ=false;
   EMuTrig_ElLeg=false, EMuTrig_MuLeg=false, EMuTrig_DZ=false;

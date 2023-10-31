@@ -298,6 +298,28 @@ bool Muon::PassID(TString ID) const {
     return true;
   }
 
+  if(ID=="HNL_ULID_v2_FO_2016") {
+
+    if(!PassID("MVALooseNoPOGMTrgSafe")) return false;
+    if(fabs(IP3D()/IP3Derr()) > 7) return false;
+    
+    if(MVA() < 0.72) {
+      if(CloseJet_BScore() > 0.025) return false;
+    }
+    return true;
+  }
+  if(ID=="HNL_ULID_v2_FO_2017" || ID=="HNL_ULID_v2_FO_2018" ) {
+
+    if(!PassID("MVALooseNoPOGMTrgSafe")) return false;
+    if(fabs(IP3D()/IP3Derr()) > 7) return false;
+
+    if(MVA() < 0.64) {
+      if(CloseJet_BScore() > 0.025) return false;
+    }
+    return true;
+  }
+
+    
   if(ID=="HNL_TopMVA_FO_TM") {
     if(!PassID("MVALoose")) return false;
     if( fabs(this->Eta()) <= 1.479 ){
@@ -355,6 +377,11 @@ bool Muon::PassID(TString ID) const {
     return true;
   }
 
+  if(ID == "MVALooseNoPOGM") {
+    if(!Pass_LepMVAID()) return false;
+    return true;
+  }
+
   /// Loose ID for SR with MVA cuts                                                                                                                                                                                              
   if(ID == "MVALooseTrgSafe") {
     if(!PassID("MVALoose")) return false;
@@ -363,9 +390,21 @@ bool Muon::PassID(TString ID) const {
   }
 
 
-  /////////// FINAL UL HNL Type-1 ID                                                                                                                                                                                                                                                                                          
+  if(ID == "MVALooseNoPOGMTrgSafe") {
+    if(!PassID("MVALooseNoPOGM")) return false;
+    if( !(TrkIso()/Pt()<0.4) ) return false;
+    return true;
+  }
+
+  /////////// FINAL UL HNL Type-1 ID                                                                                                                                                                               
   if(ID == "HNL_ULID_FO"){
     if(!PassID("MVALooseTrgSafe")) return false;
+    if(fabs(IP3D()/IP3Derr()) > 7) return false;
+    return true;
+  }
+                                                                                                           
+  if(ID == "HNL_ULID_NoPOGM_FO"){
+    if(!PassID("MVALooseNoPOGMTrgSafe")) return false;
     if(fabs(IP3D()/IP3Derr()) > 7) return false;
     return true;
   }
@@ -806,7 +845,7 @@ bool Muon::passIDHN(int ID, double dxy_b, double dxy_e, double dz_b,double dz_e,
 
 bool Muon::Pass_LepMVAID() const {
 
-  if(this->Pt() < 10)     return false;
+  if(this->Pt() < 5)     return false;
   if(this->fEta() > 2.4)  return false;
   if(MiniRelIso() > 0.4)  return false;
   if(SIP3D() > 8)         return false;
