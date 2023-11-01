@@ -16,16 +16,10 @@ declare  -a era_list=("2017")
 if [[ $1 == "TEST" ]]; then
 
     declare  -a era_list=("2017")
-    declare  -a flag_list=("SS_CR")
 
     for i in "${era_list[@]}"
     do
-        for j in "${flag_list[@]}"
-        do
-            FLAG=$j
-            SKFlat.py -a $analyzer  -i DYTypeI_DF_M100_private   -n 1 --nmax 1   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags $FLAG  &
-	    
-        done
+        SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton.txt  -n ${njobs_data}  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags RunFake  &
     done
 fi
 

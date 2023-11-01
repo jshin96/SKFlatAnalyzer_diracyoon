@@ -372,6 +372,10 @@ public:
       else if(vers=="QCD_LF1_v5")     return j_lep_mva_hnl_fake_LF1_v5;
       else if(vers=="QCD_LF2_v5")     return j_lep_mva_hnl_fake_LF2_v5;
 
+      else if(vers=="HF") return j_lep_mva_hnl_fake_v5_hfb;
+      else if(vers=="HFB") return j_lep_mva_hnl_fake_v5_hfb;
+      else if(vers=="HFC") return j_lep_mva_hnl_fake_v5_hfc;
+      else if(vers=="LF") return j_lep_mva_hnl_fake_v5_lf;
 
     }
     else{
@@ -382,6 +386,9 @@ public:
       else if(vers=="QCD_LF1_v5")     return j_lep_mva_hnl_fake_LF1_v5;
       else if(vers=="QCD_LF2_v5")     return j_lep_mva_hnl_fake_LF2_v5;
       else if(vers=="HFTop")          return  j_lep_mva;
+      else if(vers=="HF") return  j_lep_mva;
+      else if(vers=="LF") return  j_lep_mva_hnl_fake_ed_v4;
+
     }
     cout<<"[Lepton::HNL_MVA_Fake] no version set "<< vers<< endl;
     exit(ENODATA);
@@ -603,12 +610,17 @@ public:
     return ( this->Pt() ) * ( 1. + max(0., (this_reliso-Tight_reliso)) );
   }
   inline double CalcMVACone(double this_mva, double Tight_mva){
-    this_mva=this_mva+1;
-    Tight_mva=Tight_mva+1;
+    //this_mva=this_mva+1;
+    //Tight_mva=Tight_mva+1;
     
     if(this_mva > Tight_mva) return this->Pt();
     
-    double mva_diff  = 1- this_mva/Tight_mva;
+    /// this_mva =  -1 mva_diff = 1
+    /// this_mva = Tight_mva  mva_diff = 0 
+    //    y = mx + c 
+    //   mva_diff =   1 - (1 + this_mva) / (1+Tight_mva) 
+    double mva_diff  = 1  - (1 + this_mva) / (1+Tight_mva);  
+
     double PtMPtDiff = (this->Pt()/j_lep_jetptratio) - this->Pt();
     if(PtMPtDiff < 0 ) PtMPtDiff = 0;
 

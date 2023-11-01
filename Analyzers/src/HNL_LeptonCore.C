@@ -284,7 +284,7 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup_version
 }
 
 
-AnalyzerParameter HNL_LeptonCore::SetupFakeParameter(AnalyzerParameter::Syst SystType, HNL_LeptonCore::Channel channel, vector<TString>  s_jobs, TString PNAME, TString IDT, TString IDL){
+AnalyzerParameter HNL_LeptonCore::SetupFakeParameter(AnalyzerParameter::Syst SystType, HNL_LeptonCore::Channel channel, HNL_LeptonCore::NormMC norm, vector<TString>  s_jobs, TString PNAME, TString IDT, TString IDL){
 
   AnalyzerParameter param  ;
   param.Clear();
@@ -295,9 +295,9 @@ AnalyzerParameter HNL_LeptonCore::SetupFakeParameter(AnalyzerParameter::Syst Sys
   param.hprefix  = "";
   param.hpostfix = "";
   param.Jobs = s_jobs;
-  param.Apply_Weight_Norm1pb  = true;
+  param.Apply_Weight_Norm1Ipb  = true;
   param.Apply_Weight_LumiNorm = true;
-  param.Apply_Weight_SumW     = true;
+  param.Apply_Weight_SumQ     = true;
   param.Apply_Weight_PileUp   = true;
   param.Apply_Weight_PreFire  = true;
   param.Apply_Weight_kFactor  = true;
@@ -308,20 +308,23 @@ AnalyzerParameter HNL_LeptonCore::SetupFakeParameter(AnalyzerParameter::Syst Sys
   param.Apply_Weight_JetPUID   = false;
 
   //// By default dont apply ID/Trigger SF                                                                           
-  param.Apply_Weight_IDSF     = false;
+  param.Apply_Weight_IDSF     = true;
   param.Apply_Weight_TriggerSF= false;
 
 
-  if(param.HasFlag("MCFakeRates")) {
+  
+  if(norm==HNL_LeptonCore::NoNorm){
     param.Apply_Weight_LumiNorm = false;
-    param.Apply_Weight_Norm1pb  = false;
+    param.Apply_Weight_Norm1Ipb  = false;
   }
-  if(param.HasFlag("MCFakes")) {
+  if(norm==HNL_LeptonCore::NormTo1Invpb)    {
     param.Apply_Weight_LumiNorm = false;
-    param.Apply_Weight_Norm1pb  = false;
+    param.Apply_Weight_Norm1Ipb  = true;
   }
-  if(param.HasFlag("MakeRegionPlots"))     param.Apply_Weight_LumiNorm = false;
-
+  if(norm==HNL_LeptonCore::NormToXsec)  {
+    param.Apply_Weight_Norm1Ipb  = true;
+    param.Apply_Weight_LumiNorm = true;
+  }
 
   // Default settings if NOT s_setup_version is set                                                                                                                                                       
 
@@ -404,9 +407,9 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
   param.hprefix  = "";
   param.hpostfix = "";
 
-  param.Apply_Weight_Norm1pb  = true;
+  param.Apply_Weight_Norm1Ipb  = true;
   param.Apply_Weight_LumiNorm = true;
-  param.Apply_Weight_SumW     = true;
+  param.Apply_Weight_SumQ     = true;
   param.Apply_Weight_PileUp   = true;
   param.Apply_Weight_PreFire  = true;
   param.Apply_Weight_kFactor  = true;
@@ -765,7 +768,7 @@ double HNL_LeptonCore::SetupWeight(Event ev, AnalyzerParameter& param){
     FillWeightHist(param.ChannelDir()+"/PileupWeight",pileup_weight);
   }
 
-  double this_mc_weight =  MCweight(param.Apply_Weight_SumW, param.Apply_Weight_Norm1pb);
+  double this_mc_weight =  MCweight(param.Apply_Weight_SumQ, param.Apply_Weight_Norm1Ipb);
   FillWeightHist(param.ChannelDir()+"/MCWeight",    this_mc_weight);
   
   if(param.Apply_Weight_LumiNorm) FillWeightHist(param.ChannelDir()+"/LumiWeight",  ev.GetTriggerLumi("Full"));

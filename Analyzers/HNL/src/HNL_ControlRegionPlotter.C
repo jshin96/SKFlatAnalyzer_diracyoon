@@ -60,7 +60,6 @@ void HNL_ControlRegionPlotter::executeEvent(){
 
 void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector<TString> CRs){
 
-  if(CRs.size() == 0) return;
 
   //  if(_jentry==0) param.PrintParameters();
   run_Debug = (_jentry%nLog==0);
@@ -84,9 +83,8 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   TString Electron_ID = SetLeptonID("Electron",param);
   TString Muon_ID     = SetLeptonID("Muon", param);
 
-  double Min_Muon_Pt     = RunFake ? 7  : 10.;
+  double Min_Muon_Pt     = RunFake ? 8  : 10.;
   double Min_Electron_Pt = RunFake ? 10 : 15;
-
 
   std::vector<Muon>       MuonTightCollInit     = SelectMuons    ( param,Muon_ID,     Min_Muon_Pt,     2.4,weight); 
   std::vector<Electron>   ElectronTightCollInit = SelectElectrons( param,Electron_ID, Min_Electron_Pt, 2.5,weight);
@@ -113,6 +111,14 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   
   if(run_Debug) cout << "[3] HNL_ControlRegionPlotter::RunControlRegions Gen*Lumi Weight = " << weight << endl;
   if(run_Debug) cout << "[3] HNL_ControlRegionPlotter::RunControlRegions ParamWeight = " << param.EventWeight() << endl;
+
+
+  if(RunFake) FillFakeHistograms(param, "FakeStudies", MakeLeptonPointerVector(MuonTightColl, ElectronTightColl, param),  AK4_JetColl,AK8_JetColl, AK4_BJetColl, METv,weight);
+  if(RunFake&&SameCharge(MakeLeptonPointerVector(MuonTightColl, ElectronTightColl, param))) 
+    FillFakeHistograms(param, "FakeStudies/SS", MakeLeptonPointerVector(MuonTightColl, ElectronTightColl, param),  AK4_JetColl,AK8_JetColl, AK4_BJetColl, METv,weight);
+  
+
+  if(CRs.size() == 0) return;
 
   RunAllControlRegions(ElectronTightColl,ElectronVetoColl,MuonTightColl,MuonVetoColl, 
 		       AK4_JetAllColl, AK4_JetColl,AK4_VBF_JetColl,AK8_JetColl, AK4_BJetColl, 

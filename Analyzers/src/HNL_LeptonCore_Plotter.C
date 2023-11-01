@@ -10,6 +10,25 @@
 ------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------*/
 
+void HNL_LeptonCore::FillFakeHistograms(AnalyzerParameter param, TString plot_dir,std::vector<Lepton *> Leptons, std::vector<Jet> jets,   std::vector<FatJet> fatjets, vector<Jet> BJetColl, Particle met,  double w){
+  
+  for(auto ilep : Leptons){
+    TString LorT = (ilep->PassLepID()) ? "Tight" : "LooseNotTight";
+    TString MotherJetFlavour = (IsData) ? "Data" :  ilep->MotherJetFlavour();
+    FillHist((plot_dir+LorT+"/HF_MVA_"+MotherJetFlavour+"_"+ilep->sRegion()+"_"+param.Name +"_"+LorT).Data(),ilep->HNL_MVA_Fake("HF") ,  w, 200, -1, 1 );
+    FillHist((plot_dir+LorT+"/LF_MVA_"+MotherJetFlavour+"_"+ilep->sRegion()+"_"+param.Name +"_"+LorT).Data(),ilep->HNL_MVA_Fake("LF") ,  w, 200, -1, 1 );
+    FillHist((plot_dir+LorT+"/ISO_"+   MotherJetFlavour+"_"+ilep->sRegion()+"_"+param.Name +"_"+LorT).Data(), ilep->RelIso() ,  w, 60, 0, 0.6 );
+    FillHist((plot_dir+LorT+"/QCD_LFvsHF_"+MotherJetFlavour+"_"+ilep->sRegion()+"_"+param.Name +"_"+LorT).Data(), ilep->HNL_MVA_Fake("QCD_LFvsHF_v5") ,  w, 200,-1, 1);
+    FillHist((plot_dir+LorT+"/QCD_BvsC_"+  MotherJetFlavour+"_"+ilep->sRegion()+"_"+param.Name +"_"+LorT).Data(), ilep->HNL_MVA_Fake("QCD_BvsC_v5") ,  w, 200, -1, 1 );
+    FillHist((plot_dir+LorT+"/BScore_"+    MotherJetFlavour+"_"+ilep->sRegion()+"_"+param.Name +"_"+LorT).Data(), ilep->CloseJet_BScore() ,  w, 200, -1, 1 );
+    FillHist((plot_dir+LorT+"/CvsB_"+      MotherJetFlavour+"_"+ilep->sRegion()+"_"+param.Name +"_"+LorT).Data(), ilep->CloseJet_CvsBScore() ,  w, 200, -1, 1 );
+    FillHist((plot_dir+LorT+"/CvsL_"+      MotherJetFlavour+"_"+ilep->sRegion()+"_"+param.Name +"_"+LorT).Data(), ilep->CloseJet_CvsLScore() ,  w, 200, -1, 1);
+    FillHist((plot_dir+LorT+"/PtRatio_"+   MotherJetFlavour+"_"+ilep->sRegion()+"_"+param.Name +"_"+LorT).Data(), ilep->CloseJet_Ptratio() ,   w, 200, 0, 5 );
+    FillHist((plot_dir+LorT+"/PtRel_"+     MotherJetFlavour+"_"+ilep->sRegion()+"_"+param.Name +"_"+LorT).Data(), ilep->CloseJet_Ptrel() ,     w, 50, 0, 200  );
+  }
+  
+  return;
+}
 
 void HNL_LeptonCore::Fill_PlotsAK8(AnalyzerParameter param, TString region, TString plot_dir, 
 				   std::vector<Tau> TauColl, std::vector<Jet> jets,   std::vector<FatJet> fatjets, std::vector<Lepton *> leps , 

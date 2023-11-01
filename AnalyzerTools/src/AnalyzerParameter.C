@@ -82,9 +82,10 @@ void AnalyzerParameter::Clear(){
   ConvMethod="MC";
 
 
-  Apply_Weight_Norm1pb   = true;
+  Apply_Weight_Norm1Ipb   = true;
+  Apply_Weight_MCSign    = true;
   Apply_Weight_LumiNorm  = true;
-  Apply_Weight_SumW      = true;
+  Apply_Weight_SumQ      = true;
   Apply_Weight_PileUp    = true;
   Apply_Weight_PreFire   = true;
   Apply_Weight_kFactor   = true;
@@ -178,9 +179,9 @@ AnalyzerParameter::AnalyzerParameter(){
   Set_MuTrigW=false;
 
   /// Set weights to true by default
-  Apply_Weight_Norm1pb   = true;
+  Apply_Weight_Norm1Ipb   = true;
   Apply_Weight_LumiNorm  = true;
-  Apply_Weight_SumW      = true;
+  Apply_Weight_SumQ      = true;
   Apply_Weight_PileUp    = true;
   Apply_Weight_PreFire   = true;
   Apply_Weight_kFactor   = true;
@@ -429,6 +430,7 @@ double AnalyzerParameter::EventWeight(){
 
 }
 
+
 void AnalyzerParameter::PrintParameters(){
 
   cout << "\n PrintParameters:" <<endl;
@@ -506,9 +508,9 @@ void AnalyzerParameter::PrintParameters(){
   cout << "w.JetPU               = " << w.JetPU << endl;
   cout << "w.EventSetupWeight     = " << w.EventSetupWeight << endl;
 
-  cout << "Apply_Weight_Norm1pb   = " <<  Apply_Weight_Norm1pb  << endl;
+  cout << "Apply_Weight_Norm1pb   = " <<  Apply_Weight_Norm1Ipb  << endl;
   cout << "Apply_Weight_LumiNorm  = " <<  Apply_Weight_LumiNorm  << endl;
-  cout << "Apply_Weight_SumW      = " << Apply_Weight_SumW      << endl;
+  cout << "Apply_Weight_SumQ      = " << Apply_Weight_SumQ      << endl;
   cout << "Apply_Weight_PileUp    = " << Apply_Weight_PileUp    << endl;
   cout << "Apply_Weight_PreFire   = " << Apply_Weight_PreFire   << endl;
   cout << "Apply_Weight_kFactor   = " << Apply_Weight_kFactor   << endl;

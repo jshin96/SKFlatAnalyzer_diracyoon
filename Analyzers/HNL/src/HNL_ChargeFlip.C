@@ -41,7 +41,7 @@ void HNL_ChargeFlip::executeEvent(){
       //// Do not include Xsec norm since looking to Add TT/DY samples in Eff
       param.Apply_Weight_LumiNorm = false;
       if(HasFlag("ScaleFactor"))param.Apply_Weight_LumiNorm = true;
-      param.Apply_Weight_SumW     = true;
+      param.Apply_Weight_SumQ     = true;
       param.Apply_Weight_PileUp   = true;
       param.Apply_Weight_PreFire  = true;
       param.Apply_Weight_kFactor  = false;
