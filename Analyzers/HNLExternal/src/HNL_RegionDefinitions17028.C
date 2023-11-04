@@ -48,7 +48,7 @@ void HNL_RegionDefinitions17028::RunEXO17028SignalRegions( std::vector<Electron>
     }
 
     if(RunFake){
-      weight_channel = GetFakeWeight(leps, param_channel, false);
+      weight_channel = GetFakeWeight(leps, param_channel);
       FillWeightHist(param.Name+"/FakeWeight",weight_channel);
     }
 

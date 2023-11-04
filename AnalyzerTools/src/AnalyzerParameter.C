@@ -14,7 +14,8 @@ void AnalyzerParameter::Clear(){
 
   isocut = -1;
   
-  WriteOutVerbose = 0;
+  PlottingVerbose = 1;
+  WriteOutVerbose = 1;
   SRConfig="";
   Jobs.clear();
 
@@ -77,10 +78,13 @@ void AnalyzerParameter::Clear(){
   SystDir_BTag="central";
   BJet_Method="1a";
   FakeRateMethod="BDTFlavour";
+  FakeRateParam="pt_eta";
   FakeMethod="MC";
   CFMethod="MC";
   ConvMethod="MC";
 
+
+  ApplyPR=false;
 
   Apply_Weight_Norm1Ipb   = true;
   Apply_Weight_MCSign    = true;
@@ -165,6 +169,7 @@ AnalyzerParameter::AnalyzerParameter(){
   MCCorrrectionIgnoreNoHist = false;
   DEBUG = false;
 
+  PlottingVerbose=0;
   WriteOutVerbose = 0;
   SRConfig="NULL";
 
@@ -172,11 +177,15 @@ AnalyzerParameter::AnalyzerParameter(){
   SystDir_PU=0;
   SystDir_BTag="Default";
   FakeRateMethod="BDTFlavour";  FakeMethod="MC";   CFMethod="MC";   ConvMethod="MC";   BJet_Method="Default";
+  FakeRateParam="pt_eta";
 
   Set_ElIDW=false;
   Set_MuIDW=false;
   Set_ElTrigW=false;
   Set_MuTrigW=false;
+
+  ApplyPR=false;
+
 
   /// Set weights to true by default
   Apply_Weight_Norm1Ipb   = true;
@@ -372,21 +381,21 @@ TString  AnalyzerParameter::ChannelType(){
 
 TString  AnalyzerParameter::ChannelDir(){
 
-  if(Channel == "Default")  return DefName;
-  return DefName + "/"+ Channel;
+  if(Channel == "Default")  return Name;
+  return Name + "/"+ Channel;
 }
 
 
 TString  AnalyzerParameter::CutFlowDirChannel(){
 
-  if(Channel == "Default")  return CutFlowDir+"/"+DefName;
-  return "Channel"+CutFlowDir+"/"+DefName+"/"+Channel;
+  if(Channel == "Default")  return CutFlowDir+"/"+Name;
+  return "Channel"+CutFlowDir+"/"+Name+"/"+Channel;
 }
 
 TString  AnalyzerParameter::CutFlowDirIncChannel(){
 
-  if(Channel =="Default")  return CutFlowDir+"/"+DefName;
-  return "Channel"+CutFlowDir+"/"+DefName+"/"+InclusiveChannelName();
+  if(Channel =="Default")  return CutFlowDir+"/"+Name;
+  return "Channel"+CutFlowDir+"/"+Name+"/"+InclusiveChannelName();
 }
 
 
@@ -442,6 +451,11 @@ void AnalyzerParameter::PrintParameters(){
   cout << "SRConfig = " << SRConfig << endl;
 
   cout << "\n IDs:" <<endl;
+  cout << "--------------------------------------" << endl;
+  cout << "FakeRateMethod = " << FakeRateMethod << endl;
+  cout << "FakeRateParam  = " << FakeRateParam << endl;
+  cout << "FakeRateName   = " << FakeRateName() << endl;
+
   cout << "--------------------------------------" << endl;
 
   cout << "Electron_Tight_ID = " << Electron_Tight_ID << endl;

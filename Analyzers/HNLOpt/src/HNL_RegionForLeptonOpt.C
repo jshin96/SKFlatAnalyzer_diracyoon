@@ -96,7 +96,7 @@ void HNL_RegionForLeptonOpt::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
       if(run_Debug)cout << "ID2 Mu  " << param_channel.Muon_Tight_ID << " " << param_channel.Muon_FR_ID << endl;
       if(run_Debug)cout << "ID2 El  " << param_channel.Electron_Tight_ID << " " << param_channel.Electron_FR_ID << endl;
 
-      weight_channel = GetFakeWeight(leps, param_channel, false);
+      weight_channel = GetFakeWeight(leps, param_channel);
 
       if(run_Debug)cout << "Fake " << weight_channel << endl;
       FillWeightHist(param_channel.Name+"/FakeWeight",weight_channel);

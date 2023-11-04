@@ -229,7 +229,9 @@ public:
   inline double PtParton(double Corr, double MVACutBB, double MVACutEC){
     if(j_LeptonFlavour==MUON){
       if (j_lep_mva > MVACutBB)  return this->Pt();
-      return ( this->Pt() /j_lep_jetptratio ) * Corr;
+      double ptpart = ( this->Pt() /j_lep_jetptratio ) * Corr;
+      if(ptpart > 1.5*this->Pt() ) return 1.5*this->Pt() ;
+      return ptpart;
     }
     else{
       if(IsBB()){
@@ -490,7 +492,9 @@ public:
   }
 
   inline double MotherJetPt()const{
-    
+    double MotherJPt =  this->Pt()/ j_lep_jetptratio;
+    if(MotherJPt < this->Pt()) return this->Pt();
+    if(MotherJPt > 1.5 *this->Pt()) return 1.5 *this->Pt();
     return this->Pt()/ j_lep_jetptratio;
   }
   
@@ -540,8 +544,9 @@ public:
   inline TString LeptonFakeTagger() const {
     if (j_lep_mva_hnl_fake_QCD_LFvsHF_v5 > 0.) return "LF";
     else{
-      if(j_lep_mva_hnl_fake_QCD_BvsC_v5 > 0) return "HFB";
-      return "HFC";
+      if(j_lep_mva_hnl_fake_QCD_BvsC_v5 > 0.7) return "HF1";
+      if(j_lep_mva_hnl_fake_QCD_BvsC_v5 > -0.4) return "HF2";
+      return "HF3";
     }
   }
 
@@ -610,23 +615,12 @@ public:
     return ( this->Pt() ) * ( 1. + max(0., (this_reliso-Tight_reliso)) );
   }
   inline double CalcMVACone(double this_mva, double Tight_mva){
-    //this_mva=this_mva+1;
-    //Tight_mva=Tight_mva+1;
-    
     if(this_mva > Tight_mva) return this->Pt();
-    
-    /// this_mva =  -1 mva_diff = 1
-    /// this_mva = Tight_mva  mva_diff = 0 
-    //    y = mx + c 
-    //   mva_diff =   1 - (1 + this_mva) / (1+Tight_mva) 
-    double mva_diff  = 1  - (1 + this_mva) / (1+Tight_mva);  
-
-    double PtMPtDiff = (this->Pt()/j_lep_jetptratio) - this->Pt();
-    if(PtMPtDiff < 0 ) PtMPtDiff = 0;
-
-    double var = (mva_diff * PtMPtDiff) + this->Pt() ;
-    if((mva_diff * PtMPtDiff) > 1.4) return 1.4*this->Pt();
-    return var;
+    double MSlope  = 1  - (1 + this_mva) / (1+Tight_mva);  
+    double PMDiff  = (j_lep_jetptratio < 1.) ? (this->Pt()/j_lep_jetptratio) - this->Pt() : 0; /// Mother Jet - Lepton (Similar to Iso)
+    double MJProxy = (MSlope * PMDiff) + this->Pt() ;
+    if((MJProxy/this->Pt()) > 1.5) return 1.5*this->Pt();
+    return MJProxy;
   }
 
   virtual void Print();

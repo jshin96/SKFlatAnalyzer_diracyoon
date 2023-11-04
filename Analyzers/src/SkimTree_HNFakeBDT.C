@@ -247,12 +247,8 @@ void SkimTree_HNFakeBDT::executeEvent(){
   double mu_pt = (IsData) ? 4: 4;
   double el_pt = (IsData) ? 8: 8;
 
-  Particle METv = GetMiniAODvMET("PuppiT1xyULCorr");
-  if(METv.Pt() > 40.) return;
-
   vector<Muon> allmuons = GetMuons("HNLoosest", mu_pt, 2.4);
   vector<Electron> allel = GetElectrons("HNLoosest", el_pt, 2.5);
-
   
   int NLep = allmuons.size() + allel.size();
   

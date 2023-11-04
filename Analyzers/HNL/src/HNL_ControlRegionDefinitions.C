@@ -12,7 +12,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 
   if(run_Debug) cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << endl;  
   int nlog(0);
-  if(run_Debug) {cout << "RunAllControlRegions ["<< nlog<< "] : Start Loop " << endl; nlog++;}
+  //  if(run_Debug) {cout << "RunAllControlRegions ["<< nlog<< "] : Start Loop " << endl; nlog++;}
 
   
   for(unsigned int ic = 0; ic < channels.size(); ic++){
@@ -30,7 +30,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     param.Channel    =  channel_string;
     param.CutFlowDir = "CutFlow";
     
-    param.Name = channel_string + "/" + param.DefName ;
+    param.Name = channel_string + "/" + param.Name ;
 
     std::vector<Lepton *> LepsT       = MakeLeptonPointerVector(muons,     electrons,     param);
     std::vector<Lepton *> LepsV       = MakeLeptonPointerVector(muons_veto,electrons_veto,param);
@@ -61,9 +61,9 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     AnalyzerParameter paramTrilep  = param;
     AnalyzerParameter paramQuadlep = param;
     paramTrilep.Channel  = GetChannelString(trilep_channel);
-    paramTrilep.Name     = GetChannelString(trilep_channel)  + "/" + param.DefName ;
+    paramTrilep.Name     = GetChannelString(trilep_channel)  + "/" + param.Name ;
     paramQuadlep.Channel = GetChannelString(fourlep_channel);
-    paramQuadlep.Name    = GetChannelString(fourlep_channel) + "/" + param.DefName ;
+    paramQuadlep.Name    = GetChannelString(fourlep_channel) + "/" + param.Name ;
     
     double weight_channel = weight_ll;
    
@@ -119,10 +119,15 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       
       else {
 	if(IsData){
-	  weight_channel = GetFakeWeight(LepsT, param , false);
-
+	  weight_channel = GetFakeWeight(LepsT, param );
+	  
+	  //int nT = 0;
+	  //for(auto ilep : muons) {
+	  //  if(ilep.PassID(param.Muon_Tight_ID)) nT++;
+	  // }
+	  //cout << param.Name << " weight_channel = " << weight_channel << " nT = " << nT << endl;
+	  
 	  if(HasFlag("OS_VR")) weight_OS = weight_channel;
-
 	  if(LepsT.size()==2)FillFakeWeightHist(param.Name+"_2L/FakeWeight", LepsT,param, weight_channel);
 	  if(LepsT.size()==3)FillFakeWeightHist(param.Name+"_3L/FakeWeight", LepsT,param, weight_channel);
 	  if(LepsT.size()==4)FillFakeWeightHist(param.Name+"_4L/FakeWeight", LepsT,param, weight_channel);
@@ -947,8 +952,15 @@ bool HNL_RegionDefinitions::FillHighMassNPCRPlots(HNL_LeptonCore::Channel channe
 
   if(leps[0]->DeltaPhi(*leps[1]) < 2.5) return false;
 
+  /*  if(param.FakeRateMethod == "Standard" && param.FakeRateParam == "MotherJetPt") {
+    if(leps[0]->PassLepID() && leps[1]->PassLepID())  cout << " TT FillHighMassNPCRPlots " << param.Name << "   weight = " << w << endl;
+    if(leps[0]->PassLepID() && !leps[1]->PassLepID())  cout << " TL FillHighMassNPCRPlots " << param.Name << "   weight = " << w << endl;
+    if(!leps[0]->PassLepID() && leps[1]->PassLepID())  cout << " LT FillHighMassNPCRPlots " << param.Name << "   weight = " << w << endl;
+    if(!leps[0]->PassLepID() && !leps[1]->PassLepID())  cout << " LL FillHighMassNPCRPlots " << param.Name << "   weight = " << w << endl;
+    }*/
+  
   Fill_RegionPlots(param,"HNL_HighMassNP_TwoLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
-
+  
   return true;
 
 }

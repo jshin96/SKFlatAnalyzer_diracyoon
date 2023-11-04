@@ -18,19 +18,54 @@ void HNL_ControlRegionPlotter::executeEvent(){
 
   vector<TString> LepIDs = {"HNL_ULID","HNTightV2"};//,"TopHN", "DefaultPOGTight"};
 
-  vector<HNL_LeptonCore::Channel> ChannelsToRun = {EE,MuMu,EMu,MuE};
+  vector<HNL_LeptonCore::Channel> ChannelsToRun = {MuMu};//EE,MuMu,EMu,MuE};
   for (auto id: LepIDs){
     for(auto channel : ChannelsToRun){
-      AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter(id,channel);
-      
+     
       ///// Run command
       vector<TString> CRToRun;
       if(HasFlag("OS_VR"))   CRToRun.push_back("OS_VR");
       if(HasFlag("LLL_VR"))  CRToRun.push_back("LLL_VR");
       if(HasFlag("SS_CR"))   CRToRun.push_back("SS_CR");
       if(HasFlag("VBF_CR"))  CRToRun.push_back("VBF_CR");
-
-      RunControlRegions(param_signal , CRToRun );
+      
+      if(id=="HNL_ULID"){
+	vector<TString> MuFakeIDs = {"HNL_ULID_FO","HNL_ULID_v2_FO_"+GetYearString(), "HNL_ULID_v3_FO_"+GetYearString()};// "HNL_ULID_v4_FO","HNL_ULID_v5_FO", "HNL_ULID_v6_FO_"+GetYearString()};
+	vector<TString> FakeTag   = {"HNL_ULID_FO","HNL_ULID_v2_FO", "HNL_ULID_v3_FO"};//, "HNL_ULID_v4_FO","HNL_ULID_v5_FO", "HNL_ULID_v6_FO"};
+	vector<TString> FakeParam = {"Pt","PtCorr","PtParton","MotherJetPt"};
+	vector<TString> FakeMethod= {"BDTFlavour","Standard"};
+	
+	for(unsigned int i= 0 ; i < FakeTag.size(); i++){
+	  for(unsigned int j= 0 ; j < FakeParam.size(); j++){
+	    for(unsigned int k= 0 ; k < FakeMethod.size(); k++){
+	      for(int m = 0 ; m < 2 ; m++){
+		if(FakeMethod[k] == "BDTFlavour" && FakeTag[i] !=  "HNL_ULID_FO") continue;
+		AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter(id,channel);
+		param_signal.PlottingVerbose = -1;
+		param_signal.FakeRateMethod = FakeMethod[k]; 
+		param_signal.FakeRateParam  = FakeParam[j]; 
+		param_signal.Muon_FR_ID     = MuFakeIDs[i] ; 
+		param_signal.k.Muon_PR      = "pt_eta_"+param_signal.Muon_FR_ID+"_PR_cent";
+		param_signal.k.Muon_FR      = param_signal.Muon_FR_ID+"_FR_cent";
+		if(m==0) {
+		  param_signal.ApplyPR        = false;
+		  param_signal.Name           = param_signal.DefName+"_"+FakeTag[i]+"_"+param_signal.FakeRateName()+"_NoPR";
+		}		
+		else{
+                  param_signal.ApplyPR        = true;
+                  param_signal.Name           = param_signal.DefName+"_"+FakeTag[i]+"_"+param_signal.FakeRateName()+"_PR";
+		}
+		//		cout << "param_signal.Name = " << param_signal.Name << endl;
+		RunControlRegions(param_signal , CRToRun );
+	      }
+	    }
+	  }
+	}
+      }
+      else {
+	AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter(id,channel);
+	RunControlRegions(param_signal , CRToRun );
+      }
     }
   }
   
@@ -71,9 +106,6 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   /// SetupWeight applies w_GenNorm=1., w_BR=1., w_PU  w_Pref  
   double weight =SetupWeight(ev,param);
   
-  if(run_Debug) cout << "[0] HNL_ControlRegionPlotter::RunControlRegions Gen*Lumi Weight = " << weight << endl;
-  if(run_Debug) cout << "[0] HNL_ControlRegionPlotter::RunControlRegions ParamWeight = " << param.EventWeight() << endl;
-
 
   // HL ID                                                                                                                                                   
   std::vector<Electron>   ElectronVetoColl = GetElectrons(param.Electron_Veto_ID, 10.,  2.5);
@@ -88,9 +120,6 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
 
   std::vector<Muon>       MuonTightCollInit     = SelectMuons    ( param,Muon_ID,     Min_Muon_Pt,     2.4,weight); 
   std::vector<Electron>   ElectronTightCollInit = SelectElectrons( param,Electron_ID, Min_Electron_Pt, 2.5,weight);
-  if(run_Debug) cout << "Nlep = " << MuonTightCollInit.size() << " " << ElectronTightCollInit.size() << endl;
-  if(run_Debug) cout << "[1] HNL_ControlRegionPlotter::RunControlRegions Gen*Lumi Weight = " << weight << endl;
-  if(run_Debug) cout << "[1] HNL_ControlRegionPlotter::RunControlRegions ParamWeight = " << param.EventWeight() << endl;
 
   std::vector<Muon>       MuonTightColl      =  GetLepCollByRunType    (MuonTightCollInit,    param);  
   std::vector<Electron>   ElectronTightColl  =  GetLepCollByRunType    (ElectronTightCollInit,param);
@@ -104,15 +133,8 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   std::vector<Jet>    AK4_VBF_JetColl             = GetHNLJets("VBFTight",  param);
   std::vector<Jet>    AK4_BJetColl                = GetHNLJets("BJet", param);
   
-  if(run_Debug) cout << "[2] HNL_ControlRegionPlotter::RunControlRegions Gen*Lumi Weight = " << weight << endl;
-  if(run_Debug) cout << "[2] HNL_ControlRegionPlotter::RunControlRegions ParamWeight = " << param.EventWeight() << endl;
-
   EvalJetWeight(AK4_JetColl, AK8_JetColl, weight, param);
   
-  if(run_Debug) cout << "[3] HNL_ControlRegionPlotter::RunControlRegions Gen*Lumi Weight = " << weight << endl;
-  if(run_Debug) cout << "[3] HNL_ControlRegionPlotter::RunControlRegions ParamWeight = " << param.EventWeight() << endl;
-
-
   if(RunFake) FillFakeHistograms(param, "FakeStudies", MakeLeptonPointerVector(MuonTightColl, ElectronTightColl, param),  AK4_JetColl,AK8_JetColl, AK4_BJetColl, METv,weight);
   if(RunFake&&SameCharge(MakeLeptonPointerVector(MuonTightColl, ElectronTightColl, param))) 
     FillFakeHistograms(param, "FakeStudies/SS", MakeLeptonPointerVector(MuonTightColl, ElectronTightColl, param),  AK4_JetColl,AK8_JetColl, AK4_BJetColl, METv,weight);

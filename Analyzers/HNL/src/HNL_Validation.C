@@ -117,7 +117,7 @@ void HNL_Validation::executeEvent(){
     if(SameCharge(LepsT)) continue;
 
     if(RunFake){
-      weight_channel = GetFakeWeight(LepsT, param_channel, true);
+      weight_channel = GetFakeWeight(LepsT, param_channel);
       FillWeightHist(param_channel.Name+"/FakeWeight",weight_channel);
     }
 

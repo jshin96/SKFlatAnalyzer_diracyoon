@@ -120,10 +120,10 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
  
     if(RunFake&& IsData){
       if(_jentry%nLog==0){
-	cout << "Running Fakes... " <<  GetFakeWeight(leps, param_channel,false) << "  " << GetFakeWeight(leps, param_channel, true) << endl;
+	cout << "Running Fakes... " <<  GetFakeWeight(leps, param_channel) << "  " << GetFakeWeight(leps, param_channel) << endl;
       }
 
-      weight_channel = GetFakeWeight(leps, param_channel, true);
+      weight_channel = GetFakeWeight(leps, param_channel);
       FillFakeWeightHist(param_channel.Name+"/FakeWeight", leps,param_channel, weight_channel);
     }
 

@@ -1722,26 +1722,6 @@ int  Electron::PassIDTight(TString ID) const{
   if(ID=="HNL_ULID_Baseline") return PassMVABaseLine() ? 1 : 0 ;
 
 
-  //////////////////////////////////////////////////////////////////////////////////// 
-  ////////// HNLH Legacy ID (HNL_LID)  v4 of MVA (Preceded by v5)
-  //////////////////////////////////////////////////////////////////////////////////// 
-  if(ID == "HNL_LID_Run2"){
-    
-    if(!PassMVABaseLine()) return 0;
-    if( IsBB()){
-      if(!Pass_MVA(HNL_MVA_CF("v4"),   0.7,  "j_lep_mva_hnl_cf_v5"))   return 0;
-      if(!Pass_MVA(HNL_MVA_Conv("v4"), -0.7,"j_lep_mva_hnl_conv_v5")) return 0;
-      if(!Pass_MVA(HNL_MVA_Fake("v4"), 0.2,"j_lep_mva_hnl_fake_v5")) return 0;
-    }
-    else{
-      if(!Pass_MVA(HNL_MVA_Conv("EDv4"), -0.7, "j_lep_mva_hnl_conv_ed_v5")) return 0;
-      if(!Pass_MVA(HNL_MVA_CF("EDv4"),   0.65, "j_lep_mva_hnl_cf_ed_v5"))   return 0;
-      if(!Pass_MVA(HNL_MVA_Fake("EDv4"), 0.2,  "j_lep_mva_hnl_fake_ed_v5")) return 0;
-    }
-
-    return 1;
-  }
-
 
 
 
@@ -1755,87 +1735,50 @@ int  Electron::PassIDTight(TString ID) const{
   ////////////////////////////////////////////////////////////////////////////////////   
   //#########   RUN2 Opt
   ////////////////////////////////////////////////////////////////////////////////////
-  
-  //// General ID that is checked merging all Run2
-  if(ID == "HNL_ULID_Run2L" ){
-    if(!PassMVABaseLine()) return 0;
-    if(!Pass_MVA_BBEC("CF_EDv5",   0.5 ,0.5 ,   "CF_v5")) return 0;
-    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,80, -0.7,0.), GetPtSlopeCut(20,80, -0.7,0.) , "Run2_Conv_v5")) return 0;
-    if(!Pass_MVA_BBEC("Fake_EDv5", 0.25 ,0.35 ,   "Fake_v5")) return 0;
-    return 1;
-  }
-
-  if(ID == "HNL_ULID_FO_Run2L" ){
-    if(!PassMVABaseLine()) return 0;
-    if(!Pass_MVA_BBEC("CF_EDv5",   0.5 ,0.5 ,   "CF_v5")) return 0;
-    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,80, -0.7,0.), GetPtSlopeCut(20,80, -0.7,0.) , "Run2_Conv_v5")) return 0;
-    return 1;
-  }
-  if(ID == "HNL_ULID_Run2T" ){
-    if(!PassMVABaseLine()) return 0;
-    if(!Pass_MVA_BBEC("CF_EDv5",   0.75 ,0.6 ,   "CF_v5")) return 0;
-    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.4,0.3), GetPtSlopeCut(20,50, -0.4,0.3) , "Run2_Conv_v5")) return 0;
-    if(!Pass_MVA_BBEC("Fake_EDv5", 0.5 ,0.5 ,   "Fake_v5")) return 0;
-    return 1;
-  }
-
-  if(ID == "HNL_ULID_FO_Run2T" ){
-    if(!PassMVABaseLine()) return 0;
-    if(!Pass_MVA_BBEC("CF_EDv5",   0.75 ,0.6 ,   "CF_v5")) return 0;
-    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.4,0.3), GetPtSlopeCut(20,50, -0.4,0.3) , "Run2_Conv_v5")) return 0;
-    return 1;
-  }
-
+ 
   //////////////////////////////////////////////////////////////////////////////////// 
   ///  Era Scanned ID
   //////////////////////////////////////////////////////////////////////////////////// 
+  TString Year = "";
+  if(ID.Contains("2016")) Year = "2016";
+  else if(ID.Contains("2017")) Year = "2017";
+  else if(ID.Contains("2018")) Year = "2018";
 
-  if(ID == "HNL_ULID_FO_2016" ){
-    if(!PassMVABaseLine()) return 0;
-    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,60, -0.7,0.) , GetPtSlopeCut(20,60,-0.7,0.) ,   "Conv_v5")) return 0;
-    if(!Pass_MVA_BBEC("CF_EDv5",   0.6,  0.6,   "CF_v5"))   return 0;
-    return 1;
-  }
+  if(ID == "HNL_ULID_FO_"+Year ) return (PassID("HNL_ULID_Conv_"+Year) && PassID("HNL_ULID_CF_"+Year));
+  if(ID == "HNL_ULID_"+Year )    return (PassID("HNL_ULID_FO_"+Year)   && PassID("HNL_ULID_Fake_"+Year));
 
-  if(ID == "HNL_ULID_2016" ){
-    if(!PassMVABaseLine()) return 0;
-    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,60, -0.7,0.) , GetPtSlopeCut(20,60,-0.7,0.) ,   "Conv_v5")) return 0;
-    if(!Pass_MVA_BBEC("Fake_EDv5", 0.25, 0.5,   "Fake_v5")) return 0;
-    if(!Pass_MVA_BBEC("CF_EDv5",   0.6,  0.6,   "CF_v5"))   return 0;
-    return 1;
+  if(ID == "HNL_ULID_v2_FO_"+Year) {
+    if(!PassID("HNL_ULID_FO_"+Year)) return false;
+    if(!PassID("HNL_ULID_Fake_"+Year)){
+      if(CloseJet_BScore() > 0.025) return false;
+    }
+    return true;
   }
-
-  if(ID == "HNL_ULID_FO_2017" ){
-    if(!PassMVABaseLine()) return 0;
-    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.4,0.) , GetPtSlopeCut(20,50,-0.4,0.2) ,   "Conv_v5")) return 0;
-    if(!Pass_MVA_BBEC("CF_EDv5",     0.6, 0.6,    "CF_v5"))   return 0;
-    return 1;
-  }
-  if(ID == "HNL_ULID_2017" ){
-    if(!PassMVABaseLine()) return 0;
-    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.4,0.) , GetPtSlopeCut(20,50,-0.4,0.2) ,   "Conv_v5")) return 0;
-    if(!Pass_MVA_BBEC("Fake_EDv5",   0.4, 0.45,   "Fake_v5")) return 0;
-    if(!Pass_MVA_BBEC("CF_EDv5",     0.6, 0.6,    "CF_v5"))   return 0;
-    return 1;
+  if(ID  == "HNL_ULID_v3_FO_"+Year){
+    if(!PassID("HNL_ULID_FO_"+Year)) return false;
+    if(!PassID("HNL_ULID_Fake_"+Year)){
+      if(CloseJet_Ptratio() < 0.45) return false;
+      if(CloseJet_BScore() > 0.025) return false;
+    }
+    return true;
   }
 
-  if(ID == "HNL_ULID_FO_2018" ){
-    if(!PassMVABaseLine()) return 0;
-    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.4,0.2) , GetPtSlopeCut(20,50,-0.4,0.2) ,   "Conv_v5")) return 0;
-    if(!Pass_MVA_BBEC("CF_EDv5",   0.6 ,0.6 , "CF_v5")) return 0;
-    return 1;
-  }
-  if(ID == "HNL_ULID_2018" ){
-    if(!PassMVABaseLine()) return 0;
-    if(!Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.4,0.2) , GetPtSlopeCut(20,50,-0.4,0.2) ,   "Conv_v5")) return 0;
-    if(!Pass_MVA_BBEC("Fake_EDv5", 0.4 ,0.5 ,   "Fake_v5")) return 0;
-    if(!Pass_MVA_BBEC("CF_EDv5",   0.6 ,0.6 , "CF_v5")) return 0;
-    return 1;
+  if(ID=="HNL_ULID_v4_FO_"+Year)  return (PassID("HNL_ULID_FO_"+Year) && (HNL_MVA_Fake("EDv5") > -0.9));
+  if(ID=="HNL_ULID_v5_FO_"+Year)  return (PassID("HNL_ULID_FO_"+Year) && (HNL_MVA_Fake("QCD_BvsC_v5") < 0.));
+  if(ID=="HNL_ULID_v6_FO_"+Year) {
+    if(!PassID("HNL_ULID_FO_"+Year)) return false;
+    if(!PassID("HNL_ULID_Fake_"+Year)){
+      if( fabs(this->Eta())<= 1.479 ){
+        if(CloseJet_BScore() > 0.27) return false;
+      }
+      else         if(CloseJet_BScore() > 0.05) return false;
+    }
+    return true;
   }
 
+ 
 
   ////////////// SINGLE MVA [Split for ID SF]
-
 
   if(ID == "HNL_ULID_Conv_2016" ){
     if(!PassMVABaseLine()) return 0;
@@ -1863,7 +1806,6 @@ int  Electron::PassIDTight(TString ID) const{
     if(!Pass_MVA_BBEC("CF_EDv5",     0.6, 0.6,    "CF_v5"))   return 0;
     return 1;
   }
-
 
   if(ID == "HNL_ULID_Fake_2017" ){
     if(!PassMVABaseLine()) return 0;
