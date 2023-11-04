@@ -12,6 +12,23 @@ public:
 
   void  PrintObject(TString label);
 
+
+  inline double MVAFakeCut(TString Year) {
+    if(j_LeptonFlavour==MUON){
+      if(Year=="2016")  return mu_mva_cut_fake_2016;
+      if(Year=="2017")  return mu_mva_cut_fake_2017;
+      if(Year=="2018")  return mu_mva_cut_fake_2018;
+    }
+    else{
+      if(Year=="2016" && IsBB())  return el_mva_cut_fake_2016_B;
+      if(Year=="2016" && !IsBB()) return el_mva_cut_fake_2016_EC;
+      if(Year=="2017" && IsBB())  return el_mva_cut_fake_2017_B;
+      if(Year=="2017" && !IsBB()) return el_mva_cut_fake_2017_EC;
+      if(Year=="2018" && IsBB())  return el_mva_cut_fake_2018_B;
+      if(Year=="2018" && !IsBB()) return el_mva_cut_fake_2018_EC;
+    }
+    return -999;
+  }
   //// Function to Check Nature of lepton
   inline TString LepGenTypeString() const {
     //// return TString based on Gen type
@@ -226,23 +243,11 @@ public:
   }
 
 
-  inline double PtParton(double Corr, double MVACutBB, double MVACutEC){
-    if(j_LeptonFlavour==MUON){
-      if (j_lep_mva > MVACutBB)  return this->Pt();
-      double ptpart = ( this->Pt() /j_lep_jetptratio ) * Corr;
-      if(ptpart > 1.5*this->Pt() ) return 1.5*this->Pt() ;
-      return ptpart;
-    }
-    else{
-      if(IsBB()){
-        if (j_lep_mva_hnl_fake_v4 > MVACutBB)  return this->Pt();
-        return ( this->Pt() /j_lep_jetptratio ) * Corr;
-      }
-      else{
-        if (j_lep_mva_hnl_fake_ed_v4 > MVACutEC)  return this->Pt();
-        return ( this->Pt() /j_lep_jetptratio ) * Corr;
-      }
-    }
+  inline double PtParton(double Corr, double MVACut){
+    if (j_lep_mva > MVACut)  return this->Pt();
+    double ptpart = ( this->Pt() /j_lep_jetptratio ) * Corr;
+    if(ptpart > 1.5*this->Pt() ) return 1.5*this->Pt() ;
+    return ptpart;
   }
 
 
@@ -646,6 +651,17 @@ public:
   double j_lep_mva_hnl_cf_v4,j_lep_mva_hnl_ed_cf_v4;
   double j_lep_mva_hnl_ed_cf_v5,j_lep_mva_hnl_ed_cf_v5Pt;
   
+  double el_mva_cut_fake_2016_B;
+  double el_mva_cut_fake_2017_B;
+  double el_mva_cut_fake_2018_B;
+  double el_mva_cut_fake_2016_EC;
+  double el_mva_cut_fake_2017_EC;
+  double el_mva_cut_fake_2018_EC;
+
+  double mu_mva_cut_fake_2016;
+  double mu_mva_cut_fake_2017;
+  double mu_mva_cut_fake_2018;
+
 
 private:
   double j_dXY, j_dXYerr;

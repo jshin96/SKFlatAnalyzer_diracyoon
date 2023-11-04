@@ -27,36 +27,102 @@ void HNL_LeptonFakeRate::executeEvent(){
   vector<AnalyzerParameter> VParameters;
   
   if(HasFlag("CheckProfile")){
-    vector<TString> LIDs = {"HNL_ULID_FO" ,"HNL_ULID_POGM_FO" ,"HNL_ULID_v2_FO_"+GetYearString() , "HNL_ULID_v3_FO_"+GetYearString(), "HNL_ULID_v4_FO",  "HNL_ULID_v5_FO", "HNL_ULID_v6_FO_"+GetYearString()};
-    vector<TString> NIDs = {"HNL_LooseID_","HNL_LooseID_POGM_","HNL_LooseID_v2_",                  "HNL_LooseID_v3_",                 "HNL_LooseID_v4_","HNL_LooseID_v5_","HNL_LooseID_v6_"};
+    //// Check MVA Profile  for PtParton
+    vector<TString> LIDs = {"HNL_ULID_FO",
+			    "HNL_ULID_POGM_FO" ,
+			    "HNL_ULID_FOv2_"+GetYearString() , 
+			    "HNL_ULID_FOv3_"+GetYearString(), 
+			    "HNL_ULID_FOv4", 
+			    "HNL_ULID_FOv5", 
+			    "HNL_ULID_FOv6_"+GetYearString()};
+
+    vector<TString> NIDs = {"HNL_LooseID_",
+			    "HNL_LooseID_POGM_",
+			    "HNL_LooseID_v2_", 
+			    "HNL_LooseID_v3_", 
+			    "HNL_LooseID_v4_",
+			    "HNL_LooseID_v5_",
+			    "HNL_LooseID_v6_"};
     
-    if(!IsData&& HasFlag("CheckProfile")) for(unsigned int l=0 ; l < LIDs.size(); l++)  VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu, HNL_LeptonCore::NormToXsec, {"MCProfile"},NIDs[l]+"_MC","HNL_ULID_"+GetYearString(),LIDs[l]));  
-    if(IsData&& HasFlag("CheckProfile"))  for(unsigned int l=0 ; l < LIDs.size(); l++)  VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu, HNL_LeptonCore::NormToXsec, {"DATAProfile"},NIDs[l]+"_DATA","HNL_ULID_"+GetYearString(),LIDs[l]));  
+
+    if(!IsData) {
+      for(unsigned int l=0 ; l < LIDs.size(); l++)  
+	VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu, HNL_LeptonCore::NormToXsec, {"MCProfile"},NIDs[l]+"_MC","HNL_ULID_"+GetYearString(),LIDs[l]));  
+    }
+    else {
+      for(unsigned int l=0 ; l < LIDs.size(); l++) 
+	VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu, HNL_LeptonCore::NormToXsec, {"DATAProfile"},NIDs[l]+"_DATA","HNL_ULID_"+GetYearString(),LIDs[l]));  
+    }
+    goto RunJobs;
+    
   }
   if(HasFlag("CheckProfileEE")){
-    vector<TString> LIDs = {"HNL_ULID_FO_"+GetYearString() ,"HNL_ULID_v2_FO_"+GetYearString() , "HNL_ULID_v3_FO_"+GetYearString(), "HNL_ULID_v4_FO_"+GetYearString(),  "HNL_ULID_v5_FO_"+GetYearString(), "HNL_ULID_v6_FO_"+GetYearString()};
-    vector<TString> NIDs = {"HNL_LooseID_", "HNL_LooseID_v2_",                  "HNL_LooseID_v3_",                 "HNL_LooseID_v4_","HNL_LooseID_v5_","HNL_LooseID_v6_"};
+    /// Check MVA/Pt Profile for ptparton in Electrons
+    vector<TString> LIDs = {"HNL_ULID_FO_"+GetYearString() ,
+			    "HNL_ULID_FOv2_"+GetYearString() ,
+			    "HNL_ULID_FOv3_"+GetYearString(), 
+			    "HNL_ULID_FOv4_"+GetYearString(), 
+			    "HNL_ULID_FOv5_"+GetYearString(), 
+			    "HNL_ULID_FOv6_"+GetYearString()};
+    vector<TString> NIDs = {"HNL_LooseID_", 
+			    "HNL_LooseID_v2_", 
+			    "HNL_LooseID_v3_", 
+			    "HNL_LooseID_v4_",
+			    "HNL_LooseID_v5_",
+			    "HNL_LooseID_v6_"};
 
-    if(!IsData)  for(unsigned int l=0 ; l < LIDs.size(); l++)  VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE, HNL_LeptonCore::NormToXsec, {"MCProfile"},NIDs[l]+"_MC","HNL_ULID_"+GetYearString(),LIDs[l]));
-    if(IsData )  for(unsigned int l=0 ; l < LIDs.size(); l++)  VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE, HNL_LeptonCore::NormToXsec, {"DATAProfile"},NIDs[l]+"_DATA","HNL_ULID_"+GetYearString(),LIDs[l]));
-  }
+    if(!IsData){
+      for(unsigned int l=0 ; l < LIDs.size(); l++)  VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE, HNL_LeptonCore::NormToXsec, {"MCProfile"},NIDs[l]+"_MC","HNL_ULID_"+GetYearString(),LIDs[l]));
+    }
+    else{
+      for(unsigned int l=0 ; l < LIDs.size(); l++)  VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE, HNL_LeptonCore::NormToXsec, {"DATAProfile"},NIDs[l]+"_DATA","HNL_ULID_"+GetYearString(),LIDs[l]));
+    }
 
-  if(HasFlag("MCFakes")) VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NoNorm,  {"MCFakes"},"HNL_ID"         ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO"));
-  
-  if(HasFlag("RunRates")){
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FO"        ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO"));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_POGM_FO"   ,"HNL_ULID_"+GetYearString(), "HNL_ULID_POGM_FO"));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_v2_FO"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_v2_FO_"+GetYearString()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_v3_FO"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_v3_FO_"+GetYearString()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_v4_FO"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_v4_FO"));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_v5_FO"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_v5_FO"));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_v6_FO"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_v6_FO_"+GetYearString()));
     goto RunJobs;
   }
+
+  if(HasFlag("MCFakes")) {
+    //// Measure Fake Rates in MC
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NoNorm,  {"MCFakes"},"HNL_ID"         ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO"));
+    goto RunJobs;
+  }
+
+  if(HasFlag("RunRates")){
+    /// Measure FR in Data
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FO"        ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO"));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_POGM_FO"   ,"HNL_ULID_"+GetYearString(), "HNL_ULID_POGM_FO"));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv2"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FOv2_"+GetYearString()));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv3"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FOv3_"+GetYearString()));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv4"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FOv4"));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv5"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FOv5"));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv6"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FOv6_"+GetYearString()));
+    goto RunJobs;
+  }
+  if(HasFlag("RunRatesNonSNU")){
+    /// Measure FR in Data    
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"Peking"        , "HNL_Peking", "HNL_Peking_FO"));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNTightV2"     , "HNTightV2", "HNLooseV1"));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_HN3L"      , "HNL_HN3L",  "HNL_TopMVA_FO_MM"));
+    goto RunJobs;
+  }
+  
+  if(HasFlag("RunRatesEE")){
+    /// Measure FR in Data 
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FO"        ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO"));
+
+    goto RunJobs;
+  }
+  if(HasFlag("RunRatesNonSNU_EE")){
+    /// Measure FR in Data       
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"Peking"        , "HNL_Peking_"+GetYearString(), "HNL_Peking_FO_"+GetYearString()));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNTightV2"     , "HNTightV2", "HNLooseV4"));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_HN3L"      , "HNL_HN3L",  "HNL_TopMVA_FO_MM"));
+    goto RunJobs;
+  }
+
   if(HasFlag("GetNvtxSF")){
     VParameters.clear();
     VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"NvtxSF"},"HNL_ID"         ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO"));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"NvtxSF"},"HNL_LPOGM_ID" ,"HNL_ULID_"+GetYearString(), "HNL_ULID_POGM_FO"));
     goto RunJobs;
   }
   if(HasFlag("MakeRegionPlots")){
@@ -271,13 +337,14 @@ void HNL_LeptonFakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon>
   if(param.HasFlag("MCFakes"))  for(unsigned int i = 0 ; i < leps.size() ; i++) GetFakeRates("PtParton", {leps.at(i)},{blepsT.at(i)}, param, jets, "MCFake_J40" ,  event_weight);
   if(param.HasFlag("MCFakes"))  for(unsigned int i = 0 ; i < leps.size() ; i++) GetFakeRates("MotherPt", {leps.at(i)},{blepsT.at(i)}, param, jets, "MCFake_J40" ,  event_weight);
   if(param.HasFlag("MCFakes"))  for(unsigned int i = 0 ; i < leps.size() ; i++) GetFakeRates("PtCorr", {leps.at(i)},{blepsT.at(i)}, param, jets, "MCFake_J40" ,  event_weight);
+  if(param.HasFlag("MCFakes"))  for(unsigned int i = 0 ; i < leps.size() ; i++) GetFakeRates("PtCone", {leps.at(i)},{blepsT.at(i)}, param, jets, "MCFake_J40" ,  event_weight);
   if(param.HasFlag("MCFakes"))  return;
 
   if(param.HasFlag("MCProfile")){
-    double MVACut = 0.72;
-    if(GetYearString() == "2017" || GetYearString() =="2018") MVACut = 0.64;
+
     for(auto ilep : leps){
-      double PtPartonUncorr = ilep->PtParton(1,MVACut,MVACut);
+      
+      double PtPartonUncorr = ilep->PtParton(1,ilep->MVAFakeCut(GetYearString()));
       double W = event_weight;
       
       FillHist(("MCProfile/"+param.Name + "/FakeCR"+param.GetSystType()+"_MVA").Data(), ilep->HNL_MVA_Fake("HFTop"),  W, 100, -1, 1);
@@ -297,11 +364,8 @@ void HNL_LeptonFakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon>
     event_weight*= prescale_lep;
     
     if(UseEvent(leps , jets, 40., METv, event_weight)){
-      
-      double MVACut = 0.72;
-      if(GetYearString() == "2017" || GetYearString() =="2018") MVACut = 0.64;
       for(auto ilep : leps){
-	double PtPartonUncorr = ilep->PtParton(1,MVACut,MVACut);
+	double PtPartonUncorr = ilep->PtParton(1,ilep->MVAFakeCut(GetYearString()));
 	double W = event_weight;
 	if(!IsData) {
 	  if(!leps[0]->IsPrompt()) return ;
@@ -1023,6 +1087,7 @@ void HNL_LeptonFakeRate::MakeFakeRatePlots(TString label, TString mutag,Analyzer
   if(jets.size() >= 1){
     if(useevent){
       GetFakeRates("Pt",leps, blepsT, param,  jets,        label+"_"+param.GetSystType(),(event_weight));
+      GetFakeRates("PtCone",leps, blepsT, param,  jets,    label+"_"+param.GetSystType(),(event_weight));
       GetFakeRates("PtCorr",leps, blepsT, param,  jets,    label+"_"+param.GetSystType(),(event_weight));
       GetFakeRates("PtParton",leps, blepsT, param,  jets,  label+"_"+param.GetSystType(),(event_weight));
       GetFakeRates("MotherPt",leps, blepsT, param,  jets,  label+"_"+param.GetSystType(),(event_weight));
@@ -1072,8 +1137,8 @@ void HNL_LeptonFakeRate::GetFakeRates(TString Method, std::vector<Lepton *> leps
 
   bool IsMuon=(leps[0]->LeptonFlavour() == Lepton::MUON);
   TString  LooseID = IsMuon ? param.Muon_Loose_ID : param.Electron_Loose_ID;
-  double MVACut = 0.72;
-  if(GetYearString() == "2017" || GetYearString() =="2018") MVACut = 0.64;
+
+  double MVACut = leps[0]->MVAFakeCut(GetYearString());
 
   ///// TRIGGER CONDITIONS
 
@@ -1095,12 +1160,17 @@ void HNL_LeptonFakeRate::GetFakeRates(TString Method, std::vector<Lepton *> leps
 
   TString ptname = "pt_eta";
   float lep_pt (0);
-  float lep_pt_LF (0);
-  float lep_pt_HF (0);
 
   float weight_ptcorr=event_weight;
   TString MVAKey = "HFTop";
   if(!IsMuon) MVAKey = "EDv5";
+
+  if(param.Name.Contains("HNL")){
+    if(Method.Contains("PtCone")) return;
+  }
+  else{
+    if(!Method.Contains("PtCone")) return;
+  }
 
   if(Method == "Pt"){
     lep_pt      =  (leps[0]->Pt() < 80) ?  leps[0]->Pt() : 79;
@@ -1118,14 +1188,36 @@ void HNL_LeptonFakeRate::GetFakeRates(TString Method, std::vector<Lepton *> leps
       if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_3)*ApplyNvtxReweight(nPV,triggerslist_3));
     }
   }
+  if(Method == "PtCone"){
+    lep_pt      =  ( leps[0]->CalcPtCone(muons.at(i).RelIso(), isocut) < 80) ?  leps[0]->Pt() : 79;
+    ptname = "ptcone_eta";
+    if(lep_pt > 30){
+      if(leps[0]->Pt() < 20) return;
+      if(!pass_17) return;
+      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_17)*ApplyNvtxReweight(nPV,triggerslist_17));
+    }
+    else if(lep_pt > 15){
+      if(leps[0]->Pt() < 10) return;
+      if(!pass_8) return;
+      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_8)*ApplyNvtxReweight(nPV,triggerslist_8));
+    }
+    else if(lep_pt > 5){
+      if(leps[0]->Pt() < 5) return;
+      if(!pass_3) return;
+      if(For_HLT_Mu3_PFJet40_v==0) return;
+      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_3)*ApplyNvtxReweight(nPV,triggerslist_3));
+
+    }
+    else return ;
+  }
   else if(Method == "PtParton"){
     
     ptname = "ptparton_eta";
     double PTPartonSF = GetPtPartonSF(IsMuon, LooseID);
-    lep_pt      =  (leps[0]->PtParton(PTPartonSF, MVACut,MVACut) < 80) ?  leps[0]->PtParton(PTPartonSF, MVACut,MVACut) : 79;
+    lep_pt      =  (leps[0]->PtParton(PTPartonSF, leps[0]->MVAFakeCut(GetYearString())) < 80) ?  leps[0]->PtParton(PTPartonSF, leps[0]->MVAFakeCut(GetYearString())) : 79;
     
     FillProf((param.Name + "_FakeCR40_MVA_PtParton").Data(), leps[0]->HNL_MVA_Fake("HFTop"), lep_pt, event_weight, 100, -1, 1);
-
+    
     if(lep_pt > 30){
       if(leps[0]->Pt() < 20) return;
       if(!pass_17) return;

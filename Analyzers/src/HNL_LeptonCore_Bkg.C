@@ -5,12 +5,12 @@
 double HNL_LeptonCore::GetPtPartonSF(bool IsMuon, TString LooseID){
   
   if(DataYear == 2016){
-    if(IsMuon && LooseID == "HNL_ULID_FO") return 0.741;
+    if(IsMuon && LooseID == "HNL_ULID_FO")      return 0.741;
     if(IsMuon && LooseID == "HNL_ULID_POGM_FO") return 0.741;
     if(IsMuon && LooseID == "HNL_ULID_v2_FO_"+GetYearString()) return 0.670;
     if(IsMuon && LooseID == "HNL_ULID_v3_FO_"+GetYearString()) return 0.682;
-    if(IsMuon && LooseID == "HNL_ULID_v4_FO") return 0.741;
-    if(IsMuon && LooseID == "HNL_ULID_v5_FO") return 0.747;
+    if(IsMuon && LooseID == "HNL_ULID_v4_FO")   return 0.741;
+    if(IsMuon && LooseID == "HNL_ULID_v5_FO")   return 0.747;
     if(IsMuon && LooseID == "HNL_ULID_v6_FO_"+GetYearString()) return 0.737;
   }
   if(DataYear == 2017){
@@ -31,6 +31,8 @@ double HNL_LeptonCore::GetPtPartonSF(bool IsMuon, TString LooseID){
     if(IsMuon && LooseID == "HNL_ULID_v5_FO") return 0.744;
     if(IsMuon && LooseID == "HNL_ULID_v6_FO_"+GetYearString()) return 0.737;
   }
+
+  
 
   cout << "ERROR in GetPtPartonSF " << IsMuon << " " << LooseID << endl;
   exit(EXIT_FAILURE);

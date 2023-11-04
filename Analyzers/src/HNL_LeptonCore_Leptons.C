@@ -54,9 +54,7 @@ std::vector<Muon> HNL_LeptonCore::SelectMuons(AnalyzerParameter& param, TString 
     if(!( muons.at(i).PassID(id) ))           continue;
     
     if(RunFake &&  (id == param.Muon_FR_ID)){
-      double MVACut = 0.72;
-      if(GetYearString() == "2017" || GetYearString() =="2018") MVACut = 0.64;
-
+ 
       Muon this_muon = muons.at(i);
       if(param.FakeRateParam == "PtCone"){
         double Isocut = GetIsoFromID(Lepton(muons[i]), param.Muon_Tight_ID );
@@ -67,11 +65,12 @@ std::vector<Muon> HNL_LeptonCore::SelectMuons(AnalyzerParameter& param, TString 
         this_muon.SetPtEtaPhiM( muons.at(i).CalcPtCone(muons.at(i).MiniRelIso(), Isocut), muons.at(i).Eta(), muons.at(i).Phi(), muons.at(i).M() );
       }
       if(param.FakeRateParam == "PtCorr"){
-        this_muon.SetPtEtaPhiM( muons.at(i).CalcMVACone(muons.at(i).HNL_MVA_Fake("HFTop"), MVACut) , muons.at(i).Eta(), muons.at(i).Phi(), muons.at(i).M() );
+        this_muon.SetPtEtaPhiM( muons.at(i).CalcMVACone(muons.at(i).HNL_MVA_Fake("HFTop"), muons.at(i).MVAFakeCut(GetYearString())) , muons.at(i).Eta(), muons.at(i).Phi(), muons.at(i).M() );
       }
       if(param.FakeRateParam == "PtParton"){
-	this_muon.SetPtEtaPhiM(muons.at(i).PtParton(GetPtPartonSF(true, param.Muon_FR_ID), MVACut,MVACut), muons.at(i).Eta(), muons.at(i).Phi(), muons.at(i).M() );
+	this_muon.SetPtEtaPhiM(muons.at(i).PtParton(GetPtPartonSF(true, param.Muon_FR_ID), muons.at(i).MVAFakeCut(GetYearString())), muons.at(i).Eta(), muons.at(i).Phi(), muons.at(i).M() );
       }
+      
       if(param.FakeRateParam == "MotherJetPt"){
 	this_muon.SetPtEtaPhiM( muons.at(i).MotherJetPt(),muons.at(i).Eta(), muons.at(i).Phi(), muons.at(i).M() );
       } 
@@ -169,9 +168,17 @@ std::vector<Electron> HNL_LeptonCore::SelectElectrons(AnalyzerParameter& param, 
         double Isocut = GetIsoFromID(Lepton(electrons.at(i)) ,param.Electron_Tight_ID);
         this_electron.SetPtEtaPhiM( electrons.at(i).CalcPtCone(electrons.at(i).MiniRelIso(), Isocut), electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() );
       }
+
       if(param.FakeRateParam == "PtCorr"){
-        this_electron.SetPtEtaPhiM( electrons.at(i).PtParton(1,0.15,0.2),  electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M());
+        this_electron.SetPtEtaPhiM( electrons.at(i).CalcMVACone(electrons.at(i).HNL_MVA_Fake("HFTop"), electrons.at(i).MVAFakeCut(GetYearString())) , electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() );
       }
+      if(param.FakeRateParam == "PtParton"){
+        this_electron.SetPtEtaPhiM(electrons.at(i).PtParton(GetPtPartonSF(false, param.Electron_FR_ID), electrons.at(i).MVAFakeCut(GetYearString())), electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() );
+      }
+      if(param.FakeRateParam == "MotherJetPt"){
+	this_electron.SetPtEtaPhiM( electrons.at(i).MotherJetPt(),electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() );
+      }
+      
       out.push_back( this_electron);
     }
     else   out.push_back( electrons.at(i) );
