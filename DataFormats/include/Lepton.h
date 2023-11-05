@@ -12,8 +12,22 @@ public:
 
   void  PrintObject(TString label);
 
+  inline double MVCFCut(TString Year) {
 
-  inline double MVAFakeCut(TString Year) {
+    if(Year=="2016" && IsBB())  return el_mva_cut_cf_2016_B;
+    if(Year=="2016" && !IsBB()) return el_mva_cut_cf_2016_EC;
+    if(Year=="2017" && IsBB())  return el_mva_cut_cf_2017_B;
+    if(Year=="2017" && !IsBB()) return el_mva_cut_cf_2017_EC;
+    if(Year=="2018" && IsBB())  return el_mva_cut_cf_2018_B;
+    if(Year=="2018" && !IsBB()) return el_mva_cut_cf_2018_EC;
+
+    return -999;
+  }
+
+  inline double MVAFakeCut(TString ID, TString Year) {
+
+    if(ID == "HNL_HN3L") return TopMVA_cut;
+
     if(j_LeptonFlavour==MUON){
       if(Year=="2016")  return mu_mva_cut_fake_2016;
       if(Year=="2017")  return mu_mva_cut_fake_2017;
@@ -109,22 +123,7 @@ public:
     else if( sceta < 1.566 ) return GAP;
     else return EC;
   }
-  
-  inline TString  etaRegionString() const {
-    double sceta = fabs(defEta());
-    if( sceta < 0.8 ) return "EB1";
-    else if( sceta < 1.479 ) return "EB2";
-    else if( sceta < 2. ) return "EE1";
-    else return "EE2";
-  }
-
-  inline TString sRegion() const {
-    double eta = fabs(defEta());
-    if( eta < 0.8 ) return "Eta1";
-    else if( eta < 1.479 ) return "Eta2";
-    else return "Eta3";
-  }
-
+ 
   inline int Region() const {
     double eta = fabs(defEta());
     if( eta < 0.8 ) return 1;
@@ -244,7 +243,10 @@ public:
 
 
   inline double PtParton(double Corr, double MVACut){
-    if (j_lep_mva > MVACut)  return this->Pt();
+    double mva_val = j_lep_mva;
+    if(j_LeptonFlavour!=MUON) mva_val=j_lep_mva_hnl_fake_ed_v5; 
+      
+    if (mva_val > MVACut)  return this->Pt();
     double ptpart = ( this->Pt() /j_lep_jetptratio ) * Corr;
     if(ptpart > 1.5*this->Pt() ) return 1.5*this->Pt() ;
     return ptpart;
@@ -379,11 +381,13 @@ public:
       else if(vers=="QCD_LF1_v5")     return j_lep_mva_hnl_fake_LF1_v5;
       else if(vers=="QCD_LF2_v5")     return j_lep_mva_hnl_fake_LF2_v5;
 
+      
       else if(vers=="HF") return j_lep_mva_hnl_fake_v5_hfb;
       else if(vers=="HFB") return j_lep_mva_hnl_fake_v5_hfb;
       else if(vers=="HFC") return j_lep_mva_hnl_fake_v5_hfc;
       else if(vers=="LF") return j_lep_mva_hnl_fake_v5_lf;
-
+      else if(vers=="HNL") return j_lep_mva_hnl_fake_ed_v5;
+      
     }
     else{
       if(vers=="v4")             return j_lep_mva_hnl_fake_v4;
@@ -395,6 +399,7 @@ public:
       else if(vers=="HFTop")          return  j_lep_mva;
       else if(vers=="HF") return  j_lep_mva;
       else if(vers=="LF") return  j_lep_mva_hnl_fake_ed_v4;
+      else if(vers=="HNL") return  j_lep_mva;
 
     }
     cout<<"[Lepton::HNL_MVA_Fake] no version set "<< vers<< endl;
@@ -591,10 +596,34 @@ public:
     else return "Muon";
   }
 
-  inline TString GetEtaRegion() const {
-    if(fabs(defEta()) < 0.8) return "BB";
-    if(fabs(defEta()) < 1.5) return "EB";
-    return "EE";
+  inline TString  etaRegionString() const {    return GetEtaRegion("4bin"); }
+  inline TString  sRegion() const {return GetEtaRegion("3bin");}
+  
+  inline TString GetEtaRegion(TString Version="2Bin") const {
+    double sceta = fabs(defEta());
+
+    if(Version == "2bin"){
+      if(IsBB()) return "BB";
+      return "EC";
+    }
+    if(Version == "3bingap"){
+      if(sceta < 0.8) return "BB";
+      if(sceta  < 1.444) return "OB";
+      if(sceta  < 1.566) return "GAP";
+      return "EC";
+    }
+    if(Version == "3bin"){
+      if(sceta < 0.8) return "BB";
+      if(sceta  < 1.5) return "OB";
+      return "EE";
+    }
+    if(Version == "4bin"){
+      if( sceta < 0.8 ) return "EB1";
+      else if( sceta < 1.479 ) return "EB2";
+      else if( sceta < 2. ) return "EE1";
+      else return "EE2";
+    }
+    return "";
   }
 
   inline float miniIsoDr() const {
@@ -661,6 +690,15 @@ public:
   double mu_mva_cut_fake_2016;
   double mu_mva_cut_fake_2017;
   double mu_mva_cut_fake_2018;
+
+  double el_mva_cut_cf_2016_B;
+  double el_mva_cut_cf_2017_B;
+  double el_mva_cut_cf_2018_B;
+  double el_mva_cut_cf_2016_EC;
+  double el_mva_cut_cf_2017_EC;
+  double el_mva_cut_cf_2018_EC;
+
+  double TopMVA_cut;
 
 
 private:

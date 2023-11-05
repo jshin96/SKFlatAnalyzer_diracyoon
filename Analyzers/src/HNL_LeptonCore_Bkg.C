@@ -2,34 +2,102 @@
 
 
 
-double HNL_LeptonCore::GetPtPartonSF(bool IsMuon, TString LooseID){
+double HNL_LeptonCore::GetPtPartonSF(Lepton  Lep, TString LooseID){
+  
+  if(LooseID == "HNL_TopMVA_FO_MM") return 0.661;
+
+  bool IsMuon=(Lep.LeptonFlavour() == Lepton::MUON);
   
   if(DataYear == 2016){
-    if(IsMuon && LooseID == "HNL_ULID_FO")      return 0.741;
-    if(IsMuon && LooseID == "HNL_ULID_POGM_FO") return 0.741;
-    if(IsMuon && LooseID == "HNL_ULID_v2_FO_"+GetYearString()) return 0.670;
-    if(IsMuon && LooseID == "HNL_ULID_v3_FO_"+GetYearString()) return 0.682;
-    if(IsMuon && LooseID == "HNL_ULID_v4_FO")   return 0.741;
-    if(IsMuon && LooseID == "HNL_ULID_v5_FO")   return 0.747;
-    if(IsMuon && LooseID == "HNL_ULID_v6_FO_"+GetYearString()) return 0.737;
+    if(IsMuon){
+      if(LooseID == "HNL_ULID_FO")      return 0.741;
+      if(LooseID == "HNL_ULID_POGM_FO") return 0.741;
+      if(LooseID == "HNL_ULID_FOv2_"+GetYearString()) return 0.670;
+      if(LooseID == "HNL_ULID_FOv3_"+GetYearString()) return 0.682;
+      if(LooseID == "HNL_ULID_FOv4")   return 0.741;
+      if(LooseID == "HNL_ULID_FOv5")   return 0.747;
+      if(LooseID == "HNL_ULID_FOv6_"+GetYearString()) return 0.737;
+    }
+    else{
+      if(Lep.IsBB()){
+	//https://jalmond.web.cern.ch/jalmond/SNU/WebPlots/HNL/HNL_LeptonFakeRates/HNL_LeptonFakeRates/2016/HNL_GetProfileSFElNov/?match=BB
+	if(LooseID == "HNL_ULID_FO_"+GetYearString())   return 0.7661;
+	if(LooseID == "HNL_ULID_FOv2_"+GetYearString()) return 0.6412;
+	if(LooseID == "HNL_ULID_FOv3_"+GetYearString()) return 0.6496;
+	if(LooseID == "HNL_ULID_FOv4_"+GetYearString()) return 0.7650;
+	if(LooseID == "HNL_ULID_FOv5_"+GetYearString()) return 0.8176;
+	if(LooseID == "HNL_ULID_FOv6_"+GetYearString()) return 0.7477;
+      }    
+      else{
+	if(LooseID == "HNL_ULID_FO_"+GetYearString())   return 0.8824;
+	if(LooseID == "HNL_ULID_FOv2_"+GetYearString()) return 0.7684;
+	if(LooseID == "HNL_ULID_FOv3_"+GetYearString()) return 0.7706;
+	if(LooseID == "HNL_ULID_FOv4_"+GetYearString()) return 0.8824;
+	if(LooseID == "HNL_ULID_FOv5_"+GetYearString()) return 0.901;
+	if(LooseID == "HNL_ULID_FOv6_"+GetYearString()) return 0.644;
+      }
+    }
   }
   if(DataYear == 2017){
-    if(IsMuon && LooseID == "HNL_ULID_FO") return 0.732;
-    if(IsMuon && LooseID == "HNL_ULID_POGM_FO") return 0.728;
-    if(IsMuon && LooseID == "HNL_ULID_v2_FO_"+GetYearString()) return 0.683;
-    if(IsMuon && LooseID == "HNL_ULID_v3_FO_"+GetYearString()) return 0.680;
-    if(IsMuon && LooseID == "HNL_ULID_v4_FO") return 0.732;
-    if(IsMuon && LooseID == "HNL_ULID_v5_FO") return 0.740;
-    if(IsMuon && LooseID == "HNL_ULID_v6_FO_"+GetYearString()) return 0.730;
+    if(IsMuon){
+      if(LooseID == "HNL_ULID_FO") return 0.732;
+      if(LooseID == "HNL_ULID_POGM_FO") return 0.728;
+      if(LooseID == "HNL_ULID_FOv2_"+GetYearString()) return 0.683;
+      if(LooseID == "HNL_ULID_FOv3_"+GetYearString()) return 0.680;
+      if(LooseID == "HNL_ULID_FOv4") return 0.732;
+      if(LooseID == "HNL_ULID_FOv5") return 0.740;
+      if(LooseID == "HNL_ULID_FOv6_"+GetYearString()) return 0.730;
+    }
+    else{
+      if(Lep.IsBB()){
+	if(LooseID == "HNL_ULID_FO_"+GetYearString())   return 0.814;
+        if(LooseID == "HNL_ULID_FOv2_"+GetYearString()) return 0.665;
+        if(LooseID == "HNL_ULID_FOv3_"+GetYearString()) return 0.663;
+        if(LooseID == "HNL_ULID_FOv4_"+GetYearString()) return 0.8136;
+        if(LooseID == "HNL_ULID_FOv5_"+GetYearString()) return 0.8470;
+        if(LooseID == "HNL_ULID_FOv6_"+GetYearString()) return 0.7824;
+      }
+      else{
+	if(LooseID == "HNL_ULID_FO_"+GetYearString())   return 0.7658;
+        if(LooseID == "HNL_ULID_FOv2_"+GetYearString()) return 0.6320;
+        if(LooseID == "HNL_ULID_FOv3_"+GetYearString()) return 0.6294;
+        if(LooseID == "HNL_ULID_FOv4_"+GetYearString()) return 0.7658;
+        if(LooseID == "HNL_ULID_FOv5_"+GetYearString()) return 0.767;
+        if(LooseID == "HNL_ULID_FOv6_"+GetYearString()) return 0.548;
+
+      }
+    }
   }
   if(DataYear == 2018){
-    if(IsMuon && LooseID == "HNL_ULID_FO") return 0.737;
-    if(IsMuon && LooseID == "HNL_ULID_POGM_FO") return 0.735;
-    if(IsMuon && LooseID == "HNL_ULID_v2_FO_"+GetYearString()) return 0.689;
-    if(IsMuon && LooseID == "HNL_ULID_v3_FO_"+GetYearString()) return 0.687;
-    if(IsMuon && LooseID == "HNL_ULID_v4_FO") return 0.736;
-    if(IsMuon && LooseID == "HNL_ULID_v5_FO") return 0.744;
-    if(IsMuon && LooseID == "HNL_ULID_v6_FO_"+GetYearString()) return 0.737;
+    if(IsMuon){
+      if(LooseID == "HNL_ULID_FO") return 0.737;
+      if(LooseID == "HNL_ULID_POGM_FO") return 0.735;
+      if(LooseID == "HNL_ULID_FOv2_"+GetYearString()) return 0.689;
+      if(LooseID == "HNL_ULID_FOv3_"+GetYearString()) return 0.687;
+      if(LooseID == "HNL_ULID_FOv4") return 0.736;
+      if(LooseID == "HNL_ULID_FOv5") return 0.744;
+      if(LooseID == "HNL_ULID_FOv6_"+GetYearString()) return 0.737;
+    }
+    else{
+      if(Lep.IsBB()){
+	if(LooseID == "HNL_ULID_FO_"+GetYearString())   return 0.820;
+        if(LooseID == "HNL_ULID_FOv2_"+GetYearString()) return 0.667;
+        if(LooseID == "HNL_ULID_FOv3_"+GetYearString()) return 0.668;
+        if(LooseID == "HNL_ULID_FOv4_"+GetYearString()) return 0.821;
+        if(LooseID == "HNL_ULID_FOv5_"+GetYearString()) return 0.823;
+        if(LooseID == "HNL_ULID_FOv6_"+GetYearString()) return 0.798;
+
+      } 
+      else{
+        if(LooseID == "HNL_ULID_FO_"+GetYearString())   return 0.860;
+        if(LooseID == "HNL_ULID_FOv2_"+GetYearString()) return 0.727;
+        if(LooseID == "HNL_ULID_FOv3_"+GetYearString()) return 0.727;
+        if(LooseID == "HNL_ULID_FOv4_"+GetYearString()) return 0.860;
+        if(LooseID == "HNL_ULID_FOv5_"+GetYearString()) return 0.890;
+        if(LooseID == "HNL_ULID_FOv6_"+GetYearString()) return 0.603;
+	
+      } 
+    }
   }
 
   
@@ -446,6 +514,7 @@ double HNL_LeptonCore::GetIsoFromID(Lepton lep, TString id){
 
   if (lep.IsMuon()) {
 
+    if (id == "Peking")        return 0.15;
     if (id == "TopHNT")        return 0.1;
     if (id == "TopHN")         return 0.1;
     if (id == "HNTight_17028") return 0.07;
@@ -465,6 +534,16 @@ double HNL_LeptonCore::GetIsoFromID(Lepton lep, TString id){
     if (id.Contains("HNMVA_")) return 0.1;
   }
   else {
+
+    if (id == "Peking_2016")      {
+      if(fabs(eta) < 1.479) return (0.0287 + (0.506/pt));
+      else  return (0.0445 + (0.963/pt));
+    }
+    if (id == "Peking_2017" || id == "Peking_2018")      {
+      if(fabs(eta) < 1.479) return 0.0571;
+      else  return 0.05880;
+    }
+
     if( id == "TopHNSST" ) return 0.1;
     if( id == "HNTight_17028") return 0.08;
     if( id.Contains("HNTightV")) {

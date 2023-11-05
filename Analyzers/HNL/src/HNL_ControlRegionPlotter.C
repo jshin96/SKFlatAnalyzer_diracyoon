@@ -30,8 +30,8 @@ void HNL_ControlRegionPlotter::executeEvent(){
       if(HasFlag("VBF_CR"))  CRToRun.push_back("VBF_CR");
       
       if(id=="HNL_ULID"){
-	vector<TString> MuFakeIDs = {"HNL_ULID_FO","HNL_ULID_v2_FO_"+GetYearString(), "HNL_ULID_v3_FO_"+GetYearString()};// "HNL_ULID_v4_FO","HNL_ULID_v5_FO", "HNL_ULID_v6_FO_"+GetYearString()};
-	vector<TString> FakeTag   = {"HNL_ULID_FO","HNL_ULID_v2_FO", "HNL_ULID_v3_FO"};//, "HNL_ULID_v4_FO","HNL_ULID_v5_FO", "HNL_ULID_v6_FO"};
+	vector<TString> MuFakeIDs = {"HNL_ULID_FO","HNL_ULID_FOv2_"+GetYearString(), "HNL_ULID_FOv3_"+GetYearString(), "HNL_ULID_FOv4","HNL_ULID_FOv5", "HNL_ULID_FOv6_"+GetYearString()};
+	vector<TString> FakeTag   = {"HNL_ULID_FO","HNL_ULID_FOv2", "HNL_ULID_FOv3", "HNL_ULID_FOv4","HNL_ULID_FOv5", "HNL_ULID_FOv6"};
 	vector<TString> FakeParam = {"Pt","PtCorr","PtParton","MotherJetPt"};
 	vector<TString> FakeMethod= {"BDTFlavour","Standard"};
 	

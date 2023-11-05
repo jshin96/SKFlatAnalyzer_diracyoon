@@ -215,7 +215,7 @@ bool Muon::PassID(TString ID) const {
   if(ID=="HNTightV2") return (HLTCut && (fabs(dZ())<0.1) && Pass_HNTight(0.07, 0.05, 0.1, 3.));
   /// OTHER GROUP IDs
 
-  if(ID=="HNL_Peking") {
+  if(ID=="Peking") {
     if(!isPOGTight())       return false;
     if(!( RelIso()<0.15 ))  return false;
     double dxy_cut = (this->Pt() < 20) ? 0.01 : 0.02 ;
@@ -223,8 +223,8 @@ bool Muon::PassID(TString ID) const {
     if(fabs(dZ()) >  0.1)      return false;
     return true;
   }
-  if(ID=="HNL_Peking_Loose") {
-    if(!isLoose())       return false;
+  if(ID=="Peking_FO") {
+    if(!isPOGLoose())       return false;
     if(!( RelIso()<0.4 ))  return false;
     double dxy_cut = (this->Pt() < 20) ? 0.01 : 0.02 ;
     if(fabs(dXY()) >  dxy_cut) return false;

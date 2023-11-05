@@ -123,7 +123,7 @@ class HNL_LeptonCore : public AnalyzerCore {
 
    
   //------ BKG
-  double GetPtPartonSF(bool IsMuon, TString ID);
+  double GetPtPartonSF(Lepton Lep, TString ID);
   double GetFakeWeightMuon(std::vector<Muon> muons , AnalyzerParameter param);
   double GetFakeWeightMuon(std::vector<Muon> muons , std::vector<TString> vtrig, AnalyzerParameter param);
   double GetFakeWeightElectron(std::vector<Electron> electrons , vector<TString> trigs, AnalyzerParameter param);

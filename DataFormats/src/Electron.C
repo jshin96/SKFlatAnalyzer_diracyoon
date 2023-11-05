@@ -1,3 +1,4 @@
+
 #include "Electron.h"
 #include <iostream>
 #include <sstream>
@@ -1739,10 +1740,13 @@ int  Electron::PassIDTight(TString ID) const{
   else if(ID.Contains("2017")) Year = "2017";
   else if(ID.Contains("2018")) Year = "2018";
 
-  if(ID == "HNL_ULID_FO_"  +Year)   return (PassID("HNL_ULID_Conv_"+Year)   && PassID("HNL_ULID_CF_"+Year));
   if(ID == "HNL_ULID_"     +Year)   return (PassID("HNL_ULID_FO_"+Year)     && PassID("HNL_ULID_Fake_"+Year));
-  if(ID == "HNL_ULIDv2_FO_"+Year)   return (PassID("HNL_ULIDv2_Conv_"+Year) && PassID("HNL_ULIDv2_CF_"+Year));
   if(ID == "HNL_ULIDv2_"   +Year)   return (PassID("HNL_ULIDv2_FO_"+Year)   && PassID("HNL_ULIDv2_Fake_"+Year));
+
+  // Loose Fake IDs
+  if(ID == "HNL_ULID_FO_"  +Year)   return (PassID("HNL_ULID_Conv_"+Year)   && PassID("HNL_ULID_CF_"+Year));
+  if(ID == "HNL_ULIDv2_FO_"+Year)   return (PassID("HNL_ULIDv2_Conv_"+Year) && PassID("HNL_ULIDv2_CF_"+Year));
+
 
   if(ID == "HNL_ULID_FOv2_"+Year) {
     if(!PassID("HNL_ULID_FO_"+Year)) return false;
@@ -1782,15 +1786,15 @@ int  Electron::PassIDTight(TString ID) const{
 
   /// 2016
   if(ID == "HNL_ULID_Conv_2016" ) return (PassMVABaseLine() && Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,60, -0.7,0.) , GetPtSlopeCut(20,60,-0.7,0.) ,   "Conv_v5"));
-  if(ID == "HNL_ULID_CF_2016"   ) return (PassMVABaseLine() && Pass_MVA_BBEC("CF_EDv5",   0.6,  0.6,   "CF_v5"));
+  if(ID == "HNL_ULID_CF_2016"   ) return (PassMVABaseLine() && Pass_MVA_BBEC("CF_EDv5",   el_mva_cut_cf_2016_B,   el_mva_cut_cf_2016_EC,     "CF_v5"));
   if(ID == "HNL_ULID_Fake_2016" ) return (PassMVABaseLine() && Pass_MVA_BBEC("Fake_EDv5", el_mva_cut_fake_2016_B, el_mva_cut_fake_2016_EC,   "Fake_v5"));
   /// 2017
   if(ID == "HNL_ULID_Conv_2017" ) return (PassMVABaseLine() && Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.4,0.) , GetPtSlopeCut(20,50,-0.4,0.2) ,   "Conv_v5"));
-  if(ID == "HNL_ULID_CF_2017"   ) return (PassMVABaseLine() && Pass_MVA_BBEC("CF_EDv5",   0.6, 0.6,    "CF_v5"));
+  if(ID == "HNL_ULID_CF_2017"   ) return (PassMVABaseLine() && Pass_MVA_BBEC("CF_EDv5",   el_mva_cut_cf_2017_B,   el_mva_cut_cf_2017_EC,     "CF_v5"));
   if(ID == "HNL_ULID_Fake_2017" ) return (PassMVABaseLine() && Pass_MVA_BBEC("Fake_EDv5", el_mva_cut_fake_2017_B, el_mva_cut_fake_2017_EC,   "Fake_v5"));
   /// 2018
   if(ID == "HNL_ULID_Conv_2018" ) return (PassMVABaseLine() && Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.4,0.2) , GetPtSlopeCut(20,50,-0.4,0.2) ,   "Conv_v5"));
-  if(ID == "HNL_ULID_CF_2018"   ) return (PassMVABaseLine() && Pass_MVA_BBEC("CF_EDv5",   0.6 ,0.6 , "CF_v5")) ;
+  if(ID == "HNL_ULID_CF_2018"   ) return (PassMVABaseLine() && Pass_MVA_BBEC("CF_EDv5",   el_mva_cut_cf_2018_B ,  el_mva_cut_cf_2018_EC ,     "CF_v5")) ;
   if(ID == "HNL_ULID_Fake_2018" ) return (PassMVABaseLine() && Pass_MVA_BBEC("Fake_EDv5", el_mva_cut_fake_2018_B, el_mva_cut_fake_2018_EC ,   "Fake_v5"));
   /// V2
   if(ID == "HNL_ULIDv2_CF_2018" )  return (PassMVABaseLine() && Pass_MVA_BBEC("CF_EDv5",   0.5 ,0.5 , "CF_v5")) ;
@@ -1802,7 +1806,7 @@ int  Electron::PassIDTight(TString ID) const{
   //// OTHER ANALYSES IDs / POG IDs
   //////////////////////////////////////////////////////////////////////////////////// 
 
-  if(ID=="HNL_Peking_2016") {
+  if(ID=="Peking_2016") {
     if(! (passTightID()) ) return 0;
     if( IsBB()){
       if( !(fabs(dXY()) < 0.05 && fabs(dZ())< 0.1)) return 0;
@@ -1817,7 +1821,7 @@ int  Electron::PassIDTight(TString ID) const{
     return 1;
   }
 
-  if(ID=="HNL_Peking_FO_2016") {
+  if(ID=="Peking_FO_2016") {
     if(! (passLooseID()) ) return 0;
     if( IsBB()){
       if( !(fabs(dXY()) < 0.05 && fabs(dZ())< 0.1)) return 0;
@@ -1832,7 +1836,7 @@ int  Electron::PassIDTight(TString ID) const{
     return 1;
   }
 
-  if(ID=="HNL_Peking_2017" || ID=="HNL_Peking_2018") {
+  if(ID=="Peking_2017" || ID=="Peking_2018") {
     if(!passMVAID_Iso_WP90()) return 0;
     if(! IsGsfCtfScPixChargeConsistent())  return 0;
     if(! (Pass_TriggerEmulation()) ) return 0;
@@ -1842,7 +1846,7 @@ int  Electron::PassIDTight(TString ID) const{
     else       if(! (RelIso() < 0.05880 )) return 0;
     return 1;
   }
-  if(ID=="HNL_Peking_FO_2017" || ID=="HNL_Peking_FO_2018") {
+  if(ID=="Peking_FO_2017" || ID=="Peking_FO_2018") {
     if(!passMVAID_noiso_WPLoose()) return 0;
     if(! IsGsfCtfScPixChargeConsistent())  return 0;
     if(! (Pass_TriggerEmulation()) ) return 0;

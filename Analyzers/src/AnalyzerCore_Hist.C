@@ -37,18 +37,17 @@ void AnalyzerCore::SetHistBins(){
   map_hist_bins.clear();
   map_hist_nbins.clear();
 
-  AddHistBinning("Pt", {10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,500.});
+  AddHistBinning("Pt",     {10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,500.});
   AddHistBinning("Pt5", {5,6,7,8,9,10.,11,12,13,14,15.,17.5,20.,22.5,25,30.,35., 40.,50.,80., 200.});
   AddHistBinning("Eta4", {0.,0.8,  1.479, 2.,  2.5});
   
-  AddHistBinning("PR_pt", {10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,500.});
-  AddHistBinning("PR_ptcone", {10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,500.});
+  AddHistBinning("PR_pt",     {10.,15.,20.,30.,35., 40.,50., 60., 80., 100.,200.,500.});
+  AddHistBinning("PR_ptcone", {10.,15.,23.,30.,35., 40.,50., 60., 80., 100.,200.,500.});
   AddHistBinning("FR_pt", {10., 15.,20.,25.,30.,35.,40.,50.,60.,80});
 
   AddHistBinning("FR_eta", {0.,0.8,  1.479, 2.,  2.5});
-  AddHistBinning("FR_Muon_pt", {6., 10., 15.,20.,25.,30.,35.,40.,50.,60.,80});
+  AddHistBinning("FR_Muon_pt",    {6.,10., 15.,20.,25.,30.,35.,40.,50.,60.,80});
   AddHistBinning("FR_Muon_ptcone",{6.,10., 15.,20.,25.,30.,35.,40.,50., 60.,80.});
-
   AddHistBinning("FR_Electron_ptcone",{10., 15.,23.,30.,35., 40.,50.,60.,80.});
   AddHistBinning("FR_Electron_pt",{10., 15.,20.,25.,30., 35.,40.,50.,60.,80.});
   
