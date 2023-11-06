@@ -45,8 +45,8 @@ void HNL_ControlRegionPlotter::executeEvent(){
 		param_signal.FakeRateMethod = FakeMethod[k]; 
 		param_signal.FakeRateParam  = FakeParam[j]; 
 		param_signal.Muon_FR_ID     = MuFakeIDs[i] ; 
-		param_signal.k.Muon_PR      = "pt_eta_"+param_signal.Muon_FR_ID+"_PR_cent";
-		param_signal.k.Muon_FR      = param_signal.Muon_FR_ID+"_FR_cent";
+		param_signal.k.Muon_PR      = "pt_eta_"+FakeTag[i]+"_PR_cent";
+		param_signal.k.Muon_FR      = FakeTag[i]+"_FR_cent";
 		if(m==0) {
 		  param_signal.ApplyPR        = false;
 		  param_signal.Name           = param_signal.DefName+"_"+FakeTag[i]+"_"+param_signal.FakeRateName()+"_NoPR";

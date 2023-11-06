@@ -5,6 +5,8 @@ IgnoreNoHist(false),
 HasLooseLepton(false)
 {
 
+  MissingHists.clear();
+  
   histDir = TDirectoryHelper::GetTempDirectory("FakeBackgroundEstimator");
 
 }
@@ -76,6 +78,11 @@ void FakeBackgroundEstimator::ReadHistograms(){
 
 FakeBackgroundEstimator::~FakeBackgroundEstimator(){
 
+  if(MissingHists.size() > 0){
+    cout << "FakeBackgroundEstimator Missing Hists " << endl;
+    for(auto iMissing : MissingHists) cout << "Missing : " << iMissing << endl;
+  }
+  
 }
 
 
@@ -126,7 +133,12 @@ double FakeBackgroundEstimator::GetElectronFakeRate(TString ID, TString key, TSt
 
   if(mapit==map_hist_Electron.end()){
 
-    if(IgnoreNoHist) return 1.;
+    if(IgnoreNoHist){      
+
+      TString MapK = "FakeRate_"+ID+"_"+key;
+      if (std::find(MissingHists.begin(), MissingHists.end(), MapK ) == MissingHists.end())   MissingHists.push_back(MapK);
+      return 1.;
+    }
     else{
 
       cout << "[FakeBackgroundEstimator::GetElectronFakeRate] No"<< ID+"_"+key <<endl;
@@ -204,7 +216,11 @@ double FakeBackgroundEstimator::GetMuonFakeRate(TString ID, TString key, TString
   mapit = map_hist_Muon.find("FakeRate_"+ID+"_"+key);
 
   if(mapit==map_hist_Muon.end()){
-    if(IgnoreNoHist) return 1.;
+    if(IgnoreNoHist){
+      TString MapK = "FakeRate_"+ID+"_"+key;
+      if (std::find(MissingHists.begin(), MissingHists.end(), MapK ) == MissingHists.end())   MissingHists.push_back(MapK);
+      return 1.;
+    }
     else{
       cout << "[FakeBackgroundEstimator::GetMuonFakeRate] No "<< ID+"_"+key <<endl;
       exit(ENODATA);
@@ -244,7 +260,12 @@ double FakeBackgroundEstimator::GetElectronPromptRate(TString ID, TString key, d
   mapit = map_hist_Electron.find("PromptRate_"+ID+"_"+key);
 
   if(mapit==map_hist_Electron.end()){
-    if(IgnoreNoHist) return 1.;
+    if(IgnoreNoHist){
+      TString MapK = "PromptRate_"+ID+"_"+key;
+      if (std::find(MissingHists.begin(), MissingHists.end(), MapK ) == MissingHists.end())   MissingHists.push_back(MapK);
+
+      return 1.;
+    }
     else{
       cout << "[FakeBackgroundEstimator::GetElectronPromptRate] No "<< ID+"_"+key <<endl;
       exit(ENODATA);
@@ -277,7 +298,13 @@ double FakeBackgroundEstimator::GetMuonPromptRate(TString ID, TString key, doubl
   mapit = map_hist_Muon.find("PromptRate_"+ID+"_"+key);
 
   if(mapit==map_hist_Muon.end()){
-    if(IgnoreNoHist) return 1.;
+    if(IgnoreNoHist) {
+
+      TString MapK = "PromptRate_"+ID+"_"+key;
+      if (std::find(MissingHists.begin(), MissingHists.end(), MapK ) == MissingHists.end())   MissingHists.push_back(MapK);
+
+      return 1.;
+    }
     else{
       cout << "[FakeBackgroundEstimator::GetMuonPromptRate] No "<< ID+"_"+key <<endl;
       exit(ENODATA);

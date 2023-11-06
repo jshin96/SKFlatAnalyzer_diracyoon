@@ -138,6 +138,8 @@ public:
   float TriggerEfficiency(vector<Electron>& EleColl, vector<Muon>& MuColl, TString SFKey, bool ReturnDataEff, TString Option);
   float DZEfficiency(TString SFKey, bool ReturnDataEff, TString Option);
 
+  vector<TString> MissingHists;
+
 
 };
 

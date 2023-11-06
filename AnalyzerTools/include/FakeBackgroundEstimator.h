@@ -56,7 +56,8 @@ public:
 
   float CalculateLepWeight(float r1, float fr1, bool lep1Tight);
   float CalculateDilepWeight(float r1, float fr1, float r2, float fr2, bool lep1Tight, bool lep2Tight, int eventtype);
-						       
+  
+  vector<TString> MissingHists;
 
 
 };

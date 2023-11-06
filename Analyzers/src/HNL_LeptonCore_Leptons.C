@@ -170,7 +170,7 @@ std::vector<Electron> HNL_LeptonCore::SelectElectrons(AnalyzerParameter& param, 
       }
 
       if(param.FakeRateParam == "PtCorr"){
-        this_electron.SetPtEtaPhiM( electrons.at(i).CalcMVACone(electrons.at(i).HNL_MVA_Fake("HFTop"), electrons.at(i).MVAFakeCut(param.Electron_Tight_ID,GetYearString())) , electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() );
+        this_electron.SetPtEtaPhiM( electrons.at(i).CalcMVACone(electrons.at(i).HNL_MVA_Fake("EDv5"), electrons.at(i).MVAFakeCut(param.Electron_Tight_ID,GetYearString())) , electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() );
       }
       if(param.FakeRateParam == "PtParton"){
         this_electron.SetPtEtaPhiM(electrons.at(i).PtParton(GetPtPartonSF(Lepton(electrons.at(i)), param.Electron_FR_ID), electrons.at(i).MVAFakeCut(param.Electron_Tight_ID,GetYearString())), electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() );
