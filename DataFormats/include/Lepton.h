@@ -379,26 +379,24 @@ public:
       else if(vers=="QCD_LFvsHF_v5") return j_lep_mva_hnl_fake_QCD_LFvsHF_v5;
       else if(vers=="QCD_BvsC_v5")   return j_lep_mva_hnl_fake_QCD_BvsC_v5;
       else if(vers=="QCD_LF1_v5")     return j_lep_mva_hnl_fake_LF1_v5;
-      else if(vers=="QCD_LF2_v5")     return j_lep_mva_hnl_fake_LF2_v5;
-
-      
-      else if(vers=="HF") return j_lep_mva_hnl_fake_v5_hfb;
-      else if(vers=="HFB") return j_lep_mva_hnl_fake_v5_hfb;
-      else if(vers=="HFC") return j_lep_mva_hnl_fake_v5_hfc;
-      else if(vers=="LF") return j_lep_mva_hnl_fake_v5_lf;
-      else if(vers=="HNL") return j_lep_mva_hnl_fake_ed_v5;
+      else if(vers=="QCD_LF2_v5")     return j_lep_mva_hnl_fake_LF2_v5;      
+      else if(vers=="HF")   return j_lep_mva_hnl_fake_v5_hfb;
+      else if(vers=="HFB")  return j_lep_mva_hnl_fake_v5_hfb;
+      else if(vers=="HFC")  return j_lep_mva_hnl_fake_v5_hfc;
+      else if(vers=="LF")   return j_lep_mva_hnl_fake_v5_lf;
+      else if(vers=="HNL")  return j_lep_mva_hnl_fake_ed_v5;
       
     }
     else{
-      if(vers=="v4")             return j_lep_mva_hnl_fake_v4;
-      else if(vers=="EDv4")      return j_lep_mva_hnl_fake_ed_v4;
+      if(vers=="v4")                  return j_lep_mva_hnl_fake_v4;
+      else if(vers=="EDv4")           return j_lep_mva_hnl_fake_ed_v4;
       else if(vers=="QCD_LFvsHF_v5")  return  j_lep_mva_hnl_fake_QCD_LFvsHF_v5;
       else if(vers=="QCD_BvsC_v5")    return  j_lep_mva_hnl_fake_QCD_BvsC_v5;
       else if(vers=="QCD_LF1_v5")     return j_lep_mva_hnl_fake_LF1_v5;
       else if(vers=="QCD_LF2_v5")     return j_lep_mva_hnl_fake_LF2_v5;
       else if(vers=="HFTop")          return  j_lep_mva;
-      else if(vers=="HF") return  j_lep_mva;
-      else if(vers=="LF") return  j_lep_mva_hnl_fake_ed_v4;
+      else if(vers=="HF")  return  j_lep_mva;
+      else if(vers=="LF")  return  j_lep_mva_hnl_fake_ed_v4;
       else if(vers=="HNL") return  j_lep_mva;
 
     }

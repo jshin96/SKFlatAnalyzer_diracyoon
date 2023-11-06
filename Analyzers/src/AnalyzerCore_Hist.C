@@ -46,11 +46,14 @@ void AnalyzerCore::SetHistBins(){
   AddHistBinning("FR_pt", {10., 15.,20.,25.,30.,35.,40.,50.,60.,80});
 
   AddHistBinning("FR_eta", {0.,0.8,  1.479, 2.,  2.5});
+  AddHistBinning("FR_FB_Muon_pt", {6.,10.,12., 15.,20.,25.,30.,35.,40.,50.,60.,80});
   AddHistBinning("FR_Muon_pt",    {6.,10., 15.,20.,25.,30.,35.,40.,50.,60.,80});
   AddHistBinning("FR_Muon_ptcone",{6.,10., 15.,20.,25.,30.,35.,40.,50., 60.,80.});
   AddHistBinning("FR_Electron_ptcone",{10., 15.,23.,30.,35., 40.,50.,60.,80.});
   AddHistBinning("FR_Electron_pt",{10., 15.,20.,25.,30., 35.,40.,50.,60.,80.});
-  
+  AddHistBinning("FR_FB_Electron_ptcone",{10., 15.,18.,23.,30.,35., 40.,50.,60.,80.});
+  AddHistBinning("FR_FB_Electron_pt",{10., 15.,18., 20.,25.,30., 35.,40.,50.,60.,80.});
+
   AddHistBinning("PrescaledTriggerPt",{0.,5., 10., 20., 30., 50., 200. });
 
 

@@ -673,16 +673,10 @@ void HNL_LeptonCore::FillLeptonKinematicPlots(AnalyzerParameter param, TString c
   // Lep/Jet                                                                                                                                                                                                                                                                    
   FillHist( cut+ "/Lepton_PtRel_"+label         , JetLeptonPtRelLepAware( lep), w, 500, 0., 100., "");
   FillHist( cut+ "/Lepton_PtRatio_"+label       , JetLeptonPtRatioLepAware(lep), w, 500, 0., 2., "");
+
   double MotherPt = lep.Pt() /  lep.CloseJet_Ptratio();
   if(MotherPt > 200) MotherPt=200;
-  double OnepIso = 1. + lep.RelIso();
-  double v1 = 0.2*( lep.HNL_MVA_Fake("HFTop") +1.);
-  double MVAToIso = 0.4 - std::max( 0., std::min(0.4 ,v1));
-  double MPtOverMVA = MotherPt / ( (1+MVAToIso) * lep.Pt());
-  double MPtOverIso = MotherPt / (OnepIso*lep.Pt());
   FillHist( cut+ "/Lepton_MotherJetPt_"+label,  MotherPt, w, 100, 0., 200);
-  FillHist( cut+ "/Lepton_MotherJetPtOverIso_"+label,      MPtOverIso , w, 500, 0., 5);
-  FillHist( cut+ "/Lepton_MotherJetPtOverMVA_"+label,      MPtOverMVA , w, 500, 0., 5);
   FillHist( cut+ "/Lepton_MotherFlavour_"+label , lep.CloseJet_FlavourInt(), w, 10, 0., 10);
 
   if(IdxMatchJet != -1 ){

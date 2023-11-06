@@ -1196,9 +1196,9 @@ void HNL_LeptonFakeRate::MakeFakeRatePlots(TString label, TString mutag,Analyzer
   if(jets.size() >= 1){
     if(useevent){
       if(param.Channel == "MuMu"){
-	GetMuFakeRates("Pt",leps, blepsT, param,  jets,        label+"_"+param.GetSystType(),(event_weight));
-	GetMuFakeRates("PtCone",leps, blepsT, param,  jets,    label+"_"+param.GetSystType(),(event_weight));
-	GetMuFakeRates("PtCorr",leps, blepsT, param,  jets,    label+"_"+param.GetSystType(),(event_weight));
+	GetMuFakeRates("Pt",      leps, blepsT, param,  jets,        label+"_"+param.GetSystType(),(event_weight));
+	GetMuFakeRates("PtCone",  leps, blepsT, param,  jets,    label+"_"+param.GetSystType(),(event_weight));
+	GetMuFakeRates("PtCorr",  leps, blepsT, param,  jets,    label+"_"+param.GetSystType(),(event_weight));
 	GetMuFakeRates("PtParton",leps, blepsT, param,  jets,  label+"_"+param.GetSystType(),(event_weight));
 	GetMuFakeRates("MotherPt",leps, blepsT, param,  jets,  label+"_"+param.GetSystType(),(event_weight));
       }
@@ -1249,7 +1249,7 @@ bool HNL_LeptonFakeRate::UseEvent(std::vector<Lepton *> leps ,  std::vector< Jet
 void HNL_LeptonFakeRate::GetElFakeRates(TString Method, std::vector<Lepton *> leps,std::vector<bool> blepsT,  AnalyzerParameter param,  std::vector<Jet> jets,  TString tag,float event_weight){
 
   bool IsMuon=(leps[0]->LeptonFlavour() == Lepton::MUON);
-  if(!IsMuon) return;
+  if(IsMuon) return;
 
   if(param.Name.Contains("HNL_")){
     if(Method.Contains("PtCone")) return;
@@ -1273,10 +1273,10 @@ void HNL_LeptonFakeRate::GetElFakeRates(TString Method, std::vector<Lepton *> le
   bool EL12PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_12, this->DataStream) ));
   bool EL23PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_23, this->DataStream) ));
 
-  bool pass_8 = ev.PassTrigger(triggerslist_8) && El8PD;
+  bool pass_8  = ev.PassTrigger(triggerslist_8) && El8PD;
   bool pass_12 = ev.PassTrigger(triggerslist_12) && EL12PD ;
   bool pass_23 = ev.PassTrigger(triggerslist_23) && EL23PD;
-  double NVxt_El8 =  ApplyNvtxReweight(nPV,triggerslist_8);
+  double NVxt_El8  =  ApplyNvtxReweight(nPV,triggerslist_8);
   double NVxt_El12 =  ApplyNvtxReweight(nPV,triggerslist_12);
   double NVxt_El23 =  ApplyNvtxReweight(nPV,triggerslist_23);
 
@@ -1434,6 +1434,7 @@ void HNL_LeptonFakeRate::GetElFakeRates(TString Method, std::vector<Lepton *> le
 
     if(lep_pt >10){
       FillHistogram((prefix + "_"+ptname).Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+ PtHist , "FR_eta", Ptlab);
+      FillHistogram((prefix + "_FinerBins_"+ptname).Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_FB_"+leps[0]->GetFlavour()+"_"+ PtHist , "FR_eta", Ptlab);
       FillHistogram((prefix + "_pt").Data(),                 lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+ PtHist, Ptlab);
       FillHistogram((prefix + "_pt_"+ lepEtaRegion).Data(),  lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+ PtHist, Ptlab);
       FillHistogram((prefix + "_pt_"+ lepRegion).Data(),     lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+ PtHist, Ptlab);
@@ -1447,6 +1448,7 @@ void HNL_LeptonFakeRate::GetElFakeRates(TString Method, std::vector<Lepton *> le
 
       if(lep_mva_lfvshf > 0.8){
 	FillHistogram((prefix + "_LF_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+ PtHist , "FR_eta", Ptlab);
+        FillHistogram((prefix + "_LF_FinerBins_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_FB_"+leps[0]->GetFlavour()+"_"+ PtHist , "FR_eta", Ptlab);
 	FillHistogram((prefix + "_LF_pt").Data(),                 lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+ PtHist, Ptlab);
 	FillHistogram((prefix + "_LF_pt_"+ lepEtaRegion).Data(),  lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+ PtHist, Ptlab);
 	FillHistogram((prefix + "_LF_pt_"+ lepRegion).Data(),     lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+ PtHist, Ptlab);
@@ -1456,6 +1458,7 @@ void HNL_LeptonFakeRate::GetElFakeRates(TString Method, std::vector<Lepton *> le
       else{
 	if(lep_mva_bvsc > 0.7){
 	  FillHistogram((prefix + "_HF1_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+ PtHist , "FR_eta", Ptlab);
+	  FillHistogram((prefix + "_HF1_FinerBins_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_FB_"+leps[0]->GetFlavour()+"_"+ PtHist , "FR_eta", Ptlab);
 	  FillHistogram((prefix + "_HF1_pt").Data(),                 lep_pt,   weight_ptcorr,        "FR_"+leps[0]->GetFlavour()+"_"+ PtHist, Ptlab);
 	  FillHistogram((prefix + "_HF1_pt_"+ lepEtaRegion).Data(),  lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+ PtHist, Ptlab);
 	  FillHistogram((prefix + "_HF1_pt_"+ lepRegion).Data(),     lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+ PtHist, Ptlab);
@@ -1465,6 +1468,7 @@ void HNL_LeptonFakeRate::GetElFakeRates(TString Method, std::vector<Lepton *> le
 	else if(lep_mva_bvsc > -0.4){
 
           FillHistogram((prefix + "_HF2_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+ PtHist , "FR_eta", Ptlab);
+          FillHistogram((prefix + "_HF2_FinerBins_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_FB_"+leps[0]->GetFlavour()+"_"+ PtHist , "FR_eta", Ptlab);
           FillHistogram((prefix + "_HF2_pt").Data(),                 lep_pt,   weight_ptcorr,        "FR_"+leps[0]->GetFlavour()+"_"+ PtHist, Ptlab);
           FillHistogram((prefix + "_HF2_pt_"+ lepEtaRegion).Data(),  lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+ PtHist, Ptlab);
           FillHistogram((prefix + "_HF2_pt_"+ lepRegion).Data(),     lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+ PtHist, Ptlab);
@@ -1473,6 +1477,7 @@ void HNL_LeptonFakeRate::GetElFakeRates(TString Method, std::vector<Lepton *> le
 	}
 	else{
           FillHistogram((prefix + "_HF3_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+ PtHist , "FR_eta", Ptlab);
+          FillHistogram((prefix + "_HF3_FinerBins_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_FB_"+leps[0]->GetFlavour()+"_"+ PtHist , "FR_eta", Ptlab);
 	  FillHistogram((prefix + "_HF3_pt").Data(),                 lep_pt,   weight_ptcorr,        "FR_"+leps[0]->GetFlavour()+"_"+ PtHist, Ptlab);
 	  FillHistogram((prefix + "_HF3_pt_"+ lepEtaRegion).Data(),  lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+ PtHist, Ptlab);
 	  FillHistogram((prefix + "_HF3_pt_"+ lepRegion).Data(),     lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+ PtHist, Ptlab);
@@ -1665,6 +1670,8 @@ void HNL_LeptonFakeRate::GetMuFakeRates(TString Method, std::vector<Lepton *> le
 
     if(lep_pt >10){
       FillHistogram((prefix + "_"+ptname).Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_eta", Ptlab);
+      FillHistogram((prefix + "_FinerBins_"+ptname).Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_FB_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_eta", Ptlab);
+      
       FillHistogram((prefix + "_pt").Data(),                 lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist, Ptlab);
       FillHistogram((prefix + "_pt_"+ lepEtaRegion).Data(),  lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist, Ptlab);
       FillHistogram((prefix + "_pt_"+ lepRegion).Data(),     lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist, Ptlab);
@@ -1678,6 +1685,7 @@ void HNL_LeptonFakeRate::GetMuFakeRates(TString Method, std::vector<Lepton *> le
 
       if(lep_mva_lfvshf > 0.8){
 	FillHistogram((prefix + "_LF_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_eta", Ptlab);
+	FillHistogram((prefix + "_LF_FinerBins_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_FB_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_eta", Ptlab);
 	FillHistogram((prefix + "_LF_pt").Data(),                 lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist, Ptlab);
 	FillHistogram((prefix + "_LF_pt_"+ lepEtaRegion).Data(),  lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist, Ptlab);
 	FillHistogram((prefix + "_LF_pt_"+ lepRegion).Data(),     lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist, Ptlab);
@@ -1687,6 +1695,7 @@ void HNL_LeptonFakeRate::GetMuFakeRates(TString Method, std::vector<Lepton *> le
       else{
 	if(lep_mva_bvsc > 0.7){
 	  FillHistogram((prefix + "_HF1_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_eta", Ptlab);
+	  FillHistogram((prefix + "_HF1_FinerBins_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_FB_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_eta", Ptlab);
 	  FillHistogram((prefix + "_HF1_pt").Data(),                 lep_pt,   weight_ptcorr,        "FR_"+leps[0]->GetFlavour()+"_"+PtHist, Ptlab);
 	  FillHistogram((prefix + "_HF1_pt_"+ lepEtaRegion).Data(),  lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist, Ptlab);
 	  FillHistogram((prefix + "_HF1_pt_"+ lepRegion).Data(),     lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist, Ptlab);
@@ -1696,6 +1705,7 @@ void HNL_LeptonFakeRate::GetMuFakeRates(TString Method, std::vector<Lepton *> le
 	else if(lep_mva_bvsc > -0.4){
 
           FillHistogram((prefix + "_HF2_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_eta", Ptlab);
+          FillHistogram((prefix + "_HF2_FinerBins_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_FinerBins_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_eta", Ptlab);
           FillHistogram((prefix + "_HF2_pt").Data(),                 lep_pt,   weight_ptcorr,        "FR_"+leps[0]->GetFlavour()+"_"+PtHist, Ptlab);
           FillHistogram((prefix + "_HF2_pt_"+ lepEtaRegion).Data(),  lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist, Ptlab);
           FillHistogram((prefix + "_HF2_pt_"+ lepRegion).Data(),     lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist, Ptlab);
@@ -1704,6 +1714,7 @@ void HNL_LeptonFakeRate::GetMuFakeRates(TString Method, std::vector<Lepton *> le
 	}
 	else{
           FillHistogram((prefix + "_HF3_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_eta", Ptlab);
+          FillHistogram((prefix + "_HF3_FinerBins_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_FB_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_eta", Ptlab);
 	  FillHistogram((prefix + "_HF3_pt").Data(),                 lep_pt,   weight_ptcorr,        "FR_"+leps[0]->GetFlavour()+"_"+PtHist, Ptlab);
 	  FillHistogram((prefix + "_HF3_pt_"+ lepEtaRegion).Data(),  lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist, Ptlab);
 	  FillHistogram((prefix + "_HF3_pt_"+ lepRegion).Data(),     lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist, Ptlab);

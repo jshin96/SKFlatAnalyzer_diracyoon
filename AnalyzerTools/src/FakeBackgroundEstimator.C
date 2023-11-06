@@ -20,6 +20,7 @@ void FakeBackgroundEstimator::ReadHistograms(){
 
   vector<TString> FakeHMaps = {   DataFakePath+"/ElFR/histmap_Electron.txt",
 				  DataFakePath+"/MuFR/histmap_Muon.txt",
+				  DataFakePath+"/MuFR/scan_histmap_Muon.txt",
 				  MCFakePath+"/ElFR/histmap_Electron.txt",
 				  MCFakePath+"/MuFR/histmap_Muon.txt"};
 
@@ -38,6 +39,8 @@ void FakeBackgroundEstimator::ReadHistograms(){
       TString FFRPath = ihmap;
       FFRPath = FFRPath.ReplaceAll("histmap_Electron.txt","");
       FFRPath = FFRPath.ReplaceAll("histmap_Muon.txt","");
+      FFRPath = FFRPath.ReplaceAll("scan_","");
+
       TFile *file = new TFile(FFRPath+"/"+e);
       TList *histlist = file->GetListOfKeys();
       for(int i=0;i<histlist->Capacity();i++){
