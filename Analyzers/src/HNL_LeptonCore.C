@@ -591,14 +591,14 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.CFMethod   = "DATA";
     param.ConvMethod = "MC";
 
-    param.Muon_Veto_ID     = "HNVetoMVA";   
+    param.Muon_Veto_ID      = "HNVetoMVA";   
     param.Muon_Tight_ID     = "HNL_ULID_"+GetYearString();
-    param.Electron_Veto_ID     = "HNVetoMVA";  
+    param.Electron_Veto_ID  = "HNVetoMVA";  
     param.Electron_Tight_ID = "HNL_ULID_"+GetYearString();
-    param.Muon_FR_ID        = "HNL_ULID_FO";
-    param.Electron_FR_ID    = "HNL_ULID_FO_"+GetYearString();
-    param.FakeRateMethod       = "BDTFlavour";
-    param.FakeRateParam        = "PtParton";
+    param.Muon_FR_ID        = "HNL_ULID_FOv3_"+GetYearString();
+    param.Electron_FR_ID    = "HNL_ULID_FOv3_"+GetYearString();
+    param.FakeRateMethod    = "Standard";
+    param.FakeRateParam     = "PtParton";
 
     param.k.Muon_PR            = param.Muon_FR_ID+"_PR_cent";
     param.k.Muon_FR            = param.Muon_FR_ID+"_FR_cent";
