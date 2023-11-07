@@ -234,7 +234,10 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
     if(nlepMVA==0) LepTag = "_lep0";
     else if(nlepMVA==1) LepTag = "_lep1";
     else LepTag =  "_lep2plus";
-    for(auto i : lep_bdt_map)     if(DrawLevel1)  FillHist( plot_dir+ lepregion+ "/Lepton_"+LepTag+"_mva_"+i.first , i.second, w, 100, -1., 1., "MVA");
+    for(auto i : lep_bdt_map) {
+      if(DrawLevel1)  FillHist( plot_dir+ lepregion+ "/Lepton_"+LepTag+"_mva_"+i.first , i.second, w, 100, -1., 1., "MVA");
+      if(DrawLevel1)  FillHist( plot_dir+ lepregion+ "/Lepton_"+ilep->GetEtaRegion("2bin")+"_"+LepTag+"_mva_"+i.first , i.second, w, 100, -1., 1., "MVA");
+    }
     nlepMVA++;
   }
 
@@ -361,6 +364,7 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
   double minDRLep2Tau=9999.;
   int nlep(0);
   for(auto i : leps){
+    if(DrawLevel1)FillHist( plot_dir+ region+ "/Leptons/BScore_"+i->GetEtaRegion("2bin"), i->CloseJet_BScore() ,  w, 200, -1, 1 );
     if(DrawLevel1)FillHist( plot_dir+ region+ "/Leptons/Leps_pt", i->Pt()  , w, 1000, 0., 1000.,"1_{2} p_{T} GeV");
     if(DrawLevel2)FillHist( plot_dir+ region+ "/Leptons/Leps_et", i->Et()  , w, 1000, 0., 1000.,"1_{2} p_{T} GeV");
     if(DrawLevel1)FillHist( plot_dir+ region+ "/Leptons/Leps_eta",i->Eta()  , w, 50, -2.5, 2.5,"l_{1} #eta");

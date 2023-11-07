@@ -595,9 +595,9 @@ public:
   }
 
   inline TString  etaRegionString() const {    return GetEtaRegion("4bin"); }
-  inline TString  sRegion() const {return GetEtaRegion("3bin");}
+  inline TString  sRegion() const {return GetEtaRegion("2bin");}
   
-  inline TString GetEtaRegion(TString Version="2Bin") const {
+  inline TString GetEtaRegion(TString Version="2bin") const {
     double sceta = fabs(defEta());
 
     if(Version == "2bin"){
@@ -646,7 +646,13 @@ public:
   inline double CalcPtCone(double this_reliso, double Tight_reliso){
     return ( this->Pt() ) * ( 1. + max(0., (this_reliso-Tight_reliso)) );
   }
-  inline double CalcMVACone(double this_mva, double Tight_mva){
+  inline double CalcMVACone(double Tight_mva){
+    double this_mva (0.);
+
+    if(j_LeptonFlavour==MUON) this_mva = j_lep_mva;
+    else this_mva = j_lep_mva_hnl_fake_ed_v5;
+    
+  
     if(this_mva > Tight_mva) return this->Pt();
     double MSlope  = 1  - (1 + this_mva) / (1+Tight_mva);  
     double PMDiff  = (j_lep_jetptratio < 1.) ? (this->Pt()/j_lep_jetptratio) - this->Pt() : 0; /// Mother Jet - Lepton (Similar to Iso)

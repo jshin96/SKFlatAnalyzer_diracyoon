@@ -57,7 +57,7 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
 						std::vector<Jet> JetCollLoose, std::vector<Jet> JetAllColl, std::vector<Jet> JetColl, std::vector<Jet> VBF_JetColl,std::vector<FatJet>  AK8_JetColl, std::vector<Jet> B_JetColl, 
 						Event ev,   Particle METv, AnalyzerParameter param,   float weight_ll){
 
-  vector<HNL_LeptonCore::Channel> channels = {EE,MuMu, EMu};
+  vector<HNL_LeptonCore::Channel> channels = {GetChannelENum(param.Channel)};
 
   for(auto dilep_channel : channels){
     

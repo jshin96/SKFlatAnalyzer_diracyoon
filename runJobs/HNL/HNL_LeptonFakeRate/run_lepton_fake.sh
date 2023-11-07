@@ -25,7 +25,7 @@ do
     if [[ $1 == "RatesMuon" ]]; then
         SKFlat.py -a $analyzer  -l $mcpath/MC.txt              -n ${njobs}       --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRates&
         SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_mu.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRates&
-        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_MuMu.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_DileptonBDT --userflags RunRates&
+        #SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_MuMu.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_DileptonBDT --userflags RunRates&
     fi
     if [[ $1 == "RatesMuon2" ]]; then
         SKFlat.py -a $analyzer  -l $mcpath/MC.txt              -n ${njobs}       --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRatesNonSNU&

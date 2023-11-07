@@ -65,7 +65,7 @@ std::vector<Muon> HNL_LeptonCore::SelectMuons(AnalyzerParameter& param, TString 
         this_muon.SetPtEtaPhiM( muons.at(i).CalcPtCone(muons.at(i).MiniRelIso(), Isocut), muons.at(i).Eta(), muons.at(i).Phi(), muons.at(i).M() );
       }
       if(param.FakeRateParam == "PtCorr"){
-        this_muon.SetPtEtaPhiM( muons.at(i).CalcMVACone(muons.at(i).HNL_MVA_Fake("HFTop"), muons.at(i).MVAFakeCut(param.Muon_Tight_ID,GetYearString())) , muons.at(i).Eta(), muons.at(i).Phi(), muons.at(i).M() );
+        this_muon.SetPtEtaPhiM( muons.at(i).CalcMVACone( muons.at(i).MVAFakeCut(param.Muon_Tight_ID,GetYearString())) , muons.at(i).Eta(), muons.at(i).Phi(), muons.at(i).M() );
       }
       if(param.FakeRateParam == "PtParton"){
 	this_muon.SetPtEtaPhiM(muons.at(i).PtParton(GetPtPartonSF(Lepton(muons.at(i)), param.Muon_FR_ID), muons.at(i).MVAFakeCut(param.Muon_Tight_ID,GetYearString())), muons.at(i).Eta(), muons.at(i).Phi(), muons.at(i).M() );
@@ -170,7 +170,7 @@ std::vector<Electron> HNL_LeptonCore::SelectElectrons(AnalyzerParameter& param, 
       }
 
       if(param.FakeRateParam == "PtCorr"){
-        this_electron.SetPtEtaPhiM( electrons.at(i).CalcMVACone(electrons.at(i).HNL_MVA_Fake("EDv5"), electrons.at(i).MVAFakeCut(param.Electron_Tight_ID,GetYearString())) , electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() );
+        this_electron.SetPtEtaPhiM( electrons.at(i).CalcMVACone( electrons.at(i).MVAFakeCut(param.Electron_Tight_ID,GetYearString())) , electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() );
       }
       if(param.FakeRateParam == "PtParton"){
         this_electron.SetPtEtaPhiM(electrons.at(i).PtParton(GetPtPartonSF(Lepton(electrons.at(i)), param.Electron_FR_ID), electrons.at(i).MVAFakeCut(param.Electron_Tight_ID,GetYearString())), electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() );

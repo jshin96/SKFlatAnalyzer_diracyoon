@@ -45,7 +45,6 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 
     if(run_Debug) {cout <<"RunAllControlRegions ["<< nlog<< "] : Pass METFilters" << endl;nlog++;}
     
-    
     /// Filters events based on COnv/CF/Fake/Prompt
     
     if(! (HasFlag("OS_VR") && RunFake)){
@@ -236,7 +235,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     }
     if(HasFlag("SS_CR")){
       FillHighMassSR3BDTCRPlots(dilep_channel, LepsT, LepsV, JetAllColl,  JetColl,VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel);
-      if(FillSSPreselectionPlots(dilep_channel,    LepsT, LepsV, JetColl,     AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("SSPresel");
+      if(FillSSPreselectionPlots(dilep_channel,    LepsT, LepsV, JetColl,     AK8_JetColl, B_JetColl, ev, METv, param, weight_channel))	passed.push_back("SSPresel");
       if(FillHighMassSR1CRPlots(dilep_channel, LepsT, LepsV, JetColl,     AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR1_CR");
       if(FillHighMassSR2CRPlots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR2_CR");
       if(FillHighMassSR3CRPlots(dilep_channel, LepsT, LepsV, JetColl,     AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR3_CR");
@@ -804,6 +803,10 @@ bool HNL_RegionDefinitions::FillSSPreselectionPlots(HNL_LeptonCore::Channel chan
   if(ll.M() < 20) return false;
 
   Fill_RegionPlots(param,"HNL_SSPresel_TwoLepton"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  if(JetColl.size() == 0)   Fill_RegionPlots(param,"HNL_SSPresel_0J_TwoLepton"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  else if(JetColl.size() == 1)   Fill_RegionPlots(param,"HNL_SSPresel_1J_TwoLepton"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  else    Fill_RegionPlots(param,"HNL_SSPresel_2J_TwoLepton"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+
   return true;
 
 }

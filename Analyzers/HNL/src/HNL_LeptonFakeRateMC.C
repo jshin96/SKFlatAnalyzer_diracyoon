@@ -1,6 +1,6 @@
-#include "HNL_LeptonFakeRate.h"
+#include "HNL_LeptonFakeRateMC.h"
 
-void HNL_LeptonFakeRate::initializeAnalyzer(){
+void HNL_LeptonFakeRateMC::initializeAnalyzer(){
 
   HNL_LeptonCore::initializeAnalyzer();
 
@@ -17,7 +17,7 @@ void HNL_LeptonFakeRate::initializeAnalyzer(){
    */
 }
 
-void HNL_LeptonFakeRate::executeEvent(){
+void HNL_LeptonFakeRateMC::executeEvent(){
 
   Event ev = GetEvent();
 
@@ -45,14 +45,8 @@ void HNL_LeptonFakeRate::executeEvent(){
 			    "HNL_LooseID_v6_"};
     
 
-    if(!IsData) {
-      for(unsigned int l=0 ; l < LIDs.size(); l++)  
-	VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu, HNL_LeptonCore::NormToXsec, {"MCProfile"},NIDs[l]+"_MC","HNL_ULID_"+GetYearString(),LIDs[l]));  
-    }
-    else {
-      for(unsigned int l=0 ; l < LIDs.size(); l++) 
-	VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu, HNL_LeptonCore::NormToXsec, {"DATAProfile"},NIDs[l]+"_DATA","HNL_ULID_"+GetYearString(),LIDs[l]));  
-    }
+    for(unsigned int l=0 ; l < LIDs.size(); l++)   VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu, HNL_LeptonCore::NormToXsec, {"DATAProfile"},NIDs[l]+"_DATA","HNL_ULID_"+GetYearString(),LIDs[l]));  
+    
     goto RunJobs;
     
   }
@@ -70,13 +64,8 @@ void HNL_LeptonFakeRate::executeEvent(){
 			    "HNL_LooseID_v4_",
 			    "HNL_LooseID_v5_",
 			    "HNL_LooseID_v6_"};
-    if(!IsData){
-      for(unsigned int l=0 ; l < LIDs.size(); l++)  VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE, HNL_LeptonCore::NormToXsec, {"MCProfile"},NIDs[l]+"MC","HNL_ULID_"+GetYearString(),LIDs[l]));
-    }
-    else{
-      for(unsigned int l=0 ; l < LIDs.size(); l++)  VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE, HNL_LeptonCore::NormToXsec, {"DATAProfile"},NIDs[l]+"DATA","HNL_ULID_"+GetYearString(),LIDs[l]));
-    }
-
+    for(unsigned int l=0 ; l < LIDs.size(); l++)  VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE, HNL_LeptonCore::NormToXsec, {"DATAProfile"},NIDs[l]+"DATA","HNL_ULID_"+GetYearString(),LIDs[l]));
+    
     goto RunJobs;
   }
 
@@ -88,62 +77,14 @@ void HNL_LeptonFakeRate::executeEvent(){
     goto RunJobs;
   }
 
-  if(HasFlag("RunRates")){
-    /// Measure FR in Data
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FO"        ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO"));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_POGM_FO"   ,"HNL_ULID_"+GetYearString(), "HNL_ULID_POGM_FO"));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv2"     ,"HNL_ULID_"+GetYearString(),  "HNL_ULID_FOv2_"+GetYearString()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv3"     ,"HNL_ULID_"+GetYearString(),  "HNL_ULID_FOv3_"+GetYearString()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv4"     ,"HNL_ULID_"+GetYearString(),  "HNL_ULID_FOv4"));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv5"     ,"HNL_ULID_"+GetYearString(),  "HNL_ULID_FOv5"));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv6"     ,"HNL_ULID_"+GetYearString(),  "HNL_ULID_FOv6_"+GetYearString()));
-    goto RunJobs;
-  }
-  if(HasFlag("RunRatesNonSNU")){
-    /// Measure FR in Data    
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"Peking"        , "Peking",    "Peking_FO"));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNTightV2"     , "HNTightV2", "HNLooseV1"));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_HN3L"      , "HNL_HN3L",  "HNL_TopMVA_FO_MM"));
-    goto RunJobs;
-  }
   
-  if(HasFlag("RunRatesEE")){
-    /// Measure FR in Data 
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FO"       ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO_"+GetYearString()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv2"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FOv2_"+GetYearString()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv3"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FOv3_"+GetYearString()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv4"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FOv4_"+GetYearString()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv5"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FOv5_"+GetYearString()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv6"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FOv6_"+GetYearString()));
-    goto RunJobs;
-  }
-  if(HasFlag("RunRatesNonSNU_EE")){
-    /// Measure FR in Data       
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"Peking"        , "Peking_"+GetYearString(), "Peking_FO_"+GetYearString()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNTightV2"     , "HNTightV2", "HNLooseV4"));
-    goto RunJobs;
-  }
-
-  if(HasFlag("GetNvtxSF")){
-    VParameters.clear();
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"NvtxSF"},"HNL_ID"         ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO"));
-    goto RunJobs;
-  }
-  if(HasFlag("MakeRegionPlots")){
-    VParameters.clear();
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"MakeDiLeptonPlots"}    ,"HNL_ID_MakeDiLeptonPlots"         ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO"));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"MakeSingleLeptonPlots"},"HNL_ID_MakeSingleLeptonPlots"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO"));
-    goto RunJobs;
-  }
-
-
  RunJobs:
   
   for(auto param : VParameters)  executeEventFromParameter(param);
   
 }
 
-void HNL_LeptonFakeRate::executeEventFromParameter(AnalyzerParameter param){
+void HNL_LeptonFakeRateMC::executeEventFromParameter(AnalyzerParameter param){
    
   //************************************************///
   // setup event level objects
@@ -182,7 +123,7 @@ void HNL_LeptonFakeRate::executeEventFromParameter(AnalyzerParameter param){
 }
 
 
-void HNL_LeptonFakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon> loose_mu, std::vector<Jet> jets,   AnalyzerParameter param,  float event_weight){
+void HNL_LeptonFakeRateMC::RunM(std::vector<Electron> loose_el,  std::vector<Muon> loose_mu, std::vector<Jet> jets,   AnalyzerParameter param,  float event_weight){
 
   if(IsData){
     if(this->DataStream == "DoubleEG") return;
@@ -198,45 +139,12 @@ void HNL_LeptonFakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon>
   if(loose_el.size() > 0) return;
 
   std::vector<Lepton *> leps = MakeLeptonPointerVector(loose_mu,param);
-  if(1){
-    TString triggerslist_3="HLT_Mu3_PFJet40_v";    TString triggerslist_8="HLT_Mu8_TrkIsoVVL_v";    TString triggerslist_17="HLT_Mu17_TrkIsoVVL_v";
-
-    bool Mu3PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_3, this->DataStream) ));
-    bool Mu8PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_8, this->DataStream) ));
-    bool Mu17PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_17, this->DataStream) ));
-
-    bool pass_3 = ev.PassTrigger(triggerslist_3) && Mu3PD;
-    bool pass_8 = ev.PassTrigger(triggerslist_8) && Mu8PD;
-    bool pass_17 = ev.PassTrigger(triggerslist_17) && Mu17PD;
-    int n50J(0);
-    for(auto ijet : jets) {
-      if(ijet.Pt() > 50) n50J++;
-    }
-    for(auto ilep : loose_mu) {
-      FillHist("LeptonPt/Inclusive_pt" , ilep.Pt() ,  event_weight, 200, 0, 200);
-      if((n50J > 0) && pass_3) FillHist("LeptonPt/Mu3_pt" , ilep.Pt() ,  event_weight, 200, 0, 200);
-      if(pass_8) FillHist("LeptonPt/Mu8_pt" , ilep.Pt() ,  event_weight, 200, 0, 200);
-      if(pass_17) FillHist("LeptonPt/Mu17_pt" , ilep.Pt() ,  event_weight, 200, 0, 200);
-    }
-    if(UseEvent(leps ,jets, 40.,  GetvMET("PuppiT1xyULCorr",param), event_weight)){
-      for(auto ilep : loose_mu) {
-	FillHist("LeptonPtCR/Inclusive_pt" , ilep.Pt() ,  event_weight, 200, 0, 200);
-	if((n50J > 0) && pass_3) FillHist("LeptonPtCR/Mu3_pt" , ilep.Pt() ,  event_weight, 200, 0, 200);
-	if(pass_8) FillHist("LeptonPtCR/Mu8_pt" , ilep.Pt() ,  event_weight, 200, 0, 200);
-	if(pass_17) FillHist("LeptonPtCR/Mu17_pt" , ilep.Pt() ,  event_weight, 200, 0, 200);
-      }
-    }
-  }
-
-
-
+  
   std::vector<bool>    blepsT;
   for(auto ilep : loose_mu)   blepsT.push_back(ilep.PassID(param.Muon_Tight_ID));
   
   Particle METv = GetvMET("PuppiT1xyULCorr",param);
 
-  if(param.HasFlag("NvtxSF"))   MakeNVertexDistPrescaledTrig(MuMu,param, ev, leps,blepsT,param.Name+param.Channel,event_weight);   
-  
   if(param.HasFlag("MCFakes")) {
     
     std::vector<Jet>    AK4_BJetColl                = GetHNLJets("BJet", param);
@@ -399,116 +307,17 @@ void HNL_LeptonFakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon>
         }
       } 
     }
-    return;
-    for(unsigned int i = 0 ; i < loose_mu.size() ; i++){
-      TString Dir = "MCFakeOpt/";
-      TString DirInc = "MCFakeOpt/Inclusive/";
-      
-      FillHist((DirInc+"QCD_LFvsHFBC_"+loose_mu[i].MotherJetFlavour()+"_"+loose_mu[i].sRegion()+"_"+param.Name +"_Loose").Data(), loose_mu[i].HNL_MVA_Fake("QCD_LFvsHF_v5") , loose_mu[i].HNL_MVA_Fake("QCD_BvsC_v5"),   event_weight, 20,-1, 1 , 20,-1, 1 );
-      
-      if(loose_mu[i].PassID(param.Muon_Tight_ID)) FillHist((DirInc+"QCD_LFvsHFBC_"+loose_mu[i].MotherJetFlavour()+"_"+loose_mu[i].sRegion()+"_"+param.Name +"_Tight").Data(), loose_mu[i].HNL_MVA_Fake("QCD_LFvsHF_v5") , loose_mu[i].HNL_MVA_Fake("QCD_BvsC_v5"),   event_weight, 20,-1, 1 , 20,-1, 1 );
-
-      
-      FillHist((DirInc+"MVA_"    +loose_mu[i].MotherJetFlavour()+"_"+loose_mu[i].sRegion()+"_"+param.Name +"_Loose").Data(),loose_mu[i].HNL_MVA_Fake("HNL") ,  event_weight, 200, -1, 1 );
-      FillHist((DirInc+"QCD_LFvsHF_"+loose_mu[i].MotherJetFlavour()+"_"+loose_mu[i].sRegion()+"_"+param.Name +"_Loose").Data(), loose_mu[i].HNL_MVA_Fake("QCD_LFvsHF_v5") ,  event_weight, 200,-1, 1 );
-      FillHist((DirInc+"QCD_BvsC_"+loose_mu[i].MotherJetFlavour()+"_"+loose_mu[i].sRegion()+"_"+param.Name +"_Loose").Data(), loose_mu[i].HNL_MVA_Fake("QCD_BvsC_v5") ,  event_weight, 200, -1, 1 );
-      FillHist((DirInc+"BScore_" +loose_mu[i].MotherJetFlavour()+"_"+loose_mu[i].sRegion()+"_"+param.Name +"_Loose").Data(), loose_mu[i].CloseJet_BScore() ,  event_weight, 200, -1, 1 );
-      FillHist((DirInc+"CvsB_"   +loose_mu[i].MotherJetFlavour()+"_"+loose_mu[i].sRegion()+"_"+param.Name +"_Loose").Data(), loose_mu[i].CloseJet_CvsBScore() ,  event_weight, 200, -1, 1 );
-      FillHist((DirInc+"CvsL_"   +loose_mu[i].MotherJetFlavour()+"_"+loose_mu[i].sRegion()+"_"+param.Name +"_Loose").Data(), loose_mu[i].CloseJet_CvsLScore() ,  event_weight, 200, -1, 1);
-      FillHist((DirInc+"PtRatio_"+loose_mu[i].MotherJetFlavour()+"_"+loose_mu[i].sRegion()+"_"+param.Name +"_Loose").Data(), loose_mu[i].CloseJet_Ptratio() ,   event_weight, 200, 0, 5 );
-      FillHist((DirInc+"PtRel_"  +loose_mu[i].MotherJetFlavour()+"_"+loose_mu[i].sRegion()+"_"+param.Name +"_Loose").Data(), loose_mu[i].CloseJet_Ptrel() ,     event_weight, 50, 0, 200  );
-
-      
-      for(int imva=0 ; imva < 150 ; imva++){
-	
-	double mva_d=  -1 + double(imva)*.01;
-	TString mvaTS= DoubleToString(mva_d);
-	TString var = "MVATop_";
-	TString prefix=loose_mu[i].MotherJetFlavour()+"_"+loose_mu[i].sRegion()+"_"+param.Name;
-	if(loose_mu[i].HNL_MVA_Fake("HNL") < mva_d) continue;
-	FillHist((Dir+var+mvaTS+"/"+prefix +"_Loose").Data(), 1,  event_weight, 2, 0 , 2);
-	if(loose_mu[i].PassID(param.Muon_Tight_ID)) FillHist((Dir+var+mvaTS+"/"+prefix +"_Tight").Data(), 1,  event_weight, 2, 0 , 2);
-	if(loose_mu[i].Pt() < 30) {
-	  FillHist((Dir+var+mvaTS+"/"+prefix +"_ptlt30_Loose").Data(), 1,  event_weight, 2, 0 , 2);
-	  if(loose_mu[i].PassID(param.Muon_Tight_ID)) FillHist((Dir+var+mvaTS+"/"+prefix +"_ptlt30_Tight").Data(), 1,  event_weight, 2, 0 , 2);
-	}
-	else{
-	  FillHist((Dir+var+mvaTS+"/"+prefix +"_ptgt30_Loose").Data(), 1,  event_weight, 2, 0 , 2);
-	  if(loose_mu[i].PassID(param.Muon_Tight_ID)) FillHist((Dir+var+mvaTS+"/"+prefix +"_ptgt30_Tight").Data(), 1,  event_weight, 2, 0 , 2);
-	}
-      }
-      for(int imva=0 ; imva < 150 ; imva++){
-
-        double mva_d=  1 - double(imva)*.01;
-        TString mvaTS= DoubleToString(mva_d);
-        TString var = "QCD_BvsC_v5_";
-	TString prefix=loose_mu[i].MotherJetFlavour()+"_"+loose_mu[i].sRegion()+"_"+param.Name;
-
-        if(loose_mu[i].HNL_MVA_Fake("QCD_BvsC_v5") > mva_d) continue;
-
-        FillHist((Dir+var+mvaTS+"/"+prefix +"_Loose").Data(), 1,  event_weight, 2, 0 , 2);
-        if(loose_mu[i].PassID(param.Muon_Tight_ID)) FillHist((Dir+var+mvaTS+"/"+prefix +"_Tight").Data(), 1,  event_weight, 2, 0 , 2);
-	if(loose_mu[i].Pt() < 30) {
-          FillHist((Dir+var+mvaTS+"/"+prefix +"_ptlt30_Loose").Data(), 1,  event_weight, 2, 0 , 2);
-          if(loose_mu[i].PassID(param.Muon_Tight_ID)) FillHist((Dir+var+mvaTS+"/"+prefix +"_ptlt30_Tight").Data(), 1,  event_weight, 2, 0 , 2);
-	}
-	else{
-          FillHist((Dir+var+mvaTS+"/"+prefix +"_ptgt30_Loose").Data(), 1,  event_weight, 2, 0 , 2);
-          if(loose_mu[i].PassID(param.Muon_Tight_ID)) FillHist((Dir+var+mvaTS+"/"+prefix +"_ptgt30_Tight").Data(), 1,  event_weight, 2, 0 , 2);
-        }
-      }
-
-      for(int imva=0 ; imva < 150 ; imva++){
-
-        double mva_d=  -1 + double(imva)*.01;
-        TString mvaTS= DoubleToString(mva_d);
-        TString var = "QCD_LFvsHF_v5_";
-        TString prefix=loose_mu[i].MotherJetFlavour()+"_"+loose_mu[i].sRegion()+"_"+param.Name;
-
-        if(loose_mu[i].HNL_MVA_Fake("QCD_LFvsHF_v5") < mva_d) continue;
-
-        FillHist((Dir+var+mvaTS+"/"+prefix +"_Loose").Data(), 1,  event_weight, 2, 0 , 2);
-	if(loose_mu[i].PassID(param.Muon_Tight_ID)) FillHist((Dir+var+mvaTS+"/"+prefix +"_Tight").Data(), 1,  event_weight, 2, 0 , 2);
-        if(loose_mu[i].Pt() < 30) {
-          FillHist((Dir+var+mvaTS+"/"+prefix +"_ptlt30_Loose").Data(), 1,  event_weight, 2, 0 , 2);
-          if(loose_mu[i].PassID(param.Muon_Tight_ID)) FillHist((Dir+var+mvaTS+"/"+prefix +"_ptlt30_Tight").Data(), 1,  event_weight, 2, 0 , 2);
-        }
-        else{
-          FillHist((Dir+var+mvaTS+"/"+prefix +"_ptgt30_Loose").Data(), 1,  event_weight, 2, 0 , 2);
-          if(loose_mu[i].PassID(param.Muon_Tight_ID)) FillHist((Dir+var+mvaTS+"/"+prefix +"_ptgt30_Tight").Data(), 1,  event_weight, 2, 0 , 2);
-        }
-      }
-
-
-      for(int imva=0 ; imva < 100 ; imva++){
-
-        double mva_d=  1 - double(imva)*.01;
-        TString mvaTS= DoubleToString(mva_d);
-	TString var = "DeepJetB_";
-        TString prefix=loose_mu[i].MotherJetFlavour()+"_"+loose_mu[i].sRegion()+"_"+param.Name;
-        if(loose_mu[i].CloseJet_BScore() > mva_d) continue;
-	FillHist((Dir+var+mvaTS+"/"+prefix +"_Loose").Data(), 1,  event_weight, 2, 0 , 2);
-	if(loose_mu[i].PassID(param.Muon_Tight_ID)) FillHist((Dir+var+mvaTS+"/"+prefix +"_Tight").Data(), 1,  event_weight, 2, 0 , 2);
-
-	if(loose_mu[i].Pt() < 30) {
-          FillHist((Dir+var+mvaTS+"/"+prefix +"_ptlt30_Loose").Data(), 1,  event_weight, 2, 0 , 2);
-          if(loose_mu[i].PassID(param.Muon_Tight_ID)) FillHist((Dir+var+mvaTS+"/"+prefix +"_ptlt30_Tight").Data(), 1,  event_weight, 2, 0 , 2);
-	}
-	else{
-          FillHist((Dir+var+mvaTS+"/"+prefix +"_ptgt30_Loose").Data(), 1,  event_weight, 2, 0 , 2);
-          if(loose_mu[i].PassID(param.Muon_Tight_ID)) FillHist((Dir+var+mvaTS+"/"+prefix +"_ptgt30_Tight").Data(), 1,  event_weight, 2, 0 , 2);
-        }
-      }
-    }
   }
-
-
+  bool useevent40 = UseEvent(leps , jets, 40., METv, event_weight);
+  
   if(param.HasFlag("MCFakes"))  for(unsigned int i = 0 ; i < leps.size() ; i++) GetMuFakeRates("Pt", {leps.at(i)},{blepsT.at(i)}, param, jets, "MCFake_J40" ,  event_weight);
   if(param.HasFlag("MCFakes"))  for(unsigned int i = 0 ; i < leps.size() ; i++) GetMuFakeRates("PtParton", {leps.at(i)},{blepsT.at(i)}, param, jets, "MCFake_J40" ,  event_weight);
   if(param.HasFlag("MCFakes"))  for(unsigned int i = 0 ; i < leps.size() ; i++) GetMuFakeRates("MotherPt", {leps.at(i)},{blepsT.at(i)}, param, jets, "MCFake_J40" ,  event_weight);
   if(param.HasFlag("MCFakes"))  for(unsigned int i = 0 ; i < leps.size() ; i++) GetMuFakeRates("PtCorr", {leps.at(i)},{blepsT.at(i)}, param, jets, "MCFake_J40" ,  event_weight);
   if(param.HasFlag("MCFakes"))  for(unsigned int i = 0 ; i < leps.size() ; i++) GetMuFakeRates("PtCone", {leps.at(i)},{blepsT.at(i)}, param, jets, "MCFake_J40" ,  event_weight);
   if(param.HasFlag("MCFakes"))  return;
+
+
 
   if(param.HasFlag("MCProfile")){
 
@@ -524,115 +333,6 @@ void HNL_LeptonFakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon>
     }
     return;
   }
-  if(param.HasFlag("DATAProfile")){
-    
-    if(leps.size() != 1) return;
-    
-    double prescale_lep = GetPrescale(leps);
-    if(prescale_lep == 0) return;
-    event_weight*= prescale_lep;
-    
-    if(UseEvent(leps , jets, 40., METv, event_weight)){
-      for(auto ilep : leps){
-	double PtPartonUncorr = ilep->PtParton(1,ilep->MVAFakeCut(param.Muon_Tight_ID,GetYearString()));
-	double W = event_weight;
-	if(!IsData) {
-	  if(!leps[0]->IsPrompt()) return ;
-	  W=W* -1.;
-	}
-	FillProf(("DATAProfile/"+param.Name + "/FakeCR"+param.GetSystType()+"_MVA_PtPartonUncorr").Data(), ilep->HNL_MVA_Fake("HFTop"), PtPartonUncorr, W, 200, -1, 1);
-	FillProf(("DATAProfile/"+param.Name + "/FakeCR"+param.GetSystType()+"_MVA_"+ilep->GetEtaRegion("2bin")+"_PtPartonUncorr").Data(), ilep->HNL_MVA_Fake("HFTop"), PtPartonUncorr, W, 200, -1, 1);
-	
-      }
-    }
-    return;
-  }
-
-
-  if(param.HasFlag("FR") || param.HasFlag("PR"))   GetFakeRateAndPromptRates(param, leps,blepsT,jets,param.Name+param.Channel,event_weight);   
-  
-  if(param.HasFlag("MakeDiLeptonPlots"))  MakeDiLepPlots(MuMu,param, ev, leps,blepsT,param.Name+param.Channel,event_weight);
-  
-  if(!param.HasFlag("MakeSingleLeptonPlots")) return;
-
-  if(loose_mu.size() != 1) return;
-  
-  bool has_away_jet=false;
-  for(unsigned int ij=0; ij < jets.size(); ij++){
-    if(jets.at(ij).Pt() < 40.) continue;
-    float dphi =fabs(TVector2::Phi_mpi_pi(loose_mu[0].Phi()- jets.at(ij).Phi()));
-    if(dphi > 2.5)      has_away_jet=true;
-  }
-
-  /// Make plots to check control of prompt leptons and to plot Loose and Tight Samples
-  /// Only run when not running MANY IDs so param.WriteOutVerbose is set to 2
-
-  // prescale_trigger is to set weight of trigger prescale depending on the lepton pt
-  float prescale_trigger = GetPrescale(leps);
-  if(prescale_trigger == 0.) return;
-  event_weight*=prescale_trigger;
-
-  bool truth_match= false;
-  if(!IsDATA) {
-    if(loose_mu.at(0).IsPrompt()) truth_match=true;
-  }
-  else truth_match=true;
-
-  if(jets.size() > 0){
-    if(jets.at(0).Pt() > 40.){
-      
-      // Plot for 1  lep + Jet pT > trig pt
-      FillRegionPlots("MuMu", "SingleLooseMuJet_"+param.Name , jets,   loose_el,loose_mu,  METv, event_weight);
-      if(has_away_jet)       FillRegionPlots("MuMu","SingleLooseMuAwayJet_"+param.Name, jets,   loose_el,  loose_mu,  METv, event_weight);
-      if(blepsT[0]){
-        FillRegionPlots("MuMu","SingleTightMuJet_"+param.Name,  jets,  loose_el,loose_mu,  METv, event_weight);
-        if(has_away_jet) FillRegionPlots("MuMu","SingleTightMuAwayJet_"+param.Name, jets,  loose_el, loose_mu,  METv, event_weight);
-      }
-    }
-  }
-
-  Double_t MT=0;
-  Double_t METdphi=0;
-  for(unsigned int imu = 0; imu < loose_mu.size();  imu++){
-    METdphi=  TVector2::Phi_mpi_pi((loose_mu.at(imu).Phi()- METv.Phi()));
-    MT = sqrt(2.* loose_mu.at(imu).Et()*METv.Pt() * (1 - cos( METdphi)));
-  }
-  if((60. < MT)  &&(MT < 100.)){
-    if(loose_mu[0].Pt() > 20){
-      if(jets.size() > 0 && blepsT[0]){
-	if(jets[0].Pt() > 40){
-	  
-	  FillRegionPlots("MuMu","SingleTightMu_promptCR_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
-	  if(has_away_jet)FillRegionPlots("MuMu","SingleTightMuAwayJet_promptCR_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
-
-	  bool isPrompt=false;
-	  for(unsigned int ij=0; ij < jets.size(); ij++){
-	    if(jets.at(ij).Pt() < 40.) continue;
-	    float dphi =fabs(TVector2::Phi_mpi_pi(loose_mu[0].Phi()- jets.at(ij).Phi()));
-	    if(dphi > 2.5){
-	      if((jets.at(ij).Pt() /  loose_mu[0].Pt() ) < 1.) isPrompt = true;
-	    }
-	  }
-	  
-	  if (isPrompt) FillRegionPlots("MuMu","SingleTightMu_promptCR2_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
-	  if (isPrompt&&has_away_jet) FillRegionPlots("MuMu","SingleTightMuAwayJet_promptCR2_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
-	}	
-      }
-    }
-  }
-
-  
-  bool useevent40 = UseEvent(leps , jets, 40., METv, event_weight);
-  if(useevent40){
-    if (blepsT[0] && jets.size() >= 1)FillRegionPlots("MuMu","TightMu40_notm_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
-    if (jets.size() >= 1)FillRegionPlots("MuMu","LooseMu40_notm_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
-    
-    if(truth_match){
-      if (blepsT[0] && jets.size() >= 1)FillRegionPlots("MuMu","TightMu40_"+param.Name , jets,  loose_el,loose_mu, METv, event_weight);
-      if (jets.size() >= 1)FillRegionPlots("MuMu","LooseMu40_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
-    }
-    
-  }
   
   return;
 
@@ -642,7 +342,7 @@ void HNL_LeptonFakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon>
 
 
 
-void HNL_LeptonFakeRate::RunE( std::vector<Electron> loose_el, std::vector<Muon> loose_mu, std::vector<Jet> jets, AnalyzerParameter param,  float event_weight){
+void HNL_LeptonFakeRateMC::RunE( std::vector<Electron> loose_el, std::vector<Muon> loose_mu, std::vector<Jet> jets, AnalyzerParameter param,  float event_weight){
 
   if(IsData){
     if(this->DataStream == "DoubleMuon") return;
@@ -885,7 +585,7 @@ void HNL_LeptonFakeRate::RunE( std::vector<Electron> loose_el, std::vector<Muon>
 
 } /// end function RunE
 
-double HNL_LeptonFakeRate::ApplyNvtxReweight(int NPV, TString Key){
+double HNL_LeptonFakeRateMC::ApplyNvtxReweight(int NPV, TString Key){
 
   if(IsData) return 1.;
   if(!NvtxSFFile->GetListOfKeys()->Contains(Key)){ printf("[Error] No %s in NvtxSF File.\n", Key.Data()); return -1.; }
@@ -905,7 +605,7 @@ double HNL_LeptonFakeRate::ApplyNvtxReweight(int NPV, TString Key){
 }
 
 
-void HNL_LeptonFakeRate::MakeDiLepPlots(HNL_LeptonCore::Channel channel, AnalyzerParameter param, Event ev, std::vector<Lepton *> leps,std::vector<bool> blepsT,  TString label, float event_weight){
+void HNL_LeptonFakeRateMC::MakeDiLepPlots(HNL_LeptonCore::Channel channel, AnalyzerParameter param, Event ev, std::vector<Lepton *> leps,std::vector<bool> blepsT,  TString label, float event_weight){
 
   double d_event_weight = event_weight;
   if(leps.size() != 2) return;
@@ -1048,7 +748,7 @@ void HNL_LeptonFakeRate::MakeDiLepPlots(HNL_LeptonCore::Channel channel, Analyze
 
 
 
-void HNL_LeptonFakeRate::MakeNVertexDistPrescaledTrig(HNL_LeptonCore::Channel channel, AnalyzerParameter param, Event ev, std::vector<Lepton *> leps,std::vector<bool> blepsT,  TString label, float event_weight){
+void HNL_LeptonFakeRateMC::MakeNVertexDistPrescaledTrig(HNL_LeptonCore::Channel channel, AnalyzerParameter param, Event ev, std::vector<Lepton *> leps,std::vector<bool> blepsT,  TString label, float event_weight){
   
 
   if(leps.size() != 2) return;
@@ -1190,7 +890,7 @@ void HNL_LeptonFakeRate::MakeNVertexDistPrescaledTrig(HNL_LeptonCore::Channel ch
   
 
 }
-void HNL_LeptonFakeRate::GetFakeRateAndPromptRates(AnalyzerParameter param, std::vector<Lepton *> leps,std::vector<bool> blepsT, std::vector<Jet>    jetCollTight, TString label, float event_weight){
+void HNL_LeptonFakeRateMC::GetFakeRateAndPromptRates(AnalyzerParameter param, std::vector<Lepton *> leps,std::vector<bool> blepsT, std::vector<Jet>    jetCollTight, TString label, float event_weight){
 						      
   if (leps.size()<1) return;
   
@@ -1210,7 +910,7 @@ void HNL_LeptonFakeRate::GetFakeRateAndPromptRates(AnalyzerParameter param, std:
 }
 
 
-void HNL_LeptonFakeRate::MakePromptRatePlots(TString label, TString tag,AnalyzerParameter param,  std::vector<Lepton *> leps , std::vector<bool> blepsT , std::vector<Jet> jets,  float event_weight, Particle MET){
+void HNL_LeptonFakeRateMC::MakePromptRatePlots(TString label, TString tag,AnalyzerParameter param,  std::vector<Lepton *> leps , std::vector<bool> blepsT , std::vector<Jet> jets,  float event_weight, Particle MET){
   
   Event ev = GetEvent();
 
@@ -1259,7 +959,7 @@ void HNL_LeptonFakeRate::MakePromptRatePlots(TString label, TString tag,Analyzer
 }
 
 
-float HNL_LeptonFakeRate::GetPrescale(std::vector<Lepton *>   leps  ){
+float HNL_LeptonFakeRateMC::GetPrescale(std::vector<Lepton *>   leps  ){
 
   if(leps.size() != 1) return 0.;
 
@@ -1338,7 +1038,7 @@ float HNL_LeptonFakeRate::GetPrescale(std::vector<Lepton *>   leps  ){
 }
  
 
-void HNL_LeptonFakeRate::MakeFakeRatePlots(TString label, TString mutag,AnalyzerParameter param,  std::vector<Lepton *> leps , std::vector<bool> blepsT ,  std::vector<Jet> jets,  float event_weight,  Particle MET){
+void HNL_LeptonFakeRateMC::MakeFakeRatePlots(TString label, TString mutag,AnalyzerParameter param,  std::vector<Lepton *> leps , std::vector<bool> blepsT ,  std::vector<Jet> jets,  float event_weight,  Particle MET){
 				
   /// FOR FAKE RATE SUBTRACTION NEED ONLY PROMPT MUONS                                                                                                                                                  
   bool truth_match= true;
@@ -1381,7 +1081,7 @@ void HNL_LeptonFakeRate::MakeFakeRatePlots(TString label, TString mutag,Analyzer
 }
 
 
-bool HNL_LeptonFakeRate::UseEvent(std::vector<Lepton *> leps ,  std::vector< Jet> jets, float awayjetcut, Particle MET, float wt){
+bool HNL_LeptonFakeRateMC::UseEvent(std::vector<Lepton *> leps ,  std::vector< Jet> jets, float awayjetcut, Particle MET, float wt){
 
   bool useevent = false;
   if(leps.size() != 1) return false;
@@ -1412,7 +1112,7 @@ bool HNL_LeptonFakeRate::UseEvent(std::vector<Lepton *> leps ,  std::vector< Jet
 }
 
 
-void HNL_LeptonFakeRate::GetElFakeRates(TString Method, std::vector<Lepton *> leps,std::vector<bool> blepsT,  AnalyzerParameter param,  std::vector<Jet> jets,  TString tag,float event_weight){
+void HNL_LeptonFakeRateMC::GetElFakeRates(TString Method, std::vector<Lepton *> leps,std::vector<bool> blepsT,  AnalyzerParameter param,  std::vector<Jet> jets,  TString tag,float event_weight){
 
   bool IsMuon=(leps[0]->LeptonFlavour() == Lepton::MUON);
   if(IsMuon) return;
@@ -1657,7 +1357,7 @@ void HNL_LeptonFakeRate::GetElFakeRates(TString Method, std::vector<Lepton *> le
 
 }
 
-void HNL_LeptonFakeRate::GetMuFakeRates(TString Method, std::vector<Lepton *> leps,std::vector<bool> blepsT,  AnalyzerParameter param,  std::vector<Jet> jets,  TString tag,float event_weight){
+void HNL_LeptonFakeRateMC::GetMuFakeRates(TString Method, std::vector<Lepton *> leps,std::vector<bool> blepsT,  AnalyzerParameter param,  std::vector<Jet> jets,  TString tag,float event_weight){
   
 
   bool IsMuon=(leps[0]->LeptonFlavour() == Lepton::MUON);
@@ -1930,11 +1630,11 @@ void HNL_LeptonFakeRate::GetMuFakeRates(TString Method, std::vector<Lepton *> le
 }
 
 
-HNL_LeptonFakeRate::HNL_LeptonFakeRate(){
+HNL_LeptonFakeRateMC::HNL_LeptonFakeRateMC(){
   
 }
  
-HNL_LeptonFakeRate::~HNL_LeptonFakeRate(){
+HNL_LeptonFakeRateMC::~HNL_LeptonFakeRateMC(){
 
   //  delete NvtxSFFile;
   //for(std::map< TString, TH1D* >::iterator mapit = maphist_NvtxSF.begin(); mapit!=maphist_NvtxSF.end(); mapit++){
@@ -1944,7 +1644,7 @@ HNL_LeptonFakeRate::~HNL_LeptonFakeRate(){
 
 }
 
-void HNL_LeptonFakeRate::FillRegionPlots( TString plot_dir, TString region,  std::vector<Jet> jets,  std::vector<Electron> els, std::vector<Muon> mus, Particle  met,  double w){
+void HNL_LeptonFakeRateMC::FillRegionPlots( TString plot_dir, TString region,  std::vector<Jet> jets,  std::vector<Electron> els, std::vector<Muon> mus, Particle  met,  double w){
   
   if((els.size()+ mus.size()) != 1) return;
   Lepton lep1;
@@ -2004,17 +1704,17 @@ void HNL_LeptonFakeRate::FillRegionPlots( TString plot_dir, TString region,  std
 }
 
 
-void HNL_LeptonFakeRate::FillEventCutflow(int charge_i, int cf,float wt, TString cut,   TString label){
+void HNL_LeptonFakeRateMC::FillEventCutflow(int charge_i, int cf,float wt, TString cut,   TString label){
 
 
   return;
 
 }
 
-void HNL_LeptonFakeRate::FillWeightHist(TString label, double _weight){
+void HNL_LeptonFakeRateMC::FillWeightHist(TString label, double _weight){
   FillHist( "weights/"+ label , _weight ,1., 200, 0., 5,"ev weight");
 }
-void HNL_LeptonFakeRate::FillCutFlow(bool IsCentral, TString suffix, TString histname, double weight){
+void HNL_LeptonFakeRateMC::FillCutFlow(bool IsCentral, TString suffix, TString histname, double weight){
 
   if(IsCentral){
 

@@ -14,7 +14,7 @@ void SkimTree_FakeEventSkim::initializeAnalyzer(){
 void SkimTree_FakeEventSkim::executeEvent(){
 
 
-  std::vector<Muon>     muonPreColl     = GetMuons("HNLoosest", 10., 2.4);
+  std::vector<Muon>     muonPreColl     = GetMuons("HNLoosest", 5., 2.4);
   std::vector<Electron> electronPreColl = GetElectrons("HNLoosest", 10., 2.5);
   
   bool HasFakeLep=false;
