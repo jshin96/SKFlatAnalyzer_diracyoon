@@ -406,8 +406,8 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
   param.PlottingVerbose = 0;
 
   /// Default BKG 
-  param.ApplyPR;
-
+  param.ApplyPR=false;
+  
   param.Apply_Weight_Norm1Ipb  = true;
   param.Apply_Weight_LumiNorm = true;
   param.Apply_Weight_SumQ     = true;
