@@ -10,6 +10,12 @@ skim=' '
 
 declare  -a era_list=("2016postVFP" "2016preVFP"  "2017" "2018")
 
+if [[ $1 == "W" ]]; then
+    for i in "${era_list[@]}"
+    do
+        SKFlat.py -a $analyzer  -i WJets_Sherpa  -n 4000  --nmax 500   -e ${i} --skim  SkimTree_HNMultiLep &
+    done
+fi
 
 if [[ $1 == "SL" ]]; then
     for i in "${era_list[@]}"
