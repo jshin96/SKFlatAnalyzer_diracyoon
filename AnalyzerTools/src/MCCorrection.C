@@ -4,6 +4,8 @@ MCCorrection::MCCorrection() :
 IgnoreNoHist(false)
 {
 
+  MissingHists.clear();
+
   histDir = TDirectoryHelper::GetTempDirectory("MCCorrection");
 
   genFinderDY = new GenFinderForDY();
@@ -177,6 +179,11 @@ void MCCorrection::ReadHistograms(){
 }
 
 MCCorrection::~MCCorrection(){
+
+  if(MissingHists.size() > 0){
+    cout << "MCCorrection Missing Hists " << endl;
+    for(auto iMissing : MissingHists) cout << "Missing : " << iMissing << endl;
+  }
 
   delete genFinderDY;
 
@@ -4808,7 +4815,13 @@ double MCCorrection::MuonReco_SF(TString key, double eta, double p, int sys){
 
   TH2F *this_hist = map_hist_Muon["RECO_SF_"+key];
   if(!this_hist){
-    if(IgnoreNoHist) return 1.;
+    if(IgnoreNoHist) {
+
+      TString MapK = "RECO_SF_"+key;
+      if (std::find(MissingHists.begin(), MissingHists.end(), MapK ) == MissingHists.end())   MissingHists.push_back(MapK);
+      return 1.;
+
+    }
     else{
       cerr << "[MCCorrection::MuonReco_SF] No "<<"RECO_SF_"+key<<endl;
       exit(ENODATA);
@@ -4835,7 +4848,13 @@ double MCCorrection::MuonTracker_SF(TString ID, double eta, double pt, int sys){
   
   TH2F *this_hist = map_hist_Muon["Tracker_SF_"+ID];
   if(!this_hist){
-    if(IgnoreNoHist) return 1.;
+    if(IgnoreNoHist) {
+
+      TString MapK = "Tracker_SF_"+ID;
+      if (std::find(MissingHists.begin(), MissingHists.end(), MapK ) == MissingHists.end())   MissingHists.push_back(MapK);
+      return 1.;
+
+    }
     else{
       exit(ENODATA);
     }
@@ -4880,7 +4899,13 @@ double MCCorrection::MuonID_SF(TString ID, double eta, double pt, int sys){
   }
   TH2F *this_hist = map_hist_Muon["ID_SF_"+ID];
   if(!this_hist){
-    if(IgnoreNoHist) return 1.;
+    if(IgnoreNoHist) {
+
+      TString MapK = "ID_SF_"+ID;
+      if (std::find(MissingHists.begin(), MissingHists.end(), MapK ) == MissingHists.end())   MissingHists.push_back(MapK);
+      return 1.;
+
+    }
     else{
       cerr << "[MCCorrection::MuonID_SF] No "<<"ID_SF_"+ID<<endl;
       exit(ENODATA);
@@ -4922,7 +4947,11 @@ double MCCorrection::MuonISO_SF(TString ID, double eta, double pt, int sys){
   }
   TH2F *this_hist = map_hist_Muon["ISO_SF_"+ID];
   if(!this_hist){
-    if(IgnoreNoHist) return 1.;
+    if(IgnoreNoHist) {
+      TString MapK = "ISO_SF_"+ID;
+      if (std::find(MissingHists.begin(), MissingHists.end(), MapK ) == MissingHists.end())   MissingHists.push_back(MapK);
+      return 1.;
+    }
     else{
       cerr << "[MCCorrection::MuonISO_SF] No "<<"ISO_SF_"+ID<<endl;
       exit(ENODATA);
@@ -5016,7 +5045,11 @@ double MCCorrection::MuonTrigger_Eff(TString ID, TString trig, int DataOrMC, dou
   //cout << "[MCCorrection::MuonTrigger_Eff] histkey = " << histkey << endl;
   TH2F *this_hist = map_hist_Muon[histkey];
   if(!this_hist){
-    if(IgnoreNoHist) return 1.;
+    if(IgnoreNoHist) {
+      TString MapK = histkey;
+      if (std::find(MissingHists.begin(), MissingHists.end(), MapK ) == MissingHists.end())   MissingHists.push_back(MapK);
+      return 1.;
+    }
     else{
       cerr << "[MCCorrection::MuonTrigger_Eff] No "<<histkey<<endl;
       exit(ENODATA);
@@ -5189,7 +5222,11 @@ double MCCorrection::ElectronID_SF(TString ID, double sceta, double pt, int sys)
 
     TH2F *this_hist = map_hist_Electron["ID_SF_"+ID];
     if(!this_hist){
-      if(IgnoreNoHist) return 1.;
+      if(IgnoreNoHist) {
+	TString MapK = "ID_SF_"+ID;
+	if (std::find(MissingHists.begin(), MissingHists.end(), MapK ) == MissingHists.end())   MissingHists.push_back(MapK);
+	return 1.;	
+      }
       else{
         cerr << "[MCCorrection::ElectronID_SF] (Hist) No "<<"ID_SF_"+ID<<endl;
         exit(ENODATA);
@@ -5228,7 +5265,11 @@ double MCCorrection::ElectronReco_SF(TString key, double sceta, double pt, int s
     
     TH2F *this_hist = map_hist_Electron["RECO_SF_"+ptrange];
     if(!this_hist){
-      if(IgnoreNoHist) return 1.;
+      if(IgnoreNoHist) {
+	TString MapK = "RECO_SF_"+ptrange;
+        if (std::find(MissingHists.begin(), MissingHists.end(), MapK ) == MissingHists.end())   MissingHists.push_back(MapK);
+        return 1.;
+      }
       else{
 	cerr << "[MCCorrection::ElectronReco_SF] No "<<"RECO_SF_"+ptrange<<endl;
 	exit(ENODATA);
@@ -5252,7 +5293,11 @@ double MCCorrection::ElectronReco_SF(TString key, double sceta, double pt, int s
 
     TH2F *this_hist = map_hist_Electron["RECO_AFB_SF_"+ptrange];
     if(!this_hist){
-      if(IgnoreNoHist) return 1.;
+      if(IgnoreNoHist) {
+	TString MapK = "RECO_AFB_SF_"+ptrange;
+        if (std::find(MissingHists.begin(), MissingHists.end(), MapK ) == MissingHists.end())   MissingHists.push_back(MapK);
+        return 1.;	
+      }
       else{
         cerr << "[MCCorrection::ElectronReco_SF] No "<<"RECO_AFB_SF_"+ptrange<<endl;
         exit(ENODATA);
@@ -5300,7 +5345,11 @@ double MCCorrection::ElectronTrigger_Eff(TString ID, TString trig, int DataOrMC,
     //cout << "[MCCorrection::ElectronTrigger_Eff] histkey = " << histkey << endl;
     TH2F *this_hist = map_hist_Electron[histkey];
     if(!this_hist){
-      if(IgnoreNoHist) return 1.;
+      if(IgnoreNoHist) {
+	TString MapK = histkey;
+        if (std::find(MissingHists.begin(), MissingHists.end(), MapK ) == MissingHists.end())   MissingHists.push_back(MapK);
+        return 1.;
+      }
       else{
         cerr << "[MCCorrection::ElectronTrigger_Eff] No "<<histkey<<endl;
         exit(ENODATA);

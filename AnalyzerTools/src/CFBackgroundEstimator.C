@@ -3,6 +3,8 @@
 CFBackgroundEstimator::CFBackgroundEstimator()
 {
 
+  MissingHists.clear();
+
   IgnoreNoHist = false;
     
   histDir = TDirectoryHelper::GetTempDirectory("CFBackgroundEstimator");
@@ -65,6 +67,10 @@ void CFBackgroundEstimator::ReadHistograms(){
 
 CFBackgroundEstimator::~CFBackgroundEstimator(){
 
+  if(MissingHists.size() > 0){
+    cout << "CFBackgroundEstimator Missing Hists " << endl;
+    for(auto iMissing : MissingHists) cout << "Missing : " << iMissing << endl;
+  }
 }
 
 double CFBackgroundEstimator::GetElectronCFRate(TString ID, TString key, double eta, double pt, int sys){
@@ -105,7 +111,11 @@ double CFBackgroundEstimator::GetElectronCFRate(TString ID, TString key, double 
 
   if(mapit==map_hist_Electron.end()){
     cout << "[CFBackgroundEstimator::GetElectronCFRate] No"<< key  <<endl;
-    if(IgnoreNoHist) return 1.;
+    if(IgnoreNoHist) {
+      TString MapK = key;
+      if (std::find(MissingHists.begin(), MissingHists.end(), MapK ) == MissingHists.end())   MissingHists.push_back(MapK);
+      return 1.;
+    }
 
     exit(ENODATA);
   }
@@ -138,14 +148,22 @@ double CFBackgroundEstimator::GetElectronCFRate2D(TString ID, TString key, doubl
   mapit = map_hist_Electron.find("Rate_" + ID+"_"+key);
   
   if(mapit==map_hist_Electron.end()){
-    if(IgnoreNoHist) return 1.;
+    if(IgnoreNoHist) {
+      TString MapK = "Rate_" + ID+"_"+key;
+      if (std::find(MissingHists.begin(), MissingHists.end(), MapK ) == MissingHists.end())   MissingHists.push_back(MapK);
+      return 1.;
+    }
     
     cout << "[CFBackgroundEstimator::GetElectronCFRate] No"<< ID+"_"+key+"_pteta" <<endl;
     exit(ENODATA);
   }
 
   if(!mapit->second) {
-    if(IgnoreNoHist) return 1.;
+    if(IgnoreNoHist) {
+      TString MapK = "Rate_" + ID+"_"+key;
+      if (std::find(MissingHists.begin(), MissingHists.end(), MapK ) == MissingHists.end())   MissingHists.push_back(MapK);
+      return 1.;
+    }
   }
   int this_bin = (mapit->second)->FindBin(pt,eta);
   value = (mapit->second)->GetBinContent(this_bin);

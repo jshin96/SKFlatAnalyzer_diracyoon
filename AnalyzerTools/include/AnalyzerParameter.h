@@ -40,18 +40,20 @@ class AnalyzerParameter{
   double Jet_MinPt, Jet_MaxEta ;
   double FatJet_MinPt, FatJet_MaxEta ;
 
+  bool ApplyPR;
   /// Weights
-  bool   Apply_Weight_LumiNorm,Apply_Weight_Norm1pb, Apply_Weight_SumW,  Apply_Weight_PileUp, Apply_Weight_PreFire ,Apply_Weight_kFactor, Apply_Weight_IDSF , Apply_Weight_TriggerSF, Apply_Weight_RECOSF, Apply_Weight_Z0, Apply_Weight_TopCorr,Apply_Weight_DYCorr, Apply_Weight_BJetSF, Apply_Weight_PNETSF,Apply_Weight_MuonTrackerSF,Apply_Weight_JetPUID;
+  bool   Apply_Weight_LumiNorm, Apply_Weight_MCSign,Apply_Weight_Norm1Ipb, Apply_Weight_SumQ,  Apply_Weight_PileUp, Apply_Weight_PreFire ,Apply_Weight_kFactor, Apply_Weight_IDSF , Apply_Weight_TriggerSF, Apply_Weight_RECOSF, Apply_Weight_Z0, Apply_Weight_TopCorr,Apply_Weight_DYCorr, Apply_Weight_BJetSF, Apply_Weight_PNETSF,Apply_Weight_MuonTrackerSF,Apply_Weight_JetPUID;
 
 
   /// Other
   TString SRConfig;
-  int SystDir_PU,WriteOutVerbose;
+  int SystDir_PU,WriteOutVerbose, PlottingVerbose;
 
   std::string SystDir_BTag,  BJet_Method,   FakeMethod,CFMethod,  ConvMethod;
 
   vector<TString> Jobs;
   TString FakeRateMethod;
+  TString FakeRateParam;
   TString BTagger;
   TString BWP;
   TString AK4JetColl;
@@ -126,6 +128,9 @@ class AnalyzerParameter{
   double EventWeight();
   double Weight(TString wkey);
 
+  inline TString FakeRateName() {
+    return FakeRateMethod + "_"+FakeRateParam;
+  }
 
   TString ChannelType();
 

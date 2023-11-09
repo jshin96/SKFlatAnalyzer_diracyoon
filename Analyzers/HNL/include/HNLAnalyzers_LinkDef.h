@@ -6,6 +6,7 @@
 #pragma link C++ nestedclasses;
 
 #pragma link C++ class HNL_LeptonFakeRate+;
+#pragma link C++ class HNL_LeptonFakeRateMC+;
 #pragma link C++ class HNL_LeptonFakeStudy+;
 #pragma link C++ class HNL_ChargeFlip+;
 #pragma link C++ class HNL_LeptonConversionStudy+;

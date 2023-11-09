@@ -13,6 +13,12 @@ class HNL_LeptonCore : public AnalyzerCore {
 
  public:
 
+  enum NormMC {
+    NoNorm,
+    NormTo1Invpb,
+    NormToXsec
+  };
+
   enum TheRunEra{
     y2016B,y2016C,y2016D,y2016E,y2016F,y2016G,y2016H,
     y2017B,y2017C,y2017D,y2017E,y2017F,
@@ -73,7 +79,7 @@ class HNL_LeptonCore : public AnalyzerCore {
 
 
   // ----- SETUP ANALYZER
-  AnalyzerParameter SetupFakeParameter(AnalyzerParameter::Syst SystType,HNL_LeptonCore::Channel channel, vector<TString> s_jobs,TString PNAME, TString IDT, TString IDL);
+  AnalyzerParameter SetupFakeParameter(AnalyzerParameter::Syst SystType,HNL_LeptonCore::Channel channel, HNL_LeptonCore::NormMC norm,vector<TString> s_jobs,TString PNAME, TString IDT, TString IDL);
   AnalyzerParameter InitialiseHNLParameter(TString s_setup);  
   AnalyzerParameter InitialiseHNLParameter(TString s_setup, HNL_LeptonCore::Channel channel);  
   AnalyzerParameter SetupHNLParameter(TString s_setup_version, TString channel_str_name);
@@ -117,14 +123,14 @@ class HNL_LeptonCore : public AnalyzerCore {
 
    
   //------ BKG
-
+  double GetPtPartonSF(Lepton Lep, TString ID);
   double GetFakeWeightMuon(std::vector<Muon> muons , AnalyzerParameter param);
   double GetFakeWeightMuon(std::vector<Muon> muons , std::vector<TString> vtrig, AnalyzerParameter param);
   double GetFakeWeightElectron(std::vector<Electron> electrons , vector<TString> trigs, AnalyzerParameter param);
   double GetFakeWeightElectron(std::vector<Electron> electrons , AnalyzerParameter param);
   double GetFakeRateElectron(Electron el , AnalyzerParameter param);
   double GetFakeRateMuon(Muon mu, AnalyzerParameter param);
-  double GetFakeWeight(std::vector<Lepton *> leps,  AnalyzerParameter param, bool apply_r=false);
+  double GetFakeWeight(std::vector<Lepton *> leps,  AnalyzerParameter param);
   double GetIsoFromID(Lepton lep, TString id);
   double GetCFSF(AnalyzerParameter param, std::vector<Electron> electrons) ;
   double GetCFWeightElectron(std::vector<Electron> electrons ,  AnalyzerParameter param,bool ApplySF=true);
@@ -259,6 +265,7 @@ class HNL_LeptonCore : public AnalyzerCore {
  
   double FillWeightHist(TString label, double _weight);
   double FillFakeWeightHist(TString label, vector<Lepton *> Leps,AnalyzerParameter param,  double _weight);
+  void FillFakeHistograms(AnalyzerParameter param, TString Label, vector<Lepton* > Leptons, vector<Jet> JetColl, vector<FatJet> FatJetColl,vector<Jet> BJetColl, Particle MET, double w);
 
   
 

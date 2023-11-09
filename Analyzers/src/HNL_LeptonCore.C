@@ -276,15 +276,14 @@ AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup_version
 AnalyzerParameter HNL_LeptonCore::InitialiseHNLParameter(TString s_setup_version, HNL_LeptonCore::Channel channel){
   
   AnalyzerParameter p = SetupHNLParameter(s_setup_version,GetChannelString(channel));
-  if(_jentry== 1 ){
-    cout << "HNL_LeptonCore::InitialiseHNLParameter SetupHNLParameter Event " << event << endl;
-    p.PrintParameters();
-  }
+  //if(_jentry== 1 )   cout << "HNL_LeptonCore::InitialiseHNLParameter SetupHNLParameter Event " << event << endl;
+  //p.PrintParameters();
+  //}
   return p;  
 }
 
 
-AnalyzerParameter HNL_LeptonCore::SetupFakeParameter(AnalyzerParameter::Syst SystType, HNL_LeptonCore::Channel channel, vector<TString>  s_jobs, TString PNAME, TString IDT, TString IDL){
+AnalyzerParameter HNL_LeptonCore::SetupFakeParameter(AnalyzerParameter::Syst SystType, HNL_LeptonCore::Channel channel, HNL_LeptonCore::NormMC norm, vector<TString>  s_jobs, TString PNAME, TString IDT, TString IDL){
 
   AnalyzerParameter param  ;
   param.Clear();
@@ -295,9 +294,9 @@ AnalyzerParameter HNL_LeptonCore::SetupFakeParameter(AnalyzerParameter::Syst Sys
   param.hprefix  = "";
   param.hpostfix = "";
   param.Jobs = s_jobs;
-  param.Apply_Weight_Norm1pb  = true;
+  param.Apply_Weight_Norm1Ipb  = true;
   param.Apply_Weight_LumiNorm = true;
-  param.Apply_Weight_SumW     = true;
+  param.Apply_Weight_SumQ     = true;
   param.Apply_Weight_PileUp   = true;
   param.Apply_Weight_PreFire  = true;
   param.Apply_Weight_kFactor  = true;
@@ -308,20 +307,21 @@ AnalyzerParameter HNL_LeptonCore::SetupFakeParameter(AnalyzerParameter::Syst Sys
   param.Apply_Weight_JetPUID   = false;
 
   //// By default dont apply ID/Trigger SF                                                                           
-  param.Apply_Weight_IDSF     = false;
+  param.Apply_Weight_IDSF     = true;
   param.Apply_Weight_TriggerSF= false;
-
-
-  if(param.HasFlag("MCFakeRates")) {
+  
+  if(norm==HNL_LeptonCore::NoNorm){
     param.Apply_Weight_LumiNorm = false;
-    param.Apply_Weight_Norm1pb  = false;
+    param.Apply_Weight_Norm1Ipb  = false;
   }
-  if(param.HasFlag("MCFakes")) {
+  if(norm==HNL_LeptonCore::NormTo1Invpb)    {
     param.Apply_Weight_LumiNorm = false;
-    param.Apply_Weight_Norm1pb  = false;
+    param.Apply_Weight_Norm1Ipb  = true;
   }
-  if(param.HasFlag("MakeRegionPlots"))     param.Apply_Weight_LumiNorm = false;
-
+  if(norm==HNL_LeptonCore::NormToXsec)  {
+    param.Apply_Weight_Norm1Ipb  = true;
+    param.Apply_Weight_LumiNorm = true;
+  }
 
   // Default settings if NOT s_setup_version is set                                                                                                                                                       
 
@@ -403,10 +403,14 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
   param.CutFlowDir = "CutFlowDir";
   param.hprefix  = "";
   param.hpostfix = "";
+  param.PlottingVerbose = 0;
 
-  param.Apply_Weight_Norm1pb  = true;
+  /// Default BKG 
+  param.ApplyPR=false;
+
+  param.Apply_Weight_Norm1Ipb  = true;
   param.Apply_Weight_LumiNorm = true;
-  param.Apply_Weight_SumW     = true;
+  param.Apply_Weight_SumQ     = true;
   param.Apply_Weight_PileUp   = true;
   param.Apply_Weight_PreFire  = true;
   param.Apply_Weight_kFactor  = true;
@@ -536,7 +540,8 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.Muon_FR_ID       = "HNLooseV1";     param.Electron_FR_ID    = "HNLooseV4";
 
     param.k.Electron_CF          = "CF_"+s_setup_version;
-    param.FakeRateMethod       = "PtCone";
+    param.FakeRateMethod       = "Standard";
+    param.FakeRateParam        = "PtCone";
     param.k.Muon_FR            = "AwayJetPt40";
     param.k.Electron_FR        = "AwayJetPt40";
     param.k.Electron_ID_SF     = "passHNTightV2";
@@ -563,7 +568,9 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.Muon_FR_ID        = "TopHNL";
     param.Electron_FR_ID    = "TopHNSSL_"+GetEraShort();
 
-    param.FakeRateMethod       = "PtConeMini";
+    param.FakeRateMethod       = "Standard";
+    param.FakeRateParam        = "PtConeMini";
+
     param.k.Muon_FR            = "FR_cent";
     param.k.Electron_FR        = "FR_cent";
 
@@ -587,14 +594,17 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.CFMethod   = "DATA";
     param.ConvMethod = "MC";
 
-    param.Muon_Veto_ID     = "HNVetoMVA";   
+    param.Muon_Veto_ID      = "HNVetoMVA";   
     param.Muon_Tight_ID     = "HNL_ULID_"+GetYearString();
-    param.Electron_Veto_ID     = "HNVetoMVA";  
+    param.Electron_Veto_ID  = "HNVetoMVA";  
     param.Electron_Tight_ID = "HNL_ULID_"+GetYearString();
-    param.Muon_FR_ID        = "HNL_ULID_FO";
-    param.Electron_FR_ID    = "HNL_ULID_FO_"+GetYearString();
-    param.FakeRateMethod       = "BDTFlavour";
-    param.k.Muon_FR            = "FR_cent";
+    param.Muon_FR_ID        = "HNL_ULID_FOv3_"+GetYearString();
+    param.Electron_FR_ID    = "HNL_ULID_FOv3_"+GetYearString();
+    param.FakeRateMethod    = "Standard";
+    param.FakeRateParam     = "PtParton";
+
+    param.k.Muon_PR            = "pt_eta_HNL_ULID_FOv3_PR_cent";
+    param.k.Muon_FR            = "HNL_ULID_FOv3_FR_cent";
     param.k.Electron_FR        = "FR_cent";
     param.k.Muon_ID_SF      = "NUM_HNL_ULID_"+GetYearString();
     param.k.Muon_ISO_SF     = "Default";
@@ -624,7 +634,9 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.k.Muon_ID_SF       = "NUM_TightID_DEN_TrackerMuons";
     param.k.Muon_ISO_SF      = "NUM_TightRelIso_DEN_TightIDandIPCut";
     param.k.Electron_ID_SF   = "passTightID";
-    param.FakeRateMethod       = "PtCone";
+    param.FakeRateParam       = "PtCone";
+    param.FakeRateMethod       = "Standard";
+
     param.k.Muon_FR            = "AwayJetPt40";
     param.k.Electron_FR        = "AwayJetPt40";
     param.k.Electron_CF       = "CF_"+s_setup_version;
@@ -730,7 +742,9 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.k.Muon_ID_SF       = "NUM_TightID_DEN_TrackerMuons";
     param.k.Muon_ISO_SF      = "NUM_TightRelIso_DEN_TightIDandIPCut";
     param.k.Electron_ID_SF   = "passTightID";
-    param.FakeRateMethod       = "PtCone";
+    param.FakeRateMethod       = "Standard";
+    param.FakeRateParam        = "PtCone";
+
     param.k.Muon_FR            = "AwayJetPt40";
     param.k.Electron_FR        = "AwayJetPt40";
     return param;
@@ -765,7 +779,7 @@ double HNL_LeptonCore::SetupWeight(Event ev, AnalyzerParameter& param){
     FillWeightHist(param.ChannelDir()+"/PileupWeight",pileup_weight);
   }
 
-  double this_mc_weight =  MCweight(param.Apply_Weight_SumW, param.Apply_Weight_Norm1pb);
+  double this_mc_weight =  MCweight(param.Apply_Weight_SumQ, param.Apply_Weight_Norm1Ipb);
   FillWeightHist(param.ChannelDir()+"/MCWeight",    this_mc_weight);
   
   if(param.Apply_Weight_LumiNorm) FillWeightHist(param.ChannelDir()+"/LumiWeight",  ev.GetTriggerLumi("Full"));

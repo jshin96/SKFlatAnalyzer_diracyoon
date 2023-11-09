@@ -12,6 +12,37 @@ public:
 
   void  PrintObject(TString label);
 
+  inline double MVCFCut(TString Year) {
+
+    if(Year=="2016" && IsBB())  return el_mva_cut_cf_2016_B;
+    if(Year=="2016" && !IsBB()) return el_mva_cut_cf_2016_EC;
+    if(Year=="2017" && IsBB())  return el_mva_cut_cf_2017_B;
+    if(Year=="2017" && !IsBB()) return el_mva_cut_cf_2017_EC;
+    if(Year=="2018" && IsBB())  return el_mva_cut_cf_2018_B;
+    if(Year=="2018" && !IsBB()) return el_mva_cut_cf_2018_EC;
+
+    return -999;
+  }
+
+  inline double MVAFakeCut(TString ID, TString Year) {
+
+    if(ID == "HNL_HN3L") return TopMVA_cut;
+
+    if(j_LeptonFlavour==MUON){
+      if(Year=="2016")  return mu_mva_cut_fake_2016;
+      if(Year=="2017")  return mu_mva_cut_fake_2017;
+      if(Year=="2018")  return mu_mva_cut_fake_2018;
+    }
+    else{
+      if(Year=="2016" && IsBB())  return el_mva_cut_fake_2016_B;
+      if(Year=="2016" && !IsBB()) return el_mva_cut_fake_2016_EC;
+      if(Year=="2017" && IsBB())  return el_mva_cut_fake_2017_B;
+      if(Year=="2017" && !IsBB()) return el_mva_cut_fake_2017_EC;
+      if(Year=="2018" && IsBB())  return el_mva_cut_fake_2018_B;
+      if(Year=="2018" && !IsBB()) return el_mva_cut_fake_2018_EC;
+    }
+    return -999;
+  }
   //// Function to Check Nature of lepton
   inline TString LepGenTypeString() const {
     //// return TString based on Gen type
@@ -92,22 +123,7 @@ public:
     else if( sceta < 1.566 ) return GAP;
     else return EC;
   }
-  
-  inline TString  etaRegionString() const {
-    double sceta = fabs(defEta());
-    if( sceta < 0.8 ) return "EB1";
-    else if( sceta < 1.479 ) return "EB2";
-    else if( sceta < 2. ) return "EE1";
-    else return "EE2";
-  }
-
-  inline TString sRegion() const {
-    double eta = fabs(defEta());
-    if( eta < 0.8 ) return "Eta1";
-    else if( eta < 1.479 ) return "Eta2";
-    else return "Eta3";
-  }
-
+ 
   inline int Region() const {
     double eta = fabs(defEta());
     if( eta < 0.8 ) return 1;
@@ -226,21 +242,14 @@ public:
   }
 
 
-  inline double PtParton(double Corr, double MVACutBB, double MVACutEC){
-    if(j_LeptonFlavour==MUON){
-      if (j_lep_mva > MVACutBB)  return this->Pt();
-      return ( this->Pt() /j_lep_jetptratio ) * Corr;
-    }
-    else{
-      if(IsBB()){
-        if (j_lep_mva_hnl_fake_v4 > MVACutBB)  return this->Pt();
-        return ( this->Pt() /j_lep_jetptratio ) * Corr;
-      }
-      else{
-        if (j_lep_mva_hnl_fake_ed_v4 > MVACutEC)  return this->Pt();
-        return ( this->Pt() /j_lep_jetptratio ) * Corr;
-      }
-    }
+  inline double PtParton(double Corr, double MVACut){
+    double mva_val = j_lep_mva;
+    if(j_LeptonFlavour!=MUON) mva_val=j_lep_mva_hnl_fake_ed_v5; 
+      
+    if (mva_val > MVACut)  return this->Pt();
+    double ptpart = ( this->Pt() /j_lep_jetptratio ) * Corr;
+    if(ptpart > 1.5*this->Pt() ) return 1.5*this->Pt() ;
+    return ptpart;
   }
 
 
@@ -370,18 +379,26 @@ public:
       else if(vers=="QCD_LFvsHF_v5") return j_lep_mva_hnl_fake_QCD_LFvsHF_v5;
       else if(vers=="QCD_BvsC_v5")   return j_lep_mva_hnl_fake_QCD_BvsC_v5;
       else if(vers=="QCD_LF1_v5")     return j_lep_mva_hnl_fake_LF1_v5;
-      else if(vers=="QCD_LF2_v5")     return j_lep_mva_hnl_fake_LF2_v5;
-
-
+      else if(vers=="QCD_LF2_v5")     return j_lep_mva_hnl_fake_LF2_v5;      
+      else if(vers=="HF")   return j_lep_mva_hnl_fake_v5_hfb;
+      else if(vers=="HFB")  return j_lep_mva_hnl_fake_v5_hfb;
+      else if(vers=="HFC")  return j_lep_mva_hnl_fake_v5_hfc;
+      else if(vers=="LF")   return j_lep_mva_hnl_fake_v5_lf;
+      else if(vers=="HNL")  return j_lep_mva_hnl_fake_ed_v5;
+      
     }
     else{
-      if(vers=="v4")             return j_lep_mva_hnl_fake_v4;
-      else if(vers=="EDv4")      return j_lep_mva_hnl_fake_ed_v4;
+      if(vers=="v4")                  return j_lep_mva_hnl_fake_v4;
+      else if(vers=="EDv4")           return j_lep_mva_hnl_fake_ed_v4;
       else if(vers=="QCD_LFvsHF_v5")  return  j_lep_mva_hnl_fake_QCD_LFvsHF_v5;
       else if(vers=="QCD_BvsC_v5")    return  j_lep_mva_hnl_fake_QCD_BvsC_v5;
       else if(vers=="QCD_LF1_v5")     return j_lep_mva_hnl_fake_LF1_v5;
       else if(vers=="QCD_LF2_v5")     return j_lep_mva_hnl_fake_LF2_v5;
       else if(vers=="HFTop")          return  j_lep_mva;
+      else if(vers=="HF")  return  j_lep_mva;
+      else if(vers=="LF")  return  j_lep_mva_hnl_fake_ed_v4;
+      else if(vers=="HNL") return  j_lep_mva;
+
     }
     cout<<"[Lepton::HNL_MVA_Fake] no version set "<< vers<< endl;
     exit(ENODATA);
@@ -483,7 +500,9 @@ public:
   }
 
   inline double MotherJetPt()const{
-    
+    double MotherJPt =  this->Pt()/ j_lep_jetptratio;
+    if(MotherJPt < this->Pt()) return this->Pt();
+    if(MotherJPt > 1.5 *this->Pt()) return 1.5 *this->Pt();
     return this->Pt()/ j_lep_jetptratio;
   }
   
@@ -533,8 +552,9 @@ public:
   inline TString LeptonFakeTagger() const {
     if (j_lep_mva_hnl_fake_QCD_LFvsHF_v5 > 0.) return "LF";
     else{
-      if(j_lep_mva_hnl_fake_QCD_BvsC_v5 > 0) return "HFB";
-      return "HFC";
+      if(j_lep_mva_hnl_fake_QCD_BvsC_v5 > 0.7) return "HF1";
+      if(j_lep_mva_hnl_fake_QCD_BvsC_v5 > -0.4) return "HF2";
+      return "HF3";
     }
   }
 
@@ -574,10 +594,34 @@ public:
     else return "Muon";
   }
 
-  inline TString GetEtaRegion() const {
-    if(fabs(defEta()) < 0.8) return "BB";
-    if(fabs(defEta()) < 1.5) return "EB";
-    return "EE";
+  inline TString  etaRegionString() const {    return GetEtaRegion("4bin"); }
+  inline TString  sRegion() const {return GetEtaRegion("2bin");}
+  
+  inline TString GetEtaRegion(TString Version="2bin") const {
+    double sceta = fabs(defEta());
+
+    if(Version == "2bin"){
+      if(IsBB()) return "BB";
+      return "EC";
+    }
+    if(Version == "3bingap"){
+      if(sceta < 0.8) return "BB";
+      if(sceta  < 1.444) return "OB";
+      if(sceta  < 1.566) return "GAP";
+      return "EC";
+    }
+    if(Version == "3bin"){
+      if(sceta < 0.8) return "BB";
+      if(sceta  < 1.5) return "OB";
+      return "EE";
+    }
+    if(Version == "4bin"){
+      if( sceta < 0.8 ) return "EB1";
+      else if( sceta < 1.479 ) return "EB2";
+      else if( sceta < 2. ) return "EE1";
+      else return "EE2";
+    }
+    return "";
   }
 
   inline float miniIsoDr() const {
@@ -602,19 +646,19 @@ public:
   inline double CalcPtCone(double this_reliso, double Tight_reliso){
     return ( this->Pt() ) * ( 1. + max(0., (this_reliso-Tight_reliso)) );
   }
-  inline double CalcMVACone(double this_mva, double Tight_mva){
-    this_mva=this_mva+1;
-    Tight_mva=Tight_mva+1;
-    
-    if(this_mva > Tight_mva) return this->Pt();
-    
-    double mva_diff  = 1- this_mva/Tight_mva;
-    double PtMPtDiff = (this->Pt()/j_lep_jetptratio) - this->Pt();
-    if(PtMPtDiff < 0 ) PtMPtDiff = 0;
+  inline double CalcMVACone(double Tight_mva){
+    double this_mva (0.);
 
-    double var = (mva_diff * PtMPtDiff) + this->Pt() ;
-    if((mva_diff * PtMPtDiff) > 1.4) return 1.4*this->Pt();
-    return var;
+    if(j_LeptonFlavour==MUON) this_mva = j_lep_mva;
+    else this_mva = j_lep_mva_hnl_fake_ed_v5;
+    
+  
+    if(this_mva > Tight_mva) return this->Pt();
+    double MSlope  = 1  - (1 + this_mva) / (1+Tight_mva);  
+    double PMDiff  = (j_lep_jetptratio < 1.) ? (this->Pt()/j_lep_jetptratio) - this->Pt() : 0; /// Mother Jet - Lepton (Similar to Iso)
+    double MJProxy = (MSlope * PMDiff) + this->Pt() ;
+    if((MJProxy/this->Pt()) > 1.5) return 1.5*this->Pt();
+    return MJProxy;
   }
 
   virtual void Print();
@@ -640,6 +684,26 @@ public:
   double j_lep_mva_hnl_cf_v4,j_lep_mva_hnl_ed_cf_v4;
   double j_lep_mva_hnl_ed_cf_v5,j_lep_mva_hnl_ed_cf_v5Pt;
   
+  double el_mva_cut_fake_2016_B;
+  double el_mva_cut_fake_2017_B;
+  double el_mva_cut_fake_2018_B;
+  double el_mva_cut_fake_2016_EC;
+  double el_mva_cut_fake_2017_EC;
+  double el_mva_cut_fake_2018_EC;
+
+  double mu_mva_cut_fake_2016;
+  double mu_mva_cut_fake_2017;
+  double mu_mva_cut_fake_2018;
+
+  double el_mva_cut_cf_2016_B;
+  double el_mva_cut_cf_2017_B;
+  double el_mva_cut_cf_2018_B;
+  double el_mva_cut_cf_2016_EC;
+  double el_mva_cut_cf_2017_EC;
+  double el_mva_cut_cf_2018_EC;
+
+  double TopMVA_cut;
+
 
 private:
   double j_dXY, j_dXYerr;

@@ -1,8 +1,6 @@
-FakeRate	HNTightV2	     ptcone_eta        AwayJetPt40   FR_Mu_2017_Type1.root
-FakeRate	HNTight_17028	     ptcone_eta        AwayJetPt40   FR_Mu_2017_Type1.root
-FakeRate	POGTightWithTightIso ptcone_eta        AwayJetPt40   FR_Mu_2017_Type1.root
-FakeRate        TopHNT	             ptcone_eta        FR_cent       FR_2017.root
-FakeRate        HNL_ULID_2017        IncFlav_pt_eta    FR_cent       FR_Mu_2017_HNL_ULID.root
-FakeRate        HNL_ULID_2017        LF_pt_eta         FR_cent       FR_Mu_2017_HNL_ULID.root
-FakeRate        HNL_ULID_2017        HFB_pt_eta        FR_cent       FR_Mu_2017_HNL_ULID.root
-FakeRate        HNL_ULID_2017        HFC_pt_eta        FR_cent       FR_Mu_2017_HNL_ULID.root
+FakeRate      HNTightV2	     	   ptcone_eta      AwayJetPt40   	   FR_Mu_2017_Version1.root
+FakeRate      POGTightWithTightIso ptcone_eta      AwayJetPt40   	   FR_Mu_2017_Version1.root
+FakeRate      TopHNT	           ptcone_eta      FR_cent       	   FR_Mu_2017_Top.root
+FakeRate      Peking		   ptcone_eta	   FR_cent		   FR_Mu_2017_HNL_PtCone.root
+FakeRate      HNTightV2            ptcone_eta      FR_cent                 FR_Mu_2017_HNL_PtCone.root
+FakeRate      HNL_ULID_2017        ptparton_eta    HNL_ULID_FOv3_FR_cent	FR_Mu_2017_HNL_ULID_PtParton.root
