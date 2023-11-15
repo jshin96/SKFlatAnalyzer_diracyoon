@@ -282,21 +282,32 @@ bool Muon::PassID(TString ID) const {
   if(ID.Contains("HNL_ULID_FOv2_")) {
     if(!PassID("HNL_ULID_FO")) return false;
     if(MVA() < MVACut) {
-      if(CloseJet_BScore() > 0.025) return false;
+      if(this->HasCloseJet() && CloseJet_BScore() > 0.025) return false;
     }
     return true;
   }
   if(ID.Contains("HNL_ULID_FOv3_")){
     if(!PassID("HNL_ULID_FO")) return false;
     if(MVA() < MVACut) {
-      if(CloseJet_Ptratio() < 0.45) return false;
-      if(CloseJet_BScore() > 0.025) return false;
+      if(this->HasCloseJet()){
+	if(CloseJet_Ptratio() < 0.45) return false;
+	if(CloseJet_BScore() > 0.025) return false;
+      }
     }
     return true;
   }
 
-  if(ID=="HNL_ULID_FOv4")  return (PassID("HNL_ULID_FO") && (MVA() > -0.9));
-  if(ID=="HNL_ULID_FOv5")  return (PassID("HNL_ULID_FO") && (HNL_MVA_Fake("QCD_BvsC_v5") < 0.));
+  if(ID.Contains("HNL_ULID_FOv4_"))  return (PassID("HNL_ULID_FO") && (MVA() > -0.9));
+  if(ID.Contains("HNL_ULID_FOv5_")) {
+    if(!PassID("HNL_ULID_FO")) return false;
+    if(MVA() < MVACut) {
+      if(CloseJet_BScore() > 0.2) return false;
+      if(HNL_MVA_Fake("QCD_LFvsHF_v5") > 0.9)  return false;
+    }
+    return true;
+
+  }
+
   if(ID.Contains("HNL_ULID_FOv6_")) {
     if(!PassID("HNL_ULID_FO")) return false;
     if(MVA() < MVACut) {
@@ -307,6 +318,19 @@ bool Muon::PassID(TString ID) const {
     }
     return true;
   }
+
+  if(ID.Contains("HNL_ULID_FOv7_")) {
+    if(!PassID("HNL_ULID_FO")) return false;
+    if(MVA() < MVACut) {
+      if(CloseJet_BScore() > 0.2) return false;
+      if(HNL_MVA_Fake("QCD_BvsC_v5") < -0.9)  return false;
+      if(HNL_MVA_Fake("QCD_BvsC_v5") > 0.9)  return false;
+      if(HNL_MVA_Fake("QCD_LFvsHF_v5") < -0.9)  return false;
+      if(HNL_MVA_Fake("QCD_LFvsHF_v5") > 0.9)  return false;
+    }
+    return true;
+ }
+
   
   if(ID == "HNL_ULID_2016")   return (PassID("MVALooseTrgSafe") && (MVA() >  MVACut) && (fabs(IP3D()/IP3Derr()) < 7) );
   if(ID == "HNL_ULID_2017")   return (PassID("MVALooseTrgSafe") && (MVA() >  MVACut) && (fabs(IP3D()/IP3Derr()) < 7) );

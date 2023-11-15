@@ -147,11 +147,8 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
     if (dilep_channel == EMu) LimitRegionsBDTQ =HNL_LeptonCore::ElectronMuonSRBDTQQ;
     */
     
-    ///// Apply Trigger and Trigger SF
-    if (! (  PassMultiDatasetTriggerSelection(dilep_channel, ev, leps,"Dilep", "HighPt") || PassMultiDatasetTriggerSelection(dilep_channel, ev, leps,"Dilep", "Lep"))) return ;
-    FillCutflow(HNL_LeptonCore::ChannelDepTrigger, weight_channel, GetChannelString(dilep_channel) +"_MultiTrigger", param_channel);
-
-    if (!PassTriggerSelection(dilep_channel, ev, leps,"Dilep")) return ;
+    if (!PassTriggerSelection(dilep_channel, ev, LepsT,param.TriggerSelection)) continue;
+    EvalTrigWeight(dilep_channel, muons,electrons,param, weight_channel);
 
     //// Apply Trigger SF and correction
     if(IsData) {

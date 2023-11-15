@@ -61,7 +61,7 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
   //==== FakeBackgroundEstimator                                                                                                                                            
   if(RunFake&&READBKGHISTS){
     fakeEst->SetEra(GetEra());
-    fakeEst->ReadHistograms();
+    fakeEst->ReadHistograms(IsDATA);
   }
 
   //==== CFBackgroundEstimator                                                                                                                                              
@@ -358,7 +358,7 @@ AnalyzerParameter HNL_LeptonCore::SetupFakeParameter(AnalyzerParameter::Syst Sys
   param.FatJet_ID                  = "tight";
   param.FatJet_MinPt = 200.;  param.FatJet_MaxEta = 5.;
 
-  param.TriggerSelection = "Fake";
+  param.TriggerSelection = "Dilep";
   param.BTagger = "DeepJet";  param.BWP ="M";
   param.JetPUID = "Loose";
 
@@ -539,7 +539,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.Muon_Tight_ID    = "HNTightV2";     param.Electron_Tight_ID = "HNTightV2";
     param.Muon_FR_ID       = "HNLooseV1";     param.Electron_FR_ID    = "HNLooseV4";
 
-    param.k.Electron_CF          = "CF_"+s_setup_version;
+    param.k.Electron_CF  = "PtInv_EtaRegion_" + param.Electron_Tight_ID;
     param.FakeRateMethod       = "Standard";
     param.FakeRateParam        = "PtCone";
     param.k.Muon_FR            = "AwayJetPt40";
@@ -578,7 +578,8 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.k.Muon_ID_SF         = "NUM_TopHN";
     param.k.Muon_RECO_SF       = "MuonRecoSF";
 
-    param.k.Electron_CF          = "CF_"+s_setup_version;
+    param.k.Electron_CF  = "PtInv_EtaRegion_" + param.Electron_Tight_ID;
+    
     param.TriggerSelection = "Dilep";
     if(channel_st.Contains("EE"))   param.k.Electron_Trigger_SF = "DiElIso_HNL_ULID";
     if(channel_st.Contains("MuMu")) param.k.Muon_Trigger_SF = "DiMuIso_HNL_ULID";
@@ -610,7 +611,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.k.Muon_ISO_SF     = "Default";
     param.k.Electron_ID_SF  = "passHNL_ULID_"+GetYearString();
 
-    param.k.Electron_CF       = "CF_"+s_setup_version;
+    param.k.Electron_CF  = "PtInv_EtaRegion_" + param.Electron_Tight_ID;
     param.TriggerSelection = "Dilep";
     if(channel_st.Contains("EE"))   param.k.Electron_Trigger_SF = "DiElIso_HNL_ULID";
     if(channel_st.Contains("MuMu")) param.k.Muon_Trigger_SF = "DiMuIso_HNL_ULID";
@@ -639,7 +640,8 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
 
     param.k.Muon_FR            = "AwayJetPt40";
     param.k.Electron_FR        = "AwayJetPt40";
-    param.k.Electron_CF       = "CF_"+s_setup_version;
+    param.k.Electron_CF  = "PtInv_EtaRegion_" + param.Electron_Tight_ID;
+
 
     if(channel_st.Contains("EE"))   param.k.Electron_Trigger_SF = "Default";
     if(channel_st.Contains("MuMu")) {
