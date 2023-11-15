@@ -1,0 +1,14 @@
+executable = run_plots_2016a.sh
+jobbatchname = 2016a_Resolution
+universe   = vanilla
+log = condor_logs/2016a_condor.log
+getenv     = True
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+output = condor_logs/2016a_job.std
+error = condor_logs/2016a_job.err
+transfer_input_files    = plot.py, Plotter
+transfer_output_files    = original_2jets
+
+queue
+
