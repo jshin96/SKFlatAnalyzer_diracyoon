@@ -64,7 +64,7 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
     
     if(run_Debug) cout << "HNL_RegionDefinitions::RunAllSignalRegions " << GetChannelString(dilep_channel) <<  endl;
 
-    float weight_channel = weight_ll;
+    double  weight_channel = weight_ll;
 
     //// Select CHannel used for Signals to check if signal is EE/MM/Emu using gen info
     if(MCSample.Contains("Type")&& !SelectChannel(dilep_channel)) continue;
@@ -147,7 +147,7 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
     if (dilep_channel == EMu) LimitRegionsBDTQ =HNL_LeptonCore::ElectronMuonSRBDTQQ;
     */
     
-    if (!PassTriggerSelection(dilep_channel, ev, LepsT,param.TriggerSelection)) continue;
+    if (!PassTriggerSelection(dilep_channel, ev, leps,param.TriggerSelection)) continue;
     EvalTrigWeight(dilep_channel, muons,electrons,param, weight_channel);
 
     //// Apply Trigger SF and correction
