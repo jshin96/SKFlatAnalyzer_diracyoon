@@ -24,6 +24,7 @@ void FakeBackgroundEstimator::ReadHistograms(bool IsData, bool ScanIDs){
 				  DataFakePath+"/MuFR/histmap_Muon.txt"};
   
   if(ScanIDs) FakeHMaps.push_back(DataFakePath+"/MuFR/scan_histmap_Muon.txt");
+  if(ScanIDs) FakeHMaps.push_back(DataFakePath+"/ElFR/scan_histmap_Electron.txt");
 
 
   if(!IsData){
@@ -55,8 +56,8 @@ void FakeBackgroundEstimator::ReadHistograms(bool IsData, bool ScanIDs){
 	TString this_frname = histlist->At(i)->GetName();
 	
 	if (!b.Contains("Top")) {
-	  if (!this_frname.Contains(b)) continue;
-	  if (!this_frname.Contains(c)) continue;
+	  if (!this_frname.Contains(b+"_"+c)) continue;
+	  //if (!this_frname.Contains(c)) continue;
 	  if (!this_frname.Contains(d)) continue;
 	}
 	else{
@@ -72,7 +73,7 @@ void FakeBackgroundEstimator::ReadHistograms(bool IsData, bool ScanIDs){
 	if(ihmap.Contains("Electron")) cout << "[FakeBackgroundEstimator::FakeBackgroundEstimator] map_hist_Electron : " << a+"_"+b+"_"+c+"_"+d+ " --> "+this_frname << endl;
 	else cout << "[FakeBackgroundEstimator::FakeBackgroundEstimator] map_hist_Muon : " << a+"_"+b+"_"+c+"_"+d+ " --> "+this_frname << endl;
 	
-      }
+     }
       file->Close();
       delete file;
     }
@@ -110,6 +111,8 @@ double FakeBackgroundEstimator::GetElectronFakeRate(TString ID, TString key, TSt
   if(BinningParam.Contains("PtCone" ))  PtType = "ptcone_eta_";
   if(BinningParam == "PtParton") PtType= "ptparton_eta_";
   if(BinningParam == "PtCorr")   PtType= "ptcorr_eta_";
+  if(BinningParam == "PtParton2p0") PtType= "ptparton2_eta_";
+  if(BinningParam == "PtCorr2p0")   PtType= "ptcorr2_eta_";
   if(BinningParam == "MotherPt") PtType= "mjpt_eta_";
 
   if(BinningMethod != "BDTFlavour" )   key =  PtType+  + key;
@@ -194,7 +197,9 @@ double FakeBackgroundEstimator::GetMuonFakeRate(TString ID, TString key, TString
   else{
     if(BinningParam.Contains("PtCone" ))  PtType = "ptcone_eta_";
     if(BinningParam == "PtParton") PtType= "ptparton_eta_";
+    if(BinningParam == "PtParton2p0") PtType= "ptparton2_eta_";
     if(BinningParam == "PtCorr")   PtType= "ptcorr_eta_";
+    if(BinningParam == "PtCorr2p0")   PtType= "ptcorr2_eta_";
     if(BinningParam == "MotherPt") PtType= "mjpt_eta_";
     
     if(BinningMethod != "BDTFlavour" )   key =  PtType + key;
@@ -232,6 +237,7 @@ double FakeBackgroundEstimator::GetMuonFakeRate(TString ID, TString key, TString
   }
 
   std::map< TString, TH2D* >::const_iterator mapit;
+  //  cout << "KEY FakeRate_"+ID+"_"+key << endl;
   mapit = map_hist_Muon.find("FakeRate_"+ID+"_"+key);
 
   if(mapit==map_hist_Muon.end()){

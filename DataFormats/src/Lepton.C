@@ -3,8 +3,7 @@
 ClassImp(Lepton)
 
 Lepton::Lepton() : Particle() {
-
-  
+ 
   mu_mva_cut_fake_2016 = 0.72;
   mu_mva_cut_fake_2017 = 0.64;
   mu_mva_cut_fake_2018 = 0.64;

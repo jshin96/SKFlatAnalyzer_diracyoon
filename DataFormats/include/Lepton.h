@@ -594,14 +594,9 @@ public:
    
 
   inline TString LeptonFakeTagger() const {
-    if (j_lep_mva_hnl_fake_QCD_LFvsHF_v5 > 0.8) return "LF1";
-    else{
-      if(j_lep_mva_hnl_fake_QCD_BvsC_v5 > 0.7) return "HF1";
-      if(j_lep_mva_hnl_fake_QCD_BvsC_v5 > 0.1) return "HF2";
-      if(j_lep_mva_hnl_fake_QCD_BvsC_v5 > -0.3) return "HF3";
-      if(j_lep_mva_hnl_fake_QCD_BvsC_v5 > -0.7) return "HF4";
-      return "HF5";
-    }
+    if (j_lep_jetbscore > 0.4) return "HF1";
+    if (j_lep_jetbscore > 0.2) return "HF2";
+    return "HF3";
   }
 
 

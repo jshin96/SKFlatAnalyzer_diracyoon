@@ -121,12 +121,12 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 	  
 	  if(_jentry < 1000){
 	    int nT = 0;
-	    for(auto ilep : muons) {
-	      if(ilep.PassID(param.Muon_Tight_ID)) nT++;
-	    }
-	    cout << param.Name << " weight_channel = " << weight_channel << " nT = " << nT << endl;
+	    for(auto ilep : muons)       if(ilep.PassID(param.Muon_Tight_ID)) nT++;
+	    for(auto ilep : electrons)   if(ilep.PassID(param.Electron_Tight_ID)) nT++;
+	    
+	    //	    cout << param.Name << " weight_channel = " << weight_channel << " nT = " << nT << endl;
 	  }
-
+	  
 	  if(HasFlag("OS_VR")) weight_OS = weight_channel;
           if(LepsT.size()==2)FillFakeWeightHist(param.Name+"_2LnoW/FakeWeight", LepsT,param, 1);
 	  if(LepsT.size()==2)FillFakeWeightHist(param.Name+"_2L/FakeWeight", LepsT,param, weight_channel);

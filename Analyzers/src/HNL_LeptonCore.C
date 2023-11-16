@@ -61,8 +61,10 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
   //==== FakeBackgroundEstimator                                                                                                                                            
   if(RunFake&&READBKGHISTS){
     fakeEst->SetEra(GetEra());
-    if(Analyzer.Contains("Fake")) fakeEst->ReadHistograms(IsDATA,true);
-    else fakeEst->ReadHistograms(IsDATA,false);
+    //if(Analyzer.Contains("Fake")) fakeEst->ReadHistograms(IsDATA,true);
+    //else fakeEst->ReadHistograms(IsDATA,false);
+    fakeEst->ReadHistograms(IsDATA,true); /// For now when checking
+
   }
 
   //==== CFBackgroundEstimator                                                                                                                                              
@@ -327,7 +329,7 @@ AnalyzerParameter HNL_LeptonCore::SetupFakeParameter(AnalyzerParameter::Syst Sys
   // Default settings if NOT s_setup_version is set                                                                                                                                                       
 
   param.syst_ = SystType;
-  param.MCCorrrectionIgnoreNoHist = true;
+  param.MCCorrrectionIgnoreNoHist = false;
 
   /// Lepton ID DEFAULT                                                                                                                                                                                   
   param.k.Electron_RECO_SF   = "RECO_SF";  // RECO_SF_AFB is alternative SF                                                                                                                               
@@ -363,7 +365,7 @@ AnalyzerParameter HNL_LeptonCore::SetupFakeParameter(AnalyzerParameter::Syst Sys
   param.BTagger = "DeepJet";  param.BWP ="M";
   param.JetPUID = "Loose";
 
-  param.AK4JetColl       = "Tight";
+  param.AK4JetColl       = "TightPUL";
   param.AK8JetColl       = "HNL_PN";
   param.BJetColl         = "Tight";
 
@@ -428,7 +430,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
   // Default settings if NOT s_setup_version is set
 
   param.syst_ = AnalyzerParameter::Central;
-  param.MCCorrrectionIgnoreNoHist = true;
+  param.MCCorrrectionIgnoreNoHist = false;
 
   /// Lepton ID DEFAULT
   param.k.Electron_RECO_SF   = "RECO_SF";  // RECO_SF_AFB is alternative SF 
@@ -455,7 +457,8 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
   param.BTagger = "DeepJet"; 
   param.BWP ="M"; 
   param.JetPUID = "Loose";
-  param.AK4JetColl       = "Tight";
+
+  param.AK4JetColl       = "TightPUL";
   param.AK8JetColl       = "HNL_PN";
   //param.AK8JetColl       = "HNL";
   param.BJetColl         = "Tight";
