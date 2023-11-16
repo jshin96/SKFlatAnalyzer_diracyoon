@@ -546,8 +546,9 @@ TString AnalyzerParameter::GetSystType(){
   if(syst_==Syst::Central){
     return "Central";
   }
+  else if(syst_==Syst::FRAJ25)   return "AJ25";
   else if(syst_==Syst::FRAJ30)   return "AJ30";
-  else if(syst_==Syst::FRAJ50)   return "AJ50";
+  else if(syst_==Syst::FRAJ40)   return "AJ40";
   else if(syst_==Syst::FRAJ60)   return "AJ60";
   else if(syst_==Syst::JetResUp) return "JetResUp";
   else if(syst_==Syst::JetResDown) return "JetResDown";

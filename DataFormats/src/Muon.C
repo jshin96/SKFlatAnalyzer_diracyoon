@@ -277,8 +277,8 @@ bool Muon::PassID(TString ID) const {
   if(ID == "MVALooseNoPOGMTrgSafe") return (PassID("MVALooseNoPOGM") && HLTCut);
 
   /////////// FINAL UL HNL Type-1 ID                                                                                                                                                                               
-  if(ID == "HNL_ULID_POGM_FO") return (PassID("MVALooseTrgSafe") && (fabs(IP3D()/IP3Derr()) < 7)); 
-  if(ID == "HNL_ULID_FO")      return (PassID("MVALooseNoPOGMTrgSafe")       && (fabs(IP3D()/IP3Derr()) < 7));
+  if(ID == "HNL_ULID_POGM_FO") return (PassID("MVALooseTrgSafe")        && (fabs(IP3D()/IP3Derr()) < 7)); 
+  if(ID == "HNL_ULID_FO")      return (PassID("MVALooseNoPOGMTrgSafe")  && (fabs(IP3D()/IP3Derr()) < 7));
   if(ID.Contains("HNL_ULID_FOv2_")) {
     if(!PassID("HNL_ULID_FO")) return false;
     if(MVA() < MVACut) {

@@ -11,7 +11,7 @@ HasLooseLepton(false)
   
 }
 
-void FakeBackgroundEstimator::ReadHistograms(bool IsData){
+void FakeBackgroundEstimator::ReadHistograms(bool IsData, bool ScanIDs){
   
   TString datapath = getenv("DATA_DIR");
   
@@ -21,8 +21,9 @@ void FakeBackgroundEstimator::ReadHistograms(bool IsData){
   TDirectory* origDir = gDirectory;
 
   vector<TString> FakeHMaps = {   DataFakePath+"/ElFR/histmap_Electron.txt",
-				  DataFakePath+"/MuFR/histmap_Muon.txt",
-				  DataFakePath+"/MuFR/scan_histmap_Muon.txt"};
+				  DataFakePath+"/MuFR/histmap_Muon.txt"};
+  
+  if(ScanIDs) FakeHMaps.push_back(DataFakePath+"/MuFR/scan_histmap_Muon.txt");
 
 
   if(!IsData){
@@ -100,13 +101,18 @@ double FakeBackgroundEstimator::GetFakeRate(bool IsMuon,TString ID, TString key,
  
 double FakeBackgroundEstimator::GetElectronFakeRate(TString ID, TString key, TString BinningMethod, TString BinningParam,double eta, double pt, TString FakeTagger, int sys){
   
+  key=key.ReplaceAll("FO_2016","FO");
+  key=key.ReplaceAll("FO_2017","FO");
+  key=key.ReplaceAll("FO_2018","FO");
+
+
   TString PtType = "pt_eta_";
   if(BinningParam.Contains("PtCone" ))  PtType = "ptcone_eta_";
   if(BinningParam == "PtParton") PtType= "ptparton_eta_";
   if(BinningParam == "PtCorr")   PtType= "ptcorr_eta_";
   if(BinningParam == "MotherPt") PtType= "mjpt_eta_";
 
-  if(BinningMethod == "BDTFlavour" )   key =  PtType+  + key;
+  if(BinningMethod != "BDTFlavour" )   key =  PtType+  + key;
   else key = FakeTagger+"_"+ PtType+  key;
   
   if(BinningMethod == "BDTFlavour" && FakeTagger == ""){
@@ -120,7 +126,7 @@ double FakeBackgroundEstimator::GetElectronFakeRate(TString ID, TString key, TSt
   
   eta = fabs(eta);
   
-  if(pt >= 80)  pt = 79;
+  if(pt >= 60)  pt = 59;
   if(pt < 10) pt = 10;
   
   if(BinningMethod == "BDTFlavour" ) {
@@ -133,7 +139,7 @@ double FakeBackgroundEstimator::GetElectronFakeRate(TString ID, TString key, TSt
   }
   
   std::map< TString, TH2D* >::const_iterator mapit;
-  //  cout << "FakeRate_"+ID+"_"+key << " ---" <<  endl;
+  //  cout << "EL KEY FakeRate_"+ID+"_"+key << " ---" <<  endl;
   mapit = map_hist_Electron.find("FakeRate_"+ID+"_"+key);
   
   if(mapit==map_hist_Electron.end()){

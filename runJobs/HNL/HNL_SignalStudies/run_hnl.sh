@@ -41,7 +41,7 @@ fi
 if [[ $1 == "1000" ]]; then
 
     #SKFlat.py -a $analyzer  -i DYTypeI_DF_M100_private  -n 10  --nmax 10   -e 2018 --skim SkimTree_HNMultiLepBDT &
-    SKFlat.py -a $analyzer  -i DYTypeI_DF_M1000_private  -n 10  --nmax 10   -e 2018 --skim SkimTree_HNMultiLepBDT &
+    SKFlat.py -a $analyzer  -i DYTypeI_DF_M1000_private  -n 10  --nmax 10   -e 2017 --skim SkimTree_HNMultiLepBDT &
     #SKFlat.py -a $analyzer  -i VBFTypeI_DF_M1000_private  -n 10  --nmax 10   -e 2018 --skim SkimTree_HNMultiLepBDT &
     #SKFlat.py -a $analyzer  -i SSWWTypeI_SF_M1000_private  -n 10  --nmax ${nmax}   -e 2018 --skim SkimTree_HNMultiLepBDT&
     

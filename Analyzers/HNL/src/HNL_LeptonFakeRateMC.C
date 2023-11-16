@@ -968,12 +968,12 @@ void HNL_LeptonFakeRateMC::GetElFakeRates(TString Method, Lepton* lep,bool bleps
     TString Ptlab = "p_{T} (GeV)";
 
     if(lep_pt >10){
-      FillHistogram((prefix + "_"+ptname).Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_"+lep->GetFlavour()+"_"+ PtHist , "FR_eta", Ptlab);
-      FillHistogram((prefix + "_FinerBins_"+ptname).Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_FB_"+lep->GetFlavour()+"_"+ PtHist , "FR_eta", Ptlab);
+      FillHistogram((prefix + "_"+ptname).Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_"+lep->GetFlavour()+"_"+ PtHist , "FR_Eta", Ptlab);
+      FillHistogram((prefix + "_FinerBins_"+ptname).Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_FB_"+lep->GetFlavour()+"_"+ PtHist , "FR_Eta", Ptlab);
       FillHistogram((prefix + "_pt").Data(),                 lep_pt,  weight_ptcorr, "FR_"+lep->GetFlavour()+"_"+ PtHist, Ptlab);
       FillHistogram((prefix + "_pt_"+ lepEtaRegion).Data(),  lep_pt,  weight_ptcorr, "FR_"+lep->GetFlavour()+"_"+ PtHist, Ptlab);
       FillHistogram((prefix + "_pt_"+ lepRegion).Data(),     lep_pt,  weight_ptcorr, "FR_"+lep->GetFlavour()+"_"+ PtHist, Ptlab);
-      FillHistogram((prefix + "_eta").Data(),                lep_eta, weight_ptcorr ,"FR_eta","#eta");
+      FillHistogram((prefix + "_eta").Data(),                lep_eta, weight_ptcorr ,"FR_Eta","#eta");
       FillHist((prefix + "_eta_fine").Data(),           lep_eta, weight_ptcorr , 50, 0, 2.5,"#eta");
       FillHist((prefix + "_lep_mva_lfvshf").Data(),   lep_mva_lfvshf,  weight_ptcorr, 50, -1., 1.);
       FillHist((prefix + "_lep_mva_bvsc").Data(),   lep_mva_bvsc,  weight_ptcorr, 50, -1., 1.);
@@ -1020,12 +1020,12 @@ void HNL_LeptonFakeRateMC::GetElFakeRates(TString Method, Lepton* lep,bool bleps
         else TaggerLabel = "LF5_HF4";
       }
             
-      FillHistogram((prefix + "_"+TaggerLabel+"_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_"+lep->GetFlavour()+"_"+ PtHist , "FR_eta", Ptlab);
-      FillHistogram((prefix + "_"+TaggerLabel+"_FinerBins_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_FB_"+lep->GetFlavour()+"_"+ PtHist , "FR_eta", Ptlab);
+      FillHistogram((prefix + "_"+TaggerLabel+"_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_"+lep->GetFlavour()+"_"+ PtHist , "FR_Eta", Ptlab);
+      FillHistogram((prefix + "_"+TaggerLabel+"_FinerBins_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_FB_"+lep->GetFlavour()+"_"+ PtHist , "FR_Eta", Ptlab);
       FillHistogram((prefix + "_"+TaggerLabel+"_pt").Data(),                 lep_pt,  weight_ptcorr, "FR_"+lep->GetFlavour()+"_"+ PtHist, Ptlab);
       FillHistogram((prefix + "_"+TaggerLabel+"_pt_"+ lepEtaRegion).Data(),  lep_pt,  weight_ptcorr, "FR_"+lep->GetFlavour()+"_"+ PtHist, Ptlab);
       FillHistogram((prefix + "_"+TaggerLabel+"_pt_"+ lepRegion).Data(),     lep_pt,  weight_ptcorr, "FR_"+lep->GetFlavour()+"_"+ PtHist, Ptlab);
-      FillHistogram((prefix + "_"+TaggerLabel+"_eta").Data(),                lep_eta, weight_ptcorr ,"FR_eta","#eta");
+      FillHistogram((prefix + "_"+TaggerLabel+"_eta").Data(),                lep_eta, weight_ptcorr ,"FR_Eta","#eta");
       FillHist((prefix + "_"+TaggerLabel+"_eta_fine").Data(),           lep_eta, weight_ptcorr , 50, 0, 2.5,"#eta");
 
       FillHistogram((prefix + "_LF_"+ptname).Data(),             lep_pt, lep_mva_lfvshf,  weight_ptcorr, "FR_"+lep->GetFlavour()+"_"+ PtHist , "FR_BDT", Ptlab);
@@ -1255,12 +1255,12 @@ void HNL_LeptonFakeRateMC::GetMuFakeRates(TString Method, Lepton*  lep, bool ble
     TString Ptlab = "p_{T} (GeV)";
 
     if(lep_pt >10){
-      FillHistogram((prefix + "_"+ptname+"_eta").Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_"+lep->GetFlavour()+"_"+PtHist , "FR_eta", Ptlab);
-      FillHistogram((prefix + "_FinerBins_"+ptname+"_eta").Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_FB_"+lep->GetFlavour()+"_"+PtHist , "FR_eta", Ptlab);
+      FillHistogram((prefix + "_"+ptname+"_eta").Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_"+lep->GetFlavour()+"_"+PtHist , "FR_Eta", Ptlab);
+      FillHistogram((prefix + "_FinerBins_"+ptname+"_eta").Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_FB_"+lep->GetFlavour()+"_"+PtHist , "FR_Eta", Ptlab);
       
       FillHistogram((prefix + "_"+ptname).Data(),                 lep_pt,  weight_ptcorr, "FR_"+lep->GetFlavour()+"_"+PtHist, Ptlab);
       FillHistogram((prefix + "_"+ptname+"_"+ lepRegion).Data(),     lep_pt,  weight_ptcorr, "FR_"+lep->GetFlavour()+"_"+PtHist, Ptlab);
-      FillHistogram((prefix + "_eta").Data(),                lep_eta, weight_ptcorr ,"FR_eta","#eta");
+      FillHistogram((prefix + "_eta").Data(),                lep_eta, weight_ptcorr ,"FR_Eta","#eta");
       FillHist((prefix + "_eta_fine").Data(),           lep_eta, weight_ptcorr , 50, 0, 2.5,"#eta");
       FillHist((prefix + "_lep_mva_lfvshf").Data(),   lep_mva_lfvshf,  weight_ptcorr, 50, -1., 1.);
       FillHist((prefix + "_lep_mva_bvsc").Data(),   lep_mva_bvsc,  weight_ptcorr, 50, -1., 1.);
@@ -1274,8 +1274,8 @@ void HNL_LeptonFakeRateMC::GetMuFakeRates(TString Method, Lepton*  lep, bool ble
       else  if(lep_blscore > 0.1) BTaggerLabel = "BJet2";
       else  BTaggerLabel = "BJet3";
 
-      if(BTaggerLabel == "BJet3") FillHistogram((prefix + "_"+BTaggerLabel+"_"+ptname+"_eta").Data(),          lep_pt, lep_eta,  weight_ptcorr, "FR_"+lep->GetFlavour()+"_"+PtHist , "FR_eta", Ptlab);
-      else FillHistogram((prefix + "_"+BTaggerLabel+"_"+ptname+"_eta").Data(),          lep_pt, lep_eta,  weight_ptcorr, "FR_"+lep->GetFlavour()+"_"+PtHist , "FR_eta2", Ptlab);
+      if(BTaggerLabel == "BJet3") FillHistogram((prefix + "_"+BTaggerLabel+"_"+ptname+"_eta").Data(),          lep_pt, lep_eta,  weight_ptcorr, "FR_"+lep->GetFlavour()+"_"+PtHist , "FR_Eta", Ptlab);
+      else FillHistogram((prefix + "_"+BTaggerLabel+"_"+ptname+"_eta").Data(),          lep_pt, lep_eta,  weight_ptcorr, "FR_"+lep->GetFlavour()+"_"+PtHist , "FR_Eta2", Ptlab);
       
       FillHistogram((prefix + "_"+BTaggerLabel+"_"+ptname).Data(),                 lep_pt,  weight_ptcorr, "FR_"+lep->GetFlavour()+"_"+PtHist, Ptlab);
       

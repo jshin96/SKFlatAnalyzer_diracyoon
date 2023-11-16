@@ -61,7 +61,8 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
   //==== FakeBackgroundEstimator                                                                                                                                            
   if(RunFake&&READBKGHISTS){
     fakeEst->SetEra(GetEra());
-    fakeEst->ReadHistograms(IsDATA);
+    if(Analyzer.Contains("Fake")) fakeEst->ReadHistograms(IsDATA,true);
+    else fakeEst->ReadHistograms(IsDATA,false);
   }
 
   //==== CFBackgroundEstimator                                                                                                                                              
@@ -606,10 +607,10 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
 
     param.k.Muon_PR            = "pt_eta_HNL_ULID_FOv3_PR_cent";
     param.k.Muon_FR            = "HNL_ULID_FOv3_FR_cent";
-    param.k.Electron_FR        = "FR_cent";
-    param.k.Muon_ID_SF      = "NUM_HNL_ULID_"+GetYearString();
-    param.k.Muon_ISO_SF     = "Default";
-    param.k.Electron_ID_SF  = "passHNL_ULID_"+GetYearString();
+    param.k.Electron_FR        = "HNL_ULID_FOv3_FR_cent";
+    param.k.Muon_ID_SF         = "NUM_HNL_ULID_"+GetYearString();
+    param.k.Muon_ISO_SF        = "Default";
+    param.k.Electron_ID_SF     = "passHNL_ULID_"+GetYearString();
 
     param.k.Electron_CF  = "CFRate_PtInv_EtaRegion_" + param.Electron_Tight_ID;
     param.TriggerSelection = "Dilep";

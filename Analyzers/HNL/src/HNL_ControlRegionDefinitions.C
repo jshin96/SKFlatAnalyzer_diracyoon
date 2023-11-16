@@ -45,7 +45,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 
     if(run_Debug) {cout <<"RunAllControlRegions ["<< nlog<< "] : Pass METFilters" << endl;nlog++;}
     
-    /// Filters events based on COnv/CF/Fake/Prompt
+    /// Filters events based on Conv/CF/Fake/Prompt
     
     if(! (HasFlag("OS_VR") && RunFake)){
       if(!PassGenMatchFilter(LepsT,param)) return;
@@ -119,13 +119,16 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 	if(IsData){
 	  weight_channel = GetFakeWeight(LepsT, param );
 	  
-	  //int nT = 0;
-	  //for(auto ilep : muons) {
-	  //  if(ilep.PassID(param.Muon_Tight_ID)) nT++;
-	  // }
-	  //cout << param.Name << " weight_channel = " << weight_channel << " nT = " << nT << endl;
-	  
+	  if(_jentry < 1000){
+	    int nT = 0;
+	    for(auto ilep : muons) {
+	      if(ilep.PassID(param.Muon_Tight_ID)) nT++;
+	    }
+	    cout << param.Name << " weight_channel = " << weight_channel << " nT = " << nT << endl;
+	  }
+
 	  if(HasFlag("OS_VR")) weight_OS = weight_channel;
+          if(LepsT.size()==2)FillFakeWeightHist(param.Name+"_2LnoW/FakeWeight", LepsT,param, 1);
 	  if(LepsT.size()==2)FillFakeWeightHist(param.Name+"_2L/FakeWeight", LepsT,param, weight_channel);
 	  if(LepsT.size()==3)FillFakeWeightHist(param.Name+"_3L/FakeWeight", LepsT,param, weight_channel);
 	  if(LepsT.size()==4)FillFakeWeightHist(param.Name+"_4L/FakeWeight", LepsT,param, weight_channel);
@@ -892,6 +895,7 @@ bool HNL_RegionDefinitions::FillHighMassSR1CRPlots(HNL_LeptonCore::Channel chann
 
   Fill_RegionPlots(param,"HNL_HighMassSR1_TwoLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
+  //FillLimitInput(LimitRegions, weight_channel,   SRbin,  "LimitInput/"+param_channel.Name);
   return true;
 }
 

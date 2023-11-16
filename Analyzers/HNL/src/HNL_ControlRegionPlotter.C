@@ -18,7 +18,7 @@ void HNL_ControlRegionPlotter::executeEvent(){
 
   vector<TString> LepIDs = {"HNL_ULID","HNTightV2"};//,"TopHN", "DefaultPOGTight"};
 
-  vector<HNL_LeptonCore::Channel> ChannelsToRun = {MuMu};//EE,MuMu,EMu,MuE};
+  vector<HNL_LeptonCore::Channel> ChannelsToRun = {EE};//EE,MuMu,EMu,MuE};
   for (auto id: LepIDs){
     for(auto channel : ChannelsToRun){
      
@@ -36,36 +36,47 @@ void HNL_ControlRegionPlotter::executeEvent(){
 	////vector<TString> FakeParam = {"Pt","PtCorr","PtParton","MotherJetPt"};
 	//vector<TString> FakeMethod= {"BDTFlavour","Standard"};
 	
-	vector<TString> MuFakeIDs = {"HNL_ULID_FOv3_"+GetYearString()};
-        vector<TString> FakeTag   = {"HNL_ULID_FOv3"};
-        vector<TString> FakeParam = {"PtParton"};
-        vector<TString> FakeMethod= {"Standard"};
-
-	for(unsigned int i= 0 ; i < FakeTag.size(); i++){
-	  for(unsigned int j= 0 ; j < FakeParam.size(); j++){
-	    for(unsigned int k= 0 ; k < FakeMethod.size(); k++){
-	      for(int m = 0 ; m < 2 ; m++){
-		if(FakeMethod[k] == "BDTFlavour" && FakeTag[i] !=  "HNL_ULID_FO") continue;
-		AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter(id,channel);
-		param_signal.PlottingVerbose = -1;
-		param_signal.FakeRateMethod = FakeMethod[k]; 
-		param_signal.FakeRateParam  = FakeParam[j]; 
-		param_signal.Muon_FR_ID     = MuFakeIDs[i] ; 
-		param_signal.k.Muon_PR      = "pt_eta_"+FakeTag[i]+"_PR_cent";
-		param_signal.k.Muon_FR      = FakeTag[i]+"_FR_cent";
-		if(m==0) {
+	if(0){
+	  vector<TString> MuFakeIDs = {"HNL_ULID_FOv3_"+GetYearString()};
+	  vector<TString> FakeTag   = {"HNL_ULID_FOv3"};
+	  vector<TString> FakeParam = {"PtParton"};
+	  vector<TString> FakeMethod= {"Standard"};
+	  
+	  for(unsigned int i= 0 ; i < FakeTag.size(); i++){
+	    for(unsigned int j= 0 ; j < FakeParam.size(); j++){
+	      for(unsigned int k= 0 ; k < FakeMethod.size(); k++){
+		for(int m = 0 ; m < 2 ; m++){
+		  if(FakeMethod[k] == "BDTFlavour" && FakeTag[i] !=  "HNL_ULID_FO") continue;
+		  AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter(id,channel);
+		  param_signal.PlottingVerbose = -1;
+		  param_signal.FakeRateMethod = FakeMethod[k]; 
+		  param_signal.FakeRateParam  = FakeParam[j]; 
+		  param_signal.Muon_FR_ID     = MuFakeIDs[i] ; 
+		  param_signal.k.Muon_PR      = "pt_eta_"+FakeTag[i]+"_PR_cent";
+		  param_signal.k.Muon_FR      = FakeTag[i]+"_FR_cent";
 		  param_signal.ApplyPR        = false;
 		  param_signal.Name           = param_signal.DefName+"_"+FakeTag[i]+"_"+param_signal.FakeRateName()+"_NoPR";
-		}		
-		else{
-                  param_signal.ApplyPR        = true;
-                  param_signal.Name           = param_signal.DefName+"_"+FakeTag[i]+"_"+param_signal.FakeRateName()+"_PR";
+		  
+		  
+		  if(m==0) {
+		    param_signal.ApplyPR        = false;
+		    param_signal.Name           = param_signal.DefName+"_"+FakeTag[i]+"_"+param_signal.FakeRateName()+"_NoPR";
+		  }		
+		  else{
+		    param_signal.ApplyPR        = true;
+		    param_signal.Name           = param_signal.DefName+"_"+FakeTag[i]+"_"+param_signal.FakeRateName()+"_PR";
+		  }
+		  //		cout << "param_signal.Name = " << param_signal.Name << endl;
+		  RunControlRegions(param_signal , CRToRun );
 		}
-		//		cout << "param_signal.Name = " << param_signal.Name << endl;
-		RunControlRegions(param_signal , CRToRun );
 	      }
 	    }
 	  }
+	}
+	else{
+	  AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter(id,channel);
+	  RunControlRegions(param_signal , CRToRun );
+
 	}
       }
       else {

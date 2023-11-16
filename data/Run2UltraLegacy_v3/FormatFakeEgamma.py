@@ -12,19 +12,19 @@ MVPr2017 ="mv /data6/Users/jalmond/2020/HNDiLeptonWorskspace/src/HNL_LeptonFakes
 MVPr2018 ="mv /data6/Users/jalmond/2020/HNDiLeptonWorskspace/src/HNL_LeptonFakes/CreateInput/EGamma/PR_EGamma_2018_HNL_ULID.root 2018/FakeRate/DataFR/ElFR/"
 
 os.system(MV2016a)
-os.system(MVPr2016a)
+#os.system(MVPr2016a)
 os.system("ls -lth 2016preVFP/FakeRate/DataFR/ElFR/")
 
 os.system(MV2016b)
-os.system(MVPr2016b)
+#os.system(MVPr2016b)
 os.system("ls -lth 2016postVFP/FakeRate/DataFR/ElFR/")
 
 os.system(MV2017)
-os.system(MVPr2017)
+#os.system(MVPr2017)
 os.system("ls -lth 2017/FakeRate/DataFR/ElFR/")
 
 os.system(MV2018)
-os.system(MVPr2018)
+#os.system(MVPr2018)
 os.system("ls -lth 2018/FakeRate/DataFR/ElFR/")
 
 

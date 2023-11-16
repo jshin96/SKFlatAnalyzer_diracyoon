@@ -50,7 +50,14 @@ void HNL_SignalEfficiency::executeEvent(){
   /// Require leptons to match 
 
   vector<Electron> InputElectrons = GetSignalLeptons(_InputElectrons, All_Gens);
-  
+
+  for(auto  iel : InputElectrons ) {
+    // cout << "El HNTight = " << iel.PassID("HNTightV2") << " ULID 17 = " << iel.PassID("HNL_ULID_2017") << endl;
+    if(iel.PassID("HNTightV2"))     FillHist( "HNTightvsULID_EE", 1., weight, 4,0., 4);
+    if(iel.PassID("HNL_ULID_2017")) FillHist( "HNTightvsULID_EE", 2., weight, 4,0., 4);
+  }
+	
+  return;
   vector<HNL_LeptonCore::Channel> channels = {EE,MuMu};//, EMu};
   
 

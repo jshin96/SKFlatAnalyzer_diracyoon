@@ -8,7 +8,7 @@ skim=' '
 declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
 
 declare  -a era_list=("2017")
-if [[ $1 == "" ]]; then
+if [[ $1 == "TEST" ]]; then
 
     for i in "${era_list[@]}"
     do
@@ -17,15 +17,15 @@ if [[ $1 == "" ]]; then
         SKFlat.py -a $analyzer  -l $mcpath/SSWW.txt  -n $njobs  --nmax ${nmax}   -e ${i}
     done
     
-    SKFlat.py -a $analyzer  -i TTLJ_powheg  -n 300  --nmax ${nmax}   -e ${i}
+
     
 
 fi
 
 
-if [[ $1 == "Fake" ]]; then
+if [[ $1 == "" ]]; then
 
-    SKFlat.py -a $analyzer  -l ${SKFlat_WD}/runJobs/SampleLists/Bkg/FakeMuon.txt  -n 300  --nmax ${nmax}   -e 2017 &
+    SKFlat.py -a $analyzer  -i DYTypeI_DF_M1000_private  -n 10  --nmax 10   -e 2017 --skim SkimTree_HNMultiLepBDT &
     
 
 fi
