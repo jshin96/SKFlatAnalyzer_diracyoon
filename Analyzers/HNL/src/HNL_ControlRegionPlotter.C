@@ -40,8 +40,8 @@ void HNL_ControlRegionPlotter::executeEvent(){
 	  vector<TString> FakeParam = {"Pt","PtCorr","PtParton","PtParton2p0"};
 	  vector<TString> FakeMethod= {"BDTFlavour","Standard"};*/
 	  
-	  vector<TString> MuFakeIDs = {"HNL_ULID_FOv3_"+GetYearString()};
-          vector<TString> FakeTag   = {"HNL_ULID_FOv3"};
+	  vector<TString> MuFakeIDs = {"HNL_ULID_FO","HNL_ULID_POGM_FO","HNL_ULID_FOv3_"+GetYearString()};
+          vector<TString> FakeTag   = {"HNL_ULID_FO","HNL_ULID_POGM_FO","HNL_ULID_FOv3"};
           vector<TString> FakeParam = {"PtParton"};                                                                              
           vector<TString> FakeMethod= {"Standard"};
 		  
@@ -183,15 +183,11 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   
   if(param.Channel == "EE"){
     if(ElectronVetoColl.size() == 2 && ElectronTightColl.size() == 2 && MuonTightColl.size() ==0){
-      
-      if(SameCharge(ElectronTightColl)) FillFakeHistograms(param, "FakeStudies", MakeLeptonPointerVector(MuonTightColl, ElectronTightColl, param),  AK4_JetColl,AK8_JetColl, AK4_BJetColl, METv,weight);                                                     
-
-      TString nT ="";
-      for(auto ilep : ElectronTightColl) {
-	if(ilep.PassID(param.Electron_Tight_ID))  nT=nT+"T";
-	else nT=nT+"L";
-      }
-      //cout << "Electron_ID = " << Electron_ID << " nEl = " << ElectronTightColl.size() << " ElectronVetoColl = " << ElectronVetoColl.size() << " TL = " << nT <<endl;      
+      if(SameCharge(ElectronTightColl)) FillFakeHistograms(param, "ElFakeStudies", MakeLeptonPointerVector(MuonTightColl, ElectronTightColl, param),  AK4_JetColl,AK8_JetColl, AK4_BJetColl, METv,weight);                                       }
+  }
+  if(param.Channel == "MuMu"){
+    if(MuonVetoColl.size() == 2 && ElectronTightColl.size() == 0 && MuonTightColl.size() ==2){
+      if(SameCharge(MuonTightColl)) FillFakeHistograms(param, "MuonFakeStudies", MakeLeptonPointerVector(MuonTightColl, ElectronTightColl, param),  AK4_JetColl,AK8_JetColl, AK4_BJetColl, METv,weight);                                   
     }
   }
 
