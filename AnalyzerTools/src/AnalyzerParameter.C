@@ -37,6 +37,7 @@ void AnalyzerParameter::Clear(){
   Jet_ID            = "Default";
   FatJet_ID         = "Default";
   AK4JetColl        = "Default";
+  AK4VBFJetColl     = "Default";
   AK8JetColl        = "Default";
   BJetColl          = "Default";
   BTagger           = "Default";
@@ -144,6 +145,7 @@ AnalyzerParameter::AnalyzerParameter(){
   FatJet_ID        = "tight";  
   BTagger           = "Default";
   BWP               = "Default";
+  AK4VBFJetColl     = "Default";
   AK4JetColl        = "Default";
   AK8JetColl        = "Default";
   BJetColl          = "Default";
@@ -475,6 +477,7 @@ void AnalyzerParameter::PrintParameters(){
   cout << "Jet_ID            = " << Jet_ID << endl;
   cout << "FatJet_ID         = " << FatJet_ID << endl;
   cout << "AK4JetColl        = " << AK4JetColl << endl;
+  cout << "AK4VBFJetColl     = " << AK4VBFJetColl << endl;
   cout << "AK8JetColl        = " << AK8JetColl << endl;
   cout << "BJetColl          = " << BJetColl << endl;
   cout << "BTagger           = " << BTagger << endl;

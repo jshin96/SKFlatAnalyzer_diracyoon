@@ -57,6 +57,7 @@ class AnalyzerParameter{
   TString BTagger;
   TString BWP;
   TString AK4JetColl;
+  TString AK4VBFJetColl;
   TString AK8JetColl;
   TString BJetColl;
 

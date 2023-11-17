@@ -149,22 +149,7 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
     
     if (!PassTriggerSelection(dilep_channel, ev, leps,param.TriggerSelection)) continue;
     EvalTrigWeight(dilep_channel, muons,electrons,param, weight_channel);
-
-    //// Apply Trigger SF and correction
-    if(IsData) {
-      weight_channel *= FillWeightHist(param_channel.Name+"_HNLZvtxSF", HNLZvtxSF(dilep_channel));
-      
-      //// Apply Trigger SF                                                                                                                                                                                        
-      TString SFKey_Trig = "DiMuIso_HNL_ULID";
-      if (dilep_channel == EE)   SFKey_Trig = "DiElIso_HNL_ULID";
-      if (dilep_channel == EMu)  SFKey_Trig = "EMuIso_HNL_ULID";
-
-      double this_trigsf =  SFKey_Trig!=""? mcCorr->GetTriggerSF(electrons, muons, SFKey_Trig, ""):1.;
     
-      if(!HasFlag("NoTrigSF")) weight_channel*=this_trigsf;
-      if(run_Debug) cout << "SFKey_Trig = " << SFKey_Trig << " sf_T = " << this_trigsf << endl;
-    }	 
-
     if(!PassPreselection(dilep_channel,qq, leps, leps_veto, TauColl, JetColl, VBF_JetColl, AK8_JetColl, B_JetColl,ev, METv ,param_channel,"", weight_channel)) continue;
 
     TString  lep_charge =  (leps[0]->Charge() < 0)  ? "QM" :  "QP";

@@ -119,19 +119,29 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 	if(IsData){
 	  weight_channel = GetFakeWeight(LepsT, param );
 	  
-	  if(_jentry < 1000){
-	    int nT = 0;
-	    for(auto ilep : muons)       if(ilep.PassID(param.Muon_Tight_ID)) nT++;
-	    for(auto ilep : electrons)   if(ilep.PassID(param.Electron_Tight_ID)) nT++;
+	  if(SameCharge(electrons) && LepsV.size() == 2){
+	    TString nT ="";
+	    for(auto ilep : muons) {
+	      if(ilep.PassID(param.Muon_Tight_ID)) nT=nT+"T";
+	      else nT=nT+"L";
+	    }
+	    for(auto ilep : electrons) {
+	      if(ilep.PassID(param.Electron_Tight_ID))  nT=nT+"T";
+	      else nT=nT+"L";
+	    }
+	    if(nT=="TT")  FillHist(  "FAKES/"+param.Name+"/NTL",   1,  1,  5, 0, 5.);
+	    if(nT=="TL")  FillHist(  "FAKES/"+param.Name+"/NTL",   2,  weight_channel,  5, 0, 5.);
+	    if(nT=="LT")  FillHist(  "FAKES/"+param.Name+"/NTL",   3,  weight_channel,  5, 0, 5.);
+	    if(nT=="LL")  FillHist(  "FAKES/"+param.Name+"/NTL",   4,  weight_channel,  5, 0, 5.);
 	    
-	    //	    cout << param.Name << " weight_channel = " << weight_channel << " nT = " << nT << endl;
-	  }
+	    if(nT=="TT")  FillHist(  "FAKES/"+param.Name+"/UnWeighted_NTL",   1,  1,  5, 0, 5.);
+            if(nT=="TL")  FillHist(  "FAKES/"+param.Name+"/UnWeighted_NTL",   2,  1,  5, 0, 5.);
+            if(nT=="LT")  FillHist(  "FAKES/"+param.Name+"/UnWeighted_NTL",   3,  1,  5, 0, 5.);
+            if(nT=="LL")  FillHist(  "FAKES/"+param.Name+"/UnWeighted_NTL",   4,  1,  5, 0, 5.);
+	    
+	  } 
 	  
 	  if(HasFlag("OS_VR")) weight_OS = weight_channel;
-          if(LepsT.size()==2)FillFakeWeightHist(param.Name+"_2LnoW/FakeWeight", LepsT,param, 1);
-	  if(LepsT.size()==2)FillFakeWeightHist(param.Name+"_2L/FakeWeight", LepsT,param, weight_channel);
-	  if(LepsT.size()==3)FillFakeWeightHist(param.Name+"_3L/FakeWeight", LepsT,param, weight_channel);
-	  if(LepsT.size()==4)FillFakeWeightHist(param.Name+"_4L/FakeWeight", LepsT,param, weight_channel);
 	  if(run_Debug) {cout <<"RunAllControlRegions ["<< nlog<< "] Fake Weight = " << weight_channel << endl;nlog++;}
 	}
       }
@@ -237,7 +247,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       if(FillWWCRNP3Plots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel))      passed.push_back("WpWp_CRNP3");
     }
     if(HasFlag("SS_CR")){
-      FillHighMassSR3BDTCRPlots(dilep_channel, LepsT, LepsV, JetAllColl,  JetColl,VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel);
+      //FillHighMassSR3BDTCRPlots(dilep_channel, LepsT, LepsV, JetAllColl,  JetColl,VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel);
       if(FillSSPreselectionPlots(dilep_channel,    LepsT, LepsV, JetColl,     AK8_JetColl, B_JetColl, ev, METv, param, weight_channel))	passed.push_back("SSPresel");
       if(FillHighMassSR1CRPlots(dilep_channel, LepsT, LepsV, JetColl,     AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR1_CR");
       if(FillHighMassSR2CRPlots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR2_CR");
@@ -805,10 +815,12 @@ bool HNL_RegionDefinitions::FillSSPreselectionPlots(HNL_LeptonCore::Channel chan
   if (channel==EE  && (fabs(ll.M()-M_Z) < M_CUT_LL)) return false;
   if(ll.M() < 20) return false;
 
+
   Fill_RegionPlots(param,"HNL_SSPresel_TwoLepton"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
-  if(JetColl.size() == 0)   Fill_RegionPlots(param,"HNL_SSPresel_0J_TwoLepton"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
-  else if(JetColl.size() == 1)   Fill_RegionPlots(param,"HNL_SSPresel_1J_TwoLepton"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
-  else    Fill_RegionPlots(param,"HNL_SSPresel_2J_TwoLepton"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+
+  //if(JetColl.size() == 0)   Fill_RegionPlots(param,"HNL_SSPresel_0J_TwoLepton"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  //else if(JetColl.size() == 1)   Fill_RegionPlots(param,"HNL_SSPresel_1J_TwoLepton"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  //else    Fill_RegionPlots(param,"HNL_SSPresel_2J_TwoLepton"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
   return true;
 

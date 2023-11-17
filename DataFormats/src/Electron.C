@@ -55,56 +55,6 @@ Electron::Electron(){
 
 }
 
-void Electron::PrintObject(TString label){
-  
-
-  cout << "Electron  ------ " << endl;
-  cout << "PrintObject " << label << endl;
-  Lepton::PrintObject(label);
-
-  cout << "j_En_up " << j_En_up << endl;
-  cout << "j_En_down " << j_En_down<< endl;
-  cout << "j_Res_up " << j_Res_up << endl;
-  cout << "j_Res_down " << j_Res_down << endl;
-
-  cout << "j_scEta " << j_scEta << endl;
-  cout << "j_scPhi " << j_scPhi << endl;
-  cout << "j_scE " << j_scE << endl;
-  cout << "j_mvaiso " << j_mvaiso << endl;
-  cout << "j_mvanoiso " << j_mvanoiso << endl;
-  cout << "j_EnergyUnCorr " << j_EnergyUnCorr << endl;
-  cout << "j_passConversionVeto " << j_passConversionVeto << endl;
-  cout << "j_NMissingHits " << j_NMissingHits << endl;
-  cout << "j_Full5x5_sigmaIetaIeta " << j_Full5x5_sigmaIetaIeta << endl;
-  cout << "j_sigmaIetaIeta " << j_sigmaIetaIeta << endl;
-  cout << "j_dEtaSeed " << j_dEtaSeed << endl;
-  cout << "j_dPhiIn " << j_dPhiIn << endl;
-  cout << "j_dEtaIn " << j_dEtaIn << endl;
-  cout << "j_HoverE " << j_HoverE  << endl;
-  cout << "j_PhiWidth " << j_PhiWidth << endl;
-  cout << "j_EtaWidth " << j_EtaWidth << endl;
-  cout << "j_InvEminusInvP " << j_InvEminusInvP << endl;
-  cout << "j_e2x5OverE5x5 " << j_e2x5OverE5x5 << endl;
-  cout << "j_e1x5OverE5x5 " << j_e1x5OverE5x5 << endl;
-  cout << "j_e15 " << j_e15 << endl;
-  cout << "j_e25 " << j_e25 << endl;
-  cout << "j_e55 " << j_e55 << endl;
-  cout << "j_trkiso " << j_trkiso << endl;
-  cout << "j_dr03EcalRecHitSumEt " << j_dr03EcalRecHitSumEt << endl;
-  cout << "j_dr03HcalDepth1TowerSumEt " << j_dr03HcalDepth1TowerSumEt << endl;
-  cout << "j_dr03HcalTowerSumEt " << j_dr03HcalTowerSumEt << endl;
-  cout << "j_dr03TkSumPt " << j_dr03TkSumPt << endl;
-  cout << "j_ecalPFClusterIso " << j_ecalPFClusterIso << endl;
-  cout << "j_hcalPFClusterIso " << j_hcalPFClusterIso << endl;
-  cout << "j_isEcalDriven " << j_isEcalDriven << endl;
-  cout << "j_IDBit " << j_IDBit << endl;
-  cout << "j_Rho " << j_Rho << endl;
-  cout << "j_isGsfCtfScPixChargeConsistent " << j_isGsfCtfScPixChargeConsistent << endl;
-  cout << "j_isGsfScPixChargeConsistent " << j_isGsfScPixChargeConsistent << endl;
-  cout << "j_isGsfCtfChargeConsistent " << j_isGsfCtfChargeConsistent << endl;
-
-
-}
 
 Electron::~Electron(){
 
@@ -277,7 +227,6 @@ bool Electron::PassID(TString ID) const{
   if(etaRegion()==GAP) return false;
 
   //==== Customized
-
   if(ID=="TEST") return Pass_TESTID();
 
   /// PassStandardIDs contains POG + HNL confirmed IDs
@@ -293,6 +242,15 @@ bool Electron::PassID(TString ID) const{
   if(PassIDLoose(ID)   >=0) return (PassIDLoose(ID)==1)    ? true : false;
   if(PassIDTight(ID)   >=0) return (PassIDTight(ID)==1)    ? true : false;
 
+  cout << "[Electron::PassID] No id : " << ID << endl;
+  exit(ENODATA);
+
+  return false;
+
+}
+
+bool Electron::PassIDForOpt(TString ID) const{
+
   if(PassIDOptLoose(ID)>=0) return (PassIDOptLoose(ID)==1) ? true : false;
   if(PassIDOpt(ID)     >=0) return (PassIDOpt(ID)==1)      ? true : false;
 
@@ -303,7 +261,6 @@ bool Electron::PassID(TString ID) const{
   return false;
 
 }
-
 
 
 bool Electron::Pass_LepMVAID() const {
@@ -344,11 +301,6 @@ bool Electron::Pass_MultiFunction_Opt(TString ID) const {
   /// OPTIMISATION CODES
   
   if(DEBUG)cout << ID  << "  " << this->Pt() << " eta = " << this->Eta() << endl;                                                                                                             
-  /*
-    
-    Called from SignalLep Optimisation code to optimise Barrel/Endcap Lep ID
-
-   */
 
   //// Predefined CUts to reduce Hist string name
   if (ID.Contains("ScanCFNP2016_")   && !PassID("HNL_ULID_CFNPOPT16")) return false;
@@ -369,36 +321,14 @@ bool Electron::Pass_MultiFunction_Opt(TString ID) const {
   } while (ID_subs);
   
   
-  TString  trig = "";
-  TString conv_method = "";
-  TString dxy_method = "";
-  TString chg_method= "";
-  TString iso_methodB="";
-  TString iso_methodEC="";
-  
-  TString pog_method="";
-  TString mvacf_bb_method="";
-  TString mvacf_ec_method="";
-  TString mvafake_bb_method="";
-  TString mvafake_ec_method="";
-
-  TString mvaconv_bb_cut1_method="";
-  TString mvaconv_bb_cut2_method="";
-
-  TString mvaconv_ec_cut1_method="";
-  TString mvaconv_ec_cut2_method="";
-
-  TString mvacf_bb_cut1_method="";
-  TString mvacf_bb_cut2_method="";
-
-  TString mvacf_ec_cut1_method="";
-  TString mvacf_ec_cut2_method="";
-
+  TString  trig(""), conv_method(""),dxy_method(""),chg_method("");
+  TString iso_methodB (""), iso_methodEC("");
+  TString pog_method (""), mvacf_bb_method(""), mvacf_ec_method(""),  mvafake_bb_method(""),  mvafake_ec_method(""),   mvaconv_bb_cut1_method(""),  mvaconv_bb_cut2_method("");
+  TString  mvaconv_ec_cut1_method(""), mvaconv_ec_cut2_method(""),   mvacf_bb_cut1_method(""),   mvacf_bb_cut2_method(""),   mvacf_ec_cut1_method(""),   mvacf_ec_cut2_method("");
 
   for(unsigned int i=0; i < subStrings.size(); i++){
 
     bool subString_Used = false;
-
     if (subStrings[i].Contains("LTrig"))  {trig ="Loose";         subString_Used=true;}    
     if (subStrings[i].Contains("TTrig"))  {trig ="Tight";   subString_Used=true;}
     if (subStrings[i].Contains("ConvB"))  {conv_method +="B";   subString_Used=true;}
@@ -406,33 +336,23 @@ bool Electron::Pass_MultiFunction_Opt(TString ID) const {
     if (subStrings[i].Contains("CCB"))    {chg_method +="B";   subString_Used=true;}
     if (subStrings[i].Contains("CCEC"))   {chg_method +="EC";   subString_Used=true;}
     if (subStrings[i].Contains("DXY"))    {dxy_method=subStrings[i];   subString_Used=true;}
-    
-
     if (subStrings[i].Contains("MVABCV1"))mvaconv_bb_cut1_method=subStrings[i];
     if (subStrings[i].Contains("MVABCV2"))mvaconv_bb_cut2_method=subStrings[i];
     if (subStrings[i].Contains("MVAECV1"))mvaconv_ec_cut1_method=subStrings[i];
     if (subStrings[i].Contains("MVAECV2"))mvaconv_ec_cut2_method=subStrings[i];
-
     if (subStrings[i].Contains("MVABCF1"))mvacf_bb_cut1_method=subStrings[i];
     if (subStrings[i].Contains("MVABCF2"))mvacf_bb_cut2_method=subStrings[i];
     if (subStrings[i].Contains("MVAECF1"))mvacf_ec_cut1_method=subStrings[i];
     if (subStrings[i].Contains("MVAECF2"))mvacf_ec_cut2_method=subStrings[i];
-
-
     if (subStrings[i].Contains("MVABCF")) mvacf_bb_method=subStrings[i];
     if (subStrings[i].Contains("MVAECF")) mvacf_ec_method=subStrings[i];
-
     if (subStrings[i].Contains("MVABNP")) mvafake_bb_method=subStrings[i];
     if (subStrings[i].Contains("MVAENP")) mvafake_ec_method=subStrings[i];
-
     if (subStrings[i].Contains("POG")) {pog_method=subStrings[i];         subString_Used=true; }
     if (subStrings[i].Contains("WP"))  {pog_method=subStrings[i];         subString_Used=true; }
-
     if (subStrings[i].Contains("ISOB")) {iso_methodB=subStrings[i];         subString_Used=true;}
     if (subStrings[i].Contains("ISOEC")) {iso_methodEC=subStrings[i];         subString_Used=true;}
-    
   }
-
 
   if(mvaconv_bb_cut1_method != ""){
     if(IsBB()){
@@ -482,7 +402,6 @@ bool Electron::Pass_MultiFunction_Opt(TString ID) const {
 
     }
   }
-
   
   if(dxy_method == "DXYv1" && !PassID("HNLIPv1")) return false;
   if(dxy_method == "DXYv2" && !PassID("HNLIPv2")) return false;
@@ -1737,11 +1656,11 @@ int  Electron::PassIDTight(TString ID) const{
   else if(ID.Contains("2018")) Year = "2018";
 
   if(ID == "HNL_ULID_"     +Year)   return (PassID("HNL_ULID_FO_"+Year)     && PassID("HNL_ULID_Fake_"+Year));
-  if(ID == "HNL_ULLID" )   return (PassID("HNL_ULLID_FO")     && PassID("HNL_ULLID_Fake"));
+  if(ID == "HNL_ULLID" )            return (PassID("HNL_ULLID_FO")          && PassID("HNL_ULLID_Fake"));
 
   // Loose Fake IDs
   if(ID == "HNL_ULID_FO_"  +Year)   return (PassID("HNL_ULID_Conv_"+Year)   && PassID("HNL_ULID_CF_"+Year));
-  if(ID == "HNL_ULLID_FO")    return (PassID("HNL_ULLID_Conv") && PassID("HNL_ULLID_CF"));
+  if(ID == "HNL_ULLID_FO")         return (PassID("HNL_ULLID_Conv") && PassID("HNL_ULLID_CF"));
 
   if(ID == "HNL_ULID_FOv2_"+Year) {
     if(!PassID("HNL_ULID_FO_"+Year)) return false;
@@ -1780,11 +1699,12 @@ int  Electron::PassIDTight(TString ID) const{
   }
 
   if(ID=="HNL_ULID_FOv4_"+Year)  return (PassID("HNL_ULID_FO_"+Year) && (HNL_MVA_Fake("EDv5") > -0.9));
+
   if(ID=="HNL_ULID_FOv5_"+Year)  {
     if(!PassID("HNL_ULID_FO_"+Year)) return false;
     if(!PassID("HNL_ULID_Fake_"+Year)){
       if(this->HasCloseJet() && CloseJet_BScore() > 0.2) return false;
-      if(HNL_MVA_Fake("QCD_LFvsHF_v5") > 0.9)  return false;
+      if(this->HasCloseJet() && CloseJet_CvsLScore() > 0.25) return false;
     }
     return true;
   }
@@ -1792,10 +1712,8 @@ int  Electron::PassIDTight(TString ID) const{
   if(ID=="HNL_ULID_FOv6_"+Year) {
     if(!PassID("HNL_ULID_FO_"+Year)) return false;
     if(!PassID("HNL_ULID_Fake_"+Year)){
-      if( fabs(this->Eta())<= 1.479 ){
-        if(this->HasCloseJet() && CloseJet_BScore() > 0.27) return false;
-      }
-      else  if(this->HasCloseJet() && CloseJet_BScore() > 0.05) return false;
+      if(this->HasCloseJet() && CloseJet_BScore() > 0.5) return false;
+      if(this->HasCloseJet() && CloseJet_CvsLScore() > 0.25) return false;
     }
     return true;
   }
@@ -2044,6 +1962,10 @@ bool Electron::PassMVABaseLine() const{
 
 int  Electron::PassIDLoose(TString ID) const{
     
+  if(ID=="MVAID")    return  (Pass_LepMVAID()) ? 1 : 0;
+  if(ID=="TopMVAID") return  (Pass_LepMVATopID()) ? 1 : 0;
+  
+
   if(ID=="passProbeID") return passMVAID_noiso_WPLoose() ? 1 : 0;  // --- VETO POG                                                                                                                                           
   //=== POG
   if(ID=="passProbeIDTight") return passMVAID_noiso_WPLoose()&&Pass_TriggerEmulationLoose() ? 1 : 0;  // --- VETO POG                                                                                                                                             
@@ -2104,8 +2026,6 @@ int  Electron::PassIDOptLoose(TString ID) const{
 int Electron::PassIDOpt(TString ID) const{
 
   if(ID=="HNOpt")    return   PassHNOpt(); 
-  if(ID=="MVAID")    return  (Pass_LepMVAID()) ? 1 : 0;
-  if(ID=="TopMVAID") return  (Pass_LepMVATopID()) ? 1 : 0;
 
   if(ID.Contains("HNLOpt_UL_FINAL_")){
     TString ID_sub = ID;
@@ -2184,7 +2104,7 @@ int Electron::PassIDOpt(TString ID) const{
 
   
   if(ID.Contains("ElOpt")) return Pass_MultiFunction_Opt(ID) ? 1 : 0;
-  if(ID.Contains("HNL_ULID_v1"))  return Pass_MultiFunction_Opt("") ? 1 :0;
+
   
   if(ID=="HNLIPv1") {
     double dxy_cut  =  (IsBB()) ? 0.02 : 0.04;

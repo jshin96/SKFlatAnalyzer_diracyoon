@@ -1138,7 +1138,7 @@ void HNL_LeptonFakeRate::GetElFakeRates(TString Method, std::vector<Lepton *> le
     double PTPartonSF = GetPtPartonSF(*leps[0], LooseID);
     lep_pt      =  (leps[0]->PtParton(PTPartonSF,MVACut,2) < UpperPtCut) ?  leps[0]->PtParton(PTPartonSF, MVACut,2) : UpperPtCutM1;
 
-    FillProf((param.Name + "_FakeCR40_MVA_PtParton").Data(), leps[0]->HNL_MVA_Fake(MVAKey), lep_pt, event_weight, 100, -1, 1);
+    FillProf((param.Name + "_FakeCR40_MVA_PtParton2").Data(), leps[0]->HNL_MVA_Fake(MVAKey), lep_pt, event_weight, 100, -1, 1);
 
     if(lep_pt > 50){
       if(leps[0]->Pt() < 25) return;

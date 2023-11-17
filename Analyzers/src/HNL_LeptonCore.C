@@ -366,6 +366,7 @@ AnalyzerParameter HNL_LeptonCore::SetupFakeParameter(AnalyzerParameter::Syst Sys
   param.JetPUID = "Loose";
 
   param.AK4JetColl       = "TightPUL";
+  param.AK4VBFJetColl    = "VBFTightPUL";
   param.AK8JetColl       = "HNL_PN";
   param.BJetColl         = "Tight";
 
@@ -459,8 +460,8 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
   param.JetPUID = "Loose";
 
   param.AK4JetColl       = "TightPUL";
+  param.AK4VBFJetColl    = "VBFTightPUL";
   param.AK8JetColl       = "HNL_PN";
-  //param.AK8JetColl       = "HNL";
   param.BJetColl         = "Tight";
 
   //// Weights

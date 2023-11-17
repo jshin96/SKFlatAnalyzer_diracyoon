@@ -13,7 +13,7 @@ for i in "${era_list[@]}"
 do
 
     if [[ $1 == "CheckProfile" ]]; then
-        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_mu.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags CheckProfile&
+        #SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_mu.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags CheckProfile&
         SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_el.txt  -n  ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags CheckProfileEE&
     fi
 

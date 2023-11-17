@@ -19,6 +19,7 @@ void HNL_ControlRegionPlotter::executeEvent(){
   vector<TString> LepIDs = {"HNL_ULID","HNTightV2"};//,"TopHN", "DefaultPOGTight"};
 
   vector<HNL_LeptonCore::Channel> ChannelsToRun = {EE, MuMu};//,EMu,MuE};
+
   for (auto id: LepIDs){
     for(auto channel : ChannelsToRun){
      
@@ -29,14 +30,20 @@ void HNL_ControlRegionPlotter::executeEvent(){
       if(HasFlag("SS_CR"))   CRToRun.push_back("SS_CR");
       if(HasFlag("VBF_CR"))  CRToRun.push_back("VBF_CR");
 
-      vector<TString> AJetPt = {"AJ30", "AJ40","AJ60"};
+      //vector<TString> AJetPt = {"AJ30", "AJ40","AJ60"};
+      vector<TString> AJetPt = {"AJ40"};
       if(id=="HNL_ULID"){
 	
 	if(channel == MuMu){
-	  vector<TString> MuFakeIDs = {"HNL_ULID_FO","HNL_ULID_FOv2_"+GetYearString(), "HNL_ULID_FOv3_"+GetYearString(), "HNL_ULID_FOv4_"+GetYearString(),"HNL_ULID_FOv5_"+GetYearString(), "HNL_ULID_FOv6_"+GetYearString(),  "HNL_ULID_FOv7_"+GetYearString()};
+	  /*vector<TString> MuFakeIDs = {"HNL_ULID_FO","HNL_ULID_FOv2_"+GetYearString(), "HNL_ULID_FOv3_"+GetYearString(), "HNL_ULID_FOv4_"+GetYearString(),"HNL_ULID_FOv5_"+GetYearString(), "HNL_ULID_FOv6_"+GetYearString(),  "HNL_ULID_FOv7_"+GetYearString()};
 	  vector<TString> FakeTag   = {"HNL_ULID_FO","HNL_ULID_FOv2", "HNL_ULID_FOv3", "HNL_ULID_FOv4","HNL_ULID_FOv5", "HNL_ULID_FOv6", "HNL_ULID_FOv7"};
-	  vector<TString> FakeParam = {"Pt","PtCorr","PtParton","PtCorr2p0","PtParton2p0"};
-	  vector<TString> FakeMethod= {"BDTFlavour","Standard"};
+	  vector<TString> FakeParam = {"Pt","PtCorr","PtParton","PtParton2p0"};
+	  vector<TString> FakeMethod= {"BDTFlavour","Standard"};*/
+	  
+	  vector<TString> MuFakeIDs = {"HNL_ULID_FOv3_"+GetYearString()};
+          vector<TString> FakeTag   = {"HNL_ULID_FOv3"};
+          vector<TString> FakeParam = {"PtParton"};                                                                              
+          vector<TString> FakeMethod= {"Standard"};
 		  
 	  for(unsigned int i= 0 ; i < FakeTag.size(); i++){
 	    for(unsigned int j= 0 ; j < FakeParam.size(); j++){
@@ -60,10 +67,16 @@ void HNL_ControlRegionPlotter::executeEvent(){
 	}
 	else{
 	  
-	  vector<TString> ElFakeIDs = {"HNL_ULID_FO_"+GetYearString(),"HNL_ULID_FOv2_"+GetYearString(), "HNL_ULID_FOv3_"+GetYearString(), "HNL_ULID_FOv4_"+GetYearString(),"HNL_ULID_FOv5_"+GetYearString(), "HNL_ULID_FOv6_"+GetYearString(), "HNL_ULLID_FOv3"};
-          vector<TString> FakeTag   = {"HNL_ULID_FO","HNL_ULID_FOv2", "HNL_ULID_FOv3", "HNL_ULID_FOv4","HNL_ULID_FOv5", "HNL_ULID_FOv6","HNL_ULLID_FOv3"};
-          vector<TString> FakeParam = {"Pt","PtCorr","PtParton","PtCorr2p0","PtParton2p0"};
-          vector<TString> FakeMethod= {"BDTFlavour","Standard"};
+	  //vector<TString> ElFakeIDs = {"HNL_ULID_FO_"+GetYearString(),"HNL_ULID_FOv2_"+GetYearString(), "HNL_ULID_FOv3_"+GetYearString(), "HNL_ULID_FOv4_"+GetYearString(),"HNL_ULID_FOv5_"+GetYearString(), "HNL_ULID_FOv6_"+GetYearString(), "HNL_ULLID_FOv3"};
+          //vector<TString> FakeTag   = {"HNL_ULID_FO","HNL_ULID_FOv2", "HNL_ULID_FOv3", "HNL_ULID_FOv4","HNL_ULID_FOv5", "HNL_ULID_FOv6","HNL_ULLID_FOv3"};
+          //vector<TString> FakeParam = {"Pt","PtCorr","PtParton","PtParton2p0"};
+          //vector<TString> FakeMethod= {"BDTFlavour","Standard"};
+
+	  vector<TString> ElFakeIDs = {"HNL_ULID_FO_"+GetYearString(), "HNL_ULID_FOv3_"+GetYearString()};
+          vector<TString> FakeTag   = {"HNL_ULID_FO","HNL_ULID_FOv3"};
+          vector<TString> FakeParam = {"PtParton"};
+          vector<TString> FakeMethod= {"Standard"};
+
 
           for(unsigned int i= 0 ; i < FakeTag.size(); i++){
             for(unsigned int j= 0 ; j < FakeParam.size(); j++){
@@ -150,21 +163,37 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   std::vector<Muon>       MuonTightColl      =  GetLepCollByRunType    (MuonTightCollInit,    param);  
   std::vector<Electron>   ElectronTightColl  =  GetLepCollByRunType    (ElectronTightCollInit,param);
 
+  //  for(auto iel : ElectronTightColl ) cout << "EL " << iel.IsPrompt() << " eta = " << iel.Eta() << " " << weight << endl;
+
   Particle METv = GetvMET("PuppiT1xyULCorr",param); // returns MET with systematic correction                                                                      
 
   std::vector<FatJet> AK8_JetColl                 = GetHNLAK8Jets(param.AK8JetColl,param);
   std::vector<Jet>    AK4_JetColl                 = GetHNLJets(param.AK4JetColl,     param);
+  std::vector<Jet>    AK4_VBF_JetColl             = GetHNLJets(param.AK4VBFJetColl,  param);
   std::vector<Jet>    AK4_JetAllColl              = GetHNLJets("NoCut_Eta3",param);
   std::vector<Jet>    AK4_JetCollLoose            = GetHNLJets("Loose",     param);
-  std::vector<Jet>    AK4_VBF_JetColl             = GetHNLJets("VBFTightPUL",  param);
   std::vector<Jet>    AK4_BJetColl                = GetHNLJets("BJet", param);
   
   EvalJetWeight(AK4_JetColl, AK8_JetColl, weight, param);
   
-  if(RunFake) FillFakeHistograms(param, "FakeStudies", MakeLeptonPointerVector(MuonTightColl, ElectronTightColl, param),  AK4_JetColl,AK8_JetColl, AK4_BJetColl, METv,weight);
-  if(RunFake&&SameCharge(MakeLeptonPointerVector(MuonTightColl, ElectronTightColl, param))) 
-    FillFakeHistograms(param, "FakeStudies/SS", MakeLeptonPointerVector(MuonTightColl, ElectronTightColl, param),  AK4_JetColl,AK8_JetColl, AK4_BJetColl, METv,weight);
+  //  if(RunFake) FillFakeHistograms(param, "FakeStudies", MakeLeptonPointerVector(MuonTightColl, ElectronTightColl, param),  AK4_JetColl,AK8_JetColl, AK4_BJetColl, METv,weight);
+  //if(RunFake&&SameCharge(MakeLeptonPointerVector(MuonTightColl, ElectronTightColl, param))) 
+  //  FillFakeHistograms(param, "FakeStudies/SS", MakeLeptonPointerVector(MuonTightColl, ElectronTightColl, param),  AK4_JetColl,AK8_JetColl, AK4_BJetColl, METv,weight);
   
+  
+  if(param.Channel == "EE"){
+    if(ElectronVetoColl.size() == 2 && ElectronTightColl.size() == 2 && MuonTightColl.size() ==0){
+      
+      if(SameCharge(ElectronTightColl)) FillFakeHistograms(param, "FakeStudies", MakeLeptonPointerVector(MuonTightColl, ElectronTightColl, param),  AK4_JetColl,AK8_JetColl, AK4_BJetColl, METv,weight);                                                     
+
+      TString nT ="";
+      for(auto ilep : ElectronTightColl) {
+	if(ilep.PassID(param.Electron_Tight_ID))  nT=nT+"T";
+	else nT=nT+"L";
+      }
+      //cout << "Electron_ID = " << Electron_ID << " nEl = " << ElectronTightColl.size() << " ElectronVetoColl = " << ElectronVetoColl.size() << " TL = " << nT <<endl;      
+    }
+  }
 
   if(CRs.size() == 0) return;
 
