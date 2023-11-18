@@ -9,36 +9,35 @@ double HNL_LeptonCore::GetPtPartonSF(Lepton  Lep, TString LooseID){
   bool IsMuon=(Lep.LeptonFlavour() == Lepton::MUON);
 
   /// MUON
-  if(DataYear == 2016 && IsMuon && (LooseID == "HNL_ULID_FO"))      return 0.741;
-  if(DataYear == 2016 && IsMuon && (LooseID == "HNL_ULID_POGM_FO")) return 0.741;
-  if(DataYear == 2016 && IsMuon && (LooseID == "HNL_ULID_FOv2_"+GetYearString())) return 0.670;
-  if(DataYear == 2016 && IsMuon && (LooseID == "HNL_ULID_FOv3_"+GetYearString())) return 0.682;
-  if(DataYear == 2016 && IsMuon && (LooseID == "HNL_ULID_FOv4_"+GetYearString())) return 0.741;
-  if(DataYear == 2016 && IsMuon && (LooseID == "HNL_ULID_FOv5_"+GetYearString())) return 0.747;
-  if(DataYear == 2016 && IsMuon && (LooseID == "HNL_ULID_FOv6_"+GetYearString())) return 0.737;
-  if(DataYear == 2016 && IsMuon && (LooseID == "HNL_ULID_FOv7_"+GetYearString())) return 0.737; 
+  if(DataYear == 2016 && IsMuon && (LooseID == "HNL_ULID_FO"))      return 0.794;
+  if(DataYear == 2016 && IsMuon && (LooseID == "HNL_ULID_POGM_FO")) return 0.793;
+  if(DataYear == 2016 && IsMuon && (LooseID == "HNL_ULID_FOv2_"+GetYearString())) return 0.730;
+  if(DataYear == 2016 && IsMuon && (LooseID == "HNL_ULID_FOv3_"+GetYearString())) return 0.730;
+  if(DataYear == 2016 && IsMuon && (LooseID == "HNL_ULID_FOv4_"+GetYearString())) return 0.728;
+  if(DataYear == 2016 && IsMuon && (LooseID == "HNL_ULID_FOv5_"+GetYearString())) return 0.780;
+  if(DataYear == 2016 && IsMuon && (LooseID == "HNL_ULID_FOv6_"+GetYearString())) return 0.780;
+  if(DataYear == 2016 && IsMuon && (LooseID == "HNL_ULID_FOv7_"+GetYearString())) return 0.7817; 
 
-  if(DataYear == 2017 && IsMuon && (LooseID == "HNL_ULID_FO"))      return 0.732;
-  if(DataYear == 2017 && IsMuon && (LooseID == "HNL_ULID_POGM_FO")) return 0.728;
-  if(DataYear == 2017 && IsMuon && (LooseID == "HNL_ULID_FOv2_"+GetYearString())) return 0.683;
-  if(DataYear == 2017 && IsMuon && (LooseID == "HNL_ULID_FOv3_"+GetYearString())) return 0.680;
-  if(DataYear == 2017 && IsMuon && (LooseID == "HNL_ULID_FOv4_"+GetYearString())) return 0.732;
-  if(DataYear == 2017 && IsMuon && (LooseID == "HNL_ULID_FOv5_"+GetYearString())) return 0.740;
-  if(DataYear == 2017 && IsMuon && (LooseID == "HNL_ULID_FOv6_"+GetYearString())) return 0.730;
-  if(DataYear == 2017 && IsMuon && (LooseID == "HNL_ULID_FOv7_"+GetYearString())) return 0.730;
+  if(DataYear == 2017 && IsMuon && (LooseID == "HNL_ULID_FO"))      return 0.7584;
+  if(DataYear == 2017 && IsMuon && (LooseID == "HNL_ULID_POGM_FO")) return 0.758;
+  if(DataYear == 2017 && IsMuon && (LooseID == "HNL_ULID_FOv2_"+GetYearString())) return 0.688;
+  if(DataYear == 2017 && IsMuon && (LooseID == "HNL_ULID_FOv3_"+GetYearString())) return 0.684;
+  if(DataYear == 2017 && IsMuon && (LooseID == "HNL_ULID_FOv4_"+GetYearString())) return 0.6878;
+  if(DataYear == 2017 && IsMuon && (LooseID == "HNL_ULID_FOv5_"+GetYearString())) return 0.7495;
+  if(DataYear == 2017 && IsMuon && (LooseID == "HNL_ULID_FOv6_"+GetYearString())) return 0.7560;
+  if(DataYear == 2017 && IsMuon && (LooseID == "HNL_ULID_FOv7_"+GetYearString())) return 0.7493;
 
-  if(DataYear == 2018 && IsMuon && (LooseID == "HNL_ULID_FO"))      return 0.741;
-  if(DataYear == 2018 && IsMuon && (LooseID == "HNL_ULID_POGM_FO")) return 0.741;
-  if(DataYear == 2018 && IsMuon && (LooseID == "HNL_ULID_FOv2_"+GetYearString())) return 0.670;
-  if(DataYear == 2018 && IsMuon && (LooseID == "HNL_ULID_FOv3_"+GetYearString())) return 0.682;
-  if(DataYear == 2018 && IsMuon && (LooseID == "HNL_ULID_FOv4_"+GetYearString())) return 0.741;
-  if(DataYear == 2018 && IsMuon && (LooseID == "HNL_ULID_FOv5_"+GetYearString())) return 0.747;
-  if(DataYear == 2018 && IsMuon && (LooseID == "HNL_ULID_FOv6_"+GetYearString())) return 0.737;
-  if(DataYear == 2018 && IsMuon && (LooseID == "HNL_ULID_FOv7_"+GetYearString())) return 0.737;
-
+  if(DataYear == 2018 && IsMuon && (LooseID == "HNL_ULID_FO"))      return 0.783;
+  if(DataYear == 2018 && IsMuon && (LooseID == "HNL_ULID_POGM_FO")) return 0.784;
+  if(DataYear == 2018 && IsMuon && (LooseID == "HNL_ULID_FOv2_"+GetYearString())) return 0.627;
+  if(DataYear == 2018 && IsMuon && (LooseID == "HNL_ULID_FOv3_"+GetYearString())) return 0.628;
+  if(DataYear == 2018 && IsMuon && (LooseID == "HNL_ULID_FOv4_"+GetYearString())) return 0.629;
+  if(DataYear == 2018 && IsMuon && (LooseID == "HNL_ULID_FOv5_"+GetYearString())) return 0.774;
+  if(DataYear == 2018 && IsMuon && (LooseID == "HNL_ULID_FOv6_"+GetYearString())) return 0.7765;
+  if(DataYear == 2018 && IsMuon && (LooseID == "HNL_ULID_FOv7_"+GetYearString())) return 0.7737;
 
   ///// ELECTRON
-  if(DataYear == 2016 && !IsMuon && Lep.IsBB() && (LooseID == "HNL_ULLID_FOv3"))                 return 0.6496;
+  if(DataYear == 2016 && !IsMuon && Lep.IsBB() && (LooseID == "HNL_ULLID_FOv3"))                 return 0.6481;
   if(DataYear == 2016 && !IsMuon && Lep.IsBB() && (LooseID == "HNL_ULID_FO_"+GetYearString()))   return 0.7661;
   if(DataYear == 2016 && !IsMuon && Lep.IsBB() && (LooseID == "HNL_ULID_FOv2_"+GetYearString())) return 0.6412;
   if(DataYear == 2016 && !IsMuon && Lep.IsBB() && (LooseID == "HNL_ULID_FOv3_"+GetYearString())) return 0.6496;
@@ -46,7 +45,7 @@ double HNL_LeptonCore::GetPtPartonSF(Lepton  Lep, TString LooseID){
   if(DataYear == 2016 && !IsMuon && Lep.IsBB() && (LooseID == "HNL_ULID_FOv5_"+GetYearString())) return 0.7276;
   if(DataYear == 2016 && !IsMuon && Lep.IsBB() && (LooseID == "HNL_ULID_FOv6_"+GetYearString())) return 0.7654;
 
-  if(DataYear == 2016 && !IsMuon && Lep.IsEC() && (LooseID == "HNL_ULLID_FOv3"))                 return 0.7706; /// FIX
+  if(DataYear == 2016 && !IsMuon && Lep.IsEC() && (LooseID == "HNL_ULLID_FOv3"))                 return 0.909; /// FIX
   if(DataYear == 2016 && !IsMuon && Lep.IsEC() && (LooseID == "HNL_ULID_FO_"+GetYearString()))   return 0.882418;
   if(DataYear == 2016 && !IsMuon && Lep.IsEC() && (LooseID == "HNL_ULID_FOv2_"+GetYearString())) return 0.7684;
   if(DataYear == 2016 && !IsMuon && Lep.IsEC() && (LooseID == "HNL_ULID_FOv3_"+GetYearString())) return 0.7706;
@@ -55,7 +54,7 @@ double HNL_LeptonCore::GetPtPartonSF(Lepton  Lep, TString LooseID){
   if(DataYear == 2016 && !IsMuon && Lep.IsEC() && (LooseID == "HNL_ULID_FOv6_"+GetYearString())) return 0.8804;
   //https://jalmond.web.cern.ch/jalmond/SNU/WebPlots/HNL/HNL_LeptonFakeRates/HNL_LeptonFakeRates/2016/HNL_GetProfileSFElNov17/?match=EC
 
-  if(DataYear == 2017 && !IsMuon && Lep.IsBB() && (LooseID == "HNL_ULLID_FOv3"))                 return 0.663;
+  if(DataYear == 2017 && !IsMuon && Lep.IsBB() && (LooseID == "HNL_ULLID_FOv3"))                 return 0.8768;
   if(DataYear == 2017 && !IsMuon && Lep.IsBB() && (LooseID == "HNL_ULID_FO_"+GetYearString()))   return 0.814;
   if(DataYear == 2017 && !IsMuon && Lep.IsBB() && (LooseID == "HNL_ULID_FOv2_"+GetYearString())) return 0.665;
   if(DataYear == 2017 && !IsMuon && Lep.IsBB() && (LooseID == "HNL_ULID_FOv3_"+GetYearString())) return 0.663;
@@ -63,7 +62,7 @@ double HNL_LeptonCore::GetPtPartonSF(Lepton  Lep, TString LooseID){
   if(DataYear == 2017 && !IsMuon && Lep.IsBB() && (LooseID == "HNL_ULID_FOv5_"+GetYearString())) return 0.7671;
   if(DataYear == 2017 && !IsMuon && Lep.IsBB() && (LooseID == "HNL_ULID_FOv6_"+GetYearString())) return 0.8067;
 
-  if(DataYear == 2017 && !IsMuon && Lep.IsEC() && (LooseID == "HNL_ULLID_FOv3"))                 return 0.629;/// FIX         
+  if(DataYear == 2017 && !IsMuon && Lep.IsEC() && (LooseID == "HNL_ULLID_FOv3"))                 return 0.7787;
   if(DataYear == 2017 && !IsMuon && Lep.IsEC() && (LooseID == "HNL_ULID_FO_"+GetYearString()))   return 0.7658;
   if(DataYear == 2017 && !IsMuon && Lep.IsEC() && (LooseID == "HNL_ULID_FOv2_"+GetYearString())) return 0.6320;
   if(DataYear == 2017 && !IsMuon && Lep.IsEC() && (LooseID == "HNL_ULID_FOv3_"+GetYearString())) return 0.629;
@@ -71,7 +70,7 @@ double HNL_LeptonCore::GetPtPartonSF(Lepton  Lep, TString LooseID){
   if(DataYear == 2017 && !IsMuon && Lep.IsEC() && (LooseID == "HNL_ULID_FOv5_"+GetYearString())) return 0.7363;
   if(DataYear == 2017 && !IsMuon && Lep.IsEC() && (LooseID == "HNL_ULID_FOv6_"+GetYearString())) return 0.7638;
  
-  if(DataYear == 2018 && !IsMuon && Lep.IsBB() && (LooseID == "HNL_ULLID_FOv3"))                 return 0.6677;
+  if(DataYear == 2018 && !IsMuon && Lep.IsBB() && (LooseID == "HNL_ULLID_FOv3"))                 return 0.8759;
   if(DataYear == 2018 && !IsMuon && Lep.IsBB() && (LooseID == "HNL_ULID_FO_"+GetYearString()))   return 0.8208;
   if(DataYear == 2018 && !IsMuon && Lep.IsBB() && (LooseID == "HNL_ULID_FOv2_"+GetYearString())) return 0.6674;
   if(DataYear == 2018 && !IsMuon && Lep.IsBB() && (LooseID == "HNL_ULID_FOv3_"+GetYearString())) return 0.6677;
@@ -79,7 +78,7 @@ double HNL_LeptonCore::GetPtPartonSF(Lepton  Lep, TString LooseID){
   if(DataYear == 2018 && !IsMuon && Lep.IsBB() && (LooseID == "HNL_ULID_FOv5_"+GetYearString())) return 0.7959;
   if(DataYear == 2018 && !IsMuon && Lep.IsBB() && (LooseID == "HNL_ULID_FOv6_"+GetYearString())) return 0.8219;
   
-  if(DataYear == 2018 && !IsMuon && Lep.IsEC() && (LooseID == "HNL_ULLID_FOv3"))                 return 0.727;/// FIX          
+  if(DataYear == 2018 && !IsMuon && Lep.IsEC() && (LooseID == "HNL_ULLID_FOv3"))                 return 0.8748;
   if(DataYear == 2018 && !IsMuon && Lep.IsEC() && (LooseID == "HNL_ULID_FO_"+GetYearString()))   return 0.8604;
   if(DataYear == 2018 && !IsMuon && Lep.IsEC() && (LooseID == "HNL_ULID_FOv2_"+GetYearString())) return 0.727;
   if(DataYear == 2018 && !IsMuon && Lep.IsEC() && (LooseID == "HNL_ULID_FOv3_"+GetYearString())) return 0.727;

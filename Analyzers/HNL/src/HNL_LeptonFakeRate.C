@@ -48,7 +48,7 @@ void HNL_LeptonFakeRate::executeEvent(){
     
 
 
-    for(unsigned int l=0 ; l < LIDs.size(); l++)  VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu, HNL_LeptonCore::NormToXsec, {"DATAProfile"},NIDs[l]+"_DATA","HNL_ULID_"+GetYearString(),LIDs[l]));  
+    for(unsigned int l=0 ; l < LIDs.size(); l++)  VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu, HNL_LeptonCore::NormToXsec, {"DATAProfile"},NIDs[l]+"DATA","HNL_ULID_"+GetYearString(),LIDs[l]));  
     
     goto RunJobs;
     
@@ -60,13 +60,15 @@ void HNL_LeptonFakeRate::executeEvent(){
 			    "HNL_ULID_FOv3_"+GetYearString(), 
 			    "HNL_ULID_FOv4_"+GetYearString(), 
 			    "HNL_ULID_FOv5_"+GetYearString(), 
-			    "HNL_ULID_FOv6_"+GetYearString()};
+			    "HNL_ULID_FOv6_"+GetYearString(),
+			    "HNL_ULLID_FOv3"};
     vector<TString> NIDs = {"HNL_LooseID_", 
 			    "HNL_LooseID_v2_", 
 			    "HNL_LooseID_v3_", 
 			    "HNL_LooseID_v4_",
 			    "HNL_LooseID_v5_",
-			    "HNL_LooseID_v6_"};
+			    "HNL_LooseID_v6_",
+			    "HNL_LooseID_v7_"};
     for(unsigned int l=0 ; l < LIDs.size(); l++)  VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE, HNL_LeptonCore::NormToXsec, {"DATAProfile"},NIDs[l]+"DATA","HNL_ULID_"+GetYearString(),LIDs[l]));
     
     goto RunJobs;
@@ -235,9 +237,8 @@ void HNL_LeptonFakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon>
 	  if(!leps[0]->IsPrompt()) return ;
 	  W=W* -1.;
 	}
-	FillProf(("DATAProfile/"+param.Name + "/FakeCR"+param.GetSystType()+"_MVA_PtPartonUncorr").Data(), ilep->HNL_MVA_Fake("HFTop"), PtPartonUncorr, W, 200, -1, 1);
-	FillProf(("DATAProfile/"+param.Name + "/FakeCR"+param.GetSystType()+"_MVA_"+ilep->GetEtaRegion("2bin")+"_PtPartonUncorr").Data(), ilep->HNL_MVA_Fake("HFTop"), PtPartonUncorr, W, 200, -1, 1);
-	
+	FillProf(("DATAProfile/"+param.Name + "/FakeCR"+param.GetSystType()+"_MVA_PtPartonUncorr").Data(), ilep->HNL_MVA_Fake("HFTop"), PtPartonUncorr, W, 100, -1, 1);
+	FillProf(("DATAProfile/"+param.Name + "/FakeCR"+param.GetSystType()+"_MVA_"+ilep->GetEtaRegion("2bin")+"_PtPartonUncorr").Data(), ilep->HNL_MVA_Fake("HFTop"), PtPartonUncorr, W, 100, -1, 1);
       }
     }
     return;
@@ -379,7 +380,7 @@ void HNL_LeptonFakeRate::RunE( std::vector<Electron> loose_el, std::vector<Muon>
 	  if(!leps[0]->IsPrompt()) return ;
 	  W=W* -1.;
 	}
-	FillProf(("DATAProfile/"+param.Name + "/FakeCR"+param.GetSystType()+"_MVA2_"+ilep->GetEtaRegion("2bin")+"_PtPartonUncorr").Data(), ilep->HNL_MVA_Fake("EDv5"), PtPartonUncorr, W, 200, -1, 1);
+	FillProf(("DATAProfile/"+param.Name + "/FakeCR"+param.GetSystType()+"_MVA2_"+ilep->GetEtaRegion("2bin")+"_PtPartonUncorr").Data(), ilep->HNL_MVA_Fake("EDv5"), PtPartonUncorr, W, 100, -1, 1);
         FillProf(("DATAProfile/"+param.Name + "/FakeCR"+param.GetSystType()+"_MVA_"+ilep->GetEtaRegion("2bin")+"_PtPartonUncorr").Data(), ilep->HNL_MVA_Fake("EDv5"), PtPartonUncorr, W, 40, -1, 1);
       }
     }
@@ -1276,9 +1277,8 @@ void HNL_LeptonFakeRate::GetElFakeRates(TString Method, std::vector<Lepton *> le
       FillHist((prefix + "_cbscore").Data(), lep_cbscore,    weight_ptcorr, 50, -1., 1.);
       FillHist((prefix + "_clscore").Data(), lep_clscore,    weight_ptcorr, 50, -1., 1.);
 
-      if(lep_blscore > 0.4) FillHistogram((prefix + "_HF1_"+ptname).Data(),       lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Eta", Ptlab);
-      else if(lep_blscore > 0.2) FillHistogram((prefix + "_HF2_"+ptname).Data(),  lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Eta", Ptlab);
-      else FillHistogram((prefix + "_HF3_"+ptname).Data(),                        lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Eta", Ptlab);
+      FillHistogram((prefix + "_"+leps[0]->LeptonFakeTagger()+"_"+ptname).Data(),       lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Eta", Ptlab);
+      
       
     }
   }
@@ -1538,10 +1538,7 @@ void HNL_LeptonFakeRate::GetMuFakeRates(TString Method, std::vector<Lepton *> le
       FillHist((prefix + "_cbscore").Data(), lep_cbscore,    weight_ptcorr, 50, -1., 1.);
       FillHist((prefix + "_clscore").Data(), lep_clscore,    weight_ptcorr, 50, -1., 1.);
 
-      if(lep_blscore > 0.4) FillHistogram((prefix + "_HF1_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist ,      "FR_Eta", Ptlab);
-      else if(lep_blscore > 0.2) FillHistogram((prefix + "_HF2_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Eta", Ptlab);
-      else FillHistogram((prefix + "_HF3_"+ptname).Data(),             lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Eta", Ptlab);
-      
+      FillHistogram((prefix + "_"+leps[0]->LeptonFakeTagger()+"_"+ptname).Data(),       lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Eta", Ptlab);
       
     }
   }

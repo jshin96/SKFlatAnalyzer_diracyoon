@@ -249,7 +249,6 @@ public:
     else return (1/ptshift);
   }
 
-
   inline double PtParton(double Corr, double MVACut, double UpperValue=1.5){
     double mva_val = j_lep_mva;
     if(j_LeptonFlavour!=MUON) mva_val=j_lep_mva_hnl_fake_ed_v5; 
@@ -613,9 +612,10 @@ public:
    
 
   inline TString LeptonFakeTagger() const {
-    if (j_lep_jetbscore > 0.4) return "HF1";
-    if (j_lep_jetbscore > 0.2) return "HF2";
-    return "HF3";
+    if (j_lep_jetbscore > 0.2) return "HF1";
+    if (j_lep_jetbscore > 0.05) return "HF2";
+    if (j_lep_jetbscore > 0.025) return "HF3";
+    return "HF4";
   }
 
 

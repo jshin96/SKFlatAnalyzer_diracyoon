@@ -16,7 +16,7 @@ void HNL_ControlRegionPlotter::executeEvent(){
 
   Event ev = GetEvent();
 
-  vector<TString> LepIDs = {"HNL_ULID","HNTightV2"};//,"TopHN", "DefaultPOGTight"};
+  vector<TString> LepIDs = {"HNL_ULID"};//,"HNTightV2"};//,"TopHN", "DefaultPOGTight"};
 
   vector<HNL_LeptonCore::Channel> ChannelsToRun = {EE, MuMu};//,EMu,MuE};
 
@@ -176,10 +176,9 @@ void HNL_ControlRegionPlotter::RunControlRegions(AnalyzerParameter param, vector
   
   EvalJetWeight(AK4_JetColl, AK8_JetColl, weight, param);
   
-  //  if(RunFake) FillFakeHistograms(param, "FakeStudies", MakeLeptonPointerVector(MuonTightColl, ElectronTightColl, param),  AK4_JetColl,AK8_JetColl, AK4_BJetColl, METv,weight);
-  //if(RunFake&&SameCharge(MakeLeptonPointerVector(MuonTightColl, ElectronTightColl, param))) 
-  //  FillFakeHistograms(param, "FakeStudies/SS", MakeLeptonPointerVector(MuonTightColl, ElectronTightColl, param),  AK4_JetColl,AK8_JetColl, AK4_BJetColl, METv,weight);
-  
+  std::vector<Muon>       MuonTightColl1    = SelectMuons    ( param, "HNL_ULID_FO",     Min_Muon_Pt,     2.4,weight);
+  std::vector<Muon>       MuonTightColl2    = SelectMuons    ( param, "HNL_ULID_POGM_FO",     Min_Muon_Pt,     2.4,weight);
+  std::vector<Muon>       MuonTightColl3    = SelectMuons    ( param, "HNL_ULID_FOv3_"+GetYearString(),     Min_Muon_Pt,     2.4,weight);
   
   if(param.Channel == "EE"){
     if(ElectronVetoColl.size() == 2 && ElectronTightColl.size() == 2 && MuonTightColl.size() ==0){
