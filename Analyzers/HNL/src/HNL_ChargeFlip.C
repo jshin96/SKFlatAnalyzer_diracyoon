@@ -652,7 +652,10 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
     double weight_shifted = GetCFWeightElectron(ElectronColl_shifted, param , false);
     weight_shifted *= EvWeight;
     double weight_shiftedSF = weight_shifted;
-    weight_shiftedSF *= GetCFSF(param,ElectronColl);
+
+    std::vector<Lepton *> EL_Leptons = MakeLeptonPointerVector(ElectronColl,param);
+
+    weight_shiftedSF *= GetCFSF(param,EL_Leptons);
     
     
     //Particle METv_shifted;

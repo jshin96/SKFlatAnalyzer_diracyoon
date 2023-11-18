@@ -243,7 +243,7 @@ bool Muon::PassID(TString ID) const {
     return true;
   }
 
-  if(ID=="TopHNT"){
+  if(ID=="TopHN"){
     if(! isPOGMedium()        ) return false;
     if(! (MiniRelIso()<0.1)) return false;
     if(! HLTCut ) return false;

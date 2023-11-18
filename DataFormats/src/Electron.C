@@ -1796,7 +1796,7 @@ int  Electron::PassIDTight(TString ID) const{
   }
 
   
-  if(ID=="TopHNT"){
+  if(ID=="TopHN"){
     if(! passMVAID_noIso_WP90()          ) return false;
     if(! (MiniRelIso()<0.1)              ) return false;
     if(! (SIP3D()<4)                     ) return false;
