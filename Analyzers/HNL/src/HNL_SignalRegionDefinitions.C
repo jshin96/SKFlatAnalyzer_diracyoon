@@ -314,9 +314,9 @@ TString HNL_RegionDefinitions::RunSignalRegionAK8String(HNL_LeptonCore::Channel 
 
   double met2_st = GetMET2ST(leps, JetColl, AK8_JetColl, METv);
   double HT      = GetHT(JetColl, AK8_JetColl);
-  bool PassHMMet    = (met2_st < 15);
+  bool PassHMMet    = (met2_st < 10);
   bool PassBJetMVeto = (B_JetColl.size()==0);
-  double LowerMassSR1WmassCut = 500.;
+  double LowerMassSR1WmassCut = 450.;
   
   TString signal_region1 = "HNL_SR1";
   
@@ -332,27 +332,13 @@ TString HNL_RegionDefinitions::RunSignalRegionAK8String(HNL_LeptonCore::Channel 
   FillCutflow(HNL_LeptonCore::SR1, w, "SR1_bveto",param);    
 
   FillCutflow(HNL_LeptonCore::ChannelDepSR1, w, GetChannelString(channel) +"_SR1",param);
-  
-  if(leps[0]->Pt() < 100) return "SR1_MNbin1";
-  FillCutflow(HNL_LeptonCore::SR1, w, "SR1_LepPt",param);
 
  
-  double dPhil2_l = fabs(TVector2::Phi_mpi_pi( ( (AK8_JetColl[0] + *leps[1]).Phi() - (leps[0]->Phi() ))));
-  double dRl2_l2_cut = 2.;
-  if(dPhil2_l < dRl2_l2_cut) return "SR1_MNbin1";
-  FillCutflow(HNL_LeptonCore::SR1, w, "SR1_DphiN_Wlep",param);
-  
-  if(HasTightTau) return "false";
-  
-  FillCutflow(HNL_LeptonCore::SR1, w, "SR1_TauVeto",param);
-
-  if( ( HT/leps[0]->Pt()) > 4.) return "SR1_MNbin1";
-
-  FillCutflow(HNL_LeptonCore::SR1, w, "SR1_HTPt",param);
-
+  double pt_cut = 100.;
+  if(DataEra=="2018")  pt_cut = 200.; 
 
   //Fill Limit plot
-  
+ 
   float dijetmass_tmp=999.;
   float dijetmass=9990000.;
   
@@ -365,41 +351,21 @@ TString HNL_RegionDefinitions::RunSignalRegionAK8String(HNL_LeptonCore::Channel 
     }
   }
   
-  
+
   Particle N1cand = AK8_JetColl[m] + *leps[0];
   double MN1 = (N1cand.M() > 2000.) ? 1999. : N1cand.M();
-      
-  int nSRbins=5;
-  double ml1jbins[nSRbins] = { 0., 500., 750., 1000., 2000.};
-  
-      
+  if(MN1 > 225){
+    if(leps[0]->Pt() < pt_cut)  return "SR1_MNbin1";
+    FillCutflow(HNL_LeptonCore::SR1, w, "SR1_LepPt",PNMass);
+  }
+  else   if(MN1 > 150){
+    if(leps[0]->Pt() < pt_cut-50)  return "SR1_MNbin1";
+    FillCutflow(HNL_LeptonCore::SR1, w, "SR1_LepPt",PNMass);
+  }
+
+ 
+     
   FillHist( param.Name+"/LimitShape_SR1/PreCuts_N1Mass_Central",  MN1,  w, nSRbins-1, ml1jbins, "Reco M_{l1jj}");
-  
-  TString SR1Bin2="SR1_MNbin2";
-  
-  if(channel==MuMu){
-    if(MN1 > 225){
-      if(leps[0]->Pt() < 140)   return SR1Bin2;
-    }
-    else   if(MN1 > 150){
-      if(leps[0]->Pt() < 70)   return SR1Bin2;
-    }
-  }
-  if(channel==EE || channel==EMu){
-    if(MN1 > 635){
-      if(leps[0]->Pt() < 140)   return SR1Bin2;
-    }
-    else   if(MN1 > 550){
-      if(leps[0]->Pt() < 120)   return SR1Bin2;
-    }
-    else if(MN1 > 440){
-      if(leps[0]->Pt() < 120)   return SR1Bin2;
-    }
-    else   if(MN1 > 270){
-      if(leps[0]->Pt() < 100)   return SR1Bin2;
-    }
-  }
-      
   
   FillCutflow(HNL_LeptonCore::SR1, w, "SR1_masscuts",param);
       
@@ -407,8 +373,10 @@ TString HNL_RegionDefinitions::RunSignalRegionAK8String(HNL_LeptonCore::Channel 
   
   Fill_RegionPlots(param,"FinalSR1" ,  TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w);
   
+  int nSRbins=8;
+  double ml1jbins[nSRbins] = { 0., 500, 600.,700.,850, 1000.,1400, 2000.};
   for(int ibin=1; ibin < nSRbins; ibin++){
-    if(MN1 < ml1jbins[ibin]) return "SR1_MNbin"+to_string(ibin+2);
+    if(MN1 < ml1jbins[ibin]) return "SR1_MNbin"+to_string(ibin+1);
   }
   
   return "true";
@@ -493,10 +461,10 @@ TString HNL_RegionDefinitions::RunSignalRegionWWString(HNL_LeptonCore::Channel c
   Fill_RegionPlots(param,"PassSR2" ,  TauColl, JetColl, AK8_JetColl, leps,  METv, nPV, w);
 
 
-  double htltcut = 2.;
+  double htltcut = 1.;
 
   double met2_st = GetMET2ST(leps, JetColl, AK8_JetColl, METv);
-  bool PassHMMet    = (met2_st < 12);  ////// An option to add since we have MET in SR1/3
+  bool PassHMMet    = (met2_st < 10);  ////// An option to add since we have MET in SR1/3
   
   if(PassHMMet) {
     FillCutflow(HNL_LeptonCore::SR2, w, "SR2_met",param);
@@ -509,17 +477,15 @@ TString HNL_RegionDefinitions::RunSignalRegionWWString(HNL_LeptonCore::Channel c
 	
 	FillCutflow(HNL_LeptonCore::SR2, w, "SR2_bveto",param);
 	
-	double HTLT[3] = { 0.,1., 2};
-	double QHTLT[5] = { -2.,-1.,0.,1., 2};
-	FillHist( param.Name+"/LimitShape_SR2/HT_LT1_Central",  HT/leps[0]->Pt(),  w, 2, HTLT, "Reco HT/LT1");
-	FillHist( param.Name+"/LimitShape_SR2/Q_HT_LT1_Central",  (leps[0]->Charge()*HT)/leps[0]->Pt(),  w, 4 , QHTLT, "Reco HT/LT1 * Q");
-	
-	FillCutflow(HNL_LeptonCore::ChannelDepSR2, w, GetChannelString(channel) +"_SR2",param);
-	FillCutflow(HNL_LeptonCore::SR2, w, "SR2_Final",param);
-	
-	
-	if (HT/leps[0]->Pt() < 1)      return "SR2_HTLTbin1";
+
+	double PTBin[5] = { 0.,50, 100., 120., 200};
+	double L2Pt = (leps[1]->Pt() > 200) ? 199. : leps[1]->Pt();
+	if(param.WriteOutVerbose == 0)FillHist( "LimitSR2/"+param.Name+"/PT2_LT1_Central",  L2Pt,  w, 4, PTBin, "Reco PTLep2");
+
+
+	if (L2Pt > 120)      return "SR2_HTLTbin1";
 	return "SR2_HTLTbin2";
+
       }
     }
   }
@@ -688,47 +654,34 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4String(HNL_LeptonCore::Channel 
   Particle N1cand = JetColl[m] + JetColl[n]+ *leps[0];
   Particle N2cand = JetColl[m] + JetColl[n]+ *leps[1];
   Particle Wcand = JetColl[m] + JetColl[n]+ *leps[0]+ *leps[1];
-  double LT = leps[0]->Pt() + leps[1]->Pt();
-  //double dRl2JJ = leps[1]->DeltaR(JetColl[m] + JetColl[n]);
 
-  TString sbin="";
+  Particle NCand = (leps[1]->Pt() < leps[0]->Pt()) ? N2cand : N1cand;
+  Lepton Nlep = (leps[1]->Pt() < 100.) ?  *leps[1] : *leps[0];
+  Lepton Wlep = (leps[1]->Pt() > 100.) ? *leps[1] : *leps[0];
 
-  if(LT > 150){
-    if(N1cand.M() > 350.) {
-      if(Wcand.M() > 600)  {
-	sbin="3";
-	bin=3;
-      }
-      else  {
-	sbin="4";
-	bin=4;
-      }
-    }
-    else {
-      sbin="5";
-      bin=5;
-    }
+  if(Wcand.M() < 400) return "SR3_bin3";
+  FillCutflow(HNL_LeptonCore::SR3, w, "SR3_W1Mass",param);
+  if(leps[1]->Pt() < 20) return "SR3_bin3";
+  if(leps[0]->Pt() < pt_bin2) return "SR3_bin3";
+  FillCutflow(HNL_LeptonCore::SR3, w, "SR3_LepPt",param);
+
+  double Lep_LT = (leps[0]->Pt()+leps[1]->Pt());
+
+  if(met2_st < 2){
+    if(N1cand.M() < 500.)   return "SR3_bin4";
+    if(N1cand.M() < 750.)   return "SR3_bin5";
+    return "SR3_bin6";
   }
-  else {
-    if(N1cand.M() > 250.) {
-      sbin="6";
-      bin=6;
-    }  
-    else {
-      sbin="7";
-      bin=7;
-    }
+  else   if(met2_st < 7){
+    if(N1cand.M() < 500.)   return "SR3_bin7";
+    if(N1cand.M() < 750.)   return "SR3_bin8";
+    return "SR3_bin9";
   }
+  else{
+    if(N1cand.M() < 750.)   return "SR3_bin10";
+  }
+  return "SR3_bin11";
 
-  FillHist( param.Name+"/LimitShape_SR3/SignalBins",   bin, w, 16, 0, 16., "Signalbins");
-  double qbin = bin*double(leps[0]->Charge());
-  FillHist( param.Name+"/LimitShape_SR3/SignalBinsQ",   qbin, w, 32, -16, 16, "Signalbins");
-  
-  TString signal_region = "HNL_SR3";
-  
-  FillCutflow(HNL_LeptonCore::ChannelDepSR3, w, GetChannelString(channel) +"_SR3",param);
-
-  return "SR3_bin"+sbin;
   
 }
 
