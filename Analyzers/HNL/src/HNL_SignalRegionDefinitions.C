@@ -542,11 +542,11 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4StringBDT(bool isSR, TString mN
   if(B_JetColl.size() > 0)    return "false";
   if(MVAvalue< 0.0) return LabelPrefix+"_BDTbin1";
   else if(MVAvalue< 0.10) return LabelPrefix+"_BDTbin2";
-  else if(MVAvalue< 0.15) return LabelPrefix+"_BDTbin3";
-  else if(MVAvalue< 0.2) return LabelPrefix+"_BDTbin4";
-  else if(MVAvalue< 0.25) return LabelPrefix+"_BDTbin5";
-  else if(MVAvalue< 0.3) return LabelPrefix+"_BDTbin6";
-  else if(MVAvalue< 0.35) return LabelPrefix+"_BDTbin7";
+  else if(MVAvalue< 0.125) return LabelPrefix+"_BDTbin3";
+  else if(MVAvalue< 0.15) return LabelPrefix+"_BDTbin4";
+  else if(MVAvalue< 0.175) return LabelPrefix+"_BDTbin5";
+  else if(MVAvalue< 0.2) return LabelPrefix+"_BDTbin6";
+  else if(MVAvalue< 0.225) return LabelPrefix+"_BDTbin7";
   else  return LabelPrefix+"_BDTbin8";
 
   return "true";
