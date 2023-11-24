@@ -77,8 +77,10 @@ fi
 
 if [[ $1 == "" ]]; then
 
-    declare  -a era_list=("2017" "2018" "2016postVFP" "2016preVFP")
-    declare  -a flag_list=("SS_CR" "LLL_VR" "VBF_CR")
+    #declare  -a era_list=("2017" "2018" "2016postVFP" "2016preVFP")
+    declare  -a era_list=("2017")
+    #declare  -a flag_list=("SS_CR" "LLL_VR" "VBF_CR")
+    declare  -a flag_list=("LLL_VR")
     #declare  -a flag_list=("SS_CR")
     # "LLL_VR")
 
@@ -117,7 +119,7 @@ fi
 
 if [[ $1 == "Fix" ]]; then
 
-    declare  -a era_list=("2016postVFP")
+    declare  -a era_list=("2016postVFP" "2018")
     declare  -a flag_list=( "SS_CR"  "LLL_VR" "VBF_CR" )
 
     for i in "${era_list[@]}"
@@ -126,8 +128,8 @@ if [[ $1 == "Fix" ]]; then
         for j in "${flag_list[@]}"
         do
             FLAG=$j
-                SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_MuMu.txt      -n 100  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT  --userflags $FLAG,RunFake   &
-                SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_EE.txt      -n 100    --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT  --userflags $FLAG,RunFake   &
+            SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_MuMu.txt      -n 100  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT  --userflags $FLAG,RunFake   &
+            SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_EE.txt      -n 100    --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT  --userflags $FLAG,RunFake   &
         done
     done
 

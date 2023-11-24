@@ -170,13 +170,12 @@ void HNL_LeptonFakeRateMC::RunM(std::vector<Electron> loose_el,  std::vector<Muo
       std::vector<Jet>    AK4_JetColl       = GetHNLJets(param.AK4JetColl,     param);
 
       bool Lep1Prompt=false;
-      bool Lep2Prompt=false;
+
       for(unsigned int i=2; i<All_Gens.size(); i++){   
 	Gen gen = All_Gens.at(i);
 
 	if(fabs(gen.PID()) == 13 || fabs(gen.PID()) == 11){
 	  if(leps[0]->DeltaR(gen) < 0.4) Lep1Prompt=true;	    
-	  if(leps[1]->DeltaR(gen) < 0.4) Lep2Prompt=true;	    
 	}	
       }
 
@@ -396,21 +395,6 @@ void HNL_LeptonFakeRateMC::RunM(std::vector<Electron> loose_el,  std::vector<Muo
 	}
 
       }      
-
-      if(leps[1]->IsPrompt() && leps[1]->PassLepID() && leps[0]->LeptonFlavour() == Lepton::MUON &&  leps[0]->IsFake()){
-
-        double PTPartonSF    = GetPtPartonSF(*leps[0],param.Muon_Loose_ID);
-        double MVACut        = leps[0]->MVAFakeCut(param.Muon_Tight_ID,GetYearString());
-        double PtCorr        = (leps[0]->CalcMVACone(MVACut)  < 80 )       ? leps[0]->CalcMVACone( MVACut)  : 79;
-        double lep_ptparton  = (leps[0]->PtParton(PTPartonSF,MVACut) < 80) ? leps[0]->PtParton(PTPartonSF,MVACut) : 79;
-
-
-        TString FRKey = "MC_"+param.Muon_Loose_ID+"_J25_FR_cent";
-	FRKey = FRKey.ReplaceAll("_"+GetYearString(),"");
-	FRKey = FRKey.ReplaceAll("_ULID","_ID");
-
-
-      } 
 
     }
     return;
@@ -783,7 +767,7 @@ bool HNL_LeptonFakeRateMC::UseEvent(std::vector<Lepton *> leps ,  std::vector< J
       for (unsigned int ielT=0; ielT < leps.size(); ielT++){
         for(unsigned int ij=0; ij < jets.size(); ij++){
           if(jets.at(ij).Pt() < awayjetcut) continue;
-          float dphi =fabs(TVector2::Phi_mpi_pi(leps.at(ielT)->Phi()- jets.at(ij).Phi()));
+	  //       float dphi =fabs(TVector2::Phi_mpi_pi(leps.at(ielT)->Phi()- jets.at(ij).Phi()));
 	  if( (jets.at(ij).ChargedEmEnergyFraction()) > 0.65)  continue;
 
           if(leps.at(ielT)->DeltaR(jets.at(ij))> 0.7){

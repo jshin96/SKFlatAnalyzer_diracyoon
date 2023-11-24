@@ -35,7 +35,6 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
 
   SetupTriggerLists();
 
-
   if(IsDYSample) SetupZptWeight();
 
   //==== MCCorrection                                                                                                                                       
@@ -51,7 +50,7 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
 
   //// Read Histograms Moved from Initialise Tools
   if(!IsDATA){
-    mcCorr->ReadHistograms();
+    if(!Analyzer.Contains("SkimTree")) mcCorr->ReadHistograms();
     mcCorr->SetupJetTagging();
   }
 
@@ -59,21 +58,17 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
   puppiCorr->ReadHistograms();
 
   //==== FakeBackgroundEstimator                                                                                                                                            
-  if(RunFake&&READBKGHISTS){
-    fakeEst->SetEra(GetEra());
-    //if(Analyzer.Contains("Fake")) fakeEst->ReadHistograms(IsDATA,true);
-    //else fakeEst->ReadHistograms(IsDATA,false);
-    fakeEst->ReadHistograms(IsDATA,true); /// For now when checking
-
-  }
+  fakeEst->SetEra(GetEra());
+  if(RunFake&&READBKGHISTS)     fakeEst->ReadHistograms(IsDATA,true); /// For now when checking                                                                                                                    
+  else if(Analyzer.Contains("Fake") && !Analyzer.Contains("SkimTree") ) fakeEst->ReadHistograms(IsDATA,true); ///
 
   //==== CFBackgroundEstimator                                                                                                                                              
-  if(RunCF&&READBKGHISTS){
-    cfEst->SetEra(GetEra());
-    cfEst->ReadHistograms();
-  }
+  cfEst->SetEra(GetEra());
+  if(RunCF&&READBKGHISTS)     cfEst->ReadHistograms();
+  else if (Analyzer.Contains("ChargeFlip"))  cfEst->ReadHistograms();
 
-  if(SETUPIDBDT) SetupIDMVAReaderDefault();
+
+  if(SETUPIDBDT) SetupIDMVAReaderDefault(false,true);
 
 }
 

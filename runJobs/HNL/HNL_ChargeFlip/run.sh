@@ -32,6 +32,8 @@ fi
 
 if [[ $1 == "Rates" ]]; then
 
+    declare  -a era_list=("2017")
+
     for i in "${era_list[@]}"
     do
         SKFlat.py -a $analyzer -l $mcpath/DYMG.txt   -n 600  --nmax 500   -e ${i}  --skim SkimTree_DileptonBDT --userflags ElCFRates&  
@@ -45,7 +47,7 @@ fi
 
 if [[ $1 == "SF" ]]; then
     
-    declare  -a era_list=("2017")
+
     for i in "${era_list[@]}"
     do
 	SKFlat.py -a $analyzer  -i ZGToLLG       -n 50  --nmax 500   -e ${i} --skim SkimTree_HNMultiLepBDT --userflags ScaleFactor&

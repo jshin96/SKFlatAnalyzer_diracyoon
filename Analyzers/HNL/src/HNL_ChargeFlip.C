@@ -21,7 +21,7 @@ void HNL_ChargeFlip::initializeAnalyzer(){
 void HNL_ChargeFlip::executeEvent(){
   
   
-  vector<TString> LepIDs = {"HNL_ULID_"+GetYearString(),"HNTightV2","TopHN", "POGTight"};
+  vector<TString> LepIDs = {"HNL_ULID_"+GetYearString(),"HNTightV2", "POGTight"};
   vector<TString> CFMethods ={};
   //"CFRate_PtInv","CFRate_Pt"};    
   //if(HasFlag("ShiftEnergy")) LepIDs = { "POGTight"};
@@ -185,6 +185,9 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 
       if(HasFlag("RateNoShift")) PtShift = 1.;
       
+      FillHist(param.Name+"/CFrate/EtaRegion_Denom",ElectronColl.at(i).InvPt(), EvWeight, nbins_invpt, invptbins,"#pT^{-1}");
+      if(IsCF)  FillHist(param.Name+"/CFrate/EtaRegion_Num",ElectronColl.at(i).InvPt(PtShift), EvWeight, nbins_invpt, invptbins,"#pT^{-1}");
+
       if(abs(ElectronColl.at(i).scEta())<0.8){
 	FillHist(param.Name+"/CFrate/EtaRegion1_Denom",ElectronColl.at(i).InvPt(), EvWeight, nbins_invpt, invptbins,"#pT^{-1}");
 	if(IsCF)  FillHist(param.Name+"/CFrate/EtaRegion1_Num",ElectronColl.at(i).InvPt(PtShift), EvWeight, nbins_invpt, invptbins,"#pT^{-1}");
@@ -233,8 +236,16 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
       }
       
       double pTbin[13] = {0.,20.,30.,35., 40.,45., 50.,65., 80.,  100., 150., 200.,500.};
+      double pTbin2[7] = {15.,40.,65.,  100., 150., 200.,500.};
+
       int nbin = 12;//pTbin.size()-1;
       
+      FillHist(param.Name+"/CFratePt/EtaRegion_Denom", ElectronColl.at(i).PtMaxed(500), EvWeight,nbin, pTbin,"pT");
+      if(IsCF)   FillHist(param.Name+"/CFratePt/EtaRegion_Num", ElectronColl.at(i).PtMaxed(500)*PtShift, EvWeight,nbin, pTbin,"pT");
+
+      FillHist(param.Name+"/CFratePt2/EtaRegion_Denom", ElectronColl.at(i).PtMaxed(500), EvWeight,6, pTbin2,"pT");
+      if(IsCF)   FillHist(param.Name+"/CFratePt2/EtaRegion_Num", ElectronColl.at(i).PtMaxed(500)*PtShift, EvWeight,6, pTbin2,"pT");
+
       if(abs(ElectronColl.at(i).scEta())<0.8){
 	FillHist(param.Name+"/CFratePt/EtaRegion1_Denom", ElectronColl.at(i).PtMaxed(500), EvWeight,nbin, pTbin,"pT");
 	if(IsCF)   FillHist(param.Name+"/CFratePt/EtaRegion1_Num", ElectronColl.at(i).PtMaxed(500)*PtShift, EvWeight,nbin, pTbin,"pT");

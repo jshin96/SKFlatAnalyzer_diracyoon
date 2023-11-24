@@ -305,6 +305,13 @@ double HNL_LeptonCore::GetCFSF(AnalyzerParameter param, std::vector<Lepton* > le
 }
 
 
+double HNL_LeptonCore::GetCFWeightElectron(std::vector<Electron> El ,  AnalyzerParameter param, bool ApplySF){
+
+  std::vector<Lepton *> Leptons = MakeLeptonPointerVector(El,param);
+  return GetCFWeightElectron(Leptons, param, ApplySF);
+
+}
+
 double HNL_LeptonCore::GetCFWeightElectron(std::vector<Lepton* > leps ,  AnalyzerParameter param, bool ApplySF){
 
   vector<double> el_pt,el_eta;
@@ -345,6 +352,14 @@ double HNL_LeptonCore::GetZMassShift(vector<Electron> Electrons) {
     if(Electrons[0].IsEC() && Electrons[1].IsEC())  return 0.993;
     return (0.988+0.993)/2.;
   }
+  else if(DataEra=="2018"){
+    /// 2018/16 Need updating
+    if(Electrons[0].IsBB() && Electrons[1].IsBB())  return 0.988;
+    if(Electrons[0].IsEC() && Electrons[1].IsEC())  return 0.993;
+    return (0.988+0.993)/2.;
+  }
+  else     return (0.988);
+  
   return 1;
 
 }

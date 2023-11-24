@@ -1,6 +1,7 @@
 analyzer=HNL_SignalStudies
 rundir=HNL_SignalStudies
 mcpath=${SKFlat_WD}/runJobs/HNL/${analyzer}/Bkg/
+sigpath=${SKFlat_WD}/runJobs/SampleLists/Signals/
 datapath=${SKFlat_WD}/runJobs/HNL/${analyzer}/DATA/
 njobs=20
 njobs_data=20
@@ -16,9 +17,9 @@ if [[ $1 == "Sig" ]]; then
 
     for i in "${era_list[@]}"
     do
-	SKFlat.py -a $analyzer  -l $mcpath/SSWW.txt  -n $njobs  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT&
-	SKFlat.py -a $analyzer  -l $mcpath/DY.txt  -n $njobs  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT&
-	SKFlat.py -a $analyzer  -l $mcpath/VBF.txt  -n $njobs  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT&
+	SKFlat.py -a $analyzer  -l $sigpath/SSWW.txt  -n $njobs  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT&
+	SKFlat.py -a $analyzer  -l $sigpath/DY.txt  -n $njobs  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT&
+	SKFlat.py -a $analyzer  -l $sigpath/VBF.txt  -n $njobs  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT&
 	
 
     done

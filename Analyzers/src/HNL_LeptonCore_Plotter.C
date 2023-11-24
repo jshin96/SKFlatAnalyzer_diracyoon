@@ -105,11 +105,6 @@ void HNL_LeptonCore::Fill_PlotsAK8(AnalyzerParameter param, TString region, TStr
     if(DrawLevel2)FillHist( plot_dir+region+"/AK8J_Tagger_particleNet_QCD"    , fatjets[i].GetTaggerResult(JetTagging::particleNet_QCD)   , w, 50, 0, 1., "JetTagging::particleNet_WvsQCD");
     if(DrawLevel2)FillHist( plot_dir+region+"/AK8J_Tagger_particleNetMD_QCD"  , fatjets[i].GetTaggerResult(JetTagging::particleNetMD_QCD) , w, 50, 0, 1., "JetTagging::particleNetMD_WvsQCD");
     
-    
-    if(fabs(fatjets[i].Eta()) < 2.4) {
-      JetTagging::Parameters jtp = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
-      if( fatjets[i].GetTaggerResult(jtp.j_Tagger) <= mcCorr->GetJetTaggingCutValue(jtp.j_Tagger, jtp.j_WP) ) nBJetAK8++;
-    }
   }
 
   if(DrawLevel1)  FillHist( plot_dir+region+ "/AK8J_NB", fatjets.size() ,     w, 5, 0., 5., "N_{AK8 jets}");
