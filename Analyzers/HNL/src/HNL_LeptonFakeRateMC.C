@@ -170,13 +170,43 @@ void HNL_LeptonFakeRateMC::RunM(std::vector<Electron> loose_el,  std::vector<Muo
       std::vector<Jet>    AK4_JetColl       = GetHNLJets(param.AK4JetColl,     param);
 
       bool Lep1Prompt=false;
-
+      bool Lep2Prompt=false;
+      
       for(unsigned int i=2; i<All_Gens.size(); i++){   
 	Gen gen = All_Gens.at(i);
-
-	if(fabs(gen.PID()) == 13 || fabs(gen.PID()) == 11){
-	  if(leps[0]->DeltaR(gen) < 0.4) Lep1Prompt=true;	    
-	}	
+	
+	if(gen.Status() != 1) continue;
+	int mindex = All_Gens.at(i).MotherIndex();
+	int MotherPID = fabs(All_Gens.at(mindex).PID());
+	bool PromptLepMu = (MotherPID == 13)  || (MotherPID == 15);
+	bool PromptLepEl = (MotherPID == 11) || (MotherPID == 15);
+	
+	while (MotherPID > 10 && MotherPID < 16){
+	  mindex = All_Gens.at(mindex).MotherIndex();
+	  MotherPID= fabs(All_Gens.at(mindex).PID());
+	}
+	
+	bool PromptLepMuFull = PromptLepMu &&  ((MotherPID == 21)  || (MotherPID < 6));
+	bool PromptLepElFull = PromptLepEl &&  ((MotherPID == 21)  || (MotherPID < 6));
+	
+	if(fabs(gen.PID()) == 13){
+	  if(PromptLepMuFull && leps[0]->LeptonFlavour() == Lepton::MUON && leps[0]->DeltaR(gen) < 0.1) Lep1Prompt=true;	    
+	  if(PromptLepMuFull &&leps[1]->LeptonFlavour() == Lepton::MUON && leps[1]->DeltaR(gen) < 0.1) Lep2Prompt=true;	    
+	}
+	if(fabs(gen.PID()) == 11){
+          if(PromptLepElFull &&leps[0]->LeptonFlavour() != Lepton::MUON && leps[0]->DeltaR(gen) < 0.1) Lep1Prompt=true;
+          if(PromptLepElFull &&leps[1]->LeptonFlavour() != Lepton::MUON && leps[1]->DeltaR(gen) < 0.1) Lep2Prompt=true;
+        }
+      }
+      
+      if(MCSample.Contains("Sherpa")) {
+	
+	if(Lep1Prompt&&Lep2Prompt){
+	  cout << leps[0]->LeptonFlavour() << " " << leps[1]->LeptonFlavour() << endl;
+	  cout << "leps[0]->IsPrompt() = " << leps[0]->IsPrompt()  << " leps[1]->IsPrompt() = " << leps[0]->IsPrompt()  << " Lep1Prompt = " <<  Lep1Prompt  <<  " Lep2Prompt= " << Lep2Prompt << endl;
+	  cout << "leps[0] " << leps[0]->Pt() << " " << leps[0]->Eta() << "  Leps1 "  << leps[1]->Pt() << " " <<leps[1]->Eta() << endl;
+	  PrintGen(All_Gens);
+	}
       }
 
       if(!MCSample.Contains("Sherpa")) Lep1Prompt = (leps[0]->IsPrompt() && leps[0]->PassLepID() && leps[1]->LeptonFlavour() == Lepton::MUON &&  leps[1]->IsFake());
