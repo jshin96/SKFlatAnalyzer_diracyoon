@@ -51,7 +51,13 @@ void HNL_SignalStudies::executeEvent(){
   FillHist ("ObjectCount/SS_NoCut", 1, weight, 2, 0., 2.,"");
 
   FillTimer("SS_EV");
+
+  AnalyzerParameter param1  = InitialiseHNLParameter("HNTightV2");
   
+  std::vector<Electron>   ElectronCollV1 = GetElectrons(param1.Electron_Veto_ID, 10., 2.5);
+  std::vector<Muon>       MuonCollV1     = GetMuons    (param1.Muon_Veto_ID, 5., 2.4);
+  
+
   vector<HNL_LeptonCore::Channel> channels = {EE,MuMu};
   
   for(auto dilep_channel : channels){

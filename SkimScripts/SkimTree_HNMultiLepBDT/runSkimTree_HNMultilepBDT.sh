@@ -9,6 +9,12 @@ nmax=500
 declare  -a era_list=("2016postVFP" "2016preVFP"  "2017" "2018")
 
 
+if [[ $1 == "WR" ]]; then
+
+    SKFlat.py -a $analyzer  -l $sigpath/WROffshell.txt -n 20  --nmax ${nmax}   -e 2018 &
+
+fi
+
 if [[ $1 == "Signal" ]]; then
 
     for i in "${era_list[@]}"

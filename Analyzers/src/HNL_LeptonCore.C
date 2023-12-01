@@ -68,7 +68,7 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
   else if (Analyzer.Contains("ChargeFlip"))  cfEst->ReadHistograms();
 
 
-  if(SETUPIDBDT) SetupIDMVAReaderDefault(false,true);
+  if(SETUPIDBDT) SetupIDMVAReaderDefault(false,false);
 
 }
 

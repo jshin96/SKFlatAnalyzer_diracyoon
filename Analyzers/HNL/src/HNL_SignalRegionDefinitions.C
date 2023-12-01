@@ -153,7 +153,6 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
    
 
     if(!PassPreselection(dilep_channel,qq, leps, leps_veto, TauColl, JetColl, VBF_JetColl, AK8_JetColl, B_JetColl,ev, METv ,param_channel,"", weight_channel)) continue;
-    return ; //FIX
 
     TString  lep_charge =  (leps[0]->Charge() < 0)  ? "QM" :  "QP";
     

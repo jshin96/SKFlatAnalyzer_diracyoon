@@ -18,10 +18,10 @@ if [[ $1 == "WG" ]]; then
     
 fi
 
-if [[ $1 == "M1000" ]]; then
+if [[ $1 == "WR" ]]; then
 
-    SKFlat.py -a $analyzer  -i VBFTypeI_DF_M1000_private  -n 10  --nmax ${nmax}   -e 2017  --skim SkimTree_HNMultiLepBDT&
-    SKFlat.py -a $analyzer  -i DYTypeI_DF_M1000_private  -n 10  --nmax ${nmax}   -e 2017  --skim SkimTree_HNMultiLepBDT&
+    
+    SKFlat.py -a $analyzer  -l $sigpath/WROffshell.txt -n 10  --nmax ${nmax}   -e 2018  --skim SkimTree_HNMultiLepBDT&
 
 fi
 
