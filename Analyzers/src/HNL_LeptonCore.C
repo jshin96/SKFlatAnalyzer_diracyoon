@@ -1132,7 +1132,7 @@ bool HNL_LeptonCore::SelectChannel(HNL_LeptonCore::Channel channel){
   if(channel == EE   && process.Contains("SS_El-El-")) return true;
 
   if( (channel == EMu||channel == MuE) && (process.Contains("SS_El+Mu+")||process.Contains("SS_Mu+El+")) ) return true;
-  if( (channel == EMu||channel == MuE) && (process.Contains("SS_El+Mu+")||process.Contains("SS_Mu+El+")) ) return true;
+  if( (channel == EMu||channel == MuE) && (process.Contains("SS_El-Mu-")||process.Contains("SS_Mu-El-")) ) return true;
 
   return false;
 }

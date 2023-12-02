@@ -351,10 +351,23 @@ double HNL_LeptonCore::GetZMassShift(vector<Electron> Electrons) {
   if(Electrons.size() != 2) return 1;
 
   if(Electrons[0].Charge() == Electrons[1].Charge()) return 1;
+
+  if(DataEra=="2016preVFP"){
+    if(Electrons[0].IsBB() && Electrons[1].IsBB())  return 0.993;
+    if(Electrons[0].IsEC() && Electrons[1].IsEC())  return 0.996;
+    return (0.993+0.996)/2.;
+
+  }
+  else  if(DataEra=="2016postVFP"){
+    if(Electrons[0].IsBB() && Electrons[1].IsBB())  return 0.992;
+    if(Electrons[0].IsEC() && Electrons[1].IsEC())  return 0.995;
+    return (0.992+0.995)/2.;
+
+  }
   if(DataEra=="2017"){
-    if(Electrons[0].IsBB() && Electrons[1].IsBB())  return 0.988;
+    if(Electrons[0].IsBB() && Electrons[1].IsBB())  return 0.987;
     if(Electrons[0].IsEC() && Electrons[1].IsEC())  return 0.993;
-    return (0.988+0.993)/2.;
+    return (0.987+0.993)/2.;
   }
   else if(DataEra=="2018"){
     /// 2018/16 Need updating
@@ -362,7 +375,6 @@ double HNL_LeptonCore::GetZMassShift(vector<Electron> Electrons) {
     if(Electrons[0].IsEC() && Electrons[1].IsEC())  return 0.993;
     return (0.988+0.993)/2.;
   }
-  else     return (0.988);
   
   return 1;
 
