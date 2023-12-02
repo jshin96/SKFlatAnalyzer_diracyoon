@@ -371,6 +371,13 @@ bool AnalyzerParameter::HasFlag(TString JobName) {
 }
 
 
+void  AnalyzerParameter::SetChannel(TString inch){
+
+  if (inch == "MuE") Channel = "EMu";
+  else Channel = inch;
+  return;
+}
+
 TString  AnalyzerParameter::ChannelType(){
 
   if(Channel == "EE"   || Channel =="MuMu"       || Channel == "EMu"   || Channel == "MuE" ) return "Dilepton";

@@ -78,7 +78,6 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
 
     // Make channel speciific AnalyzerParameter                                                                                                              
     AnalyzerParameter param_channel = param;
-    param_channel.Channel = GetChannelString(dilep_channel);
 
     FillCutflow(HNL_LeptonCore::ChannelDepInc, weight_channel, GetChannelString(dilep_channel) +"_NoCut",param_channel);
 
@@ -134,13 +133,17 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
     HNL_LeptonCore::SearchRegion LimitRegions = HNL_LeptonCore::MuonSR;
     if (dilep_channel == EE) LimitRegions =HNL_LeptonCore::ElectronSR;
     if (dilep_channel == EMu) LimitRegions =HNL_LeptonCore::ElectronMuonSR;
+    if (dilep_channel == MuE) LimitRegions =HNL_LeptonCore::ElectronMuonSR;
+    
     HNL_LeptonCore::SearchRegion LimitRegionsQ = HNL_LeptonCore::MuonSRQQ;
     if (dilep_channel == EE) LimitRegionsQ =HNL_LeptonCore::ElectronSRQQ;
     if (dilep_channel == EMu) LimitRegionsQ =HNL_LeptonCore::ElectronMuonSRQQ;
+    if (dilep_channel == MuE) LimitRegionsQ =HNL_LeptonCore::ElectronMuonSRQQ;
 
     HNL_LeptonCore::SearchRegion LimitRegionsBDT = HNL_LeptonCore::MuonSRBDT;
     if (dilep_channel == EE) LimitRegionsBDT =HNL_LeptonCore::ElectronSRBDT;
     if (dilep_channel == EMu) LimitRegionsBDT =HNL_LeptonCore::ElectronMuonSRBDT;
+    if (dilep_channel == MuE) LimitRegionsBDT =HNL_LeptonCore::ElectronMuonSRBDT;
 
     /*HNL_LeptonCore::SearchRegion LimitRegionsBDTQ = HNL_LeptonCore::MuonSRBDTQQ;
     if (dilep_channel == EE) LimitRegionsBDTQ =HNL_LeptonCore::ElectronSRBDTQQ;
@@ -149,8 +152,7 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
     
     if (!PassTriggerSelection(dilep_channel, ev, leps,param.TriggerSelection)) continue;
     EvalTrigWeight(dilep_channel, muons,electrons,param, weight_channel);
-    
-   
+       
 
     if(!PassPreselection(dilep_channel,qq, leps, leps_veto, TauColl, JetColl, VBF_JetColl, AK8_JetColl, B_JetColl,ev, METv ,param_channel,"", weight_channel)) continue;
 

@@ -285,7 +285,7 @@ AnalyzerParameter HNL_LeptonCore::SetupFakeParameter(AnalyzerParameter::Syst Sys
 
   AnalyzerParameter param  ;
   param.Clear();
-  param.Channel  = GetChannelString(channel);
+  param.SetChannel(GetChannelString(channel));
   param.Name     = GetChannelString(channel)+"_"+PNAME;
   param.DefName  = PNAME;
   param.CutFlowDir = "CutFlowDir";
@@ -396,7 +396,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
   
   AnalyzerParameter param  ;
   param.Clear();
-  param.Channel  = channel_st;
+  param.SetChannel(channel_st);
   param.Name     = s_setup_version;
   param.DefName  = s_setup_version;
   param.CutFlowDir = "CutFlowDir";
@@ -1034,17 +1034,17 @@ TString HNL_LeptonCore::GetChannelString(HNL_LeptonCore::Channel channel, HNL_Le
   if (channel == EE) channel_string="EE";
   if (channel == MuMu) channel_string="MuMu";
   if (channel == EMu) channel_string="EMu";
-  if (channel == MuE) channel_string="MuE";
+  if (channel == MuE) channel_string="EMu";
 
   if (channel == EEE) channel_string="EEE";
   if (channel == EMuL) channel_string="EMuL";
-  if (channel == MuEL) channel_string="MuEL";
+  if (channel == MuEL) channel_string="EMuL";
   if (channel == MuMuMu) channel_string="MuMuMu";
 
   if (channel == EEEE) channel_string="EEEE";
   if (channel == MuMuMuMu) channel_string="MuMuMuMu";
   if (channel == EMuLL) channel_string="EMuLL";
-  if (channel == MuELL) channel_string="MuELL";
+  if (channel == MuELL) channel_string="EMuLL";
 
 
   if (q == Plus) channel_string+="_+";
@@ -1130,11 +1130,9 @@ bool HNL_LeptonCore::SelectChannel(HNL_LeptonCore::Channel channel){
   if(channel == MuMu && process.Contains("SS_Mu-Mu-")) return true;
   if(channel == EE   && process.Contains("SS_El+El+")) return true;
   if(channel == EE   && process.Contains("SS_El-El-")) return true;
-  if(channel == EMu  && process.Contains("SS_El+Mu+")) return true;
-  if(channel == EMu  && process.Contains("SS_El-Mu-")) return true;
-  if(channel == MuE  && process.Contains("SS_Mu+El+")) return true;
-  if(channel == MuE  && process.Contains("SS_Mu-El-")) return true;
 
+  if( (channel == EMu||channel == MuE) && (process.Contains("SS_El+Mu+")||process.Contains("SS_Mu+El+")) ) return true;
+  if( (channel == EMu||channel == MuE) && (process.Contains("SS_El+Mu+")||process.Contains("SS_Mu+El+")) ) return true;
 
   return false;
 }

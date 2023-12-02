@@ -134,7 +134,7 @@ class AnalyzerParameter{
   }
 
   TString ChannelType();
-
+  void SetChannel(TString inch);
   TString InclusiveChannelName();
   TString CutFlowDirChannel();
   TString CutFlowDirIncChannel();

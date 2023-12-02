@@ -291,6 +291,29 @@ void HNL_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
     return;
   }
 
+  if(HasFlag("ShiftCFStudy")){
+
+    for(auto iel : ElectronColl){
+      Gen MatchedGen = GetGenMatchedLepton(iel, All_Gens);
+      
+      if(iel.LeptonIsCF()) {
+
+	FillHist(param.Name+"/CFStudy/CF_El_Eta", iel.scEta() /MatchedGen.Eta() , EvWeight ,100, 0 , 5);
+	FillHist(param.Name+"/CFStudy/CF_El_Phi", iel.Phi() /MatchedGen.Phi() , EvWeight ,100, 0 , 5);
+        FillHist(param.Name+"/CFStudy/CF_El_E",   iel.E() /MatchedGen.E() , EvWeight ,100, 0 , 5);
+        FillHist(param.Name+"/CFStudy/CF_El_Pt",  iel.Pt() /MatchedGen.Pt() , EvWeight ,100, 0 , 5);
+      }
+      else{
+	FillHist(param.Name+"/CFStudy/Prompt_El_Eta", iel.scEta() /MatchedGen.Eta() , EvWeight ,100, 0 , 5);
+        FillHist(param.Name+"/CFStudy/Prompt_El_Phi", iel.Phi() /MatchedGen.Phi() , EvWeight ,100, 0 , 5);
+        FillHist(param.Name+"/CFStudy/Prompt_El_E",   iel.E() /MatchedGen.E() , EvWeight ,100, 0 , 5);
+        FillHist(param.Name+"/CFStudy/Prompt_El_Pt",  iel.Pt() /MatchedGen.Pt() , EvWeight ,100, 0 , 5);
+      }
+    }   
+    
+    return;
+  }
+
 
   
   if(HasFlag("ShiftEnergyZ")){

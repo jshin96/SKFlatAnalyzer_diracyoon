@@ -7,6 +7,17 @@ nmax=400
 skim=' '
 declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
 
+
+if [[ $1 == "Study" ]]; then
+    declare  -a era_list=("2018")
+
+    for i in "${era_list[@]}"
+    do
+	SKFlat.py -a $analyzer  -i DYJets           -n 600  --nmax 500   -e ${i}  --skim SkimTree_DileptonBDT --userflags ShiftCFStudy&
+        SKFlat.py -a $analyzer  -i TTLL_powheg      -n 600  --nmax 500   -e ${i}  --skim SkimTree_DileptonBDT --userflags ShiftCFStudy&
+    done
+fi
+
 if [[ $1 == "Shift" ]]; then
 
     for i in "${era_list[@]}"
