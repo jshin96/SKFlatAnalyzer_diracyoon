@@ -12,6 +12,14 @@ public:
 
   void  PrintObject(TString label);
 
+
+  inline bool HasCloseJet() const{
+    /// Some low Pt muons have no close jet since Jet Pt cut is 10 GeV in MINIAOD
+    /// So here Jet based var are set to a default val
+    
+    if(j_lep_jetbscore == 0.1 && j_lep_jetcvsbscore == 0.4 && j_lep_jetcvslscore == 0.1) return false;
+    return true;
+  }
   inline double MVCFCut(TString Year) {
 
     if(Year=="2016" && IsBB())  return el_mva_cut_cf_2016_B;
@@ -214,7 +222,7 @@ public:
   }
 
   inline TString GetEtaLabel(){
-    double eta = defEta();
+    double eta = fEta();
     if(fabs(eta) < 0.8 ) return "eta1";
     if(fabs(eta) < 1.5 ) return "eta2";
     if(fabs(eta) < 2.5 ) return "eta3";
@@ -241,14 +249,13 @@ public:
     else return (1/ptshift);
   }
 
-
-  inline double PtParton(double Corr, double MVACut){
+  inline double PtParton(double Corr, double MVACut, double UpperValue=1.5){
     double mva_val = j_lep_mva;
     if(j_LeptonFlavour!=MUON) mva_val=j_lep_mva_hnl_fake_ed_v5; 
       
     if (mva_val > MVACut)  return this->Pt();
     double ptpart = ( this->Pt() /j_lep_jetptratio ) * Corr;
-    if(ptpart > 1.5*this->Pt() ) return 1.5*this->Pt() ;
+    if(ptpart > UpperValue*this->Pt() ) return UpperValue*this->Pt() ;
     return ptpart;
   }
 
@@ -304,6 +311,24 @@ public:
   void SetHNL_CFLepMVA_EtaDependantV5( double mvacf,double mvacfpt);
 
   
+  map<TString, double> MAPBDTFake() const {
+    map<TString, double> _map;
+    if(j_LeptonFlavour==ELECTRON){
+      _map["El_ED_Fake_v5"]        = j_lep_mva_hnl_fake_ed_v5;
+      _map["El_Fake_QCD_LFvsHF_v5"]= j_lep_mva_hnl_fake_QCD_LFvsHF_v5;
+      _map["El_Fake_QCD_BvsC_v5"]  = j_lep_mva_hnl_fake_QCD_BvsC_v5;
+    }
+    else{
+      _map["Mu_Fake_QCD_LFvsHF_v5"] = j_lep_mva_hnl_fake_QCD_LFvsHF_v5;
+      _map["Mu_Fake_QCD_BvsC_v5"]   = j_lep_mva_hnl_fake_QCD_BvsC_v5;
+      _map["Mu_HF_Fake_POG"]        = j_lep_mva;
+    }
+    return _map;
+  }
+
+
+
+
   map<TString, double> MAPBDT() const {
 
     map<TString, double> _map;
@@ -351,7 +376,7 @@ public:
   }
 
 
-  inline double HNL_MVA_Fake(TString vers) const {
+  inline double HNL_MVA_Fake(TString vers="HNL") const {
 
     ///// v5 is July 23 MVA Trained                                                                                                                                                                                                       
     ///// v4 is Mar - May trained                                                                                                                                                                                                         
@@ -421,7 +446,7 @@ public:
       else if(vers=="EDv4")return j_lep_mva_hnl_conv_ed_v4;
       else if(vers=="EDv5")return j_lep_mva_hnl_conv_ed_v5;
     }
-    
+    else return 1;
     cout<<"[Lepton::HNL_MVA_CONV]"<< endl;
     exit(ENODATA);
 
@@ -437,6 +462,7 @@ public:
       else if(vers=="EDv5Pt")return j_lep_mva_hnl_ed_cf_v5Pt;
 
     }
+    else return 1;
     cout<<"[Lepton::HNL_MVA_CF] " << vers << endl;
     exit(ENODATA);
 
@@ -499,10 +525,10 @@ public:
     return "Pileup";
   }
 
-  inline double MotherJetPt()const{
+  inline double MotherJetPt(double UpperValue=1.5)const{
     double MotherJPt =  this->Pt()/ j_lep_jetptratio;
     if(MotherJPt < this->Pt()) return this->Pt();
-    if(MotherJPt > 1.5 *this->Pt()) return 1.5 *this->Pt();
+    if(MotherJPt > UpperValue *this->Pt()) return UpperValue *this->Pt();
     return this->Pt()/ j_lep_jetptratio;
   }
   
@@ -549,13 +575,47 @@ public:
   void SetLepIso(double ch, double nh, double ph);
 
   inline double fEta() const {return fabs(defEta());}
+
+  inline TString FakeTaggerString() const {
+    TString TaggerSt="";
+    if(j_lep_mva_hnl_fake_QCD_LFvsHF_v5 > 0.8) TaggerSt+="LF1_";
+    else if(j_lep_mva_hnl_fake_QCD_LFvsHF_v5 > 0.5) TaggerSt+="LF2_";
+    else if(j_lep_mva_hnl_fake_QCD_LFvsHF_v5 > 0.) TaggerSt+="LF3_";
+    else if(j_lep_mva_hnl_fake_QCD_LFvsHF_v5 > -0.5) TaggerSt+="LF4_";
+    else TaggerSt+="LF5_";
+    if(j_lep_mva_hnl_fake_QCD_BvsC_v5 > 0.8)  TaggerSt+="HF1";
+    else if(j_lep_mva_hnl_fake_QCD_BvsC_v5 > 0.2)  TaggerSt+="HF2";
+    else if(j_lep_mva_hnl_fake_QCD_BvsC_v5 > -0.4)  TaggerSt+="HF3";
+    else TaggerSt+="HF4";
+    
+    return TaggerSt;
+  }
+
+  inline TString FakeTaggerStringLF() const {
+
+    TString TaggerSt="";
+    if(j_lep_mva_hnl_fake_QCD_LFvsHF_v5 > 0.8) TaggerSt+="LF1";
+    else if(j_lep_mva_hnl_fake_QCD_LFvsHF_v5 > 0.5) TaggerSt+="LF2";
+    else if(j_lep_mva_hnl_fake_QCD_LFvsHF_v5 > 0.) TaggerSt+="LF3";
+    else if(j_lep_mva_hnl_fake_QCD_LFvsHF_v5 > -0.5) TaggerSt+="LF4";
+    else TaggerSt+="LF5_";
+    return TaggerSt;
+  }
+  inline TString FakeTaggerStringHF() const {
+    TString TaggerSt="";
+    if(j_lep_mva_hnl_fake_QCD_BvsC_v5 > 0.8)       TaggerSt+="HF1";
+    else if(j_lep_mva_hnl_fake_QCD_BvsC_v5 > 0.2)  TaggerSt+="HF2";
+    else if(j_lep_mva_hnl_fake_QCD_BvsC_v5 > -0.4)  TaggerSt+="HF3";
+    else TaggerSt+="HF4";
+    return TaggerSt;
+  }
+   
+
   inline TString LeptonFakeTagger() const {
-    if (j_lep_mva_hnl_fake_QCD_LFvsHF_v5 > 0.) return "LF";
-    else{
-      if(j_lep_mva_hnl_fake_QCD_BvsC_v5 > 0.7) return "HF1";
-      if(j_lep_mva_hnl_fake_QCD_BvsC_v5 > -0.4) return "HF2";
-      return "HF3";
-    }
+    if (j_lep_jetbscore > 0.2) return "HF1";
+    if (j_lep_jetbscore > 0.05) return "HF2";
+    if (j_lep_jetbscore > 0.025) return "HF3";
+    return "HF4";
   }
 
 
@@ -646,7 +706,7 @@ public:
   inline double CalcPtCone(double this_reliso, double Tight_reliso){
     return ( this->Pt() ) * ( 1. + max(0., (this_reliso-Tight_reliso)) );
   }
-  inline double CalcMVACone(double Tight_mva){
+  inline double CalcMVACone(double Tight_mva, double UpperValue=1.5){
     double this_mva (0.);
 
     if(j_LeptonFlavour==MUON) this_mva = j_lep_mva;
@@ -657,7 +717,7 @@ public:
     double MSlope  = 1  - (1 + this_mva) / (1+Tight_mva);  
     double PMDiff  = (j_lep_jetptratio < 1.) ? (this->Pt()/j_lep_jetptratio) - this->Pt() : 0; /// Mother Jet - Lepton (Similar to Iso)
     double MJProxy = (MSlope * PMDiff) + this->Pt() ;
-    if((MJProxy/this->Pt()) > 1.5) return 1.5*this->Pt();
+    if((MJProxy/this->Pt()) > UpperValue) return UpperValue*this->Pt();
     return MJProxy;
   }
 

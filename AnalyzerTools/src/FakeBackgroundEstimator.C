@@ -8,11 +8,11 @@ HasLooseLepton(false)
   MissingHists.clear();
   
   histDir = TDirectoryHelper::GetTempDirectory("FakeBackgroundEstimator");
-
+  
 }
 
-void FakeBackgroundEstimator::ReadHistograms(){
-
+void FakeBackgroundEstimator::ReadHistograms(bool IsData, bool ScanIDs){
+  
   TString datapath = getenv("DATA_DIR");
   
   TString DataFakePath = datapath+"/"+GetEra()+"/FakeRate/DataFR/";
@@ -21,12 +21,19 @@ void FakeBackgroundEstimator::ReadHistograms(){
   TDirectory* origDir = gDirectory;
 
   vector<TString> FakeHMaps = {   DataFakePath+"/ElFR/histmap_Electron.txt",
-				  DataFakePath+"/MuFR/histmap_Muon.txt",
-				  DataFakePath+"/MuFR/scan_histmap_Muon.txt",
-				  MCFakePath+"/ElFR/histmap_Electron.txt",
-				  MCFakePath+"/MuFR/histmap_Muon.txt"};
+				  DataFakePath+"/MuFR/histmap_Muon.txt"};
+  
+  if(ScanIDs) FakeHMaps.push_back(DataFakePath+"/MuFR/scan_histmap_Muon.txt");
+  if(ScanIDs) FakeHMaps.push_back(DataFakePath+"/ElFR/scan_histmap_Electron.txt");
 
+
+  if(!IsData){
+    cout << "Setting up MC Hists" << endl;
+    FakeHMaps = {	  MCFakePath+"/ElFR/histmap_Electron.txt",
+			  MCFakePath+"/MuFR/histmap_Muon.txt"};
+  }
   for(auto ihmap  :  FakeHMaps){
+    cout << ihmap << endl;
     string elline;
     ifstream in(ihmap);
     while(getline(in,elline)){
@@ -49,8 +56,8 @@ void FakeBackgroundEstimator::ReadHistograms(){
 	TString this_frname = histlist->At(i)->GetName();
 	
 	if (!b.Contains("Top")) {
-	  if (!this_frname.Contains(b)) continue;
-	  if (!this_frname.Contains(c)) continue;
+	  if (!this_frname.Contains(b+"_"+c)) continue;
+	  //if (!this_frname.Contains(c)) continue;
 	  if (!this_frname.Contains(d)) continue;
 	}
 	else{
@@ -66,7 +73,7 @@ void FakeBackgroundEstimator::ReadHistograms(){
 	if(ihmap.Contains("Electron")) cout << "[FakeBackgroundEstimator::FakeBackgroundEstimator] map_hist_Electron : " << a+"_"+b+"_"+c+"_"+d+ " --> "+this_frname << endl;
 	else cout << "[FakeBackgroundEstimator::FakeBackgroundEstimator] map_hist_Muon : " << a+"_"+b+"_"+c+"_"+d+ " --> "+this_frname << endl;
 	
-      }
+     }
       file->Close();
       delete file;
     }
@@ -92,30 +99,37 @@ double FakeBackgroundEstimator::GetFakeRate(bool IsMuon,TString ID, TString key,
   else return GetElectronFakeRate(ID, key, BinningMethod, BinningParam, eta, pt, FakeTagger, sys );
 
 }
-
+ 
 double FakeBackgroundEstimator::GetElectronFakeRate(TString ID, TString key, TString BinningMethod, TString BinningParam,double eta, double pt, TString FakeTagger, int sys){
+  
+  key=key.ReplaceAll("FO_2016","FO");
+  key=key.ReplaceAll("FO_2017","FO");
+  key=key.ReplaceAll("FO_2018","FO");
+
 
   TString PtType = "pt_eta_";
   if(BinningParam.Contains("PtCone" ))  PtType = "ptcone_eta_";
   if(BinningParam == "PtParton") PtType= "ptparton_eta_";
   if(BinningParam == "PtCorr")   PtType= "ptcorr_eta_";
+  if(BinningParam == "PtParton2p0") PtType= "ptparton2_eta_";
+  if(BinningParam == "PtCorr2p0")   PtType= "ptcorr2_eta_";
   if(BinningParam == "MotherPt") PtType= "mjpt_eta_";
 
-  if(BinningMethod == "BDTFlavour" )   key =  PtType+  + key;
+  if(BinningMethod != "BDTFlavour" )   key =  PtType+  + key;
   else key = FakeTagger+"_"+ PtType+  key;
-
+  
   if(BinningMethod == "BDTFlavour" && FakeTagger == ""){
     cout << "[FakeBackgroundEstimator::GetElectronFakeRate] BinningMethod Error" <<endl;
     exit(ENODATA);
   }
-
-
+  
+  
   double value = 1.;
   double error = 0.;
-
+  
   eta = fabs(eta);
-
-  if(pt >= 80)  pt = 79;
+  
+  if(pt >= 60)  pt = 59;
   if(pt < 10) pt = 10;
   
   if(BinningMethod == "BDTFlavour" ) {
@@ -128,9 +142,9 @@ double FakeBackgroundEstimator::GetElectronFakeRate(TString ID, TString key, TSt
   }
   
   std::map< TString, TH2D* >::const_iterator mapit;
-  //  cout << "FakeRate_"+ID+"_"+key << " ---" <<  endl;
+  //  cout << "EL KEY FakeRate_"+ID+"_"+key << " ---" <<  endl;
   mapit = map_hist_Electron.find("FakeRate_"+ID+"_"+key);
-
+  
   if(mapit==map_hist_Electron.end()){
 
     if(IgnoreNoHist){      
@@ -163,24 +177,34 @@ double FakeBackgroundEstimator::GetElectronFakeRate(TString ID, TString key, TSt
 
 double FakeBackgroundEstimator::GetMuonFakeRate(TString ID, TString key, TString BinningMethod, TString BinningParam,  double eta, double pt, TString FakeTagger, int sys){
 
-  //cout << "[FakeBackgroundEstimator::GetMuonFakeRate] ID = " << ID << ", key = " << key << endl;                                                                                                                                                                                                                                                                                                                                       
-  //cout << "[FakeBackgroundEstimator::GetMuonFakeRate] eta = " << eta << ", pt = " << pt << endl;                                                                                                                                                                                                                                                                                      
-  
   key=key.ReplaceAll("FO_2016","FO");                                               
   key=key.ReplaceAll("FO_2017","FO");                                               
   key=key.ReplaceAll("FO_2018","FO");                                               
 
+  bool IsMC = false;
 
   TString PtType = "pt_eta_";
-  //  if(BinningMethod != "BDTFlavour" && BinningParam != "Pt") return;
-  if(BinningParam.Contains("PtCone" ))  PtType = "ptcone_eta_";
-  if(BinningParam == "PtParton") PtType= "ptparton_eta_";
-  if(BinningParam == "PtCorr")   PtType= "ptcorr_eta_";
-  if(BinningParam == "MotherPt") PtType= "mjpt_eta_";
+  if(key.Contains("MC")){
+    IsMC=true;
+    key=key.ReplaceAll("MC_","");
+    if(BinningParam.Contains("PtCone" ))  PtType = "ptcone_eta_";
+    if(BinningParam == "PtParton") PtType= "ptparton_eta_";
+    if(BinningParam == "PtCorr")   PtType= "ptcorr_eta_";
+    if(BinningMethod != "BDTFlavour" )   key =  "MC_"+PtType + key;
+    else key = "MC_"+FakeTagger+"_"+ PtType + key;
 
-  if(BinningMethod != "BDTFlavour" )   key =  PtType + key;
-  else key = FakeTagger+"_"+ PtType + key;
-  
+  }
+  else{
+    if(BinningParam.Contains("PtCone" ))  PtType = "ptcone_eta_";
+    if(BinningParam == "PtParton") PtType= "ptparton_eta_";
+    if(BinningParam == "PtParton2p0") PtType= "ptparton2_eta_";
+    if(BinningParam == "PtCorr")   PtType= "ptcorr_eta_";
+    if(BinningParam == "PtCorr2p0")   PtType= "ptcorr2_eta_";
+    if(BinningParam == "MotherPt") PtType= "mjpt_eta_";
+    
+    if(BinningMethod != "BDTFlavour" )   key =  PtType + key;
+    else key = FakeTagger+"_"+ PtType + key;
+  }
   
 
   if(BinningMethod == "BDTFlavour" && FakeTagger == ""){
@@ -213,6 +237,7 @@ double FakeBackgroundEstimator::GetMuonFakeRate(TString ID, TString key, TString
   }
 
   std::map< TString, TH2D* >::const_iterator mapit;
+  //  cout << "KEY FakeRate_"+ID+"_"+key << endl;
   mapit = map_hist_Muon.find("FakeRate_"+ID+"_"+key);
 
   if(mapit==map_hist_Muon.end()){
@@ -227,18 +252,21 @@ double FakeBackgroundEstimator::GetMuonFakeRate(TString ID, TString key, TString
     }
   }
 
-  int this_bin = (mapit->second)->FindBin(pt,eta);
+  int this_bin (0);
+  //  if(IsMC ) this_bin = (mapit->second)->FindBin(pt);
+  this_bin = (mapit->second)->FindBin(pt,eta);
+
   value = (mapit->second)->GetBinContent(this_bin);
   error = (mapit->second)->GetBinError(this_bin);
 
   if(value > 0.5) value = 0.5;
-
+  
   return value+double(sys)*error;
 
 }
 
 
-
+ 
 double FakeBackgroundEstimator::GetPromptRate(bool ApplyR,bool isMuon, TString ID, TString key, double eta, double pt, int sys){
   
   if(!ApplyR) return 1;
