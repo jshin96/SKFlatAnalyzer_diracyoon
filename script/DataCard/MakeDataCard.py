@@ -40,14 +40,14 @@ myWPs = ["HNL_ULID","HNTightV2"]
 myWPs = ["NewOpt_HNL_ULID","NewOpt_HNTightV2"]
 myWPs = ["231227_KCMS_WS_HNL_ULID","231227_KCMS_WS_HNTightV2"]
 
-doCombine = False
+doCombine = False #True --> merge all era's datacards into a single Run2 datacard. Run False first.
 
 lines_orig = lines[:]
 
 for WP in myWPs:
   if not doCombine:
     os.system("mkdir -p "+WP)
-    os.system("ln -s /data6/Users/jihkim/SKFlatAnalyzer/script/DataCard/MakeWorkspace.py "+WP)
+    os.system("ln -s /data6/Users/jihkim/SKFlatAnalyzer/script/DataCard/MakeWorkspace.py "+WP) #FIXME your path to MakeWorkspace.py
     for era in eras:
       for channel in channels:
         for mass in masses:
