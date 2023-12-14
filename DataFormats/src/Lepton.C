@@ -55,6 +55,7 @@ Lepton::Lepton() : Particle() {
   j_lep_mva=-999;
   j_LeptonType = -999;
   j_LeptonIsCF = false;
+  j_LeptonIsPromptConv = false;
   j_passID = false;
   j_IDSet= false;
   j_TIDName="";
@@ -386,7 +387,9 @@ void Lepton::SetLeptonType(int t){
 void Lepton::SetLeptonIsCF(bool t){
   j_LeptonIsCF= t;
 }
-
+void Lepton::SetLeptonIsPromptConv(bool t){
+  j_LeptonIsPromptConv= t;
+}
 
 void Lepton::SetID(){
   j_IDSet = true;
