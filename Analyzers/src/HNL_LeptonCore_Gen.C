@@ -8,7 +8,7 @@ bool HNL_LeptonCore::PassGenMatchFilter(vector<Lepton *> leps, AnalyzerParameter
   /// If user used Data driven method for Fake/CF then function returns for Fake/F bkf true for data and false for MC
   /// If user used Data driven method for Fake/CF then for Conv function requires at least one conv lepton is present
   
-  bool DEBUG = (leps.size() == 3);
+  bool DEBUG = false;
   if(DEBUG) cout << "RunFake = " << RunFake << " RunCF = " << RunCF << " RunConv = " << RunConv << endl;
   if(DEBUG) cout << "param.FakeMethod = " << param.FakeMethod << " param.CFMethod = " << param.CFMethod << " param.ConvMethod " << param.ConvMethod << endl;
   if(IsData) return true;
