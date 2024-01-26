@@ -3,6 +3,11 @@
 
 void HNL_LeptonCore::FillCutflowDef(TString cutflow_dirname,TString cutflow_histname, double weight, vector<TString> bin_lables, TString fill_label){
 
+  if(cutflow_dirname.Contains("MuMu") && cutflow_histname.Contains("ChannelDep") ) return;
+  if(cutflow_dirname.Contains("EE") && cutflow_histname.Contains("ChannelDep") ) return;
+  if(cutflow_dirname.Contains("EMu") && cutflow_histname.Contains("ChannelDep") ) return;
+  if(cutflow_dirname.Contains("MuE") && cutflow_histname.Contains("ChannelDep") ) return;
+
   char end_str = string(cutflow_dirname).back();
 
   if ( end_str  == '/') {
@@ -37,7 +42,7 @@ void HNL_LeptonCore::FillCutflowDef(TString cutflow_dirname,TString cutflow_hist
 
 void HNL_LeptonCore::FillCutflow(TString analysis_dir_name,TString histname, double weight, vector<TString> lables, TString label){
   FillCutflowDef(analysis_dir_name,histname, weight,lables, label);
-  FillCutflowDef(analysis_dir_name,histname+"_unweighted", 1,lables, label);
+  //  FillCutflowDef(analysis_dir_name,histname+"_unweighted", 1,lables, label);
 }
 
 

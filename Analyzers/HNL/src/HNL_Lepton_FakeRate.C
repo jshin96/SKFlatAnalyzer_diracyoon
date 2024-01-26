@@ -24,30 +24,32 @@ void HNL_Lepton_FakeRate::executeEvent(){
   //************************************************///
   // setup list of IDs and jobs
 
+
+  vector<TString> vLMVA;
+
+  for(int ilmva=0 ; ilmva < 1 ; ilmva++){
+    double lmva_d=  -1. + double(ilmva)*.05;
+    vLMVA.push_back(DoubleToString(lmva_d));
+  }
+
   vector<AnalyzerParameter> VParameters;
   
   if(HasFlag("CheckProfile")){
     //// Check MVA Profile  for PtParton
-    vector<TString> LIDs = {"HNL_ULID_FO",
-			    "HNL_ULID_POGM_FO" ,
-			    "HNL_ULID_FOv2_"+GetYearString() , 
-			    "HNL_ULID_FOv3_"+GetYearString(), 
-			    "HNL_ULID_FOv4_"+GetYearString(), 
-			    "HNL_ULID_FOv5_"+GetYearString(), 
-			    "HNL_ULID_FOv6_"+GetYearString(), 
-			    "HNL_ULID_FOv7_"+GetYearString()};
 
-    vector<TString> NIDs = {"HNL_LooseID_",
-			    "HNL_LooseID_POGM_",
-			    "HNL_LooseID_v2_", 
-			    "HNL_LooseID_v3_", 
-			    "HNL_LooseID_v4_",
-			    "HNL_LooseID_v5_",
-			    "HNL_LooseID_v6_",
-			    "HNL_LooseID_v7_"};
-    
+    vector<TString> LIDs = {"HNL_ULID_FO_v1_"+GetYearString(),
+			    "HNL_ULID_FO_v2_"+GetYearString(),
+			    "HNL_ULID_FO_v3_"+GetYearString(),
+			    "HNL_ULID_FO_v4_"+GetYearString(),
+			    "HNL_ULID_FO_v5_"+GetYearString()};
 
-
+    vector<TString> NIDs = {"HNL_LooseID_FO_v1_"+GetYearString(),
+			    "HNL_LooseID_FO_v2_"+GetYearString(),
+			    "HNL_LooseID_FO_v3_"+GetYearString(),
+			    "HNL_LooseID_FO_v4_"+GetYearString(),
+			    "HNL_LooseID_FO_v5_"+GetYearString()};
+			    
+        
     for(unsigned int l=0 ; l < LIDs.size(); l++)  VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu, HNL_LeptonCore::NormTo1Invpb, {"DATAProfile"},NIDs[l]+"DATA","HNL_ULID_"+GetYearString(),LIDs[l]));  
     
     goto RunJobs;
@@ -55,20 +57,18 @@ void HNL_Lepton_FakeRate::executeEvent(){
   }
   if(HasFlag("CheckProfileEE")){
     /// Check MVA/Pt Profile for ptparton in Electrons
-    vector<TString> LIDs = {"HNL_ULID_FO_"+GetYearString() ,
-			    "HNL_ULID_FOv2_"+GetYearString() ,
-			    "HNL_ULID_FOv3_"+GetYearString(), 
-			    "HNL_ULID_FOv4_"+GetYearString(), 
-			    "HNL_ULID_FOv5_"+GetYearString(), 
-			    "HNL_ULID_FOv6_"+GetYearString(),
-			    "HNL_ULLID_FOv3"};
-    vector<TString> NIDs = {"HNL_LooseID_", 
-			    "HNL_LooseID_v2_", 
-			    "HNL_LooseID_v3_", 
-			    "HNL_LooseID_v4_",
-			    "HNL_LooseID_v5_",
-			    "HNL_LooseID_v6_",
-			    "HNL_LooseID_v7_"};
+    vector<TString> LIDs = {"HNL_ULID_FO_v1_"+GetYearString(),
+                            "HNL_ULID_FO_v2_"+GetYearString(),
+                            "HNL_ULID_FO_v3_"+GetYearString(),
+                            "HNL_ULID_FO_v4_"+GetYearString(),
+                            "HNL_ULID_FO_v5_"+GetYearString()};
+
+    vector<TString> NIDs = {"HNL_LooseID_FO_v1_"+GetYearString(),
+                            "HNL_LooseID_FO_v2_"+GetYearString(),
+                            "HNL_LooseID_FO_v3_"+GetYearString(),
+                            "HNL_LooseID_FO_v4_"+GetYearString(),
+                            "HNL_LooseID_FO_v5_"+GetYearString()};
+
     for(unsigned int l=0 ; l < LIDs.size(); l++)  VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE, HNL_LeptonCore::NormTo1Invpb, {"DATAProfile"},NIDs[l]+"DATA","HNL_ULID_"+GetYearString(),LIDs[l]));
     
     goto RunJobs;
@@ -76,14 +76,15 @@ void HNL_Lepton_FakeRate::executeEvent(){
 
   if(HasFlag("RunRates")){
     /// Measure FR in Data
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FO"        ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO"));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_POGM_FO"   ,"HNL_ULID_"+GetYearString(), "HNL_ULID_POGM_FO"));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv2"     ,"HNL_ULID_"+GetYearString(),  "HNL_ULID_FOv2_"+GetYearString()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv3"     ,"HNL_ULID_"+GetYearString(),  "HNL_ULID_FOv3_"+GetYearString()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv4"     ,"HNL_ULID_"+GetYearString(),  "HNL_ULID_FOv4_"+GetYearString()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv5"     ,"HNL_ULID_"+GetYearString(),  "HNL_ULID_FOv5_"+GetYearString()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv6"     ,"HNL_ULID_"+GetYearString(),  "HNL_ULID_FOv6_"+GetYearString()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv7"     ,"HNL_ULID_"+GetYearString(),  "HNL_ULID_FOv7_"+GetYearString()));
+
+    
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNL_ULID_FO_v1_"+GetYearString()  ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO_v1_"+GetYearString()));                                                      
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNL_ULID_FO_v2_"+GetYearString()  ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO_v2_"+GetYearString()));                                                      
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNL_ULID_FO_v3_"+GetYearString()  ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO_v3_"+GetYearString()));                                                      
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNL_ULID_FO_v4_"+GetYearString()  ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO_v4_"+GetYearString()));                                                      
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNL_ULID_FO_v5_"+GetYearString()  ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO_v5_"+GetYearString()));                                                      
+   
+
     goto RunJobs;
   }
   if(HasFlag("RunRatesNonSNU")){
@@ -96,13 +97,20 @@ void HNL_Lepton_FakeRate::executeEvent(){
   
   if(HasFlag("RunRatesEE")){
     /// Measure FR in Data 
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FO"       ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO_"+GetYearString()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv2"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FOv2_"+GetYearString()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv3"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FOv3_"+GetYearString()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv4"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FOv4_"+GetYearString()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv5"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FOv5_"+GetYearString()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv6"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FOv6_"+GetYearString()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULLID_FOv3"     ,"HNL_ULLID", "HNL_ULLID_FOv3"));
+    //VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FO"       ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO_"+GetYearString()));
+    //VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv2"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FOv2_"+GetYearString()));
+    //VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv3"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FOv3_"+GetYearString()));
+    //VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv4"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FOv4_"+GetYearString()));
+    //VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv5"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FOv5_"+GetYearString()));
+    //VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULID_FOv6"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FOv6_"+GetYearString()));
+    //VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNL_ULLID_FOv3"     ,"HNL_ULLID", "HNL_ULLID_FOv3"));
+
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNL_ULID_FO_v1_"+GetYearString()  ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO_v1_"+GetYearString()));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNL_ULID_FO_v2_"+GetYearString()  ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO_v2_"+GetYearString()));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNL_ULID_FO_v3_"+GetYearString()  ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO_v3_"+GetYearString()));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNL_ULID_FO_v4_"+GetYearString()  ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO_v4_"+GetYearString()));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNL_ULID_FO_v5_"+GetYearString()  ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO_v5_"+GetYearString()));
+
 
     goto RunJobs;
   }
@@ -140,7 +148,7 @@ void HNL_Lepton_FakeRate::executeEventFromParameter(AnalyzerParameter param){
 
   double weight = SetupWeight(ev, param);
   if(IsData) weight = 1;
-
+  
   if(!PassMETFilter()) return;
   
   std::vector<Electron> Initial_loose_electrons     = SelectElectrons( param,param.Electron_Loose_ID, 10, 2.5) ;
@@ -226,13 +234,13 @@ void HNL_Lepton_FakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon
     if(leps.size() != 1) return;
 
     for(auto ilep : leps){
+      if(ilep->Pt() > 80) continue;
       
       double PtParton = ilep->PtParton(GetPtPartonSF(*ilep, param.Muon_Loose_ID),ilep->MVAFakeCut(param.Muon_Tight_ID,GetYearString()));
       double PtPartonUncorr = ilep->PtParton(1,ilep->MVAFakeCut(param.Muon_Tight_ID,GetYearString()));
       double W = event_weight;
       if(UseEvent(leps , jets, 40., METv, event_weight)) FillProf(("DATAProfile/"+param.Name + "/FakeCR"+param.GetSystType()+"_AJ40_MVA_PtParton").Data(), ilep->HNL_MVA_Fake("HFTop"), PtParton, W, 50, -1, 1);
       FillProf(("DATAProfile/"+param.Name + "/FakeCR"+param.GetSystType()+"_Inclusive_MVA_PtParton").Data(), ilep->HNL_MVA_Fake("HFTop"), PtParton, W, 50, -1, 1);
-
       
       FillProf(("DATAProfile/"+param.Name + "/FakeCR"+param.GetSystType()+"_Inclusive_MVA_PtPartonUncorr").Data(), ilep->HNL_MVA_Fake("HFTop"), PtPartonUncorr, W, 50, -1, 1);
       if(UseEvent(leps , jets, 30., METv, event_weight)) FillProf(("DATAProfile/"+param.Name + "/FakeCR"+param.GetSystType()+"_AJ30_MVA_PtPartonUncorr").Data(), ilep->HNL_MVA_Fake("HFTop"), PtPartonUncorr, W, 50, -1, 1);
@@ -967,18 +975,14 @@ void HNL_Lepton_FakeRate::MakeFakeRatePlots(TString label, TString mutag,Analyze
 	  GetMuFakeRates("Pt",      leps, blepsT, param,  jets,        label+"_"+param.GetSystType(),(event_weight));
 	  GetMuFakeRates("PtCone",  leps, blepsT, param,  jets,        label+"_"+param.GetSystType(),(event_weight));
 	  GetMuFakeRates("PtCorr",  leps, blepsT, param,  jets,        label+"_"+param.GetSystType(),(event_weight));
-	  GetMuFakeRates("PtCorr2p0",  leps, blepsT, param,  jets,     label+"_"+param.GetSystType(),(event_weight));
 	  GetMuFakeRates("PtParton",leps, blepsT, param,  jets,        label+"_"+param.GetSystType(),(event_weight));
-	  GetMuFakeRates("PtParton2p0",leps, blepsT, param,  jets,     label+"_"+param.GetSystType(),(event_weight));
 	  GetMuFakeRates("MotherPt",leps, blepsT, param,  jets,        label+"_"+param.GetSystType(),(event_weight));
 	}
 	else{
 	  GetElFakeRates("Pt",leps, blepsT, param,  jets,              label+"_"+param.GetSystType(),(event_weight));
 	  GetElFakeRates("PtCone",leps, blepsT, param,  jets,          label+"_"+param.GetSystType(),(event_weight));
 	  GetElFakeRates("PtCorr",leps, blepsT, param,  jets,          label+"_"+param.GetSystType(),(event_weight));
-	  GetElFakeRates("PtCorr2p0",leps, blepsT, param,  jets,       label+"_"+param.GetSystType(),(event_weight));
 	  GetElFakeRates("PtParton",leps, blepsT, param,  jets,        label+"_"+param.GetSystType(),(event_weight));
-	  GetElFakeRates("PtParton2p0",leps, blepsT, param,  jets,     label+"_"+param.GetSystType(),(event_weight));
 	  GetElFakeRates("MotherPt",leps, blepsT, param,  jets,        label+"_"+param.GetSystType(),(event_weight));
 	}
       }
@@ -1129,7 +1133,7 @@ void HNL_Lepton_FakeRate::GetElFakeRates(TString Method, std::vector<Lepton *> l
       if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_12)*NVxt_El12);
     }
     else if(lep_pt > 10){
-      if(leps[0]->Pt() < 9.5) return;
+      if(leps[0]->Pt() < 8) return;
       if(!pass_8) return;
       if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_8)*NVxt_El8);
 
@@ -1138,36 +1142,7 @@ void HNL_Lepton_FakeRate::GetElFakeRates(TString Method, std::vector<Lepton *> l
     
   }
 
-  else if(Method == "PtParton2p0"){
-    PtHist ="ptcone2";
-    ptname = "ptparton2_eta";
-    double PTPartonSF = GetPtPartonSF(*leps[0], LooseID);
-    lep_pt      =  (leps[0]->PtParton(PTPartonSF,MVACut,2) < UpperPtCut) ?  leps[0]->PtParton(PTPartonSF, MVACut,2) : UpperPtCutM1;
-
-    FillProf((param.Name + "_FakeCR40_MVA_PtParton2").Data(), leps[0]->HNL_MVA_Fake(MVAKey), lep_pt, event_weight, 100, -1, 1);
-
-    if(lep_pt > 50){
-      if(leps[0]->Pt() < 25) return;
-      if(!pass_23) return;
-      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_23)*NVxt_El23);
-    }
-    else if(lep_pt > 30){
-      if(leps[0]->Pt() < 15) return;
-      if(!pass_12) return;
-      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_12)*NVxt_El12);
-    }
-    else if(lep_pt > 10){
-      if(leps[0]->Pt() < 9.5) return;
-      if(!pass_8) return;
-      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_8)*NVxt_El8);
-
-    }
-    else return ;
-
-  }
-
-
-  if(Method == "PtCorr"){
+  else if(Method == "PtCorr"){
 
     PtHist ="ptcone";
     ptname = "ptcorr_eta";
@@ -1192,34 +1167,8 @@ void HNL_Lepton_FakeRate::GetElFakeRates(TString Method, std::vector<Lepton *> l
     else return ;
 
   }
-  if(Method == "PtCorr2p0"){
-
-    PtHist ="ptcone2";
-    ptname = "ptcorr2_eta";
-    lep_pt      = (leps[0]->CalcMVACone(MVACut,2)  < UpperPtCut) ? leps[0]->CalcMVACone(MVACut,2)  : UpperPtCutM1;
-
-    if(lep_pt > 50){
-      if(leps[0]->Pt() < 25) return;
-      if(!pass_23) return;
-      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_23)*NVxt_El23);
-    }
-    else if(lep_pt > 30){
-      if(leps[0]->Pt() < 15) return;
-      if(!pass_12) return;
-      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_12)*NVxt_El12);
-    }
-    else if(lep_pt > 10){
-      if(leps[0]->Pt() < 9.5) return;
-      if(!pass_8) return;
-      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_8)*NVxt_El8);
-
-    }
-    else return ;
-
-  }
-
-
-  if(Method == "MotherPt"){
+  
+  else if(Method == "MotherPt"){
     PtHist ="ptcone";
     ptname = "MJpt_eta";
     lep_pt      = leps[0]->MotherJetPt();
@@ -1278,6 +1227,16 @@ void HNL_Lepton_FakeRate::GetElFakeRates(TString Method, std::vector<Lepton *> l
       FillHist((prefix + "_eta_fine").Data(),                lep_eta, weight_ptcorr , 50, 0, 2.5,"#eta");
       FillHist((prefix + "_lep_mva_lfvshf").Data(),          lep_mva_lfvshf,  weight_ptcorr, 50, -1., 1.);
       FillHist((prefix + "_lep_mva_bvsc").Data(),            lep_mva_bvsc,  weight_ptcorr, 50, -1., 1.);
+
+
+
+      if(lep_blscore < 0.1) FillHistogram((prefix + "_bscore0to0p1_"+ptname).Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Eta", Ptlab);
+
+      if(lep_blscore < 0.05) FillHistogram((prefix + "_bscore1_"+ptname).Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Eta", Ptlab);
+      else if(lep_blscore < 0.1) FillHistogram((prefix + "_bscore2_"+ptname).Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Eta2Bin", Ptlab);
+      else if(lep_blscore < 0.4)  FillHistogram((prefix + "_bscore3_"+ptname).Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Eta1", Ptlab);
+      else FillHistogram((prefix + "_bscore4_"+ptname).Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Eta1", Ptlab);
+
       FillHist((prefix + "_blscore").Data(), lep_blscore,    weight_ptcorr, 50, -1., 1.);
       FillHist((prefix + "_cbscore").Data(), lep_cbscore,    weight_ptcorr, 50, -1., 1.);
       FillHist((prefix + "_clscore").Data(), lep_clscore,    weight_ptcorr, 50, -1., 1.);
@@ -1404,35 +1363,6 @@ void HNL_Lepton_FakeRate::GetMuFakeRates(TString Method, std::vector<Lepton *> l
     
   }
 
-  else if(Method == "PtParton2p0"){
-
-    ptname = "ptparton2_eta";
-    double PTPartonSF = GetPtPartonSF(*leps[0], LooseID);
-
-    lep_pt      =  (leps[0]->PtParton(PTPartonSF,MVACut,2) < UpperPtCut) ?  leps[0]->PtParton(PTPartonSF, MVACut,2) : UpperPtCutM1;
-
-    FillProf((param.Name + "_FakeCR40_MVA_PtParton").Data(), leps[0]->HNL_MVA_Fake(MVAKey), lep_pt, event_weight, 100, -1, 1);
-
-    if(lep_pt > 40){
-      if(leps[0]->Pt() < 20) return;
-      if(!pass_17) return;
-      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_17)*ApplyNvtxReweight(nPV,triggerslist_17));
-    }
-    else if(lep_pt > 20){
-      if(leps[0]->Pt() < 10) return;
-      if(!pass_8) return;
-      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_8)*ApplyNvtxReweight(nPV,triggerslist_8));
-    }
-    else if(lep_pt > 5){
-      if(leps[0]->Pt() < 5) return;
-      if(!pass_3) return;
-      if(For_HLT_Mu3_PFJet40_v==0) return;
-      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_3)*ApplyNvtxReweight(nPV,triggerslist_3));
-
-    }
-    else return ;
-
-  }
 
   if(Method == "PtCorr"){
 
@@ -1445,29 +1375,6 @@ void HNL_Lepton_FakeRate::GetMuFakeRates(TString Method, std::vector<Lepton *> l
       if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_17)*ApplyNvtxReweight(nPV,triggerslist_17));
     }
     else if(lep_pt > 15){
-      if(leps[0]->Pt() < 10) return;
-      if(!pass_8) return;
-      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_8)*ApplyNvtxReweight(nPV,triggerslist_8));
-    }
-    else if(lep_pt > 5){
-      if(leps[0]->Pt() < 5) return;
-      if(!pass_3) return;
-      if(For_HLT_Mu3_PFJet40_v==0) return;
-      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_3)*ApplyNvtxReweight(nPV,triggerslist_3));
-    }
-    else return ;
-  }
-  if(Method == "PtCorr2p0"){
-
-    ptname = "ptcorr2_eta";
-    lep_pt      = (leps[0]->CalcMVACone( MVACut,2)  < UpperPtCut) ? leps[0]->CalcMVACone(MVACut,2)  : UpperPtCutM1;
-
-    if(lep_pt > 40){
-      if(leps[0]->Pt() < 20) return;
-      if(!pass_17) return;
-      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_17)*ApplyNvtxReweight(nPV,triggerslist_17));
-    }
-    else if(lep_pt > 20){
       if(leps[0]->Pt() < 10) return;
       if(!pass_8) return;
       if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_8)*ApplyNvtxReweight(nPV,triggerslist_8));
@@ -1514,6 +1421,8 @@ void HNL_Lepton_FakeRate::GetMuFakeRates(TString Method, std::vector<Lepton *> l
   TString lepEtaRegion  = leps[0]->etaRegionString();
   TString lepRegion     = (leps[0]->IsBB()) ? "BB" : "EC";
 
+  float  lepptration = leps[0]->CloseJet_Ptratio();
+
   TString L_prefix = "Fake_"+Method+"_Loose"+tag;
   TString T_prefix = "Fake_"+Method+"_Tight"+tag;
 
@@ -1530,8 +1439,17 @@ void HNL_Lepton_FakeRate::GetMuFakeRates(TString Method, std::vector<Lepton *> l
       FillHistogram((prefix + "_"+ptname).Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Eta", Ptlab);
       FillHistogram((prefix + "_"+ptname+"v2").Data(),       lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Etav2", Ptlab);
       FillHistogram((prefix + "_"+ptname+"v3").Data(),       lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Etav3", Ptlab);
-
       
+      FillHist((prefix + "_lepptratio_"+ptname).Data(), lepptration , weight_ptcorr , 100, 0, 5.);
+
+      if(lep_blscore < 0.025) FillHistogram((prefix + "_bscore0to0p025_"+ptname).Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Eta", Ptlab);      
+      
+      if(lep_blscore < 0.01)       FillHistogram((prefix + "_bscore1_"+ptname).Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Eta", Ptlab);
+      else if(lep_blscore < 0.025) FillHistogram((prefix + "_bscore2_"+ptname).Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Eta", Ptlab);
+      else if(lep_blscore < 0.15) FillHistogram((prefix + "_bscore3_"+ptname).Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Eta2Bin", Ptlab);
+      else if(lep_blscore < 0.6)  FillHistogram((prefix + "_bscore4_"+ptname).Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Eta1", Ptlab);
+      else FillHistogram((prefix + "_bscore5_"+ptname).Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Eta1", Ptlab);
+
       FillHistogram((prefix + "_pt").Data(),                 lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist, Ptlab);
       FillHistogram((prefix + "_pt_"+ lepEtaRegion).Data(),  lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist, Ptlab);
       FillHistogram((prefix + "_pt_"+ lepRegion).Data(),     lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist, Ptlab);
@@ -1539,7 +1457,7 @@ void HNL_Lepton_FakeRate::GetMuFakeRates(TString Method, std::vector<Lepton *> l
       FillHist((prefix + "_eta_fine").Data(),                lep_eta, weight_ptcorr , 50, 0, 2.5,"#eta");
       FillHist((prefix + "_lep_mva_lfvshf").Data(),          lep_mva_lfvshf,  weight_ptcorr, 50, -1., 1.);
       FillHist((prefix + "_lep_mva_bvsc").Data(),            lep_mva_bvsc,  weight_ptcorr, 50, -1., 1.);
-      FillHist((prefix + "_blscore").Data(), lep_blscore,    weight_ptcorr, 50, -1., 1.);
+      FillHist((prefix + "_blscore").Data(), lep_blscore,    weight_ptcorr, 400, -1., 1.);
       FillHist((prefix + "_cbscore").Data(), lep_cbscore,    weight_ptcorr, 50, -1., 1.);
       FillHist((prefix + "_clscore").Data(), lep_clscore,    weight_ptcorr, 50, -1., 1.);
 

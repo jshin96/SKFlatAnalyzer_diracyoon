@@ -576,7 +576,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.CFMethod   = "DATA";
     param.ConvMethod = "MC";
     param.Muon_Veto_ID     = "HNVeto_17028";  param.Muon_Tight_ID     = "TopHN";
-    param.Electron_Veto_ID = "HNVeto";        param.Electron_Tight_ID = "TopHN";
+    param.Electron_Veto_ID = "HNVeto";        param.Electron_Tight_ID = "TopHNSST";
     param.Muon_FR_ID        = "TopHNL";
     param.Electron_FR_ID    = "TopHNSSL_"+GetEraShort();
 
@@ -586,12 +586,12 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.k.Muon_FR            = "FR_cent";
     param.k.Electron_FR        = "FR_cent";
 
-    param.k.Electron_ID_SF     = "passTopHN";
-    param.k.Muon_ID_SF         = "NUM_TopHN";
+    param.k.Electron_ID_SF     = "passTopHNSST";
+    param.k.Muon_ID_SF         = "NUM_TopHNT";
     param.k.Muon_RECO_SF       = "MuonRecoSF";
 
-    param.k.Electron_CF  = "CFRate_PtInv_EtaRegion_" + param.Electron_Tight_ID;
-    
+    param.k.Electron_CF  = "CFRate_PtInv_EtaRegion_TopHN";
+
     param.TriggerSelection = "Dilep";
     if(channel_st.Contains("EE"))   param.k.Electron_Trigger_SF = "DiElIso_HNL_ULID";
     if(channel_st.Contains("MuMu")) param.k.Muon_Trigger_SF = "DiMuIso_HNL_ULID";
@@ -611,15 +611,15 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.Muon_Tight_ID     = "HNL_ULID_"+GetYearString();
     param.Electron_Veto_ID  = "HNVetoMVA";  
     param.Electron_Tight_ID = "HNL_ULID_"+GetYearString();
-    param.Muon_FR_ID        = "HNL_ULID_FOv2_"+GetYearString();
-    param.Electron_FR_ID    = "HNL_ULID_FOv2_"+GetYearString();
+    param.Muon_FR_ID        = "HNL_ULID_FOv3_"+GetYearString();
+    param.Electron_FR_ID    = "HNL_ULID_FOv3_"+GetYearString();
     param.FakeRateMethod    = "Standard";
     param.FakeRateParam   = "PtParton";
 
     param.k.Muon_PR            = "pt_eta_HNL_ULID_FOv3_PR_cent";
 
-    param.k.Muon_FR            = "HNL_ULID_FOv2_AJ30";
-    param.k.Electron_FR        = "HNL_ULID_FOv2_AJ30";
+    param.k.Muon_FR            = "HNL_ULID_FOv3_AJ30";
+    param.k.Electron_FR        = "HNL_ULID_FOv3_AJ30";
 
     param.k.Muon_ID_SF         = "NUM_HNL_ULID_"+GetYearString();
     param.k.Muon_ISO_SF        = "Default";

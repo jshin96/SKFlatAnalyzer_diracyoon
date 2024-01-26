@@ -14,142 +14,35 @@ void HNL_ControlRegion_Plotter::executeEvent(){
   if(!(_jentry%10000)) run_Debug=true;
   else run_Debug=false;
 
-  vector<TString> LepIDs = {"HNL_ULID","HNTightV2"};//,"TopHN", "DefaultPOGTight"};
-
-  vector<HNL_LeptonCore::Channel> ChannelsToRun = {EE, MuMu};//,EMu,MuE};
-
+  ///// LIST IDs to run
+  vector<TString> LepIDs = {"HNL_ULID"};//"TopHN","HNL_ULID","HNTightV2"};//,"TopHN", "DefaultPOGTight"};
+  //// List Channels to run
+  vector<HNL_LeptonCore::Channel> ChannelsToRun = {MuMu};//,EE,EMu,MuE };
   
-  if(HasFlag("TestFakes")){
-    
+  vector<TString> RegionsToPlot = {"SSMultiLep","Dilepton"}; 
+  
+  ///// Run command 
+
+  vector<TString> CRToRun;
+  bool StandardProcess = true;
+  if(HasFlag("Dilepton"))        CRToRun = {"OS_VR","SS_CR","VBF_CR","LLL_VR"};
+  else if(HasFlag("SSMultiLep")) CRToRun = {"SS_CR","VBF_CR","LLL_VR"};
+  else if(HasFlag("TestFakes"))  { StandardProcess=false ; CRToRun = {"SS_CR","VBF_CR","LLL_VR"};}
+  else CRToRun = {"SS_CR"};
+
+  if(StandardProcess){
     for (auto id: LepIDs){
       for(auto channel : ChannelsToRun){
-	
-	///// Run command
-	vector<TString> CRToRun;
-	if(HasFlag("OS_VR"))   CRToRun.push_back("OS_VR");
-	if(HasFlag("LLL_VR"))  CRToRun.push_back("LLL_VR");
-	if(HasFlag("SS_CR"))   CRToRun.push_back("SS_CR");
-	if(HasFlag("VBF_CR"))  CRToRun.push_back("VBF_CR");
-      
-	vector<TString> AJetPt = {"AJ30"};
-	
-	if(id=="HNL_ULID"){
-	  
-	  if(channel == MuMu){
-	    
-	    
-	    //vector<TString> MuFakeIDs = {"HNL_ULID_FO","HNL_ULID_FOv2_"+GetYearString()};// "HNL_ULID_FOv3_"+GetYearString(), "HNL_ULID_FOv4_"+GetYearString(),"HNL_ULID_FOv5_"+GetYearString(), "HNL_ULID_FOv6_"+GetYearString(),  "HNL_ULID_FOv7_"+GetYearString()};
-	    
-	    //vector<TString> FakeTag   = {"HNL_ULID_FO","HNL_ULID_FOv2"};//, "HNL_ULID_FOv3", "HNL_ULID_FOv4","HNL_ULID_FOv5", "HNL_ULID_FOv6", "HNL_ULID_FOv7"};
-	    //vector<TString> FakeParam = {"Pt","PtParton"};
-	    //vector<TString> FakeMethod= {"BDTFlavour","Standard"};
-	    vector<TString> MuFakeIDs =  {"HNL_ULID_FOv2_"+GetYearString()};
-	    vector<TString> FakeTag   = {"HNL_ULID_FOv2"};
-	    vector<TString> FakeParam = {"Pt"};
-	    vector<TString> FakeMethod= {"Standard"};                                                              
-	    
-	    for(unsigned int i= 0 ; i < FakeTag.size(); i++){
-	      for(unsigned int j= 0 ; j < FakeParam.size(); j++){
-		for(unsigned int k= 0 ; k < FakeMethod.size(); k++){
-		  for(auto iaj : AJetPt){
-		    if(FakeMethod[k] == "BDTFlavour" && FakeTag[i] !=  "HNL_ULID_FO") continue;
-		    AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter(id,channel);
-		    param_signal.PlottingVerbose = -1;
-		    param_signal.FakeRateMethod = FakeMethod[k]; 
-		    param_signal.FakeRateParam  = FakeParam[j]; 
-		    param_signal.Muon_FR_ID     = MuFakeIDs[i] ; 
-		    param_signal.k.Muon_PR      = "pt_eta_"+FakeTag[i]+"_PR_cent";
-		    param_signal.k.Muon_FR      = FakeTag[i]+"_"+iaj;
-		    param_signal.ApplyPR        = false;
-		    //param_signal.Name           = param_signal.DefName+"_"+FakeTag[i]+"_"+param_signal.FakeRateName()+"_"+iaj;
-		    
-		    RunControlRegions(param_signal , CRToRun );
-		  }
-		}
-	      }
-	    }
-	  }
-	  else{
-	    
-	    
-	    //vector<TString> ElFakeIDs = {"HNL_ULID_FO_"+GetYearString(),"HNL_ULID_FOv2_"+GetYearString()};//, "HNL_ULID_FOv3_"+GetYearString()};//, "HNL_ULID_FOv4_"+GetYearString(),"HNL_ULID_FOv5_"+GetYearString(), "HNL_ULID_FOv6_"+GetYearString(), "HNL_ULLID_FOv3"};
-	    //vector<TString> FakeTag   = {"HNL_ULID_FO","HNL_ULID_FOv2"};//, "HNL_ULID_FOv3", "HNL_ULID_FOv4","HNL_ULID_FOv5", "HNL_ULID_FOv6","HNL_ULLID_FOv3"};
-	    //vector<TString> FakeParam = {"Pt","PtParton"};
-	    //vector<TString> FakeMethod= {"BDTFlavour","Standard"};
-	    
-	    vector<TString> ElFakeIDs = {"HNL_ULID_FOv2_"+GetYearString()};
-	    vector<TString> FakeTag   = {"HNL_ULID_FOv2"};
-	    vector<TString> FakeParam = {"PtParton"}; 
-	    vector<TString> FakeMethod= {"Standard"};                                                              
-	    
-	    for(unsigned int i= 0 ; i < FakeTag.size(); i++){
-	      for(unsigned int j= 0 ; j < FakeParam.size(); j++){
-		for(unsigned int k= 0 ; k < FakeMethod.size(); k++){
-		  if(FakeMethod[k] == "BDTFlavour" && FakeTag[i] !=  "HNL_ULID_FO_"+GetYearString()) continue;
-		  for(auto iaj : AJetPt){
-		    
-		    AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter(id,channel);
-		    if(FakeTag[i] == "HNL_ULLID_FOv3") param_signal.Electron_Tight_ID = "HNL_ULLID";
-		    param_signal.PlottingVerbose = -1;
-		    param_signal.FakeRateMethod = FakeMethod[k];
-		    param_signal.FakeRateParam  = FakeParam[j];
-		    param_signal.Electron_FR_ID     = ElFakeIDs[i] ;
-		    param_signal.k.Electron_PR      = "pt_eta_"+FakeTag[i]+"_PR_cent";
-		    param_signal.k.Electron_FR      = FakeTag[i]+"_"+iaj;
-		    param_signal.ApplyPR        = false;
-		    //param_signal.Name           = param_signal.DefName+"_"+FakeTag[i]+"_"+param_signal.FakeRateName()+"_"+iaj;
-		    RunControlRegions(param_signal , CRToRun );
-		  }
-		}
-	      }
-	    }
-	  }
-	}
-      }
-    }
-  }
-  else {
-
-    for (auto id: LepIDs){
-      for(auto channel : ChannelsToRun){
-
-        ///// Run command                                                                                                                                                                    
-        vector<TString> CRToRun;
-        if(HasFlag("OS_VR"))   CRToRun.push_back("OS_VR");
-        if(HasFlag("LLL_VR"))  CRToRun.push_back("LLL_VR");
-        if(HasFlag("SS_CR"))   CRToRun.push_back("SS_CR");
-        if(HasFlag("VBF_CR"))  CRToRun.push_back("VBF_CR");
-	
 	AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter(id,channel);
-	RunControlRegions(param_signal , CRToRun );
 	
+	if(channel == MuMu && id == "HNL_ULID") param_signal.FakeRateParam  = "Pt";
+	if(channel == MuMu && id == "HNL_ULID") param_signal.Muon_FR_ID = "HNL_ULID_FO";
+	for(auto iCR : CRToRun) RunControlRegions(param_signal , {iCR} );
       }
     }
+    return;
   }
 
-  
-  /// For BDT plots 
-
-  if(HasFlag("BDTCheck")) {
-    AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter("SignalStudy");
-    vector<TString> IDs = {"HNL_ULID_Baseline"};
-    TString param_signal_name = param_signal.Name;
-    for (auto id: IDs){
-      param_signal.Electron_Tight_ID = id;
-      param_signal.Muon_Tight_ID = id;
-      param_signal.Name = param_signal_name + id;
-      param_signal.DefName = param_signal_name + id;
-      param_signal.k.Electron_ID_SF = "Default";
-      param_signal.Muon_FR_ID = "HNL_ULID_Baseline";
-      param_signal.Electron_FR_ID = "HNL_ULID_Baseline";
-      RunControlRegions(param_signal , {"BDTCheck"});
-
-      return;
-    }
-  }
-
-  return;
-  
 }
 
 void HNL_ControlRegion_Plotter::RunControlRegions(AnalyzerParameter param, vector<TString> CRs){
@@ -173,7 +66,7 @@ void HNL_ControlRegion_Plotter::RunControlRegions(AnalyzerParameter param, vecto
   TString Electron_ID = SetLeptonID("Electron",param);
   TString Muon_ID     = SetLeptonID("Muon", param);
 
-  double Min_Muon_Pt     = RunFake ? 6  : 10.;
+  double Min_Muon_Pt     = RunFake ? 5  : 10.;
   double Min_Electron_Pt = RunFake ? 10 : 15;
 
   std::vector<Muon>       MuonTightCollInit     = SelectMuons    ( param,Muon_ID,     Min_Muon_Pt,     2.4,weight); 
@@ -182,7 +75,6 @@ void HNL_ControlRegion_Plotter::RunControlRegions(AnalyzerParameter param, vecto
   std::vector<Muon>       MuonTightColl      =  GetLepCollByRunType    (MuonTightCollInit,    param);  
   std::vector<Electron>   ElectronTightColl  =  GetLepCollByRunType    (ElectronTightCollInit,param);
 
-  //  for(auto iel : ElectronTightColl ) cout << "EL " << iel.IsPrompt() << " eta = " << iel.Eta() << " " << weight << endl;
 
   Particle METv = GetvMET("PuppiT1xyULCorr",param); // returns MET with systematic correction                                                                      
 
@@ -194,23 +86,107 @@ void HNL_ControlRegion_Plotter::RunControlRegions(AnalyzerParameter param, vecto
   std::vector<Jet>    AK4_BJetColl                = GetHNLJets("BJet", param);
   
   EvalJetWeight(AK4_JetColl, AK8_JetColl, weight, param);
-  
-  if(0){
-    if(RunConv){
-      if(param.Channel == "EE"){
-	if(ElectronVetoColl.size() == 3 ) {
-	  for(auto iel : ElectronVetoColl)  cout << "VLep type = " << iel.sLepGenType() << " Pt = " << iel.Pt() << " " << iel.LeptonIsCF() <<  endl;
-	  for(auto iel : ElectronTightColl) cout << "TLep type = " << iel.sLepGenType() << " Pt = " << iel.Pt() <<  endl;
-	}
-      }
-      if(param.Channel == "MuMu"){
-	if(MuonTightColl.size() == 3){
-	  for(auto imu : MuonTightColl) cout << "Lep type = " << imu.sLepGenType() << " Pt = " << imu.Pt() <<  endl;
-	}
-      }
+
+  bool DrawBasicPlotsL (true);
+  bool DrawBasicPlotsT (true);
+  if(DrawBasicPlotsL){
+    std::vector<Lepton *> LepsAll       = MakeLeptonPointerVector(MuonVetoColl,ElectronVetoColl,param);
+    
+    if(MuonVetoColl.size() == 3)     {
+      FillHist("SimplePlots/TriMuon", 1 ,  1, 200, 0 ,5 );
+      double MassMinOSSF = GetMassMinOSSF(MakeLeptonPointerVector(MuonVetoColl));
+      if(MassMinOSSF > 50) MassMinOSSF = 49;
+      FillHist("SimplePlots/TriMuon_MinOSSF", MassMinOSSF ,  1, 50, 0 ,50 );
+      FillHist("SimplePlots/TriMuon1_Pt",  MuonVetoColl[0].Pt() ,  1, 50, 0 ,200 );
+      FillHist("SimplePlots/TriMuon2_Pt",  MuonVetoColl[1].Pt() ,  1, 50, 0 ,200 );
+      FillHist("SimplePlots/TriMuon3_Pt",  MuonVetoColl[2].Pt() ,  1, 50, 0 ,200 );
+    }
+    else   if(ElectronVetoColl.size() == 3) {
+      double MassMinOSSF = GetMassMinOSSF(MakeLeptonPointerVector(ElectronVetoColl));
+      if(MassMinOSSF > 50) MassMinOSSF = 49;
+      FillHist("SimplePlots/TriEl", 1 ,  1, 200, 0 ,5 );
+      FillHist("SimplePlots/TriEl_MinOSSF", MassMinOSSF ,  1, 50, 0 ,50 );
+      FillHist("SimplePlots/TriEl1_Pt",  ElectronVetoColl[0].Pt() ,  1, 50, 0 ,200 );
+      FillHist("SimplePlots/TriEl2_Pt",  ElectronVetoColl[1].Pt() ,  1, 50, 0 ,200 );
+      FillHist("SimplePlots/TriEl3_Pt",  ElectronVetoColl[2].Pt() ,  1, 50, 0 ,200 );
+    }
+    else if(LepsAll.size() == 3){
+      double MassMinOSSF = GetMassMinOSSF(LepsAll);
+      if(MassMinOSSF > 50) MassMinOSSF = 49;
+      FillHist("SimplePlots/TriEMu", 1 ,  1, 200, 0 ,5 );
+      FillHist("SimplePlots/TriEMu_MinOSSF", MassMinOSSF ,  1, 50, 0 ,50 );
+      FillHist("SimplePlots/TriEMu1_Pt",  LepsAll[0]->Pt() ,  1, 50, 0 ,200 );
+      FillHist("SimplePlots/TriEMu2_Pt",  LepsAll[1]->Pt() ,  1, 50, 0 ,200 );
+      FillHist("SimplePlots/TriEMu3_Pt",  LepsAll[2]->Pt() ,  1, 50, 0 ,200 );
     }
   }
+
+  bool PassTriLep(false);
+  if(DrawBasicPlotsT){
+    std::vector<Lepton *> LepsAll       = MakeLeptonPointerVector(MuonTightColl,ElectronTightColl);
+
+    if(MuonTightColl.size() == 3)     {
+      FillHist("Tight_TriMuon", 1 ,  1, 200, 0 ,5 );
+      double MassMinOSSF = GetMassMinOSSF(MakeLeptonPointerVector(MuonTightColl));
+      if(MassMinOSSF > 50) MassMinOSSF = 49;
+      FillHist("Tight_TriMuon_MinOSSF", MassMinOSSF ,  1, 50, 0 ,50 );
+      FillHist("Tight_TriMuon1_Pt",  MuonVetoColl[0].Pt() ,  1, 50, 0 ,200 );
+      FillHist("Tight_TriMuon2_Pt",  MuonVetoColl[1].Pt() ,  1, 50, 0 ,200 );
+      FillHist("Tight_TriMuon3_Pt",  MuonVetoColl[2].Pt() ,  1, 50, 0 ,200 );
+      PassTriLep=true;
+    }
+    else   if(ElectronTightColl.size() == 3) {
+      double MassMinOSSF = GetMassMinOSSF(MakeLeptonPointerVector(ElectronTightColl));
+      if(MassMinOSSF > 50) MassMinOSSF = 49;
+      FillHist("Tight_TriEl", 1 ,  1, 200, 0 ,5 );
+      FillHist("Tight_TriEl_MinOSSF", MassMinOSSF ,  1, 50, 0 ,50 );
+      FillHist("Tight_TriEl1_Pt",  ElectronVetoColl[0].Pt() ,  1, 50, 0 ,200 );
+      FillHist("Tight_TriEl2_Pt",  ElectronVetoColl[1].Pt() ,  1, 50, 0 ,200 );
+      FillHist("Tight_TriEl3_Pt",  ElectronVetoColl[2].Pt() ,  1, 50, 0 ,200 );
+      PassTriLep=true;
+
+    }
+    else if(LepsAll.size() == 3){
+      double MassMinOSSF = GetMassMinOSSF(LepsAll);
+      if(MassMinOSSF > 50) MassMinOSSF = 49;
+      FillHist("Tight_TriEMu", 1 ,  1, 200, 0 ,5 );
+      FillHist("Tight_TriEMu_MinOSSF", MassMinOSSF ,  1, 50, 0 ,50 );
+      FillHist("Tight_TriEMu1_Pt",  LepsAll[0]->Pt() ,  1, 50, 0 ,200 );
+      FillHist("Tight_TriEMu2_Pt",  LepsAll[1]->Pt() ,  1, 50, 0 ,200 );
+      FillHist("Tight_TriEMu3_Pt",  LepsAll[2]->Pt() ,  1, 50, 0 ,200 );
+      //      PassTriLep=true;
+
+    }
+  }
+
   if(CRs.size() == 0) return;
+  
+  if(RunFake) {
+    vector<Muon> MuonTightCollMedium;
+    for(auto imu : MuonTightColl) if( imu.PassID("POGMedium")) MuonTightCollMedium.push_back(imu);
+
+    std::vector<Lepton *> LepsAll       = MakeLeptonPointerVector(MuonTightColl,ElectronTightColl,param);
+    std::vector<Lepton *> LepsAll2       = MakeLeptonPointerVector(MuonTightCollMedium,ElectronTightColl,param);
+    if(SameCharge(LepsAll)) {
+      if(LepsAll[0]->Pt() > 20 && LepsAll[1]->Pt() > 10){
+	FillFakeHistograms(param, "SSFakePlots" ,LepsAll, AK4_JetColl,AK8_JetColl, AK4_BJetColl, METv,   1);
+	if(AK4_JetColl.size()==0)       FillFakeHistograms(param, "SS1JetFakePlots" ,  LepsAll, AK4_JetColl,AK8_JetColl, AK4_BJetColl, METv,   1);
+	if(AK4_BJetColl.size()==0)       FillFakeHistograms(param, "SS0BJetFakePlots" ,  LepsAll, AK4_JetColl,AK8_JetColl, AK4_BJetColl, METv,   1);
+	else  FillFakeHistograms(param, "SSBJetFakePlots" ,  LepsAll, AK4_JetColl,AK8_JetColl, AK4_BJetColl, METv,   1);
+      }
+    }
+    if(SameCharge(LepsAll2)) {
+      if(LepsAll2[0]->Pt() > 20 && LepsAll2[1]->Pt() > 10){
+	FillFakeHistograms(param, "SS2FakePlots" ,LepsAll2, AK4_JetColl,AK8_JetColl, AK4_BJetColl, METv,   1);
+	if(AK4_JetColl.size()==0)       FillFakeHistograms(param, "SS21JetFakePlots" ,  LepsAll2, AK4_JetColl,AK8_JetColl, AK4_BJetColl, METv,   1);
+	if(AK4_BJetColl.size()==0)       FillFakeHistograms(param, "SS20BJetFakePlots" ,  LepsAll2, AK4_JetColl,AK8_JetColl, AK4_BJetColl, METv,   1);
+	else  FillFakeHistograms(param, "SS2BJetFakePlots" ,  LepsAll2, AK4_JetColl,AK8_JetColl, AK4_BJetColl, METv,   1);
+      }
+    }
+    
+    return;
+  }
+
 
   RunAllControlRegions(ElectronTightColl,ElectronVetoColl,MuonTightColl,MuonVetoColl, 
 		       AK4_JetAllColl, AK4_JetColl,AK4_VBF_JetColl,AK8_JetColl, AK4_BJetColl, 

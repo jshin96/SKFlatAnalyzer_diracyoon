@@ -10,13 +10,13 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     cout << "CHANNEL NOT SET" << endl;
     exit(EXIT_FAILURE);
   }
-
+  
   if(run_Debug) cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << endl;  
   int nlog(0);
-  //  if(run_Debug) {cout << "RunAllControlRegions ["<< nlog<< "] : Start Loop " << endl; nlog++;}
-
   
   for(unsigned int ic = 0; ic < channels.size(); ic++){
+
+    //cout << "RunAllControlRegions ["<< nlog<< "] : Start Loop " << CRs[0] << " " << GetChannelString(channels[ic]) << endl;
     
     if(run_Debug) cout << "HNL_RegionDefinitions::RunAllControlRegions [" << GetChannelString(channels[ic])<<" ]" << endl;
     
@@ -30,7 +30,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     TString channel_string = GetChannelString(dilep_channel);
     param.CutFlowDir = "CutFlow";
     
-    param.Name = channel_string + "/" + param.Name ;
+    param.Name = param.Name  + "/"+channel_string;
 
     std::vector<Lepton *> LepsT       = MakeLeptonPointerVector(muons,     electrons,     param);
     std::vector<Lepton *> LepsV       = MakeLeptonPointerVector(muons_veto,electrons_veto,param);
@@ -48,21 +48,22 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     
     /// Filters events based on Conv/CF/Fake/Prompt
     
-    if(! (HasFlag("OS_VR") && RunFake)){
+    
+    if(! (RunCR("OS_VR",CRs) && RunFake)){
       if(!PassGenMatchFilter(LepsT,param)) return;
     }
     
     FillCutflow(CutFlow_Region, weight_ll, "GENMatched",param);
-
+    
     if(run_Debug) cout << "HNL_RegionDefinitions::RunAllControlRegions [" << GetChannelString(channels[ic])<<" ]" << endl;
     
     //// Make Trilep/4 lep param
     AnalyzerParameter paramTrilep  = param;
     AnalyzerParameter paramQuadlep = param;
     paramTrilep.Channel  = GetChannelString(trilep_channel);
-    paramTrilep.Name     = GetChannelString(trilep_channel)  + "/" + param.Name ;
+    paramTrilep.Name     = param.DefName + "/"+GetChannelString(trilep_channel);
     paramQuadlep.Channel = GetChannelString(fourlep_channel);
-    paramQuadlep.Name    = GetChannelString(fourlep_channel) + "/" + param.Name ;
+    paramQuadlep.Name    = param.DefName + "/"+GetChannelString(fourlep_channel) ;
     
     double weight_channel = weight_ll;
    
@@ -70,7 +71,10 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
    
     if(! (CheckLeptonFlavourForChannel(dilep_channel, LepsT) 
     	  || CheckLeptonFlavourForChannel(trilep_channel, LepsT) 
-    	  || CheckLeptonFlavourForChannel(fourlep_channel, LepsT))) continue;
+    	  || CheckLeptonFlavourForChannel(fourlep_channel, LepsT))) {
+      continue;
+
+    }
 
 
     FillCutflow(CutFlow_Region, weight_channel, "LeptonFlavour",param);
@@ -99,7 +103,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     /// For OS Fakes use SS TT events - VV , but RunFake uses LL so need to apply Tight ID 
     bool PassTight = true;
     if(RunFake){
-      if(HasFlag("OS_VR") && (dilep_channel==EE || dilep_channel==MuMu) ){
+      if(RunCR("OS_VR",CRs) && (dilep_channel==EE || dilep_channel==MuMu) ){
 	
 	if(dilep_channel==EE   && !SameCharge(electrons))   continue;
 	if(dilep_channel==MuMu && !SameCharge(muons))       continue;
@@ -141,11 +145,12 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 	    
 	  } 
 	  
-	  if(HasFlag("OS_VR")) weight_OS = weight_channel;
+	  if(RunCR("OS_VR",CRs)) weight_OS = weight_channel;
 	  if(run_Debug) {cout <<"RunAllControlRegions ["<< nlog<< "] Fake Weight = " << weight_channel << endl;nlog++;}
 	}
       }
     }
+
 
     if(RunCR("BDTCheck",CRs)){
       double BDTweight_channel = weight_channel;
@@ -181,7 +186,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 
 
     vector<TString> passed;
-    if(HasFlag("OS_VR")){
+    if(RunCR("OS_VR",CRs)){
       //// OS L+L-
       
       FillCutflow(CutFlow_Region, weight_OS, "OS_VR",param);
@@ -194,10 +199,10 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       
     }
       
-    if(HasFlag("LLL_VR")){
-	
-      FillCutflow(CutFlow_Region, weight_channel, "VV_VR",param);
+    if(RunCR("LLL_VR",CRs)){
       
+      FillCutflow(CutFlow_Region, weight_channel, "VV_VR",param);
+
       // LLL / LLLL 
       if(FillZZCRPlots (fourlep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramQuadlep, weight_channel)) passed.push_back("ZZ_CR");
       if(FillZZ2CRPlots(fourlep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramQuadlep, weight_channel)) passed.push_back("ZZOffshell_CR"); 
@@ -209,16 +214,16 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       
       if(FillWZ2CRPlots      (trilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("WZ2_CR");
       if(FillWZBCRPlots      (trilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("WZB_CR");
-      if(FillZ_ElNPCRPlots   (trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel))     passed.push_back("ZNP_CR");
-      if(FillZ_MuonNPCRPlots (trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel))     passed.push_back("ZNP_CR");
+      if(FillZ_ElNPCRPlots   (trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel))     passed.push_back("ZNPEl_CR");
+      if(FillZ_MuonNPCRPlots (trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel))     passed.push_back("ZNPMu_CR");
       if(FillTopNPCRPlots    (trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel))     passed.push_back("TopNP_CR");
     }
   
     
-    if(HasFlag("SS_CR") || HasFlag("VBF_CR")){
+    if(RunCR("SS_CR",CRs) || RunCR("VBF_CR",CRs)){
 
-      if(HasFlag("SS_CR"))  FillCutflow(CutFlow_Region, weight_channel, "SS_CR",param);
-      if(HasFlag("VBF_CR")) FillCutflow(CutFlow_Region, weight_channel, "VBF_CR",param);
+      if(RunCR("SS_CR",CRs))  FillCutflow(CutFlow_Region, weight_channel, "SS_CR",param);
+      if(RunCR("VBF_CR",CRs)) FillCutflow(CutFlow_Region, weight_channel, "VBF_CR",param);
       
       if(RunCF){    
 	if(LepsT.size() == 2){
@@ -238,14 +243,14 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       
     }
     
-    if(HasFlag("VBF_CR")){
+    if(RunCR("VBF_CR",CRs)){
       if(FillWWCR1Plots  (dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel))      passed.push_back("WpWp_CR1");
       if(FillWWCR2Plots  (dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel))      passed.push_back("WpWp_CR2");
       if(FillWWCRNPPlots (dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel))      passed.push_back("WpWp_CRNP");
       if(FillWWCRNP2Plots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel))      passed.push_back("WpWp_CRNP2");
       if(FillWWCRNP3Plots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel))      passed.push_back("WpWp_CRNP3");
     }
-    if(HasFlag("SS_CR")){
+    if(RunCR("SS_CR",CRs)){
       //FillHighMassSR3BDTCRPlots(dilep_channel, LepsT, LepsV, JetAllColl,  JetColl,VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel);
       if(FillSSPreselectionPlots(dilep_channel,    LepsT, LepsV, JetColl,     AK8_JetColl, B_JetColl, ev, METv, param, weight_channel))	passed.push_back("SSPresel");
       if(FillHighMassSR1CRPlots(dilep_channel, LepsT, LepsV, JetColl,     AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR1_CR");
@@ -311,7 +316,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     TString ControlLabel = "";
     vector<TString> cutlabels = {};
     
-    if(HasFlag("OS_VR")){
+    if(RunCR("OS_VR",CRs)){
       cutlabels.push_back("ZAK8_CR");
       cutlabels.push_back("TopAK8_CR");
       cutlabels.push_back("Z_CR");
@@ -320,7 +325,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       ControlLabel+="OS_VR";
     }
     
-    if(HasFlag("LLL_VR")) {
+    if(RunCR("LLL_VR",CRs)) {
       cutlabels.push_back("ZZ_CR");
       cutlabels.push_back("ZZOffshell_CR");
       cutlabels.push_back("WZ_CR");
@@ -329,12 +334,13 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       cutlabels.push_back("ZG_CR");
       cutlabels.push_back("WZ2_CR");
       cutlabels.push_back("WZB_CR");
-      cutlabels.push_back("ZNP_CR");
+      cutlabels.push_back("ZNPEl_CR");
+      cutlabels.push_back("ZNPMu_CR");
       cutlabels.push_back("TopNP_CR");
       ControlLabel+="LLL";
     }
 
-    if(HasFlag("SS_CR")) {
+    if(RunCR("SS_CR",CRs)) {
       cutlabels.push_back("SSPresel");
       cutlabels.push_back("HighMassSR1_CR");
       cutlabels.push_back("HighMassSR2_CR");
@@ -345,7 +351,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       ControlLabel+="SS";
     }
 
-    if(HasFlag("VBF_CR")){
+    if(RunCR("VBF_CR",CRs)){
       cutlabels.push_back("WpWp_CR1");
       cutlabels.push_back("WpWp_CR2");
       cutlabels.push_back("WpWp_CRNP");
@@ -1777,19 +1783,27 @@ bool HNL_RegionDefinitions::FillZGCRPlots(HNL_LeptonCore::Channel channel, std::
 
 
 bool HNL_RegionDefinitions::FillWGCRPlots(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto, std::vector<Jet> JetColl, std::vector<FatJet> AK8_JetColl, std::vector<Jet> B_JetColl,  Event ev, Particle METv, AnalyzerParameter param, float w){
-
+  
+  bool DEBUGWG=false;
+  if(DEBUGWG)cout << "FillWGCRPlots " << param.Name<< endl;
+  if(DEBUGWG)PrintGen(All_Gens);
+  if(DEBUGWG)for(auto ilep : leps) cout << ilep->GetFlavour() << " pt = " << ilep->Pt() << endl;
   FillCutflow(WGCR, w, "Step0",param);
-
+  
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
+  FillCutflow(WGCR, w, "Step1",param);
+
   if(leps.size() != 3) return false;
   
-  FillCutflow(WGCR, w, "Step1",param);
-  if(!HasOSSFPair(leps))    return false;
   FillCutflow(WGCR, w, "Step2",param);
-  if(HasLowMassMeson(leps)) return false;
+  if(!HasOSSFPair(leps))    return false;
   FillCutflow(WGCR, w, "Step3",param);
-  if(leps[2]->Pt() < 15) return false;
+  if(DEBUGWG)cout << "FillWGCRPlots 2" << endl;
+  if(HasLowMassMeson(leps)) return false;
   FillCutflow(WGCR, w, "Step4",param);
+  if(leps[2]->Pt() < 15) return false;
+  FillCutflow(WGCR, w, "Step5",param);
+  if(DEBUGWG)cout << "FillWGCRPlots 3" << endl;
 
   double metcut = 30.;
   double mt_cut = 30.;
@@ -1799,24 +1813,30 @@ bool HNL_RegionDefinitions::FillWGCRPlots(HNL_LeptonCore::Channel channel, std::
   double MassMinOSSF = GetMassMinOSSF(leps);
 
   if(MassMinOSSF > 4)  return false;
-  FillCutflow(WGCR, w, "Step5",param);
-
+  FillCutflow(WGCR, w, "Step6",param);
+  if(DEBUGWG)cout << "FillWGCRPlots 4" << endl;
 
   Particle lll = (*leps[0]) + (*leps[1])+ (*leps[2]);
   double MT_lll = M_T(METv,lll);
 
   if(MT_lll <= mt_cut)  return false;
-  FillCutflow(WGCR, w, "Step6",param);
+  FillCutflow(WGCR, w, "Step7",param);
+  if(DEBUGWG)cout << "FillWGCRPlots 5" << endl;
 
   if(NB_JetColl > 0)    return false;
-  FillCutflow(WGCR, w, "Step7",param);
+  FillCutflow(WGCR, w, "Step8",param);
  
   if(METv.Pt() < metcut)return false;
+  if(DEBUGWG)cout << "FillWGCRPlots 6" << endl;
 
   FillCutflow(WGCR, w, "Step8",param);
 
-  if(!ConversionSplitting(leps,RunConv,3)) return false;
+  if(!ConversionSplitting(leps,RunConv,3)) {
+    if(DEBUGWG)cout << "Fail Conversion split " << endl;
+    return false;
+  }
   FillCutflow(WGCR, w, "Step9",param);
+  if(DEBUGWG)cout << "FillWGCRPlots 7" << endl;
 
 
   Fill_RegionPlots(param,"HNL_WG_ThreeLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
@@ -1830,9 +1850,11 @@ bool HNL_RegionDefinitions::FillWZCRPlots(HNL_LeptonCore::Channel channel, std::
 
   HNL_LeptonCore::SearchRegion Reg = WZCR;
   
+
   FillCutflow(Reg, w, "Step0",param);
 
   if(leps_veto.size() != 3) return false;
+
   FillCutflow(Reg, w, "Step1",param);
 
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
@@ -1843,6 +1865,7 @@ bool HNL_RegionDefinitions::FillWZCRPlots(HNL_LeptonCore::Channel channel, std::
 
   FillCutflow(Reg, w, "Step3",param);
 
+
   double metcut  = 50.;
   double mtcut   = 20.;
   double trilep_masscut=105.;
@@ -1852,105 +1875,35 @@ bool HNL_RegionDefinitions::FillWZCRPlots(HNL_LeptonCore::Channel channel, std::
   int sum_ch(0);
   for(auto ilep : leps) sum_ch += ilep->Charge();
 
+
   if(fabs(sum_ch) != 1) return false;
   FillCutflow(Reg, w, "Step4",param);
   
   if(METv.Pt() < metcut) return false;
   FillCutflow(Reg, w, "Step5",param);
   
+
   if(NB_JetColl > 0) return false;
   FillCutflow(Reg, w, "Step6",param);
   
   if(GetIndexNonBestZ(leps,M_ZWINDOW_CR) < 0) return false;
   FillCutflow(Reg, w, "Step7",param);
   
+
   if(M_T((*leps[GetIndexNonBestZ(leps,M_ZWINDOW_CR)]), METv)  < mtcut) return false;
   FillCutflow(Reg, w, "Step8",param);
 
   if(HasLowMassOSSF(leps,M_CUT_LL)) return false;
   FillCutflow(Reg, w, "Step9",param);
 
+
   if(((*leps[0])+ (*leps[1]) + (*leps[2])).M() <  trilep_masscut) return false;
   FillCutflow(Reg, w, "Step10",param);
   
   OutCutFlow("HNL_WZ_ThreeLepton_CR",w);
+
   Fill_RegionPlots(param,"HNL_WZ_ThreeLepton_CR" ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
   
   return true;
 }
-
-
-/*                                                                                                                                                                                                                 CR Functions                                                                                                                                                                                                     -----------------------------------                                                                                                                                                                              * RunAllControlRegions Run ALL following CRs                                                                                                                                                                     ** RunElectronChannelCR                                                                                                                                                                                          ** RunMuonChannelCR                                                                                                                                                                                              ===============================================================                                                                                                                                                  1- FillTopCRPlots                                                                                                                                                                                              %% 2 leptons (OS/SS) + MET > 50 + Nb > 0 +                                                                                                                                                                         %% -validate B tagging eff + SF                                                                                                                                                                                  ===============================================================                                                                                                                                                  2- FillZNPCRPlots                                                                                                                                                                                                %% 3Lep +  MET < 30 + MZ  + MTnonZlep < 30                                                                                                                                                                       %% Validate Fakes                                                                                                                                                                                                ===============================================================y                                                                                                                                                 3- FillZCRPlots                                                                                                                                                                                                %% 2 Lep + MET < 30 + Nb(0) + NAK8(>0) + MZ                                                                                                                                                                        %% Check in SR1 like region with low met and 0 b jet                                                                                                                                                             ===============================================================                                                                                                                                                  4- FillWWCR1Plots                                                                                                                                                                                              %% SSlep +  VBFJ(2) + MJJ(>500) + JPt(30) + Nb(0) JJEta(>2.5) + Zepp(<0.75) + MZ + llDphi(<2.)                                                                                                                   %% - region frmo Peking, SR w/Reverse dphi cut                                                                                                                                                                     ===============================================================                                                                                                                                                  5- FillWWCR2Plots                                                                                                                                                                                              %% SSlep +  VBFJ(2) + MJJ(>500) + JPt(30) + Nb(0) JJEta(>2.5) + Zepp(<0.75) + MZ + MET2ST(>15)                                                                                                                     %% - SR2 BUT with HIgh met                                                                                                                                                                                       ===============================================================                                                                                                                                                  6- FillWWCRNPPlots                                                                                                                                                                                             %% SSlep +  VBFJ(2) + MET > 30 + Nb(>0) + JJEta(>2.5) + MZ +  MJJ(>500) same as AN2020_045 Table 15 Nonprompt                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
-  %%  SR2 BUT with HIgh met and bjet                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-  ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-  7- FillWWCRNP2Plots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
-%%  SSlep +  VBFJ(2) + Nb(>0) + JJEta(>2.5) + MZ +  MJJ(>500)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
-  %%  SR2 BUT with  bjet                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-  ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-  8- FillWWCRNP3Plots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
-%% SSlep +  VBFJ(2) + Nb(0) + JJEta(>2.5) + MZ +  MJJ(150-500)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-  %% Loook in SR2 MJJ sideband                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
-  ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-
-  10- FillSSPreselectionPlots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
-%% - SS2l + mll(>20) + Nj(>1) +MZ                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-  ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-  11- FillSSVBFPreselectionPlots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-%% - SS2l + mll(>20) + Nvbfj(>1) +MZ                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
-  ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-  12- FillHighMassSR1CRPlots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-%% FillSSPreselectionPlots + MET2ST > 15||Nb(>0)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-  ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-  13- FillHighMass1JetCRPlots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
-%% SS2l + Nj(1) + MZpeak                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
-  ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-  14- FillHighMassBJetCRPlots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
-%% SS2l + NBj(1)+ Mll(>10)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-  ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-  15- FillHighMassNPCRPlots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
-%% SS2l + Nj(0)+ Mll(>10) + llDphi(> 2.5)                                                                                                                                                                                                                                    ===============================================================                                                                                                                                                                                                                                                                                                              
-  16- FillHighMassSR3BDTCRPlots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
-  %%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-  ==============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-  17- FillHighMassSR3CRPlots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-  %% CR3                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-  ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-  18- FillHighMassSR2CRPlots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-  %% CR2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-  ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-  19- FillWZ2CRPlots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-  %%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-  %%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-  ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-  20- FillWZBCRPlots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
- %%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
- %%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-  ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-  21- FillZZCRPlots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
- %%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
- %%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-  ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-  22- FillZZ2CRPlots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
- %%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
- %%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-  ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-  23- FillZGCRPlots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
- %%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
- %%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-  ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-  24- FillWGCRPlots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
- %%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
- %%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-  ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-  25- FillWZCRPlots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
- %%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
- %%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-  ===============================================================                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-  BDT Functions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
-  -----------------------------------                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
-1- RunSR3BDT  (used to make plots of mass dep BDT scores for all weight files input)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-*/
 
