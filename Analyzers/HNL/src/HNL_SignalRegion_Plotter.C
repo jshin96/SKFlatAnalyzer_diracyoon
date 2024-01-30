@@ -15,19 +15,19 @@ void HNL_SignalRegion_Plotter::executeEvent(){
 
   FillTimer("START_EV");
   
-  vector<TString> LepIDs = {"HNL_ULID","HNTightV2"}; //,"TopHN", "DefaultPOGTight"};                                             
-  vector<HNL_LeptonCore::Channel> ChannelsToRun = {MuMu,EE,EMu,MuE};                                                    
+  vector<TString> LepIDs = {"HNL_ULID","HNTightV2","TopHN", "Peking","POGTight"};                                             
+  vector<HNL_LeptonCore::Channel> ChannelsToRun = {MuMu,EE};                                                    
 
   for (auto id: LepIDs){
     for(auto channel : ChannelsToRun){
       AnalyzerParameter param = HNL_LeptonCore::InitialiseHNLParameter(id,channel);
-      //param.PlottingVerbose = -1; /// ONLY DRAW BASIC PLOTS
+      param.PlottingVerbose = 1;
       RunULAnalysis(param);
       
-      if(!IsData) RunSyst=false;
+      if(!IsData) RunSyst=true;
       if(RunSyst){
 	TString param_name = param.Name;
-	vector<AnalyzerParameter::Syst> SystList;// = GetSystList("Initial");
+	vector<AnalyzerParameter::Syst> SystList = GetSystList("Initial");
 	
 	for(auto isyst : SystList){
 	  param.syst_ = AnalyzerParameter::Syst(isyst);
@@ -72,6 +72,9 @@ void HNL_SignalRegion_Plotter::RunULAnalysis(AnalyzerParameter param){
   std::vector<Tau>        TauColl        = SelectTaus   (leps_veto,param.Tau_Veto_ID,20., 2.3);
 
   std::vector<FatJet> AK8_JetColl                 = GetHNLAK8Jets(param.AK8JetColl,param);
+
+  if(HasFlag("PNET")) AK8_JetColl                 = GetHNLAK8Jets("HNL_NoMass",param);
+
   std::vector<Jet>    AK4_JetColl                 = GetHNLJets(param.AK4JetColl,     param);
   std::vector<Jet>    AK4_VBF_JetColl             = GetHNLJets(param.AK4VBFJetColl,  param);
   std::vector<Jet>    AK4_JetAllColl              = GetHNLJets("NoCut_Eta3",param);

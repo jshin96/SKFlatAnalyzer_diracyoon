@@ -297,7 +297,6 @@ bool Muon::PassID(TString ID) const {
     }
     return true;
   }
-
   
   if(ID == "HNL_ULID_FO_v2_"+Era){
     if(!PassID("HNL_ULID_FO")) return false;
@@ -308,6 +307,19 @@ bool Muon::PassID(TString ID) const {
         if(this->CloseJet_BScore()  >  0.9) return false;
         if(this->CloseJet_CvsBScore() < 0.1 ) return false;
         if(this->CloseJet_CvsLScore() > 0.6)return false;
+      }
+    }
+    return true;
+  }
+  if(ID == "HNL_ULID_FO_v2b_"+Era){
+    if(!PassID("HNL_ULID_FO")) return false;
+    if(MVA() < MVACut) {
+      if(this->HasCloseJet()){
+        if(CloseJet_Ptratio() < 0.45) return false;
+
+        if(this->CloseJet_BScore()  >  0.9) return false;
+        if(this->CloseJet_CvsBScore() < 0.1 ) return false;
+        if(this->CloseJet_CvsLScore() > 0.8)return false;
       }
     }
     return true;
@@ -326,6 +338,22 @@ bool Muon::PassID(TString ID) const {
     }
     return true;
   }
+
+  if(ID == "HNL_ULID_FO_v3b_"+Era){
+    if(!PassID("HNL_ULID_FO")) return false;
+    if(MVA() < MVACut) {
+      if(this->HasCloseJet()){
+        if(CloseJet_Ptratio() < 0.45) return false;
+        if(this->CloseJet_BScore()  >  0.4) return false;
+        if(this->CloseJet_CvsBScore() < 0.1 ) return false;
+        if(this->CloseJet_CvsLScore() > 0.6)return false;
+      }
+    }
+    return true;
+  }
+  
+  
+
   if(ID == "HNL_ULID_FO_v4_"+Era){
     if(!PassID("HNL_ULID_FO")) return false;
     if(MVA() < MVACut) {
@@ -338,6 +366,21 @@ bool Muon::PassID(TString ID) const {
     }
     return true;
   }
+
+  if(ID == "HNL_ULID_FO_v4b_"+Era){
+    if(!PassID("HNL_ULID_FO")) return false;
+    if(MVA() < MVACut) {
+      if(this->HasCloseJet()){
+        if(CloseJet_Ptratio() < 0.45) return false;
+        if(this->CloseJet_BScore()  >  0.2) return false;
+        if(this->CloseJet_CvsBScore() < 0.1 ) return false;
+        if(this->CloseJet_CvsLScore() > 0.6)return false;
+      }
+    }
+    return true;
+  }
+
+
   if(ID == "HNL_ULID_FO_v5_"+Era){
     if(!PassID("HNL_ULID_FO")) return false;
     if(MVA() < MVACut) {
@@ -351,8 +394,97 @@ bool Muon::PassID(TString ID) const {
     return true;
   }
 
+  if(ID == "HNL_ULID_FO_v5b_"+Era){
+    if(!PassID("HNL_ULID_FO")) return false;
+    if(MVA() < MVACut) {
+      if(this->HasCloseJet()){
+        if(CloseJet_Ptratio() < 0.45) return false;
+        if(this->CloseJet_BScore()  >  0.1)   return false;
+        if(this->CloseJet_CvsBScore() < 0.1 ) return false;
+        if(this->CloseJet_CvsLScore() > 0.6)  return false;
+      }
+    }
+    return true;
+  }
+
+  if(ID == "HNL_ULID_FO_v6_"+Era){
+    if(!PassID("HNL_ULID_FO")) return false;
+    if(MVA() < MVACut) {
+      if(this->HasCloseJet()){
+        if(CloseJet_Ptratio() < 0.45) return false;
+        if(this->CloseJet_BScore()  >  0.6)   return false;
+        if(this->CloseJet_CvsBScore() < 0.1 ) return false;
+        if(this->CloseJet_CvsLScore() > 0.8)  return false;
+      }
+    }
+    return true;
+  }
+
+  if(ID == "HNL_ULID_FO_v6b_"+Era){
+    if(!PassID("HNL_ULID_FO")) return false;
+    if(MVA() < MVACut) {
+      if(this->HasCloseJet()){
+	if(CloseJet_Ptratio() < 0.45) return false;
+        if(this->CloseJet_BScore()  >  0.6)   return false;
+        if(this->CloseJet_CvsBScore() < 0.1 ) return false;
+        if(this->CloseJet_CvsLScore() > 0.6)  return false;
+      }
+    }
+    return true;
+  }
 
 
+  if(ID == "HNL_ULID_FO_v7_"+Era){
+    if(!PassID("HNL_ULID_FO")) return false;
+    if(MVA() < MVACut) {
+      if(this->HasCloseJet()){
+        if(CloseJet_Ptratio() < 0.45) return false;
+        if(this->CloseJet_BScore()  >  0.05)   return false;
+        if(this->CloseJet_CvsBScore() < 0.1 ) return false;
+        if(this->CloseJet_CvsLScore() > 0.8)  return false;
+      }
+    }
+    return true;
+  }
+
+  if(ID == "HNL_ULID_FO_v7b_"+Era){
+    if(!PassID("HNL_ULID_FO")) return false;
+    if(MVA() < MVACut) {
+      if(this->HasCloseJet()){
+	if(CloseJet_Ptratio() < 0.45) return false;
+        if(this->CloseJet_BScore()  >  0.05)   return false;
+        if(this->CloseJet_CvsBScore() < 0.1 ) return false;
+        if(this->CloseJet_CvsLScore() > 0.6)  return false;
+      }
+    }
+    return true;
+  }
+
+  if(ID == "HNL_ULID_FO_v8_"+Era){
+    if(!PassID("HNL_ULID_FO")) return false;
+    if(MVA() < MVACut) {
+      if(this->HasCloseJet()){
+        if(CloseJet_Ptratio() < 0.45) return false;
+        if(this->CloseJet_BScore()  >  0.1)   return false;
+        if(this->CloseJet_CvsBScore() < 0.1 ) return false;
+        if(this->CloseJet_CvsLScore() > 0.8)  return false;
+      }
+    }
+    return true;
+  }
+
+  if(ID == "HNL_ULID_FO_v8b_"+Era){
+    if(!PassID("HNL_ULID_FO")) return false;
+    if(MVA() < MVACut) {
+      if(this->HasCloseJet()){
+	if(CloseJet_Ptratio() < 0.45) return false;
+        if(this->CloseJet_BScore()  >  0.1)   return false;
+        if(this->CloseJet_CvsBScore() < 0.1 ) return false;
+        if(this->CloseJet_CvsLScore() > 0.6)  return false;
+      }
+    }
+    return true;
+  }
 
   
   

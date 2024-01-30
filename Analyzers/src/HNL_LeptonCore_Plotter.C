@@ -78,12 +78,13 @@ void HNL_LeptonCore::Fill_PlotsAK8(AnalyzerParameter param, TString region, TStr
 
   if(fatjets.size() == 0) return;
   if((leps.size()  == 1) && !(param.ChannelType() == "Lepton"))     return;
-  if((leps.size()  == 2) && !(param.ChannelType() == "DiLepton"))   return;
-  if((leps.size()  == 3) && !(param.ChannelType() == "TriLepton"))  return;
-  if((leps.size()  == 4) && !(param.ChannelType() == "QuadLepton")) return;
+  if((leps.size()  == 2) && !(param.ChannelType() == "Dilepton"))   return;
+  if((leps.size()  == 3) && !(param.ChannelType() == "Trilepton"))  return;
+  if((leps.size()  == 4) && !(param.ChannelType() == "Quadlepton")) return;
 
 
-  bool DrawLevel1 = true; // Always gets drawn                                                                                                                                                                                             
+
+  bool DrawLevel1 = true; // Always gets drawn                                                                                                              
   bool DrawLevel2 = (param.PlottingVerbose >= 1);
   bool DrawLevel3 = (param.PlottingVerbose >= 2);
 
@@ -91,6 +92,7 @@ void HNL_LeptonCore::Fill_PlotsAK8(AnalyzerParameter param, TString region, TStr
   double minDRTauAK8=9999.;
   double minDRLepAK8=9999.;
   int nBJetAK8(0);
+
   for(unsigned int i=0; i < fatjets.size(); i++){
 
     for(auto itau : TauColl){
@@ -105,10 +107,8 @@ void HNL_LeptonCore::Fill_PlotsAK8(AnalyzerParameter param, TString region, TStr
     if(DrawLevel1)FillHist( plot_dir+region+ "/AK8J_Eta",          fatjets[i].Eta()       , w, 100, -5., 5.   , "AK8 Jet #eta");
     if(DrawLevel1)FillHist( plot_dir+region+ "/AK8J_Pt",           fatjets[i].Pt()        , w, 100, 0., 2000. , "AK8 Jet p_{T} GeV");
     if(DrawLevel1)FillHist( plot_dir+region+ "/AK8J_SDMass",       fatjets[i].SDMass()    , w, 100, 0., 500.  , "Mass_{softdrop} GeV");
-    if(DrawLevel3)FillHist( plot_dir+region+ "/AK8J_tau21",        fatjets[i].PuppiTau21(), w, 200, 0., 1.    , "#tau_{21}");
+    if(DrawLevel1)FillHist( plot_dir+region+ "/AK8J_tau21",        fatjets[i].PuppiTau21(), w, 200, 0., 1.    , "#tau_{21}");
     if(DrawLevel2)FillHist( plot_dir+region+ "/AK8J_MET_dR",       fatjets[i].DeltaR(met) , w, 50,  0., 5     ,"#DeltaR(FJ,met)");
-    if(DrawLevel2)FillHist( plot_dir+region+ "/AK8J_Tagger_DeepCSV" , fatjets[i].GetTaggerResult(JetTagging::DeepCSV), w, 50, 0, 1., "JetTagging::DeepCSV");
-    if(DrawLevel2)FillHist( plot_dir+region+ "/AK8J_Tagger_DeepJet" , fatjets[i].GetTaggerResult(JetTagging::DeepJet), w, 50, 0, 1., "JetTagging::DeepCSV");
     
     vector<JetTagging::Tagger> Taggers = {    JetTagging::DeepCSV, JetTagging::DeepCSV_CvsL, JetTagging::DeepCSV_CvsB,
                                               JetTagging::particleNet_TvsQCD, JetTagging::particleNet_WvsQCD, JetTagging::particleNet_ZvsQCD,
@@ -232,10 +232,8 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
 				vector<Tau> TauColl,  std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Lepton *> leps , 
 				Particle  met, double nvtx,  double w){
 
-  TString regionAK8 = region;
-  //  regionAK8 = regionAK8.ReplaceAll("RegionPlots_","RegionPlotsAK8_");
+  TString regionAK8 = region+"/AK8";
   TString lepregion= region + "/LeptonMVA";
-  //  lepregion = lepregion.ReplaceAll("RegionPlots_","LeptonMVARegionPlots_");
 
   if((leps.size()  == 1) && !(param.ChannelType() == "Lepton"))     return;
   if((leps.size()  == 2) && !(param.ChannelType() == "Dilepton"))   return;
@@ -250,16 +248,18 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
     if(ilep->LeptonFlavour() == Lepton::MUON) nmu++;
   }
     
-  Fill_PlotsAK8(param, plot_dir, regionAK8, TauColl,jets , fatjets, leps, met, nvtx,w);
+  Fill_PlotsAK8(param, regionAK8, plot_dir,TauColl,jets , fatjets, leps, met, nvtx,w);
   
   bool DrawLevel1 = true; // Always gets drawn
   bool DrawLevel2 = (param.PlottingVerbose >= 1);
   bool DrawLevel3 = (param.PlottingVerbose >= 2);
 
   /// Draw N leptons                                                                                                                                                                                                                                                             
+  //  cout << plot_dir+ region << endl; // JOHN
   if(DrawLevel1) FillHist( plot_dir+ region+ "/NObj/N_El", nel,  w, 5, 0, 5, "El size");
   if(DrawLevel1) FillHist( plot_dir+ region+ "/NObj/N_Mu", nmu,  w, 5, 0, 5, "Mu size");
-  // Draw N jets                                                                                                                                                                                                                           
+  // Draw N jets                                                                                                        
+
   if(DrawLevel1) FillHist( plot_dir+ region+ "/NObj/N_AK4J", jets.size() , w, 10, 0., 10., "N_{AK4 jets}");
 
   if(leps.size() < 2) return;
@@ -277,6 +277,7 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
     }
     nlepMVA++;
   }
+
 
   if(DrawLevel3)FillHist( plot_dir+ region+ "/Leptons/SumQ", leps[0]->Charge() + leps[1]->Charge(),  w, 10, -5, 5, "Q size");
 
@@ -387,8 +388,8 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
 
     if(DrawLevel3) FillHist( plot_dir+ region+ "/Mass/DiJet_M_l1W_M_W",         MN1, MllW,  w, 100, 0., 2000., 100, 0., 2000.);
     if(DrawLevel2)FillHist( plot_dir+ region+ "/Mass/DiJet_M_l1W_multibins",   MN1,        w, 200, 0, 2000, "Reco M_{l1jj}");
-    if(DrawLevel1)FillHist( plot_dir+ region+ "/Mass/DiJet_M_l1W",             MN1,        w, 7, mljbins , "Reco M_{l1jj}");
-    if(DrawLevel1)FillHist( plot_dir+ region+ "/Mass/DiJet_M_l2W",             MN2,        w, 7, mljbins , "Reco M_{l2jj} ");
+    if(DrawLevel1)FillHist( plot_dir+ region+ "/Mass/DiJet_M_l1W",             MN1,        w, 9, mljbins , "Reco M_{l1jj}");
+    if(DrawLevel1)FillHist( plot_dir+ region+ "/Mass/DiJet_M_l2W",             MN2,        w, 9, mljbins , "Reco M_{l2jj} ");
     if(DrawLevel3) FillHist( plot_dir+ region+ "/Mass/DiJet_M_lAv12W", (N1Cand.M()+  N2Cand.M())/2.,  w,  500, 0., 2000., "Reco M_{l1_2jj} ");
     if(DrawLevel1)FillHist( plot_dir+ region+ "/Mass/DiJet_M_llW",  MllW ,  w, 7, mljbins , "Reco M_{lljj}");
     if(DrawLevel2)FillHist( plot_dir+ region+ "/Mass/DiJet_M_llW_multibins",  MllW ,  w,  200, 0, 2000, "Reco M_{lljj}");

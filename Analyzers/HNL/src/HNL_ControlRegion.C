@@ -17,7 +17,7 @@ void HNL_ControlRegion::executeEvent(){
   ///// LIST IDs to run
   vector<TString> LepIDs = {"HNL_ULID"};//"TopHN","HNL_ULID","HNTightV2"};//,"TopHN", "DefaultPOGTight"};
   //// List Channels to run
-  vector<HNL_LeptonCore::Channel> ChannelsToRun = {MuMu};//,EE,EMu,MuE };
+  vector<HNL_LeptonCore::Channel> ChannelsToRun = {MuMu,EE};//,EMu,MuE };
   
   vector<TString> RegionsToPlot = {"SSMultiLep","Dilepton"}; 
   
@@ -48,7 +48,7 @@ void HNL_ControlRegion::executeEvent(){
     for (auto id: LepIDs){
       for(auto channel : ChannelsToRun){
 	      
-	vector<TString> AJetPt = {"AJ25", "AJ30","AJ40"};
+	vector<TString> AJetPt = {"AJ30","AJ40"};
 	
 	if(id=="HNL_ULID"){
 	  
@@ -56,7 +56,7 @@ void HNL_ControlRegion::executeEvent(){
 	    
 	    vector<TString> MuFakeIDs = {"HNL_ULID_FO_v1_"+GetYearString(),"HNL_ULID_FO_v2_"+GetYearString(),"HNL_ULID_FO_v3_"+GetYearString(),"HNL_ULID_FO_v4_"+GetYearString(),"HNL_ULID_FO_v5_"+GetYearString()};
 	    
-	    vector<TString> FakeTag   = {"HNL_ULID_FO_v1_2017MuMu","HNL_ULID_FO_v2_2017MuMu","HNL_ULID_FO_v3_2017MuMu","HNL_ULID_FO_v4_2017MuMu","HNL_ULID_FO_v5_2017MuMu"};
+	    vector<TString> FakeTag   = {"HNL_ULID_FO_v1","HNL_ULID_FO_v2","HNL_ULID_FO_v3","HNL_ULID_FO_v4","HNL_ULID_FO_v5"};
 	    vector<TString> FakeParam = {"Pt","PtParton","PtCorr"};
 	    vector<TString> FakeMethod= {"Standard"};                                                              
 	    
@@ -73,6 +73,7 @@ void HNL_ControlRegion::executeEvent(){
 		    param_signal.k.Muon_PR      = "pt_eta_"+FakeTag[i]+"_PR_cent";
 		    param_signal.k.Muon_FR      = FakeTag[i]+"_"+iaj;
 		    param_signal.ApplyPR        = false;
+		    param_signal.DefName        = param_signal.DefName+"_"+FakeTag[i]+"_"+param_signal.FakeRateName()+"_"+iaj;
 		    param_signal.Name           = param_signal.DefName+"_"+FakeTag[i]+"_"+param_signal.FakeRateName()+"_"+iaj;
 		    
 		    RunControlRegions(param_signal , CRToRun );
@@ -86,7 +87,7 @@ void HNL_ControlRegion::executeEvent(){
 	    
 	    vector<TString> ElFakeIDs = {"HNL_ULID_FO_v1_"+GetYearString(),"HNL_ULID_FO_v2_"+GetYearString(),"HNL_ULID_FO_v3_"+GetYearString(),"HNL_ULID_FO_v4_"+GetYearString(),"HNL_ULID_FO_v5_"+GetYearString()};
 
-            vector<TString> FakeTag   = {"HNL_ULID_FOv1", "HNL_ULID_FOv2","HNL_ULID_FOv3", "HNL_ULID_FOv4", "HNL_ULID_FOv5"};
+            vector<TString> FakeTag   = {"HNL_ULID_FO_v1","HNL_ULID_FO_v2","HNL_ULID_FO_v3","HNL_ULID_FO_v4","HNL_ULID_FO_v5"};
             vector<TString> FakeParam = {"Pt","PtParton","PtCorr"};
             vector<TString> FakeMethod= {"Standard"};
 	    
@@ -107,6 +108,7 @@ void HNL_ControlRegion::executeEvent(){
 		    param_signal.k.Electron_FR      = FakeTag[i]+"_"+iaj;
 		    param_signal.ApplyPR        = false;
 		    param_signal.Name           = param_signal.DefName+"_"+FakeTag[i]+"_"+param_signal.FakeRateName()+"_"+iaj;
+		    param_signal.DefName           = param_signal.DefName+"_"+FakeTag[i]+"_"+param_signal.FakeRateName()+"_"+iaj;
 		    RunControlRegions(param_signal , CRToRun );
 		  }
 		}
