@@ -616,8 +616,10 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.Muon_Tight_ID     = "HNL_ULID_"+GetYearString();
     param.Electron_Veto_ID  = "HNVetoMVA";  
     param.Electron_Tight_ID = "HNL_ULID_"+GetYearString();
-    param.Muon_FR_ID        = "HNL_ULID_FO_v3_"+GetYearString();
-    param.Electron_FR_ID    = "HNL_ULID_FO_v3_"+GetYearString();
+
+    ///Fakes
+    param.Muon_FR_ID        = "HNL_ULID_FO_v2_"+GetYearString();
+    param.Electron_FR_ID    = "HNL_ULID_FO_v2_"+GetYearString();
     param.FakeRateMethod    = "Standard";
     param.FakeRateParam   = "PtParton";
 
@@ -625,6 +627,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.k.Electron_FR        = "HNL_ULID_FO_v2_AJ30";
     if(GetYearString() == "2017"){
       param.k.Muon_FR            = "HNL_ULID_FO_v3_AJ30";
+      param.Muon_FR_ID        = "HNL_ULID_FO_v3_"+GetYearString();
     }
 
     param.k.Muon_ID_SF         = "NUM_HNL_ULID_"+GetYearString();
