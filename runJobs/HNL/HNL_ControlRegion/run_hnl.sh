@@ -36,28 +36,36 @@ fi
 if [[ $1 == "Scan" ]]; then
 
     declare  -a era_list=("2017" "2018" "2016postVFP" "2016preVFP")
+    declare  -a eta_list=("BB" "EC")
 
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_MuMu.txt      -n 100  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT   --userflags ScanFakes &
-        SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_EE.txt      -n 100    --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT   --userflags ScanFakes &
-        SKFlat.py -a $analyzer  -l $mcpath/PromptSS.txt             -n 20        --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags  ScanFakes,RunPrompt &
-        SKFlat.py -a $analyzer  -l $mcpath/PromptSS2.txt            -n 200       --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags  ScanFakes,RunPrompt &
-        SKFlat.py -a $analyzer  -l $mcpath/Conv.txt                 -n 10        --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT  --userflags ScanFakes,RunConv&
-        SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_MuMu.txt      -n 100  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT  --userflags ScanFakes,RunFake   &
-        SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_EE.txt      -n 100    --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT  --userflags ScanFakes,RunFake   &
-        SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_EE.txt      -n 100    --nmax ${nmax}   -e ${i} --skim SkimTree_DileptonBDT  --userflags ScanFakes,RunCF &
+	for j in "${eta_list[@]}"
+	do
+            SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_MuMu.txt      -n 100  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT   --userflags ScanFakes,${j}   &
+            SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_EE.txt      -n 100    --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT   --userflags ScanFakes,${j}   &
+            SKFlat.py -a $analyzer  -l $mcpath/PromptSS.txt             -n 20        --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags  ScanFakes,RunPrompt,${j} &
+            SKFlat.py -a $analyzer  -l $mcpath/PromptSS2.txt            -n 200       --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT --userflags  ScanFakes,RunPrompt,${j} &
+            SKFlat.py -a $analyzer  -l $mcpath/Conv.txt                 -n 10        --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT  --userflags ScanFakes,RunConv,${j}&
+            SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_MuMu.txt      -n 100  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT  --userflags ScanFakes,RunFake,${j}   &
+            SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_EE.txt      -n 100    --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT  --userflags ScanFakes,RunFake,${j}  &
+            SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_EE.txt      -n 100    --nmax ${nmax}   -e ${i} --skim SkimTree_DileptonBDT  --userflags ScanFakes,RunCF,${j} &
+	done
     done
-
 fi
 
 if [[ $1 == "CF" ]]; then
 
-    declare  -a era_list=("2018")
+    declare  -a era_list=("2017" "2018" "2016postVFP" "2016preVFP")
+    declare  -a eta_list=("BB" "EC")
 
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_EE.txt      -n 1000    --nmax ${nmax}   -e ${i} --skim SkimTree_DileptonBDT  --userflags ScanFakes,RunCF &
+        for j in "${eta_list[@]}"
+        do
+	    
+            SKFlat.py -a $analyzer  -l runJobs/HNL/HNL_ControlRegion/Bkg/CF.txt      -n 400    --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT  --userflags ScanFakes,RunCF,${j} &
+	done
     done
 
 fi

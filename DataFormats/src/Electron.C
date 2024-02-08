@@ -1688,73 +1688,59 @@ int  Electron::PassIDTight(TString ID) const{
 
   /// Iteration 2
 
-  if(ID  == "HNL_ULID_FO_v1_"+Year){
+  if(ID == "HNL_ULID_FO_v0_"+Year){
     if(!PassID("HNL_ULID_FO_"+Year)) return false;
     if(!PassID("HNL_ULID_Fake_"+Year)){
       if(this->HasCloseJet()){
-	if(CloseJet_Ptratio() <CloseJet_PtratioCut) return false;
-	if(this->CloseJet_BScore()  >  0.1)   return false;
+        if(CloseJet_Ptratio() < 0.45)         return false;
       }
     }
     return true;
   }
 
-  if(ID == "HNL_ULID_FO_v2_"+Year){
-   if(!PassID("HNL_ULID_FO_"+Year)) return false;
+
+
+  if(ID.Contains("HNL_ULID_FO_")){
+
+    double BJetDeepJetCut = 999;
+    if(ID.Contains("HNL_ULID_FO_v1")) BJetDeepJetCut = 0.025;   //// Version 1 == TOP                                                                                                                                                                                                                                                                                       
+    if(ID.Contains("HNL_ULID_FO_v2")) BJetDeepJetCut = 0.05;
+    if(ID.Contains("HNL_ULID_FO_v3")) BJetDeepJetCut = 0.1;
+    if(ID.Contains("HNL_ULID_FO_v4")) BJetDeepJetCut = 0.2;
+    if(ID.Contains("HNL_ULID_FO_v5")) BJetDeepJetCut = 0.3;
+    if(ID.Contains("HNL_ULID_FO_v6")) BJetDeepJetCut = 0.4;
+    if(ID.Contains("HNL_ULID_FO_v7")) BJetDeepJetCut = 0.5;
+    if(ID.Contains("HNL_ULID_FO_v8")) BJetDeepJetCut = 0.75;
+    if(ID.Contains("HNL_ULID_FO_v9")) BJetDeepJetCut = 0.9;
+    bool ApplyCloseJet_CvsBScore=false;
+    bool ApplyCloseJet_CvsLScore=false;
+    double CBJetDeepJetCut = -999;
+    double CLJetDeepJetCut = 999;
+
+    if(ID.Contains("_b")){
+      ApplyCloseJet_CvsBScore = true;
+      ApplyCloseJet_CvsLScore= true;
+      CBJetDeepJetCut=0.1;
+      CLJetDeepJetCut=0.6;
+    }
+    if(ID.Contains("_c")){
+      ApplyCloseJet_CvsBScore = true;
+      ApplyCloseJet_CvsLScore= true;
+      CBJetDeepJetCut=0.1;
+      CLJetDeepJetCut=0.8;
+    }
+
+    if(!PassID("HNL_ULID_FO_"+Year)) return false;
     if(!PassID("HNL_ULID_Fake_"+Year)){
       if(this->HasCloseJet()){
-	if(CloseJet_Ptratio() <CloseJet_PtratioCut) return false;
-	if(this->CloseJet_BScore()  >  0.9) return false;
-        if(this->CloseJet_CvsBScore() < 0.1 ) return false;
-        if(this->CloseJet_CvsLScore() > 0.6)return false;
+        if(CloseJet_Ptratio() < CloseJet_PtratioCut)         return false;
+        if(this->CloseJet_BScore()    >  BJetDeepJetCut) return false;
+        if(ApplyCloseJet_CvsBScore && this->CloseJet_CvsBScore() <  CBJetDeepJetCut ) return false;
+        if(ApplyCloseJet_CvsLScore && this->CloseJet_CvsLScore() >  CLJetDeepJetCut ) return false;
       }
     }
     return true;
   }
-
-
-  if(ID == "HNL_ULID_FO_v3_"+Year){
-   if(!PassID("HNL_ULID_FO_"+Year)) return false;
-    if(!PassID("HNL_ULID_Fake_"+Year)){
-
-      if(this->HasCloseJet()){
-        if(CloseJet_Ptratio() <CloseJet_PtratioCut) return false;
-        if(this->CloseJet_BScore()  >  0.4) return false;
-        if(this->CloseJet_CvsBScore() < 0.1 ) return false;
-        if(this->CloseJet_CvsLScore() > 0.8)return false;
-      }
-    }
-    return true;
-  }
-  if(ID == "HNL_ULID_FO_v4_"+Year){
-   if(!PassID("HNL_ULID_FO_"+Year)) return false;
-    if(!PassID("HNL_ULID_Fake_"+Year)){
-
-      if(this->HasCloseJet()){
-        if(CloseJet_Ptratio() <CloseJet_PtratioCut) return false;
-
-        if(this->CloseJet_BScore()  >  0.2) return false;
-        if(this->CloseJet_CvsBScore() < 0.1 ) return false;
-        if(this->CloseJet_CvsLScore() > 0.8)return false;
-      }
-    }
-    return true;
-  }
-  if(ID == "HNL_ULID_FO_v5_"+Year){
-   if(!PassID("HNL_ULID_FO_"+Year)) return false;
-    if(!PassID("HNL_ULID_Fake_"+Year)){
-
-      if(this->HasCloseJet()){
-        if(CloseJet_Ptratio() <CloseJet_PtratioCut) return false;
-        if(this->CloseJet_BScore()  >  0.1)   return false;
-        if(this->CloseJet_CvsBScore() < 0.1 ) return false;
-        if(this->CloseJet_CvsLScore() > 0.8)  return false;
-      }
-    }
-    return true;
-  }
-
-
 
  
 

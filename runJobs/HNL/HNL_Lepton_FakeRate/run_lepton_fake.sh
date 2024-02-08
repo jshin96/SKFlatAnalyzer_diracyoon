@@ -19,10 +19,10 @@ do
     fi
 
     if [[ $1 == "CheckProfileEE" ]]; then
-
+	
         SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_el.txt  -n  ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags CheckProfileEE&
     fi
-
+    
     if [[ $1 == "Rates" ]]; then
         SKFlat.py -a $analyzer  -l $mcpath/MC.txt              -n ${njobs}       --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRates&
         SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_mu.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRates&
