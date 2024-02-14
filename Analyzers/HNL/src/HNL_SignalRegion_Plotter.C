@@ -26,16 +26,16 @@ void HNL_SignalRegion_Plotter::executeEvent(){
       
       if(!IsData) RunSyst=true;
       if(RunSyst){
-	TString param_name = param.Name;
-	vector<AnalyzerParameter::Syst> SystList = GetSystList("Initial");
-	
-	for(auto isyst : SystList){
-	  param.syst_ = AnalyzerParameter::Syst(isyst);
-	  
-	  param.Name = "Syst_"+param.GetSystType()+param_name;
-	  param.DefName = "Syst_"+param.GetSystType()+param_name;
-	  RunULAnalysis(param);
-	}
+        TString param_name = param.Name;
+        vector<AnalyzerParameter::Syst> SystList = GetSystList("Initial");
+        
+        for(auto isyst : SystList){
+          param.syst_ = AnalyzerParameter::Syst(isyst);
+          
+          param.Name = "Syst_"+param.GetSystType()+param_name;
+          param.DefName = "Syst_"+param.GetSystType()+param_name;
+          RunULAnalysis(param);
+        }
       }    
       
     }
@@ -81,16 +81,17 @@ void HNL_SignalRegion_Plotter::RunULAnalysis(AnalyzerParameter param){
   std::vector<Jet>    AK4_JetCollLoose            = GetHNLJets("Loose",     param);
   std::vector<Jet>    AK4_BJetColl                = GetHNLJets("BJet", param);
  
-  Particle METv = GetvMET("PuppiT1xyULCorr",param); // returns MET with systematic correction; run this after all object selection done; NOTE that VBF jet is used here
+  //Particle METv = GetvMET("PuppiT1xyULCorr",param);
+  Particle METv = GetvMET("PuppiT1xyULCorr", param, AK4_VBF_JetColl, AK8_JetColl, MuonCollT, ElectronCollT); // returns MET with systematic correction; run this after all object selection done; NOTE that VBF jet is used here
   
   EvalJetWeight(AK4_JetColl, AK8_JetColl, weight, param);
 
   FillTimer("START_SR");
   
   RunAllSignalRegions(Inclusive,
-		      ElectronCollT,ElectronCollV,MuonCollT,MuonCollV,  TauColl,
-		      AK4_JetCollLoose, AK4_JetAllColl, AK4_JetColl,AK4_VBF_JetColl,AK8_JetColl, AK4_BJetColl, 
-		      ev,METv, param, weight);
+                      ElectronCollT,ElectronCollV,MuonCollT,MuonCollV,  TauColl,
+                      AK4_JetCollLoose, AK4_JetAllColl, AK4_JetColl,AK4_VBF_JetColl,AK8_JetColl, AK4_BJetColl, 
+                      ev,METv, param, weight);
 
   FillTimer("END_SR");
 
