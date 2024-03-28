@@ -258,6 +258,7 @@ vector<AnalyzerParameter::Syst> HNL_LeptonCore::GetSystList(TString SystType){
 		AnalyzerParameter::MuonEnUp,AnalyzerParameter::MuonEnDown,                                                                                       
 		AnalyzerParameter::MuonIDSFUp,AnalyzerParameter::MuonIDSFDown,                                                                                   
 		AnalyzerParameter::MuonISOSFUp,AnalyzerParameter::MuonISOSFDown,                                                                                 
+		AnalyzerParameter::MuonTriggerSFUp,AnalyzerParameter::MuonTriggerSFDown,                                                                                 
 		AnalyzerParameter::ElectronRecoSFUp,AnalyzerParameter::ElectronRecoSFDown,                                                                       
 		AnalyzerParameter::ElectronResUp,AnalyzerParameter::ElectronResDown,                                                                             
 		AnalyzerParameter::ElectronEnUp,AnalyzerParameter::ElectronEnDown,                                                                               
@@ -1042,17 +1043,17 @@ TString HNL_LeptonCore::GetChannelString(HNL_LeptonCore::Channel channel, HNL_Le
   if (channel == EE) channel_string="EE";
   if (channel == MuMu) channel_string="MuMu";
   if (channel == EMu) channel_string="EMu";
-  if (channel == MuE) channel_string="EMu";
+  if (channel == MuE) channel_string="MuE";
 
   if (channel == EEE) channel_string="EEE";
   if (channel == EMuL) channel_string="EMuL";
-  if (channel == MuEL) channel_string="EMuL";
+  if (channel == MuEL) channel_string="MuEL";
   if (channel == MuMuMu) channel_string="MuMuMu";
 
   if (channel == EEEE) channel_string="EEEE";
   if (channel == MuMuMuMu) channel_string="MuMuMuMu";
   if (channel == EMuLL) channel_string="EMuLL";
-  if (channel == MuELL) channel_string="EMuLL";
+  if (channel == MuELL) channel_string="MuELL";
 
 
   if (q == Plus) channel_string+="_+";
