@@ -126,6 +126,19 @@ void HNL_Lepton_FakeRate::executeEvent(){
     goto RunJobs;
   }
 
+  if(HasFlag("RunRatesTauAnalysis")){
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR"},"WRTau_Resolved","POGHighPtWithLooseTrkIso","POGHighPt"));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR"},"WRTau_Boosted","POGHighPtWithVLooseTrkIso","POGHighPt"));
+
+  }
+
+  if(HasFlag("RunRatesTauAnalysisEE")){
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"WRTau_Resolved", "passHEEPID"  ,"passVetoID"));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"WRTau_Boosted","CutBasedLooseNoIso"  ,"passVetoID"));
+
+  }
+
+
   if(HasFlag("RunRates")){
     /// Measure FR in Data
 
@@ -1137,13 +1150,18 @@ void HNL_Lepton_FakeRate::GetElFakeRates(TString Method, std::vector<Lepton *> l
   bool IsMuon=(leps[0]->LeptonFlavour() == Lepton::MUON);
   if(IsMuon) return;
 
-  if(param.Name.Contains("HNL_")){
-    if(Method.Contains("PtCone")) return;
+  if(! ( HasFlag("RunRatesTauAnalysis") || HasFlag("RunRatesTauAnalysisEE"))){
+    
+    if(param.Name.Contains("HNL_")){
+      if(Method.Contains("PtCone")) return;
+    }
+    else{
+      if(!Method.Contains("PtCone")) return;
+    }
   }
   else{
-    if(!Method.Contains("PtCone")) return;
+    if(! ( (Method == "PtCone") ||  (Method == "Pt") )) return;
   }
-
   double   isocut  = (Method == "PtCone") ? GetIsoFromID(*leps[0], param.Electron_Tight_ID) : 0. ;
   TString  LooseID =  param.Electron_Loose_ID ;
   TString  TightID =  param.Electron_Tight_ID ;
@@ -1365,13 +1383,17 @@ void HNL_Lepton_FakeRate::GetMuFakeRates(TString Method, std::vector<Lepton *> l
   bool IsMuon=(leps[0]->LeptonFlavour() == Lepton::MUON);
   if(!IsMuon) return;
 
-  if(param.Name.Contains("HNL_")){
-    if(Method.Contains("PtCone")) return;
+  if(! ( HasFlag("RunRatesTauAnalysis") ||  HasFlag("RunRatesTauAnalysisEE"))){
+    if(param.Name.Contains("HNL_")){
+      if(Method.Contains("PtCone")) return;
+    }
+    else{
+      if(!Method.Contains("PtCone")) return;
+    }
   }
   else{
-    if(!Method.Contains("PtCone")) return;
+    if(! ( (Method == "PtCone") ||   (Method == "Pt") )) return;
   }
-  
   double   isocut  = (Method == "PtCone") ? GetIsoFromID(*leps[0], param.Muon_Tight_ID) : 0.;
   TString  LooseID =  param.Muon_Loose_ID ;
   TString  TightID =  param.Muon_Tight_ID ;

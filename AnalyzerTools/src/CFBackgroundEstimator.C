@@ -90,13 +90,15 @@ double CFBackgroundEstimator::GetElectronCFRate(TString ID, TString key, double 
     if(pt > 500) pt = 499;
   }
   else{
-    if(pt > 200) pt = 199;
+    if(pt > 500) pt = 499;
   }
+  
+  
   
   TString EtaRegion = "EtaRegion1";
   if(eta<0.8) EtaRegion = "EtaRegion1";
   else if(eta<1.2)   EtaRegion = "EtaRegion2";
-  else if(eta<1.47) EtaRegion = "EtaRegion3";
+  else if(eta<1.444) EtaRegion = "EtaRegion3";
   else if(eta<1.9) EtaRegion = "EtaRegion4";
   else if(eta<2.1) EtaRegion = "EtaRegion5";
   else if(eta<2.2) EtaRegion = "EtaRegion6";
@@ -104,7 +106,15 @@ double CFBackgroundEstimator::GetElectronCFRate(TString ID, TString key, double 
   else if(eta<2.4) EtaRegion = "EtaRegion8";
   else EtaRegion = "EtaRegion9";
 
-  key = key.ReplaceAll("EtaRegion",EtaRegion);
+  if(key.Contains("MergedEtaRegion")){
+    if(eta<0.8) EtaRegion = "MergedEtaRegion1";
+    else if(eta<1.556) EtaRegion = "MergedEtaRegion2";
+    else   EtaRegion = "MergedEtaRegion3";
+
+    key = key.ReplaceAll("MergedEtaRegion",EtaRegion);
+  }
+  else   key = key.ReplaceAll("EtaRegion",EtaRegion);
+
   std::map< TString, TH1D* >::const_iterator mapit;
 
   mapit = map_hist_Electron.find(key );

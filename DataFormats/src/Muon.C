@@ -190,6 +190,7 @@ bool Muon::PassID(TString ID) const {
   if(ID=="POGLoose")  return isPOGLoose();
   if(ID=="POGTightWithTightIso")     return Pass_POGTightWithTightIso();
   if(ID=="POGHighPtWithLooseTrkIso") return Pass_POGHighPtWithLooseTrkIso();
+  if(ID=="POGHighPtWithVLooseTrkIso") return Pass_POGHighPtWithVLooseTrkIso();
   if(ID=="POGHighPtTight")    return Pass_POGHighPtTight();
   if(ID=="POGHighPtLoose")    return Pass_POGHighPtLoose();
   if(ID=="POGHighPtMixTight") return Pass_POGHighPtTightOR();
@@ -886,6 +887,14 @@ bool Muon::Pass_POGHighPtWithLooseTrkIso() const {
   if(!( TrkIso()/TuneP4().Pt()<0.1 )) return false;
   return true;
 }
+
+
+bool Muon::Pass_POGHighPtWithVLooseTrkIso() const {
+  if(!( isPOGHighPt() )) return false;
+  if(!( TrkIso()/TuneP4().Pt()<0.45 )) return false;
+  return true;
+}
+
 
 bool Muon::Pass_HNVeto2016() const {
   //  if(Pass_POGHighPtTight()) return true;

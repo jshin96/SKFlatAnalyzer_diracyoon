@@ -146,6 +146,10 @@ std::vector<Electron> HNL_LeptonCore::SelectElectrons(AnalyzerParameter& param, 
   else if(param.syst_ == AnalyzerParameter::ElectronEnDown)  electrons = ScaleElectrons( this_AllElectrons, -1 );
   else electrons = this_AllElectrons;
 
+  double ElEnergyShift=1;
+  if(RunCF ) ElEnergyShift = GetZMassShift(electrons);
+
+
   std::vector<Electron> out;
   for(unsigned int i=0; i<electrons.size(); i++){
 
@@ -158,7 +162,13 @@ std::vector<Electron> HNL_LeptonCore::SelectElectrons(AnalyzerParameter& param, 
       }
     }
     
-    if(RunFake && (id == param.Electron_FR_ID)){
+    if(RunCF)    {
+      Electron this_electron = electrons.at(i);
+      this_electron.SetPtEtaPhiM( electrons.at(i).Pt()*ElEnergyShift, electrons.at(i).Eta(), electrons.at(i).Phi(), electrons.at(i).M() );
+      out.push_back( this_electron);
+    }
+
+    else if(RunFake && (id == param.Electron_FR_ID)){
       Electron this_electron = electrons.at(i);
       if(param.FakeRateParam == "PtCone"){
         double Isocut = GetIsoFromID(Lepton(electrons.at(i)),param.Electron_Tight_ID);

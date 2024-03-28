@@ -251,7 +251,7 @@ public:
   
   inline double InvPt(double shift=1.) const {
     double ptshift = this->Pt()*shift;
-    if(ptshift > 200) return 1/200.;
+    if(ptshift > 1000) return 1/1000.;
     else return (1/ptshift);
   }
 
