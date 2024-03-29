@@ -80,7 +80,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 
     if(run_Debug) {cout <<"RunAllControlRegions ["<< nlog<< "] pass Lep Flavour" << endl;nlog++;}
 
-    if(dilep_channel == EMu || dilep_channel == MuE){
+    if(dilep_channel == EMu ){
       if(param.TriggerSelection == "POGSgLep"){
 	/// For Single Lep its on OR of two PD so need to add veto logic to not double ocunt in data
 	if ( PassMultiDatasetTriggerSelection(dilep_channel, ev, LepsT, "POGSgMu", "POGSglEl")) continue;
@@ -268,12 +268,10 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 	  HNL_LeptonCore::SearchRegion LimitRegions = HNL_LeptonCore::MuonCR;
 	  if (dilep_channel == EE)  LimitRegions =HNL_LeptonCore::ElectronCR;
 	  if (dilep_channel == EMu) LimitRegions =HNL_LeptonCore::ElectronMuonCR;
-	  if (dilep_channel == MuE) LimitRegions =HNL_LeptonCore::ElectronMuonCR;
 	  
 	  HNL_LeptonCore::SearchRegion LimitRegionsBDT = HNL_LeptonCore::MuonCRBDT;
 	  if (dilep_channel == EE) LimitRegionsBDT =HNL_LeptonCore::ElectronCRBDT;
 	  if (dilep_channel == EMu) LimitRegionsBDT =HNL_LeptonCore::ElectronMuonCRBDT;
-	  if (dilep_channel == MuE) LimitRegionsBDT =HNL_LeptonCore::ElectronMuonCRBDT;
 	  
 	  if(PassPreselection(dilep_channel,Inclusive, LepsT, LepsV, TauColl, JetColl, VBF_JetColl, AK8_JetColl, B_JetColl,ev, METv ,param,"", weight_channel)){
 	    if(AK8_JetColl.size() > 0) {

@@ -118,12 +118,10 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
     HNL_LeptonCore::SearchRegion LimitRegions = HNL_LeptonCore::MuonSR;
     if (dilep_channel == EE) LimitRegions =HNL_LeptonCore::ElectronSR;
     if (dilep_channel == EMu) LimitRegions =HNL_LeptonCore::ElectronMuonSR;
-    if (dilep_channel == MuE) LimitRegions =HNL_LeptonCore::ElectronMuonSR;
     
     HNL_LeptonCore::SearchRegion LimitRegionsBDT = HNL_LeptonCore::MuonSRBDT;
     if (dilep_channel == EE) LimitRegionsBDT =HNL_LeptonCore::ElectronSRBDT;
     if (dilep_channel == EMu) LimitRegionsBDT =HNL_LeptonCore::ElectronMuonSRBDT;
-    if (dilep_channel == MuE) LimitRegionsBDT =HNL_LeptonCore::ElectronMuonSRBDT;
 
 
     HNL_LeptonCore::SearchRegion LimitRegionSR1 = HNL_LeptonCore::MuonSR1;

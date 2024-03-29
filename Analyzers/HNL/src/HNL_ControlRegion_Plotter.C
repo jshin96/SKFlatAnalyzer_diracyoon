@@ -17,7 +17,7 @@ void HNL_ControlRegion_Plotter::executeEvent(){
   ///// LIST IDs to run
   vector<TString> LepIDs = {"HNL_ULID"};//"TopHN","HNL_ULID","HNTightV2"};//,"TopHN", "DefaultPOGTight"};
   //// List Channels to run
-  vector<HNL_LeptonCore::Channel> ChannelsToRun = {MuMu};//,EE,EMu,MuE };
+  vector<HNL_LeptonCore::Channel> ChannelsToRun = {MuMu,EE,EMu };
   
   vector<TString> RegionsToPlot = {"SSMultiLep","Dilepton"}; 
   

@@ -570,7 +570,6 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     if(channel_st.Contains("EE"))   param.k.Electron_Trigger_SF = "DiElIso_HNL_ULID";
     if(channel_st.Contains("MuMu")) param.k.Muon_Trigger_SF = "DiMuIso_HNL_ULID";
     if(channel_st.Contains("EMu"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
-    if(channel_st.Contains("MuE"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
   
     return param;
   }
@@ -602,7 +601,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     if(channel_st.Contains("EE"))   param.k.Electron_Trigger_SF = "DiElIso_HNL_ULID";
     if(channel_st.Contains("MuMu")) param.k.Muon_Trigger_SF = "DiMuIso_HNL_ULID";
     if(channel_st.Contains("EMu"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
-    if(channel_st.Contains("MuE"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
+
     return param;
   }
   else if (s_setup_version=="HNL_ULID"){
@@ -640,7 +639,6 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     if(channel_st.Contains("EE"))   param.k.Electron_Trigger_SF = "DiElIso_HNL_ULID";
     if(channel_st.Contains("MuMu")) param.k.Muon_Trigger_SF = "DiMuIso_HNL_ULID";
     if(channel_st.Contains("EMu"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
-    if(channel_st.Contains("MuE"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
     return param;
   }
   else if (s_setup_version=="POGTight"){
@@ -675,13 +673,6 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
       param.k.Muon_Trigger_SF=trigKey+"_POGTight";
     }
     if(channel_st.Contains("EMu"))  {
-      TString trigKey=TrigList_POG_Mu[0];
-      trigKey=trigKey.ReplaceAll("HLT_","");
-      trigKey=trigKey.ReplaceAll("_v","");
-      param.k.Muon_Trigger_SF=trigKey+"_POGTight";
-      param.k.Electron_Trigger_SF = "Default";
-    }
-    if(channel_st.Contains("MuE")) {
       TString trigKey=TrigList_POG_Mu[0];
       trigKey=trigKey.ReplaceAll("HLT_","");
       trigKey=trigKey.ReplaceAll("_v","");
@@ -819,7 +810,6 @@ HNL_LeptonCore::Channel  HNL_LeptonCore::GetChannelENum(TString ch){
   if(ch == "EE")   return EE;
   if(ch == "MuMu") return MuMu;
   if(ch == "EMu")  return EMu;
-  if(ch == "MuE")  return MuE;
 
   return NONE;
 }
@@ -830,7 +820,6 @@ HNL_LeptonCore::Channel  HNL_LeptonCore::GetTriLeptonChannel(HNL_LeptonCore::Cha
   if(channel == EE)   return EEE;
   if(channel == MuMu) return MuMuMu;
   if(channel == EMu)  return EMuL;
-  if(channel == MuE)  return MuEL;
 
   return channel;
 }
@@ -840,7 +829,6 @@ HNL_LeptonCore::Channel HNL_LeptonCore::GetQuadLeptonChannel(HNL_LeptonCore::Cha
   if(channel ==EE)   return EEEE;
   if(channel == MuMu) return MuMuMuMu;
   if(channel == EMu)  return EMuLL;
-  if(channel == MuE)  return MuELL;
 
   return channel;
 }
@@ -854,18 +842,16 @@ bool HNL_LeptonCore::CheckLeptonFlavourForChannel(HNL_LeptonCore::Channel channe
     if(ilep->LeptonFlavour() == Lepton::ELECTRON) n_el++;
   }
   
-  if(channel==MuMu  || channel==EE || channel== EMu || channel== MuE ){
+  if(channel==MuMu  || channel==EE || channel== EMu ){
     
     if (leps.size() != 2) return false;
 
     if (channel==EE     && !(leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::ELECTRON)) return false;
     if (channel==MuMu   && !(leps[0]->LeptonFlavour() == Lepton::MUON     && leps[1]->LeptonFlavour() == Lepton::MUON))    return false;
-    //if (channel==EMu    && !(leps[0]->LeptonFlavour() == Lepton::ELECTRON && leps[1]->LeptonFlavour() == Lepton::MUON))    return false;
-    //if (channel==MuE    && !(leps[1]->LeptonFlavour() == Lepton::ELECTRON && leps[0]->LeptonFlavour() == Lepton::MUON))    return false; 
-    if(( channel == EMu || channel == MuE) && (n_el != n_mu) ) return false;
+    if (channel==EMu    && (n_el != n_mu) ) return false;
     double lep1_ptcut= (channel==EE) ?   25. : 20.;
     double lep2_ptcut= (channel==EE) ?   10. : 10.;
-    //
+    
     if(!(leps[0]->Pt() > lep1_ptcut && leps[1]->Pt()  > lep2_ptcut)) return false;
     
     return true;
@@ -873,16 +859,12 @@ bool HNL_LeptonCore::CheckLeptonFlavourForChannel(HNL_LeptonCore::Channel channe
   }
 
   
-  if(channel==MuMuMu  || channel==EEE || channel==EMuL || channel==MuEL){
+  if(channel==MuMuMu  || channel==EEE || channel==EMuL){
     
     if( leps.size() != 3) return false;
     if(channel==MuMuMu && n_mu != 3) return false;
-    if(channel==EEE && n_el != 3) return false;
-    if(channel==EMuL&&  (n_el == 3  || n_mu == 3)) return false;
-    if(channel==MuEL&&  (n_el == 3  || n_mu == 3)) return false;
-    
-    if(channel==EMuL&&  !(leps[0]->LeptonFlavour() == Lepton::ELECTRON)) return false;
-    if(channel==MuEL&&  !(leps[0]->LeptonFlavour() == Lepton::MUON))     return false;
+    if(channel==EEE    && n_el != 3) return false;
+    if(channel==EMuL   && (n_el == 3  || n_mu == 3)) return false;
     
     double lep1_ptcut= (channel==MuMuMu) ?   20.  : 25.;
     double lep2_ptcut= (channel==MuMuMu) ?   10   : 10.;
@@ -893,15 +875,12 @@ bool HNL_LeptonCore::CheckLeptonFlavourForChannel(HNL_LeptonCore::Channel channe
     return true;
   }
 
-  if(channel == MuMuMuMu || channel == EEEE || channel == EMuLL || channel == MuELL ) {
+  if(channel == MuMuMuMu || channel == EEEE || channel == EMuLL ) {
 
     if( leps.size() != 4) return false;
-    if( channel==MuMuMuMu && n_mu != 4) return false;
-    if( channel==EEEE && n_el != 4) return false;
-    if( channel == EMuLL && !(n_mu == 2 && n_mu == 2)) return false;
-    if( channel == MuELL && !(n_mu == 2 && n_mu == 2)) return false;
-    if(channel==EMuLL&&  !(leps[0]->LeptonFlavour() == Lepton::ELECTRON)) return false;
-    if(channel==MuELL&&  !(leps[0]->LeptonFlavour() == Lepton::MUON))     return false;
+    if( channel == MuMuMuMu && n_mu != 4) return false;
+    if( channel == EEEE     && n_el != 4) return false;
+    if( channel == EMuLL    && !(n_mu == 2 && n_mu == 2)) return false;
     
     double lep1_ptcut= (channel==MuMuMuMu) ?   20. : 25.;
     double lep2_ptcut= (channel==MuMuMuMu) ?   10. : 10.;
@@ -1043,17 +1022,14 @@ TString HNL_LeptonCore::GetChannelString(HNL_LeptonCore::Channel channel, HNL_Le
   if (channel == EE) channel_string="EE";
   if (channel == MuMu) channel_string="MuMu";
   if (channel == EMu) channel_string="EMu";
-  if (channel == MuE) channel_string="MuE";
 
   if (channel == EEE) channel_string="EEE";
   if (channel == EMuL) channel_string="EMuL";
-  if (channel == MuEL) channel_string="MuEL";
   if (channel == MuMuMu) channel_string="MuMuMu";
 
   if (channel == EEEE) channel_string="EEEE";
   if (channel == MuMuMuMu) channel_string="MuMuMuMu";
   if (channel == EMuLL) channel_string="EMuLL";
-  if (channel == MuELL) channel_string="MuELL";
 
 
   if (q == Plus) channel_string+="_+";
@@ -1140,8 +1116,8 @@ bool HNL_LeptonCore::SelectChannel(HNL_LeptonCore::Channel channel){
   if(channel == EE   && process.Contains("SS_El+El+")) return true;
   if(channel == EE   && process.Contains("SS_El-El-")) return true;
 
-  if( (channel == EMu||channel == MuE) && (process.Contains("SS_El+Mu+")||process.Contains("SS_Mu+El+")) ) return true;
-  if( (channel == EMu||channel == MuE) && (process.Contains("SS_El-Mu-")||process.Contains("SS_Mu-El-")) ) return true;
+  if(channel == EMu  && (process.Contains("SS_El+Mu+")||process.Contains("SS_Mu+El+")) ) return true;
+  if(channel == EMu  && (process.Contains("SS_El-Mu-")||process.Contains("SS_Mu-El-")) ) return true;
 
   return false;
 }
