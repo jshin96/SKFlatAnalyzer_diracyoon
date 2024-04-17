@@ -790,19 +790,25 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 
     if(!IsDATA) {
       
-      if(ElectronColl.at(0).LeptonGenType() <= 0 || ElectronColl.at(0).LeptonGenType() >=4) return;
-      if(ElectronColl.at(1).LeptonGenType() <= 0 || ElectronColl.at(1).LeptonGenType() >=4) return;
-
-      bool IsCF1 = ElectronColl.at(0).LeptonIsCF();
-      bool IsCF2 = ElectronColl.at(1).LeptonIsCF();
-      
-      if(HasPromptConv(ElectronColl.at(0))) return;
-      if(HasPromptConv(ElectronColl.at(1))) return;
-      
-      if(SameCharge(ElectronColl)){
-	if(!IsCF1 && !IsCF2) return;
+      if(MCSample.Contains("DY")){
+	if(ElectronColl.at(0).LeptonGenType() <= 0 || ElectronColl.at(0).LeptonGenType() >=4) return;
+	if(ElectronColl.at(1).LeptonGenType() <= 0 || ElectronColl.at(1).LeptonGenType() >=4) return;
+	
+	bool IsCF1 = ElectronColl.at(0).LeptonIsCF();
+	bool IsCF2 = ElectronColl.at(1).LeptonIsCF();
+	
+	if(HasPromptConv(ElectronColl.at(0))) return;
+	if(HasPromptConv(ElectronColl.at(1))) return;
+	
+	if(SameCharge(ElectronColl)){
+	  if(!IsCF1 && !IsCF2) return;
+	}
       }
-
+      else{
+	/// ZG Subtraction
+	if(! (ElectronColl.at(0).IsConv() ||  ElectronColl.at(1).IsConv() )) return;
+	EvWeight = -1*EvWeight;
+      }
     }
 
     vector<Electron> ElectronColl_shifted;// = ElectronColl; // copy the vector                                                                                                              

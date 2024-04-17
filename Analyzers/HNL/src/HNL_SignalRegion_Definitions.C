@@ -305,8 +305,8 @@ TString HNL_RegionDefinitions::RunSignalRegionAK8String(bool ApplyForSR,
   Particle ll =  (*leps[0]) + (*leps[1]);
   if(ApplyForSR)FillCutflow(Reg, w, RegionTag+"_dilep_mass",param);
 
-  if(HasTightTau) return "false";
-  if(ApplyForSR)FillCutflow(Reg, w, RegionTag+"_tauveto",param);
+  //  if(HasTightTau) return "false";
+  //if(ApplyForSR)FillCutflow(Reg, w, RegionTag+"_tauveto",param);
     
   if(AK8_JetColl.size() != 1)  return "false";
   if(ApplyForSR)FillCutflow(Reg, w, RegionTag+"_1AK8",param);

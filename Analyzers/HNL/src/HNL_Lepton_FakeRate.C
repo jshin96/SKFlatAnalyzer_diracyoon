@@ -1260,9 +1260,10 @@ void HNL_Lepton_FakeRate::GetElFakeRates(TString Method, std::vector<Lepton *> l
       if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_12)*NVxt_El12);
     }
     else if(lep_pt > 10){
-      if(leps[0]->Pt() < 8) return;
-      if(!pass_8) return;
-      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_8)*NVxt_El8);
+      if(leps[0]->Pt() < 10) return;
+      //if(!pass_8) return;
+      if(!pass_12) return;
+      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_12)*NVxt_El12);
 
     }
     else return ;
@@ -1471,6 +1472,8 @@ void HNL_Lepton_FakeRate::GetMuFakeRates(TString Method, std::vector<Lepton *> l
     
     lep_pt      =  (leps[0]->PtParton(PTPartonSF,MVACut) < UpperPtCut) ?  leps[0]->PtParton(PTPartonSF, MVACut) : UpperPtCutM1;
     
+    //if(leps[0]->Pt() < 10)      cout << "Lep pt = " << leps[0]->Pt() << " ptparton = " << lep_pt <<  << " PASS TRIG " << triggerslist_3 << " ~For_HLT_Mu3_PFJet40_v~="  <<For_HLT_Mu3_PFJet40_v <<endl;
+  
     FillProf((param.Name + "_FakeCR40_MVA_PtParton").Data(), leps[0]->HNL_MVA_Fake(MVAKey), lep_pt, event_weight, 100, -1, 1);
     
     if(lep_pt > 30){
@@ -1483,12 +1486,13 @@ void HNL_Lepton_FakeRate::GetMuFakeRates(TString Method, std::vector<Lepton *> l
       if(!pass_8) return;
       if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_8)*ApplyNvtxReweight(nPV,triggerslist_8));
     }
-    else if(lep_pt > 5){
+    else if(lep_pt > 10){
       if(leps[0]->Pt() < 5) return;
-      if(!pass_3) return;
-      if(For_HLT_Mu3_PFJet40_v==0) return;
-      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_3)*ApplyNvtxReweight(nPV,triggerslist_3));
-
+      //if(!pass_3) return;
+      //if(For_HLT_Mu3_PFJet40_v==0) return;
+      //if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_3)*ApplyNvtxReweight(nPV,triggerslist_3));
+      if(!pass_8) return;
+      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_8)*ApplyNvtxReweight(nPV,triggerslist_8));
     }
    else return ;
     
@@ -1512,9 +1516,12 @@ void HNL_Lepton_FakeRate::GetMuFakeRates(TString Method, std::vector<Lepton *> l
     }
     else if(lep_pt > 5){
       if(leps[0]->Pt() < 5) return;
-      if(!pass_3) return;
-      if(For_HLT_Mu3_PFJet40_v==0) return;
-      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_3)*ApplyNvtxReweight(nPV,triggerslist_3));
+      //if(!pass_3) return;
+      //if(For_HLT_Mu3_PFJet40_v==0) return;
+      //if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_3)*ApplyNvtxReweight(nPV,triggerslist_3));
+      if(!pass_8) return;
+      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_8)*ApplyNvtxReweight(nPV,triggerslist_8));
+
     }
     else return ;
   }

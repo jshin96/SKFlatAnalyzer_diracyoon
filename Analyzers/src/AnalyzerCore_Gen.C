@@ -426,11 +426,11 @@ bool AnalyzerCore::ConversionSplitting(std::vector<Lepton *> leps, bool RunConvM
     if(ilep->Pt() > 15.) nlep_pt20++;
   }
 
-  if(MCSample.Contains("WGTo") ||MCSample.Contains("ZGTo")){
+  if(MCSample.Contains("ZGTo")){
     if(nlep_pt20 ==nlep) return true;
     else return false;
   }
-  else if(MCSample.Contains("DYJet") || MCSample.Contains("WJet")) {
+  else if(MCSample.Contains("DYJet")) {
 
     if(nlep_pt20 !=nlep) return true;
     else return false;
