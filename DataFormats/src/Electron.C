@@ -320,8 +320,10 @@ int  Electron::PassIDTight(TString ID) const{
   else if(ID.Contains("2017")) Year = "2017";
   else if(ID.Contains("2018")) Year = "2018";
 
-  if(ID == "HNL_ULID_"     +Year)   return (PassID("HNL_ULID_FO_"+Year)     && PassID("HNL_ULID_Fake_"+Year));
-  if(ID == "HNL_ULLID" )            return (PassID("HNL_ULLID_FO")          && PassID("HNL_ULLID_Fake"));
+  if(ID == "HNL_ULID_"     +Year)         return (PassID("HNL_ULID_FO_"+Year)    && PassID("HNL_ULID_Fake_"+Year));
+  if(ID == "HNL_ULID_LooseNP_"+Year )     return (PassID("HNL_ULID_FO_"+Year)    && PassID("HNL_ULLID_Fake"));
+  if(ID == "HNL_ULID_LooseCF_"+Year )     return (PassID("HNL_ULID_Conv_"+Year)  && PassID("HNL_ULLID_CF")   && PassID("HNL_ULID_Fake_"+Year));
+
 
   // Loose Fake IDs
   if(ID == "HNL_ULID_FO_"  +Year)   return (PassID("HNL_ULID_Conv_"+Year)   && PassID("HNL_ULID_CF_"+Year));
@@ -425,8 +427,8 @@ int  Electron::PassIDTight(TString ID) const{
   if(ID == "HNL_ULID_Fake_2018" ) return (PassMVABaseLine() && Pass_MVA_BBEC("Fake_EDv5", el_mva_cut_fake_2018_B, el_mva_cut_fake_2018_EC ,   "Fake_v5"));
 
   if(ID == "HNL_ULLID_Conv" ) return (PassMVABaseLine() && Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.4,0.) , GetPtSlopeCut(20,50,-0.4,0.) ,   "Conv_v5"));
-  if(ID == "HNL_ULLID_CF" )  return (PassMVABaseLine() && Pass_MVA_BBEC("CF_EDv5",   0.5 ,0.4 , "CF_v5")) ;
-  if(ID == "HNL_ULLID_Fake") return (PassMVABaseLine() && Pass_MVA_BBEC("Fake_EDv5",0.25 ,0.25 ,   "Fake_v5"));
+  if(ID == "HNL_ULLID_CF" )  return (PassMVABaseLine() && Pass_MVA_BBEC("CF_EDv5",   0.4 ,0.4 , "CF_v5")) ;
+  if(ID == "HNL_ULLID_Fake") return (PassMVABaseLine() && Pass_MVA_BBEC("Fake_EDv5",0.2 ,0.2 ,   "Fake_v5"));
 
 
   //////////////////////////////////////////////////////////////////////////////////// 

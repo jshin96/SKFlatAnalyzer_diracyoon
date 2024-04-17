@@ -515,8 +515,11 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
 	TLorentzVector genZ=(gen_l0+gen_l1);
 	param.w.zptweight =GetZptWeight(genZ.M(),genZ.Rapidity(),genZ.Pt());
 	param.w.weakweight=GetDYWeakWeight(genZ.M());
+
       }
-      else param.hprefix+="tau_";
+      else {
+	if(HasFlag("SplitDYTau"))param.hprefix+="tau_";
+      }
     }
     
     if(IsTTSample)   param.w.topptweight=mcCorr->GetTopPtReweight(All_Gens);
@@ -557,7 +560,8 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.Muon_Tight_ID    = "HNTightV2";     param.Electron_Tight_ID = "HNTightV2";
     param.Muon_FR_ID       = "HNLooseV1";     param.Electron_FR_ID    = "HNLooseV4";
 
-    param.k.Electron_CF  = "CFRate_PtInv_EtaRegion_" + param.Electron_Tight_ID;
+    param.k.Electron_CF  = "CFRate_InvPtEta3_PBS_" + param.Electron_Tight_ID;
+
     param.FakeRateMethod       = "Standard";
     param.FakeRateParam        = "PtCone";
     param.k.Muon_FR            = "AwayJetPt40";
@@ -634,7 +638,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.k.Muon_ISO_SF        = "Default";
     param.k.Electron_ID_SF     = "passHNL_ULID_"+GetYearString();
 
-    param.k.Electron_CF  = "CFRate_PtInv_EtaRegion_" + param.Electron_Tight_ID;
+    param.k.Electron_CF  = "CFRate_InvPtEta3_PBS_" + param.Electron_Tight_ID;
     param.TriggerSelection = "Dilep";
     if(channel_st.Contains("EE"))   param.k.Electron_Trigger_SF = "DiElIso_HNL_ULID";
     if(channel_st.Contains("MuMu")) param.k.Muon_Trigger_SF = "DiMuIso_HNL_ULID";
@@ -662,7 +666,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
 
     param.k.Muon_FR            = "AwayJetPt40";
     param.k.Electron_FR        = "AwayJetPt40";
-    param.k.Electron_CF  = "CFRate_PtInv_EtaRegion_POGTight";
+    param.k.Electron_CF  = "CFRate_InvPtEta3_PBS_POGTight";
 
 
     if(channel_st.Contains("EE"))   param.k.Electron_Trigger_SF = "Default";

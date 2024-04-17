@@ -48,7 +48,7 @@ void HNL_ControlRegion::executeEvent(){
     for (auto id: LepIDs){
       for(auto channel : ChannelsToRun){
 	      
-	vector<TString> AJetPt = {"AJ30"};
+	vector<TString> AJetPt = {"AJ30","AJ40"};
 	
 	if(id=="HNL_ULID"){
 	  
@@ -112,15 +112,22 @@ void HNL_ControlRegion::executeEvent(){
                                          "HNL_ULID_FO_v9_b",
                                          "HNL_ULID_FO_v9_c"};
 
-	    vector<TString> FakeParam = {"PtParton"};//,"PtCorr"};
+	    vector<TString> FakeParam = {"PtParton","Pt","PtCorr"};
 	    vector<TString> FakeMethod= {"Standard"};                                                              
 	    
 	    for(unsigned int i= 0 ; i < FakeTag.size(); i++){
 	      for(unsigned int j= 0 ; j < FakeParam.size(); j++){
 		for(unsigned int k= 0 ; k < FakeMethod.size(); k++){
 		  for(auto iaj : AJetPt){
+		    if(!RunFake){
+		      if(FakeMethod[k] != "Standard") continue;
+		      if(FakeParam[j]  != "PtParton") continue;
+		      if(iaj !=  "AJ30") continue;
+		      if(FakeTag[i] != "HNL_ULID_FO_v0") continue;
+		    }
 		    if(FakeMethod[k] == "BDTFlavour" && FakeTag[i] !=  "HNL_ULID_FO") continue;
 		    AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter(id,channel);
+		    
 		    param_signal.PlottingVerbose = -1;
 		    param_signal.FakeRateMethod = FakeMethod[k]; 
 		    param_signal.FakeRateParam  = FakeParam[j]; 
@@ -199,7 +206,7 @@ void HNL_ControlRegion::executeEvent(){
                                          "HNL_ULID_FO_v9_b",
                                          "HNL_ULID_FO_v9_c"};
 
-            vector<TString> FakeParam = {"PtParton"};//"Pt","PtParton","PtCorr"};
+            vector<TString> FakeParam = {"PtParton","Pt"};
             vector<TString> FakeMethod= {"Standard"};
 	    
 	    
@@ -209,8 +216,17 @@ void HNL_ControlRegion::executeEvent(){
 		  if(FakeMethod[k] == "BDTFlavour" && FakeTag[i] !=  "HNL_ULID_FO_"+GetYearString()) continue;
 		  for(auto iaj : AJetPt){
 		    
+		    if(!RunFake){
+                      if(FakeMethod[k] != "Standard") continue;
+                      if(FakeParam[j]  != "PtParton") continue;
+                      if(iaj !=  "AJ30") continue;
+                      if(FakeTag[i] != "HNL_ULID_FO_v0") continue;
+                    }
+
+
 		    AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter(id,channel);
-		    param_signal.CFMethod   = "MC";
+		    param_signal.CFMethod   = "DATA";
+		    
 		    param_signal.PlottingVerbose = -1;
 		    param_signal.FakeRateMethod = FakeMethod[k];
 		    param_signal.FakeRateParam  = FakeParam[j];
@@ -385,10 +401,15 @@ void HNL_ControlRegion::RunControlRegions(AnalyzerParameter param, vector<TStrin
     }
   }
 
-  RunAllControlRegions(ElectronTightColl,ElectronVetoColl,MuonTightColl,MuonVetoColl, 
-		       AK4_JetAllColl, AK4_JetColl,AK4_VBF_JetColl,AK8_JetColl, AK4_BJetColl, 
-		       ev,METv, param, CRs,weight);
-  
+  vector<int> RunEl ;
+  if(RunCF) RunEl =  {0,1} ;
+  else RunEl = {-1};
+
+  for(auto ir : RunEl){
+    RunAllControlRegions(ElectronTightColl,ElectronVetoColl,MuonTightColl,MuonVetoColl, 
+			 AK4_JetAllColl, AK4_JetColl,AK4_VBF_JetColl,AK8_JetColl, AK4_BJetColl, 
+			 ev,METv, param, CRs, ir, weight);
+  }
 
 }
 

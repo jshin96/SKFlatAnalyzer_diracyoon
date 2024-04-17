@@ -29,7 +29,7 @@
 void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq, 
 						std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Tau> TauColl, 
 						std::vector<Jet> JetCollLoose, std::vector<Jet> JetAllColl, std::vector<Jet> JetColl, std::vector<Jet> VBF_JetColl,std::vector<FatJet>  AK8_JetColl, std::vector<Jet> B_JetColl, 
-						Event ev,   Particle METv, AnalyzerParameter param,   float weight_ll){
+						Event ev,   Particle METv, AnalyzerParameter param, int nElForRunCF,   float weight_ll){
 
   vector<HNL_LeptonCore::Channel> channels = {GetChannelENum(param.Channel)};
 
@@ -87,7 +87,7 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
       if(IsData && SameCharge(LepsT)) continue;
       if(!IsData && !SameCharge(LepsT)) continue;
       
-      if(IsData)weight_channel = GetCFWeightElectron(LepsT, param);
+      if(IsData)weight_channel = GetCFWeightElectron(LepsT, param,nElForRunCF,true);
       if(IsData)FillWeightHist(param.Name+"/CFWeight",weight_channel);
 
     }

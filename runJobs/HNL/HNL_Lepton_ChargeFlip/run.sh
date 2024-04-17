@@ -1,4 +1,4 @@
-analyzer=HNL_Lepton_ChargeFlip
+1;95;0canalyzer=HNL_Lepton_ChargeFlip
 rundir=HNL_Lepton_ChargeFlip
 datapath=${SKFlat_WD}/runJobs/HNL/${analyzer}/Data/
 mcpath=${SKFlat_WD}/runJobs/HNL/${analyzer}/Bkg/
@@ -7,9 +7,9 @@ nmax=400
 skim=' '
 declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
 
+declare  -a era_list=("2017")
 
 if [[ $1 == "Study" ]]; then
-    declare  -a era_list=("2018")
 
     for i in "${era_list[@]}"
     do
@@ -20,13 +20,12 @@ fi
 
 if [[ $1 == "Shift" ]]; then
 
-    for i in "${era_list[@]}"
+    declare  -a era_list=("2016postVFP" "2016preVFP" "2018")
+
+    for  i in "${era_list[@]}"
     do
-	SKFlat.py -a $analyzer  -i DYJets           -n 600  --nmax 500   -e ${i}  --skim SkimTree_DileptonBDT --userflags ShiftEnergy&
-	SKFlat.py -a $analyzer  -i TTLL_powheg      -n 600  --nmax 500   -e ${i}  --skim SkimTree_DileptonBDT --userflags ShiftEnergy&
-	SKFlat.py -a $analyzer  -l $mcpath/DYMG.txt -n 600  --nmax 500   -e ${i}  --skim SkimTree_DileptonBDT --userflags ShiftEnergy&
-	SKFlat.py -a $analyzer  -i WJets_MG         -n 600  --nmax 500   -e ${i}  --skim SkimTree_DileptonBDT --userflags ShiftEnergy&
-	SKFlat.py -a $analyzer  -i TTLJ_powheg      -n 600  --nmax 500   -e ${i}  --skim SkimTree_DileptonBDT --userflags ShiftEnergy&
+	SKFlat.py -a $analyzer  -l $mcpath/Shift.txt -n 200      --nmax 400   -e ${i}  --skim SkimTree_DileptonBDT --userflags ShiftEnergy&
+	SKFlat.py -a $analyzer  -l $mcpath/Shift_all.txt -n 200  --nmax 400   -e ${i}  --skim SkimTree_BDT --userflags ShiftEnergy
     done
 fi
 
@@ -49,14 +48,15 @@ fi
 
 
 if [[ $1 == "Rates" ]]; then
-    
+
+    declare  -a era_list=("2017")
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer -l $mcpath/DYMG.txt   -n 600  --nmax 600   -e ${i}  --skim SkimTree_DileptonBDT --userflags ElCFRates&  
-	SKFlat.py -a $analyzer  -i DYJets            -n 600  --nmax 600   -e ${i}  --skim SkimTree_DileptonBDT --userflags ElCFRates&
-	SKFlat.py -a $analyzer  -i TTLL_powheg       -n 600  --nmax 600   -e ${i}  --skim SkimTree_DileptonBDT --userflags ElCFRates&
-	SKFlat.py -a $analyzer  -i TTLJ_powheg       -n 600  --nmax 600   -e ${i}  --skim SkimTree_DileptonBDT --userflags ElCFRates&
-	SKFlat.py -a $analyzer  -i WJets_MG          -n 600  --nmax 600   -e ${i}  --skim SkimTree_DileptonBDT --userflags ElCFRates&
+        #SKFlat.py -a $analyzer -l $mcpath/CFRates.txt   -n 600  --nmax 600   -e ${i}  --skim SkimTree_DileptonBDT --userflags ElCFRates&  
+        SKFlat.py -a $analyzer -l $mcpath/CFRates.txt   -n 600  --nmax 800   -e ${i}  --skim SkimTree_DileptonBDT --userflags ElCFRates,RateNoShift&  
+	
+        #SKFlat.py -a $analyzer  -l $mcpath/Shift_all.txt -n 600  --nmax 600   -e ${i}  --skim SkimTree_BDT --userflags ElCFRates&
+        #SKFlat.py -a $analyzer  -l $mcpath/Shift_all.txt -n 600  --nmax 600   -e ${i}  --skim SkimTree_BDT --userflags ElCFRates,RateNoShift&
 	
     done
 fi

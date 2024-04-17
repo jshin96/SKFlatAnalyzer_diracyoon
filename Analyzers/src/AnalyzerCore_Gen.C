@@ -10,11 +10,11 @@ void AnalyzerCore::PrintGen(const std::vector<Gen>& gens){
   cout << "index\tPID\tStatus\tMIdx\tMPID\tStart\tPt\tEta\tPhi\tM" << endl;
   for(unsigned int i=2; i<gens.size(); i++){
     Gen gen = gens.at(i);
-    cout << i << "\t" << gen.PID() << "\t" << gen.Status() << "\t" << gen.MotherIndex() << "\t"  ;
     if(!MCSample.Contains("Sherpa")){
       vector<int> history = TrackGenSelfHistory(gen, gens);
       cout << i << "\t" << gen.PID() << "\t" << gen.Status() << "\t" << gen.MotherIndex() << "\t" << gens.at(gen.MotherIndex()).PID()<< "\t" << history[0] << "\t";
     }
+    else     cout << i << "\t" << gen.PID() << "\t" << gen.Status() << "\t" << gen.MotherIndex() << "\t"  ;
 
     printf("%.2f\t%.2f\t%.2f\t%.2f\n",gen.Pt(), gen.Eta(), gen.Phi(), gen.M());
   }

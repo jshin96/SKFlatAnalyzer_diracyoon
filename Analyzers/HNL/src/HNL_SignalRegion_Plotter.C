@@ -88,10 +88,16 @@ void HNL_SignalRegion_Plotter::RunULAnalysis(AnalyzerParameter param){
 
   FillTimer("START_SR");
   
-  RunAllSignalRegions(Inclusive,
-                      ElectronCollT,ElectronCollV,MuonCollT,MuonCollV,  TauColl,
-                      AK4_JetCollLoose, AK4_JetAllColl, AK4_JetColl,AK4_VBF_JetColl,AK8_JetColl, AK4_BJetColl, 
-                      ev,METv, param, weight);
+  vector<int> RunEl ;
+  if(RunCF) RunEl =  {0,1} ;
+  else RunEl = {-1};
+
+  for(auto ir : RunEl){
+    RunAllSignalRegions(Inclusive,
+			ElectronCollT,ElectronCollV,MuonCollT,MuonCollV,  TauColl,
+			AK4_JetCollLoose, AK4_JetAllColl, AK4_JetColl,AK4_VBF_JetColl,AK8_JetColl, AK4_BJetColl, 
+			ev,METv, param, ir, weight);
+  }
 
   FillTimer("END_SR");
 

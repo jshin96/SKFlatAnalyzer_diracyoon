@@ -1,6 +1,21 @@
 #include "HNL_RegionDefinitions.h"
 
-void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> JetAllColl, std::vector<Jet> JetColl, std::vector<Jet> VBF_JetColl,   std::vector<FatJet> AK8_JetColl, std::vector<Jet> B_JetColl,  Event ev, Particle METv, AnalyzerParameter param, vector<TString> CRs, float weight_ll ){
+void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electronsInitial, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto, std::vector<Jet> JetAllColl, std::vector<Jet> JetColl, std::vector<Jet> VBF_JetColl,   std::vector<FatJet> AK8_JetColl, std::vector<Jet> B_JetColl,  Event ev, Particle METv, AnalyzerParameter param, vector<TString> CRs, int nElRun_ForCF, float weight_ll ){
+
+  std::vector<Electron> electrons;
+  if(RunCF) {
+    /// Add code to smear individual electron for CF Bkg
+    for(unsigned int i=0; i<electronsInitial.size(); i++){
+      Electron this_electron = electronsInitial.at(i);
+      double ElEnergyShift = 1;
+      
+      if(i==nElRun_ForCF) ElEnergyShift = GetShiftCFEl(this_electron, param.Electron_Tight_ID);
+      
+      this_electron.SetPtEtaPhiM( electronsInitial.at(i).Pt()*ElEnergyShift, electronsInitial.at(i).Eta(), electronsInitial.at(i).Phi(), electronsInitial.at(i).M() );
+      electrons.push_back( this_electron);
+    }
+  }
+  else  electrons = electronsInitial;
   
   vector<HNL_LeptonCore::Channel> channels = {GetChannelENum(param.Channel)};
  
@@ -15,9 +30,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
   int nlog(0);
   
   for(unsigned int ic = 0; ic < channels.size(); ic++){
-
-    //cout << "RunAllControlRegions ["<< nlog<< "] : Start Loop " << CRs[0] << " " << GetChannelString(channels[ic]) << endl;
-    
+   
     if(run_Debug) cout << "HNL_RegionDefinitions::RunAllControlRegions [" << GetChannelString(channels[ic])<<" ]" << endl;
     
     HNL_LeptonCore::Channel dilep_channel   = channels[ic];
@@ -230,7 +243,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 	  if(dilep_channel == MuMu)       continue;
 	  if(IsData && SameCharge(LepsT)) continue;
 	  if(IsData){
-	    weight_channel = GetCFWeightElectron(LepsT, param);
+	    weight_channel = GetCFWeightElectron(LepsT, param,nElRun_ForCF, true);
 	    FillWeightHist(param.ChannelDir()+"/CFWeight",weight_channel);
 	  }
 	  if(!IsData && !SameCharge(LepsT)) continue;
@@ -255,7 +268,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       if(FillSSPreselectionPlots(dilep_channel,    LepsT, LepsV, JetColl,     AK8_JetColl, B_JetColl, ev, METv, param, weight_channel))	passed.push_back("SSPresel");
       if(FillHighMassSR1CRPlots(dilep_channel, LepsT, LepsV, JetColl,     AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR1_CR");
       if(FillHighMassSR2CRPlots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR2_CR");
-      if(FillHighMassSR3CRPlots(dilep_channel, LepsT, LepsV, JetColl,     AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR3_CR");
+      if(!PassVBF(VBF_JetColl,LepsT,750) && FillHighMassSR3CRPlots(dilep_channel, LepsT, LepsV, JetColl,     AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR3_CR");
       if(FillHighMass1JetCRPlots(dilep_channel, LepsT, LepsV, JetColl,    AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMass1Jet_CR");
       if(FillHighMassBJetCRPlots(dilep_channel, LepsT, LepsV, JetColl,    AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassBJet_CR");
       if(FillHighMassNPCRPlots(dilep_channel, LepsT, LepsV, JetColl,      AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassNP_CR");
@@ -1319,7 +1332,6 @@ bool HNL_RegionDefinitions::FillHighMassSR3CRPlots(HNL_LeptonCore::Channel chann
 
   if(ll.M() < M_CUT_LL) return false;
   FillCutflow(Reg, w, "Step3",param);
-
 
   double met2_st = GetMET2ST(leps, JetColl, AK8_JetColl, METv);
   bool PassHMMet = (met2_st < 20);

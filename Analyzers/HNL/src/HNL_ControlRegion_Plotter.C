@@ -188,10 +188,15 @@ void HNL_ControlRegion_Plotter::RunControlRegions(AnalyzerParameter param, vecto
   }
 
 
-  RunAllControlRegions(ElectronTightColl,ElectronVetoColl,MuonTightColl,MuonVetoColl, 
-		       AK4_JetAllColl, AK4_JetColl,AK4_VBF_JetColl,AK8_JetColl, AK4_BJetColl, 
-		       ev,METv, param, CRs,weight);
-  
+  vector<int> RunEl ;
+  if(RunCF) RunEl =  {0,1} ;
+  else RunEl = {-1};
+
+  for(auto ir : RunEl){
+    RunAllControlRegions(ElectronTightColl,ElectronVetoColl,MuonTightColl,MuonVetoColl, 
+			 AK4_JetAllColl, AK4_JetColl,AK4_VBF_JetColl,AK8_JetColl, AK4_BJetColl, 
+			 ev,METv, param, CRs,ir,weight);
+  }
 
 }
 
