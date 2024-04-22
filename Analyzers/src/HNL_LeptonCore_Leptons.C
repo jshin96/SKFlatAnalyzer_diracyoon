@@ -53,7 +53,7 @@ std::vector<Muon> HNL_LeptonCore::SelectMuons(AnalyzerParameter& param, TString 
     if(!( fabs(muons.at(i).Eta())< fetamax )) continue;
     if(!( muons.at(i).PassID(id) ))           continue;
     
-    if(RunFake &&  (id == param.Muon_FR_ID)){
+    if((RunFake||RunPromptTLRemoval)  &&  (id == param.Muon_FR_ID)){
  
       Muon this_muon = muons.at(i);
       if(param.FakeRateParam == "PtCone"){
@@ -161,7 +161,7 @@ std::vector<Electron> HNL_LeptonCore::SelectElectrons(AnalyzerParameter& param, 
       }
     }
     
-    if(RunFake && (id == param.Electron_FR_ID)){
+    if((RunFake||RunPromptTLRemoval) && (id == param.Electron_FR_ID)){
       Electron this_electron = electrons.at(i);
       if(param.FakeRateParam == "PtCone"){
         double Isocut = GetIsoFromID(Lepton(electrons.at(i)),param.Electron_Tight_ID);

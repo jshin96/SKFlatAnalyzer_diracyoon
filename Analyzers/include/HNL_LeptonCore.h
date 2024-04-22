@@ -95,6 +95,9 @@ class HNL_LeptonCore : public AnalyzerCore {
   map<TString, Particle> METMap(AnalyzerParameter param);
 
 
+  double ReturnCFWeight(vector<double> CFRates);
+  double ReturnCFWeight(double CFRates);
+
   /// Jet Functions   HNL_LeptonCore_Jet                                                                                                                           
   JetTagging::Parameters GetParamJetTagger(AnalyzerParameter param);
   void  EvalJetWeight(std::vector<Jet>    AK4_JetColl, std::vector<FatJet> fatjets, double & w,AnalyzerParameter& param); 
@@ -134,6 +137,8 @@ class HNL_LeptonCore : public AnalyzerCore {
   double GetFakeWeight(std::vector<Lepton *> leps,  AnalyzerParameter param);
   double GetIsoFromID(Lepton lep, TString id);
   double GetCFSF(AnalyzerParameter param, Lepton*  lep, bool ApplySF=true) ;
+  double GetCFSF(AnalyzerParameter param, Lepton  lep, bool ApplySF=true) ;
+  double GetCFSF(AnalyzerParameter param, TString EtaReg, bool ApplySF=true) ;
   double GetCFWeightElectron(std::vector<Electron> electrons ,  AnalyzerParameter param,bool ApplySF=true);
   double GetCFWeightElectron(std::vector<Lepton* > leps ,  AnalyzerParameter param,int nEl,bool ApplySF=true);
   double GetShiftCFEl(Electron el , TString ID,  TString Method = "minChi2") ;

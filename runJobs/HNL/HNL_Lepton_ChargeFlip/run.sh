@@ -67,7 +67,7 @@ if [[ $1 == "SF" ]]; then
     for i in "${era_list[@]}"
     do
 	SKFlat.py -a $analyzer  -l runJobs/SampleLists/Bkg/DYMG.txt      -n 500  --nmax 500   -e ${i} --skim SkimTree_DileptonBDT --userflags ScaleFactor&
-	#SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_EE.txt  -n 50    --nmax 500       -e ${i}  --skim SkimTree_DileptonBDT --userflag ScaleFactor   &   
-        #SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_EE.txt  -n 50    --nmax 500       -e ${i}  --skim SkimTree_DileptonBDT --userflag ScaleFactor,FLATSF   &           
+	SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_EE.txt  -n 50    --nmax 500       -e ${i}  --skim SkimTree_DileptonBDT --userflag ScaleFactor   &   
+        SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_EE.txt  -n 50    --nmax 500       -e ${i}  --skim SkimTree_DileptonBDT --userflag ScaleFactor,FLATSF   &           
     done
 fi

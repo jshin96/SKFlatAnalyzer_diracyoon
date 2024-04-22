@@ -1347,6 +1347,7 @@ void HNL_Lepton_FakeRate::GetElFakeRates(TString Method, std::vector<Lepton *> l
       FillHistogram((prefix + "_"+ptname).Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+ PtHist , "FR_Eta", Ptlab);
       FillHistogram((prefix + "_"+ptname+"v2").Data(),       lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Etav2", Ptlab);
       FillHistogram((prefix + "_"+ptname+"v3").Data(),       lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Etav3", Ptlab);
+    
 
       FillHistogram((prefix + "_pt").Data(),                 lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+ PtHist, Ptlab);
       FillHistogram((prefix + "_pt_"+ lepEtaRegion).Data(),  lep_pt,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+ PtHist, Ptlab);
@@ -1572,9 +1573,10 @@ void HNL_Lepton_FakeRate::GetMuFakeRates(TString Method, std::vector<Lepton *> l
     prefix = Method + "/"+prefix;
 
     TString Ptlab = "p_{T} (GeV)";
-
+  
     if(lep_pt >10){
       FillHistogram((prefix + "_"+ptname).Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Eta", Ptlab);
+      FillHistogram((prefix + "_"+ptname+"Binning2").Data(),            lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist+"2" , "FR_Eta", Ptlab);
       FillHistogram((prefix + "_"+ptname+"v2").Data(),       lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Etav2", Ptlab);
       FillHistogram((prefix + "_"+ptname+"v3").Data(),       lep_pt, lep_eta,  weight_ptcorr, "FR_"+leps[0]->GetFlavour()+"_"+PtHist , "FR_Etav3", Ptlab);
       

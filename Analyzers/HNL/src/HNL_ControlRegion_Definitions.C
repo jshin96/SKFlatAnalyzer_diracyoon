@@ -30,6 +30,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
   int nlog(0);
   
   for(unsigned int ic = 0; ic < channels.size(); ic++){
+
    
     if(run_Debug) cout << "HNL_RegionDefinitions::RunAllControlRegions [" << GetChannelString(channels[ic])<<" ]" << endl;
     
@@ -53,7 +54,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     if(!PassHEMVeto(LepsV)) continue;
     FillCutflow(CutFlow_Region, weight_ll, "HEMVeto", param);
 
-    if(!PassMETFilter()) return;
+    if(!PassMETFilter()) continue;
 
     FillCutflow(CutFlow_Region, weight_ll, "METFilter",param);
 
@@ -63,7 +64,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     
     
     if(! (RunCR("OS_VR",CRs) && RunFake)){
-      if(!PassGenMatchFilter(LepsT,param)) return;
+      if(!PassGenMatchFilter(LepsT,param)) continue;
     }
     
     FillCutflow(CutFlow_Region, weight_ll, "GENMatched",param);
@@ -111,7 +112,52 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     FillCutflow(CutFlow_Region, weight_channel, "Trigger",param);
 
     double weight_OS = weight_channel;
+  
+    if(RunPromptTLRemoval) {
+      if(LepsV.size() != 2) continue;
+      if(LepsT.size() != 2) continue;
+      if(!(SameCharge(electrons))) continue;
 
+      bool Lep_Sub=false;
+
+      bool el1T = electrons[0].PassID(param.Electron_Tight_ID);
+      bool el2T = electrons[1].PassID(param.Electron_Tight_ID);
+  
+      FillHist(  "RunPromptTLRemoval/"+param.Name+"/NTotal",   electrons[1].Pt(),  weight_channel,  50, 0, 500.);
+      FillHist(  "RunPromptTLRemoval/"+param.Name+"/NTotal_now",   electrons[1].Pt(),  1,  50, 0, 500.);
+
+      if(LepsT[0]->IsPrompt()){
+	if(LepsT[1]->LeptonIsCF()) Lep_Sub=true;
+	if(LepsT[1]->LeptonGenType() >= 4) Lep_Sub=true;
+      }
+      if(LepsT[1]->IsPrompt()){
+	if(LepsT[0]->LeptonIsCF()) Lep_Sub=true;
+	if(LepsT[0]->LeptonGenType() >= 4) Lep_Sub=true;
+      }
+      if(Lep_Sub ){
+
+	FillHist(  "RunPromptTLRemoval/"+param.Name+"/NTotal_Lep_Sub",   electrons[1].Pt(),  weight_channel,  50, 0, 500.);
+
+	if(el2T && !el1T){ 
+	  double this_fr = fakeEst->GetFakeRate  (false, param.Electron_Tight_ID,  param.k.Electron_FR, param.FakeRateMethod, param.FakeRateParam, LepsT[0]->fEta(), LepsT[0]->Pt(),LepsT[0]->LeptonFakeTagger());
+	  weight_channel *= (this_fr / (1-this_fr));
+	}
+	else         if(!el2T && el1T){
+          double this_fr = fakeEst->GetFakeRate  (false, param.Electron_Tight_ID,  param.k.Electron_FR, param.FakeRateMethod, param.FakeRateParam, LepsT[1]->fEta(), LepsT[1]->Pt(),LepsT[1]->LeptonFakeTagger());
+          weight_channel *= (this_fr / (1-this_fr));
+        }
+
+	else return;
+
+	FillHist(  "RunPromptTLRemoval/"+param.Name+"/NTotal2",   electrons[1].Pt(),  weight_channel,  50, 0, 500.);
+        FillHist(  "RunPromptTLRemoval/"+param.Name+"/NTotal2_now",   electrons[1].Pt(),  1,  50, 0, 500.);
+
+      }
+      else return ;
+      weight_channel *=  -1;
+
+    }
+  
     /// For OS Fakes use SS TT events - VV , but RunFake uses LL so need to apply Tight ID 
     bool PassTight = true;
     if(RunFake){
@@ -195,7 +241,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       }      
       return;
     }
-
+  
 
     vector<TString> passed;
     if(RunCR("OS_VR",CRs)){

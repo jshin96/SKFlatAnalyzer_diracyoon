@@ -370,7 +370,7 @@ int  Electron::PassIDTight(TString ID) const{
   if(ID.Contains("HNL_ULID_FO_")){
 
     double BJetDeepJetCut = 999;
-    if(ID.Contains("HNL_ULID_FO_v1")) BJetDeepJetCut = 0.025;   //// Version 1 == TOP                                                                                                                                                                                                                                                                                       
+    if(ID.Contains("HNL_ULID_FO_v1")) BJetDeepJetCut = 0.025;   //// Version 1 == TOP 
     if(ID.Contains("HNL_ULID_FO_v2")) BJetDeepJetCut = 0.05;
     if(ID.Contains("HNL_ULID_FO_v3")) BJetDeepJetCut = 0.1;
     if(ID.Contains("HNL_ULID_FO_v4")) BJetDeepJetCut = 0.2;

@@ -59,7 +59,8 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
 
   //==== FakeBackgroundEstimator                                                                                                                                            
   fakeEst->SetEra(GetEra());
-  if(RunFake&&READBKGHISTS)     fakeEst->ReadHistograms(IsDATA,true); /// For now when checking                                                                                                                    
+  if(RunFake&&READBKGHISTS)     fakeEst->ReadHistograms(IsDATA,Analyzer=="HNL_ControlRegion"); /// For now when checking                                                                                                                    
+  else if(RunPromptTLRemoval)   fakeEst->ReadHistograms(true,Analyzer=="HNL_ControlRegion"); /// For now when checking                                                                                                                    
   else if(Analyzer.Contains("Fake") && !Analyzer.Contains("SkimTree") ) fakeEst->ReadHistograms(IsDATA,true); ///
 
   //==== CFBackgroundEstimator                                                                                                                                              
@@ -126,12 +127,12 @@ void HNL_LeptonCore::OutCutFlow(TString lab, double w){
 TString HNL_LeptonCore::SetLeptonID(TString lep, AnalyzerParameter p){
 
   if(lep=="Electron"){
-    TString ID = (RunFake) ?  p.Electron_FR_ID  : p.Electron_Tight_ID ;
+    TString ID = (RunFake||RunPromptTLRemoval) ?  p.Electron_FR_ID  : p.Electron_Tight_ID ;
     if(p.FakeMethod == "MC")  ID =p.Electron_Tight_ID;
     return ID;
   }
   else if(lep=="Muon"){
-    TString ID = (RunFake) ?  p.Muon_FR_ID  : p.Muon_Tight_ID ;
+    TString ID = (RunFake||RunPromptTLRemoval) ?  p.Muon_FR_ID  : p.Muon_Tight_ID ;
     if(p.FakeMethod == "MC")  ID = p.Muon_Tight_ID;
     return ID;
   }
@@ -923,6 +924,7 @@ HNL_LeptonCore::HNL_LeptonCore(){
       
   rand_ = new TRandom3(1234);
 
+  RunPromptTLRemoval= false;
   RunFake = false;
   RunCF= false;
   IsCentral=true;
@@ -1437,9 +1439,6 @@ vector<Muon> HNL_LeptonCore::GetLepCollByRunType(const std::vector<Muon>& MuColl
     if(param.ConvMethod == "MC") Option+="NHConv";
   }
 
-
-  if(RunPromptTLRemoval) Option == "NHIntConv";
-
   ///cout << "AnalyzerCore::LepCollByRunType  Muon Option = " << Option << endl;                                                                                                                                                                                                                   
 
   bool GetHadFake=false,  GetNHIntConv=false, GetNHExtConv=false;
@@ -1536,6 +1535,8 @@ vector<Electron> HNL_LeptonCore::GetLepCollByRunType(const vector<Electron>& ElC
     if(param.CFMethod   == "MC") Option+="CF";
   }
 
+  if(RunPromptTLRemoval) Option == "NHConv";
+  if(RunPromptTLRemoval) Option += "CF";
 
   //cout << "AnalyzerCore::GetLepCollByRunType Electron  Option = " << Option << endl;                                                                                                                                                                                                                     
   bool GetHadFake=false,  GetNHIntConv=false, GetNHExtConv=false, GetCF=false;

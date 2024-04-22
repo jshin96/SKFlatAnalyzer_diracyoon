@@ -1,7 +1,35 @@
 #include "HNL_LeptonCore.h"
 
 
+double HNL_LeptonCore::ReturnCFWeight(double CFRates){
+
+  double W = CFRates/(1-CFRates);
+
+  return W;
+}
+
+
+double HNL_LeptonCore::ReturnCFWeight(vector<double> CFRates){
+
+  double W = 0.;
+  for(auto i : CFRates) W += (i/(1-i));
+  return W;
+}
+
+
 double HNL_LeptonCore::GetCFSF(AnalyzerParameter param, Lepton*  lep, bool ApplySF){
+  if(lep->IsMuon()) return 1.;
+
+  
+  return GetCFSF(param,lep->GetEtaRegion(), ApplySF);
+
+}
+double HNL_LeptonCore::GetCFSF(AnalyzerParameter param, Lepton  lep, bool ApplySF){
+  if(lep.IsMuon()) return 1.;
+  return GetCFSF(param,lep.GetEtaRegion(), ApplySF);
+
+}
+double HNL_LeptonCore::GetCFSF(AnalyzerParameter param, TString EraReg, bool ApplySF){
 
   if(!ApplySF) return 1;
   /*
@@ -12,9 +40,6 @@ double HNL_LeptonCore::GetCFSF(AnalyzerParameter param, Lepton*  lep, bool Apply
   double _SF=1.;
 
   map<TString,vector<double> > CFSFValues;
-  //CFSFValues["HNL_ULID_BB"]      =  {1.27854,  1.34035,  1.110, 0.754886};
-  //CFSFValues["HNL_ULID_EC"]      =  {1.23574,  1.10426,  1.111, 0.78659};
-
   CFSFValues["HNL_ULID_BB"]      =  {1.02,1.095,1.43,1.45};
   CFSFValues["HNL_ULID_EC"]      =  {0.97,0.98,1.38,1.29};
 
@@ -35,9 +60,7 @@ double HNL_LeptonCore::GetCFSF(AnalyzerParameter param, Lepton*  lep, bool Apply
 
   map<TString,vector<double> >::iterator CFMapIter ;
 
-  if(lep->IsMuon()) return 1.;
-
-  TString CFKey = param.Electron_Tight_ID+"_"+lep->GetEtaRegion(); 
+  TString CFKey = param.Electron_Tight_ID+"_"+EraReg;
   CFKey=CFKey.ReplaceAll("_"+GetYearString(),"");
   CFMapIter = CFSFValues.find(CFKey);
   if(CFMapIter == CFSFValues.end()) {  cout << "[HNL_LeptonCore::GetCFSF ] ERROR in CFSF.. " << CFKey  << endl;   exit(EXIT_FAILURE);}

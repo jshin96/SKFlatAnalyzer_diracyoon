@@ -18,7 +18,8 @@ void HNL_ControlRegion::executeEvent(){
   vector<TString> LepIDs = {"HNL_ULID"};//"TopHN","HNL_ULID","HNTightV2"};//,"TopHN", "DefaultPOGTight"};
   //// List Channels to run
   vector<HNL_LeptonCore::Channel> ChannelsToRun = {MuMu,EE,EMu};
-  
+  if(RunPromptTLRemoval) ChannelsToRun = {EE};
+
   vector<TString> RegionsToPlot = {"SSMultiLep","Dilepton"}; 
   
   ///// Run command 
@@ -48,8 +49,9 @@ void HNL_ControlRegion::executeEvent(){
     for (auto id: LepIDs){
       for(auto channel : ChannelsToRun){
 	      
+	vector<TString> AJetPtEE = {"AJ25","AJ30","AJ40"};
 	vector<TString> AJetPt = {"AJ30","AJ40"};
-	
+
 	if(id=="HNL_ULID"){
 	  
 	  if(channel == MuMu){
@@ -112,7 +114,7 @@ void HNL_ControlRegion::executeEvent(){
                                          "HNL_ULID_FO_v9_b",
                                          "HNL_ULID_FO_v9_c"};
 
-	    vector<TString> FakeParam = {"PtParton","Pt","PtCorr"};
+	    vector<TString> FakeParam = {"PtParton","Pt"};
 	    vector<TString> FakeMethod= {"Standard"};                                                              
 	    
 	    for(unsigned int i= 0 ; i < FakeTag.size(); i++){
@@ -214,7 +216,7 @@ void HNL_ControlRegion::executeEvent(){
 	      for(unsigned int j= 0 ; j < FakeParam.size(); j++){
 		for(unsigned int k= 0 ; k < FakeMethod.size(); k++){
 		  if(FakeMethod[k] == "BDTFlavour" && FakeTag[i] !=  "HNL_ULID_FO_"+GetYearString()) continue;
-		  for(auto iaj : AJetPt){
+		  for(auto iaj : AJetPtEE){
 		    
 		    if(!RunFake){
                       if(FakeMethod[k] != "Standard") continue;
@@ -292,8 +294,8 @@ void HNL_ControlRegion::RunControlRegions(AnalyzerParameter param, vector<TStrin
   TString Electron_ID = SetLeptonID("Electron",param);
   TString Muon_ID     = SetLeptonID("Muon", param);
 
-  double Min_Muon_Pt     = RunFake ? 5  : 10.;
-  double Min_Electron_Pt = RunFake ? 10 : 15;
+  double Min_Muon_Pt     = (RunFake) ? 5  : 10.;
+  double Min_Electron_Pt = (RunFake) ? 10 : 15;
 
   std::vector<Muon>       MuonTightCollInit     = SelectMuons    ( param,Muon_ID,     Min_Muon_Pt,     2.4,weight); 
   std::vector<Electron>   ElectronTightCollInit = SelectElectrons( param,Electron_ID, Min_Electron_Pt, 2.5,weight);
@@ -312,78 +314,6 @@ void HNL_ControlRegion::RunControlRegions(AnalyzerParameter param, vector<TStrin
   std::vector<Jet>    AK4_BJetColl                = GetHNLJets("BJet", param);
   
   EvalJetWeight(AK4_JetColl, AK8_JetColl, weight, param);
-
-  bool DrawBasicPlotsL (true);
-  bool DrawBasicPlotsT (true);
-  if(DrawBasicPlotsL){
-    std::vector<Lepton *> LepsAll       = MakeLeptonPointerVector(MuonVetoColl,ElectronVetoColl,param);
-    
-    if(MuonVetoColl.size() == 3)     {
-      FillHist("SimplePlots/TriMuon", 1 ,  1, 200, 0 ,5 );
-      double MassMinOSSF = GetMassMinOSSF(MakeLeptonPointerVector(MuonVetoColl));
-      if(MassMinOSSF > 50) MassMinOSSF = 49;
-      FillHist("SimplePlots/TriMuon_MinOSSF", MassMinOSSF ,  1, 50, 0 ,50 );
-      FillHist("SimplePlots/TriMuon1_Pt",  MuonVetoColl[0].Pt() ,  1, 50, 0 ,200 );
-      FillHist("SimplePlots/TriMuon2_Pt",  MuonVetoColl[1].Pt() ,  1, 50, 0 ,200 );
-      FillHist("SimplePlots/TriMuon3_Pt",  MuonVetoColl[2].Pt() ,  1, 50, 0 ,200 );
-    }
-    else   if(ElectronVetoColl.size() == 3) {
-      double MassMinOSSF = GetMassMinOSSF(MakeLeptonPointerVector(ElectronVetoColl));
-      if(MassMinOSSF > 50) MassMinOSSF = 49;
-      FillHist("SimplePlots/TriEl", 1 ,  1, 200, 0 ,5 );
-      FillHist("SimplePlots/TriEl_MinOSSF", MassMinOSSF ,  1, 50, 0 ,50 );
-      FillHist("SimplePlots/TriEl1_Pt",  ElectronVetoColl[0].Pt() ,  1, 50, 0 ,200 );
-      FillHist("SimplePlots/TriEl2_Pt",  ElectronVetoColl[1].Pt() ,  1, 50, 0 ,200 );
-      FillHist("SimplePlots/TriEl3_Pt",  ElectronVetoColl[2].Pt() ,  1, 50, 0 ,200 );
-    }
-    else if(LepsAll.size() == 3){
-      double MassMinOSSF = GetMassMinOSSF(LepsAll);
-      if(MassMinOSSF > 50) MassMinOSSF = 49;
-      FillHist("SimplePlots/TriEMu", 1 ,  1, 200, 0 ,5 );
-      FillHist("SimplePlots/TriEMu_MinOSSF", MassMinOSSF ,  1, 50, 0 ,50 );
-      FillHist("SimplePlots/TriEMu1_Pt",  LepsAll[0]->Pt() ,  1, 50, 0 ,200 );
-      FillHist("SimplePlots/TriEMu2_Pt",  LepsAll[1]->Pt() ,  1, 50, 0 ,200 );
-      FillHist("SimplePlots/TriEMu3_Pt",  LepsAll[2]->Pt() ,  1, 50, 0 ,200 );
-    }
-  }
-
-  bool PassTriLep(false);
-  if(DrawBasicPlotsT){
-    std::vector<Lepton *> LepsAll       = MakeLeptonPointerVector(MuonTightColl,ElectronTightColl);
-
-    if(MuonTightColl.size() == 3)     {
-      FillHist("SimplePlots/Tight_TriMuon", 1 ,  1, 200, 0 ,5 );
-      double MassMinOSSF = GetMassMinOSSF(MakeLeptonPointerVector(MuonTightColl));
-      if(MassMinOSSF > 50) MassMinOSSF = 49;
-      FillHist("SimplePlots/Tight_TriMuon_MinOSSF", MassMinOSSF ,  1, 50, 0 ,50 );
-      FillHist("SimplePlots/Tight_TriMuon1_Pt",  MuonVetoColl[0].Pt() ,  1, 50, 0 ,200 );
-      FillHist("SimplePlots/Tight_TriMuon2_Pt",  MuonVetoColl[1].Pt() ,  1, 50, 0 ,200 );
-      FillHist("SimplePlots/Tight_TriMuon3_Pt",  MuonVetoColl[2].Pt() ,  1, 50, 0 ,200 );
-      PassTriLep=true;
-    }
-    else   if(ElectronTightColl.size() == 3) {
-      double MassMinOSSF = GetMassMinOSSF(MakeLeptonPointerVector(ElectronTightColl));
-      if(MassMinOSSF > 50) MassMinOSSF = 49;
-      FillHist("SimplePlots/Tight_TriEl", 1 ,  1, 200, 0 ,5 );
-      FillHist("SimplePlots/Tight_TriEl_MinOSSF", MassMinOSSF ,  1, 50, 0 ,50 );
-      FillHist("SimplePlots/Tight_TriEl1_Pt",  ElectronVetoColl[0].Pt() ,  1, 50, 0 ,200 );
-      FillHist("SimplePlots/Tight_TriEl2_Pt",  ElectronVetoColl[1].Pt() ,  1, 50, 0 ,200 );
-      FillHist("SimplePlots/Tight_TriEl3_Pt",  ElectronVetoColl[2].Pt() ,  1, 50, 0 ,200 );
-      PassTriLep=true;
-
-    }
-    else if(LepsAll.size() == 3){
-      double MassMinOSSF = GetMassMinOSSF(LepsAll);
-      if(MassMinOSSF > 50) MassMinOSSF = 49;
-      FillHist("SimplePlots/Tight_TriEMu", 1 ,  1, 200, 0 ,5 );
-      FillHist("SimplePlots/Tight_TriEMu_MinOSSF", MassMinOSSF ,  1, 50, 0 ,50 );
-      FillHist("SimplePlots/Tight_TriEMu1_Pt",  LepsAll[0]->Pt() ,  1, 50, 0 ,200 );
-      FillHist("SimplePlots/Tight_TriEMu2_Pt",  LepsAll[1]->Pt() ,  1, 50, 0 ,200 );
-      FillHist("SimplePlots/Tight_TriEMu3_Pt",  LepsAll[2]->Pt() ,  1, 50, 0 ,200 );
-      //      PassTriLep=true;
-
-    }
-  }
 
   if(CRs.size() == 0) return;
   

@@ -176,27 +176,19 @@ double FakeBackgroundEstimator::GetMuonFakeRate(TString ID, TString key, TString
     if(BinningParam.Contains("PtCone" ))  PtType = "ptcone_eta_";
     if(BinningParam == "PtParton") PtType= "ptparton_eta_";
     if(BinningParam == "PtCorr")   PtType= "ptcorr_eta_";
-    if(BinningMethod != "BDTFlavour" )   key =  "MC_"+PtType + key;
-    else key = "MC_"+FakeTagger+"_"+ PtType + key;
+    key =  "MC_"+PtType + key;
 
   }
   else{
     if(BinningParam.Contains("PtCone" ))  PtType = "ptcone_eta_";
     if(BinningParam == "PtParton") PtType= "ptparton_eta_";
-    if(BinningParam == "PtParton2p0") PtType= "ptparton2_eta_";
     if(BinningParam == "PtCorr")   PtType= "ptcorr_eta_";
-    if(BinningParam == "PtCorr2p0")   PtType= "ptcorr2_eta_";
     if(BinningParam == "MotherPt") PtType= "mjpt_eta_";
     
-    if(BinningMethod != "BDTFlavour" )   key =  PtType + key;
-    else key = FakeTagger+"_"+ PtType + key;
+    key =  PtType + key;
   }
   
 
-  if(BinningMethod == "BDTFlavour" && FakeTagger == ""){
-    cout << "[FakeBackgroundEstimator::GetElectronFakeRate] BinningMethod Error" <<endl;
-    exit(ENODATA);
-  }
 
   double value = 1.;
   double error = 0.;
@@ -204,7 +196,7 @@ double FakeBackgroundEstimator::GetMuonFakeRate(TString ID, TString key, TString
   eta = fabs(eta);
 
   /// Make Sure pt is not out of bin range                                                                                                                                                                                                                                                                                                                                                                                               
-  if(pt>=60) pt = 59;
+  if(pt>=70) pt=69;
   if(pt < 10) pt=10;
 
   /// For Flvour bins binning is differen                                                                                                                                                   
