@@ -36,8 +36,6 @@ void HNL_ControlRegion::executeEvent(){
       for(auto channel : ChannelsToRun){
 	AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter(id,channel);
 	
-	if(channel == MuMu && id == "HNL_ULID") param_signal.FakeRateParam  = "Pt";
-	if(channel == MuMu && id == "HNL_ULID") param_signal.Muon_FR_ID = "HNL_ULID_FO";
 	for(auto iCR : CRToRun) RunControlRegions(param_signal , {iCR} );
       }
     }
@@ -297,12 +295,8 @@ void HNL_ControlRegion::RunControlRegions(AnalyzerParameter param, vector<TStrin
   double Min_Muon_Pt     = (RunFake) ? 5  : 10.;
   double Min_Electron_Pt = (RunFake) ? 10 : 15;
 
-  std::vector<Muon>       MuonTightCollInit     = SelectMuons    ( param,Muon_ID,     Min_Muon_Pt,     2.4,weight); 
-  std::vector<Electron>   ElectronTightCollInit = SelectElectrons( param,Electron_ID, Min_Electron_Pt, 2.5,weight);
-
-  std::vector<Muon>       MuonTightColl = MuonTightCollInit;//;      =  GetLepCollByRunType    (MuonTightCollInit,    param);  
-  std::vector<Electron>   ElectronTightColl = ElectronTightCollInit;//;  =  GetLepCollByRunType    (ElectronTightCollInit,param);
- 
+  std::vector<Muon>       MuonTightColl     = SelectMuons    ( param,Muon_ID,     Min_Muon_Pt,     2.4,weight); 
+  std::vector<Electron>   ElectronTightColl = SelectElectrons( param,Electron_ID, Min_Electron_Pt, 2.5,weight);
 
   Particle METv = GetvMET("PuppiT1xyULCorr",param); // returns MET with systematic correction                                                                      
 

@@ -17,6 +17,20 @@ double HNL_LeptonCore::GetPtPartonSF(Lepton  Lep, TString LooseID){
 
   /// DeepJet split
 
+  if(IsMuon && (LooseID == "HNL_ULID_FO_2016a")) return GetPtPartonSF(Lep,"HNL_ULID_FO_v3_a_2016");
+  if(IsMuon && (LooseID == "HNL_ULID_FO_2016b")) return GetPtPartonSF(Lep,"HNL_ULID_FO_v4_b_2016");
+  if(IsMuon && (LooseID == "HNL_ULID_FO_2017") && Lep.IsBB()) return GetPtPartonSF(Lep,"HNL_ULID_FO_v9_c_2017");
+  if(IsMuon && (LooseID == "HNL_ULID_FO_2017") && !Lep.IsBB()) return GetPtPartonSF(Lep,"HNL_ULID_FO_v1_a_2017");
+  if(IsMuon && (LooseID == "HNL_ULID_FO_2018")) return GetPtPartonSF(Lep,"HNL_ULID_FO_v3_b_2018");
+
+  if(!IsMuon && (LooseID == "HNL_ULID_FO_2016a"))  return GetPtPartonSF(Lep,"HNL_ULID_FO_v5_a_2016");
+  if(!IsMuon && (LooseID == "HNL_ULID_FO_2016b"))  return GetPtPartonSF(Lep,"HNL_ULID_FO_v3_a_2016");
+  if(!IsMuon && (LooseID == "HNL_ULID_FO_2017"))  return GetPtPartonSF(Lep,"HNL_ULID_FO_v0_2017");
+  if(!IsMuon && (LooseID == "HNL_ULID_FO_2018"))  return GetPtPartonSF(Lep,"HNL_ULID_FO_v3_a_2018");
+
+  /// Scan Numbers
+
+
   if(DataYear == 2016 && IsMuon && (LooseID == "HNL_ULID_FO_v0_"+GetYearString())) return 0.783613;
   if(DataYear == 2016 && IsMuon && (LooseID == "HNL_ULID_FO_v1_a_"+GetYearString())) return 0.708957;
   if(DataYear == 2016 && IsMuon && (LooseID == "HNL_ULID_FO_v1_b_"+GetYearString())) return 0.708957;
@@ -399,7 +413,14 @@ double HNL_LeptonCore::GetFakeRateMuon(Muon mu, AnalyzerParameter param){
   double  LepEta = mu.fEta();
   double  LepPt  = mu.PtMaxed(80);
   TString  fr_key = param.k.Muon_FR;
+  if(param.k.Muon_BB_FR != "Default") {
+    if(mu.IsBB()) fr_key = param.k.Muon_BB_FR;
+  }
+  if(param.k.Muon_EC_FR!= "Default") {
+    if(mu.IsEC()) fr_key = param.k.Muon_EC_FR;
+  }
 
+  
   //// Access individual lepton Fake Ratex                                                                                                                                                                                                                                                                                                                                                                                               
   return fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, fr_key,param.FakeRateMethod,param.FakeRateParam,LepEta, LepPt, mu.LeptonFakeTagger() );
 
@@ -416,7 +437,14 @@ double HNL_LeptonCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParamet
   double this_weight = -1.;
 
   if(leps.size() == 1){
-    TString fr_key = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.k.Electron_FR : _param.k.Muon_FR;
+    TString  muon_fr_key = _param.k.Muon_FR;
+    if(_param.k.Muon_BB_FR!= "Default") {
+      if(leps[0]->IsBB()) muon_fr_key = _param.k.Muon_BB_FR;
+    }
+    if(_param.k.Muon_EC_FR!= "Default") {
+      if(leps[0]->IsEC()) muon_fr_key = _param.k.Muon_EC_FR;
+    }
+    TString fr_key = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.k.Electron_FR : muon_fr_key;
     TString pr_key = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.k.Electron_PR : _param.k.Muon_PR;
     bool IsMuon    = (leps[0]->LeptonFlavour() != Lepton::ELECTRON);
     TString ID     = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.Electron_Tight_ID : _param.Muon_Tight_ID;
@@ -438,12 +466,24 @@ double HNL_LeptonCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParamet
       exit(EXIT_FAILURE);
     }
 
-    TString fr_key = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.k.Electron_FR : _param.k.Muon_FR;
+    TString  muon_fr_key1 = _param.k.Muon_FR;
+    TString  muon_fr_key2 = _param.k.Muon_FR;
+    if(_param.k.Muon_BB_FR!= "Default") {
+      if(leps[0]->IsBB()) muon_fr_key1 = _param.k.Muon_BB_FR;
+      else  muon_fr_key1 = _param.k.Muon_EC_FR;
+      if(leps[1]->IsBB()) muon_fr_key2 = _param.k.Muon_BB_FR;
+      else  muon_fr_key2 = _param.k.Muon_EC_FR;
+
+    }
+
+
+    TString fr_key1 = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.k.Electron_FR : muon_fr_key1;
+    TString fr_key2 = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.k.Electron_FR : muon_fr_key2;
     TString pr_key = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.k.Electron_PR : _param.k.Muon_PR;
 
     if(run_Debug){
-      if(leps[0]->LeptonFlavour() == Lepton::ELECTRON) cout << "_param.Electron_Tight_ID = " << _param.Electron_Tight_ID <<  " fr_key = " << fr_key << endl;
-      else cout << "_param.Muon_Tight_ID  = " <<  _param.Muon_Tight_ID <<  " fr_key = " << fr_key <<endl;
+      if(leps[0]->LeptonFlavour() == Lepton::ELECTRON) cout << "_param.Electron_Tight_ID = " << _param.Electron_Tight_ID <<  " fr_key1 = " << fr_key1 << endl;
+      else cout << "_param.Muon_Tight_ID  = " <<  _param.Muon_Tight_ID <<  " fr_key1 = " << fr_key1 <<endl;
     }
 
     
@@ -452,17 +492,17 @@ double HNL_LeptonCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParamet
     bool IsMuon1  = (leps[0]->LeptonFlavour() != Lepton::ELECTRON);
     bool IsMuon2  = (leps[1]->LeptonFlavour() != Lepton::ELECTRON);
 
-    double this_fr1 =  fakeEst->GetFakeRate(IsMuon1, ID1,  fr_key, _param.FakeRateMethod, _param.FakeRateParam, leps[0]->fEta(), leps[0]->Pt(),leps[0]->LeptonFakeTagger());
-    double this_fr2 =  fakeEst->GetFakeRate(IsMuon2, ID2,  fr_key, _param.FakeRateMethod, _param.FakeRateParam, leps[1]->fEta(), leps[1]->Pt(),leps[1]->LeptonFakeTagger() );
+    double this_fr1 =  fakeEst->GetFakeRate(IsMuon1, ID1,  fr_key1, _param.FakeRateMethod, _param.FakeRateParam, leps[0]->fEta(), leps[0]->Pt(),leps[0]->LeptonFakeTagger());
+    double this_fr2 =  fakeEst->GetFakeRate(IsMuon2, ID2,  fr_key2, _param.FakeRateMethod, _param.FakeRateParam, leps[1]->fEta(), leps[1]->Pt(),leps[1]->LeptonFakeTagger() );
     double this_pr1 =  1;//fakeEst->GetPromptRate(_param.ApplyPR, IsMuon1, ID1, pr_key, leps[0]->fEta(), leps[0]->UncorrectedPt());
     double this_pr2 =  1;//fakeEst->GetPromptRate(_param.ApplyPR, IsMuon2, ID2, pr_key, leps[1]->fEta(), leps[1]->UncorrectedPt());
     
     if(this_fr1 == 1){
-      cout << _param.Electron_Tight_ID << " KEY  = "  << fr_key << " _param.FakeRateParam = " << _param.FakeRateParam << " _param.FakeRateMethod = " << _param.FakeRateMethod << endl;
+      cout << _param.Electron_Tight_ID << " KEY  = "  << fr_key1 << " _param.FakeRateParam = " << _param.FakeRateParam << " _param.FakeRateMethod = " << _param.FakeRateMethod << endl;
       cout << "this_fr1 = " << this_fr1 << " this_fr2 = " << this_fr2 << " this_pr1 = " << this_pr1 << " this_pr2 = " << this_pr2 << endl;
     }
     this_weight = fakeEst->CalculateDilepWeight(this_pr1,this_fr1, this_pr2, this_fr2, leps[0]->PassLepID(),leps[1]->PassLepID(),0);
-    if(run_Debug) cout << ID1 << " " << ID2 << "fr_key1 = " << fr_key <<  " w= " << this_weight << " 2L"<<endl;                                                    
+    if(run_Debug) cout << ID1 << " " << ID2 << "fr_key11 = " << fr_key1 <<  " w= " << this_weight << " 2L"<<endl;                                                    
     return this_weight;
   }
 
@@ -478,7 +518,14 @@ double HNL_LeptonCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParamet
 
       if( lep->PassLepID() ) continue;
 
-      TString fr_key = (lep->LeptonFlavour() == Lepton::ELECTRON) ?  _param.k.Electron_FR : _param.k.Muon_FR;
+      TString  muon_fr_key = _param.k.Muon_FR;
+      if(_param.k.Muon_BB_FR!= "Default") {
+	if(lep->IsBB()) muon_fr_key = _param.k.Muon_BB_FR;
+	else  muon_fr_key = _param.k.Muon_EC_FR;
+      }
+
+
+      TString fr_key = (lep->LeptonFlavour() == Lepton::ELECTRON) ?  _param.k.Electron_FR : muon_fr_key;
       TString ID     = (lep->LeptonFlavour() == Lepton::ELECTRON) ?  _param.Electron_Tight_ID : _param.Muon_Tight_ID;
       bool IsMuon    = (lep->LeptonFlavour() != Lepton::ELECTRON);
       

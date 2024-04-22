@@ -218,7 +218,6 @@ bool Electron::PassID(TString ID) const{
 
   */
 
-
   // === list of IDs for analyis
   if(ID=="NoCut") return true;
   if(ID=="NOCUT") return true;
@@ -325,9 +324,15 @@ int  Electron::PassIDTight(TString ID) const{
   if(ID == "HNL_ULID_LooseCF_"+Year )     return (PassID("HNL_ULID_Conv_"+Year)  && PassID("HNL_ULLID_CF")   && PassID("HNL_ULID_Fake_"+Year));
 
 
-  // Loose Fake IDs
-  if(ID == "HNL_ULID_FO_"  +Year)   return (PassID("HNL_ULID_Conv_"+Year)   && PassID("HNL_ULID_CF_"+Year));
+  // Loose Fake IDs [FO] 
+  if(ID == "HNL_ULID_Def_FO_"  +Year)   return (PassID("HNL_ULID_Conv_"+Year)   && PassID("HNL_ULID_CF_"+Year));
   if(ID == "HNL_ULLID_FO")         return (PassID("HNL_ULLID_Conv") && PassID("HNL_ULLID_CF"));
+
+
+  if(ID == "HNL_ULID_FO_2016a")     return PassID("HNL_ULID_FO_v5_a_"+Year);
+  if(ID == "HNL_ULID_FO_2016b")     return PassID("HNL_ULID_FO_v3_a_"+Year);
+  if(ID == "HNL_ULID_FO_2017")      return PassID("HNL_ULID_FO_v0_"+Year);
+  if(ID == "HNL_ULID_FO_2018")     return PassID("HNL_ULID_FO_v3_a_"+Year);
 
 
   double CloseJet_PtratioCut = 0.4;
@@ -335,7 +340,7 @@ int  Electron::PassIDTight(TString ID) const{
 
   /// Iteration 1
   if(ID == "HNL_ULID_FOv2_"+Year) {
-    if(!PassID("HNL_ULID_FO_"+Year)) return false;
+    if(!PassID("HNL_ULID_Def_FO_"+Year)) return false;
     if(!PassID("HNL_ULID_Fake_"+Year)){
       if(this->HasCloseJet() && CloseJet_BScore() > 0.1) return false;
     }
@@ -343,7 +348,7 @@ int  Electron::PassIDTight(TString ID) const{
   }
 
   if(ID  == "HNL_ULID_FOv3_"+Year){
-    if(!PassID("HNL_ULID_FO_"+Year)) return false;
+    if(!PassID("HNL_ULID_Def_FO_"+Year)) return false;
     if(!PassID("HNL_ULID_Fake_"+Year)){
       if(this->HasCloseJet()){
         if(CloseJet_Ptratio() <CloseJet_PtratioCut) return false;
@@ -356,7 +361,7 @@ int  Electron::PassIDTight(TString ID) const{
   /// Iteration 2
 
   if(ID == "HNL_ULID_FO_v0_"+Year){
-    if(!PassID("HNL_ULID_FO_"+Year)) return false;
+    if(!PassID("HNL_ULID_Def_FO_"+Year)) return false;
     if(!PassID("HNL_ULID_Fake_"+Year)){
       if(this->HasCloseJet()){
         if(CloseJet_Ptratio() < 0.45)         return false;
@@ -397,7 +402,7 @@ int  Electron::PassIDTight(TString ID) const{
       CLJetDeepJetCut=0.8;
     }
 
-    if(!PassID("HNL_ULID_FO_"+Year)) return false;
+    if(!PassID("HNL_ULID_Def_FO_"+Year)) return false;
     if(!PassID("HNL_ULID_Fake_"+Year)){
       if(this->HasCloseJet()){
         if(CloseJet_Ptratio() < CloseJet_PtratioCut)         return false;

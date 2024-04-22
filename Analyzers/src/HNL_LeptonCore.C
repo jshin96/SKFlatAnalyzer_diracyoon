@@ -548,6 +548,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     return param;
   }
 
+
   if (s_setup_version=="HNTightV2"){
 
     //// Trun on SF weights
@@ -623,16 +624,29 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.Electron_Tight_ID = "HNL_ULID_"+GetYearString();
 
     ///Fakes
-    param.Muon_FR_ID        = "HNL_ULID_FO_v2_b_"+GetYearString();
-    param.Electron_FR_ID    = "HNL_ULID_FO_v2_b_"+GetYearString();
     param.FakeRateMethod    = "Standard";
     param.FakeRateParam   = "PtParton";
 
-    param.k.Muon_FR            = "HNL_ULID_FO_v2_b_AJ30";
-    param.k.Electron_FR        = "HNL_ULID_FO_v2_b_AJ30";
-    if(GetYearString() == "2017"){
+    param.Muon_FR_ID        = "HNL_ULID_FO_"+GetEraShort();
+    param.Electron_FR_ID    = "HNL_ULID_FO_"+GetEraShort();
+
+    if(GetEra() == "2016preVFP"){
       param.k.Muon_FR            = "HNL_ULID_FO_v3_b_AJ30";
-      param.Muon_FR_ID        = "HNL_ULID_FO_v3_b_"+GetYearString();
+      param.k.Electron_FR        = "HNL_ULID_FO_v5_a_AJ30";
+    }
+    if(GetEra() == "2016postVFP"){
+      param.k.Muon_FR            = "HNL_ULID_FO_v4_b_AJ30";
+      param.k.Electron_FR        = "HNL_ULID_FO_v3_a_AJ30";
+    }    
+    
+    if(GetYearString() == "2017"){
+      param.k.Muon_EC_FR         = "HNL_ULID_FO_v9_c_AJ30";
+      param.k.Muon_BB_FR         = "HNL_ULID_FO_v1_a_AJ30";
+      param.k.Electron_FR        = "HNL_ULID_FO_v0_AJ30";
+    }
+    if(GetYearString() == "2018"){
+      param.k.Muon_FR         = "HNL_ULID_FO_v3_b_AJ30";
+      param.k.Electron_FR     = "HNL_ULID_FO_v3_a_AJ30";
     }
 
     param.k.Muon_ID_SF         = "NUM_HNL_ULID_"+GetYearString();
