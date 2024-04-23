@@ -1109,10 +1109,10 @@ bool HNL_RegionDefinitions::FillSSPreselectionPlots(HNL_LeptonCore::Channel chan
   FillCutflow(Reg, w, "Step2",param);
 
   Particle ll =  (*leps[0]) + (*leps[1]);
-  if (channel==EE  && (fabs(ll.M()-M_Z) < M_CUT_LL)) return false;
+  if (channel==EE  && (fabs(ll.M()-M_Z) < M_ZWINDOW_VETO)) return false;
   FillCutflow(Reg, w, "Step3",param);
 
-  if(ll.M() < 20) return false;
+  if(ll.M() < M_CUT_LL) return false;
   FillCutflow(Reg, w, "Step4",param);
 
 
@@ -1521,15 +1521,18 @@ bool HNL_RegionDefinitions::FillHighMassSR2CRPlots(HNL_LeptonCore::Channel chann
   if(PassHMMet && NB_JetColl==0) return false;
   FillCutflow(Reg, w, "Step4",param);
 
+  if(AK8_JetColl.size() > 0) return false;
+  FillCutflow(Reg, w, "Step5",param);
+
   if(PassVBF(JetColl,leps,450)) {
     double HT(0.);
     for(UInt_t emme=0; emme<JetColl.size(); emme++){
       HT += JetColl[emme].Pt();
     }
     if (HT/leps[0]->Pt() > 2)  return false;
-    FillCutflow(Reg, w, "Step5",param);
+    FillCutflow(Reg, w, "Step6",param);
 
-    Fill_RegionPlots(param,"HNL_HighMassCR2_TwoLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+    Fill_RegionPlots(param,"HNL_HighMassSR2_TwoLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
     
   
     double HTLT[2] = { 0., 2};
