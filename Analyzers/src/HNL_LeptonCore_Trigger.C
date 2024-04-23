@@ -220,33 +220,14 @@ bool HNL_LeptonCore::PassTriggerSelection(HNL_LeptonCore::Channel channel,Event 
       if(ilep->LeptonFlavour() == Lepton::ELECTRON) leps_eg.push_back(ilep);
     }
 
-    if(selection == "Dilep")     return  PassTriggerAndCheckStream(apply_ptcut,leps,     ev,TrigList_HNL_EGMu,check_pd);
+    if(selection == "Dilep")     return  PassTriggerAndCheckStream(apply_ptcut,leps,     ev,TrigList_HNL_EGMu,check_pd) || PassTriggerAndCheckStream(apply_ptcut,leps,     ev,TrigList_HNL_MuEG,check_pd);
     if(selection == "POGSglEl")  return  PassTriggerAndCheckStream(apply_ptcut,leps_eg,  ev,TrigList_POG_EG,check_pd);
     if(selection == "POGSglMu")  return  PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_POG_Mu,check_pd);
-    if(selection == "Full") return  PassTriggerAndCheckStream(apply_ptcut,leps,     ev,TrigList_Full_EGMu,check_pd);
+    if(selection == "Full")      return  PassTriggerAndCheckStream(apply_ptcut,leps,     ev,TrigList_Full_EGMu,check_pd) || PassTriggerAndCheckStream(apply_ptcut,leps,     ev,TrigList_Full_MuEG,check_pd);
 
     cout << "[HNL_LeptonCore::PassTriggerSelection ] selection " <<  selection << " not found.." << endl;
     exit(EXIT_FAILURE);
   
-  }
-
-  if (channel == MuE){
-
-    for(auto ilep : leps) {
-      if(ilep->LeptonFlavour() == Lepton::MUON)     leps_muon.push_back(ilep);
-      if(ilep->LeptonFlavour() == Lepton::ELECTRON) leps_eg.push_back(ilep);
-    }
-
-    if(selection == "Dilep")       return   PassTriggerAndCheckStream(apply_ptcut,leps,     ev,TrigList_HNL_MuEG,check_pd);
-    if(selection == "POGSglEl")    return   PassTriggerAndCheckStream(apply_ptcut,leps_eg,  ev,TrigList_POG_EG,check_pd);
-    if(selection == "POGSglMu")    return   PassTriggerAndCheckStream(apply_ptcut,leps_muon,ev,TrigList_POG_Mu,check_pd);
-
-    else    if(selection == "Full") return  PassTriggerAndCheckStream(apply_ptcut,leps,     ev,TrigList_Full_MuEG,check_pd);
-
-    else {
-      cout << "[HNL_LeptonCore::PassTriggerSelection ] selection " <<  selection << " not found.." << endl;
-      exit(EXIT_FAILURE);
-    }
   }
 
   return PassTrigger;
@@ -483,8 +464,10 @@ void HNL_LeptonCore::EvalTrigWeight(HNL_LeptonCore::Channel channel, vector<Muon
     else SFKey_Trig = p.k.EMu_Trigger_SF;
   }
   else{
-    if(channel == EMu)  SFKey_Trig = p.k.Electron_Trigger_SF;
-    if(channel == MuE)  SFKey_Trig = p.k.Muon_Trigger_SF;
+    if(channel == EMu) {
+      SFKey_Trig = p.k.Electron_Trigger_SF;
+      SFKey_Trig = p.k.Muon_Trigger_SF;
+    }
   }
 
   double this_trigsf =  SFKey_Trig!=""? mcCorr->GetTriggerSF(electrons, muons, SFKey_Trig, ""):1.;
