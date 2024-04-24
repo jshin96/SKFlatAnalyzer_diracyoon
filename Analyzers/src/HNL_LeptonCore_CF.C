@@ -125,7 +125,7 @@ double HNL_LeptonCore::GetCFWeightElectron(std::vector<Lepton* > leps ,  Analyze
   //// Appply Mass Dependant Corr for 2017 for now
   if(IsData && DataEra == "2017"){
     if(param.syst_ == AnalyzerParameter::CFSFUp) {
-      if(GetLLMass(leps) < 80.) cf_weight *= 1.2;
+      if(GetLLMass(leps) < 90.) cf_weight *= 1.2;
     }
   }
 
