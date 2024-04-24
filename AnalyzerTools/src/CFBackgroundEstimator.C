@@ -73,6 +73,9 @@ CFBackgroundEstimator::~CFBackgroundEstimator(){
   }
 }
 
+
+
+
 double CFBackgroundEstimator::GetElectronCFRate(TString ID, TString key, double eta, double pt, int sys){
 
   //cout << "[CFBackgroundEstimator::GetElectronCFRate] ID = " << ID << ", key = " << key << endl;
@@ -84,15 +87,15 @@ double CFBackgroundEstimator::GetElectronCFRate(TString ID, TString key, double 
   eta = fabs(eta);
   if(eta>=2.5) eta = 2.49;
   
-  
+  //// Lowest pt value is 20;
+
   if(pt < 15) pt = 15;
-  if(key.Contains("PtInv")){
-    if(pt > 1000) pt = 999;
-  }
-  else{
-    if(pt > 1000) pt = 999;
-  }
   
+  //  if(pt < 25) {
+  // key = key.ReplaceAll("Inv","");
+  //}
+  
+  if(pt > 1000) pt = 999;
  
  
   std::map< TString, TH2D* >::const_iterator mapit;
@@ -113,6 +116,12 @@ double CFBackgroundEstimator::GetElectronCFRate(TString ID, TString key, double 
   int this_bin = (key.Contains("Inv")) ?  (mapit->second)->FindBin(1/pt,eta) :  (mapit->second)->FindBin(pt,eta);
   value = (mapit->second)->GetBinContent(this_bin);
   error = (mapit->second)->GetBinError(this_bin);
+
+  if(pt < 25){
+    cout << "Low Pt key = " << key << " CFRate = " << value << " Bin = " << this_bin << endl;
+  }
+
+  if(pt > 500) error = value *0.5;
 
   return value+double(sys)*error;
 
