@@ -298,14 +298,14 @@ TString HNL_RegionDefinitions::RunSignalRegionAK8String(bool ApplyForSR,
 
   double LowerMassSR1WmassCut = 450.;
 
-  bool HasTightTau=false;
-  for(auto itau: TauColl){
-    bool HasTightTau_n=true;
-    for (auto ilep : leps)        if (ilep->DeltaR(itau) < 0.4) HasTightTau_n=false;
-    for (auto ijet : AK8_JetColl) if (ijet.DeltaR(itau) < 1.)   HasTightTau_n=false;
-    for (auto ijet : JetColl)     if (ijet.DeltaR(itau) < 0.5)  HasTightTau_n=false;
-    if(HasTightTau_n) HasTightTau=true;
-  }
+  //bool HasTightTau=false;
+  //for(auto itau: TauColl){
+  //  bool HasTightTau_n=true;
+  //  for (auto ilep : leps)        if (ilep->DeltaR(itau) < 0.4) HasTightTau_n=false;
+  //  for (auto ijet : AK8_JetColl) if (ijet.DeltaR(itau) < 1.)   HasTightTau_n=false;
+  //  for (auto ijet : JetColl)     if (ijet.DeltaR(itau) < 0.5)  HasTightTau_n=false;
+  //  if(HasTightTau_n) HasTightTau=true;
+  //}
   
   if(ApplyForSR) FillCutflow(Reg, w, RegionTag+"_Init",param);
 
@@ -563,8 +563,8 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4StringBDT(bool ApplyForSR, TStr
 
   std::vector<FatJet> FatJetColl;
   
-  if(PassHMMet) FillCutflow(Reg, w, RegionTag+"_MET",param);
-  if(PassHMMet&& PassBJetMVeto)  FillCutflow(Reg, w, RegionTag+"_bveto",param);
+  if(PassHMMet && ApplyForSR) FillCutflow(Reg, w, RegionTag+"_MET",param);
+  if(PassHMMet && PassBJetMVeto && ApplyForSR)  FillCutflow(Reg, w, RegionTag+"_bveto",param);
 
   if(!PassRegionReq)  return "false";
 
