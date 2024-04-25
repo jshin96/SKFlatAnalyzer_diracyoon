@@ -1235,6 +1235,7 @@ bool HNL_RegionDefinitions::FillSSZPeakCRPlots(HNL_LeptonCore::Channel channel, 
   
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
   if (leps_veto.size() != 2) return false;
+  if (!SameCharge(leps)) return false;
 
   Particle ll =  (*leps[0]) + (*leps[1]);
   // Kepp only Z peak events with many CF                                                                                                                                                                         
