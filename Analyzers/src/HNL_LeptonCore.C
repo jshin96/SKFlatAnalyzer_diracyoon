@@ -641,8 +641,8 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     }    
     
     if(GetYearString() == "2017"){
-      param.k.Muon_EC_FR         = "HNL_ULID_FO_v9_c_AJ30";
-      param.k.Muon_BB_FR         = "HNL_ULID_FO_v1_a_AJ30";
+      param.k.Muon_BB_FR         = "HNL_ULID_FO_v9_c_AJ30";
+      param.k.Muon_EC_FR         = "HNL_ULID_FO_v1_a_AJ30";
       param.k.Electron_FR        = "HNL_ULID_FO_v0_AJ30";
     }
     if(GetYearString() == "2018"){

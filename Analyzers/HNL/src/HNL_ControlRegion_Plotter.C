@@ -84,7 +84,16 @@ void HNL_ControlRegion_Plotter::RunControlRegions(AnalyzerParameter param, vecto
 
   if(CRs.size() == 0) return;
   
-
+  if(_jentry < 8000 ){
+    if(RunFake){
+      cout << "Running Fakes: Initial check for process name " + param.Name << endl;
+      cout << "Muon ID = " << param.Muon_Tight_ID  << " run ID  = " << Muon_ID << endl;
+      for(auto ilep : MuonTightColl)cout << "Muon isT=" << ilep.PassID(param.Muon_Tight_ID) << endl;
+      
+      cout << "Electron ID = " << param.Electron_Tight_ID  << " run ID  = " << Electron_ID << endl;
+      for(auto ilep : ElectronTightColl)cout << "Electron isT=" << ilep.PassID(param.Electron_Tight_ID) << endl;
+    }
+  }
   vector<int> RunEl ;
   if(RunCF) RunEl =  {0,1} ;
   else RunEl = {-1};
