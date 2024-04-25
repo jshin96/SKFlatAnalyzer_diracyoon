@@ -91,10 +91,10 @@ double CFBackgroundEstimator::GetElectronCFRate(TString ID, TString key, double 
 
   if(pt < 15) pt = 15;
   
-  if(pt < 25) {
-    //// Temp fix until new Rates are added with low pt bin
-    key = key.ReplaceAll("Inv","");
-  }
+  //if(pt < 25) {
+  //// Temp fix until new Rates are added with low pt bin
+  //key = key.ReplaceAll("Inv","");
+  //}
   
   if(pt > 1000) pt = 999;
  

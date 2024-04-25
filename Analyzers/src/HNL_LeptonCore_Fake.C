@@ -475,12 +475,13 @@ double HNL_LeptonCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParamet
       else  muon_fr_key2 = _param.k.Muon_EC_FR;
 
     }
-
-
     TString fr_key1 = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.k.Electron_FR : muon_fr_key1;
     TString fr_key2 = (leps[1]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.k.Electron_FR : muon_fr_key2;
     TString pr_key = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.k.Electron_PR : _param.k.Muon_PR;
 
+    cout << "fr_key1 = " << fr_key1 << " fr_key2=" << fr_key2 << endl;
+    cout << "mu 1 = isBB=" << leps[0]->IsBB() << " eta = " << leps[0]->Eta() << endl;
+    cout << "mu 2 = isBB=" << leps[1]->IsBB() << " eta = " << leps[1]->Eta() << endl;
     if(run_Debug){
       if(leps[0]->LeptonFlavour() == Lepton::ELECTRON) cout << "_param.Electron_Tight_ID = " << _param.Electron_Tight_ID <<  " fr_key1 = " << fr_key1 << endl;
       else cout << "_param.Muon_Tight_ID  = " <<  _param.Muon_Tight_ID <<  " fr_key1 = " << fr_key1 <<endl;

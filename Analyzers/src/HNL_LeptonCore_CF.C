@@ -168,7 +168,7 @@ double HNL_LeptonCore::GetZMassShift(vector<Electron> Electrons) {
   return 1;
 
 }
-double HNL_LeptonCore::GetShiftCFEl(Electron el,TString ID, TString Method, bool ApplyDataCorr) {
+double HNL_LeptonCore::GetShiftCFEl(Electron el,TString ID, bool ApplyDataCorr,TString Method) {
 
   //// Get Shift for  Prompt -> CF Pt response                                                                                                                                                                   
 
@@ -285,17 +285,15 @@ double HNL_LeptonCore::GetShiftCFEl(Electron el,TString ID, TString Method, bool
     double DataCorr = 1.;
     
     if(ApplyDataCorr){
-      if(IsData){
-	if(DataEra=="2016preVFP"  && el.IsBB()) DataCorr=0.975; 
-	if(DataEra=="2016postVFP" && el.IsBB()) DataCorr=0.99; 
-	if(DataEra=="2017"        && el.IsBB()) DataCorr=0.975; 
-	if(DataEra=="2018"        && el.IsBB()) DataCorr=0.975; 
-	
-	if(DataEra=="2016preVFP"  && !el.IsBB()) DataCorr=0.995;
-	if(DataEra=="2016postVFP" && !el.IsBB()) DataCorr=1.;
-	if(DataEra=="2017"        && !el.IsBB()) DataCorr=1.;
-	if(DataEra=="2018"        && !el.IsBB()) DataCorr=0.98;
-      }
+      if(DataEra=="2016preVFP"  && el.IsBB()) DataCorr=0.975; 
+      if(DataEra=="2016postVFP" && el.IsBB()) DataCorr=0.99; 
+      if(DataEra=="2017"        && el.IsBB()) DataCorr=0.975; 
+      if(DataEra=="2018"        && el.IsBB()) DataCorr=0.975; 
+      
+      if(DataEra=="2016preVFP"  && !el.IsBB()) DataCorr=0.995;
+      if(DataEra=="2016postVFP" && !el.IsBB()) DataCorr=1.;
+      if(DataEra=="2017"        && !el.IsBB()) DataCorr=1.;
+      if(DataEra=="2018"        && !el.IsBB()) DataCorr=0.98;
     }
 
     if(DataEra.Contains("2016")){
