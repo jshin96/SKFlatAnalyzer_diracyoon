@@ -4881,9 +4881,14 @@ double MCCorrection::MuonID_SF(TString ID, double eta, double pt, int sys){
 
   eta = fabs(eta);
 
-  if(ID.Contains("HN")){
+  if(ID.Contains("HNL_ULID")){
     if(pt<10.) pt = 10.1;
-    if(pt>=1000.) pt = 9999.9;
+    if(pt>=1000.) pt = 999.9; 
+    if(eta>=2.4) eta = 2.39;
+  }
+  else  if(ID.Contains("HNTight")){
+    if(pt<10.) pt = 10.1;
+    if(pt>=120.) pt = 119.9;
     if(eta>=2.4) eta = 2.39;
   }
   else   if(ID=="NUM_TightID_DEN_TrackerMuons" || ID=="NUM_MediumID_DEN_TrackerMuons" || ID=="NUM_HighPtID_DEN_TrackerMuons"){
