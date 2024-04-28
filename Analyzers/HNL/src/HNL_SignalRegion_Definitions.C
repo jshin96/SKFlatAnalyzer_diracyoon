@@ -246,9 +246,6 @@ void   HNL_RegionDefinitions::RunMainRegionCode(bool IsSR,HNL_LeptonCore::Channe
       else{
 
 	for(auto imapHP :FinalBDTHyperParamMap){
-	  //// Check key is correct for mass/channel
-	  if(!imapHP.first.Contains(GetChannelString(channel))) continue;
-	  /// remove channel name from key
 	  TString mNSting = imapHP.first;
 	  TString RegBDT = RunSignalRegionAK4StringBDT(IsSR,mNSting , imapHP.second.first, imapHP.second.second, channel,qq, LepsT, JetColl,  B_JetColl, ev, METv ,param,weight_reg);
 
