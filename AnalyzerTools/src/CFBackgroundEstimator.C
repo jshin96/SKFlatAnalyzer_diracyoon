@@ -74,7 +74,69 @@ CFBackgroundEstimator::~CFBackgroundEstimator(){
 }
 
 
+double CFBackgroundEstimator::GetElectronCFRateFitted(TString ID, TString key, double eta, double pt, int sys){
 
+  double value = 1.;
+  double error = 0.;
+
+  eta = fabs(eta);
+  if(eta>=2.5) eta = 2.49;
+  
+  //// Lowest pt value is 20;                                                                                                                                                                
+
+  if(pt < 15) pt = 15;
+  if(pt > 1000) pt = 999;
+
+  std::map< TString, TH2D* >::const_iterator mapit;
+  mapit = map_hist_Electron.find(key );
+
+  if(mapit==map_hist_Electron.end()){
+    cout << "[CFBackgroundEstimator::GetElectronCFRate] No"<< key  <<endl;
+    if(IgnoreNoHist) {
+      TString MapK = key;
+      if (std::find(MissingHists.begin(), MissingHists.end(), MapK ) == MissingHists.end())   MissingHists.push_back(MapK);
+      return 1.;
+    }
+    exit(ENODATA);
+  }
+
+  int this_bin = (key.Contains("Inv")) ?  (mapit->second)->FindBin(1/pt,eta) :  (mapit->second)->FindBin(pt,eta);
+  
+  int this_bin_m1 = this_bin-1;
+  int this_bin_p1 = this_bin+1;
+
+  double value_MainBin = (mapit->second)->GetBinContent(this_bin);
+  double value_mBin = (mapit->second)->GetBinContent(this_bin_m1);
+  double value_pBin = (mapit->second)->GetBinContent(this_bin_p1);
+
+  double Center_MainBin = (mapit->second)->GetBinCenter(this_bin);
+  double Center_mBin = (mapit->second)->GetBinCenter(this_bin-1);
+  double Center_pBin = (mapit->second)->GetBinCenter(this_bin+1);
+  
+  double IPt = (1/pt);
+  if(IPt > 0.04)  return value_MainBin;
+  if(IPt < 0.002) return value_MainBin;
+  
+  ////    0         0.002     0.003                      0.04     0.07
+  ////    |         |         |       |    |      |     |    |
+  
+  if(IPt < Center_MainBin) {
+    double dX = Center_MainBin - Center_mBin;
+    double dY = value_mBin - value_MainBin;
+    
+    double CFRate = value_MainBin + (dY/dX) * (Center_MainBin-IPt);
+    return CFRate;
+  }
+  else{
+    double dX = Center_pBin - Center_MainBin;
+    double dY = value_MainBin - value_pBin;
+
+    double CFRate = value_MainBin + (dY/dX) * (Center_MainBin-IPt);
+    return CFRate;
+  }
+
+  
+}
 
 double CFBackgroundEstimator::GetElectronCFRate(TString ID, TString key, double eta, double pt, int sys){
 

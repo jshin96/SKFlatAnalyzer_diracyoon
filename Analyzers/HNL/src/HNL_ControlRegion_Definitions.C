@@ -29,6 +29,8 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
   if(run_Debug) cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << endl;  
   int nlog(0);
   
+  if(RunCF && electrons_veto.size() !=2) return;
+
   for(unsigned int ic = 0; ic < channels.size(); ic++){
 
    
@@ -1145,7 +1147,7 @@ bool HNL_RegionDefinitions::FillHighMassSR1CRPlots(HNL_LeptonCore::Channel chann
   HNL_LeptonCore::SearchRegion Reg = HMCR1;
   FillCutflow(Reg, w, "Step0",param);
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
-  if(leps[1]->Pt() < 15) return false; 
+  if(leps[1]->Pt() < 20) return false; 
 
   FillCutflow(Reg, w, "Step1",param);
 
@@ -1375,7 +1377,7 @@ bool HNL_RegionDefinitions::FillHighMassSR2CRPlots(HNL_LeptonCore::Channel chann
 
 
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
-  if(leps[1]->Pt() < 15) return false; 
+  if(leps[1]->Pt() < 20) return false; 
 
   if (leps_veto.size() != 2) return false;
   if (leps.size() != 2) return false;
