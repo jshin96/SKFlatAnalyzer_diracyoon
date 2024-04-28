@@ -242,7 +242,11 @@ void   HNL_RegionDefinitions::RunMainRegionCode(bool IsSR,HNL_LeptonCore::Channe
 
 	for(auto imapHP :FinalBDTHyperParamMap){
 	  
-	  TString RegBDT = RunSignalRegionAK4StringBDT(IsSR,imapHP.first , imapHP.second.first, imapHP.second.second, channel,qq, LepsT, JetColl,  B_JetColl, ev, METv ,param,weight_reg);
+	  if(!imapHP.first.Contains(GetChannelString(channel))) continue;
+	  TString mNSting = imapHP.first;
+	  mNSting=mNSting.ReplaceAll("_"+GetChannelString(channel),"");
+								  
+	  TString RegBDT = RunSignalRegionAK4StringBDT(IsSR,mNSting , imapHP.second.first, imapHP.second.second, channel,qq, LepsT, JetColl,  B_JetColl, ev, METv ,param,weight_reg);
 
 	  if(RegBDT != "false"){
 	    FillLimitInput(LimitRegionsBDT, weight_reg, RegBDT,"LimitExtractionBDT/"+param.Name+"/M"+imapHP.first);
