@@ -1147,7 +1147,7 @@ bool HNL_RegionDefinitions::FillHighMassSR1CRPlots(HNL_LeptonCore::Channel chann
   HNL_LeptonCore::SearchRegion Reg = HMCR1;
   FillCutflow(Reg, w, "Step0",param);
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
-  if(leps[1]->Pt() < 20) return false; 
+  if(leps[1]->Pt() < 15) return false; 
 
   FillCutflow(Reg, w, "Step1",param);
 
@@ -1377,7 +1377,7 @@ bool HNL_RegionDefinitions::FillHighMassSR2CRPlots(HNL_LeptonCore::Channel chann
 
 
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
-  if(leps[1]->Pt() < 20) return false; 
+  if(leps[1]->Pt() < 15) return false; 
 
   if (leps_veto.size() != 2) return false;
   if (leps.size() != 2) return false;

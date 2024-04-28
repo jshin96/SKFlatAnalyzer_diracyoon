@@ -368,7 +368,7 @@ TString HNL_RegionDefinitions::RunSignalRegionAK8String(bool ApplyForSR,
   if(!CheckLeptonFlavourForChannel(channel, leps)) return "false";  
   if (leps_veto.size() != 2) return "false";
 
-  if(leps[1]->Pt() < 20 ) return "false";
+  if(leps[1]->Pt() < 15 ) return "false";
 
   if(ApplyForSR)FillCutflow(Reg, w, RegionTag+"_lep_pt",param);
   
@@ -474,7 +474,7 @@ TString HNL_RegionDefinitions::RunSignalRegionWWString(bool ApplyForSR,HNL_Lepto
 
   if(!CheckLeptonFlavourForChannel(channel, leps)) return "false";
 
-  if(leps[1]->Pt() < 20 ) return "false";
+  if(leps[1]->Pt() < 15.) return "false";
   if(ApplyForSR)  FillCutflow(Reg, w, RegionTag+"_lep_pt",param);
 
   bool use_leadjets=true;
