@@ -1,9 +1,11 @@
 WZTo3LNu_amcatnlo
+WZTo3LNu_mllmin4p0_powheg
 WZ_EWK
 WWTo2L2Nu_DS
 WWW
 WWZ
 ZZZ
+WZZ
 WpWp_EWK
 WpWp_QCD
 ttWToLNu
@@ -18,3 +20,12 @@ GluGluToZZto4mu
 TTTT
 TTZZ
 tZq
+GluGluHToWWTo2L2Nu
+VBF_HToZZTo4L
+VBFHToWWTo2L2Nu
+VBFHToTauTau_M125
+VHToNonbb
+ttHToNonbb
+tHq
+ttWJets
+ttZJets
