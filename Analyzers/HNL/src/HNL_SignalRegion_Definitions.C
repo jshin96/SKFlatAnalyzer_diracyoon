@@ -98,7 +98,7 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
     
     if(RunCF){
       if(dilep_channel == MuMu) continue;
-
+      
       if(IsData && SameCharge(LepsT)) continue;
       if(!IsData && !SameCharge(LepsT)) continue;
       
@@ -127,7 +127,12 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
 
 
     /// RunMainRegionCode runs SR1/SR2/SR3
-
+    
+    if(isnan(weight_channel)) {
+      cout << "Weight for event is set to Nan..." << endl;
+      exit(EXIT_FAILURE);
+    }
+    
     if(HasFlag("RunCR")) RunMainRegionCode(false,dilep_channel,Inclusive, LepsT, LepsV, TauColl,JetLooseColl, JetColl,  VBF_JetColl, AK8_JetColl, B_JetColl,ev, METv ,param, weight_channel);
     else     RunMainRegionCode(true,dilep_channel,Inclusive, LepsT, LepsV, TauColl, JetLooseColl,JetColl, VBF_JetColl, AK8_JetColl, B_JetColl,ev, METv ,param, weight_channel);
   }
@@ -245,7 +250,6 @@ void   HNL_RegionDefinitions::RunMainRegionCode(bool IsSR,HNL_LeptonCore::Channe
 	  if(!imapHP.first.Contains(GetChannelString(channel))) continue;
 	  /// remove channel name from key
 	  TString mNSting = imapHP.first;
-	  mNSting=mNSting.ReplaceAll("_"+GetChannelString(channel),"");
 	  TString RegBDT = RunSignalRegionAK4StringBDT(IsSR,mNSting , imapHP.second.first, imapHP.second.second, channel,qq, LepsT, JetColl,  B_JetColl, ev, METv ,param,weight_reg);
 
 	  if(RegBDT != "false"){
@@ -607,10 +611,8 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4StringBDT(bool ApplyForSR, TStr
   float MVAvalueFake    = EvaluateEventMVA(mN, "Fake", NCut, NTree, channel, LepTColl, ev, METv, param);
   float MVAvalueNonFake = EvaluateEventMVA(mN, "NonFake", NCut, NTree, channel, LepTColl, ev, METv, param);
 
-  //if(ApplyForSR)FillHist(param.Name+"/LimitShape_SR3BDT/SignalBins_M"+mN+"_NCut"+NCut+"_NTree"+NTree, MVAvalue, w, 40, -1., 1.);
-  
   FillHist("LimitExtraction/"+param.Name+"/LimitShape_"+RegionTag+"BDT/MVA1D_Incl_"+BDTLabel, MVAvalueIncl, w, 80, -1., 1.);
-  //  FillHist("LimitExtraction/"+param.Name+"/LimitShape_"+RegionTag+"BDT/MVA2D_"+BDTLabel, MVAvalueFake, MVAvalueNonFake, w, 80, -1., 1., 80, -1., 1.);
+  FillHist("LimitExtraction/"+param.Name+"/LimitShape_"+RegionTag+"BDT/MVA2D_"+BDTLabel, MVAvalueFake, MVAvalueNonFake, w, 80, -1., 1., 80, -1., 1.);
     
   if(FillCutFlow && PassHMMet && ApplyForSR) FillCutflow(Reg, w, RegionTag+"_MET",param);
   if(FillCutFlow && PassHMMet && PassBJetMVeto && ApplyForSR)  FillCutflow(Reg, w, RegionTag+"_bveto",param);

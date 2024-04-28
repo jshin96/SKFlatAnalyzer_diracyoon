@@ -552,10 +552,6 @@ void HNL_LeptonCore::SetupEventMVAReader(bool ee, bool mm, bool emu){
     if(im == 9){ NTreeMM = "850", NCutMM = "200", NTreeEE = "500", NCutEE = "400", NTreeEM = "850", NCutEM = "200"; }    // mN = 400 GeV
     if(im == 10){ NTreeMM = "850", NCutMM = "200", NTreeEE = "700", NCutEE = "200", NTreeEM = "850", NCutEM = "200"; }   // mN = 500 GeV
 
-    FinalBDTHyperParamMap[MNStrList.at(im)+"_MuMu"] = make_pair(NCutMM,NTreeMM);
-    FinalBDTHyperParamMap[MNStrList.at(im)+"_EE"]   = make_pair(NCutEE,NTreeEE);
-    FinalBDTHyperParamMap[MNStrList.at(im)+"_EMu"]  = make_pair(NCutEM,NTreeEM);
-
     TString FileNameMM        = "output_DY_MuMu_M"+MNStrList.at(im)+"_Incl_Run2_NTrees"+NTreeMM+"_NCuts"+NCutMM+"_MaxDepth3_BDT.weights.xml";
     TString FileNameMMFake    = "output_DY_MuMu_M"+MNStrList.at(im)+"_Fake_Run2_NTrees850_NCuts200_MaxDepth3_BDT.weights.xml";
     TString FileNameMMNonFake = "output_DY_MuMu_M"+MNStrList.at(im)+"_NonFake_Run2_NTrees850_NCuts200_MaxDepth3_BDT.weights.xml";
