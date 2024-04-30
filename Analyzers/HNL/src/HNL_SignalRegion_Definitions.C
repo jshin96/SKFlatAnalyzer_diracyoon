@@ -418,7 +418,7 @@ TString HNL_RegionDefinitions::RunSignalRegionAK8String(bool ApplyForSR,
   int m=-999;
   for(UInt_t emme=0; emme<AK8_JetColl.size(); emme++){
     dijetmass_tmp = AK8_JetColl[emme].SDMass();
-    if ( fabs(dijetmass_tmp-80.4) < fabs(dijetmass-80.4) ) {
+    if ( fabs(dijetmass_tmp-M_W) < fabs(dijetmass-M_W) ) {
       dijetmass = dijetmass_tmp;
       m = emme;
     }
@@ -617,7 +617,7 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4StringBDT(bool ApplyForSR, TStr
 
 
   Particle ll =  (*LepTColl[0]) + (*LepTColl[1]);
-  if (channel==EE  && (fabs(ll.M()-M_Z) < 10)) return "false";
+  if (channel==EE  && (fabs(ll.M()-M_Z) < M_ZWINDOW_VETO)) return "false";
 
   if(FillCutFlow)  FillCutflow(Reg, w, RegionTag+"_dilep_mass",param);
 
@@ -631,12 +631,17 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4StringBDT(bool ApplyForSR, TStr
 
   if(FillCutFlow && ApplyForSR && PassHMMet ) FillCutflow(Reg, w, RegionTag+"_MET",param);
 
-
   if(!PassRegionReq)  return "false";
   if(FillCutFlow && !ApplyForSR )  FillCutflow(Reg, w, RegionTag+"_MET",param);
   if(FillCutFlow) FillCutflow(Reg, w, RegionTag+"_bveto",param);
   
-  FillHist("LimitExtraction/"+param.Name+"/LimitShape_"+RegionTag+"BDT/MVA1D_Incl_"+BDTLabel, MVAvalueIncl, w, 80, -1., 1.);
+  FillHist("LimitExtraction/"+param.Name+"/LimitShape_"+RegionTag+"BDT/MVA1D_Incl_AllJets_"+BDTLabel, MVAvalueIncl, w, 80, -1., 1.);
+  if(JetColl.size() < 2){
+    FillHist("LimitExtraction/"+param.Name+"/LimitShape_"+RegionTag+"BDT/MVA1D_Incl_01Jet_"+BDTLabel, MVAvalueIncl, w, 80, -1., 1.);
+  }
+  else{
+    FillHist("LimitExtraction/"+param.Name+"/LimitShape_"+RegionTag+"BDT/MVA1D_Incl_2Jets_"+BDTLabel, MVAvalueIncl, w, 80, -1., 1.);
+  }
   FillHist("LimitExtraction/"+param.Name+"/LimitShape_"+RegionTag+"BDT/MVA2D_"+BDTLabel, MVAvalueFake, MVAvalueNonFake, w, 80, -1., 1., 80, -1., 1.);
 
   vector<Tau> TauColl;
@@ -813,7 +818,7 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4String(bool ApplyForSR,HNL_Lept
       dijetmass_tmp = (JetColl[emme]+JetColl[enne]).M();
 
       
-      if ( fabs(dijetmass_tmp-80.4) < fabs(dijetmass-80.4) ) {
+      if ( fabs(dijetmass_tmp-M_W) < fabs(dijetmass-M_W) ) {
         dijetmass = dijetmass_tmp;
         m = emme;
         n = enne;
