@@ -20,7 +20,7 @@ void HNL_LeptonCore::FillCutflowDef(TString cutflow_dirname,TString cutflow_hist
   if( !this_hist ){
     TString cf_name="Cutflows";
 
-    cout << "cf_name = " << cf_name << " cutflow_dirname = " << cutflow_dirname << " cutflow_histname = " << cutflow_histname << endl;
+    //    cout << "cf_name = " << cf_name << " cutflow_dirname = " << cutflow_dirname << " cutflow_histname = " << cutflow_histname << endl;
     if(cutflow_histname.Contains("SR")||cutflow_histname.Contains("MuonCR")||cutflow_histname.Contains("ElectronCR")) cf_name="LimitBins";
     if(cutflow_histname.Contains("SR_Cut")) cf_name="SignalCutFlow";
     
@@ -28,7 +28,7 @@ void HNL_LeptonCore::FillCutflowDef(TString cutflow_dirname,TString cutflow_hist
     if(!cutflow_dirname.Contains("ChannelCutFlow"))  cf_name = cutflow_dirname + "/"+cf_name;
     else cf_name = cutflow_dirname;
 
-    cout << "cf_name+cutflow_histname = " << cf_name+"/"+cutflow_histname << endl;
+    //cout << "cf_name+cutflow_histname = " << cf_name+"/"+cutflow_histname << endl;
     this_hist = new TH1D(cf_name+"/"+cutflow_histname, "", bin_lables.size(), 0, bin_lables.size());
     for (unsigned int i=0 ; i < bin_lables.size(); i++)  this_hist->GetXaxis()->SetBinLabel(i+1,bin_lables[i]);
     this_hist->SetDirectory(NULL);
@@ -176,7 +176,11 @@ TString HNL_LeptonCore::GetCutFlowNameFromRegion(HNL_LeptonCore::SearchRegion sr
   if(sr==SR2)    EVHistName= "Cutflow_SR2";
   if(sr==SR3)    EVHistName= "Cutflow_SR3";
   if(sr==SR3BDT) EVHistName= "Cutflow_SR3BDT";
-  
+  if(sr==CR1)    EVHistName= "Cutflow_CR1";
+  if(sr==CR2)    EVHistName= "Cutflow_CR2";
+  if(sr==CR3)    EVHistName= "Cutflow_CR3";
+  if(sr==CR3BDT) EVHistName= "Cutflow_CR3BDT";
+
   if(sr==MuonSR1)   EVHistName ="MuonSR1";
   if(sr==MuonSR2)   EVHistName ="MuonSR2";
   if(sr==MuonSR3)   EVHistName ="MuonSR3";
@@ -224,16 +228,16 @@ TString HNL_LeptonCore::GetCutFlowNameFromRegion(HNL_LeptonCore::SearchRegion sr
   if(sr==ChannelDepPresel)  EVHistName ="ChannelDependant_Presel";
   if(sr==ChannelDepSR1)   EVHistName ="ChannelDependant_SR1";
   if(sr==ChannelDepSR2)   EVHistName ="ChannelDependant_SR2";
-  if(sr==ChannelDepSR3)   EVHistName ="ChannelDependant_SR3BDT";
-  if(sr==ChannelDepSR3HM)   EVHistName ="ChannelDependant_SR3";
+  if(sr==ChannelDepSR3)   EVHistName ="ChannelDependant_SR3_BDT";
+  if(sr==ChannelDepSR3HM)   EVHistName ="ChannelDependant_SR3_HighMass";
 
   if(sr==ChannelDepFAILSR3) EVHistName ="ChannelDependantSR3Fail";
   if(sr==SR) EVHistName ="SR_Summary";
 
   if(sr==ChannelDepCR1)   EVHistName ="ChannelDependant_CR1";
   if(sr==ChannelDepCR2)   EVHistName ="ChannelDependant_CR2";
-  if(sr==ChannelDepCR3)   EVHistName ="ChannelDependant_CR3BDT";
-  if(sr==ChannelDepCR3HM)   EVHistName ="ChannelDependant_CR3";
+  if(sr==ChannelDepCR3)   EVHistName ="ChannelDependant_CR3_BDT";
+  if(sr==ChannelDepCR3HM)   EVHistName ="ChannelDependant_CR3_HighMass";
   
   //// Region plots
   if(sr == ControlRegion) EVHistName = "ValidationRegionFlow";
@@ -292,26 +296,29 @@ vector<TString>  HNL_LeptonCore::GetLabelsFromRegion(HNL_LeptonCore::SearchRegio
   }
  
   if(sr==SR1 || sr==CR1 )   {
-    labels = {  "SR1_Init","SR1_lep_charge","SR1_lep_pt","SR1_dilep_mass" , "SR1_tauveto","SR1_1AK8" ,"SR1_MET" ,"SR1_bveto","SR1_Wmass"};
+    labels = {  "SR1_Init","SR1_lep_charge","SR1_lep_pt","SR1_dilep_mass" ,"SR1_1AK8" ,"SR1_MET" ,"SR1_bveto","SR1_Wmass"};
     if(sr==CR1) labels = ConvertCutFlowLabels(labels);
   }
   
   if(sr==SR2  || sr==CR2) {
     
-    labels = {  "SR2_lep_charge",  "SR2_lep_pt",  "SR2_DPhi",  "SR2_LLMass", "SR2_DiJet", "SR2_DiJetEta", "SR2_DiJetMass","SR2_VBF","SR2_met","SR2_ht_lt1","SR2_bveto",  "SR2_Final"};
+    labels = {  "SR2_lep_charge",  "SR2_lep_pt",  "SR2_DPhi",  "SR2_LLMass", "SR2_DiJet", "SR2_DiJetEta", "SR2_DiJetMass","SR2_VBF","SR2_met","SR2_bveto", "SR2_ht_lt1"};
     
     if(sr==CR2) labels = ConvertCutFlowLabels(labels);
   }
   
   if( sr==SR3 || sr==CR3) {
-    labels = { "SR3_lep_charge" ,"SR3_lep_pt", "SR3_dilep_mass","SR3_0JetBinHPT","SR3_1JetBinHPT", "SR3_dijet", "SR3_J1Pt",   "SR3_bveto","SR3_MET"};
+    labels = { "SR3_lep_charge" ,"SR3_lep_pt", "SR3_dilep_mass","SR3_MET","SR3_bveto","SR3_0JetBinHighPT","SR3_0JetBinLowPT","SR3_1JetBinHighPT", "SR3_1JetBinLowPT","SR3_dijet", "SR3_J1Pt"};
     if(sr==CR3) labels = ConvertCutFlowLabels(labels);
   }
 
   if(sr==MuonSRSummary) labels = {"Inclusive", "GenMatch", "CheckLeptonFlavourForChannel","METFilter", "CFCut", "Preselection", "AK8","SigReg1", "SigReg1Fail",  "SigReg2",  "SigReg3", "SigReg3Pass", "SigReg3Fail"};
   
-  if( sr==SR3BDT)  labels = {  "SR3_lep_charge" , "SR3_lep_pt",  "SR3_dilep_mass", "SR3_MET", "SR3_bveto"};//, "SR3_jet", "SR3_dijet","SR3_Wmass",  "SR3_J1Pt", "SR3_MET", "SR3_bveto"};
-  
+  if( sr==SR3BDT || sr==CR3BDT)  {
+    labels = {  "SR3_lep_charge" , "SR3_lep_pt",  "SR3_dilep_mass", "SR3_MET", "SR3_bveto"};//, "SR3_jet", "SR3_dijet","SR3_Wmass",  "SR3_J1Pt", "SR3_MET", "SR3_bveto"};
+    if( sr==CR3BDT) labels= ConvertCutFlowLabels(labels);
+  }
+ 
   
   /// Channel Summary Labels
 
