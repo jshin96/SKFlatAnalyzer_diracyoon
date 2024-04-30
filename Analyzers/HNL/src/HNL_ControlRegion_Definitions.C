@@ -1,6 +1,6 @@
 #include "HNL_RegionDefinitions.h"
 
-void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electronsInitial, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto,std::vector<Jet> JetAllColl, std::vector<Jet> JetColl, std::vector<Jet> VBF_JetColl,   std::vector<FatJet> AK8_JetColl, std::vector<Jet> B_JetColl,  Event ev, Particle METv, AnalyzerParameter param, vector<TString> CRs, int nElRun_ForCF, float weight_ll ){
+void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electronsInitial, std::vector<Electron> electrons_veto, std::vector<Muon> muons, std::vector<Muon> muons_veto,std::vector<Jet> JetCollLoose, std::vector<Jet> JetColl, std::vector<Jet> VBF_JetColl,   std::vector<FatJet> AK8_JetColl, std::vector<Jet> B_JetColl,  Event ev, Particle METv, AnalyzerParameter param, vector<TString> CRs, int nElRun_ForCF, float weight_ll ){
 
   std::vector<Electron> electrons;
   if(RunCF) {
@@ -329,9 +329,9 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 	passed.push_back("SSPresel");
 
 	if(FillHighMassSR1CRPlots(dilep_channel, LepsT, LepsV, JetColl,     AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR1_CR");
-	if(FillHighMassSR2CRPlots(dilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR2_CR");
+	if(FillHighMassSR2CRPlots(dilep_channel, LepsT, LepsV,JetCollLoose, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR2_CR");
 	if(!PassVBF(VBF_JetColl,LepsT,750) && FillHighMassSR3CRPlots(dilep_channel, LepsT, LepsV, JetColl,     AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassSR3_CR");
-
+	
 	if(FillHighMass1JetCRPlots(dilep_channel, LepsT, LepsV, JetColl,    AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMass1Jet_CR");
 	if(FillHighMassBJetCRPlots(dilep_channel, LepsT, LepsV, JetColl,    AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassBJet_CR");
 	if(FillHighMassNPCRPlots(dilep_channel, LepsT, LepsV, JetColl,      AK8_JetColl, B_JetColl, ev, METv, param, weight_channel)) passed.push_back("HighMassNP_CR");
@@ -340,7 +340,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       }
 
       //// RunMainRegionCode(false runs CR version of SR1/2/3
-      if(!HasFlag("ScanFakes")) RunMainRegionCode(false, dilep_channel, Inclusive, LepsT, LepsV,TauColl, JetAllColl,JetColl, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel);
+      if(!HasFlag("ScanFakes")) RunMainRegionCode(false, dilep_channel, Inclusive, LepsT, LepsV,TauColl, JetCollLoose,JetColl, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, param, weight_channel);
       
     }
     
@@ -811,24 +811,20 @@ bool HNL_RegionDefinitions::FillWWCR1Plots(HNL_LeptonCore::Channel channel, std:
   }
   Fill_RegionPlots(param,"HNL_WpWp_TwoLepton_CR1" ,  jets_eta5,  AK8_JetColl,  leps,  METv, nPV, w);
 
-  int nPtbins=8;
-  double Pt1bins[nPtbins+1] = { 10., 20., 40.,60., 100.,150,200.,400.,1000};
+  int nPtbins=6;
+  double Pt1bins[nPtbins+1] = { 10., 50., 100.,150,200.,400.,1000};
   double PTLep1  = (leps[0]->Pt() > 500.) ? 199. : leps[0]->Pt();
 
   FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_WW/Lep1_Pt",  PTLep1  ,  w, nPtbins, Pt1bins,"l_{1} p_{T} GeV");
 
   double Binvalue=0;
-  if((jets_eta5.size()<2) && (leps[1]->Pt()  < 50)) Binvalue=0.5;
-  else   if((jets_eta5.size()<2) && (leps[1]->Pt()  < 150)) Binvalue=1.5;
-  else   if((jets_eta5.size()<2)) Binvalue=2.5;
-  else   {
-    Particle llJJ =  *leps[0] + *leps[1]+jets_eta5[0]+jets_eta5[1];
-    /// For first one yes, OK yeah it's OK. What these are arbitary 
-    if(llJJ.M() < 200) Binvalue= 3.5; 
-    else     if(llJJ.M() < 400) Binvalue= 4.5;
-    else Binvalue= 5.5;
-  }
-  FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_WW/Binnned",  Binvalue  ,  w, 6,0,6 ,"CR Binned");
+  Particle llJJ =  *leps[0] + *leps[1]+jets_eta5[0]+jets_eta5[1];
+  /// For first one yes, OK yeah it's OK. What these are arbitary 
+  if(llJJ.M() < 200) Binvalue= 0.5; 
+  else     if(llJJ.M() < 400) Binvalue= 1.5;
+  else Binvalue= 2.5;
+  
+  FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_WW/Binnned",  Binvalue  ,  w, 3,0,3 ,"CR Binned");
 
 
   return true;
@@ -1379,13 +1375,17 @@ bool HNL_RegionDefinitions::FillHighMassSR3CRPlots(HNL_LeptonCore::Channel chann
   Fill_RegionPlots(param,"HNL_HighMassSR3_TwoLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
   if(leps[1]->Pt() > 80)    Fill_RegionPlots(param,"HNL_HighMassSR3_HighPt_TwoLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
-  for(auto imapHP :FinalBDTHyperParamMap){
-    TString SRBDT = RunSignalRegionAK4StringBDT(false, imapHP.first, imapHP.second.first, imapHP.second.second, channel, Inclusive, leps, JetColl, B_JetColl, ev, METv, param, w);
-  }
+  //for(auto imapHP :FinalBDTHyperParamMap){
+  //  TString PNAME = param.Name ;
+  //  param.Name = param.Name + "_ControlCode";
+  //  TString SRBDT = RunSignalRegionAK4StringBDT(false, imapHP.first, imapHP.second.first, imapHP.second.second, channel, Inclusive, leps, JetColl, B_JetColl, ev, METv, param, w);
+  //  param.Name = PNAME;
+  // }
 
   if (JetColl.size() < 2  && leps[1]->Pt() > 80.) {
     Fill_RegionPlots(param,"HNL_HighMassSR3LowJet_TwoLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
-    return true;
+    if(leps[1]->Pt() > 140.)return true;
+    else return false;
   }
 
   if (JetColl.size() < 2) return false;
@@ -1406,7 +1406,7 @@ bool HNL_RegionDefinitions::FillHighMassSR3CRPlots(HNL_LeptonCore::Channel chann
 
 
 
-bool HNL_RegionDefinitions::FillHighMassSR2CRPlots(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto   , std::vector<Jet> JetColl, std::vector<FatJet> AK8_JetColl, std::vector<Jet> B_JetColl,  Event ev, Particle METv, AnalyzerParameter param, float w){
+bool HNL_RegionDefinitions::FillHighMassSR2CRPlots(HNL_LeptonCore::Channel channel, std::vector<Lepton *> leps, std::vector<Lepton *> leps_veto   , std::vector<Jet> JetCollLoose,std::vector<Jet> JetColl, std::vector<FatJet> AK8_JetColl, std::vector<Jet> B_JetColl,  Event ev, Particle METv, AnalyzerParameter param, float w){
 
 
   HNL_LeptonCore::SearchRegion Reg = HMCR2;
@@ -1426,7 +1426,7 @@ bool HNL_RegionDefinitions::FillHighMassSR2CRPlots(HNL_LeptonCore::Channel chann
   if (channel==EE  && (fabs(ll.M()-M_Z) < M_ZWINDOW_VETO)) return false;
   FillCutflow(Reg, w, "Step2",param);
 
-  if (ll.M() < M_CUT_LL) return false;
+  if (ll.M() < M_CUT_LL) return false;  ///// CHECK  10 GeV or 20 GeV
   FillCutflow(Reg, w, "Step3",param);
 
   double met2_st = GetMET2ST(leps, JetColl, AK8_JetColl, METv);
@@ -1440,14 +1440,14 @@ bool HNL_RegionDefinitions::FillHighMassSR2CRPlots(HNL_LeptonCore::Channel chann
 
   if(PassVBF(JetColl,leps,450)) {
     double HT(0.);
-    for(UInt_t emme=0; emme<JetColl.size(); emme++){
+    for(UInt_t emme=0; emme<JetCollLoose.size(); emme++){
       HT += JetColl[emme].Pt();
     }
 
     Fill_RegionPlots(param,"HNL_HighMassSR2_TwoLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
     if(leps[1]->Pt() > 80)     Fill_RegionPlots(param,"HNL_HighMassSR2_HighPt_TwoLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
-    if (HT/leps[0]->Pt() > 2)  return false; //Increase stats by removing HT/LT cut in Region plots
+    if (HT/leps[0]->Pt() > 1)  return false; //Increase stats by removing HT/LT cut in Region plots
     FillCutflow(Reg, w, "Step6",param);
 
        
@@ -1681,8 +1681,8 @@ bool HNL_RegionDefinitions::FillZZCRPlots(HNL_LeptonCore::Channel channel, std::
   if(!z_cr_pass)  return false;
   FillCutflow(Reg, w, "Step5",param);
 
-  int nPtbins=8;
-  double Pt1bins[nPtbins+1] = { 10., 20., 40.,60., 100.,150,200.,400.,1000};
+  int nPtbins=6;
+  double Pt1bins[nPtbins+1] = { 10., 50., 100.,150,200.,400.,1000};
   double PTLep1  = (leps[0]->Pt() > 500.) ? 199. : leps[0]->Pt();
 
   FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_ZZ/Lep1_Pt",  PTLep1  ,  w, nPtbins, Pt1bins,"l_{1} p_{T} GeV");
