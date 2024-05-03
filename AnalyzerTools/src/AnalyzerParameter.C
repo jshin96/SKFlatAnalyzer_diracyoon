@@ -6,6 +6,8 @@ void AnalyzerParameter::Clear(){
   DefName = "Default";
   Channel = "Default";
   CutFlowDir="CutFlow";
+  NameInclusive_Channel="Dafulat";
+
   hprefix = "";
   hpostfix = "";
   SplitPlot = "NULL";
