@@ -6,7 +6,7 @@ void AnalyzerParameter::Clear(){
   DefName = "Default";
   Channel = "Default";
   CutFlowDir="CutFlow";
-  NameInclusive_Channel="Dafulat";
+  NameInclusive_Channel="Default";
 
   hprefix = "";
   hpostfix = "";
