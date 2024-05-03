@@ -799,23 +799,17 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4String(bool ApplyForSR,HNL_Lept
   }
   FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_"+RegionTag+"/Binnned",  Binvalue  ,  w, 6,0,6 ,"CR Binned");
 
-  if(JetColl.size() == 0){
+  if(JetColl.size() < 2){
     //// These cuts are temp HL will check
-    if(leps[1]->Pt() > 140. && (met2_st < 5)) {
-      FillCutflow(Reg, w, RegionTag+"_0JetBinHighPT",param);
+    if(met2_st > 5) return "false";
+    if(leps[1]->Pt() < 300. ){
       FillHist( "LimitExtraction/"+param.Name+"/LimitShape_"+RegionTag+"/RegionBins",  0.5,  w, 11, 0,11,  RegionTag+" Bins");
       return RegionTag+"_bin1";
     }
-    else   FillCutflow(Reg, w, RegionTag+"_0JetBinLowPT",param);
-  }
-  if(JetColl.size() == 1 ){
-    if(leps[1]->Pt() > 140. && (met2_st < 5)) {
-      FillCutflow(Reg, w, RegionTag+"_1JetBinHighPT",param);
+    else{
       FillHist( "LimitExtraction/"+param.Name+"/LimitShape_"+RegionTag+"/RegionBins",  1.5,  w, 11, 0,11,  RegionTag+" Bins");
       return RegionTag+"_bin2";
     }
-    else  FillCutflow(Reg, w, RegionTag+"_1JetBinLowPT",param);
-
   }
 
   if(ApplyForSR)Fill_RegionPlots(param,"PassSR3" ,TauColl,  JetColl, AK8_JetColl, leps,  METv, nPV, w);

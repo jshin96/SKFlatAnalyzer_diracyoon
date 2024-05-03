@@ -13,8 +13,8 @@ if [[ $1 == "VBF" ]]; then
 
     for i in "${era_list[@]}"
     do
-	SKFlat.py -a $analyzer  -i VBFTypeI_NLO_DF_M400 -n 20  --nmax ${nmax}   -e ${i} &
-	SKFlat.py -a $analyzer  -i VBFTypeI_NLO_DF_M300 -n 20  --nmax ${nmax}   -e ${i} &
+	SKFlat.py -a $analyzer  -i VBFTypeI_DF_M300_private -n 20  --nmax ${nmax}   -e ${i} &
+	SKFlat.py -a $analyzer  -i VBFTypeI_DF_M400_private -n 20  --nmax ${nmax}   -e ${i} &
     done
 fi
 
