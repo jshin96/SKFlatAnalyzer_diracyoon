@@ -18,7 +18,7 @@ void HNL_SignalRegion_Plotter::executeEvent(){
   vector<TString> LepIDs = {"HNL_ULID","HNTightV2"};
   if(strcmp(std::getenv("USER"),"jalmond")==0) LepIDs = {"HNL_ULID","HNTightV2","POGTight","HighPt"};
 
-  vector<HNL_LeptonCore::Channel> ChannelsToRun = {MuMu,EE};                                                    
+  vector<HNL_LeptonCore::Channel> ChannelsToRun = {MuMu,EE,EMu};                                                    
 
   for (auto id: LepIDs){
     for(auto channel : ChannelsToRun){

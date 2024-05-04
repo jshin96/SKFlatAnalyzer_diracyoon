@@ -801,12 +801,11 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4String(bool ApplyForSR,HNL_Lept
 
   if(JetColl.size() < 2){
     //// These cuts are temp HL will check
-    if(met2_st > 5) return "false";
-    if(leps[1]->Pt() < 300. ){
+    if(leps[1]->Pt() < 300. && met2_st < 5 ){
       FillHist( "LimitExtraction/"+param.Name+"/LimitShape_"+RegionTag+"/RegionBins",  0.5,  w, 11, 0,11,  RegionTag+" Bins");
       return RegionTag+"_bin1";
     }
-    else{
+    else  if(leps[1]->Pt() > 300.) {
       FillHist( "LimitExtraction/"+param.Name+"/LimitShape_"+RegionTag+"/RegionBins",  1.5,  w, 11, 0,11,  RegionTag+" Bins");
       return RegionTag+"_bin2";
     }
@@ -840,7 +839,7 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4String(bool ApplyForSR,HNL_Lept
     }
   }
 
-  double pt_bin2= 140.;
+  double pt_bin2= 100.; /// OPT 
   Particle Wcand = JetColl[m] + JetColl[n]+ *leps[0]+ *leps[1];
   Particle N1cand = JetColl[m] + JetColl[n]+ *leps[0];
   Particle N2cand = JetColl[m] + JetColl[n]+ *leps[1];
@@ -848,15 +847,14 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4String(bool ApplyForSR,HNL_Lept
   // double MN  = (NCand.M() > 2000.) ? 1999. : NCand.M();
 
   TString LimitBin = "";
- 
-  if(Wcand.M() < 400) LimitBin=RegionTag+"_bin3";
-  FillCutflow(Reg, w, RegionTag+"_W1Mass",param);
-  if(leps[1]->Pt() < 20) LimitBin=RegionTag+"_bin3";
 
-  if(leps[0]->Pt() < pt_bin2) LimitBin=RegionTag+"_bin3";
-  FillCutflow(Reg, w, RegionTag+"_LepPt",param);
+  if(Wcand.M() < 400 || leps[0]->Pt() < pt_bin2) {
+    LimitBin=RegionTag+"_bin3";
+    FillCutflow(Reg, w, RegionTag+"_W1Mass",param);
+    FillCutflow(Reg, w, RegionTag+"_LepPt",param);
+  }
 
-  if(met2_st < 2){
+  else if(met2_st < 2){
     if(N1cand.M() < 500.)   LimitBin=RegionTag+"_bin4";
     else if(N1cand.M() < 750.)   LimitBin=RegionTag+"_bin5";
     else LimitBin=RegionTag+"_bin6";
