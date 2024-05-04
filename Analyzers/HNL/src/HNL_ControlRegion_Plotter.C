@@ -15,9 +15,10 @@ void HNL_ControlRegion_Plotter::executeEvent(){
   else run_Debug=false;
 
   ///// LIST IDs to run
-  vector<TString> LepIDs = {"HNL_ULID", "TopHN","HNTightV2"};//,"TopHN", "DefaultPOGTight"};
+  vector<TString> LepIDs = {"HNL_ULID"};//,"TopHN", "DefaultPOGTight"};
+  if(std::getenv("USER") == "jalmond") LepIDs = {"HNL_ULID", "TopHN","HNTightV2"};;
   if(RunFakeTF) LepIDs = {"HNL_ULID"};
-
+  
   
   //// List Channels to run
   vector<HNL_LeptonCore::Channel> ChannelsToRun = {MuMu,EE,EMu };
