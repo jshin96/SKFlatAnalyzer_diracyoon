@@ -237,8 +237,6 @@ void   HNL_RegionDefinitions::RunMainRegionCode(bool IsSR,HNL_LeptonCore::Channe
       }
     }
 
-    else     if(IsSR) FillCutflow(HNL_LeptonCore::SR, weight_reg, "Fail",param);
-    
     return;
   }//// END OF AK8 Loop
   else{
@@ -300,8 +298,6 @@ void   HNL_RegionDefinitions::RunMainRegionCode(bool IsSR,HNL_LeptonCore::Channe
       else{
 	
 	if(IsSR){
-
-	  FillCutflow(HNL_LeptonCore::SR, weight_reg, "Fail",param);
 
 	  Fill_RegionPlots(param,"FailSRSelection" ,  TauColl, JetColl, AK8_JetColl, LepsT,  METv, nPV, weight_reg);
 	  
@@ -738,7 +734,7 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4StringBDT(bool ApplyForSR, TStr
 
   }
 
-  if(channel == EE){
+  else if(channel == EE){
     BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin1" , -0.2));
     BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin2" , -0.15));
     BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin3" , -0.1));
@@ -799,107 +795,107 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4StringBDT(bool ApplyForSR, TStr
   }
 
 
-  if(channel == EMu){
+  else if(channel == EMu){
 
-    BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin1" , -0.25));
-    BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin2" , -0.2));
-    BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin3" , -0.1));
-    BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin4" , 0.));
-    BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin5" , 0.05));
-    BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin6" , 0.1));
-    BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin7" , 0.12));
-    BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin8" , 0.14));
-    BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin9" , 0.16));
-    BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin10" , 0.18));
-    BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin11" , 0.20));
-    BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin12" , 0.21));
-    BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin13" , 0.22));
-    BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin14" , 0.23));
-    BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin15" , 0.24));
-    BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin16" , 0.26));
-    BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin17" , 1.));
+    BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin1" , -0.25));
+    BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin2" , -0.2));
+    BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin3" , -0.1));
+    BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin4" , 0.));
+    BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin5" , 0.05));
+    BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin6" , 0.1));
+    BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin7" , 0.12));
+    BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin8" , 0.14));
+    BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin9" , 0.16));
+    BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin10" , 0.18));
+    BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin11" , 0.20));
+    BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin12" , 0.21));
+    BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin13" , 0.22));
+    BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin14" , 0.23));
+    BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin15" , 0.24));
+    BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin16" , 0.26));
+    BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin17" , 1.));
 
 
     if( mN=="200" || mN == "250" || mN == "300"){
 
       
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin1" , -0.25));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin2" , -0.2));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin3" , -0.1));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin4" , 0.));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin5" , 0.05));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin6" , 0.1));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin7" , 0.12));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin8" , 0.14));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin9" , 0.16));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin10" , 0.18));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin11" , 0.20));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin12" , 0.21));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin13" , 0.22));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin14" , 0.23));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin15" , 0.24));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin16" , 0.26));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin17" , 1.));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin1" , -0.25));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin2" , -0.2));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin3" , -0.1));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin4" , 0.));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin5" , 0.05));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin6" , 0.1));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin7" , 0.12));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin8" , 0.14));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin9" , 0.16));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin10" , 0.18));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin11" , 0.20));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin12" , 0.21));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin13" , 0.22));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin14" , 0.23));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin15" , 0.24));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin16" , 0.26));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin17" , 1.));
     }
 
     if(mN == "125"){
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin1" , -0.25));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin2" , -0.2));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin3" , -0.1));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin4" , 0.));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin5" , 0.05));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin6" , 0.1));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin7" , 0.12));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin8" , 0.14));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin9" , 0.16));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin10" , 0.18));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin11" , 0.2));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin12" , 0.22));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin13" , 0.24));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin14" , 0.26));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin15" , 0.28));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin16" , 0.3));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin17" , 1.));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin1" , -0.25));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin2" , -0.2));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin3" , -0.1));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin4" , 0.));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin5" , 0.05));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin6" , 0.1));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin7" , 0.12));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin8" , 0.14));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin9" , 0.16));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin10" , 0.18));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin11" , 0.2));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin12" , 0.22));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin13" , 0.24));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin14" , 0.26));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin15" , 0.28));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin16" , 0.3));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin17" , 1.));
     }
     if(mN == "150"){
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin1" , -0.25));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin2" , -0.2));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin3" , -0.1));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin4" , 0.));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin5" , 0.05));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin6" , 0.1));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin7" , 0.15));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin8" , 0.15));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin9" , 0.175));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin10" , 0.2));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin11" , 0.22));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin12" , 0.24));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin13" , 0.26));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin14" , 0.28));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin15" , 0.3));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin16" , 0.325));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin17" , 1.));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin1" , -0.25));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin2" , -0.2));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin3" , -0.1));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin4" , 0.));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin5" , 0.05));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin6" , 0.1));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin7" , 0.15));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin8" , 0.15));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin9" , 0.175));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin10" , 0.2));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin11" , 0.22));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin12" , 0.24));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin13" , 0.26));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin14" , 0.28));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin15" , 0.3));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin16" , 0.325));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin17" , 1.));
     }
 
 
     if(mN == "400" || mN== "500"){
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin1" , -0.25));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin2" , -0.2));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin3" , -0.1));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin4" , 0.));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin5" , 0.02));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin6" , 0.04));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin7" , 0.06));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin8" , 0.08));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin9" , 0.1));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin10" , 0.12));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin11" , 0.14));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin12" , 0.22));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin13" , 0.16));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin14" , 0.18));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin15" , 0.2));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin16" , 0.22));
-      BDTLimitBinsEl.push_back( make_pair(RegionTag+"_BDTbin17" , 1.));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin1" , -0.25));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin2" , -0.2));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin3" , -0.1));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin4" , 0.));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin5" , 0.02));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin6" , 0.04));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin7" , 0.06));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin8" , 0.08));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin9" , 0.1));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin10" , 0.12));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin11" , 0.14));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin12" , 0.22));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin13" , 0.16));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin14" , 0.18));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin15" , 0.2));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin16" , 0.22));
+      BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin17" , 1.));
     }
   }
   
