@@ -759,7 +759,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.Muon_Veto_ID      = "HNVetoMVA";
     param.Muon_Tight_ID     = "HNL_ULID_"+GetYearString();
     param.Electron_Veto_ID  = "HNVetoMVA";
-    param.Electron_Tight_ID = "HNL_TC1_ULID_"+GetYearString();
+    param.Electron_Tight_ID = "HNL_ULID_"+GetYearString();
 
     ///Fakes                                                                                                                                                                                                                                                                    
     param.FakeRateMethod    = "Standard";

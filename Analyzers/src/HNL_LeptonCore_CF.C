@@ -43,11 +43,11 @@ double HNL_LeptonCore::GetCFSF(AnalyzerParameter param, TString EraReg, bool App
 
   map<TString,vector<double> > CFSFValues;
 
-  CFSFValues["HNL_TC1_ULID_BB"]      =  {0.944,1.02,1.48,1.437};
-  CFSFValues["HNL_TC1_ULID_EC"]      =  {0.907,0.903,1.343,1.217};
+  CFSFValues["HNL_ULID_BB"]      =  {0.944,1.02,1.48,1.437};
+  CFSFValues["HNL_ULID_EC"]      =  {0.907,0.903,1.343,1.217};
 
-  CFSFValues["HNL_ULID_BB"]      =  {0.987,1.064,1.398,1.413};
-  CFSFValues["HNL_ULID_EC"]      =  {0.93,0.934,1.332,1.241};
+  //CFSFValues["HNL_ULID_BB"]      =  {0.987,1.064,1.398,1.413};
+  //  CFSFValues["HNL_ULID_EC"]      =  {0.93,0.934,1.332,1.241};
 
   CFSFValues["passPOGTight_BB"]      =  {1.097, 1.04, 1.49, 1.54};
   CFSFValues["passPOGTight_EC"]  =  {1.01,1, 1.30, 1.35};
