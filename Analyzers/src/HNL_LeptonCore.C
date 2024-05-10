@@ -579,7 +579,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.Muon_Tight_ID    = "HNTightV2";     param.Electron_Tight_ID = "HNTightV2";
     param.Muon_FR_ID       = "HNLooseV1";     param.Electron_FR_ID    = "HNLooseV4";
 
-    param.k.Electron_CF  = "CFRate_InvPtEta3_PBSExtrap_" + param.Electron_Tight_ID;
+    param.k.Electron_CF  = "CFRate_InvPtEta3_PBSExtrap_Central_" + param.Electron_Tight_ID;
 
     param.FakeRateMethod       = "Standard";
     param.FakeRateParam        = "PtCone";
@@ -611,7 +611,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.Muon_Tight_ID    = "HNTightV2";     param.Electron_Tight_ID = "HNTightV2";
     param.Muon_FR_ID       = "HNLooseV1";     param.Electron_FR_ID    = "HNLooseV4";
 
-    param.k.Electron_CF  = "CFRate_InvPtEta3_PBSExtrap_" + param.Electron_Tight_ID;
+    param.k.Electron_CF  = "CFRate_InvPtEta3_PBSExtrap_Central_" + param.Electron_Tight_ID;
 
     param.FakeRateMethod       = "Standard";
     param.FakeRateParam        = "PtCone";
@@ -738,7 +738,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.k.Muon_ISO_SF        = "Default";
     param.k.Electron_ID_SF     = "passHNL_ULID_"+GetYearString();
 
-    param.k.Electron_CF  = "CFRate_InvPtEta3_PBSExtrap_" + param.Electron_Tight_ID;
+    param.k.Electron_CF  = "CFRate_InvPtEta3_PBSExtrap_Central_" + param.Electron_Tight_ID;
     param.TriggerSelection = "Dilep";
     if(channel_st.Contains("EE"))   param.k.Electron_Trigger_SF = "DiElIso_HNL_ULID";
     if(channel_st.Contains("MuMu")) param.k.Muon_Trigger_SF = "DiMuIso_HNL_ULID";
@@ -792,7 +792,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.k.Muon_ISO_SF        = "Default";
     param.k.Electron_ID_SF     = "passHNL_ULID_"+GetYearString();
 
-    param.k.Electron_CF  = "CFRate_InvPtEta3_PBSExtrap_" + param.Electron_Tight_ID;
+    param.k.Electron_CF  = "CFRate_InvPtEta3_PBSExtrap_Central_" + param.Electron_Tight_ID;
     param.TriggerSelection = "Dilep";
     if(channel_st.Contains("EE"))   param.k.Electron_Trigger_SF = "DiElIso_HNL_ULID";
     if(channel_st.Contains("MuMu")) param.k.Muon_Trigger_SF = "DiMuIso_HNL_ULID";
@@ -821,7 +821,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
 
     param.k.Muon_FR            = "AwayJetPt40";
     param.k.Electron_FR        = "AwayJetPt40";
-    param.k.Electron_CF  = "CFRate_InvPtEta3_PBSExtrap_POGTight";
+    param.k.Electron_CF  = "CFRate_InvPtEta3_PBSExtrap_Central_POGTight";
 
     /// Just Cross check so no need to apply trigger SF
     param.Apply_Weight_TriggerSF = false;
