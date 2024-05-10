@@ -1011,15 +1011,19 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4String(bool ApplyForSR,HNL_Lept
 
   if(JetColl.size() < 2){
     //// These cuts are temp HL will check
-    if(leps[1]->Pt() < 140. && met2_st < 5 ){
+    if(leps[1]->Pt() < 100. && met2_st < 5 ){
       FillHist( "LimitExtraction/"+param.Name+"/LimitShape_"+RegionTag+"/RegionBins",  0.5,  w, 14, 0,14,  RegionTag+" Bins");
       return RegionTag+"_bin1";
     }
-    else if(leps[1]->Pt() < 300. && met2_st < 5 ){
+    else if(leps[1]->Pt() < 140. && met2_st < 5 ){
+      FillHist( "LimitExtraction/"+param.Name+"/LimitShape_"+RegionTag+"/RegionBins",  0.5,  w, 14, 0,14,  RegionTag+" Bins");
+      return RegionTag+"_bin1";
+    }
+    else if(leps[1]->Pt() < 250. && met2_st < 5 ){
       FillHist( "LimitExtraction/"+param.Name+"/LimitShape_"+RegionTag+"/RegionBins",  1.5,  w, 14, 0,14,  RegionTag+" Bins");
       return RegionTag+"_bin2";
     }
-    else  if(leps[1]->Pt() > 300.) {
+    else  if(leps[1]->Pt() > 250.) {
       FillHist( "LimitExtraction/"+param.Name+"/LimitShape_"+RegionTag+"/RegionBins",  2.5,  w, 14, 0,14,  RegionTag+" Bins");
       return RegionTag+"_bin3";
     }
