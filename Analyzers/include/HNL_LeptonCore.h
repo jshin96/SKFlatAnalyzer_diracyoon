@@ -65,7 +65,7 @@ class HNL_LeptonCore : public AnalyzerCore {
     Presel,    PreselSS,    PreselOS,
     sigmm,    sigee,    sigem,   sigmm_17028,    sigee_17028,    sigem_17028,
     ControlRegion,    SignalRegion,  SR,  CR,
-    WGCR,    ZGCR, WZCR, ZZCR, WZBCR,WZCR2,ZZCR2,HMCR1,HMCR2,HMCR3,HMBDTCR3,HMNPCR,HMBCR,HM1JCR,PreselVBF,
+    WGCR,    ZGCR, WZCR, ZZCR, ZZVBFCR, WZBCR,WZVBFCR,WZVBFCR2,ZZCR2,HMCR1,HMCR2,HMCR3,HMBDTCR3,HMNPCR,HMBCR,HM1JCR,PreselVBF,
     WWNP1CR, WWNP2CR, WWNP3CR, WWCR1,WWCR2,ZAK8CR,ZCR,ZNPElCR,ZNPMuCR,TopCR,TopNPCR,TopAK8NPCR,TopNPCR2,
 
   };

@@ -257,14 +257,13 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
     DrawLevel3 = true;
   }
 
-  /// Draw N leptons                                                                                                                                                                                                                                                             
-  //  cout << plot_dir+ region << endl; // JOHN
+  /// Draw N leptons                                                                                                                                                                                             
   if(DrawLevel1) FillHist( plot_dir+ region+ "/NObj/N_El", nel,  w, 5, 0, 5, "El size");
   if(DrawLevel1) FillHist( plot_dir+ region+ "/NObj/N_Mu", nmu,  w, 5, 0, 5, "Mu size");
   // Draw N jets                                                                                                        
-
   if(DrawLevel1) FillHist( plot_dir+ region+ "/NObj/N_AK4J", jets.size() , w, 10, 0., 10., "N_{AK4 jets}");
 
+  ///// Only Draw Multi Lepton plots
   if(leps.size() < 2) return;
   
   int nlepMVA(0);
@@ -405,12 +404,12 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
   double minDRLep2Tau=9999.;
   int nlep(0);
   for(auto i : leps){
-    if(DrawLevel1)FillHist( plot_dir+ region+ "/Leptons/BScore_"+i->GetEtaRegion("2bin"), i->CloseJet_BScore() ,  w, 200, -1, 1 );
-    if(DrawLevel1)FillHist( plot_dir+ region+ "/Leptons/Leps_pt", i->PtMaxed(1000.)  , w, 1000, 0., 1000.,"1_{2} p_{T} GeV");
-    if(DrawLevel1)FillHist( plot_dir+ region+ "/Leptons/Leps_pt_unweighted", i->PtMaxed(1000.)  , 1, 1000, 0., 1000.,"1_{2} p_{T} GeV");
-    if(DrawLevel2)FillHist( plot_dir+ region+ "/Leptons/Leps_et", i->Et()  , w, 1000, 0., 1000.,"1_{2} p_{T} GeV");
-    if(DrawLevel1)FillHist( plot_dir+ region+ "/Leptons/Leps_eta",i->Eta()  , w, 50, -2.5, 2.5,"l_{1} #eta");
-    if(DrawLevel2)FillHist( plot_dir+ region+ "/Leptons/Leps_phi",i->Phi()  , w, 50, -2.5, 2.5,"l_{1} #phi");
+    if(DrawLevel1)FillHist( plot_dir+ region+ "/Leptons/CloseJet_BScore_"+i->GetEtaRegion("2bin"), i->CloseJet_BScore() ,  w, 200, -1, 1 );
+    if(DrawLevel1)FillHist( plot_dir+ region+ "/Leptons/Lepton_pt", i->PtMaxed(1000.)  , w, 1000, 0., 1000.,"1_{2} p_{T} GeV");
+    if(DrawLevel1)FillHist( plot_dir+ region+ "/Leptons/Lepton_pt_unweighted", i->PtMaxed(1000.)  , 1, 1000, 0., 1000.,"1_{2} p_{T} GeV");
+    if(DrawLevel2)FillHist( plot_dir+ region+ "/Leptons/Lepton_et", i->Et()  , w, 1000, 0., 1000.,"1_{2} p_{T} GeV");
+    if(DrawLevel1)FillHist( plot_dir+ region+ "/Leptons/Lepton_eta",i->Eta()  , w, 50, -2.5, 2.5,"l_{1} #eta");
+    if(DrawLevel2)FillHist( plot_dir+ region+ "/Leptons/Lepton_phi",i->Phi()  , w, 50, -2.5, 2.5,"l_{1} #phi");
     LT += i->Pt();
     for(auto itau  : TauColl){
       if(nlep==0 && i->DeltaR(itau) < minDRLep1Tau) minDRLep1Tau = i->DeltaR(itau);
@@ -541,10 +540,10 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
     if(DrawLevel3)FillHist( plot_dir+ region+ "/AK4Jets/pileup_tight", jets[i].PassPileupMVA("Tight", GetEraShort()), w, 2, 0., 2., "PileupJetId");
     if(DrawLevel2)FillHist( plot_dir+ region+ "/AK4Jets/DeepCSV_score", jets[i].GetTaggerResult(JetTagging::DeepCSV), w, 100, 0, 1., "DeepCSV_score");
     if(DrawLevel2)FillHist( plot_dir+ region+ "/AK4Jets/DeepJet_score", jets[i].GetTaggerResult(JetTagging::DeepJet), w, 100, 0, 1., "DeepCSV_score");
-    if(DrawLevel2)FillHist( plot_dir+ region+ "/AK4Jets/Jet_pt",  jets[i].Pt() , w, 400, 0., 2000., "AK4 Jet p_{T} GeV");
-    if(DrawLevel2)FillHist( plot_dir+ region+ "/AK4Jets/Jet_eta",  jets[i].Eta() , w, 100, -5., 5., "AK4 Jet #eta ");
-    if(DrawLevel3)FillHist( plot_dir+ region+ "/AK4Jets/Jet_CEEF", jets[i].ChargedEmEnergyFraction(), w, 50, 0., 1. ,"");
-    if(DrawLevel3)FillHist( plot_dir+ region+ "/AK4Jets/Jet_CHEF", jets[i].ChargedHadEnergyFraction(), w, 50, 0., 1. ,"");
+    if(DrawLevel1)FillHist( plot_dir+ region+ "/AK4Jets/Jet_pt",  jets[i].Pt() , w, 400, 0., 2000., "AK4 Jet p_{T} GeV");
+    if(DrawLevel1)FillHist( plot_dir+ region+ "/AK4Jets/Jet_eta",  jets[i].Eta() , w, 100, -5., 5., "AK4 Jet #eta ");
+    if(DrawLevel2)FillHist( plot_dir+ region+ "/AK4Jets/Jet_CEEF", jets[i].ChargedEmEnergyFraction(), w, 50, 0., 1. ,"");
+    if(DrawLevel2)FillHist( plot_dir+ region+ "/AK4Jets/Jet_CHEF", jets[i].ChargedHadEnergyFraction(), w, 50, 0., 1. ,"");
     if(jets[i].DeltaR(*leps[0] ) < mindRlepj1) mindRlepj1=jets[i].DeltaR(*leps[0] );
     if(jets[i].DeltaR(*leps[1] ) < mindRlepj2) mindRlepj2=jets[i].DeltaR(*leps[1] );
     if(i == 0){
@@ -556,7 +555,7 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
     if(DrawLevel3)FillHist( plot_dir+ region+"/DeltaR/dR_jet_MET",  jets[i].DeltaR(met) ,w, 50,  0., 5,"#DeltaR(j,met)");
     for(unsigned int j=1; j < jets.size(); j++){
       if(i==j)continue;
-      if(DrawLevel3)FillHist( plot_dir+ region+"/DeltaR/Jet_dR_jj",  jets[i].DeltaR(jets[j]) ,w, 50,  0., 5,"#DeltaR(j,j)");
+      if(DrawLevel1)FillHist( plot_dir+ region+"/DeltaR/Jet_dR_jj",  jets[i].DeltaR(jets[j]) ,w, 50,  0., 5,"#DeltaR(j,j)");
       if(DrawLevel3)FillHist( plot_dir+ region+"/Mass/Jet_M_jj",  (jets[i]+jets[j]).M() ,w, 200,  0., 2000,"M(j,j)");
     }
   }
@@ -597,7 +596,7 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
 
   double ll_dphi = fabs(TVector2::Phi_mpi_pi( ( (*leps[0]).Phi() - (*leps[1]).Phi() )) );
   double ll_deta = fabs((*leps[0]).Eta() - (*leps[1]).Eta());
-  if(DrawLevel3)FillHist( plot_dir+ region+ "/DeltaPhi/dPhi_lep1_lep2", ll_dphi  , w, 200, -5., 5., "#Delta #Phi(l1,l2)") ;
+  if(DrawLevel1)FillHist( plot_dir+ region+ "/DeltaPhi/dPhi_lep1_lep2", ll_dphi  , w, 200, -5., 5., "#Delta #Phi(l1,l2)") ;
   if(DrawLevel1)FillHist( plot_dir+ region+ "/DeltaEta/dEta_lep1_lep2", ll_deta  , w, 200, -5., 5., "#Delta #Phi(l1,l2)") ;
   if(DrawLevel3)FillHist( plot_dir+ region+ "/DeltaR/dRmin_jet_lep1", mindRlepj1  , w, 50, 0., 5., "#Delta R(l1,j)") ;
   if(DrawLevel3)FillHist( plot_dir+ region+ "/DeltaR/dRmin_jet_lep2", mindRlepj2  , w, 50, 0., 5., "#Delta R(l1,j)") ;
