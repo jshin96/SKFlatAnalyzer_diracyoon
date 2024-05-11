@@ -251,6 +251,12 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
   bool DrawLevel2 = (param.PlottingVerbose >= 1);
   bool DrawLevel3 = (param.PlottingVerbose >= 2);
 
+  if(plot_dir.Contains("HNL_HighMassZPeakNP")) {
+    DrawLevel1 = true; 
+    DrawLevel2 = true;
+    DrawLevel3 = true;
+  }
+
   /// Draw N leptons                                                                                                                                                                                                                                                             
   //  cout << plot_dir+ region << endl; // JOHN
   if(DrawLevel1) FillHist( plot_dir+ region+ "/NObj/N_El", nel,  w, 5, 0, 5, "El size");
@@ -384,12 +390,12 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
     double MllW = (W1Cand.M() > 2000.) ? 1999. : W1Cand.M();
 
     if(DrawLevel3) FillHist( plot_dir+ region+ "/Mass/DiJet_M_l1W_M_W",         MN1, MllW,  w, 100, 0., 2000., 100, 0., 2000.);
-    if(DrawLevel2)FillHist( plot_dir+ region+ "/Mass/DiJet_M_l1W_multibins",   MN1,        w, 200, 0, 2000, "Reco M_{l1jj}");
-    if(DrawLevel1)FillHist( plot_dir+ region+ "/Mass/DiJet_M_l1W",             MN1,        w, 9, mljbins , "Reco M_{l1jj}");
-    if(DrawLevel1)FillHist( plot_dir+ region+ "/Mass/DiJet_M_l2W",             MN2,        w, 9, mljbins , "Reco M_{l2jj} ");
+    if(DrawLevel2) FillHist( plot_dir+ region+ "/Mass/DiJet_M_l1W_multibins",   MN1,        w, 200, 0, 2000, "Reco M_{l1jj}");
+    if(DrawLevel1) FillHist( plot_dir+ region+ "/Mass/DiJet_M_l1W",             MN1,        w, 9, mljbins , "Reco M_{l1jj}");
+    if(DrawLevel1) FillHist( plot_dir+ region+ "/Mass/DiJet_M_l2W",             MN2,        w, 9, mljbins , "Reco M_{l2jj} ");
     if(DrawLevel3) FillHist( plot_dir+ region+ "/Mass/DiJet_M_lAv12W", (N1Cand.M()+  N2Cand.M())/2.,  w,  500, 0., 2000., "Reco M_{l1_2jj} ");
-    if(DrawLevel1)FillHist( plot_dir+ region+ "/Mass/DiJet_M_llW",  MllW ,  w, 7, mljbins , "Reco M_{lljj}");
-    if(DrawLevel2)FillHist( plot_dir+ region+ "/Mass/DiJet_M_llW_multibins",  MllW ,  w,  200, 0, 2000, "Reco M_{lljj}");
+    if(DrawLevel1) FillHist( plot_dir+ region+ "/Mass/DiJet_M_llW",  MllW ,  w, 7, mljbins , "Reco M_{lljj}");
+    if(DrawLevel2) FillHist( plot_dir+ region+ "/Mass/DiJet_M_llW_multibins",  MllW ,  w,  200, 0, 2000, "Reco M_{lljj}");
     if(DrawLevel3) FillHist( plot_dir+ region+ "/DeltaR/DiJet_dR_Wj1_lep2",   jets[m].DeltaR(*leps[1] ),  w, 50, 0, 5, "#DeltaR (Wj1,lep2)");
     if(DrawLevel3) FillHist( plot_dir+ region+ "/DeltaR/DiJet_dR_Wj2_lep2",   jets[n].DeltaR(*leps[1] ),  w, 50, 0, 5, "#DeltaR (Wj2,lep2)");
   }// end dijet loop                                            
@@ -473,7 +479,7 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
   double ST = GetST(leps, jets, fatjets, met);
   double met2_st = pow(met.Pt(),2.)/ ST;
 
-  if(DrawLevel2)FillHist( plot_dir+ region+ "/SKEvent/Ev_ST", ST  , w, 250, 0., 5000.,"ST GeV");
+  if(DrawLevel1)FillHist( plot_dir+ region+ "/SKEvent/Ev_ST", ST  , w, 250, 0., 5000.,"ST GeV");
   if(DrawLevel1)FillHist( plot_dir+ region+ "/SKEvent/Ev_MET2_ST", met2_st  , w, 100, 0., 100.,"MET2/ST GeV");
 
   Particle METv           = GetMiniAODvMET("T1xyCorr");
@@ -486,9 +492,9 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
   if(DrawLevel1)FillHist( plot_dir+ region+ "/SKEvent/Ev_MET", met.Pt()  , w, 200, 0., 400.,"MET GeV");
   if(param.PlottingVerbose == 3)FillHist( plot_dir+ region+ "/SKEvent/Ev_pfMET_T1", METvNoPhi.Pt()  , w, 200, 0., 400.,"MET GeV");
   if(param.PlottingVerbose == 3)FillHist( plot_dir+ region+ "/SKEvent/Ev_pfMET_T1xyCorr", METv.Pt()  , w, 200, 0., 400.,"MET GeV");
-  if(DrawLevel1)FillHist( plot_dir+ region+ "/SKEvent/Ev_PuppiMET_T1", PuppiMETvNoPhi.Pt()  , w, 200, 0., 400.,"MET GeV");
+  if(DrawLevel2)FillHist( plot_dir+ region+ "/SKEvent/Ev_PuppiMET_T1", PuppiMETvNoPhi.Pt()  , w, 200, 0., 400.,"MET GeV");
   if(param.PlottingVerbose == 3)FillHist( plot_dir+ region+ "/SKEvent/Ev_PuppiMET_T1xyCorr", PuppiMETv.Pt()  , w, 200, 0., 400.,"MET GeV");
-  if(DrawLevel1)FillHist( plot_dir+ region+ "/SKEvent/Ev_PuppiMET_T1ULxyCorr", PuppiMETvULPhiCorr.Pt()  , w, 200, 0., 400.,"MET GeV");
+  if(DrawLevel2)FillHist( plot_dir+ region+ "/SKEvent/Ev_PuppiMET_T1ULxyCorr", PuppiMETvULPhiCorr.Pt()  , w, 200, 0., 400.,"MET GeV");
   if(param.PlottingVerbose == 3)FillHist( plot_dir+ region+ "/SKEvent/Ev_pfMET_T1ULxyCorr", METvULPhiCorr.Pt()  , w, 200, 0., 400.,"MET GeV");
   if(param.PlottingVerbose == 3)FillHist( plot_dir+ region+ "/SKEvent/Ev_pfMETphi_T1", METvNoPhi.Phi()  , w, 200, -5., 5.,"MET #phi");
   if(param.PlottingVerbose == 3)FillHist( plot_dir+ region+ "/SKEvent/Ev_pfMETphi_T1xyCorr", METv.Phi()  , w, 200, -5., 5.,"MET #phi");
@@ -498,11 +504,11 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
   if(DrawLevel2)FillHist( plot_dir+ region+ "/SKEvent/Mt_lep2", MT(*leps[1] ,met)  , w, 200, 0., 400.,"MT GeV");
   if(threelep) {
     if(DrawLevel1)FillHist( plot_dir+ region+ "/Mass/M_lll", lllCand.M() , w, 200, 0., 800.,"M(lll) GeV");
-    if(GetIndexNonMinOSSF(leps) > 0 && DrawLevel2)FillHist( plot_dir+ region+ "/SKEvent/Mt_minOSSF", MT(*leps[GetIndexNonMinOSSF(leps)], met) , w, 200, 0., 800.,"M(T) non MinOS GeV");
+    if(GetIndexNonMinOSSF(leps) > 0 && DrawLevel1)FillHist( plot_dir+ region+ "/SKEvent/Mt_minOSSF", MT(*leps[GetIndexNonMinOSSF(leps)], met) , w, 200, 0., 800.,"M(T) non MinOS GeV");
     if(GetIndexNonBestZ(leps,M_ZWINDOW)> 0 && DrawLevel2)FillHist( plot_dir+ region+ "/SKEvent/Mt_nonZLep", MT(*leps[GetIndexNonBestZ(leps,M_ZWINDOW)], met) , w, 200, 0., 800.,"M(T) non Z GeV");
-    if(DrawLevel2)FillHist( plot_dir+ region+ "/Mass/M_minOSSF", GetMassMinOSSF(leps), w, 200, 0., 800.,"M non MinOS GeV");
-    if(DrawLevel2)FillHist( plot_dir+ region+ "/Mass/M_minSSSF", GetMassMinSSSF(leps), w, 200, 0., 800.,"M(T) non MinSS GeV");
-    if(GetIndexNonMinSSSF(leps) > 0 && DrawLevel2)FillHist( plot_dir+ region+ "/Mass/Mt_minSSSF", MT(*leps[GetIndexNonMinSSSF(leps)], met) , w, 200, 0., 800.,"M non MinSS GeV");
+    if(DrawLevel1)FillHist( plot_dir+ region+ "/Mass/M_minOSSF", GetMassMinOSSF(leps), w, 200, 0., 800.,"M non MinOS GeV");
+    if(DrawLevel1)FillHist( plot_dir+ region+ "/Mass/M_minSSSF", GetMassMinSSSF(leps), w, 200, 0., 800.,"M(T) non MinSS GeV");
+    if(GetIndexNonMinSSSF(leps) > 0 && DrawLevel1)FillHist( plot_dir+ region+ "/Mass/Mt_minSSSF", MT(*leps[GetIndexNonMinSSSF(leps)], met) , w, 200, 0., 800.,"M non MinSS GeV");
   }
 
   if(fourlep) {
@@ -574,7 +580,7 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
     if(DrawLevel3)FillHist( plot_dir+ region+"/VBF/Jet_dR_jet1_lep2",  jets[ijet1].DeltaR(*leps[1]) ,w, 100,  0., 5,"#DeltaR(j,l1)");
     if(DrawLevel1)FillHist( plot_dir+ region+ "/VBF/MaxDEta_jet1_jet2", maxDiJetDeta  , w, 200, 0., 10., "Max DEta");
     Particle JJMEta = jets[ijet1] + jets[ijet2];
-    if(DrawLevel1)FillHist( plot_dir+ region+ "/VBF/MaxDEtaJets_MJJ",JJMEta.M()   , w, 200, 0., 2000., "MaxDEta MJJ");
+    if(DrawLevel1)FillHist( plot_dir+ region+ "/VBF/MaxDEtaJets_MJJ",JJMEta.M()   , w, 300, 0., 3000., "MaxDEta MJJ");
     double Av_JetEta= 0.5*(jets[ijet1].Eta()+ jets[ijet2].Eta());
     double zeppenfeld = TMath::Max((*leps[0]).Eta()  - Av_JetEta , (*leps[1]).Eta()  - Av_JetEta ) /maxDiJetDeta;
     if(DrawLevel1)FillHist( plot_dir+ region+ "/VBF/MaxDEta_Jets_zeppenfeld", zeppenfeld  , w, 200, 0., 2., "zeppenfeld");
@@ -582,7 +588,7 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
 
   if(jets.size()>1){
     Particle JJLead = jets[0] + jets[1];
-    if(DrawLevel1)FillHist( plot_dir+ region+ "/VBF/Lead_MJJ",JJLead.M()   , w, 200, 0., 2000., "Lead MJJ");
+    if(DrawLevel1)FillHist( plot_dir+ region+ "/VBF/Lead_MJJ",JJLead.M()   , w, 300, 0., 3000., "Lead MJJ");
     double maxDiJetDeta=fabs(jets[0].Eta() - jets[1].Eta());
     double Av_JetEta= 0.5*(jets[0].Eta()+ jets[1].Eta());
     double zeppenfeld = TMath::Max((*leps[0]).Eta()  - Av_JetEta , (*leps[1]).Eta()  - Av_JetEta ) /maxDiJetDeta;

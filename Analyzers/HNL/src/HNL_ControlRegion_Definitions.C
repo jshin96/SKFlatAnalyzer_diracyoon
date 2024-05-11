@@ -29,10 +29,14 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
   if(run_Debug) cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << endl;  
   int nlog(0);
   
-  if(RunCF && electrons_veto.size() !=2) return;
 
   for(unsigned int ic = 0; ic < channels.size(); ic++){
 
+    if(RunCF){
+      if(channels[ic] == MuMu) continue;
+      if(electrons_veto.size() !=2 && channels[ic] == EE) continue;
+      if(electrons_veto.size() !=1 && muons_veto.size() !=1 && channels[ic] == EMu) return;
+    }
    
     if(run_Debug) cout << "HNL_RegionDefinitions::RunAllControlRegions [" << GetChannelString(channels[ic])<<" ]" << endl;
     
@@ -83,6 +87,9 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     paramQuadlep.Channel = GetChannelString(fourlep_channel);
     paramQuadlep.Name    = param.DefName + "/"+GetChannelString(fourlep_channel) ;
     
+    paramTrilep.NameInclusive_Channel = param.Name  + "/"+param.InclusiveChannelName();
+    paramQuadlep.NameInclusive_Channel = param.Name  + "/"+param.InclusiveChannelName();
+
     double weight_channel = weight_ll;
    
     TString label    = param.Name;
@@ -1124,7 +1131,7 @@ bool HNL_RegionDefinitions::FillWWCRNP3Plots(HNL_LeptonCore::Channel channel, st
   if (NB_JetColl>0) return false;
   FillCutflow(Reg, w, "Step6",param);
 
-  if ((j1+j2).M() < 150. || (j1+j2).M() > 500.) return false;
+  if ((j1+j2).M() < 150. || (j1+j2).M() > 750.) return false;
   FillCutflow(Reg, w, "Step7",param);
 
   double DiJetDeta = fabs(j1.Eta() - j2.Eta());
@@ -1353,7 +1360,7 @@ bool HNL_RegionDefinitions::FillHighMassBJetCRPlots(HNL_LeptonCore::Channel chan
   //  if (channel==EE  && (fabs(ll.M()-M_Z) > M_ZWINDOW_VETO)) return false;
   FillCutflow(Reg, w, "Step2",param);
 
-  if(ll.M() < M_CUT_LL) return false;
+  if(ll.M() < M_CUT_NonSR3_LL) return false;
   FillCutflow(Reg, w, "Step3",param);
 
   int NB_JetColl = B_JetColl.size();
@@ -1382,7 +1389,7 @@ bool HNL_RegionDefinitions::FillHighMassNPCRPlots(HNL_LeptonCore::Channel channe
   FillCutflow(Reg, w, "Step0",param);
 
   Particle ll =  (*leps[0]) + (*leps[1]);
-  if(ll.M() < M_CUT_LL) return false;
+  if(ll.M() < M_CUT_NonSR3_LL) return false;
   FillCutflow(Reg, w, "Step1",param);
 
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
@@ -1391,15 +1398,22 @@ bool HNL_RegionDefinitions::FillHighMassNPCRPlots(HNL_LeptonCore::Channel channe
   if (leps_veto.size() != 2) return false;
   FillCutflow(Reg, w, "Step3",param);
 
+  if((fabs(ll.M()-M_Z) < 15) && JetColl.size() == 1)   Fill_RegionPlots(param,"HNL_HighMassZPeakNP1J_TwoLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  if((fabs(ll.M()-M_Z) < 15) && JetColl.size() == 2)   Fill_RegionPlots(param,"HNL_HighMassZPeakNP2J_TwoLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+
   if(JetColl.size() > 0) return false;
   FillCutflow(Reg, w, "Step4",param);
 
+  if((fabs(ll.M()-M_Z) < 15))   Fill_RegionPlots(param,"HNL_HighMassZPeakNP_TwoLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  
   if (channel==EE  && (fabs(ll.M()-M_Z) < M_ZWINDOW_VETO)) return false;
+
   FillCutflow(Reg, w, "Step5",param);
 
   if(leps[0]->DeltaPhi(*leps[1]) < 2.5) return false;
   FillCutflow(Reg, w, "Step6",param);
 
+  
   Fill_RegionPlots(param,"HNL_HighMassNP_TwoLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
   if(leps[1]->Pt() > 100)   Fill_RegionPlots(param,"HNL_HighMassNP_HightPt_TwoLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
