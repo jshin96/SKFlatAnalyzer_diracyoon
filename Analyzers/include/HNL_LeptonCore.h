@@ -416,6 +416,10 @@ nvtx,  double w);
   double GetMassBestZ(std::vector<Lepton *> leps,  bool bestZ);
   double GetRecoObjMass(TString type , std::vector<Jet> jets, std::vector<FatJet> fatjets, vector<Lepton*> leps);
 
+
+  double CalulateMaxZeppenfeld(std::vector<Lepton *> leps, double Av_JetEta, double maxDiJetDeta);
+  double CalulateZeppenfeld(Lepton * lep, double Av_JetEta, double maxDiJetDeta);  
+
   pair<int,int> LeptonPairBestZCand(std::vector<Lepton *> leps);
   double LeptonMassBestZ(std::vector<Lepton *> leps, pair<int,int> Zind);
   double LeptonMassNonZ(std::vector<Lepton *> leps, pair<int,int> Zind);

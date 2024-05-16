@@ -16,9 +16,8 @@ void HNL_ControlRegion_Plotter::executeEvent(){
 
   ///// LIST IDs to run
   vector<TString> LepIDs = {"HNL_ULID"};//,"TopHN", "DefaultPOGTight"};
-  if(strcmp(std::getenv("USER"),"jalmond")==0) LepIDs = {"HNL_ULID","TopHN","HNTightV2"};;
+  if(strcmp(std::getenv("USER"),"jalmond")==0) LepIDs = {"HNL_ULID","HNTightV2" ,"TopHN"};//, "POGTight"};
   if(RunFakeTF) LepIDs = {"HNL_ULID"};
-  
   
   //// List Channels to run
   vector<HNL_LeptonCore::Channel> ChannelsToRun = {MuMu,EE,EMu };
@@ -97,7 +96,6 @@ void HNL_ControlRegion_Plotter::RunControlRegions(AnalyzerParameter param, vecto
   EvalJetWeight(AK4_JetColl, AK8_JetColl, weight, param);
 
 
-
   if(CRs.size() == 0) return;
   
   if(_jentry < 2000 ){
@@ -110,6 +108,8 @@ void HNL_ControlRegion_Plotter::RunControlRegions(AnalyzerParameter param, vecto
       for(auto ilep : ElectronTightColl)cout << "Electron isT=" << ilep.PassID(param.Electron_Tight_ID) << endl;
     }
   }
+
+
   vector<int> RunEl ;
   if(RunCF) RunEl =  {0,1} ;
   else RunEl = {-1};

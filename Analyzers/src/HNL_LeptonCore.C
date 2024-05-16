@@ -626,6 +626,8 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     if(channel_st.Contains("MuMu")) param.k.Muon_Trigger_SF = "DiMuIso_HNL_ULID";
     if(channel_st.Contains("EMu"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
   
+    param.AK8JetColl       = "HNL";
+
     return param;
   }
   else if (s_setup_version=="HighPt"){
