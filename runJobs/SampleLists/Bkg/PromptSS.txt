@@ -22,4 +22,3 @@ VHToNonbb
 ttHToNonbb
 ttWJets
 ttZJets
-tHq
