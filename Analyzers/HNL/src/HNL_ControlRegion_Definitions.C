@@ -325,11 +325,8 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     }
     
     if(RunCR("LLL_VR",CRs)){
-      
-      
+     
       FillCutflow(CutFlow_Region, weight_channel, "VV_VR",param);
-
-      
 
       // LLL / LLLL 
       if(ConversionSplitting(LepsT,RunConv,4)){
@@ -338,28 +335,31 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 	if(FillZZ2CRPlots(fourlep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramQuadlep, weight_channel)) passed.push_back("ZZOffshell_CR"); 
 	//// SR2 ZZ AN[1] Table 11 
 	if(FillZZVBFCRPlots(fourlep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, paramQuadlep, weight_channel)) passed.push_back("ZZVBF_CR");
-
       }
       
-      if(HasFlag("OLDConv")){
-	if(ConversionSplitting(LepsT,RunConv,3,false)){
-	  if(FillZGCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("ZG_CR");
-	}
-      }
-
       if(ConversionSplitting(LepsT,RunConv,3)){
-	
 	FillCutflow(CutFlow_Region, weight_channel, "VG_VR",param);
-
+	
 	if(FillWGCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("WG_CR");
 	if(FillZGCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("ZG_CR");
-	if(FillWZCRPlots (trilep_channel,  LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel))  passed.push_back("WZ_CR");
 	
+	////// WZ CR [SR1+3]
+	
+	if(AK8_JetColl.size() > 0) {
+	  if(FillWZCRPlots (trilep_channel,  LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel))  passed.push_back("WZ_CR");
+	}
+	else if(!PassVBF(VBF_JetColl,LepsT,750)){
+	  if(FillWZCRPlots (trilep_channel,  LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel))  passed.push_back("WZ_CR");
+	}
+	
+	////// WZ CR2
+
 	//// AN[2] Table 13 
 	if(FillWZVBFCRPlots      (trilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("WZVBF_CR");
 	/// AN[3] Table 15
 	if(FillWZVBF2CRPlots      (trilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("WZVBF2_CR");
 
+	///// Top CR
 	///// AN [1] :   FillWZBCRPlots is Table11 WZ SR anti-bjet AM2019_089_v7 (Jet cut 50 -> 30 ; m(lll) > 100 ->105)
 	if(FillWZBCRPlots      (trilep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("WZB_CR");
 
@@ -1672,6 +1672,7 @@ bool HNL_RegionDefinitions::FillWZVBFCRPlots(HNL_LeptonCore::Channel channel, st
     else Binvalue= 5.5;
   }
   FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_WZ_SR2/Binned",  Binvalue  ,  w, 6,0,6 ,"CR Binned");
+  FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_WZ/Binned",  Binvalue+3  ,  w, 12,0,12 ,"CR Binned");
   
   Fill_RegionPlots(param,"HNL_WZVBF_ThreeLepton_CR" ,  jets_eta5,  AK8_JetColl,  leps,  METv, nPV, w);
   OutCutFlow("HNL_WZVBF_ThreeLepton_CR",w);
@@ -1870,11 +1871,6 @@ bool HNL_RegionDefinitions::FillZZCRPlots(HNL_LeptonCore::Channel channel, std::
   if(!z_cr_pass)  return false;
   FillCutflow(Reg, w, "Step5",param);
 
-  int nPtbins=6;
-  double Pt1bins[nPtbins+1] = { 10., 50., 100.,150,200.,400.,1000};
-  double PTLep1  = (leps[0]->Pt() > 500.) ? 199. : leps[0]->Pt();
-
-  FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_ZZ/Lep1_Pt",  PTLep1  ,  w, nPtbins, Pt1bins,"l_{1} p_{T} GeV");
 
   double Binvalue=0;
   if((JetColl.size()<2) && (leps[1]->Pt()  < 50)) Binvalue=0.5;
@@ -1887,8 +1883,9 @@ bool HNL_RegionDefinitions::FillZZCRPlots(HNL_LeptonCore::Channel channel, std::
     else     if(llJJ.M() < 400) Binvalue= 4.5;
     else Binvalue= 5.5;
   }
-  FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_ZZ/Binned",  Binvalue  ,  w, 6,0,6 ,"CR Binned");
-
+  FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_ZZ/Binned",  Binvalue+3  ,  w, 9,0,9 ,"CR Binned");
+  FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_ZZ_SR3/Binned",  Binvalue  ,  w, 6,0,6 ,"CR Binned");
+  
   Fill_RegionPlots(param,"HNL_ZZ_FourLepton_CR" ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
   if(leps[2]->Pt() > 75)   Fill_RegionPlots(param,"HNL_ZZ_HighPt_FourLepton_CR" ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
@@ -1941,9 +1938,24 @@ bool HNL_RegionDefinitions::FillZZ2CRPlots(HNL_LeptonCore::Channel channel, std:
   if(Z2Cand.M() < M_CUT_LL) return false;
   FillCutflow(Reg, w, "Step8",param);
 
-  if(AK8_JetColl.size() > 0 && JetColl.size() < 5)   Fill_RegionPlots(param,"HNL_ZZ_SR1_FourLepton_CR" ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  if(AK8_JetColl.size() > 0)  {
+    Fill_RegionPlots(param,"HNL_ZZ_SR1_FourLepton_CR" ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+    double Binvalue=0;
+    
+    Particle llJ =  *leps[0] + *leps[1]+AK8_JetColl[0];
+    /// For first one these are arbitary                                                                                                                                                                            
+    if(llJ.M() < 200) Binvalue= 0.5;
+    else     if(llJ.M() < 750) Binvalue= 1.5;
+    else Binvalue= 2.5;
 
-  Fill_RegionPlots(param,"HNL_ZZLoose_FourLepton_CR" ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+    FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_ZZ_SR1/Binned",  Binvalue  ,  w, 3,0,3 ,"CR Binned");
+    FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_ZZ/Binned",  Binvalue  ,  w, 9,0,9 ,"CR Binned");
+
+
+
+  }
+  else  Fill_RegionPlots(param,"HNL_ZZLoose_FourLepton_CR" ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+
   OutCutFlow("HNL_ZZLoose_FourLepton_CR",w);
 
   return true;
@@ -2081,26 +2093,32 @@ bool HNL_RegionDefinitions::FillZGCRPlots(HNL_LeptonCore::Channel channel, std::
 
   OutCutFlow("HNL_ZG_ThreeLepton_CR",w);
 
-  int nPtbins=8;
-  double Pt1bins[nPtbins+1] = { 10., 20., 40.,60., 100.,150,200.,400.,1000};
-  double PTLep1  = (leps[0]->Pt() > 500.) ? 199. : leps[0]->Pt();
-
-  FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_ZG/Lep1_Pt",  PTLep1  ,  w, nPtbins, Pt1bins,"l_{1} p_{T} GeV");
-
-  double Binvalue=0;
-  if((JetColl.size()<2) && (leps[1]->Pt()  < 50)) Binvalue=0.5;
-  else   if((JetColl.size()<2) && (leps[1]->Pt()  < 150)) Binvalue=1.5;
-  else   if((JetColl.size()<2)) Binvalue=2.5;
-  else   {
-    Particle llJJ =  *leps[0] + *leps[1]+JetColl[0]+JetColl[1];
-    /// For first one these are arbitary                                                                                                                                                                                                                                                                                                                    
-    if(llJJ.M() < 200) Binvalue= 3.5; 
-    else     if(llJJ.M() < 400) Binvalue= 4.5;
-    else Binvalue= 5.5;
+  if(AK8_JetColl.size() > 0 ){
+    double Binvalue=0;
+    Particle llJ =  *leps[0] + *leps[1]+AK8_JetColl[0];
+    /// For first one these are arbitary                                                                                                                                                                                                                                                                                                                                                                                            
+    if(llJ.M() < 200) Binvalue= 0.5;
+    else     if(llJ.M() < 750) Binvalue= 1.5;
+    else Binvalue= 2.5;
+    FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_ZG_SR1/Binned",  Binvalue  ,  w, 6,0,6 ,"CR Binned");
+    FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_ZG/Binned",  Binvalue  ,  w, 9,0,9 ,"CR Binned");
   }
-  FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_ZG/Binned",  Binvalue  ,  w, 6,0,6 ,"CR Binned");
-
-
+  else {
+    double Binvalue=0;
+    if((JetColl.size()<2) && (leps[1]->Pt()  < 50)) Binvalue=0.5;
+    else   if((JetColl.size()<2) && (leps[1]->Pt()  < 150)) Binvalue=1.5;
+    else   if((JetColl.size()<2)) Binvalue=2.5;
+    else   {
+      Particle llJJ =  *leps[0] + *leps[1]+JetColl[0]+JetColl[1];
+      /// For first one these are arbitary                                                                                                                                                                                                                                                                                                                    
+      if(llJJ.M() < 200) Binvalue= 3.5; 
+      else     if(llJJ.M() < 400) Binvalue= 4.5;
+      else Binvalue= 5.5;
+    }
+    FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_ZG_SR3/Binned",  Binvalue  ,  w, 6,0,6 ,"CR Binned");
+    FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_ZG/Binned",  Binvalue+3  ,  w, 9,0,9 ,"CR Binned");
+  }
+  
 
   return true;
 
@@ -2240,21 +2258,24 @@ bool HNL_RegionDefinitions::FillWZCRPlots(HNL_LeptonCore::Channel channel, std::
       else     if(llJJ.M() < 400) Binvalue= 4.5;
       else Binvalue= 5.5;
     }
+    FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_WZ/Binned",  Binvalue  ,  w, 12,0,12 ,"CR Binned");
     FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_WZ_SR3/Binned",  Binvalue  ,  w, 6,0,6 ,"CR Binned");
   }
   else if(AK8_JetColl.size() > 0 && JetColl.size() < 5 ){
     double Binvalue=0;
     Particle llJJ =  *leps[0] + *leps[1]+ AK8_JetColl[0];
     if(llJJ.M() < 200) Binvalue= 0.5;
-    else     if(llJJ.M() < 400) Binvalue= 1.5;
+    else     if(llJJ.M() < 750) Binvalue= 1.5;
     else Binvalue= 2.5;
-    FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_WZ_SR1/Binned",  Binvalue  ,  w, 6,0,6 ,"CR Binned");
+
+    FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_WZ/Binned",  Binvalue+9  ,  w, 12,0,12 ,"CR Binned");
+    FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_WZ_SR1/Binned",  Binvalue  ,  w, 3,0,3 ,"CR Binned");
   }
 
   //// SR1
   if(AK8_JetColl.size() > 0 && JetColl.size() < 5)   Fill_RegionPlots(param,"HNL_WZ_SR1_ThreeLepton_CR" ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
   //// SR3
-  if(AK8_JetColl.size() == 0)  Fill_RegionPlots(param,"HNL_WZ_ThreeLepton_CR" ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
+  if(AK8_JetColl.size() == 0)  Fill_RegionPlots(param,"HNL_WZ_SR3_ThreeLepton_CR" ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
   //// High Pt check
   if(leps[2]->Pt() > 75)   Fill_RegionPlots(param,"HNL_WZ_HighPt_ThreeLepton_CR" ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
 
