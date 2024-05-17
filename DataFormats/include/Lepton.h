@@ -309,6 +309,20 @@ public:
   inline double LogdXYSig() const {return std::log(fabs(j_dXY/j_dXYerr));}
   inline double LogdZSig() const {return std::log(fabs(j_dZ/j_dZerr));}
 
+  TString LepDoubleToString(double d){
+
+    std::string str = std::to_string (d);
+    str.erase ( str.find_last_not_of('0') + 1, std::string::npos );
+    str.erase ( str.find_last_not_of('.') + 1, std::string::npos );
+
+    TString ts_str = TString(str);
+    //    ts_str = ts_str.ReplaceAll(".","p");
+    //ts_str = ts_str.ReplaceAll("-","neg");
+
+    return ts_str;
+
+  }
+
 
 
   void SetLepMVA(double mva);
@@ -743,6 +757,10 @@ public:
     double MJProxy = (MSlope * PMDiff) + this->Pt() ;
     if((MJProxy/this->Pt()) > UpperValue) return UpperValue*this->Pt();
     return MJProxy;
+  }
+
+  inline TString PrintInfo(){
+    return GetFlavour() +" Pt " + LepDoubleToString(this->Pt()) + " Lep Eta " + LepDoubleToString(this->Eta()) + " Lep Phi = " + LepDoubleToString(this->Phi());
   }
 
   virtual void Print();

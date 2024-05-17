@@ -23,7 +23,7 @@ fi
 if [[ $1 == "DY" ]]; then
     for i in "${era_list[@]}"
     do
-        SKFlat.py -a $analyzer  -i DYJetsToEE_MiNNLO     -n ${njobs_data}  --nmax ${nmax}   -e ${i}   --skim SkimTree_Dilepton &
+        SKFlat.py -a $analyzer  -i DYJetsToTauTau_MiNNLO     -n ${njobs}  --nmax ${nmax}   -e ${i}   --skim SkimTree_Dilepton &
     done
 fi
 
