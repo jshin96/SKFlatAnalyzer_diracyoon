@@ -93,7 +93,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     double weight_channel = weight_ll;
    
     TString label    = param.Name;
-   
+    
     if(! (CheckLeptonFlavourForChannel(dilep_channel, LepsT) 
     	  || CheckLeptonFlavourForChannel(trilep_channel, LepsT) 
     	  || CheckLeptonFlavourForChannel(fourlep_channel, LepsT))) {

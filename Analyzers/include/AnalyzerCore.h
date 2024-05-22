@@ -243,6 +243,10 @@ public:
   bool IsCF(Muon mu, std::vector<Gen> gens);
   bool HasPromptConv(Electron el);
 
+  bool HasMEPhoton(Lepton lep);
+  bool GenIsPrompt(Gen gen);
+  Gen GenGetMother(Gen gen);
+
   void GetAFBGenParticles(const vector<Gen>& gens,Gen& parton0,Gen& parton1,Gen& l0,Gen& l1,int mode);
   void GetAFBLHEParticles(const vector<LHE>& lhes,LHE& p0,LHE& p1,LHE& l0,LHE& l1,LHE& j0);
 
@@ -251,6 +255,7 @@ public:
 
   void PrintGen(const std::vector<Gen>& gens);
   void PrintMatchedGen(std::vector<Gen>& gens,const Lepton& Lep);
+  int  HotFixLeptonType(Lepton lep);
 
   bool GenTypeMatched(TString gen_string);
   bool IsFromHadron(const Gen& me, const std::vector<Gen>& gens);
