@@ -590,12 +590,21 @@ bool AnalyzerCore::IsCF(Muon mu, std::vector<Gen> truthColl){
   return false;
 }
 
-bool AnalyzerCore::ConversionSplitting(std::vector<Lepton *> leps, bool RunConvMode,  int nlep, bool SplitType){
+bool AnalyzerCore::ConversionSplitting(std::vector<Lepton *> leps, bool RunConvMode,  int nlep, AnalyzerParameter param){
 
   if(!RunConvMode) return true;
   if(IsData) return true;
 
-  if(!( MCSample.Contains("ZGTo") || MCSample.Contains("DYJet"))) return true;
+  bool IsSampleConvSplit = false;
+  vector<TString> ConvSamples  = {"ZGTo","DYJet","WGToLNuG","WJet"};
+  for(auto i : ConvSamples) if (MCSample.Contains(i)) IsSampleConvSplit=true;
+
+  if(!IsSampleConvSplit) return true;
+
+  bool SplitExtConv=true;
+  if(param.GetChannelFlavour() == "Muon") SplitExtConv=false;
+  
+  if(HasFlag("GENTConv")) SplitExtConv=true;
 
   int nlep_pt15(0);
   
@@ -609,18 +618,34 @@ bool AnalyzerCore::ConversionSplitting(std::vector<Lepton *> leps, bool RunConvM
   }
 
   if(MCSample.Contains("ZGTo")){
-    
     if(nlep_pt15 !=nlep ) return false;
-    if(hasExtConv) return true;
-    return false;
+
+    if(SplitExtConv){
+      if(hasExtConv) return true;
+      else return false;
+    }
+    else return true;
   }
   else if(MCSample.Contains("DYJets")) {
     if(nlep_pt15 !=nlep) return true;
-    
-    if(!hasExtConv) return true;
-    return false;
-
+    if(SplitExtConv){
+      if(!hasExtConv) return true;
+      else return false;
+    }
+    else return false;
+       
   }
+
+  if(MCSample.Contains("WGTo")){
+    if(nlep_pt15 !=nlep ) return false;
+    else return true;
+  }
+  else if(MCSample.Contains("WJets")) {
+    if(nlep_pt15 !=nlep) return true;
+    else return false;
+  }
+
+
 
   return true;
 

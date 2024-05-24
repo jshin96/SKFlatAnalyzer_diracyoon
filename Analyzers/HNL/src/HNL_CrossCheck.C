@@ -131,10 +131,8 @@ void HNL_CrossCheck::RunControlRegions(AnalyzerParameter param, vector<TString> 
     Particle ll =  (*LepsT[0]) + (*LepsT[1]);
     if(LepsT.size() ==2 && ll.M() < M_CUT_NonSR3_LL) return ;
     
-    //if(! ( (LepsT[0]->IsPrompt() && LepsT[1]->IsPrompt() )  || ( LepsT[0]->LeptonIsCF() || LepsT[1]->LeptonIsCF()  ))) return;
-    
-    if(! ( (LepsT[0]->IsPrompt() && LepsT[1]->IsPrompt()))) return;
-    if( ( (LepsT[0]->LeptonIsCF() || LepsT[1]->LeptonIsCF()))) return;
+    //    if(! ( (LepsT[0]->IsPrompt() && LepsT[1]->IsPrompt() )  || ( LepsT[0]->LeptonIsCF() || LepsT[1]->LeptonIsCF()  ))) return;
+    if( ! ( HasMEPhoton(*LepsT[0]) && LepsT[0]->LeptonGenType() > 0) || ( HasMEPhoton(*LepsT[1]) && LepsT[1]->LeptonGenType() > 0) || ( !HasMEPhoton(*LepsT[0]) && LepsT[0]->LeptonGenType() < 0) || ( !HasMEPhoton(*LepsT[1]) && LepsT[1]->LeptonGenType() < 0) ) return;
     
     if(CheckLeptonFlavourForChannel(dilep_channel,LepsT ) && SameCharge(LepsT)){
       cout << " " << endl;
@@ -145,13 +143,14 @@ void HNL_CrossCheck::RunControlRegions(AnalyzerParameter param, vector<TString> 
       cout << " " << endl;
       cout << " " << endl;
       cout << " " << endl;
-      cout << "SS EMu " << ll.M() << endl;
+      cout << "SS LL " << ll.M() << endl;
       int Idx_Closest1    = GenMatchedIdx(*LepsT[0],All_Gens);
       int Idx_Closest2    = GenMatchedIdx(*LepsT[1],All_Gens);
       if(Idx_Closest1 > 0 && Idx_Closest2 > 0){
 	cout << "Lep 1 matched lep isPrompt = " << GenIsPrompt(All_Gens[Idx_Closest1]) << " Matched PID = " << All_Gens[Idx_Closest1].PID()  << " Type= " << LepsT[0]->LeptonGenType() << endl;
 	cout << "Lep 2 matched lep isPrompt = " << GenIsPrompt(All_Gens[Idx_Closest2]) << " Matched PID = " << All_Gens[Idx_Closest1].PID()  << " Type= " << LepsT[1]->LeptonGenType() << endl;
-
+	cout << "Lep 1 HasMEPhoton = " << HasMEPhoton(*LepsT[0]) << endl;
+	cout << "Lep 2 HasMEPhoton = " << HasMEPhoton(*LepsT[1]) << endl;
         PrintGen(All_Gens);
         for(auto i : LepsT)   PrintMatchedGen( All_Gens,*i);
 	for(auto i : LepsT)   cout << i->GetFlavour() << " "  << i->PrintInfo() <<  endl;
@@ -172,7 +171,8 @@ void HNL_CrossCheck::RunControlRegions(AnalyzerParameter param, vector<TString> 
 	cout << "SS EMu No Match" << ll.M() << endl;
 	cout << "Lep 1 matched lep " << LepsT[0]->LeptonGenType() << endl;
 	cout << "Lep 2 matched lep " << LepsT[1]->LeptonGenType() << endl;
-
+	cout << "Lep 1 HasMEPhoton = " << HasMEPhoton(*LepsT[0]) << endl;
+	cout << "Lep 2 HasMEPhoton = " << HasMEPhoton(*LepsT[1]) << endl;
 	cout << "Idx_Closest1 = " << Idx_Closest1 << " Idx_Closest2 = " << Idx_Closest2 << endl;
 
 	PrintGen(All_Gens);

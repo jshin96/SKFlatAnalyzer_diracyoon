@@ -237,7 +237,7 @@ public:
 
 
   // =================   FR functions   AnalyzerCore_GEN.C  ======================                                                                                                                                                                                                         
-  bool ConversionSplitting(std::vector<Lepton *> leps, bool RunConvMode, int nlep, bool SplitByType=true);
+  bool ConversionSplitting(std::vector<Lepton *> leps, bool RunConvMode, int nlep,AnalyzerParameter param);
   bool ConversionVeto(std::vector<Lepton *> leps,const std::vector<Gen>& gens);
   bool IsCF(Electron el, std::vector<Gen> gens, bool checcloseel=true);
   bool IsCF(Muon mu, std::vector<Gen> gens);
