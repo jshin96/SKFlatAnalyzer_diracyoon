@@ -2053,8 +2053,6 @@ bool HNL_RegionDefinitions::FillZGCRPlots(HNL_LeptonCore::Channel channel, std::
   if (leps_veto.size() != 3) return false;
   FillCutflow(Reg, w, "Step2",param);
   
-  if(leps[2]->Pt() < 15.)cout << "leps 3 EEE pt = " << leps[2]->Pt() <<  "  " << event << endl;
-
   if(!HasOSSFPair(leps)) return false;
   FillCutflow(ZGCR, w, "Step3",param);
 

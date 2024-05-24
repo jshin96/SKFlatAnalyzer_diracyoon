@@ -18,8 +18,6 @@ void HNL_ControlRegion_Plotter::executeEvent(){
   vector<TString> LepIDs = {"HNL_ULID"};//,"TopHN", "DefaultPOGTight"};
   if(strcmp(std::getenv("USER"),"jalmond")==0) LepIDs = {"HNL_ULID","HNTightV2" ,"TopHN"};//, "POGTight"};
   if(RunFakeTF) LepIDs = {"HNL_ULID"};
-
-  LepIDs = {"HNL_ULID"};
   
   //// List Channels to run
   vector<HNL_LeptonCore::Channel> ChannelsToRun = {MuMu,EE,EMu };
@@ -48,9 +46,6 @@ void HNL_ControlRegion_Plotter::executeEvent(){
 
 void HNL_ControlRegion_Plotter::RunControlRegions(AnalyzerParameter param, vector<TString> CRs){
 
-  if(event != 519272285) return;
-
-  //  if(_jentry==0) param.PrintParameters();
   run_Debug = (_jentry%nLog==0);
 
   if(run_Debug) cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
