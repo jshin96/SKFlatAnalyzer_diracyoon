@@ -18,6 +18,8 @@ void HNL_ControlRegion_Plotter::executeEvent(){
   vector<TString> LepIDs = {"HNL_ULID"};//,"TopHN", "DefaultPOGTight"};
   if(strcmp(std::getenv("USER"),"jalmond")==0) LepIDs = {"HNL_ULID","HNTightV2" ,"TopHN"};//, "POGTight"};
   if(RunFakeTF) LepIDs = {"HNL_ULID"};
+
+  LepIDs = {"HNL_ULID"};
   
   //// List Channels to run
   vector<HNL_LeptonCore::Channel> ChannelsToRun = {MuMu,EE,EMu };
@@ -46,6 +48,7 @@ void HNL_ControlRegion_Plotter::executeEvent(){
 
 void HNL_ControlRegion_Plotter::RunControlRegions(AnalyzerParameter param, vector<TString> CRs){
 
+  if(event != 519272285) return;
 
   //  if(_jentry==0) param.PrintParameters();
   run_Debug = (_jentry%nLog==0);
@@ -73,11 +76,17 @@ void HNL_ControlRegion_Plotter::RunControlRegions(AnalyzerParameter param, vecto
     Electron_ID = "HNL_ULID_Def_FO_"+GetYearString();
   }
 
-  double Min_Muon_Pt     = RunFake ? 5  : 10.;
-  double Min_Electron_Pt = RunFake ? 10 : 15;
+  double Min_FakeMuon_Pt     =  5;
+  double Min_FakeElectron_Pt =  10 ;
+  std::vector<Muon>       MuonTightColl_Init     = SelectMuons    ( param,Muon_ID,     Min_FakeMuon_Pt,     2.4,weight); 
+  std::vector<Electron>   ElectronTightColl_Init = SelectElectrons( param,Electron_ID, Min_FakeElectron_Pt, 2.5,weight);
 
-  std::vector<Muon>       MuonTightColl     = SelectMuons    ( param,Muon_ID,     Min_Muon_Pt,     2.4,weight); 
-  std::vector<Electron>   ElectronTightColl = SelectElectrons( param,Electron_ID, Min_Electron_Pt, 2.5,weight);
+  //// Apply Full Pt cut after pt corrected in fakes  
+  double Min_Muon_Pt     =  10.;
+  double Min_Electron_Pt =  15;
+  std::vector<Muon>       MuonTightColl  = SelectMuons(MuonTightColl_Init,Muon_ID,     Min_Muon_Pt,     2.4);
+  std::vector<Electron>   ElectronTightColl = SelectElectrons(ElectronTightColl_Init,Electron_ID, Min_Electron_Pt, 2.5);
+
 
   //// Change this so now Truth matching does not remove Leptons but in Definition code the GenFIlter removes events 
   //  std::vector<Muon>       MuonTightColl      =  GetLepCollByRunType    (MuonTightCollInit,    param);  
@@ -99,7 +108,7 @@ void HNL_ControlRegion_Plotter::RunControlRegions(AnalyzerParameter param, vecto
   if(CRs.size() == 0) return;
   
 
-  if(_jentry < 10000 ){
+  if(_jentry < 500 ){
     if(RunFake){
       cout << "Running Fakes: Initial check for process name " + param.Name << endl;
       cout << "Muon ID = " << param.Muon_Tight_ID  << " run ID  = " << Muon_ID << endl;
