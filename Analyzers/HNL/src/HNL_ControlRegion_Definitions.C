@@ -93,7 +93,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     double weight_channel = weight_ll;
    
     TString label    = param.Name;
-   
+    
     if(! (CheckLeptonFlavourForChannel(dilep_channel, LepsT) 
     	  || CheckLeptonFlavourForChannel(trilep_channel, LepsT) 
     	  || CheckLeptonFlavourForChannel(fourlep_channel, LepsT))) {
@@ -312,7 +312,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     if(RunCR("OS_VR",CRs)){
       //// OS L+L-
       
-      if(!ConversionSplitting(LepsT,RunConv,2)) return;
+      if(!ConversionSplitting(LepsT,RunConv,2,param)) return;
 
       FillCutflow(CutFlow_Region, weight_OS, "OS_VR",param);
     
@@ -329,7 +329,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       FillCutflow(CutFlow_Region, weight_channel, "VV_VR",param);
 
       // LLL / LLLL 
-      if(ConversionSplitting(LepsT,RunConv,4)){
+      if(ConversionSplitting(LepsT,RunConv,4,param)){
 	//////  SR1+3 ZZ
 	if(FillZZCRPlots (fourlep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramQuadlep, weight_channel)) passed.push_back("ZZ_CR");
 	if(FillZZ2CRPlots(fourlep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramQuadlep, weight_channel)) passed.push_back("ZZOffshell_CR"); 
@@ -337,7 +337,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 	if(FillZZVBFCRPlots(fourlep_channel, LepsT, LepsV, VBF_JetColl, AK8_JetColl, B_JetColl, ev, METv, paramQuadlep, weight_channel)) passed.push_back("ZZVBF_CR");
       }
       
-      if(ConversionSplitting(LepsT,RunConv,3)){
+      if(ConversionSplitting(LepsT,RunConv,3,param)){
 	FillCutflow(CutFlow_Region, weight_channel, "VG_VR",param);
 	
 	if(FillWGCRPlots( trilep_channel, LepsT, LepsV, JetColl, AK8_JetColl, B_JetColl, ev, METv, paramTrilep, weight_channel)) passed.push_back("WG_CR");
@@ -377,7 +377,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
       if(RunCR("SS_CR",CRs))  FillCutflow(CutFlow_Region, weight_channel, "SS_CR",param);
       if(RunCR("VBF_CR",CRs)) FillCutflow(CutFlow_Region, weight_channel, "VBF_CR",param);
 
-      if(!ConversionSplitting(LepsT,RunConv,2))  return;
+      if(!ConversionSplitting(LepsT,RunConv,2,param))  return;
 
       if(RunCF&& IsData){    
 	if(LepsT.size() == 2){
@@ -1828,7 +1828,7 @@ bool HNL_RegionDefinitions::FillZZCRPlots(HNL_LeptonCore::Channel channel, std::
   if (leps_veto.size() != 4) return false;
   FillCutflow(Reg, w, "Step2",param);
 
-  if(!ConversionSplitting(leps,RunConv,4)) return false;
+  if(!ConversionSplitting(leps,RunConv,4,param)) return false;
 
 
   int sumQ = leps[0]->Charge() + leps[1]->Charge() +leps[2]->Charge() +leps[3]->Charge() ;
@@ -1904,7 +1904,7 @@ bool HNL_RegionDefinitions::FillZZ2CRPlots(HNL_LeptonCore::Channel channel, std:
   FillCutflow(Reg, w, "Step1",param);
 
 
-  if(!ConversionSplitting(leps,RunConv,4)) return false;
+  if(!ConversionSplitting(leps,RunConv,4,param)) return false;
 
   if(!CheckLeptonFlavourForChannel(channel, leps)) return false;
   FillCutflow(Reg, w, "Step2",param);
@@ -1973,7 +1973,7 @@ bool HNL_RegionDefinitions::FillZZVBFCRPlots(HNL_LeptonCore::Channel channel, st
   if (leps_veto.size() != 4) return false;
   FillCutflow(Reg, w, "Step2",param);
 
-  if(!ConversionSplitting(leps,RunConv,4)) return false;
+  if(!ConversionSplitting(leps,RunConv,4,param)) return false;
 
   int sumQ = leps[0]->Charge() + leps[1]->Charge() +leps[2]->Charge() +leps[3]->Charge() ;
   if(sumQ != 0) return false;
@@ -2083,7 +2083,7 @@ bool HNL_RegionDefinitions::FillZGCRPlots(HNL_LeptonCore::Channel channel, std::
 
   FillCutflow(ZGCR, w, "Step9",param);
 
-  if(!ConversionSplitting(leps,RunConv,3)) return false;
+  if(!ConversionSplitting(leps,RunConv,3,param)) return false;
   
   FillCutflow(ZGCR, w, "Step10",param);
 
@@ -2176,7 +2176,7 @@ bool HNL_RegionDefinitions::FillWGCRPlots(HNL_LeptonCore::Channel channel, std::
 
   FillCutflow(WGCR, w, "Step8",param);
 
-  if(!ConversionSplitting(leps,RunConv,3)) {
+  if(!ConversionSplitting(leps,RunConv,3,param)) {
     if(DEBUGWG)cout << "Fail Conversion split " << endl;
     return false;
   }
