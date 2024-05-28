@@ -15,20 +15,20 @@ void HNL_ControlRegion_Plotter::executeEvent(){
   else run_Debug=false;
 
   ///// LIST IDs to run
-  vector<TString> LepIDs = {"HNL_ULID"};//,"TopHN", "DefaultPOGTight"};
-  if(strcmp(std::getenv("USER"),"jalmond")==0) LepIDs = {"HNL_ULID","HNTightV2" ,"TopHN"};//, "POGTight"};
+  vector<TString> LepIDs = {"HNL_ULID","HNTightV2"};//,"TopHN", "DefaultPOGTight"};
+  if(strcmp(std::getenv("USER"),"jalmond")==0) LepIDs = {"HNL_ULID","HNTightV2" };//, "POGTight"};
   if(RunFakeTF) LepIDs = {"HNL_ULID"};
-  
+
   //// List Channels to run
   vector<HNL_LeptonCore::Channel> ChannelsToRun = {MuMu,EE,EMu };
   
-  vector<TString> RegionsToPlot = {"SSMultiLep","Dilepton"}; 
   
   ///// Run command 
 
   vector<TString> CRToRun;
   if(HasFlag("Dilepton"))        CRToRun = {"OS_VR","SS_CR","VBF_CR","LLL_VR"};
   else if(HasFlag("SSMultiLep")) CRToRun = {"SS_CR","VBF_CR","LLL_VR"};
+  else if(HasFlag("LLL")) CRToRun = {"LLL_VR"};
   else CRToRun = {"SS_CR"};
 
   for (auto id: LepIDs){
