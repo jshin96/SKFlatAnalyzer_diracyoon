@@ -2123,19 +2123,22 @@ bool HNL_RegionDefinitions::FillZGCRPlots(HNL_LeptonCore::Channel channel, std::
     FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_ZG/Binned",  Binvalue+3  ,  w, 9,0,9 ,"CR Binned");
   }
   
-  if(RunConv){
+  /*
+    if(RunConv){
     if(leps[2]->Pt() < 100){
-      cout <<  "PASSES ZG  " << endl;
-      if(leps.size() == 3){
-	for(auto ilep : leps)cout << ilep->PrintInfo() << endl;
-	for(auto ilep : leps)cout << "HasMEPhoton = " << HasMEPhoton(*ilep) << endl;
-	PrintGen(All_Gens);
-	PrintMatchedGen(All_Gens, *leps[2]);
-      }
+    cout <<  "PASSES ZG  " << endl;
+    if(leps.size() == 3){
+    for(auto ilep : leps)cout << ilep->PrintInfo() << endl;
+    for(auto ilep : leps)cout << "HasMEPhoton = " << HasMEPhoton(*ilep) << endl;
+    PrintGen(All_Gens);
+    PrintMatchedGen(All_Gens, *leps[2]);
     }
-  }
+    }
+    }
+  */
+  
   return true;
-
+  
 }
 
 
