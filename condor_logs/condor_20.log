@@ -1,0 +1,1981 @@
+000 (390874.020.000) 2024-01-18 20:28:10 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (390874.020.000) 2024-01-18 20:28:26 Started transferring input files
+	Transferring to host: <172.30.1.213:9618?addrs=172.30.1.213-9618&alias=node13&noUDP&sock=slot1_61_4363_e0ca_274571>
+...
+040 (390874.020.000) 2024-01-18 20:28:26 Finished transferring input files
+...
+001 (390874.020.000) 2024-01-18 20:28:26 Job executing on host: <172.30.1.213:9618?addrs=172.30.1.213-9618&alias=node13&noUDP&sock=startd_4329_e993>
+...
+006 (390874.020.000) 2024-01-18 20:28:34 Image size of job updated: 139344
+	68  -  MemoryUsage of job (MB)
+	69428  -  ResidentSetSize of job (KB)
+...
+006 (390874.020.000) 2024-01-18 20:30:40 Image size of job updated: 843360
+	68  -  MemoryUsage of job (MB)
+	69428  -  ResidentSetSize of job (KB)
+...
+040 (390874.020.000) 2024-01-18 20:30:40 Started transferring output files
+...
+040 (390874.020.000) 2024-01-18 20:30:41 Finished transferring output files
+...
+005 (390874.020.000) 2024-01-18 20:30:41 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:01:18, Sys 0 00:00:08  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:01:18, Sys 0 00:00:08  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	13956726  -  Run Bytes Sent By Job
+	181578  -  Run Bytes Received By Job
+	13956726  -  Total Bytes Sent By Job
+	181578  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :                 1         1 
+	   Disk (KB)            :    13874      200    261111 
+	   Memory (MB)          :       68     3900      3968 
+
+	Job terminated of its own accord at 2024-01-18T11:30:40Z.
+...
+000 (390875.020.000) 2024-01-18 20:45:32 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (390875.020.000) 2024-01-18 20:45:47 Started transferring input files
+	Transferring to host: <172.30.1.211:9618?addrs=172.30.1.211-9618&alias=node11&noUDP&sock=slot1_28_3735_6531_176924>
+...
+001 (390875.020.000) 2024-01-18 20:45:47 Job executing on host: <172.30.1.211:9618?addrs=172.30.1.211-9618&alias=node11&noUDP&sock=startd_3699_c8e9>
+...
+040 (390875.020.000) 2024-01-18 20:45:47 Finished transferring input files
+...
+006 (390875.020.000) 2024-01-18 20:45:56 Image size of job updated: 139344
+	10  -  MemoryUsage of job (MB)
+	9916  -  ResidentSetSize of job (KB)
+...
+006 (390875.020.000) 2024-01-18 20:50:57 Image size of job updated: 866968
+	208  -  MemoryUsage of job (MB)
+	212280  -  ResidentSetSize of job (KB)
+...
+006 (390875.020.000) 2024-01-18 20:51:36 Image size of job updated: 871912
+	208  -  MemoryUsage of job (MB)
+	212280  -  ResidentSetSize of job (KB)
+...
+040 (390875.020.000) 2024-01-18 20:51:36 Started transferring output files
+...
+040 (390875.020.000) 2024-01-18 20:51:39 Finished transferring output files
+...
+005 (390875.020.000) 2024-01-18 20:51:39 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:04:03, Sys 0 00:00:17  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:04:03, Sys 0 00:00:17  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	104932672  -  Run Bytes Sent By Job
+	182042  -  Run Bytes Received By Job
+	104932672  -  Total Bytes Sent By Job
+	182042  -  Total Bytes Received By Job
+	Partitionable Resources :     Usage  Request Allocated 
+	   Cpus                 :      0.66        1         1 
+	   Disk (KB)            : 102724         200    128928 
+	   Memory (MB)          :    208        3900      3968 
+
+	Job terminated of its own accord at 2024-01-18T11:51:36Z.
+...
+000 (390886.020.000) 2024-01-18 21:10:43 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (390886.020.000) 2024-01-18 21:10:46 Started transferring input files
+	Transferring to host: <172.30.1.211:9618?addrs=172.30.1.211-9618&alias=node11&noUDP&sock=slot1_25_3735_6531_176938>
+...
+001 (390886.020.000) 2024-01-18 21:10:46 Job executing on host: <172.30.1.211:9618?addrs=172.30.1.211-9618&alias=node11&noUDP&sock=startd_3699_c8e9>
+...
+040 (390886.020.000) 2024-01-18 21:10:46 Finished transferring input files
+...
+006 (390886.020.000) 2024-01-18 21:10:54 Image size of job updated: 139344
+	89  -  MemoryUsage of job (MB)
+	90252  -  ResidentSetSize of job (KB)
+...
+006 (390886.020.000) 2024-01-18 21:12:27 Image size of job updated: 846172
+	89  -  MemoryUsage of job (MB)
+	90488  -  ResidentSetSize of job (KB)
+...
+040 (390886.020.000) 2024-01-18 21:12:27 Started transferring output files
+...
+040 (390886.020.000) 2024-01-18 21:12:28 Finished transferring output files
+...
+005 (390886.020.000) 2024-01-18 21:12:28 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:01:08, Sys 0 00:00:07  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:01:08, Sys 0 00:00:07  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	7473247  -  Run Bytes Sent By Job
+	181210  -  Run Bytes Received By Job
+	7473247  -  Total Bytes Sent By Job
+	181210  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :                 1         1 
+	   Disk (KB)            :     7541      200    128928 
+	   Memory (MB)          :       89     3900      3968 
+
+	Job terminated of its own accord at 2024-01-18T12:12:27Z.
+...
+000 (390887.020.000) 2024-01-18 21:19:38 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (390887.020.000) 2024-01-18 21:19:40 Started transferring input files
+	Transferring to host: <172.30.1.211:9618?addrs=172.30.1.211-9618&alias=node11&noUDP&sock=slot1_24_3735_6531_176955>
+...
+040 (390887.020.000) 2024-01-18 21:19:40 Finished transferring input files
+...
+001 (390887.020.000) 2024-01-18 21:19:40 Job executing on host: <172.30.1.211:9618?addrs=172.30.1.211-9618&alias=node11&noUDP&sock=startd_3699_c8e9>
+...
+006 (390887.020.000) 2024-01-18 21:19:49 Image size of job updated: 835112
+	183  -  MemoryUsage of job (MB)
+	186748  -  ResidentSetSize of job (KB)
+...
+006 (390887.020.000) 2024-01-18 21:23:22 Image size of job updated: 867844
+	183  -  MemoryUsage of job (MB)
+	186748  -  ResidentSetSize of job (KB)
+...
+040 (390887.020.000) 2024-01-18 21:23:22 Started transferring output files
+...
+040 (390887.020.000) 2024-01-18 21:23:22 Finished transferring output files
+...
+005 (390887.020.000) 2024-01-18 21:23:22 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:03:14, Sys 0 00:00:14  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:03:14, Sys 0 00:00:14  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	34476968  -  Run Bytes Sent By Job
+	181210  -  Run Bytes Received By Job
+	34476968  -  Total Bytes Sent By Job
+	181210  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.55        1         1 
+	   Disk (KB)            : 33918         200    128928 
+	   Memory (MB)          :   183        3900      3968 
+
+	Job terminated of its own accord at 2024-01-18T12:23:22Z.
+...
+000 (390888.020.000) 2024-01-18 21:30:57 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (390888.020.000) 2024-01-18 21:31:02 Started transferring input files
+	Transferring to host: <172.30.1.211:9618?addrs=172.30.1.211-9618&alias=node11&noUDP&sock=slot1_28_3735_6531_176977>
+...
+040 (390888.020.000) 2024-01-18 21:31:02 Finished transferring input files
+...
+001 (390888.020.000) 2024-01-18 21:31:02 Job executing on host: <172.30.1.211:9618?addrs=172.30.1.211-9618&alias=node11&noUDP&sock=startd_3699_c8e9>
+...
+006 (390888.020.000) 2024-01-18 21:31:10 Image size of job updated: 815940
+	181  -  MemoryUsage of job (MB)
+	185040  -  ResidentSetSize of job (KB)
+...
+006 (390888.020.000) 2024-01-18 21:34:41 Image size of job updated: 867768
+	181  -  MemoryUsage of job (MB)
+	185040  -  ResidentSetSize of job (KB)
+...
+040 (390888.020.000) 2024-01-18 21:34:42 Started transferring output files
+...
+040 (390888.020.000) 2024-01-18 21:34:42 Finished transferring output files
+...
+005 (390888.020.000) 2024-01-18 21:34:42 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:03:14, Sys 0 00:00:14  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:03:14, Sys 0 00:00:14  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	33575832  -  Run Bytes Sent By Job
+	181214  -  Run Bytes Received By Job
+	33575832  -  Total Bytes Sent By Job
+	181214  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :                 1         1 
+	   Disk (KB)            :    33032      200    128928 
+	   Memory (MB)          :      181     3900      3968 
+
+	Job terminated of its own accord at 2024-01-18T12:34:41Z.
+...
+000 (390894.020.000) 2024-01-18 21:35:52 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (390894.020.000) 2024-01-18 21:36:10 Started transferring input files
+	Transferring to host: <172.30.1.211:9618?addrs=172.30.1.211-9618&alias=node11&noUDP&sock=slot1_29_3735_6531_176996>
+...
+001 (390894.020.000) 2024-01-18 21:36:10 Job executing on host: <172.30.1.211:9618?addrs=172.30.1.211-9618&alias=node11&noUDP&sock=startd_3699_c8e9>
+...
+040 (390894.020.000) 2024-01-18 21:36:10 Finished transferring input files
+...
+006 (390894.020.000) 2024-01-18 21:36:19 Image size of job updated: 186732
+	183  -  MemoryUsage of job (MB)
+	186732  -  ResidentSetSize of job (KB)
+...
+006 (390894.020.000) 2024-01-18 21:39:52 Image size of job updated: 869312
+	183  -  MemoryUsage of job (MB)
+	186732  -  ResidentSetSize of job (KB)
+...
+040 (390894.020.000) 2024-01-18 21:39:52 Started transferring output files
+...
+040 (390894.020.000) 2024-01-18 21:39:54 Finished transferring output files
+...
+005 (390894.020.000) 2024-01-18 21:39:54 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:03:15, Sys 0 00:00:14  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:03:15, Sys 0 00:00:14  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	33590204  -  Run Bytes Sent By Job
+	181194  -  Run Bytes Received By Job
+	33590204  -  Total Bytes Sent By Job
+	181194  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :                 1         1 
+	   Disk (KB)            :    33046      200    128928 
+	   Memory (MB)          :      183     3900      3968 
+
+	Job terminated of its own accord at 2024-01-18T12:39:52Z.
+...
+000 (390895.020.000) 2024-01-18 21:48:05 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (390895.020.000) 2024-01-18 21:48:08 Started transferring input files
+	Transferring to host: <172.30.1.204:9618?addrs=172.30.1.204-9618&alias=node4&noUDP&sock=slot1_18_3725_5971_202815>
+...
+001 (390895.020.000) 2024-01-18 21:48:08 Job executing on host: <172.30.1.204:9618?addrs=172.30.1.204-9618&alias=node4&noUDP&sock=startd_3691_4c27>
+...
+040 (390895.020.000) 2024-01-18 21:48:08 Finished transferring input files
+...
+006 (390895.020.000) 2024-01-18 21:48:17 Image size of job updated: 152880
+	74  -  MemoryUsage of job (MB)
+	75260  -  ResidentSetSize of job (KB)
+...
+006 (390895.020.000) 2024-01-18 21:50:05 Image size of job updated: 863732
+	74  -  MemoryUsage of job (MB)
+	75320  -  ResidentSetSize of job (KB)
+...
+004 (390895.020.000) 2024-01-18 21:50:06 Job was evicted.
+	(0) CPU times
+		Usr 0 00:01:18, Sys 0 00:00:05  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+	0  -  Run Bytes Sent By Job
+	182143  -  Run Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.81        1         1 
+	   Disk (KB)            :  6135         200    128928 
+	   Memory (MB)          :    74        3900      3968 
+...
+009 (390895.020.000) 2024-01-18 21:50:06 Job was aborted.
+	via condor_rm (by user shin)
+...
+000 (390896.020.000) 2024-01-18 21:53:08 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (390896.020.000) 2024-01-18 21:54:28 Started transferring input files
+	Transferring to host: <172.30.1.211:9618?addrs=172.30.1.211-9618&alias=node11&noUDP&sock=slot1_11_3735_6531_177132>
+...
+001 (390896.020.000) 2024-01-18 21:54:28 Job executing on host: <172.30.1.211:9618?addrs=172.30.1.211-9618&alias=node11&noUDP&sock=startd_3699_c8e9>
+...
+040 (390896.020.000) 2024-01-18 21:54:28 Finished transferring input files
+...
+006 (390896.020.000) 2024-01-18 21:54:36 Image size of job updated: 186748
+	183  -  MemoryUsage of job (MB)
+	186748  -  ResidentSetSize of job (KB)
+...
+006 (390896.020.000) 2024-01-18 21:58:44 Image size of job updated: 869572
+	183  -  MemoryUsage of job (MB)
+	186748  -  ResidentSetSize of job (KB)
+...
+040 (390896.020.000) 2024-01-18 21:58:44 Started transferring output files
+...
+040 (390896.020.000) 2024-01-18 21:58:45 Finished transferring output files
+...
+005 (390896.020.000) 2024-01-18 21:58:45 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:03:30, Sys 0 00:00:16  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:03:30, Sys 0 00:00:16  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	39426560  -  Run Bytes Sent By Job
+	182135  -  Run Bytes Received By Job
+	39426560  -  Total Bytes Sent By Job
+	182135  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.93        1         1 
+	   Disk (KB)            : 38753         200    128928 
+	   Memory (MB)          :   183        3900      3968 
+
+	Job terminated of its own accord at 2024-01-18T12:58:44Z.
+...
+000 (390897.020.000) 2024-01-18 22:03:48 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (390897.020.000) 2024-01-18 22:05:49 Started transferring input files
+	Transferring to host: <172.30.1.204:9618?addrs=172.30.1.204-9618&alias=node4&noUDP&sock=slot1_21_3725_5971_202867>
+...
+001 (390897.020.000) 2024-01-18 22:05:49 Job executing on host: <172.30.1.204:9618?addrs=172.30.1.204-9618&alias=node4&noUDP&sock=startd_3691_4c27>
+...
+040 (390897.020.000) 2024-01-18 22:05:49 Finished transferring input files
+...
+006 (390897.020.000) 2024-01-18 22:05:58 Image size of job updated: 745524
+	183  -  MemoryUsage of job (MB)
+	186744  -  ResidentSetSize of job (KB)
+...
+006 (390897.020.000) 2024-01-18 22:09:28 Image size of job updated: 863700
+	183  -  MemoryUsage of job (MB)
+	186744  -  ResidentSetSize of job (KB)
+...
+040 (390897.020.000) 2024-01-18 22:09:28 Started transferring output files
+...
+040 (390897.020.000) 2024-01-18 22:09:31 Finished transferring output files
+...
+005 (390897.020.000) 2024-01-18 22:09:31 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:03:03, Sys 0 00:00:12  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:03:03, Sys 0 00:00:12  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	39264668  -  Run Bytes Sent By Job
+	182135  -  Run Bytes Received By Job
+	39264668  -  Total Bytes Sent By Job
+	182135  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.93        1         1 
+	   Disk (KB)            : 38594         200    128928 
+	   Memory (MB)          :   183        3900      3968 
+
+	Job terminated of its own accord at 2024-01-18T13:09:28Z.
+...
+000 (390986.020.000) 2024-01-18 22:24:33 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (390986.020.000) 2024-01-18 22:26:35 Started transferring input files
+	Transferring to host: <172.30.1.207:9618?addrs=172.30.1.207-9618&alias=node7&noUDP&sock=slot1_2_39434_91fd_224890>
+...
+001 (390986.020.000) 2024-01-18 22:26:35 Job executing on host: <172.30.1.207:9618?addrs=172.30.1.207-9618&alias=node7&noUDP&sock=startd_3748_650d>
+...
+040 (390986.020.000) 2024-01-18 22:26:35 Finished transferring input files
+...
+006 (390986.020.000) 2024-01-18 22:26:44 Image size of job updated: 174668
+	171  -  MemoryUsage of job (MB)
+	174668  -  ResidentSetSize of job (KB)
+...
+006 (390986.020.000) 2024-01-18 22:31:10 Image size of job updated: 866280
+	171  -  MemoryUsage of job (MB)
+	174668  -  ResidentSetSize of job (KB)
+...
+040 (390986.020.000) 2024-01-18 22:31:10 Started transferring output files
+...
+040 (390986.020.000) 2024-01-18 22:31:11 Finished transferring output files
+...
+005 (390986.020.000) 2024-01-18 22:31:11 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:03:08, Sys 0 00:00:12  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:03:08, Sys 0 00:00:12  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	35178440  -  Run Bytes Sent By Job
+	182182  -  Run Bytes Received By Job
+	35178440  -  Total Bytes Sent By Job
+	182182  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.99        1         1 
+	   Disk (KB)            : 34604         200    121695 
+	   Memory (MB)          :   171        3900      3968 
+
+	Job terminated of its own accord at 2024-01-18T13:31:10Z.
+...
+000 (391043.020.000) 2024-01-18 23:16:23 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391043.020.000) 2024-01-18 23:16:29 Started transferring input files
+	Transferring to host: <172.30.1.204:9618?addrs=172.30.1.204-9618&alias=node4&noUDP&sock=slot1_7_3725_5971_202934>
+...
+001 (391043.020.000) 2024-01-18 23:16:29 Job executing on host: <172.30.1.204:9618?addrs=172.30.1.204-9618&alias=node4&noUDP&sock=startd_3691_4c27>
+...
+040 (391043.020.000) 2024-01-18 23:16:29 Finished transferring input files
+...
+006 (391043.020.000) 2024-01-18 23:16:37 Image size of job updated: 139472
+	72  -  MemoryUsage of job (MB)
+	73640  -  ResidentSetSize of job (KB)
+...
+006 (391043.020.000) 2024-01-18 23:18:14 Image size of job updated: 842280
+	72  -  MemoryUsage of job (MB)
+	73724  -  ResidentSetSize of job (KB)
+...
+040 (391043.020.000) 2024-01-18 23:18:19 Entered queue to transfer output files
+...
+040 (391043.020.000) 2024-01-18 23:18:22 Started transferring output files
+...
+040 (391043.020.000) 2024-01-18 23:18:23 Finished transferring output files
+...
+005 (391043.020.000) 2024-01-18 23:18:23 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:01:05, Sys 0 00:00:07  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:01:05, Sys 0 00:00:07  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	7464213  -  Run Bytes Sent By Job
+	182524  -  Run Bytes Received By Job
+	7464213  -  Total Bytes Sent By Job
+	182524  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.14        1         1 
+	   Disk (KB)            :  7540         200    128928 
+	   Memory (MB)          :    72        3900      3968 
+
+	Job terminated of its own accord at 2024-01-18T14:18:14Z.
+...
+000 (391059.020.000) 2024-01-19 10:38:28 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391059.020.000) 2024-01-19 10:38:32 Started transferring input files
+	Transferring to host: <172.30.1.213:9618?addrs=172.30.1.213-9618&alias=node13&noUDP&sock=slot1_78_4363_e0ca_274867>
+...
+040 (391059.020.000) 2024-01-19 10:38:32 Finished transferring input files
+...
+001 (391059.020.000) 2024-01-19 10:38:32 Job executing on host: <172.30.1.213:9618?addrs=172.30.1.213-9618&alias=node13&noUDP&sock=startd_4329_e993>
+...
+006 (391059.020.000) 2024-01-19 10:38:41 Image size of job updated: 139088
+	74  -  MemoryUsage of job (MB)
+	75448  -  ResidentSetSize of job (KB)
+...
+006 (391059.020.000) 2024-01-19 10:43:25 Image size of job updated: 869940
+	75  -  MemoryUsage of job (MB)
+	76188  -  ResidentSetSize of job (KB)
+...
+040 (391059.020.000) 2024-01-19 10:43:25 Started transferring output files
+...
+040 (391059.020.000) 2024-01-19 10:43:26 Finished transferring output files
+...
+005 (391059.020.000) 2024-01-19 10:43:26 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:03:19, Sys 0 00:00:14  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:03:19, Sys 0 00:00:14  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	33689044  -  Run Bytes Sent By Job
+	182504  -  Run Bytes Received By Job
+	33689044  -  Total Bytes Sent By Job
+	182504  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.56        1         1 
+	   Disk (KB)            : 33150         200    261111 
+	   Memory (MB)          :    75        3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T01:43:25Z.
+...
+000 (391060.020.000) 2024-01-19 10:57:46 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391060.020.000) 2024-01-19 10:57:51 Started transferring input files
+	Transferring to host: <172.30.1.214:9618?addrs=172.30.1.214-9618&alias=node14&noUDP&sock=slot1_76_4480_50af_235020>
+...
+040 (391060.020.000) 2024-01-19 10:57:51 Finished transferring input files
+...
+001 (391060.020.000) 2024-01-19 10:57:51 Job executing on host: <172.30.1.214:9618?addrs=172.30.1.214-9618&alias=node14&noUDP&sock=startd_4446_2a28>
+...
+006 (391060.020.000) 2024-01-19 10:58:00 Image size of job updated: 198288
+	169  -  MemoryUsage of job (MB)
+	172040  -  ResidentSetSize of job (KB)
+...
+006 (391060.020.000) 2024-01-19 11:02:51 Image size of job updated: 869388
+	169  -  MemoryUsage of job (MB)
+	172048  -  ResidentSetSize of job (KB)
+...
+040 (391060.020.000) 2024-01-19 11:02:51 Started transferring output files
+...
+040 (391060.020.000) 2024-01-19 11:02:52 Finished transferring output files
+...
+005 (391060.020.000) 2024-01-19 11:02:52 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:03:31, Sys 0 00:00:17  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:03:31, Sys 0 00:00:17  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	36835880  -  Run Bytes Sent By Job
+	182520  -  Run Bytes Received By Job
+	36835880  -  Total Bytes Sent By Job
+	182520  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.89        1         1 
+	   Disk (KB)            : 36223         200    261111 
+	   Memory (MB)          :   169        3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T02:02:51Z.
+...
+000 (391113.020.000) 2024-01-19 11:50:58 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391113.020.000) 2024-01-19 11:51:01 Started transferring input files
+	Transferring to host: <172.30.1.211:9618?addrs=172.30.1.211-9618&alias=node11&noUDP&sock=slot1_45_3735_6531_177563>
+...
+001 (391113.020.000) 2024-01-19 11:51:01 Job executing on host: <172.30.1.211:9618?addrs=172.30.1.211-9618&alias=node11&noUDP&sock=startd_3699_c8e9>
+...
+040 (391113.020.000) 2024-01-19 11:51:01 Finished transferring input files
+...
+006 (391113.020.000) 2024-01-19 11:51:09 Image size of job updated: 230108
+	68  -  MemoryUsage of job (MB)
+	69436  -  ResidentSetSize of job (KB)
+...
+006 (391113.020.000) 2024-01-19 11:53:06 Image size of job updated: 836872
+	68  -  MemoryUsage of job (MB)
+	69436  -  ResidentSetSize of job (KB)
+...
+040 (391113.020.000) 2024-01-19 11:53:06 Started transferring output files
+...
+040 (391113.020.000) 2024-01-19 11:53:06 Finished transferring output files
+...
+005 (391113.020.000) 2024-01-19 11:53:06 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:01:12, Sys 0 00:00:08  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:01:12, Sys 0 00:00:08  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	7464079  -  Run Bytes Sent By Job
+	183986  -  Run Bytes Received By Job
+	7464079  -  Total Bytes Sent By Job
+	183986  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :                 1         1 
+	   Disk (KB)            :     7536      200    128928 
+	   Memory (MB)          :       68     3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T02:53:06Z.
+...
+000 (391114.020.000) 2024-01-19 11:56:30 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391114.020.000) 2024-01-19 11:56:33 Started transferring input files
+	Transferring to host: <172.30.1.211:9618?addrs=172.30.1.211-9618&alias=node11&noUDP&sock=slot1_48_3735_6531_177574>
+...
+001 (391114.020.000) 2024-01-19 11:56:33 Job executing on host: <172.30.1.211:9618?addrs=172.30.1.211-9618&alias=node11&noUDP&sock=startd_3699_c8e9>
+...
+040 (391114.020.000) 2024-01-19 11:56:33 Finished transferring input files
+...
+006 (391114.020.000) 2024-01-19 11:56:42 Image size of job updated: 571288
+	183  -  MemoryUsage of job (MB)
+	186744  -  ResidentSetSize of job (KB)
+...
+006 (391114.020.000) 2024-01-19 11:58:36 Image size of job updated: 846012
+	183  -  MemoryUsage of job (MB)
+	186744  -  ResidentSetSize of job (KB)
+...
+040 (391114.020.000) 2024-01-19 11:58:36 Started transferring output files
+...
+040 (391114.020.000) 2024-01-19 11:58:37 Finished transferring output files
+...
+005 (391114.020.000) 2024-01-19 11:58:37 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:01:12, Sys 0 00:00:07  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:01:12, Sys 0 00:00:07  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	7464183  -  Run Bytes Sent By Job
+	183986  -  Run Bytes Received By Job
+	7464183  -  Total Bytes Sent By Job
+	183986  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :                 1         1 
+	   Disk (KB)            :     7536      200    128928 
+	   Memory (MB)          :      183     3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T02:58:36Z.
+...
+000 (391115.020.000) 2024-01-19 12:05:54 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391115.020.000) 2024-01-19 12:05:57 Started transferring input files
+	Transferring to host: <172.30.1.204:9618?addrs=172.30.1.204-9618&alias=node4&noUDP&sock=slot1_41_3725_5971_203301>
+...
+001 (391115.020.000) 2024-01-19 12:05:57 Job executing on host: <172.30.1.204:9618?addrs=172.30.1.204-9618&alias=node4&noUDP&sock=startd_3691_4c27>
+...
+040 (391115.020.000) 2024-01-19 12:05:57 Finished transferring input files
+...
+006 (391115.020.000) 2024-01-19 12:06:06 Image size of job updated: 809104
+	183  -  MemoryUsage of job (MB)
+	186744  -  ResidentSetSize of job (KB)
+...
+006 (391115.020.000) 2024-01-19 12:07:58 Image size of job updated: 846144
+	183  -  MemoryUsage of job (MB)
+	186744  -  ResidentSetSize of job (KB)
+...
+040 (391115.020.000) 2024-01-19 12:07:58 Started transferring output files
+...
+040 (391115.020.000) 2024-01-19 12:07:58 Finished transferring output files
+...
+005 (391115.020.000) 2024-01-19 12:07:58 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:01:11, Sys 0 00:00:07  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:01:11, Sys 0 00:00:07  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	7464183  -  Run Bytes Sent By Job
+	184022  -  Run Bytes Received By Job
+	7464183  -  Total Bytes Sent By Job
+	184022  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.48        1         1 
+	   Disk (KB)            :  7542         200    128928 
+	   Memory (MB)          :   183        3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T03:07:58Z.
+...
+000 (391116.020.000) 2024-01-19 12:09:38 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391116.020.000) 2024-01-19 12:09:40 Started transferring input files
+	Transferring to host: <172.30.1.204:9618?addrs=172.30.1.204-9618&alias=node4&noUDP&sock=slot1_41_3725_5971_203309>
+...
+001 (391116.020.000) 2024-01-19 12:09:40 Job executing on host: <172.30.1.204:9618?addrs=172.30.1.204-9618&alias=node4&noUDP&sock=startd_3691_4c27>
+...
+040 (391116.020.000) 2024-01-19 12:09:40 Finished transferring input files
+...
+006 (391116.020.000) 2024-01-19 12:09:49 Image size of job updated: 186736
+	183  -  MemoryUsage of job (MB)
+	186736  -  ResidentSetSize of job (KB)
+...
+006 (391116.020.000) 2024-01-19 12:11:47 Image size of job updated: 846200
+	183  -  MemoryUsage of job (MB)
+	186736  -  ResidentSetSize of job (KB)
+...
+040 (391116.020.000) 2024-01-19 12:11:47 Started transferring output files
+...
+040 (391116.020.000) 2024-01-19 12:11:48 Finished transferring output files
+...
+005 (391116.020.000) 2024-01-19 12:11:48 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:01:12, Sys 0 00:00:07  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:01:12, Sys 0 00:00:07  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	7464207  -  Run Bytes Sent By Job
+	184022  -  Run Bytes Received By Job
+	7464207  -  Total Bytes Sent By Job
+	184022  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.60        1         1 
+	   Disk (KB)            :  7542         200    128928 
+	   Memory (MB)          :   183        3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T03:11:47Z.
+...
+000 (391117.020.000) 2024-01-19 12:15:27 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391117.020.000) 2024-01-19 12:15:32 Started transferring input files
+	Transferring to host: <172.30.1.204:9618?addrs=172.30.1.204-9618&alias=node4&noUDP&sock=slot1_42_3725_5971_203318>
+...
+001 (391117.020.000) 2024-01-19 12:15:32 Job executing on host: <172.30.1.204:9618?addrs=172.30.1.204-9618&alias=node4&noUDP&sock=startd_3691_4c27>
+...
+040 (391117.020.000) 2024-01-19 12:15:32 Finished transferring input files
+...
+006 (391117.020.000) 2024-01-19 12:15:41 Image size of job updated: 833424
+	181  -  MemoryUsage of job (MB)
+	185040  -  ResidentSetSize of job (KB)
+...
+006 (391117.020.000) 2024-01-19 12:20:12 Image size of job updated: 868120
+	181  -  MemoryUsage of job (MB)
+	185040  -  ResidentSetSize of job (KB)
+...
+040 (391117.020.000) 2024-01-19 12:20:12 Started transferring output files
+...
+040 (391117.020.000) 2024-01-19 12:20:16 Finished transferring output files
+...
+005 (391117.020.000) 2024-01-19 12:20:16 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:03:26, Sys 0 00:00:13  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:03:26, Sys 0 00:00:13  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	33833512  -  Run Bytes Sent By Job
+	184028  -  Run Bytes Received By Job
+	33833512  -  Total Bytes Sent By Job
+	184028  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.76        1         1 
+	   Disk (KB)            : 33293         200    128928 
+	   Memory (MB)          :   181        3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T03:20:12Z.
+...
+000 (391118.020.000) 2024-01-19 12:41:45 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391118.020.000) 2024-01-19 12:41:52 Started transferring input files
+	Transferring to host: <172.30.1.204:9618?addrs=172.30.1.204-9618&alias=node4&noUDP&sock=slot1_46_3725_5971_203338>
+...
+040 (391118.020.000) 2024-01-19 12:41:52 Finished transferring input files
+...
+001 (391118.020.000) 2024-01-19 12:41:52 Job executing on host: <172.30.1.204:9618?addrs=172.30.1.204-9618&alias=node4&noUDP&sock=startd_3691_4c27>
+...
+006 (391118.020.000) 2024-01-19 12:42:00 Image size of job updated: 175112
+	172  -  MemoryUsage of job (MB)
+	175112  -  ResidentSetSize of job (KB)
+...
+006 (391118.020.000) 2024-01-19 12:43:50 Image size of job updated: 841540
+	172  -  MemoryUsage of job (MB)
+	175112  -  ResidentSetSize of job (KB)
+...
+040 (391118.020.000) 2024-01-19 12:43:50 Started transferring output files
+...
+040 (391118.020.000) 2024-01-19 12:43:50 Finished transferring output files
+...
+005 (391118.020.000) 2024-01-19 12:43:50 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:01:10, Sys 0 00:00:07  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:01:10, Sys 0 00:00:07  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	7464143  -  Run Bytes Sent By Job
+	183796  -  Run Bytes Received By Job
+	7464143  -  Total Bytes Sent By Job
+	183796  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :                 1         1 
+	   Disk (KB)            :     7536      200    128928 
+	   Memory (MB)          :      172     3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T03:43:50Z.
+...
+000 (391119.020.000) 2024-01-19 12:47:04 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391119.020.000) 2024-01-19 12:47:13 Started transferring input files
+	Transferring to host: <172.30.1.208:9618?addrs=172.30.1.208-9618&alias=node8&noUDP&sock=slot1_42_3811_f1b4_191222>
+...
+001 (391119.020.000) 2024-01-19 12:47:13 Job executing on host: <172.30.1.208:9618?addrs=172.30.1.208-9618&alias=node8&noUDP&sock=startd_3777_494c>
+...
+040 (391119.020.000) 2024-01-19 12:47:13 Finished transferring input files
+...
+006 (391119.020.000) 2024-01-19 12:47:22 Image size of job updated: 179600
+	176  -  MemoryUsage of job (MB)
+	179600  -  ResidentSetSize of job (KB)
+...
+006 (391119.020.000) 2024-01-19 12:51:45 Image size of job updated: 863840
+	176  -  MemoryUsage of job (MB)
+	179600  -  ResidentSetSize of job (KB)
+...
+040 (391119.020.000) 2024-01-19 12:51:45 Started transferring output files
+...
+040 (391119.020.000) 2024-01-19 12:51:47 Finished transferring output files
+...
+005 (391119.020.000) 2024-01-19 12:51:47 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:03:23, Sys 0 00:00:13  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:03:23, Sys 0 00:00:13  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	33242008  -  Run Bytes Sent By Job
+	183796  -  Run Bytes Received By Job
+	33242008  -  Total Bytes Sent By Job
+	183796  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.60        1         1 
+	   Disk (KB)            : 32715         200    128928 
+	   Memory (MB)          :   176        3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T03:51:45Z.
+...
+000 (391120.020.000) 2024-01-19 13:02:28 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391120.020.000) 2024-01-19 13:02:38 Started transferring input files
+	Transferring to host: <172.30.1.208:9618?addrs=172.30.1.208-9618&alias=node8&noUDP&sock=slot1_45_3811_f1b4_191234>
+...
+001 (391120.020.000) 2024-01-19 13:02:38 Job executing on host: <172.30.1.208:9618?addrs=172.30.1.208-9618&alias=node8&noUDP&sock=startd_3777_494c>
+...
+040 (391120.020.000) 2024-01-19 13:02:38 Finished transferring input files
+...
+006 (391120.020.000) 2024-01-19 13:02:47 Image size of job updated: 488460
+	181  -  MemoryUsage of job (MB)
+	184576  -  ResidentSetSize of job (KB)
+...
+006 (391120.020.000) 2024-01-19 13:07:03 Image size of job updated: 863760
+	181  -  MemoryUsage of job (MB)
+	184576  -  ResidentSetSize of job (KB)
+...
+040 (391120.020.000) 2024-01-19 13:07:03 Started transferring output files
+...
+040 (391120.020.000) 2024-01-19 13:07:19 Finished transferring output files
+...
+005 (391120.020.000) 2024-01-19 13:07:20 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:03:23, Sys 0 00:00:12  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:03:23, Sys 0 00:00:12  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	33221808  -  Run Bytes Sent By Job
+	183796  -  Run Bytes Received By Job
+	33221808  -  Total Bytes Sent By Job
+	183796  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.68        1         1 
+	   Disk (KB)            : 32696         200    128928 
+	   Memory (MB)          :   181        3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T04:07:03Z.
+...
+000 (391131.020.000) 2024-01-19 14:22:45 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391131.020.000) 2024-01-19 14:22:52 Started transferring input files
+	Transferring to host: <172.30.1.209:9618?addrs=172.30.1.209-9618&alias=node9&noUDP&sock=slot1_48_3782_82d3_179377>
+...
+001 (391131.020.000) 2024-01-19 14:22:52 Job executing on host: <172.30.1.209:9618?addrs=172.30.1.209-9618&alias=node9&noUDP&sock=startd_3748_650d>
+...
+040 (391131.020.000) 2024-01-19 14:22:52 Finished transferring input files
+...
+006 (391131.020.000) 2024-01-19 14:23:01 Image size of job updated: 561376
+	132  -  MemoryUsage of job (MB)
+	134808  -  ResidentSetSize of job (KB)
+...
+006 (391131.020.000) 2024-01-19 14:28:02 Image size of job updated: 959200
+	302  -  MemoryUsage of job (MB)
+	308688  -  ResidentSetSize of job (KB)
+...
+006 (391131.020.000) 2024-01-19 14:28:10 Image size of job updated: 959200
+	302  -  MemoryUsage of job (MB)
+	308708  -  ResidentSetSize of job (KB)
+...
+004 (391131.020.000) 2024-01-19 14:28:10 Job was evicted.
+	(0) CPU times
+		Usr 0 00:04:45, Sys 0 00:00:19  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+	0  -  Run Bytes Sent By Job
+	183798  -  Run Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.99        1         1 
+	   Disk (KB)            :  1199         200    128928 
+	   Memory (MB)          :   302        3900      3968 
+...
+009 (391131.020.000) 2024-01-19 14:28:10 Job was aborted.
+	via condor_rm (by user shin)
+...
+000 (391132.020.000) 2024-01-19 14:30:22 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391132.020.000) 2024-01-19 14:30:25 Started transferring input files
+	Transferring to host: <172.30.1.209:9618?addrs=172.30.1.209-9618&alias=node9&noUDP&sock=slot1_48_3782_82d3_179382>
+...
+040 (391132.020.000) 2024-01-19 14:30:25 Finished transferring input files
+...
+001 (391132.020.000) 2024-01-19 14:30:25 Job executing on host: <172.30.1.209:9618?addrs=172.30.1.209-9618&alias=node9&noUDP&sock=startd_3748_650d>
+...
+006 (391132.020.000) 2024-01-19 14:30:34 Image size of job updated: 793992
+	182  -  MemoryUsage of job (MB)
+	185384  -  ResidentSetSize of job (KB)
+...
+006 (391132.020.000) 2024-01-19 14:35:35 Image size of job updated: 871336
+	213  -  MemoryUsage of job (MB)
+	217632  -  ResidentSetSize of job (KB)
+...
+000 (391137.020.000) 2024-01-19 14:35:50 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391137.020.000) 2024-01-19 14:35:54 Started transferring input files
+	Transferring to host: <172.30.1.109:9618?addrs=172.30.1.109-9618&alias=n9&noUDP&sock=slot1_21_4134_86e1_92610>
+...
+001 (391137.020.000) 2024-01-19 14:35:54 Job executing on host: <172.30.1.109:9618?addrs=172.30.1.109-9618&alias=n9&noUDP&sock=startd_4100_d663>
+...
+040 (391137.020.000) 2024-01-19 14:35:54 Finished transferring input files
+...
+004 (391132.020.000) 2024-01-19 14:36:00 Job was evicted.
+	(0) CPU times
+		Usr 0 00:04:43, Sys 0 00:00:18  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+	0  -  Run Bytes Sent By Job
+	183608  -  Run Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.52        1         1 
+	   Disk (KB)            : 12777         200    128928 
+	   Memory (MB)          :   213        3900      3968 
+...
+006 (391137.020.000) 2024-01-19 14:36:01 Image size of job updated: 230108
+	0  -  MemoryUsage of job (MB)
+	0  -  ResidentSetSize of job (KB)
+...
+009 (391132.020.000) 2024-01-19 14:36:01 Job was aborted.
+	via condor_rm (by user shin)
+...
+004 (391137.020.000) 2024-01-19 14:36:01 Job was evicted.
+	(0) CPU times
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+	0  -  Run Bytes Sent By Job
+	183614  -  Run Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.04        1         1 
+	   Disk (KB)            :   235         200    127849 
+	   Memory (MB)          :     0        3900      3968 
+...
+009 (391137.020.000) 2024-01-19 14:36:01 Job was aborted.
+	via condor_rm (by user shin)
+...
+000 (391138.020.000) 2024-01-19 14:36:02 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391138.020.000) 2024-01-19 14:36:14 Started transferring input files
+	Transferring to host: <172.30.1.209:9618?addrs=172.30.1.209-9618&alias=node9&noUDP&sock=slot1_47_3782_82d3_179386>
+...
+001 (391138.020.000) 2024-01-19 14:36:14 Job executing on host: <172.30.1.209:9618?addrs=172.30.1.209-9618&alias=node9&noUDP&sock=startd_3748_650d>
+...
+040 (391138.020.000) 2024-01-19 14:36:14 Finished transferring input files
+...
+006 (391138.020.000) 2024-01-19 14:36:22 Image size of job updated: 729536
+	181  -  MemoryUsage of job (MB)
+	184564  -  ResidentSetSize of job (KB)
+...
+006 (391138.020.000) 2024-01-19 14:41:22 Image size of job updated: 872672
+	213  -  MemoryUsage of job (MB)
+	217436  -  ResidentSetSize of job (KB)
+...
+006 (391138.020.000) 2024-01-19 14:43:14 Image size of job updated: 872912
+	213  -  MemoryUsage of job (MB)
+	217436  -  ResidentSetSize of job (KB)
+...
+040 (391138.020.000) 2024-01-19 14:43:14 Started transferring output files
+...
+040 (391138.020.000) 2024-01-19 14:43:16 Finished transferring output files
+...
+005 (391138.020.000) 2024-01-19 14:43:16 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:05:59, Sys 0 00:00:25  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:05:59, Sys 0 00:00:25  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	33005592  -  Run Bytes Sent By Job
+	183614  -  Run Bytes Received By Job
+	33005592  -  Total Bytes Sent By Job
+	183614  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :        0        1         1 
+	   Disk (KB)            :    32484      200    128928 
+	   Memory (MB)          :      213     3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T05:43:14Z.
+...
+000 (391139.020.000) 2024-01-19 14:48:49 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391139.020.000) 2024-01-19 14:48:52 Started transferring input files
+	Transferring to host: <172.30.1.209:9618?addrs=172.30.1.209-9618&alias=node9&noUDP&sock=slot1_47_3782_82d3_179391>
+...
+040 (391139.020.000) 2024-01-19 14:48:52 Finished transferring input files
+...
+001 (391139.020.000) 2024-01-19 14:48:52 Job executing on host: <172.30.1.209:9618?addrs=172.30.1.209-9618&alias=node9&noUDP&sock=startd_3748_650d>
+...
+006 (391139.020.000) 2024-01-19 14:49:01 Image size of job updated: 575396
+	171  -  MemoryUsage of job (MB)
+	174644  -  ResidentSetSize of job (KB)
+...
+006 (391139.020.000) 2024-01-19 14:52:18 Image size of job updated: 879408
+	171  -  MemoryUsage of job (MB)
+	174644  -  ResidentSetSize of job (KB)
+...
+004 (391139.020.000) 2024-01-19 14:52:18 Job was evicted.
+	(0) CPU times
+		Usr 0 00:02:50, Sys 0 00:00:11  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+	0  -  Run Bytes Sent By Job
+	183618  -  Run Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.98        1         1 
+	   Disk (KB)            :  7686         200    128928 
+	   Memory (MB)          :   171        3900      3968 
+...
+009 (391139.020.000) 2024-01-19 14:52:18 Job was aborted.
+	via condor_rm (by user shin)
+...
+000 (391140.020.000) 2024-01-19 14:52:19 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391140.020.000) 2024-01-19 14:52:21 Started transferring input files
+	Transferring to host: <172.30.1.209:9618?addrs=172.30.1.209-9618&alias=node9&noUDP&sock=slot1_47_3782_82d3_179396>
+...
+040 (391140.020.000) 2024-01-19 14:52:21 Finished transferring input files
+...
+001 (391140.020.000) 2024-01-19 14:52:21 Job executing on host: <172.30.1.209:9618?addrs=172.30.1.209-9618&alias=node9&noUDP&sock=startd_3748_650d>
+...
+006 (391140.020.000) 2024-01-19 14:52:31 Image size of job updated: 832924
+	182  -  MemoryUsage of job (MB)
+	185700  -  ResidentSetSize of job (KB)
+...
+006 (391140.020.000) 2024-01-19 14:57:31 Image size of job updated: 872932
+	213  -  MemoryUsage of job (MB)
+	217552  -  ResidentSetSize of job (KB)
+...
+006 (391140.020.000) 2024-01-19 14:59:25 Image size of job updated: 875096
+	213  -  MemoryUsage of job (MB)
+	217552  -  ResidentSetSize of job (KB)
+...
+040 (391140.020.000) 2024-01-19 14:59:25 Started transferring output files
+...
+040 (391140.020.000) 2024-01-19 14:59:28 Finished transferring output files
+...
+005 (391140.020.000) 2024-01-19 14:59:28 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:06:00, Sys 0 00:00:24  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:06:00, Sys 0 00:00:24  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	32938984  -  Run Bytes Sent By Job
+	183636  -  Run Bytes Received By Job
+	32938984  -  Total Bytes Sent By Job
+	183636  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.97        1         1 
+	   Disk (KB)            : 32419         200    128928 
+	   Memory (MB)          :   213        3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T05:59:25Z.
+...
+000 (391145.020.000) 2024-01-19 15:59:26 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391145.020.000) 2024-01-19 15:59:28 Started transferring input files
+	Transferring to host: <172.30.1.203:9618?addrs=172.30.1.203-9618&alias=node3&noUDP&sock=slot1_39_24221_a2b2_52023>
+...
+001 (391145.020.000) 2024-01-19 15:59:28 Job executing on host: <172.30.1.203:9618?addrs=172.30.1.203-9618&alias=node3&noUDP&sock=startd_24188_88db>
+...
+040 (391145.020.000) 2024-01-19 15:59:28 Finished transferring input files
+...
+006 (391145.020.000) 2024-01-19 15:59:37 Image size of job updated: 173224
+	150  -  MemoryUsage of job (MB)
+	153132  -  ResidentSetSize of job (KB)
+...
+006 (391145.020.000) 2024-01-19 16:04:37 Image size of job updated: 874392
+	181  -  MemoryUsage of job (MB)
+	184544  -  ResidentSetSize of job (KB)
+...
+006 (391145.020.000) 2024-01-19 16:06:12 Image size of job updated: 874924
+	181  -  MemoryUsage of job (MB)
+	184548  -  ResidentSetSize of job (KB)
+...
+040 (391145.020.000) 2024-01-19 16:06:12 Started transferring output files
+...
+040 (391145.020.000) 2024-01-19 16:06:15 Finished transferring output files
+...
+005 (391145.020.000) 2024-01-19 16:06:15 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:05:37, Sys 0 00:00:19  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:05:37, Sys 0 00:00:19  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	31915872  -  Run Bytes Sent By Job
+	184262  -  Run Bytes Received By Job
+	31915872  -  Total Bytes Sent By Job
+	184262  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.88        1         1 
+	   Disk (KB)            : 31421         200    128924 
+	   Memory (MB)          :   181        3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T07:06:12Z.
+...
+000 (391151.020.000) 2024-01-19 16:45:38 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391151.020.000) 2024-01-19 16:45:46 Started transferring input files
+	Transferring to host: <172.30.1.209:9618?addrs=172.30.1.209-9618&alias=node9&noUDP&sock=slot1_47_3782_82d3_179420>
+...
+040 (391151.020.000) 2024-01-19 16:45:46 Finished transferring input files
+...
+001 (391151.020.000) 2024-01-19 16:45:46 Job executing on host: <172.30.1.209:9618?addrs=172.30.1.209-9618&alias=node9&noUDP&sock=startd_3748_650d>
+...
+006 (391151.020.000) 2024-01-19 16:45:55 Image size of job updated: 808980
+	172  -  MemoryUsage of job (MB)
+	175176  -  ResidentSetSize of job (KB)
+...
+000 (391152.020.000) 2024-01-19 16:46:33 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391152.020.000) 2024-01-19 16:46:36 Started transferring input files
+	Transferring to host: <172.30.1.105:9618?addrs=172.30.1.105-9618&alias=n5&noUDP&sock=slot1_5_3459_eda6_34495>
+...
+040 (391152.020.000) 2024-01-19 16:46:36 Finished transferring input files
+...
+001 (391152.020.000) 2024-01-19 16:46:36 Job executing on host: <172.30.1.105:9618?addrs=172.30.1.105-9618&alias=n5&noUDP&sock=startd_3425_d7f5>
+...
+006 (391152.020.000) 2024-01-19 16:46:45 Image size of job updated: 50132
+	0  -  MemoryUsage of job (MB)
+	0  -  ResidentSetSize of job (KB)
+...
+004 (391152.020.000) 2024-01-19 16:46:45 Job was evicted.
+	(0) CPU times
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+	0  -  Run Bytes Sent By Job
+	184253  -  Run Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.06        1         1 
+	   Disk (KB)            :   236         200     61880 
+	   Memory (MB)          :     0        3900      3968 
+...
+009 (391152.020.000) 2024-01-19 16:46:45 Job was aborted.
+	via condor_rm (by user shin)
+...
+006 (391151.020.000) 2024-01-19 16:47:35 Image size of job updated: 826504
+	172  -  MemoryUsage of job (MB)
+	175176  -  ResidentSetSize of job (KB)
+...
+004 (391151.020.000) 2024-01-19 16:47:35 Job was evicted.
+	(0) CPU times
+		Usr 0 00:01:04, Sys 0 00:00:06  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+	0  -  Run Bytes Sent By Job
+	184253  -  Run Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.52        1         1 
+	   Disk (KB)            :  3362         200    128928 
+	   Memory (MB)          :   172        3900      3968 
+...
+009 (391151.020.000) 2024-01-19 16:47:36 Job was aborted.
+	via condor_rm (by user shin)
+...
+000 (391153.020.000) 2024-01-19 16:47:37 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391153.020.000) 2024-01-19 16:47:58 Started transferring input files
+	Transferring to host: <172.30.1.209:9618?addrs=172.30.1.209-9618&alias=node9&noUDP&sock=slot1_5_3782_82d3_179422>
+...
+001 (391153.020.000) 2024-01-19 16:47:58 Job executing on host: <172.30.1.209:9618?addrs=172.30.1.209-9618&alias=node9&noUDP&sock=startd_3748_650d>
+...
+040 (391153.020.000) 2024-01-19 16:47:58 Finished transferring input files
+...
+006 (391153.020.000) 2024-01-19 16:48:07 Image size of job updated: 835120
+	183  -  MemoryUsage of job (MB)
+	186728  -  ResidentSetSize of job (KB)
+...
+006 (391153.020.000) 2024-01-19 16:49:57 Image size of job updated: 846484
+	183  -  MemoryUsage of job (MB)
+	186728  -  ResidentSetSize of job (KB)
+...
+040 (391153.020.000) 2024-01-19 16:49:57 Started transferring output files
+...
+040 (391153.020.000) 2024-01-19 16:49:58 Finished transferring output files
+...
+005 (391153.020.000) 2024-01-19 16:49:58 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:01:14, Sys 0 00:00:07  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:01:14, Sys 0 00:00:07  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	7470423  -  Run Bytes Sent By Job
+	184257  -  Run Bytes Received By Job
+	7470423  -  Total Bytes Sent By Job
+	184257  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :                 1         1 
+	   Disk (KB)            :     7543      200    128928 
+	   Memory (MB)          :      183     3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T07:49:57Z.
+...
+000 (391154.020.000) 2024-01-19 16:50:49 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391154.020.000) 2024-01-19 16:50:52 Started transferring input files
+	Transferring to host: <172.30.1.210:9618?addrs=172.30.1.210-9618&alias=node10&noUDP&sock=slot1_44_3822_b1d4_184721>
+...
+040 (391154.020.000) 2024-01-19 16:50:52 Finished transferring input files
+...
+001 (391154.020.000) 2024-01-19 16:50:52 Job executing on host: <172.30.1.210:9618?addrs=172.30.1.210-9618&alias=node10&noUDP&sock=startd_3788_d4d6>
+...
+006 (391154.020.000) 2024-01-19 16:51:01 Image size of job updated: 186748
+	183  -  MemoryUsage of job (MB)
+	186748  -  ResidentSetSize of job (KB)
+...
+006 (391154.020.000) 2024-01-19 16:56:02 Image size of job updated: 871028
+	190  -  MemoryUsage of job (MB)
+	194536  -  ResidentSetSize of job (KB)
+...
+040 (391154.020.000) 2024-01-19 16:57:28 Started transferring output files
+...
+040 (391154.020.000) 2024-01-19 16:57:28 Finished transferring output files
+...
+005 (391154.020.000) 2024-01-19 16:57:28 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:05:35, Sys 0 00:00:19  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:05:35, Sys 0 00:00:19  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	32395526  -  Run Bytes Sent By Job
+	184256  -  Run Bytes Received By Job
+	32395526  -  Total Bytes Sent By Job
+	184256  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.98        1         1 
+	   Disk (KB)            : 31889         200    128928 
+	   Memory (MB)          :   190        3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T07:57:28Z.
+...
+000 (391155.020.000) 2024-01-19 17:22:15 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391155.020.000) 2024-01-19 17:22:18 Started transferring input files
+	Transferring to host: <172.30.1.210:9618?addrs=172.30.1.210-9618&alias=node10&noUDP&sock=slot1_38_3822_b1d4_184739>
+...
+001 (391155.020.000) 2024-01-19 17:22:18 Job executing on host: <172.30.1.210:9618?addrs=172.30.1.210-9618&alias=node10&noUDP&sock=startd_3788_d4d6>
+...
+040 (391155.020.000) 2024-01-19 17:22:18 Finished transferring input files
+...
+006 (391155.020.000) 2024-01-19 17:22:27 Image size of job updated: 186744
+	183  -  MemoryUsage of job (MB)
+	186744  -  ResidentSetSize of job (KB)
+...
+006 (391155.020.000) 2024-01-19 17:24:27 Image size of job updated: 846668
+	183  -  MemoryUsage of job (MB)
+	186744  -  ResidentSetSize of job (KB)
+...
+040 (391155.020.000) 2024-01-19 17:24:27 Started transferring output files
+...
+040 (391155.020.000) 2024-01-19 17:24:28 Finished transferring output files
+...
+005 (391155.020.000) 2024-01-19 17:24:28 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:01:13, Sys 0 00:00:07  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:01:13, Sys 0 00:00:07  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	7465407  -  Run Bytes Sent By Job
+	186554  -  Run Bytes Received By Job
+	7465407  -  Total Bytes Sent By Job
+	186554  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :                 1         1 
+	   Disk (KB)            :     7540      200    128928 
+	   Memory (MB)          :      183     3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T08:24:27Z.
+...
+000 (391156.020.000) 2024-01-19 17:29:00 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391156.020.000) 2024-01-19 17:29:03 Started transferring input files
+	Transferring to host: <172.30.1.210:9618?addrs=172.30.1.210-9618&alias=node10&noUDP&sock=slot1_34_3822_b1d4_184747>
+...
+001 (391156.020.000) 2024-01-19 17:29:03 Job executing on host: <172.30.1.210:9618?addrs=172.30.1.210-9618&alias=node10&noUDP&sock=startd_3788_d4d6>
+...
+040 (391156.020.000) 2024-01-19 17:29:03 Finished transferring input files
+...
+006 (391156.020.000) 2024-01-19 17:29:12 Image size of job updated: 574784
+	182  -  MemoryUsage of job (MB)
+	185392  -  ResidentSetSize of job (KB)
+...
+006 (391156.020.000) 2024-01-19 17:31:05 Image size of job updated: 844104
+	182  -  MemoryUsage of job (MB)
+	185392  -  ResidentSetSize of job (KB)
+...
+040 (391156.020.000) 2024-01-19 17:31:05 Started transferring output files
+...
+040 (391156.020.000) 2024-01-19 17:31:06 Finished transferring output files
+...
+005 (391156.020.000) 2024-01-19 17:31:06 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:01:11, Sys 0 00:00:07  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:01:11, Sys 0 00:00:07  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	7465407  -  Run Bytes Sent By Job
+	186554  -  Run Bytes Received By Job
+	7465407  -  Total Bytes Sent By Job
+	186554  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :                 1         1 
+	   Disk (KB)            :     7540      200    128928 
+	   Memory (MB)          :      182     3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T08:31:05Z.
+...
+000 (391161.020.000) 2024-01-19 17:33:03 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391161.020.000) 2024-01-19 17:33:06 Started transferring input files
+	Transferring to host: <172.30.1.210:9618?addrs=172.30.1.210-9618&alias=node10&noUDP&sock=slot1_34_3822_b1d4_184756>
+...
+001 (391161.020.000) 2024-01-19 17:33:06 Job executing on host: <172.30.1.210:9618?addrs=172.30.1.210-9618&alias=node10&noUDP&sock=startd_3788_d4d6>
+...
+040 (391161.020.000) 2024-01-19 17:33:06 Finished transferring input files
+...
+006 (391161.020.000) 2024-01-19 17:33:14 Image size of job updated: 591636
+	183  -  MemoryUsage of job (MB)
+	186748  -  ResidentSetSize of job (KB)
+...
+006 (391161.020.000) 2024-01-19 17:34:55 Image size of job updated: 836480
+	183  -  MemoryUsage of job (MB)
+	186748  -  ResidentSetSize of job (KB)
+...
+040 (391161.020.000) 2024-01-19 17:34:55 Started transferring output files
+...
+040 (391161.020.000) 2024-01-19 17:34:55 Finished transferring output files
+...
+005 (391161.020.000) 2024-01-19 17:34:55 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:01:12, Sys 0 00:00:07  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:01:12, Sys 0 00:00:07  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	7469647  -  Run Bytes Sent By Job
+	186686  -  Run Bytes Received By Job
+	7469647  -  Total Bytes Sent By Job
+	186686  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :                 1         1 
+	   Disk (KB)            :     7545      200    128928 
+	   Memory (MB)          :      183     3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T08:34:55Z.
+...
+000 (391162.020.000) 2024-01-19 17:42:17 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391162.020.000) 2024-01-19 17:42:28 Started transferring input files
+	Transferring to host: <172.30.1.210:9618?addrs=172.30.1.210-9618&alias=node10&noUDP&sock=slot1_33_3822_b1d4_184764>
+...
+040 (391162.020.000) 2024-01-19 17:42:28 Finished transferring input files
+...
+001 (391162.020.000) 2024-01-19 17:42:28 Job executing on host: <172.30.1.210:9618?addrs=172.30.1.210-9618&alias=node10&noUDP&sock=startd_3788_d4d6>
+...
+006 (391162.020.000) 2024-01-19 17:42:37 Image size of job updated: 186736
+	183  -  MemoryUsage of job (MB)
+	186736  -  ResidentSetSize of job (KB)
+...
+006 (391162.020.000) 2024-01-19 17:44:32 Image size of job updated: 845200
+	183  -  MemoryUsage of job (MB)
+	186736  -  ResidentSetSize of job (KB)
+...
+040 (391162.020.000) 2024-01-19 17:44:32 Started transferring output files
+...
+040 (391162.020.000) 2024-01-19 17:44:32 Finished transferring output files
+...
+005 (391162.020.000) 2024-01-19 17:44:32 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:01:12, Sys 0 00:00:07  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:01:12, Sys 0 00:00:07  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	7465015  -  Run Bytes Sent By Job
+	187104  -  Run Bytes Received By Job
+	7465015  -  Total Bytes Sent By Job
+	187104  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :                 1         1 
+	   Disk (KB)            :     7540      200    128928 
+	   Memory (MB)          :      183     3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T08:44:32Z.
+...
+000 (391163.020.000) 2024-01-19 17:55:43 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391163.020.000) 2024-01-19 17:55:56 Started transferring input files
+	Transferring to host: <172.30.1.101:9618?addrs=172.30.1.101-9618&alias=n1&noUDP&sock=slot1_41_3437_6d65_45371>
+...
+001 (391163.020.000) 2024-01-19 17:55:56 Job executing on host: <172.30.1.101:9618?addrs=172.30.1.101-9618&alias=n1&noUDP&sock=startd_3403_c0e0>
+...
+040 (391163.020.000) 2024-01-19 17:55:56 Finished transferring input files
+...
+006 (391163.020.000) 2024-01-19 17:56:05 Image size of job updated: 139472
+	16  -  MemoryUsage of job (MB)
+	15484  -  ResidentSetSize of job (KB)
+...
+006 (391163.020.000) 2024-01-19 18:01:06 Image size of job updated: 874720
+	199  -  MemoryUsage of job (MB)
+	203732  -  ResidentSetSize of job (KB)
+...
+004 (391163.020.000) 2024-01-19 18:03:19 Job was evicted.
+	(0) CPU times
+		Usr 0 00:06:05, Sys 0 00:00:29  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+	0  -  Run Bytes Sent By Job
+	186100  -  Run Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.93        1         1 
+	   Disk (KB)            : 15491         200    127948 
+	   Memory (MB)          :   199        3900      3968 
+...
+009 (391163.020.000) 2024-01-19 18:03:19 Job was aborted.
+	via condor_rm (by user shin)
+...
+000 (391164.020.000) 2024-01-19 18:03:23 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391164.020.000) 2024-01-19 18:03:37 Started transferring input files
+	Transferring to host: <172.30.1.101:9618?addrs=172.30.1.101-9618&alias=n1&noUDP&sock=slot1_39_3437_6d65_45383>
+...
+040 (391164.020.000) 2024-01-19 18:03:37 Finished transferring input files
+...
+001 (391164.020.000) 2024-01-19 18:03:37 Job executing on host: <172.30.1.101:9618?addrs=172.30.1.101-9618&alias=n1&noUDP&sock=startd_3403_c0e0>
+...
+006 (391164.020.000) 2024-01-19 18:03:46 Image size of job updated: 139344
+	111  -  MemoryUsage of job (MB)
+	113604  -  ResidentSetSize of job (KB)
+...
+006 (391164.020.000) 2024-01-19 18:08:46 Image size of job updated: 875144
+	202  -  MemoryUsage of job (MB)
+	206752  -  ResidentSetSize of job (KB)
+...
+006 (391164.020.000) 2024-01-19 18:12:49 Image size of job updated: 875536
+	202  -  MemoryUsage of job (MB)
+	206752  -  ResidentSetSize of job (KB)
+...
+040 (391164.020.000) 2024-01-19 18:12:49 Started transferring output files
+...
+040 (391164.020.000) 2024-01-19 18:12:57 Finished transferring output files
+...
+005 (391164.020.000) 2024-01-19 18:12:57 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:08:06, Sys 0 00:00:34  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:08:06, Sys 0 00:00:34  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	56167580  -  Run Bytes Sent By Job
+	186386  -  Run Bytes Received By Job
+	56167580  -  Total Bytes Sent By Job
+	186386  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.98        1         1 
+	   Disk (KB)            : 55106         200    127948 
+	   Memory (MB)          :   202        3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T09:12:49Z.
+...
+000 (391165.020.000) 2024-01-19 22:41:31 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391165.020.000) 2024-01-19 22:41:35 Started transferring input files
+	Transferring to host: <172.30.1.204:9618?addrs=172.30.1.204-9618&alias=node4&noUDP&sock=slot1_28_3725_5971_203500>
+...
+001 (391165.020.000) 2024-01-19 22:41:35 Job executing on host: <172.30.1.204:9618?addrs=172.30.1.204-9618&alias=node4&noUDP&sock=startd_3691_4c27>
+...
+040 (391165.020.000) 2024-01-19 22:41:35 Finished transferring input files
+...
+006 (391165.020.000) 2024-01-19 22:41:43 Image size of job updated: 139088
+	34  -  MemoryUsage of job (MB)
+	33980  -  ResidentSetSize of job (KB)
+...
+006 (391165.020.000) 2024-01-19 22:43:34 Image size of job updated: 846580
+	34  -  MemoryUsage of job (MB)
+	33980  -  ResidentSetSize of job (KB)
+...
+040 (391165.020.000) 2024-01-19 22:43:34 Started transferring output files
+...
+040 (391165.020.000) 2024-01-19 22:43:35 Finished transferring output files
+...
+005 (391165.020.000) 2024-01-19 22:43:35 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:01:07, Sys 0 00:00:07  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:01:07, Sys 0 00:00:07  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	7473695  -  Run Bytes Sent By Job
+	185908  -  Run Bytes Received By Job
+	7473695  -  Total Bytes Sent By Job
+	185908  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.03        1         1 
+	   Disk (KB)            :  7554         200    128928 
+	   Memory (MB)          :    34        3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T13:43:34Z.
+...
+000 (391166.020.000) 2024-01-19 22:44:51 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391166.020.000) 2024-01-19 22:44:59 Started transferring input files
+	Transferring to host: <172.30.1.204:9618?addrs=172.30.1.204-9618&alias=node4&noUDP&sock=slot1_28_3725_5971_203526>
+...
+001 (391166.020.000) 2024-01-19 22:44:59 Job executing on host: <172.30.1.204:9618?addrs=172.30.1.204-9618&alias=node4&noUDP&sock=startd_3691_4c27>
+...
+040 (391166.020.000) 2024-01-19 22:44:59 Finished transferring input files
+...
+006 (391166.020.000) 2024-01-19 22:45:08 Image size of job updated: 139088
+	125  -  MemoryUsage of job (MB)
+	127736  -  ResidentSetSize of job (KB)
+...
+006 (391166.020.000) 2024-01-19 22:50:08 Image size of job updated: 871764
+	183  -  MemoryUsage of job (MB)
+	186756  -  ResidentSetSize of job (KB)
+...
+006 (391166.020.000) 2024-01-19 22:50:40 Image size of job updated: 878760
+	183  -  MemoryUsage of job (MB)
+	186756  -  ResidentSetSize of job (KB)
+...
+040 (391166.020.000) 2024-01-19 22:50:40 Started transferring output files
+...
+040 (391166.020.000) 2024-01-19 22:50:41 Finished transferring output files
+...
+005 (391166.020.000) 2024-01-19 22:50:41 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:05:11, Sys 0 00:00:15  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:05:11, Sys 0 00:00:15  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	32367288  -  Run Bytes Sent By Job
+	185911  -  Run Bytes Received By Job
+	32367288  -  Total Bytes Sent By Job
+	185911  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.84        1         1 
+	   Disk (KB)            : 31864         200    128928 
+	   Memory (MB)          :   183        3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T13:50:40Z.
+...
+000 (391167.020.000) 2024-01-19 22:57:44 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391167.020.000) 2024-01-19 22:57:47 Started transferring input files
+	Transferring to host: <172.30.1.204:9618?addrs=172.30.1.204-9618&alias=node4&noUDP&sock=slot1_30_3725_5971_203554>
+...
+001 (391167.020.000) 2024-01-19 22:57:47 Job executing on host: <172.30.1.204:9618?addrs=172.30.1.204-9618&alias=node4&noUDP&sock=startd_3691_4c27>
+...
+040 (391167.020.000) 2024-01-19 22:57:47 Finished transferring input files
+...
+006 (391167.020.000) 2024-01-19 22:57:56 Image size of job updated: 139344
+	74  -  MemoryUsage of job (MB)
+	75360  -  ResidentSetSize of job (KB)
+...
+006 (391167.020.000) 2024-01-19 23:02:57 Image size of job updated: 874944
+	200  -  MemoryUsage of job (MB)
+	203820  -  ResidentSetSize of job (KB)
+...
+006 (391167.020.000) 2024-01-19 23:03:22 Image size of job updated: 874996
+	200  -  MemoryUsage of job (MB)
+	203820  -  ResidentSetSize of job (KB)
+...
+040 (391167.020.000) 2024-01-19 23:03:22 Started transferring output files
+...
+040 (391167.020.000) 2024-01-19 23:03:22 Finished transferring output files
+...
+005 (391167.020.000) 2024-01-19 23:03:22 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:05:00, Sys 0 00:00:15  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:05:00, Sys 0 00:00:15  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	32352044  -  Run Bytes Sent By Job
+	185911  -  Run Bytes Received By Job
+	32352044  -  Total Bytes Sent By Job
+	185911  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.99        1         1 
+	   Disk (KB)            : 31849         200    128928 
+	   Memory (MB)          :   200        3900      3968 
+
+	Job terminated of its own accord at 2024-01-19T14:03:22Z.
+...
+000 (391343.020.000) 2024-01-22 10:59:17 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391343.020.000) 2024-01-22 10:59:24 Started transferring input files
+	Transferring to host: <172.30.1.216:9618?addrs=172.30.1.216-9618&alias=node16&noUDP&sock=slot1_29_4290_7168_332798>
+...
+040 (391343.020.000) 2024-01-22 10:59:24 Finished transferring input files
+...
+001 (391343.020.000) 2024-01-22 10:59:24 Job executing on host: <172.30.1.216:9618?addrs=172.30.1.216-9618&alias=node16&noUDP&sock=startd_4255_2791>
+...
+006 (391343.020.000) 2024-01-22 10:59:32 Image size of job updated: 1288
+	1  -  MemoryUsage of job (MB)
+	84  -  ResidentSetSize of job (KB)
+...
+006 (391343.020.000) 2024-01-22 11:04:32 Image size of job updated: 961236
+	275  -  MemoryUsage of job (MB)
+	280976  -  ResidentSetSize of job (KB)
+...
+006 (391343.020.000) 2024-01-22 11:09:33 Image size of job updated: 967828
+	275  -  MemoryUsage of job (MB)
+	280976  -  ResidentSetSize of job (KB)
+...
+006 (391343.020.000) 2024-01-22 11:19:34 Image size of job updated: 969156
+	275  -  MemoryUsage of job (MB)
+	280976  -  ResidentSetSize of job (KB)
+...
+040 (391343.020.000) 2024-01-22 11:21:26 Started transferring output files
+...
+040 (391343.020.000) 2024-01-22 11:21:28 Finished transferring output files
+...
+005 (391343.020.000) 2024-01-22 11:21:28 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:20:09, Sys 0 00:00:56  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:20:09, Sys 0 00:00:56  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	30844428  -  Run Bytes Sent By Job
+	185924  -  Run Bytes Received By Job
+	30844428  -  Total Bytes Sent By Job
+	185924  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     0.97        1         1 
+	   Disk (KB)            : 30376         200    261111 
+	   Memory (MB)          :   275        3900      3968 
+
+	Job terminated of its own accord at 2024-01-22T02:21:25Z.
+...
+000 (391348.020.000) 2024-01-22 12:29:14 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391348.020.000) 2024-01-22 12:29:19 Started transferring input files
+	Transferring to host: <172.30.1.216:9618?addrs=172.30.1.216-9618&alias=node16&noUDP&sock=slot1_21_4290_7168_332834>
+...
+040 (391348.020.000) 2024-01-22 12:29:19 Finished transferring input files
+...
+001 (391348.020.000) 2024-01-22 12:29:19 Job executing on host: <172.30.1.216:9618?addrs=172.30.1.216-9618&alias=node16&noUDP&sock=startd_4255_2791>
+...
+006 (391348.020.000) 2024-01-22 12:29:27 Image size of job updated: 139344
+	5  -  MemoryUsage of job (MB)
+	4956  -  ResidentSetSize of job (KB)
+...
+006 (391348.020.000) 2024-01-22 12:34:27 Image size of job updated: 952028
+	293  -  MemoryUsage of job (MB)
+	299808  -  ResidentSetSize of job (KB)
+...
+006 (391348.020.000) 2024-01-22 12:39:28 Image size of job updated: 961044
+	293  -  MemoryUsage of job (MB)
+	299808  -  ResidentSetSize of job (KB)
+...
+006 (391348.020.000) 2024-01-22 12:49:29 Image size of job updated: 969016
+	293  -  MemoryUsage of job (MB)
+	299808  -  ResidentSetSize of job (KB)
+...
+040 (391348.020.000) 2024-01-22 12:50:10 Started transferring output files
+...
+040 (391348.020.000) 2024-01-22 12:50:11 Finished transferring output files
+...
+005 (391348.020.000) 2024-01-22 12:50:11 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:19:26, Sys 0 00:00:53  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:19:26, Sys 0 00:00:53  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	30846168  -  Run Bytes Sent By Job
+	186484  -  Run Bytes Received By Job
+	30846168  -  Total Bytes Sent By Job
+	186484  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     1.01        1         1 
+	   Disk (KB)            : 30379         200    261111 
+	   Memory (MB)          :   293        3900      3968 
+
+	Job terminated of its own accord at 2024-01-22T03:50:10Z.
+...
+000 (391350.020.000) 2024-01-22 13:01:44 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391350.020.000) 2024-01-22 13:02:01 Started transferring input files
+	Transferring to host: <172.30.1.216:9618?addrs=172.30.1.216-9618&alias=node16&noUDP&sock=slot1_21_4290_7168_332874>
+...
+040 (391350.020.000) 2024-01-22 13:02:01 Finished transferring input files
+...
+001 (391350.020.000) 2024-01-22 13:02:01 Job executing on host: <172.30.1.216:9618?addrs=172.30.1.216-9618&alias=node16&noUDP&sock=startd_4255_2791>
+...
+006 (391350.020.000) 2024-01-22 13:02:10 Image size of job updated: 139232
+	5  -  MemoryUsage of job (MB)
+	4956  -  ResidentSetSize of job (KB)
+...
+006 (391350.020.000) 2024-01-22 13:07:10 Image size of job updated: 962148
+	285  -  MemoryUsage of job (MB)
+	291060  -  ResidentSetSize of job (KB)
+...
+006 (391350.020.000) 2024-01-22 13:12:10 Image size of job updated: 968856
+	285  -  MemoryUsage of job (MB)
+	291060  -  ResidentSetSize of job (KB)
+...
+040 (391350.020.000) 2024-01-22 13:23:18 Started transferring output files
+...
+040 (391350.020.000) 2024-01-22 13:23:18 Finished transferring output files
+...
+005 (391350.020.000) 2024-01-22 13:23:18 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:19:49, Sys 0 00:00:53  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:19:49, Sys 0 00:00:53  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	30891000  -  Run Bytes Sent By Job
+	186577  -  Run Bytes Received By Job
+	30891000  -  Total Bytes Sent By Job
+	186577  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     1.00        1         1 
+	   Disk (KB)            : 30423         200    261111 
+	   Memory (MB)          :   285        3900      3968 
+
+	Job terminated of its own accord at 2024-01-22T04:23:18Z.
+...
+000 (391361.020.000) 2024-01-22 13:44:17 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391361.020.000) 2024-01-22 13:44:30 Started transferring input files
+	Transferring to host: <172.30.1.216:9618?addrs=172.30.1.216-9618&alias=node16&noUDP&sock=slot1_46_4290_7168_333004>
+...
+040 (391361.020.000) 2024-01-22 13:44:30 Finished transferring input files
+...
+001 (391361.020.000) 2024-01-22 13:44:30 Job executing on host: <172.30.1.216:9618?addrs=172.30.1.216-9618&alias=node16&noUDP&sock=startd_4255_2791>
+...
+006 (391361.020.000) 2024-01-22 13:44:38 Image size of job updated: 139232
+	5  -  MemoryUsage of job (MB)
+	4960  -  ResidentSetSize of job (KB)
+...
+006 (391361.020.000) 2024-01-22 13:48:26 Image size of job updated: 868924
+	5  -  MemoryUsage of job (MB)
+	4960  -  ResidentSetSize of job (KB)
+...
+040 (391361.020.000) 2024-01-22 13:48:26 Started transferring output files
+...
+040 (391361.020.000) 2024-01-22 13:48:28 Finished transferring output files
+...
+005 (391361.020.000) 2024-01-22 13:48:28 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:03:24, Sys 0 00:00:13  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:03:24, Sys 0 00:00:13  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	31094320  -  Run Bytes Sent By Job
+	191813  -  Run Bytes Received By Job
+	31094320  -  Total Bytes Sent By Job
+	191813  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     1.00        1         1 
+	   Disk (KB)            : 30629         200    261111 
+	   Memory (MB)          :     5        3900      3968 
+
+	Job terminated of its own accord at 2024-01-22T04:48:26Z.
+...
+000 (391362.020.000) 2024-01-22 13:50:58 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391362.020.000) 2024-01-22 13:51:00 Started transferring input files
+	Transferring to host: <172.30.1.216:9618?addrs=172.30.1.216-9618&alias=node16&noUDP&sock=slot1_7_4290_7168_333030>
+...
+040 (391362.020.000) 2024-01-22 13:51:00 Finished transferring input files
+...
+001 (391362.020.000) 2024-01-22 13:51:00 Job executing on host: <172.30.1.216:9618?addrs=172.30.1.216-9618&alias=node16&noUDP&sock=startd_4255_2791>
+...
+006 (391362.020.000) 2024-01-22 13:51:09 Image size of job updated: 561384
+	68  -  MemoryUsage of job (MB)
+	69436  -  ResidentSetSize of job (KB)
+...
+006 (391362.020.000) 2024-01-22 13:56:10 Image size of job updated: 952056
+	255  -  MemoryUsage of job (MB)
+	261004  -  ResidentSetSize of job (KB)
+...
+006 (391362.020.000) 2024-01-22 14:01:11 Image size of job updated: 962284
+	255  -  MemoryUsage of job (MB)
+	261004  -  ResidentSetSize of job (KB)
+...
+006 (391362.020.000) 2024-01-22 14:06:11 Image size of job updated: 962284
+	277  -  MemoryUsage of job (MB)
+	283080  -  ResidentSetSize of job (KB)
+...
+006 (391362.020.000) 2024-01-22 14:11:12 Image size of job updated: 969636
+	277  -  MemoryUsage of job (MB)
+	283196  -  ResidentSetSize of job (KB)
+...
+006 (391362.020.000) 2024-01-22 14:15:20 Image size of job updated: 969696
+	277  -  MemoryUsage of job (MB)
+	283196  -  ResidentSetSize of job (KB)
+...
+040 (391362.020.000) 2024-01-22 14:15:20 Started transferring output files
+...
+040 (391362.020.000) 2024-01-22 14:15:21 Finished transferring output files
+...
+005 (391362.020.000) 2024-01-22 14:15:21 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:22:01, Sys 0 00:01:01  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:22:01, Sys 0 00:01:01  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	30874592  -  Run Bytes Sent By Job
+	191814  -  Run Bytes Received By Job
+	30874592  -  Total Bytes Sent By Job
+	191814  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     1.00        1         1 
+	   Disk (KB)            : 30414         200    261111 
+	   Memory (MB)          :   277        3900      3968 
+
+	Job terminated of its own accord at 2024-01-22T05:15:20Z.
+...
+000 (391496.020.000) 2024-01-22 14:58:10 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391496.020.000) 2024-01-22 14:58:19 Started transferring input files
+	Transferring to host: <172.30.1.216:9618?addrs=172.30.1.216-9618&alias=node16&noUDP&sock=slot1_31_4290_7168_333211>
+...
+040 (391496.020.000) 2024-01-22 14:58:19 Finished transferring input files
+...
+001 (391496.020.000) 2024-01-22 14:58:19 Job executing on host: <172.30.1.216:9618?addrs=172.30.1.216-9618&alias=node16&noUDP&sock=startd_4255_2791>
+...
+006 (391496.020.000) 2024-01-22 14:58:28 Image size of job updated: 139344
+	5  -  MemoryUsage of job (MB)
+	4956  -  ResidentSetSize of job (KB)
+...
+006 (391496.020.000) 2024-01-22 15:03:29 Image size of job updated: 952580
+	246  -  MemoryUsage of job (MB)
+	251396  -  ResidentSetSize of job (KB)
+...
+006 (391496.020.000) 2024-01-22 15:08:30 Image size of job updated: 964728
+	285  -  MemoryUsage of job (MB)
+	291116  -  ResidentSetSize of job (KB)
+...
+006 (391496.020.000) 2024-01-22 15:13:30 Image size of job updated: 969136
+	285  -  MemoryUsage of job (MB)
+	291116  -  ResidentSetSize of job (KB)
+...
+006 (391496.020.000) 2024-01-22 15:27:07 Image size of job updated: 969828
+	285  -  MemoryUsage of job (MB)
+	291116  -  ResidentSetSize of job (KB)
+...
+040 (391496.020.000) 2024-01-22 15:27:07 Started transferring output files
+...
+040 (391496.020.000) 2024-01-22 15:27:10 Finished transferring output files
+...
+005 (391496.020.000) 2024-01-22 15:27:10 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:26:44, Sys 0 00:01:16  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:26:44, Sys 0 00:01:16  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	30867568  -  Run Bytes Sent By Job
+	191814  -  Run Bytes Received By Job
+	30867568  -  Total Bytes Sent By Job
+	191814  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     1.00        1         1 
+	   Disk (KB)            : 30407         200    261111 
+	   Memory (MB)          :   285        3900      3968 
+
+	Job terminated of its own accord at 2024-01-22T06:27:07Z.
+...
+000 (391511.020.000) 2024-01-22 15:59:41 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391511.020.000) 2024-01-22 15:59:53 Started transferring input files
+	Transferring to host: <172.30.1.214:9618?addrs=172.30.1.214-9618&alias=node14&noUDP&sock=slot1_43_4480_50af_235845>
+...
+040 (391511.020.000) 2024-01-22 15:59:53 Finished transferring input files
+...
+001 (391511.020.000) 2024-01-22 15:59:53 Job executing on host: <172.30.1.214:9618?addrs=172.30.1.214-9618&alias=node14&noUDP&sock=startd_4446_2a28>
+...
+006 (391511.020.000) 2024-01-22 16:00:02 Image size of job updated: 139344
+	11  -  MemoryUsage of job (MB)
+	10772  -  ResidentSetSize of job (KB)
+...
+006 (391511.020.000) 2024-01-22 16:05:03 Image size of job updated: 962112
+	225  -  MemoryUsage of job (MB)
+	230236  -  ResidentSetSize of job (KB)
+...
+006 (391511.020.000) 2024-01-22 16:10:04 Image size of job updated: 965044
+	276  -  MemoryUsage of job (MB)
+	282364  -  ResidentSetSize of job (KB)
+...
+006 (391511.020.000) 2024-01-22 16:15:04 Image size of job updated: 968980
+	276  -  MemoryUsage of job (MB)
+	282380  -  ResidentSetSize of job (KB)
+...
+006 (391511.020.000) 2024-01-22 16:20:05 Image size of job updated: 969812
+	295  -  MemoryUsage of job (MB)
+	301068  -  ResidentSetSize of job (KB)
+...
+040 (391511.020.000) 2024-01-22 16:25:52 Started transferring output files
+...
+040 (391511.020.000) 2024-01-22 16:25:56 Finished transferring output files
+...
+005 (391511.020.000) 2024-01-22 16:25:56 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:24:14, Sys 0 00:01:09  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:24:14, Sys 0 00:01:09  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	30870400  -  Run Bytes Sent By Job
+	191824  -  Run Bytes Received By Job
+	30870400  -  Total Bytes Sent By Job
+	191824  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     1.00        1         1 
+	   Disk (KB)            : 30410         200    261111 
+	   Memory (MB)          :   295        3900      3968 
+
+	Job terminated of its own accord at 2024-01-22T07:25:52Z.
+...
+000 (391574.020.000) 2024-01-22 23:14:59 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391574.020.000) 2024-01-22 23:15:01 Started transferring input files
+	Transferring to host: <172.30.1.216:9618?addrs=172.30.1.216-9618&alias=node16&noUDP&sock=slot1_3_4290_7168_334220>
+...
+040 (391574.020.000) 2024-01-22 23:15:01 Finished transferring input files
+...
+001 (391574.020.000) 2024-01-22 23:15:01 Job executing on host: <172.30.1.216:9618?addrs=172.30.1.216-9618&alias=node16&noUDP&sock=startd_4255_2791>
+...
+006 (391574.020.000) 2024-01-22 23:15:10 Image size of job updated: 139344
+	5  -  MemoryUsage of job (MB)
+	4956  -  ResidentSetSize of job (KB)
+...
+006 (391574.020.000) 2024-01-22 23:20:10 Image size of job updated: 952708
+	275  -  MemoryUsage of job (MB)
+	281588  -  ResidentSetSize of job (KB)
+...
+006 (391574.020.000) 2024-01-22 23:25:10 Image size of job updated: 968916
+	275  -  MemoryUsage of job (MB)
+	281588  -  ResidentSetSize of job (KB)
+...
+004 (391574.020.000) 2024-01-22 23:35:24 Job was evicted.
+	(0) CPU times
+		Usr 0 00:18:42, Sys 0 00:00:51  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+	0  -  Run Bytes Sent By Job
+	191685  -  Run Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     1.00        1         1 
+	   Disk (KB)            : 12101         200    261111 
+	   Memory (MB)          :   275        3900      3968 
+...
+009 (391574.020.000) 2024-01-22 23:35:24 Job was aborted.
+	via condor_rm (by user shin)
+...
+000 (391577.020.000) 2024-01-22 23:35:26 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391577.020.000) 2024-01-22 23:35:35 Started transferring input files
+	Transferring to host: <172.30.1.216:9618?addrs=172.30.1.216-9618&alias=node16&noUDP&sock=slot1_21_4290_7168_334298>
+...
+040 (391577.020.000) 2024-01-22 23:35:35 Finished transferring input files
+...
+001 (391577.020.000) 2024-01-22 23:35:35 Job executing on host: <172.30.1.216:9618?addrs=172.30.1.216-9618&alias=node16&noUDP&sock=startd_4255_2791>
+...
+006 (391577.020.000) 2024-01-22 23:35:44 Image size of job updated: 139088
+	5  -  MemoryUsage of job (MB)
+	4956  -  ResidentSetSize of job (KB)
+...
+006 (391577.020.000) 2024-01-22 23:40:44 Image size of job updated: 962384
+	237  -  MemoryUsage of job (MB)
+	241772  -  ResidentSetSize of job (KB)
+...
+006 (391577.020.000) 2024-01-22 23:45:44 Image size of job updated: 968924
+	294  -  MemoryUsage of job (MB)
+	300916  -  ResidentSetSize of job (KB)
+...
+040 (391577.020.000) 2024-01-23 00:02:54 Started transferring output files
+...
+040 (391577.020.000) 2024-01-23 00:02:55 Finished transferring output files
+...
+005 (391577.020.000) 2024-01-23 00:02:55 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:25:45, Sys 0 00:01:12  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:25:45, Sys 0 00:01:12  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	30872136  -  Run Bytes Sent By Job
+	191687  -  Run Bytes Received By Job
+	30872136  -  Total Bytes Sent By Job
+	191687  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     1.00        1         1 
+	   Disk (KB)            : 30411         200    261111 
+	   Memory (MB)          :   294        3900      3968 
+
+	Job terminated of its own accord at 2024-01-22T15:02:54Z.
+...
+000 (391582.020.000) 2024-01-23 10:33:34 Job submitted from host: <172.30.1.200:9618?addrs=172.30.1.200-9618&alias=tamsa2.snu.ac.kr&noUDP&sock=schedd_3625_06e6>
+...
+040 (391582.020.000) 2024-01-23 10:33:41 Started transferring input files
+	Transferring to host: <172.30.1.216:9618?addrs=172.30.1.216-9618&alias=node16&noUDP&sock=slot1_29_4290_7168_337546>
+...
+040 (391582.020.000) 2024-01-23 10:33:41 Finished transferring input files
+...
+001 (391582.020.000) 2024-01-23 10:33:41 Job executing on host: <172.30.1.216:9618?addrs=172.30.1.216-9618&alias=node16&noUDP&sock=startd_4255_2791>
+...
+006 (391582.020.000) 2024-01-23 10:33:50 Image size of job updated: 4724
+	5  -  MemoryUsage of job (MB)
+	4700  -  ResidentSetSize of job (KB)
+...
+006 (391582.020.000) 2024-01-23 10:38:51 Image size of job updated: 952652
+	266  -  MemoryUsage of job (MB)
+	271696  -  ResidentSetSize of job (KB)
+...
+006 (391582.020.000) 2024-01-23 10:43:52 Image size of job updated: 969264
+	276  -  MemoryUsage of job (MB)
+	282576  -  ResidentSetSize of job (KB)
+...
+006 (391582.020.000) 2024-01-23 10:53:52 Image size of job updated: 969264
+	287  -  MemoryUsage of job (MB)
+	293292  -  ResidentSetSize of job (KB)
+...
+006 (391582.020.000) 2024-01-23 10:54:09 Image size of job updated: 969876
+	287  -  MemoryUsage of job (MB)
+	293292  -  ResidentSetSize of job (KB)
+...
+040 (391582.020.000) 2024-01-23 10:54:09 Started transferring output files
+...
+040 (391582.020.000) 2024-01-23 10:54:09 Finished transferring output files
+...
+005 (391582.020.000) 2024-01-23 10:54:09 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:18:40, Sys 0 00:00:55  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:18:40, Sys 0 00:00:55  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	30869190  -  Run Bytes Sent By Job
+	191687  -  Run Bytes Received By Job
+	30869190  -  Total Bytes Sent By Job
+	191687  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     1.01        1         1 
+	   Disk (KB)            : 30408         200    261111 
+	   Memory (MB)          :   287        3900      3968 
+
+	Job terminated of its own accord at 2024-01-23T01:54:09Z.
+...

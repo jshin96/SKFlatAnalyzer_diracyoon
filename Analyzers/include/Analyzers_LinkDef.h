@@ -18,10 +18,19 @@
 #pragma link C++ class SkimTree_HNMultiLep+;
 #pragma link C++ class MeasureJetTaggingEfficiency+;
 #pragma link C++ class SkimTree_Dilepton+;
-#pragma link C++ class Vcb+;
-#pragma link C++ class Vcb_DL+;
-#pragma link C++ class Vcb_Tagging_RF+;
-#pragma link C++ class Vcb_Tagging_RF_DL+;
+//#pragma link C++ class Vcb+;
+//#pragma link C++ class Vcb_DL+;
+//#pragma link C++ class Vcb_Tagging_RF+;
+//#pragma link C++ class Vcb_Tagging_RF_DL+;
 #pragma link C++ class XYMETCorrection_withUL17andUL18andUL16+;
-
+#pragma link C++ class Vcb_BJetRegression_El+;
+#pragma link C++ class Vcb_BJetRegression_El_BReg+;
+#pragma link C++ class Vcb_BJetRegression_Mu+;
+#pragma link C++ class Vcb_BJetRegression_Mu_BReg+;
+#pragma link C++ class Vcb_BJetRegression_El_pt+;
+#pragma link C++ class Vcb_BJetRegression_El_BReg_pt+;
+#pragma link C++ class Vcb_BJetRegression_Mu_pt+;
+#pragma link C++ class Vcb_BJetRegression_Mu_BReg_pt+;
+#pragma link C++ class Vcb_BJetRegression_Single_El+;
+#pragma link C++ class Vcb_BJetRegression_Single_Mu+;
 #endif

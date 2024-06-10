@@ -1,0 +1,10 @@
+
+      if(k==0) param.Name=param.Name+"_dd";  
+      else if(k==1) param.Name=param.Name+"_dn"; 
+      else if(k==2) param.Name=param.Name+"_du";
+      else if(k==3) param.Name=param.Name+"_nd";
+      else if(k==4) param.Name=param.Name;
+      else if(k==5) param.Name=param.Name+"_nu";
+      else if(k==6) param.Name=param.Name+"_ud";
+      else if(k==7) param.Name=param.Name+"_un";
+      else if(k==8) param.Name=param.Name+"_uu";

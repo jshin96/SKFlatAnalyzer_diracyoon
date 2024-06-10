@@ -1,0 +1,113 @@
+from ROOT import TCanvas, TLegend, TPad, THStack, TLatex
+
+
+class PlotterBase:
+    def __init__(self, cvs_type="default", logy=False, grid=False):
+        # store information
+        # legend should be made in child class
+        self.cvs_type = cvs_type
+        # self.leg_size = leg_size    # TODO: Update legend option
+        self.logy = logy
+        self.grid = grid
+
+    # getter for child class
+    def cvs(self):
+        return self.cvs
+
+    def pad_lefttop(self):
+        return self.pad_lefttop
+
+    def pad_righttop(self):
+        return self.pad_righttop
+
+    def pad_leftbottom(self):
+        return self.pad_leftbottom
+
+    def pad_rightbottom(self):
+        return self.pad_rightbottom
+
+    def pad_up(self):
+        return self.pad_up
+
+    def pad_down(self):
+        return self.pad_down
+
+    def info(self):
+        return self.info
+
+    def logo(self):
+        return self.logo
+
+    def extra_logo(self):
+        return self.extra_logo
+
+    def set_info(self):
+        self.info = TLatex()
+        self.info.SetTextSize(0.035)
+        self.info.SetTextFont(42)
+
+    def set_logo(self):
+        self.logo = TLatex()
+        self.extra_logo = TLatex()
+        self.logo.SetTextSize(0.04)
+        self.logo.SetTextFont(61)
+        self.extra_logo.SetTextSize(0.035)
+        self.extra_logo.SetTextFont(52)
+
+    def set_canvas(self):
+        try:
+            if self.cvs_type == "default":
+                self.cvs = TCanvas("cvs", "", 680, 800)
+                if self.grid:
+                    self.cvs.SetGrid()
+                if self.logy:
+                    self.cvs.SetLogy()
+            elif self.cvs_type == "ratio":
+                self.cvs = TCanvas("cvs", "", 720, 800)
+                self.pad_up = TPad("pad_up", "", 0, 0.25, 1, 1)
+                self.pad_up.SetBottomMargin(0.02)
+                if self.grid:
+                    self.pad_up.SetGrid()
+                if self.logy:
+                    self.pad_up.SetLogy()
+
+                self.pad_down = TPad("pad_down", "", 0, 0, 1, 0.25)
+                self.pad_down.SetGrid(1)
+                self.pad_down.SetTopMargin(0.08)
+                self.pad_down.SetBottomMargin(0.3)
+            elif self.cvs_type == "2by2":
+                print("producing 2 by 2 canvas")
+                self.cvs = TCanvas("cvs", "", 1000, 1000)
+                self.pad_lefttop = TPad("pad_up", "", 0, 0.5, 0.5, 1)
+                self.pad_lefttop.SetBottomMargin(0.08)
+                self.pad_righttop = TPad("pad_up", "", 0.5, 0.5, 1, 1)
+                self.pad_righttop.SetBottomMargin(0.08)
+                self.pad_leftbottom = TPad("pad_up", "", 0, 0, 0.5, 0.5)
+                self.pad_leftbottom.SetTopMargin(0.02)
+                self.pad_rightbottom = TPad("pad_up", "", 0.5, 0, 1, 0.5)
+                self.pad_rightbottom.SetTopMargin(0.02)
+                if self.grid:
+                    self.pad_lefttop.SetGrid()
+                    self.pad_leftbotttmo.SetGrid()
+                    self.pad_righttop.SetGrid()
+                    self.pad_rightbottom.SetGrid()
+                if self.logy:
+                    self.pad_lefttop.SetLogy()
+                    self.pad_leftbotttmo.SetLogy()
+                    self.pad_righttop.SetLogy()
+                    self.pad_rightbottom.SetLogy()
+
+        except Exception as e:
+            print("__set_canvas(): Exception Occured! " + str(e))
+            # raise(AttributeError)
+    # methods
+
+    def draw(self):
+        self.cvs.Draw()
+
+    def save(self, path1, path2=""):
+        self.cvs.SaveAs(path1)
+        if path2!="":
+            self.cvs.SaveAs(path2)
+        self.cvs.Close()
+

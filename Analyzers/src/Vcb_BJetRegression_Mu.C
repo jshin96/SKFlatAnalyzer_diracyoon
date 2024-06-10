@@ -38,10 +38,11 @@ void Vcb_BJetRegression_Mu::initializeAnalyzer(){
 
 
   if(run_debug){
-    jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::comb) );
+    jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Tight, JetTagging::incl, JetTagging::comb) );
   }
   else if (RunSyst){
-    jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::iterativefit, JetTagging::iterativefit) );
+//    jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::iterativefit, JetTagging::iterativefit) );
+    jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Tight, JetTagging::iterativefit, JetTagging::iterativefit) );
   }
   mcCorr->SetJetTaggingParameters(jtps);
 }
@@ -61,8 +62,8 @@ void Vcb_BJetRegression_Mu::executeEvent(){
   param.Electron_Tight_ID = "passMVAID_iso_WP80";
   param.Jet_ID = "tight";
   param.PUJet_Veto_ID = "LoosePileupJetVeto";
-  param.MuName = Muon_Tight_ID+"_"+"Central";
-  param.ElName = Electron_Tight_ID+"_"+"Central";
+  param.MuName = param.Muon_Tight_ID+"_"+"Central";
+  param.ElName = param.Electron_Tight_ID+"_"+"Central";
 
   executeEventFromParameter(param);
 
@@ -70,23 +71,22 @@ void Vcb_BJetRegression_Mu::executeEvent(){
     
     for(int it_syst=1; it_syst<AnalyzerParameter::NSyst; it_syst++){
       param.syst_ = AnalyzerParameter::Syst(it_syst);
-      param.MuName = MuonID+"_"+"Syst_"+param.GetSystType();
-      param.ElName = ElectronID+"_"+"Syst_"+param.GetSystType();
+      param.MuName = param.Muon_Tight_ID+"_"+"Syst_"+param.GetSystType();
+      param.ElName = param.Electron_Tight_ID+"_"+"Syst_"+param.GetSystType();
       executeEventFromParameter(param);
     }
-    cout << "Pass Syst" << endl;
   }
 }
 
 void Vcb_BJetRegression_Mu::executeEventFromParameter(AnalyzerParameter param){
-  FillHist(param.MuName+"/No_Cut_"+param.Name, 0., 1., 1, 0., 1.);
+  FillHist(param.MuName+"/Cut_"+param.Name, 0., 1., 11, 0., 11.);
 
   if(!PassMETFilter()) return;
 
   Event ev = GetEvent();
 
-  if(!(ev.PassTrigger(HLTElTriggerName))) return;
-  FillHist(param.MuName+"/Trig_Cut_"+param.Name, 0., 1., 1, 0., 1.);
+  if(!(ev.PassTrigger(HLTMuTriggerName))) return;
+  FillHist(param.MuName+"/Cut_"+param.Name, 1., 1., 11, 0., 11.);
 
   vector<Jet> this_AllJets = AllJets;
   vector<Muon> this_AllMuons = AllMuons;
@@ -150,14 +150,15 @@ void Vcb_BJetRegression_Mu::executeEventFromParameter(AnalyzerParameter param){
 
   std::sort(jets.begin(), jets.end(), PtComparing);
   if(jets.size() != 2) return;
-  cout << "Pass 2Jets" << endl;
+  FillHist(param.MuName+"/Cut_"+param.Name, 2., 1., 11, 0., 11.);
   double LeadBTagging_Score = jets.at(0).GetTaggerResult(JetTagging::DeepJet);
   double SubBTagging_Score = jets.at(1).GetTaggerResult(JetTagging::DeepJet);
-  double BtagCutValue = mcCorr->GetJetTaggingCutValue( JetTagging::DeepJet, JetTagging::Medium);
+  double BtagCutValue = mcCorr->GetJetTaggingCutValue( JetTagging::DeepJet, JetTagging::Tight);
+//  double BtagCutValue = mcCorr->GetJetTaggingCutValue( JetTagging::DeepJet, JetTagging::Medium);
   if(LeadBTagging_Score < BtagCutValue){
-    cout << "Fail B Tagging" << endl;
     return;
   }
+  FillHist(param.MuName+"/Cut_"+param.Name, 3., 1., 11, 0., 11.);
 
 //  double BJetNNCorr = 1.0;          //To not apply BJetRegression
 //  BJetNNCorr = jets.at(0).BJetNNCorrection();
@@ -167,6 +168,7 @@ void Vcb_BJetRegression_Mu::executeEventFromParameter(AnalyzerParameter param){
   vector<Jet> leadjet;
   leadjet.push_back(jets.at(0)); 
   if(jets.at(0).Pt()<20) return;
+  FillHist(param.MuName+"/Cut_"+param.Name, 4., 1., 11, 0., 11.);
   double btagWeight = 1.0;
   if(run_debug){
     btagWeight = mcCorr->GetBTaggingReweight_1a(leadjet, jtps.at(0), "central");
@@ -223,31 +225,41 @@ void Vcb_BJetRegression_Mu::executeEventFromParameter(AnalyzerParameter param){
     AllGens = GetGens();
     DY_PT_Corr = mcCorr->GetOfficialDYReweight(AllGens,0);
     weight *= DY_PT_Corr;
+    FillHist(param.MuName+"/DYWeight_"+param.Name, DY_PT_Corr , 1., 40, -5, 5);
 
     weight_pujet_veto = mcCorr->PileupJetVeto_Reweight(jets, param.PUJet_Veto_ID, 0);
     weight *= weight_pujet_veto;
+    FillHist(param.MuName+"/PU_Veto_Weight_"+param.Name, weight_pujet_veto , 1., 40, -5, 5);
 
   }
 
-  cout << "Pass event weights" << endl;
     
   std::sort(muons.begin(), muons.end(), PtComparing);
-  if(electrons.size() != 0 or muons.size()!=2) return;
+  FillHist(param.MuName+"/N_Raw_Mu_"+param.Name, this_AllMuons.size(), 1., 10, 0., 11.);
+  FillHist(param.MuName+"/N_Mu_"+param.Name, muons.size(), 1., 10, 0., 11.);
+  FillHist(param.MuName+"/Mu_Cut_"+param.Name, 0., 1., 4, 0., 4.);
+  if(muons.size()!=2) return;
+  FillHist(param.MuName+"/Mu_Cut_"+param.Name, 1., 1., 4, 0., 4.);
   if(muons.at(0).Charge() == muons.at(1).Charge()) return;
-  if(muons.at(0).Pt() <= ElTriggerSafePtCut) return;
+  FillHist(param.MuName+"/Mu_Cut_"+param.Name, 2., 1., 4, 0., 4.);
+  if(muons.at(0).Pt() <= MuTriggerSafePtCut) return;
+  FillHist(param.MuName+"/Mu_Cut_"+param.Name, 3., 1., 4, 0., 4.);
+  FillHist(param.MuName+"/Cut_"+param.Name, 5., 1., 11, 0., 11.);
   Particle Z_cand = muons.at(0) + muons.at(1);
  
-  if(Z_cand.Pt() < 100) {
+  if(Z_cand.Pt() < 70) {
     return;
   }
+  FillHist(param.MuName+"/Cut_"+param.Name, 6., 1., 11, 0., 11.);
 
   if(Z_cand.M() >= 111 || Z_cand.M() <= 71) return;
+  FillHist(param.MuName+"/Cut_"+param.Name, 7., 1., 11, 0., 11.);
 
 
 
   if(!IsDATA){  
-      //double this_triggersf = 1.;
-//    double this_triggersf = mcCorr->ElectronTrigger_SF("passTightID", ElTriggerName , electrons, 0);
+//      double this_triggersf = 1.;
+    double this_triggersf = mcCorr->MuonTrigger_SF("POGTight", MuTriggerName , muons, 0);
 //    if(RunSyst){
 //        double weight_El_trig_down = mcCorr->ElectronTrigger_SF("passTightID", ElTriggerName , electrons, -1);
 //        double weight_El_trig_up = mcCorr->ElectronTrigger_SF("passTightID", ElTriggerName , electrons, -1);
@@ -256,10 +268,10 @@ void Vcb_BJetRegression_Mu::executeEventFromParameter(AnalyzerParameter param){
 //        weight_El_ISO_down = 1.0;
 //        weight_El_ISO_up = 1.0;
 //    }
-//    weight *= this_triggersf;
+    weight *= this_triggersf;
     for(unsigned int i=0; i<muons.size(); i++){
-      double this_idsf = mcCorr->MuonID_SF(param.Muon_Tight_ID, muons.at(i).Eta(), muons.at(i).MiniAODPt(),0);
-      double this_isosf = mcCorr->MuonISO_SF(param.Muon_Tight_ID, muons.at(i).Eta(), muons.at(i).MiniAODPt(),0);
+      double this_idsf = mcCorr->MuonID_SF(param.Muon_ID_SF_Key, muons.at(i).Eta(), muons.at(i).MiniAODPt(),0);
+      double this_isosf = mcCorr->MuonISO_SF(param.Muon_ISO_SF_Key, muons.at(i).Eta(), muons.at(i).MiniAODPt(),0);
       weight *= this_idsf*this_isosf;     
 //      if(RunSyst){
 //        weight_Mu_ID_down *= mcCorr->MuonID_SF (param.Muon_ID_SF_Key,  muons.at(i).Eta(), muons.at(i).MiniAODPt(),-1);
@@ -280,78 +292,154 @@ void Vcb_BJetRegression_Mu::executeEventFromParameter(AnalyzerParameter param){
       }
     }
     if (Gen_Jet_dR == 999) return;
-    cout << "Pass gens" << endl;
   }
+  FillHist(param.MuName+"/Cut_"+param.Name, 8., 1., 11, 0., 11.);
   Particle rest = Z_cand;
   float rest_PT = rest.Pt();
 
   if(abs(jets.at(0).DeltaPhi(Z_cand)) > 2.8) {
     FillHist(param.MuName+"/Z_leadjet_dphi_Cut_"+param.Name, 0., 1., 1, 0., 1.);
   } else return;
+  FillHist(param.MuName+"/Cut_"+param.Name, 9., 1., 11, 0., 11.);
 
+  double nominal_weight = weight;
+  param.raw_Name=param.Name;
+  if(!IsDATA){
+    for (unsigned int k=0; k<weight_Scale->size(); k++){
+      weight = nominal_weight*weight_Scale->at(k);
+      if (!isfinite(weight)) return;
+      if (!isnormal(weight)) return;
+      if(k==0) param.Name=param.raw_Name+"_dd";  
+      else if(k==1) param.Name=param.raw_Name+"_dn"; 
+      else if(k==2) param.Name=param.raw_Name+"_du";
+      else if(k==3) param.Name=param.raw_Name+"_nd";
+      else if(k==4) param.Name=param.raw_Name;
+      else if(k==5) param.Name=param.raw_Name+"_nu";
+      else if(k==6) param.Name=param.raw_Name+"_ud";
+      else if(k==7) param.Name=param.raw_Name+"_un";
+      else if(k==8) param.Name=param.raw_Name+"_uu";
 
-  if (abs(0.84-(jets.at(0).Pt()/rest_PT))< 0.24){
-    FillHist(param.MuName+"/Balanced_subjet_frac_"+param.Name, (jets.at(1).Pt()/Z_cand.Pt()), weight, 40, 0.0, 2.0);
+      if (abs(0.84-(jets.at(0).Pt()/rest_PT))< 0.24){
+	FillHist(param.MuName+"/Balanced_subjet_frac_"+param.Name, (jets.at(1).Pt()/Z_cand.Pt()), weight, 40, 0.0, 2.0);
+      } 
+      else{
+	FillHist(param.MuName+"/Unbalanced_subjet_frac_"+param.Name, (jets.at(1).Pt()/Z_cand.Pt()), weight, 40, 0.0, 2.0);
+      }
+      Particle rest_all = Z_cand+jets.at(1);
+      float rest_all_PT = rest_all.Pt();
+      if (abs(0.9-(jets.at(0).Pt()/rest_all_PT))< 0.24){
+	FillHist(param.MuName+"/All_Balanced_subjet_frac_"+param.Name, (jets.at(1).Pt()/Z_cand.Pt()), weight, 40, 0.0, 2.0);
+      } 
+      else{
+	FillHist(param.MuName+"/All_Unbalanced_subjet_frac_"+param.Name, (jets.at(1).Pt()/Z_cand.Pt()), weight, 40, 0.0, 2.0);
+      }
+
+      if(jets.at(1).Pt()/Z_cand.Pt() < 0.3) {
+	FillHist(param.MuName+"/subleadjet_carry_pT_Cut_"+param.Name, 0., 1., 1, 0., 1.);
+      } else return; 
+/// Z pt binning ([70,85],[85,95],[95,105],[105,115],[115,130],[130,160],[160,inf])
+      FillHist(param.MuName+"/Cut_"+param.Name, 10., 1., 11, 0., 11.);
+      FillHist(param.MuName+"/Z_pT_"+param.Name, Z_cand.Pt(), weight, 40, 0., 200);
+      FillHist(param.MuName+"/Z_mass_constraint_"+param.Name, 0., 1., 1, 0., 1.);
+      FillHist(param.MuName+"/Z_leadjet_dphi_Val_"+param.Name, abs(jets.at(0).DeltaPhi(Z_cand)), weight, 30, 0., 3.2);
+      FillHist(param.MuName+"/Z_subjet_dphi_Val_"+param.Name, abs(jets.at(1).DeltaPhi(Z_cand)), weight, 30, 0., 3.2);
+      FillHist(param.MuName+"/subjet_pt_frac_"+param.Name, jets.at(1).Pt()/Z_cand.Pt(), weight, 20, 0, 1);
+      FillHist(param.MuName+"/subjet_pt_"+param.Name, jets.at(1).Pt(), weight, 40, 0, 200);
+      if(jets.at(1).Pt()/Z_cand.Pt()>0. and jets.at(1).Pt()/Z_cand.Pt()<0.1){
+	FillHist(param.MuName+"/pTlead_over_rest_alpha_1_"+param.Name, jets.at(0).Pt()/rest_PT, weight, 25, 0., 2.);
+	FillHist(param.MuName+"/pTlead_over_rest_all_alpha_1_"+param.Name, jets.at(0).Pt()/rest_all_PT, weight, 25, 0., 2.);
+	FillHist(param.MuName+"/Genb_Jetb_1_"+param.Name, jets.at(0).Pt()/Gen_b.Pt(), weight, 25, 0., 2.);
+      }
+      else if(jets.at(1).Pt()/Z_cand.Pt()>0.1 and jets.at(1).Pt()/Z_cand.Pt()<0.155){
+	FillHist(param.MuName+"/pTlead_over_rest_alpha_2_"+param.Name, jets.at(0).Pt()/rest_PT, weight, 25, 0., 2.);
+	FillHist(param.MuName+"/pTlead_over_rest_all_alpha_2_"+param.Name, jets.at(0).Pt()/rest_all_PT, weight, 25, 0., 2.);
+	FillHist(param.MuName+"/Genb_Jetb_2_"+param.Name, jets.at(0).Pt()/Gen_b.Pt(), weight, 25, 0., 2.);
+      }
+      else if(jets.at(1).Pt()/Z_cand.Pt()>0.155 and jets.at(1).Pt()/Z_cand.Pt()<0.185){
+	FillHist(param.MuName+"/pTlead_over_rest_alpha_3_"+param.Name, jets.at(0).Pt()/rest_PT, weight, 25, 0., 2.);
+	FillHist(param.MuName+"/pTlead_over_rest_all_alpha_3_"+param.Name, jets.at(0).Pt()/rest_all_PT, weight, 25, 0., 2.);
+	FillHist(param.MuName+"/Genb_Jetb_3_"+param.Name, jets.at(0).Pt()/Gen_b.Pt(), weight, 25, 0., 2.);
+      }
+      else if(jets.at(1).Pt()/Z_cand.Pt()>0.185 and jets.at(1).Pt()/Z_cand.Pt()<0.23){
+	FillHist(param.MuName+"/pTlead_over_rest_alpha_4_"+param.Name, jets.at(0).Pt()/rest_PT, weight, 25, 0., 2.);
+	FillHist(param.MuName+"/pTlead_over_rest_all_alpha_4_"+param.Name, jets.at(0).Pt()/rest_all_PT, weight, 25, 0., 2.);
+	FillHist(param.MuName+"/Genb_Jetb_4_"+param.Name, jets.at(0).Pt()/Gen_b.Pt(), weight, 25, 0., 2.);
+      }
+      else if(jets.at(1).Pt()/Z_cand.Pt()>0.23 and jets.at(1).Pt()/Z_cand.Pt()<0.3){
+	FillHist(param.MuName+"/pTlead_over_rest_alpha_5_"+param.Name, jets.at(0).Pt()/rest_PT, weight, 25, 0., 2.);
+	FillHist(param.MuName+"/pTlead_over_rest_all_alpha_5_"+param.Name, jets.at(0).Pt()/rest_all_PT, weight, 25, 0., 2.);
+	FillHist(param.MuName+"/Genb_Jetb_5_"+param.Name, jets.at(0).Pt()/Gen_b.Pt(), weight, 25, 0., 2.);
+      }
+      FillHist(param.MuName+"/leadjet_pt_"+param.Name, jets.at(0).Pt(),weight, 40, 0, 200);
+      FillHist(param.MuName+"/leadjet_pt_frac_"+param.Name, jets.at(0).Pt()/Z_cand.Pt(), weight, 20, 0, 1);
+      FillHist(param.MuName+"/LeadJet_BTagging_Score_"+param.Name, LeadBTagging_Score, weight, 40, 0, 1);
+      FillHist(param.MuName+"/SubJet_BTagging_Score_"+param.Name, SubBTagging_Score, weight, 40, 0, 1);
+      FillHist(param.MuName+"/Sum_BTagging_Score_"+param.Name, LeadBTagging_Score+SubBTagging_Score, weight, 40, 0, 2);  
+      FillHist(param.MuName+"/ZCand_Mass_"+param.Name, Z_cand.M(), weight, 40, 71., 111.);
+      FillHist(param.MuName+"/pTlead_over_rest_"+param.Name, jets.at(0).Pt()/rest.Pt(), weight, 25, 0., 2.);
+    }   
   } 
-  else{
-    FillHist(param.MuName+"/Unbalanced_subjet_frac_"+param.Name, (jets.at(1).Pt()/Z_cand.Pt()), weight, 40, 0.0, 2.0);
-  }
-  Particle rest_all = Z_cand+jets.at(1);
-  float rest_all_PT = rest_all.Pt();
-  if (abs(0.9-(jets.at(0).Pt()/rest_all_PT))< 0.24){
-    FillHist(param.MuName+"/All_Balanced_subjet_frac_"+param.Name, (jets.at(1).Pt()/Z_cand.Pt()), weight, 40, 0.0, 2.0);
-  } 
-  else{
-    FillHist(param.MuName+"/All_Unbalanced_subjet_frac_"+param.Name, (jets.at(1).Pt()/Z_cand.Pt()), weight, 40, 0.0, 2.0);
-  }
+  else {
+    if (!isnormal(weight)) return;
+    if (!isfinite(weight)) return;
+    if (abs(0.84-(jets.at(0).Pt()/rest_PT))< 0.24){
+      FillHist(param.MuName+"/Balanced_subjet_frac_"+param.Name, (jets.at(1).Pt()/Z_cand.Pt()), weight, 40, 0.0, 2.0);
+    } 
+    else{
+      FillHist(param.MuName+"/Unbalanced_subjet_frac_"+param.Name, (jets.at(1).Pt()/Z_cand.Pt()), weight, 40, 0.0, 2.0);
+    }
+    Particle rest_all = Z_cand+jets.at(1);
+    float rest_all_PT = rest_all.Pt();
+    if (abs(0.9-(jets.at(0).Pt()/rest_all_PT))< 0.24){
+      FillHist(param.MuName+"/All_Balanced_subjet_frac_"+param.Name, (jets.at(1).Pt()/Z_cand.Pt()), weight, 40, 0.0, 2.0);
+    } 
+    else{
+      FillHist(param.MuName+"/All_Unbalanced_subjet_frac_"+param.Name, (jets.at(1).Pt()/Z_cand.Pt()), weight, 40, 0.0, 2.0);
+    }
 
-  if(jets.at(1).Pt()/Z_cand.Pt() < 0.3) {
-    FillHist(param.MuName+"/subleadjet_carry_pT_Cut_"+param.Name, 0., 1., 1, 0., 1.);
-  } else return; 
-
-
-
-
-
-
-
-
-
-  FillHist(param.MuName+"/Z_pT_"+param.Name, Z_cand.Pt(), weight, 40, 0., 200);
-  FillHist(param.MuName+"/Z_mass_constraint_"+param.Name, 0., 1., 1, 0., 1.);
-  FillHist(param.MuName+"/Z_leadjet_dphi_Val_"+param.Name, abs(jets.at(0).DeltaPhi(Z_cand)), weight, 30, 0., 3.2);
-  FillHist(param.MuName+"/Z_subjet_dphi_Val_"+param.Name, abs(jets.at(1).DeltaPhi(Z_cand)), weight, 30, 0., 3.2);
-  FillHist(param.MuName+"/subjet_pt_frac_"+param.Name, jets.at(1).Pt()/Z_cand.Pt(), weight, 20, 0, 1);
-  FillHist(param.MuName+"/subjet_pt_"+param.Name, jets.at(1).Pt(), weight, 40, 0, 200);
-  if(jets.at(1).Pt()/Z_cand.Pt()>0. and jets.at(1).Pt()/Z_cand.Pt()<0.155){
-    FillHist(param.MuName+"/pTlead_over_rest_alpha_1_"+param.MuName, jets.at(0).Pt()/rest_PT, weight, 25, 0., 2.);
-    FillHist(param.MuName+"/pTlead_over_rest_all_alpha_1_"+param.MuName, jets.at(0).Pt()/rest_all_PT, weight, 25, 0., 2.);
-    FillHist(param.MuName+"/Genb_Jetb_1_"+param.MuName, jets.at(0).Pt()/Gen_b.Pt(), weight, 25, 0., 2.);
-  }
-  if(jets.at(1).Pt()/Z_cand.Pt()>0.155 and jets.at(1).Pt()/Z_cand.Pt()<0.185){
-    FillHist(param.MuName+"/pTlead_over_rest_alpha_2_"+param.MuName, jets.at(0).Pt()/rest_PT, weight, 25, 0., 2.);
-    FillHist(param.MuName+"/pTlead_over_rest_all_alpha_2_"+param.MuName, jets.at(0).Pt()/rest_all_PT, weight, 25, 0., 2.);
-    FillHist(param.MuName+"/Genb_Jetb_2_"+param.MuName, jets.at(0).Pt()/Gen_b.Pt(), weight, 25, 0., 2.);
-  }
-  if(jets.at(1).Pt()/Z_cand.Pt()>0.185 and jets.at(1).Pt()/Z_cand.Pt()<0.23){
-    FillHist(param.MuName+"/pTlead_over_rest_alpha_3_"+param.MuName, jets.at(0).Pt()/rest_PT, weight, 25, 0., 2.);
-    FillHist(param.MuName+"/pTlead_over_rest_all_alpha_3_"+param.MuName, jets.at(0).Pt()/rest_all_PT, weight, 25, 0., 2.);
-    FillHist(param.MuName+"/Genb_Jetb_3_"+param.MuName, jets.at(0).Pt()/Gen_b.Pt(), weight, 25, 0., 2.);
-  }
-  if(jets.at(1).Pt()/Z_cand.Pt()>0.23 and jets.at(1).Pt()/Z_cand.Pt()<0.3){
-    FillHist(param.MuName+"/pTlead_over_rest_alpha_4_"+param.MuName, jets.at(0).Pt()/rest_PT, weight, 25, 0., 2.);
-    FillHist(param.MuName+"/pTlead_over_rest_all_alpha_4_"+param.MuName, jets.at(0).Pt()/rest_all_PT, weight, 25, 0., 2.);
-    FillHist(param.MuName+"/Genb_Jetb_4_"+param.MuName, jets.at(0).Pt()/Gen_b.Pt(), weight, 25, 0., 2.);
-  }
-  FillHist(param.MuName+"/leadjet_pt_"+param.Name, jets.at(0).Pt(),weight, 40, 0, 200);
-  FillHist(param.MuName+"/leadjet_pt_frac_"+param.Name, jets.at(0).Pt()/Z_cand.Pt(), weight, 20, 0, 1);
-  FillHist(param.MuName+"/LeadJet_BTagging_Score_"+param.Name, LeadBTagging_Score, weight, 40, 0, 1);
-  FillHist(param.MuName+"/SubJet_BTagging_Score_"+param.Name, SubBTagging_Score, weight, 40, 0, 1);
-  FillHist(param.MuName+"/Sum_BTagging_Score_"+param.Name, LeadBTagging_Score+SubBTagging_Score, weight, 40, 0, 2);  
-  FillHist(param.MuName+"/ZCand_Mass_"+param.MuName, Z_cand.M(), weight, 40, 71., 111.);
-  FillHist(param.MuName+"/pTlead_over_rest_"+param.MuName, jets.at(0).Pt()/rest.Pt(), weight, 25, 0., 2.);
-  
-
+    if(jets.at(1).Pt()/Z_cand.Pt() < 0.3) {
+      FillHist(param.MuName+"/subleadjet_carry_pT_Cut_"+param.Name, 0., 1., 1, 0., 1.);
+    } else return; 
+    FillHist(param.MuName+"/Cut_"+param.Name, 10., 1., 11, 0., 11.);
+    FillHist(param.MuName+"/Z_pT_"+param.Name, Z_cand.Pt(), weight, 40, 0., 200);
+    FillHist(param.MuName+"/Z_mass_constraint_"+param.Name, 0., 1., 1, 0., 1.);
+    FillHist(param.MuName+"/Z_leadjet_dphi_Val_"+param.Name, abs(jets.at(0).DeltaPhi(Z_cand)), weight, 30, 0., 3.2);
+    FillHist(param.MuName+"/Z_subjet_dphi_Val_"+param.Name, abs(jets.at(1).DeltaPhi(Z_cand)), weight, 30, 0., 3.2);
+    FillHist(param.MuName+"/subjet_pt_frac_"+param.Name, jets.at(1).Pt()/Z_cand.Pt(), weight, 20, 0, 1);
+    FillHist(param.MuName+"/subjet_pt_"+param.Name, jets.at(1).Pt(), weight, 40, 0, 200);
+    if(jets.at(1).Pt()/Z_cand.Pt()>0. and jets.at(1).Pt()/Z_cand.Pt()<0.1){
+      FillHist(param.MuName+"/pTlead_over_rest_alpha_1_"+param.Name, jets.at(0).Pt()/rest_PT, weight, 25, 0., 2.);
+      FillHist(param.MuName+"/pTlead_over_rest_all_alpha_1_"+param.Name, jets.at(0).Pt()/rest_all_PT, weight, 25, 0., 2.);
+      FillHist(param.MuName+"/Genb_Jetb_1_"+param.Name, jets.at(0).Pt()/Gen_b.Pt(), weight, 25, 0., 2.);
+    }
+    else if(jets.at(1).Pt()/Z_cand.Pt()>0.1 and jets.at(1).Pt()/Z_cand.Pt()<0.155){
+      FillHist(param.MuName+"/pTlead_over_rest_alpha_2_"+param.Name, jets.at(0).Pt()/rest_PT, weight, 25, 0., 2.);
+      FillHist(param.MuName+"/pTlead_over_rest_all_alpha_2_"+param.Name, jets.at(0).Pt()/rest_all_PT, weight, 25, 0., 2.);
+      FillHist(param.MuName+"/Genb_Jetb_2_"+param.Name, jets.at(0).Pt()/Gen_b.Pt(), weight, 25, 0., 2.);
+    }
+    else if(jets.at(1).Pt()/Z_cand.Pt()>0.155 and jets.at(1).Pt()/Z_cand.Pt()<0.185){
+      FillHist(param.MuName+"/pTlead_over_rest_alpha_3_"+param.Name, jets.at(0).Pt()/rest_PT, weight, 25, 0., 2.);
+      FillHist(param.MuName+"/pTlead_over_rest_all_alpha_3_"+param.Name, jets.at(0).Pt()/rest_all_PT, weight, 25, 0., 2.);
+      FillHist(param.MuName+"/Genb_Jetb_3_"+param.Name, jets.at(0).Pt()/Gen_b.Pt(), weight, 25, 0., 2.);
+    }
+    else if(jets.at(1).Pt()/Z_cand.Pt()>0.185 and jets.at(1).Pt()/Z_cand.Pt()<0.23){
+      FillHist(param.MuName+"/pTlead_over_rest_alpha_4_"+param.Name, jets.at(0).Pt()/rest_PT, weight, 25, 0., 2.);
+      FillHist(param.MuName+"/pTlead_over_rest_all_alpha_4_"+param.Name, jets.at(0).Pt()/rest_all_PT, weight, 25, 0., 2.);
+      FillHist(param.MuName+"/Genb_Jetb_4_"+param.Name, jets.at(0).Pt()/Gen_b.Pt(), weight, 25, 0., 2.);
+    }
+    else if(jets.at(1).Pt()/Z_cand.Pt()>0.23 and jets.at(1).Pt()/Z_cand.Pt()<0.3){
+      FillHist(param.MuName+"/pTlead_over_rest_alpha_5_"+param.Name, jets.at(0).Pt()/rest_PT, weight, 25, 0., 2.);
+      FillHist(param.MuName+"/pTlead_over_rest_all_alpha_5_"+param.Name, jets.at(0).Pt()/rest_all_PT, weight, 25, 0., 2.);
+      FillHist(param.MuName+"/Genb_Jetb_5_"+param.Name, jets.at(0).Pt()/Gen_b.Pt(), weight, 25, 0., 2.);
+    }
+    FillHist(param.MuName+"/leadjet_pt_"+param.Name, jets.at(0).Pt(),weight, 40, 0, 200);
+    FillHist(param.MuName+"/leadjet_pt_frac_"+param.Name, jets.at(0).Pt()/Z_cand.Pt(), weight, 20, 0, 1);
+    FillHist(param.MuName+"/LeadJet_BTagging_Score_"+param.Name, LeadBTagging_Score, weight, 40, 0, 1);
+    FillHist(param.MuName+"/SubJet_BTagging_Score_"+param.Name, SubBTagging_Score, weight, 40, 0, 1);
+    FillHist(param.MuName+"/Sum_BTagging_Score_"+param.Name, LeadBTagging_Score+SubBTagging_Score, weight, 40, 0, 2);  
+    FillHist(param.MuName+"/ZCand_Mass_"+param.Name, Z_cand.M(), weight, 40, 71., 111.);
+    FillHist(param.MuName+"/pTlead_over_rest_"+param.Name, jets.at(0).Pt()/rest.Pt(), weight, 25, 0., 2.);
+  }   
 
 
 //    weight *= weight_pujet_veto;

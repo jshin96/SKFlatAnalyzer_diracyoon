@@ -174,7 +174,7 @@ void MCCorrection::ReadHistograms()
     delete file;
     origDir->cd();
   }
-
+  
   /*
     cout << "[MCCorrection::MCCorrection] map_hist_pileup :" << endl;
     for(std::map< TString, TH1D* >::iterator it=map_hist_pileup.begin(); it!=map_hist_pileup.end(); it++){
@@ -200,11 +200,12 @@ void MCCorrection::ReadHistograms()
   for (unsigned int i = 0; i < pileupjetveto_wp.size(); i++)
   {
     TString period_alt_name = DataEra;
-    if (DataEra == "2016preVFP")
+    if (DataEra == "2016preVFP"){
       period_alt_name = "2016APV";
-    else if (DataEra == "2016postVFP")
+    }
+    else if (DataEra == "2016postVFP"){
       period_alt_name = "2016";
-
+    }
     TString key = "eff_mcUL" + DataEra + "_" + pileupjetveto_wp[i];
     TString target = "h2_eff_mcUL" + period_alt_name + "_" + pileupjetveto_wp[i];
     map_hist_pujet_veto[key] = (TH2F *)file_pileupJetVetoPath->Get(target)->Clone();
@@ -225,38 +226,38 @@ void MCCorrection::ReadHistograms()
   file_pileupJetVetoPath->Close();
   delete file_pileupJetVetoPath;
   origDir->cd();
-
+/*
   // == Get CTagging
   // TString CTagShapeCorrPath = datapath + "/" + GetEra() + "/CTag/CTag_iterfit_ULRun2_" + TString::Itoa(DataYear, 10) + ".root";
-  TString CTagShapeCorrPath = datapath + "/" + GetEra() + "/CTag/DeepJet_ctagSF_Summer20UL";
+//  TString CTagShapeCorrPath = datapath + "/" + GetEra() + "/CTag/DeepJet_ctagSF_Summer20UL";
 
-  if (DataEra == "2016preVFP")
-    CTagShapeCorrPath += "16PreVFP";
-  else if (DataEra == "2016postVFP")
-    CTagShapeCorrPath += "16PostVFP";
-  else if (DataEra == "2017")
-    CTagShapeCorrPath += "17";
-  else if (DataEra == "2018")
-    CTagShapeCorrPath += "18";
+//  if (DataEra == "2016preVFP")
+//    CTagShapeCorrPath += "16PreVFP";
+//  else if (DataEra == "2016postVFP")
+//    CTagShapeCorrPath += "16PostVFP";
+//  else if (DataEra == "2017")
+//    CTagShapeCorrPath += "17";
+//  else if (DataEra == "2018")
+//    CTagShapeCorrPath += "18";
+//
+//  CTagShapeCorrPath += "_interp_withJEC.root";
 
-  CTagShapeCorrPath += "_interp_withJEC.root";
-
-  TFile *file_CTagShapeCorrPath = new TFile(CTagShapeCorrPath);
-  histDir->cd();
-  std::vector<std::string> flav = {"b", "c", "l"};
-  std::vector<std::string> cTagSyst = {"Extrap", "Interp",
-                                       "LHEScaleWeight_muF", "LHEScaleWeight_muR",
-                                       "PSWeightFSRFixed", "PSWeightISRFixed",
-                                       "PUWeight",
-                                       "Stat",
-                                       "XSec_BRUnc_DYJets_b", "XSec_BRUnc_DYJets_c", "XSec_BRUnc_WJets_c",
-                                       "jer", "jesTotal"};
-  std::vector<std::string> sysUporDown = {"Up", "Down"};
-  std::vector<std::string>::iterator iter;
-  std::vector<std::string>::iterator jter;
-  std::vector<std::string>::iterator kter;
-  TString histkey;
-  TString key;
+//  TFile *file_CTagShapeCorrPath = new TFile(CTagShapeCorrPath);
+//  histDir->cd();
+//  std::vector<std::string> flav = {"b", "c", "l"};
+//  std::vector<std::string> cTagSyst = {"Extrap", "Interp",
+//                                       "LHEScaleWeight_muF", "LHEScaleWeight_muR",
+//                                       "PSWeightFSRFixed", "PSWeightISRFixed",
+//                                       "PUWeight",
+//                                       "Stat",
+//                                       "XSec_BRUnc_DYJets_b", "XSec_BRUnc_DYJets_c", "XSec_BRUnc_WJets_c",
+//                                       "jer", "jesTotal"};
+//  std::vector<std::string> sysUporDown = {"Up", "Down"};
+//  std::vector<std::string>::iterator iter;
+//  std::vector<std::string>::iterator jter;
+//  std::vector<std::string>::iterator kter;
+//  TString histkey;
+//  TString key;
   for (iter = flav.begin(); iter != flav.end(); iter++)
   {
     key = *iter + "_central";
@@ -277,6 +278,7 @@ void MCCorrection::ReadHistograms()
   file_CTagShapeCorrPath->Close();
   delete file_CTagShapeCorrPath;
   origDir->cd();
+*/
 }
 
 MCCorrection::~MCCorrection()
@@ -1510,8 +1512,8 @@ void MCCorrection::SetupMCJetTagEff()
   cout << "[MCCorrection::SetupMCJetTagEff] setting MCJetTagEff" << endl;
 
   TString datapath = getenv("DATA_DIR");
-  // TString mcjetpath=datapath+"/"+DataEra+"/BTag/MeasureJetTaggingEfficiency_TTLL_TTLJ_hadded.root";
-  TString mcjetpath = datapath + "/" + DataEra + "/BTag/MeasureJetTaggingEfficiency_TTLJ_powheg.root";
+  TString mcjetpath=datapath+"/"+DataEra+"/BTag/MeasureJetTaggingEfficiency_TTLL_TTLJ_hadded.root";
+//  TString mcjetpath = datapath + "/" + DataEra + "/BTag/MeasureJetTaggingEfficiency_TTLJ_powheg.root";
   ifstream fcheck(mcjetpath);
   if (!fcheck.good())
   {
@@ -1762,7 +1764,7 @@ double MCCorrection::GetBTaggingReweight_1d(const vector<Jet> &jets, JetTagging:
 } // double MCCorrection::GetBTaggingReweight_1d(const vector<Jet> &jets, JetTagging::Parameters jtp, string Syst)
 
 //////////
-
+/*
 double MCCorrection::GetCTaggingReweight(const vector<Jet> &jets, JetTagging::Parameters jtp, string Syst)
 {
   if (IsDATA)
@@ -1814,7 +1816,7 @@ double MCCorrection::GetCTaggingReweight(const vector<Jet> &jets, JetTagging::Pa
 } // double MCCorrection::GetCTaggingReweight(const vector<Jet>& jets, JetTagging::Parameters jtp)
 
 //////////
-
+*/
 bool MCCorrection::IsBTagged_2a(JetTagging::Parameters jtp, const Jet &jet, string Syst)
 {
 
@@ -2016,7 +2018,7 @@ double MCCorrection::PileupJetVeto_Reweight(const vector<Jet> &jets, const TStri
 } // double MCCorrection::PileupJetVeto_Reweight(const vector<Jet>& jets, string wp, string Syst)
 
 //////////
-
+/*
 double MCCorrection::GetCTaggingReweight_1d(const vector<Jet> &jets, const JetTagging::Parameters &jtp, const string &Syst)
 {
   if (IsDATA)
@@ -2058,5 +2060,5 @@ double MCCorrection::GetCTaggingReweight_1d(const vector<Jet> &jets, const JetTa
 
   return rew;
 }
-
+*/
 //////////

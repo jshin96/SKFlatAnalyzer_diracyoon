@@ -1,5 +1,21 @@
 ##DYJets
-DYJets_MG
+DYJets_MG_HT-100to200
+DYJets_MG_HT-1200to2500
+DYJets_MG_HT-200to400
+DYJets_MG_HT-2500toInf
+DYJets_MG_HT-400to600
+DYJets_MG_HT-600to800
+DYJets_MG_HT-70to100
+DYJets_MG_HT-800to1200
+##TT
 TTLL_powheg
-TTLJ_powheg
+#TTLJ_powheg
 #TTJJ_powheg
+## VV
+WW_pythia
+WZ_pythia
+ZZ_pythia
+## SingleTop
+SingleTop_sch_Lep
+SingleTop_tW_top_NoFullyHad
+SingleTop_tW_antitop_NoFullyHad

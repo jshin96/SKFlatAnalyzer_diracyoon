@@ -300,22 +300,22 @@ void Vcb_BJetRegression_Single_Mu::executeEventFromParameter(AnalyzerParameter p
   for(unsigned int pt_ind=0; pt_ind<7; pt_ind++){
     if(pt_ind<=3){
       if(jets.at(0).Pt()<(40+(pt_ind*20)) and jets.at(0).Pt()>=(20+(pt_ind*10))){
-        FillHist(param.MuName+"/pTlead_over_rest_alpha_"+pt_ind+"_"+param.MuName, jets.at(0).Pt()/rest_PT, weight, 25, 0., 2.);
-        FillHist(param.MuName+"/Genb_Jetb_"+pt_ind+"_"+param.MuName, jets.at(0).Pt()/Gen_b.Pt(), weight, 25, 0., 2.);
+        FillHist(param.MuName+"/pTlead_over_rest_alpha_"+pt_ind+"_"+param.Name, jets.at(0).Pt()/rest_PT, weight, 25, 0., 2.);
+        FillHist(param.MuName+"/Genb_Jetb_"+pt_ind+"_"+param.Name, jets.at(0).Pt()/Gen_b.Pt(), weight, 25, 0., 2.);
         break;
       }
     }
     if(pt_ind>3 and pt_ind <=5){
       if(jets.at(0).Pt()<((pt_ind*50)-50) and jets.at(0).Pt()>=((pt_ind*50)-100)){
-        FillHist(param.MuName+"/pTlead_over_rest_alpha_"+pt_ind+"_"+param.MuName, jets.at(0).Pt()/rest_PT, weight, 25, 0., 2.);
-        FillHist(param.MuName+"/Genb_Jetb_"+pt_ind+"_"+param.MuName, jets.at(0).Pt()/Gen_b.Pt(), weight, 25, 0., 2.);
+        FillHist(param.MuName+"/pTlead_over_rest_alpha_"+pt_ind+"_"+param.Name, jets.at(0).Pt()/rest_PT, weight, 25, 0., 2.);
+        FillHist(param.MuName+"/Genb_Jetb_"+pt_ind+"_"+param.Name, jets.at(0).Pt()/Gen_b.Pt(), weight, 25, 0., 2.);
         break;
       }
     }
     if(pt_ind>5){
       if(jets.at(0).Pt()<((pt_ind*200)-800) and jets.at(0).Pt()>=((pt_ind*200)-1000)){
-        FillHist(param.MuName+"/pTlead_over_rest_alpha_"+pt_ind+"_"+param.MuName, jets.at(0).Pt()/rest_PT, weight, 25, 0., 2.);
-        FillHist(param.MuName+"/Genb_Jetb_"+pt_ind+"_"+param.MuName, jets.at(0).Pt()/Gen_b.Pt(), weight, 25, 0., 2.);
+        FillHist(param.MuName+"/pTlead_over_rest_alpha_"+pt_ind+"_"+param.Name, jets.at(0).Pt()/rest_PT, weight, 25, 0., 2.);
+        FillHist(param.MuName+"/Genb_Jetb_"+pt_ind+"_"+param.Name, jets.at(0).Pt()/Gen_b.Pt(), weight, 25, 0., 2.);
         break;
       }
     }
@@ -323,8 +323,8 @@ void Vcb_BJetRegression_Single_Mu::executeEventFromParameter(AnalyzerParameter p
   FillHist(param.MuName+"/leadjet_pt_"+param.Name, jets.at(0).Pt(),weight, 50, 0, 500);
   FillHist(param.MuName+"/leadjet_pt_frac_"+param.Name, jets.at(0).Pt()/Z_cand.Pt(), weight, 20, 0, 1);
   FillHist(param.MuName+"/LeadJet_BTagging_Score_"+param.Name, LeadBTagging_Score, weight, 40, 0, 1);
-  FillHist(param.MuName+"/ZCand_Mass_"+param.MuName, Z_cand.M(), weight, 40, 71., 111.);
-  FillHist(param.MuName+"/pTlead_over_rest_"+param.MuName, jets.at(0).Pt()/rest.Pt(), weight, 25, 0., 2.);
+  FillHist(param.MuName+"/ZCand_Mass_"+param.Name, Z_cand.M(), weight, 40, 71., 111.);
+  FillHist(param.MuName+"/pTlead_over_rest_"+param.Name, jets.at(0).Pt()/rest.Pt(), weight, 25, 0., 2.);
   
 
 

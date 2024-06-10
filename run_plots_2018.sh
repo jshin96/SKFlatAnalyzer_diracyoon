@@ -10,10 +10,10 @@ cd 2018_BREG_plot
 mkdir BREG_Z_20
 mkdir no_BREG_Z_20
 cd no_BREG_Z_20
-python3 ../../../plot.py -e 2018 -B 0 -s original >> fit_result.txt
+python3 ../../../plot.py -e 2018 -B 0 -s original  -r $1
 cd ..
 cd BREG_Z_20
-python3 ../../../plot.py -e 2018 -B 1 -s original >> fit_result.txt
+python3 ../../../plot.py -e 2018 -B 1 -s original  -r $1
 
 
 #cd ../../../
@@ -23,10 +23,10 @@ python3 ../../../plot.py -e 2018 -B 1 -s original >> fit_result.txt
 #mkdir BREG_Z_20
 #mkdir no_BREG_Z_20
 #cd no_BREG_Z_20
-#python3 ../../../plot.py -e 2018 -B 0 -s modified >> fit_result.txt
+#python3 ../../../plot.py -e 2018 -B 0 -s modified
 #cd ..
 #cd BREG_Z_20
-#python3 ../../../plot.py -e 2018 -B 1 -s modified >> fit_result.txt
+#python3 ../../../plot.py -e 2018 -B 1 -s modified
 
 #cd ../../../
 #cd free_2jets
@@ -35,10 +35,10 @@ python3 ../../../plot.py -e 2018 -B 1 -s original >> fit_result.txt
 #mkdir BREG_Z_20
 #mkdir no_BREG_Z_20
 #cd no_BREG_Z_20
-#python3 ../../../plot.py -e 2018 -B 0 -s free >> fit_result.txt
+#python3 ../../../plot.py -e 2018 -B 0 -s free
 #cd ..
 #cd BREG_Z_20
-#python3 ../../../plot.py -e 2018 -B 1 -s free >> fit_result.txt
+#python3 ../../../plot.py -e 2018 -B 1 -s free
 
 
 

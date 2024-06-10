@@ -750,10 +750,9 @@ try:
             TotalEventRunTime += this_EventRunTime
             MaxTimeLeft = max(MaxTimeLeft,this_TimeLeft)
             MaxEventRunTime = max(MaxEventRunTime,this_EventRunTime)
-
           elif "RUNNING" in this_status:
+            '''
             outlog = str(it_job)+'\t| '+this_status.split()[1]+' %'
-
             EventInfo = this_status.split()[2].split(':')
 
             this_EventDone = int(EventInfo[1])
@@ -782,8 +781,8 @@ try:
 
             outlog += ' ('+str(round_this_EventRunTime)+' s ran, and '+str(round_this_TimeLeft)+' s left)'
             ToStatuslog.append(outlog)
+            '''
             n_eventran += 1
-
           else:
             outlog = str(it_job)+'\t| '+this_status
             ToStatuslog.append(outlog)
@@ -906,7 +905,7 @@ try:
 
       os.system('cp -r '+webdirpathbase+'/* '+SKFlatLogWebDir)
 
-    time.sleep(20)
+    time.sleep(600)
 
 except KeyboardInterrupt:
   print('interrupted!')

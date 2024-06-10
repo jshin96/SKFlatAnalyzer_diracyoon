@@ -4,7 +4,10 @@ import os
 
 def GetEventDone(l):
   # [SKFlatNtuple::Loop RUNNING] 1185000/1207307 (98.1523 %) @ 2018-5-16 11:0:9
-  w = l.split()[2]
+  try:
+    w = l.split()[2]
+  except IndexError:
+    return 
   nums = w.split('/')
 
   if len(nums)<2:
@@ -131,10 +134,17 @@ def CheckJobStatus(logfiledir, cycle, jobnumber, hostname):
 
   ## 3) Running
   elif "[SKFlatNtuple::Loop RUNNING]" in LASTLINE:
+    
     # [SKFlatNtuple::Loop RUNNING] 2011000/38777460 (5.186 %)
-    perct =  LASTLINE.split()[3].strip('(')
+    perct =  LASTLINE
+    try:
+      perct =  LASTLINE.split()[3].strip('(')
+    except IndexError:
+      return "Failed To bring Event Progress"
     EventDone = GetEventDone(ForTimeEst)
     return "RUNNING\t"+perct+"\tEVDONE:"+EventDone+"\t"+line_JobStart
+    
+
   else:
 
     for it_l in range(0,len(log_o)):

@@ -1,0 +1,14 @@
+executable = run_plots.sh
+jobbatchname = Resolution
+universe   = vanilla
+log = condor_logs/condor_$(Process).log
+error = condor_logs/condor_$(Process).err
+getenv     = True
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+#output = condor_logs/job_$(Process).std
+#error = condor_logs/job_$(Process).err
+transfer_input_files    = plot.py, Plotter
+transfer_output_files    = original_2jets
+arguments = 25
+queue

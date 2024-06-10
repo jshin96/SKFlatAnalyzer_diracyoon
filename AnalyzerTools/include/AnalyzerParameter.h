@@ -10,7 +10,7 @@ class AnalyzerParameter
 {
  public:
   
-  TString Name;
+  TString Name, MuName, ElName, raw_Name;
   
   bool MCCorrrectionIgnoreNoHist;
   
@@ -38,10 +38,10 @@ class AnalyzerParameter
     Central,
     JetResUp, JetResDown, 
     JetEnUp, JetEnDown,
-    /* MuonEnUp, MuonEnDown,  */
-    ElectronResUp, ElectronResDown, 
-    ElectronEnUp, ElectronEnDown, 
-    UnclusteredEnergyUp, UnclusteredEnergyDown,
+//    MuonEnUp, MuonEnDown, 
+//    ElectronResUp, ElectronResDown, 
+//    ElectronEnUp, ElectronEnDown, 
+//    UnclusteredEnergyUp, UnclusteredEnergyDown,
     NSyst
   };
   Syst syst_;

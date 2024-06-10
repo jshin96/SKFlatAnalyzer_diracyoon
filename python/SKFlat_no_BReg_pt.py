@@ -750,40 +750,39 @@ try:
             TotalEventRunTime += this_EventRunTime
             MaxTimeLeft = max(MaxTimeLeft,this_TimeLeft)
             MaxEventRunTime = max(MaxEventRunTime,this_EventRunTime)
-
           elif "RUNNING" in this_status:
-            outlog = str(it_job)+'\t| '+this_status.split()[1]+' %'
+           '''
+           outlog = str(it_job)+'\t| '+this_status.split()[1]+' %'
 
-            EventInfo = this_status.split()[2].split(':')
+           EventInfo = this_status.split()[2].split(':')
 
-            this_EventDone = int(EventInfo[1])
-            this_EventTotal = int(EventInfo[2])
+           this_EventDone = int(EventInfo[1])
+           this_EventTotal = int(EventInfo[2])
 
-            EventDone += this_EventDone
-            EventTotal += this_EventTotal
+           EventDone += this_EventDone
+           EventTotal += this_EventTotal
 
-            line_EventRunTime = this_status.split()[3]+' '+this_status.split()[4]
-            this_jobstarttime = GetDatetimeFromMyFormat(line_EventRunTime)
-            this_diff = datetime.datetime.now()-this_jobstarttime
-            this_EventRunTime = 86400*this_diff.days+this_diff.seconds
+           line_EventRunTime = this_status.split()[3]+' '+this_status.split()[4]
+           this_jobstarttime = GetDatetimeFromMyFormat(line_EventRunTime)
+           this_diff = datetime.datetime.now()-this_jobstarttime
+           this_EventRunTime = 86400*this_diff.days+this_diff.seconds
 
-            if this_EventDone==0:
-              this_EventDone = 1
+           if this_EventDone==0:
+             this_EventDone = 1
 
-            this_TimePerEvent = float(this_EventRunTime)/float(this_EventDone)
-            this_TimeLeft = (this_EventTotal-this_EventDone)*this_TimePerEvent
+             this_TimePerEvent = float(this_EventRunTime)/float(this_EventDone)
+             this_TimeLeft = (this_EventTotal-this_EventDone)*this_TimePerEvent
 
-            TotalEventRunTime += this_EventRunTime
-            MaxTimeLeft = max(MaxTimeLeft,this_TimeLeft)
-            MaxEventRunTime = max(MaxEventRunTime,this_EventRunTime)
+             TotalEventRunTime += this_EventRunTime
+             MaxTimeLeft = max(MaxTimeLeft,this_TimeLeft)
+             MaxEventRunTime = max(MaxEventRunTime,this_EventRunTime)
 
-            round_this_TimeLeft = round(this_TimeLeft,1)
-            round_this_EventRunTime = round(this_EventRunTime,1)
+             round_this_TimeLeft = round(this_TimeLeft,1)
+             round_this_EventRunTime = round(this_EventRunTime,1)
 
-            outlog += ' ('+str(round_this_EventRunTime)+' s ran, and '+str(round_this_TimeLeft)+' s left)'
-            ToStatuslog.append(outlog)
-            n_eventran += 1
-
+             outlog += ' ('+str(round_this_EventRunTime)+' s ran, and '+str(round_this_TimeLeft)+' s left)'
+             ToStatuslog.append(outlog)
+             '''
           else:
             outlog = str(it_job)+'\t| '+this_status
             ToStatuslog.append(outlog)
@@ -906,7 +905,7 @@ try:
 
       os.system('cp -r '+webdirpathbase+'/* '+SKFlatLogWebDir)
 
-    time.sleep(20)
+    time.sleep(600)
 
 except KeyboardInterrupt:
   print('interrupted!')
