@@ -59,7 +59,7 @@ double HNL_LeptonCore::GetPtPartonSF(Lepton  Lep, TString LooseID){
   /// FCO IDs are for checks regarding Conv backgrounds
   if(LooseID.Contains("HNL_ULID_FCO")){
     for(auto i : {"2016a","2016b","2017","2018"}) {
-      return GetPtPartonSF(Lep,"HNL_ULID_FO_"+i);
+      return GetPtPartonSF(Lep,"HNL_ULID_FO_"+TString(i));
     }
   }
 

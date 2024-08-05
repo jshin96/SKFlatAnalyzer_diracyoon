@@ -75,23 +75,38 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
   TString datapath = getenv("DATA_DIR");
   vector<TString> FakeHMaps = {datapath + "/"+GetEra()+"/FakeRate/MCFR/TT_PartonSF.txt",
 			       datapath + "/"+GetEra()+"/FakeRate/MCFR/QCD_PartonSF.txt"};
+
+  if(IsData) FakeHMaps = {datapath + "/"+GetEra()+"/FakeRate/DataFR/Data_PartonSF.txt"};
+
   for(auto ihmap  :  FakeHMaps){
     string Fline;
     ifstream in(ihmap);
     while(getline(in,Fline)){
       std::istringstream is( Fline );
-      TString a,b,c,d,e;
-      double f;
-      is >> a; // Era
-      is >> b; // Eta
-      is >> c; // ID
-      is >> d; // SampleType
-      is >> e; // Sample
-      is >> f; // SF
-      MakeSFmap[a+"_"+b+"_"+c+"_"+d + "_"+e] = f;
+      if(IsData){
+        TString a,b,c,d;
+        double e;
+        is >> a; // Era
+        is >> b; // Eta
+        is >> c; // ID 
+        is >> d; // SampleType
+        is >> e; // SF                                                                                                                                                                                                                                     
+        MakeSFmap[a+"_"+b+"_"+c+"_"+d] = e;	
+      }
+      else{
+	TString a,b,c,d,e;
+	double f;
+	is >> a; // Era
+	is >> b; // Eta
+	is >> c; // ID
+	is >> d; // SampleType
+	is >> e; // Sample
+	is >> f; // SF
+	MakeSFmap[a+"_"+b+"_"+c+"_"+d + "_"+e] = f;
+      }
     }
   }
-  //for(auto ih : MakeSFmap) cout << ih.first << " " << ih.second << endl;
+  for(auto ih : MakeSFmap) cout << "Adding PartonSF " << ih.first << " " << ih.second << endl;
 
   if(SETUPIDBDT) SetupIDMVAReaderDefault(false,false);
 
@@ -796,7 +811,6 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     if(GetEra() == "2016preVFP"){
       param.k.Muon_FR            = "HNL_ULID_FO_v1_a_AJ40"; 
       param.k.Electron_FR        = "HNL_ULID_FO_v9_a_AJ40_El12"; //// Updated after MC Closure 
-      //// v0 Pt                                                                                                                                                                             
     }
     if(GetEra() == "2016postVFP"){
       param.k.Muon_FR            = "HNL_ULID_FO_v2_a_AJ40"; //// Updated after MC CLosure
