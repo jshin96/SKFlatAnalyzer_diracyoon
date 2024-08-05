@@ -39,31 +39,26 @@ do
         SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_el.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRatesEE&
     fi
     
-    if [[ $1 == "RatesMuon" ]]; then
-        SKFlat.py -a $analyzer  -l $mcpath/MC.txt              -n ${njobs}       --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRates&
-        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_mu.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRates&
+    if [[ $1 == "RatesFull" ]]; then
+        SKFlat.py -a $analyzer  -l $mcpath/MC.txt              -n ${njobs}       --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRatesFullID&
+        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_mu.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRatesFullID&
         
+        SKFlat.py -a $analyzer  -l $mcpath/MC.txt              -n ${njobs}       --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRatesFullEEID&
+        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_el.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRatesFullEEID&
     fi
-    if [[ $1 == "RatesMuon2" ]]; then
-        SKFlat.py -a $analyzer  -l $mcpath/MC.txt              -n ${njobs}       --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRatesNonSNU&
-        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_mu.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRatesNonSNU&
-        #SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_MuMu.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_DileptonBDT --userflags RunRatesNonSNU&
-    fi
-    if [[ $1 == "RatesEl" ]]; then
-        SKFlat.py -a $analyzer  -l $mcpath/MC.txt              -n ${njobs}       --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRatesEE&
-        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_el.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRatesEE&
-        #SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_EE.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_DileptonBDT --userflags RunRatesEE&
-    fi
-    if [[ $1 == "RatesEl2" ]]; then
-	SKFlat.py -a $analyzer  -l $mcpath/MC.txt              -n ${njobs}       --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRatesNonSNU_EE&
-        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_el.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRatesNonSNU_EE&
-        SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_EE.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_DileptonBDT --userflags RunRatesNonSNU_EE&
-    fi
+
     if [[ $1 == "MakeRegionPlots" ]]; then
         SKFlat.py -a $analyzer  -l $mcpath/MC.txt              -n ${njobs}       --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags MakeRegionPlots&
         SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_mu.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags MakeRegionPlots&                                              
         SKFlat.py -a $analyzer  -l ${mcpath}/QCD_${i}.txt  -n ${njobs}  --nmax ${nmax}  -e ${i}   --skim SkimTree_FakeEventSkimBDT --userflags MakeRegionPlots&                                                     
     fi
+
+    if [[ $1 == "GetNvtxSF" ]]; then
+        SKFlat.py -a $analyzer  -l $mc/DY.txt              -n ${njobs}       --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags MakeRegionPlots&
+        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_mu.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags MakeRegionPlots&
+        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_el.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags MakeRegionPlots&
+    fi
+
 
 done
 echo "List of Job Options are:"

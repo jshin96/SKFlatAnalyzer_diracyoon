@@ -1,4 +1,3 @@
-WJets_Sherpa
 WJetsToLNu_HT-70To100
 WJetsToLNu_HT-100To200
 WJetsToLNu_HT-200To400

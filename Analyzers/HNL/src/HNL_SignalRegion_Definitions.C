@@ -395,7 +395,7 @@ TString HNL_RegionDefinitions::RunSignalRegionAK8String(bool ApplyForSR,
   if(!CheckLeptonFlavourForChannel(channel, leps)) return "false";  
   if (leps_veto.size() != 2) return "false";
 
-  if(leps[1]->Pt() < 15 ) return "false";
+  if(leps[1]->Pt() < 20 ) return "false";
 
   FillCutflow(Reg, w, RegionTag+"_lep_pt",param);
   

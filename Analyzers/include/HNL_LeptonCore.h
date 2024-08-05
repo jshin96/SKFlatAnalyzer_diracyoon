@@ -97,6 +97,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   std::pair<double,double> METXYCorr_Met_MetPhi(double uncormet, double uncormet_phi, int runnb, TString year, bool isMC, int npv, bool isUL =false,bool ispuppi=false);
   std::map<TString, double> cfmap;
 
+  std::map<TString, double> MakeSFmap;
   map<TString, Particle> METMap(AnalyzerParameter param);
 
 
@@ -383,6 +384,7 @@ nvtx,  double w);
   vector<Gen> GetGenLepronsSignal();
   bool SelectChannel(HNL_LeptonCore::Channel channel);
   TString GetProcess();
+  TString GetProcessLRSM();
   TString GetChannelString(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType  q=HNL_LeptonCore::ChargeType::Inclusive);
   Particle GetSignalObject(TString obj, TString Sig);
 

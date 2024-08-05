@@ -319,16 +319,27 @@ int  Electron::PassIDTight(TString ID) const{
   else if(ID.Contains("2017")) Year = "2017";
   else if(ID.Contains("2018")) Year = "2018";
 
+  //// TC = Tight Charge 
   if(ID == "HNL_TC0_ULID_"     +Year)     return (PassID("HNL_ULID_OLDDef_FO_"+Year)    && PassID("HNL_ULID_Fake_"+Year));
-  if(ID == "HNL_TC1_ULID_"     +Year)     return (PassID("HNL_ULID_Def_FO_"+Year)    && PassID("HNL_ULID_Fake_"+Year) && IsGsfCtfChargeConsistent());
-  if(ID == "HNL_TC2_ULID_"     +Year)     return (PassID("HNL_ULID_Def_FO_"+Year)    && PassID("HNL_ULID_Fake_"+Year) && IsGsfScPixChargeConsistent());
-  if(ID == "HNL_TC3_ULID_"     +Year)     return (PassID("HNL_ULID_Def_FO_"+Year)    && PassID("HNL_ULID_Fake_"+Year) && IsGsfCtfChargeConsistent() && IsGsfScPixChargeConsistent());
+  if(ID == "HNL_TC1_ULID_"     +Year)     return (PassID("HNL_ULID_OLDDef_FO_"+Year)    && PassID("HNL_ULID_Fake_"+Year) && IsGsfCtfChargeConsistent());
+  if(ID == "HNL_TC2_ULID_"     +Year)     return (PassID("HNL_ULID_OLDDef_FO_"+Year)    && PassID("HNL_ULID_Fake_"+Year) && IsGsfScPixChargeConsistent());
+  if(ID == "HNL_TC3_ULID_"     +Year)     return (PassID("HNL_ULID_OLDDef_FO_"+Year)    && PassID("HNL_ULID_Fake_"+Year) && IsGsfCtfChargeConsistent() && IsGsfScPixChargeConsistent());
 
+  //// HNL_ULID_Def_FO_ has Medium Charge cut on top of HNL_ULID_OLDDef_FO_
   if(ID == "HNL_ULID_"     +Year)     return (PassID("HNL_ULID_Def_FO_"+Year)    && PassID("HNL_ULID_Fake_"+Year));
+  if(ID == "HNL_ULID2_"     +Year)     return (PassID("HNL_ULID_Def_FO_"+Year)    && PassID("HNL_ULID_Fake_"+Year));
+  
+  ///// Check SB for conv inclusion
+  if(ID == "HNL_ULID_CONVSB_"+Year ) {
+    return  PassID("HNL_ULID_CF_"+Year) &&  IsGsfCtfChargeConsistent();
+  }
 
 
+  
+  
   // Loose Fake IDs [FO]
 
+  /// SB for Transfer factor method
   if(ID == "HNL_ULID_SB_"+Year ) {
 
     if(!PassID("HNL_ULID_Conv_"+Year)) return false;
@@ -340,16 +351,30 @@ int  Electron::PassIDTight(TString ID) const{
   }
 
   if(ID == "HNL_ULID_OLDDef_FO_"  +Year)   return (PassID("HNL_ULID_Conv_"+Year)   && PassID("HNL_ULID_CF_"+Year));
-  if(ID == "HNL_ULID_Def_FO_"  +Year)   return (PassID("HNL_ULID_Conv_"+Year)   && PassID("HNL_ULID_CF_"+Year)) &&  IsGsfCtfChargeConsistent();
 
+  if(ID == "HNL_ULID_Def_FO_"  +Year)   return (PassID("HNL_ULID_Conv_"+Year)   && PassID("HNL_ULID_CF_"+Year) &&  IsGsfCtfChargeConsistent());
+  if(ID == "HNL_ULID_Def_FCO_"  +Year)   return (PassID("HNL_ULID_CF_"+Year) &&  IsGsfCtfChargeConsistent());
+
+  /// FO = Fake Obj, is main obj in NP bkg estimate
   if(ID == "HNL_ULID_FO_2016a")     return PassID("HNL_ULID_FO_v0_"+Year);
   if(ID == "HNL_ULID_FO_2016b")     return PassID("HNL_ULID_FO_v0_"+Year);
   if(ID == "HNL_ULID_FO_2017")      return PassID("HNL_ULID_FO_v0_"+Year);
   if(ID == "HNL_ULID_FO_2018")     return PassID("HNL_ULID_FO_v0_"+Year);
 
+  /// FCO = Fake+Conv Object to check Conv bkg
 
   double CloseJet_PtratioCut = 0.4;
   if(Year=="2016") CloseJet_PtratioCut = 0.5;
+
+  if(ID.Contains("HNL_ULID_FCO_")){
+    if(!PassID("HNL_ULID_Def_FCO_"+Year)) return false;
+    if(!PassID("HNL_ULID_Fake_"+Year)){
+      if(this->HasCloseJet()){
+        if(CloseJet_Ptratio() < CloseJet_PtratioCut)         return false;
+      }
+    }
+    return true;
+  }
 
   /// Iteration 1
   if(ID == "HNL_ULID_FOv2_"+Year) {
@@ -428,6 +453,7 @@ int  Electron::PassIDTight(TString ID) const{
   }
 
  
+
 
   ////////////// SINGLE MVA [Split for ID SF]
 

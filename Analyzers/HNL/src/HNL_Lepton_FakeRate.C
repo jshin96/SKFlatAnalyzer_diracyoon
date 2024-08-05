@@ -182,14 +182,16 @@ void HNL_Lepton_FakeRate::executeEvent(){
   if(HasFlag("RunRatesFullID")){
     /// Measure FR in Data    
     
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR"},"POGHighPtWithLooseTrkIso","POGHighPtWithLooseTrkIso","POGHighPt"));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR"},"POGHighPtWithLooseTrkIso", "POGHighPtWithLooseTrkIso","POGHighPt"));
     VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR"},"Peking"        , "Peking",    "Peking_FO"));
     VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNTightV2"     , "HNTightV2", "HNLooseV1"));
     VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNL_HN3L"      , "HNL_HN3L",  "HNL_TopMVA_FO_MM"));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNL_ULID_"+GetYearString()   , "HNL_ULID_"+GetYearString(),  "HNL_ULID_FO_"+GetEraShort()));
-
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNL_ULID_"+GetYearString()   , "HNL_ULID_"+GetYearString(),    "HNL_ULID_FO_"+GetEraShort()));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNL_ULID2_"+GetYearString()   , "HNL_ULID2_"+GetYearString(),  "HNL_ULID_FCO_"+GetEraShort()));
+    
     goto RunJobs;
   }
+  
   
   if(HasFlag("RunRatesEE")){
     /// Measure FR in Data 
@@ -236,10 +238,15 @@ void HNL_Lepton_FakeRate::executeEvent(){
 
     goto RunJobs;
   }
-  if(HasFlag("RunRatesNonSNU_EE")){
-    /// Measure FR in Data       
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"Peking"        , "Peking_"+GetYearString(), "Peking_FO_"+GetYearString()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR","PR"},"HNTightV2"     , "HNTightV2", "HNLooseV4"));
+
+  if(HasFlag("RunRatesFullEEID")){
+    /// Measure FR in Data                                                                                                                                                                                                                    
+    
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"Peking"        , "Peking_"+GetYearString(),    "Peking_FO_"+GetYearString()));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNTightV2"     , "HNTightV2", "HNLooseV1"));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNL_ULID_"+GetYearString()   , "HNL_ULID_"+GetYearString(),    "HNL_ULID_FO_"+GetEraShort()));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNL_ULID2_"+GetYearString()   , "HNL_ULID2_"+GetYearString(),  "HNL_ULID_FCO_"+GetEraShort()));
+
     goto RunJobs;
   }
 
@@ -276,6 +283,10 @@ void HNL_Lepton_FakeRate::executeEventFromParameter(AnalyzerParameter param){
   /// check pt is not changed
   std::vector<Electron> Initial_loose_electrons     = SelectElectrons( param,param.Electron_Loose_ID, 10, 2.5) ;
   std::vector<Muon>     Initial_loose_muons         = SelectMuons    ( param,param.Muon_Loose_ID,     5,  2.4);
+
+  if(_jentry < 10) {
+    cout << "param.Electron_Loose_ID = " << param.Electron_Loose_ID << " nel = " << Initial_loose_electrons.size() << endl;
+  }
 
   std::vector<Electron> Loose_Electrons;
   std::vector<Muon>     Loose_Muons;
@@ -823,7 +834,6 @@ void HNL_Lepton_FakeRate::MakeNVertexDistPrescaledTrig(HNL_LeptonCore::Channel c
     bool pass_3 = ev.PassTrigger(triggerslist_3) && Mu3PD;
     bool pass_8 = ev.PassTrigger(triggerslist_8) && Mu8PD;
     bool pass_17 = ev.PassTrigger(triggerslist_17) && Mu17PD;
-
 
     if(pass_3){
       if(leps[1]->Pt() > 5){

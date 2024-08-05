@@ -62,13 +62,36 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
   fakeEst->SetEra(GetEra());
   if(RunFake&&READBKGHISTS)     fakeEst->ReadHistograms(IsDATA,Analyzer=="HNL_ControlRegion"); /// For now when checking                                                                                                                    
   else if(RunPromptTLRemoval)   fakeEst->ReadHistograms(true,Analyzer=="HNL_ControlRegion"); /// For now when checking                                                                                                                    
+  else if(Analyzer.Contains("HNL_Lepton_FakeRate") && !Analyzer.Contains("SkimTree") ) fakeEst->ReadHistograms(IsDATA,false); ///
   else if(Analyzer.Contains("Fake") && !Analyzer.Contains("SkimTree") ) fakeEst->ReadHistograms(IsDATA,true); ///
-
+  
   //==== CFBackgroundEstimator                                                                                                                                              
   cfEst->SetEra(GetEra());
   if(RunCF&&READBKGHISTS)     cfEst->ReadHistograms(true);
   else if (Analyzer.Contains("ChargeFlip"))  cfEst->ReadHistograms(false);
 
+
+  //// Setup Fake SF
+  TString datapath = getenv("DATA_DIR");
+  vector<TString> FakeHMaps = {datapath + "/"+GetEra()+"/FakeRate/MCFR/TT_PartonSF.txt",
+			       datapath + "/"+GetEra()+"/FakeRate/MCFR/QCD_PartonSF.txt"};
+  for(auto ihmap  :  FakeHMaps){
+    string Fline;
+    ifstream in(ihmap);
+    while(getline(in,Fline)){
+      std::istringstream is( Fline );
+      TString a,b,c,d,e;
+      double f;
+      is >> a; // Era
+      is >> b; // Eta
+      is >> c; // ID
+      is >> d; // SampleType
+      is >> e; // Sample
+      is >> f; // SF
+      MakeSFmap[a+"_"+b+"_"+c+"_"+d + "_"+e] = f;
+    }
+  }
+  //for(auto ih : MakeSFmap) cout << ih.first << " " << ih.second << endl;
 
   if(SETUPIDBDT) SetupIDMVAReaderDefault(false,false);
 
@@ -717,23 +740,22 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.Electron_FR_ID    = "HNL_ULID_FO_"+GetEraShort();
 
     if(GetEra() == "2016preVFP"){
-      param.k.Muon_FR            = "HNL_ULID_FO_v1_a_AJ30";
-      param.k.Electron_FR        = "HNL_ULID_FO_v0_AJ30";
+      param.k.Muon_FR            = "HNL_ULID_FO_v1_a_AJ40";
+      param.k.Electron_FR        = "HNL_ULID_FO_v0_AJ40";
       //// v0 Pt 
     }
     if(GetEra() == "2016postVFP"){
-      param.k.Muon_FR            = "HNL_ULID_FO_v4_b_AJ30";
-      param.k.Electron_FR        = "HNL_ULID_FO_v0_AJ30";
+      param.k.Muon_FR            = "HNL_ULID_FO_v4_b_AJ40";
+      param.k.Electron_FR        = "HNL_ULID_FO_v0_AJ40";
     }    
     
     if(GetYearString() == "2017"){
-      param.k.Muon_BB_FR         = "HNL_ULID_FO_v9_c_AJ30";
-      param.k.Muon_EC_FR         = "HNL_ULID_FO_v1_a_AJ30";
-      param.k.Electron_FR        = "HNL_ULID_FO_v0_AJ30";
+      param.k.Muon_FR         = "HNL_ULID_FO_v2_a_AJ40";
+      param.k.Electron_FR        = "HNL_ULID_FO_v0_AJ40";
     }
     if(GetYearString() == "2018"){
-      param.k.Muon_FR         = "HNL_ULID_FO_v3_b_AJ30";
-      param.k.Electron_FR     = "HNL_ULID_FO_v0_AJ25";
+      param.k.Muon_FR         = "HNL_ULID_FO_v2_b_AJ40"; /// HNL_ULID_FO_v3_b_AJ30 -> HNL_ULID_FO_v2_b_AJ30
+      param.k.Electron_FR     = "HNL_ULID_FO_v0_AJ40";
     }
 
     param.k.Muon_ID_SF         = "NUM_HNL_ULID_"+GetYearString();
@@ -771,23 +793,21 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.Electron_FR_ID    = "HNL_ULID_FO_"+GetEraShort();
 
     if(GetEra() == "2016preVFP"){
-      param.k.Muon_FR            = "HNL_ULID_FO_v1_a_AJ30";
-      param.k.Electron_FR        = "HNL_ULID_FO_v0_AJ30";
-      //// v0 Pt                                                                                                                                                                                                                                                                
+      param.k.Muon_FR            = "HNL_ULID_FO_v1_a_AJ40"; 
+      param.k.Electron_FR        = "HNL_ULID_FO_v9_a_AJ40"; //// Updated after MC Closure 
+      //// v0 Pt                                                                                                                                                                             
     }
     if(GetEra() == "2016postVFP"){
-      param.k.Muon_FR            = "HNL_ULID_FO_v4_b_AJ30";
-      param.k.Electron_FR        = "HNL_ULID_FO_v0_AJ30";
+      param.k.Muon_FR            = "HNL_ULID_FO_v2_a_AJ40"; //// Updated after MC CLosure
+      param.k.Electron_FR        = "HNL_ULID_FO_v9_a_AJ40"; //// Updated after MC Closure  
     }
-
     if(GetYearString() == "2017"){
-      param.k.Muon_BB_FR         = "HNL_ULID_FO_v9_c_AJ30";
-      param.k.Muon_EC_FR         = "HNL_ULID_FO_v1_a_AJ30";
-      param.k.Electron_FR        = "HNL_ULID_FO_v0_AJ30";
+      param.k.Muon_FR            = "HNL_ULID_FO_v2_a_AJ40";  //// Updated after MC CLosure 
+      param.k.Electron_FR        = "HNL_ULID_FO_v9_a_AJ40";  //// Updated after MC CLosure 
     }
     if(GetYearString() == "2018"){
-      param.k.Muon_FR         = "HNL_ULID_FO_v3_b_AJ30";
-      param.k.Electron_FR     = "HNL_ULID_FO_v0_AJ25";
+      param.k.Muon_FR         = "HNL_ULID_FO_v3_a_AJ40"; /// HNL_ULID_FO_v3_b_AJ30 -> HNL_ULID_FO_v3_a_AJ30                                                                                  
+      param.k.Electron_FR     = "HNL_ULID_FO_v9_a_AJ40";  //// Updated after MC CLosure 
     }
 
     param.k.Muon_ID_SF         = "NUM_HNL_ULID_"+GetYearString();
@@ -801,6 +821,61 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     if(channel_st.Contains("EMu"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
     return param;
   }
+
+
+  else if (s_setup_version=="HNL_ULID2"){
+
+    /// MAIN SETUP FOR ANALYSIS                                                                                                                                                                                                                                                                                                                                             
+    param.Apply_Weight_IDSF     = true;
+    param.Apply_Weight_TriggerSF= true;
+
+    param.FakeMethod = "DATA";
+    param.CFMethod   = "DATA";
+    param.ConvMethod = "MC";
+
+    param.Muon_Veto_ID      = "HNVetoMVA";
+    param.Muon_Tight_ID     = "HNL_ULID2_"+GetYearString();
+    param.Electron_Veto_ID  = "HNVetoMVA";
+    param.Electron_Tight_ID = "HNL_ULID_"+GetYearString();
+
+    ///Fakes                                                                                                                                                                                                                                                                                                                                                                
+    param.FakeRateMethod    = "Standard";
+    param.FakeRateParam     = "PtParton";
+
+    param.Muon_FR_ID        = "HNL_ULID_FCO_"+GetEraShort();
+    param.Electron_FR_ID    = "HNL_ULID_FCO_"+GetEraShort();
+
+    if(GetEra() == "2016preVFP"){
+      param.k.Muon_FR            = "HNL_ULID_FCO_v1_a_AJ30";
+      param.k.Electron_FR        = "HNL_ULID_FCO_v0_AJ30";
+    }
+    if(GetEra() == "2016postVFP"){
+      param.k.Muon_FR            = "HNL_ULID_FCO_v4_b_AJ30";
+      param.k.Electron_FR        = "HNL_ULID_FCO_v0_AJ30";
+    }
+
+    if(GetYearString() == "2017"){
+      param.k.Muon_BB_FR         = "HNL_ULID_FCO_v9_c_AJ30";
+      param.k.Muon_EC_FR         = "HNL_ULID_FCO_v1_a_AJ30";
+      param.k.Electron_FR        = "HNL_ULID_FCO_v0_AJ30";
+    }
+    if(GetYearString() == "2018"){
+      param.k.Muon_FR         = "HNL_ULID_FCO_v3_b_AJ30";
+      param.k.Electron_FR     = "HNL_ULID_FCO_v0_AJ25";
+    }
+    
+    param.k.Muon_ID_SF         = "NUM_HNL_ULID_"+GetYearString();
+    param.k.Muon_ISO_SF        = "Default";
+    param.k.Electron_ID_SF     = "passHNL_ULID_"+GetYearString();
+
+    param.k.Electron_CF  = "CFRate_InvPtEta3_PBSExtrap_Central_" + param.Electron_Tight_ID;
+    param.TriggerSelection = "Dilep";
+    if(channel_st.Contains("EE"))   param.k.Electron_Trigger_SF = "DiElIso_HNL_ULID";
+    if(channel_st.Contains("MuMu")) param.k.Muon_Trigger_SF = "DiMuIso_HNL_ULID";
+    if(channel_st.Contains("EMu"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
+    return param;
+  }
+
 
   else if (s_setup_version=="POGTight"){
     param.Apply_Weight_IDSF     = true;
@@ -1274,6 +1349,31 @@ bool HNL_LeptonCore::SelectChannel(HNL_LeptonCore::Channel channel){
 }
 
 
+TString HNL_LeptonCore::GetProcessLRSM(){
+
+  if (IsData) return "";
+  if(!MCSample.Contains("WR")) return "";
+  
+  int N_Mother(0);
+  for(unsigned int i=2; i<All_Gens.size(); i++){
+    Gen gen = All_Gens.at(i);
+    if((gen.PID() == 9900012 || gen.PID() == 9900014)  && gen.Status()==62)     N_Mother= i;
+  }
+  
+  for(unsigned int i=2; i<All_Gens.size(); i++){
+    Gen gen = All_Gens.at(i);     
+    TString lep_ch="";
+
+    if(gen.MotherIndex() == N_Mother) {
+      if(fabs(gen.PID()) == 11) return "EE";
+      if(fabs(gen.PID()) == 13) return "MuMu";
+    }
+  }                                        
+  
+  PrintGen(All_Gens);
+
+  return "";
+}
 
 
 TString HNL_LeptonCore::GetProcess(){
@@ -1291,7 +1391,7 @@ TString HNL_LeptonCore::GetProcess(){
 
   if(isDYVBF){
 
-    /*bool isVBF=false;                                                                                                                                                                                                  
+    /*bool isVBF=false;                                                                                                                                                                                                 
                                                                                                                                                                                                                          
     for (auto i : All_Gens){                                                                                                                                                                                                 
       Gen gen = i;                                                                                                                                                                                                       
