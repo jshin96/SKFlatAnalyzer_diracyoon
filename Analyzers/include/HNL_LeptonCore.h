@@ -384,7 +384,6 @@ nvtx,  double w);
   vector<Gen> GetGenLepronsSignal();
   bool SelectChannel(HNL_LeptonCore::Channel channel);
   TString GetProcess();
-  TString GetProcessLRSM();
   TString GetChannelString(HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType  q=HNL_LeptonCore::ChargeType::Inclusive);
   Particle GetSignalObject(TString obj, TString Sig);
 

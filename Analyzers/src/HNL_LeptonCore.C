@@ -1313,32 +1313,6 @@ bool HNL_LeptonCore::SelectChannel(HNL_LeptonCore::Channel channel){
 }
 
 
-TString HNL_LeptonCore::GetProcessLRSM(){
-
-  if (IsData) return "";
-  if(!MCSample.Contains("WR")) return "";
-  
-  int N_Mother(0);
-  for(unsigned int i=2; i<All_Gens.size(); i++){
-    Gen gen = All_Gens.at(i);
-    if((gen.PID() == 9900012 || gen.PID() == 9900014)  && gen.Status()==62)     N_Mother= i;
-  }
-  
-  for(unsigned int i=2; i<All_Gens.size(); i++){
-    Gen gen = All_Gens.at(i);     
-    TString lep_ch="";
-
-    if(gen.MotherIndex() == N_Mother) {
-      if(fabs(gen.PID()) == 11) return "EE";
-      if(fabs(gen.PID()) == 13) return "MuMu";
-    }
-  }                                        
-  
-  PrintGen(All_Gens);
-
-  return "";
-}
-
 
 TString HNL_LeptonCore::GetProcess(){
 

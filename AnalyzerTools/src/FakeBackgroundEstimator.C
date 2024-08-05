@@ -73,7 +73,6 @@ void FakeBackgroundEstimator::ReadHistograms(bool IsData, bool ScanIDs){
 	  if (!this_frname.Contains(b)) continue;
           if (!this_frname.Contains(d)) continue;
 	}
-	cout << "Pass "  << endl;
 	histDir->cd();
 	
 	if(ihmap.Contains("Electron")) map_hist_Electron[a+"_"+b+"_"+c+"_"+d] = (TH2D *)file->Get(this_frname)->Clone(a+"_"+b+"_"+c+"_"+d);
