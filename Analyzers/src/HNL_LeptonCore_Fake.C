@@ -11,6 +11,8 @@ double HNL_LeptonCore::GetPtPartonSF(Lepton  Lep, TString LooseID){
   if (LooseID.Contains("Veto")) return 1;
 
   if(!IsData){
+
+  //// Access SF from text file 
     if(IsMuon){
     TString FSFKey = DataEra + "_"+ Lep.GetEtaRegion() +"_MuMu_"+LooseID + "_MC_QCD" ;
     
@@ -20,108 +22,53 @@ double HNL_LeptonCore::GetPtPartonSF(Lepton  Lep, TString LooseID){
       cout << "MakeSFmap has no key " <<  FSFKey << endl;
       exit(EXIT_FAILURE);
     }
-    
     return fit->second;
-    
-    if(DataEra == "2016preVFP"  && Lep.IsBB()  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.673;
-    if(DataEra == "2016preVFP"  && !Lep.IsBB()  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.744;
-    if(DataEra == "2016postVFP"  && Lep.IsBB()  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.894;
-    if(DataEra == "2016postVFP"  && !Lep.IsBB()  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.922;
-    
-    if(DataYear == 2017  && Lep.IsBB()  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.796;
-    if(DataYear == 2017  && !Lep.IsBB()  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.608;
-    
-    if(DataYear == 2018  && Lep.IsBB()  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.823;
-    if(DataYear == 2018  && !Lep.IsBB()  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.842;
-    
     }
-    
     else{
 
       TString FSFKey = DataEra + "_"+ Lep.etaRegionString() +"_EE_"+LooseID + "_MC_QCD" ;
-      
       map<TString, double>::iterator fit = MakeSFmap.find(FSFKey);
       
       if(fit == MakeSFmap.end()) {
 	cout << "MakeSFmap has no key " <<  FSFKey << endl;
 	exit(EXIT_FAILURE);
       }
-      
       return fit->second;
-	
-
-      if(DataEra == "2016preVFP"  && Lep.etaRegionString() == "EB1"  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.785;
-      if(DataEra == "2016preVFP"  && Lep.etaRegionString() == "EB2"  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.782;
-      if(DataEra == "2016preVFP"  && Lep.etaRegionString() == "EE1"  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.851;
-      if(DataEra == "2016preVFP"  && Lep.etaRegionString() == "EE2"  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.810;
-      
-      if(DataEra == "2016postVFP"  && Lep.etaRegionString() == "EB1"  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.834;
-      if(DataEra == "2016postVFP"  && Lep.etaRegionString() == "EB2"  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.794;
-      if(DataEra == "2016postVFP"  && Lep.etaRegionString() == "EE1"  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.739;
-      if(DataEra == "2016postVFP"  && Lep.etaRegionString() == "EE2"  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.831;
-      
-      if(DataEra == "2017"  && Lep.etaRegionString() == "EB1"  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.791;
-      if(DataEra == "2017"  && Lep.etaRegionString() == "EB2"  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.788;
-      if(DataEra == "2017"  && Lep.etaRegionString() == "EE1"  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.781;
-      if(DataEra == "2017"  && Lep.etaRegionString() == "EE2"  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.826;
-      
-      if(DataEra == "2018"  && Lep.etaRegionString() == "EB1"  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.836;
-      if(DataEra == "2018"  && Lep.etaRegionString() == "EB2"  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.829;
-      if(DataEra == "2018"  && Lep.etaRegionString() == "EE1"  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.862;
-      if(DataEra == "2018"  && Lep.etaRegionString() == "EE2"  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.831;
-      
-      
-      return 1;
     }
   }
+
   vector<TString> MVAIDs = {"TopMVA","HNL_ULID"};
   bool isMVAID=false;
   for(auto ID : MVAIDs){
     if(LooseID.Contains("ID")) isMVAID=true;
   }
-  
+
+
+  /// Check ID needs SF applied. i.e. BDT ID only need SF
   if(!isMVAID) return 1.;
   
-  
+  ///// Some IDs are predefined by other groups and we use their values
   if(LooseID == "HNL_TopMVA_FO_MM") return 0.661;
   if(LooseID == "HNL_HN3L") return 0.661;
   
-
   
   /// MUON   //https://jalmond.web.cern.ch/jalmond/SNU/WebPlots/HNL/HNL_LeptonFakeRatesMC/HNL_LeptonFakeRatesMC/2017/HNL_GetProfileSFMC_Jan24_Muon/?match=v1_M
   
   /// DeepJet split
-  
-  if(IsMuon && (LooseID == "HNL_ULID_FCO_2016a")) return GetPtPartonSF(Lep,"HNL_ULID_FO_v3_b_2016");
-  if(IsMuon && (LooseID == "HNL_ULID_FCO_2016b")) return GetPtPartonSF(Lep,"HNL_ULID_FO_v4_b_2016");
-  if(IsMuon && (LooseID == "HNL_ULID_FCO_2017") && Lep.IsBB()) return GetPtPartonSF(Lep,"HNL_ULID_FO_v9_c_2017");
-  if(IsMuon && (LooseID == "HNL_ULID_FCO_2017") && !Lep.IsBB()) return GetPtPartonSF(Lep,"HNL_ULID_FO_v1_a_2017");
-  if(IsMuon && (LooseID == "HNL_ULID_FCO_2018")) return GetPtPartonSF(Lep,"HNL_ULID_FO_v3_b_2018");
 
-
-  if(IsMuon && (LooseID == "HNL_ULID_FO_2016a")) return GetPtPartonSF(Lep,"HNL_ULID_FO_v3_b_2016");
-  if(IsMuon && (LooseID == "HNL_ULID_FO_2016b")) return GetPtPartonSF(Lep,"HNL_ULID_FO_v4_b_2016");
-  if(IsMuon && (LooseID == "HNL_ULID_FO_2017") && Lep.IsBB()) return GetPtPartonSF(Lep,"HNL_ULID_FO_v9_c_2017");
-  if(IsMuon && (LooseID == "HNL_ULID_FO_2017") && !Lep.IsBB()) return GetPtPartonSF(Lep,"HNL_ULID_FO_v1_a_2017");
-  if(IsMuon && (LooseID == "HNL_ULID_FO_2018")) return GetPtPartonSF(Lep,"HNL_ULID_FO_v3_b_2018");
-
-  if(!IsMuon && (LooseID == "HNL_ULID_FO_2016a"))  return GetPtPartonSF(Lep,"HNL_ULID_FO_v0_2016");
-  if(!IsMuon && (LooseID == "HNL_ULID_FO_2016b"))  return GetPtPartonSF(Lep,"HNL_ULID_FO_v0_2016");
-  if(!IsMuon && (LooseID == "HNL_ULID_FO_2017"))  return GetPtPartonSF(Lep,"HNL_ULID_FO_v0_2017");
-  if(!IsMuon && (LooseID == "HNL_ULID_FO_2018"))  return GetPtPartonSF(Lep,"HNL_ULID_FO_v0_2018");
-
-  if(!IsMuon && (LooseID == "HNL_ULID_FCO_2016a"))  return GetPtPartonSF(Lep,"HNL_ULID_FO_v0_2016");
-  if(!IsMuon && (LooseID == "HNL_ULID_FCO_2016b"))  return GetPtPartonSF(Lep,"HNL_ULID_FO_v0_2016");
-  if(!IsMuon && (LooseID == "HNL_ULID_FCO_2017"))  return GetPtPartonSF(Lep,"HNL_ULID_FO_v0_2017");
-  if(!IsMuon && (LooseID == "HNL_ULID_FCO_2018"))  return GetPtPartonSF(Lep,"HNL_ULID_FO_v0_2018");
+  /// FCO IDs are for checks regarding Conv backgrounds
+  if(LooseID.Contains("HNL_ULID_FCO")){
+    for(auto i : {"2016a","2016b","2017","2018"}) {
+      return GetPtPartonSF(Lep,"HNL_ULID_FO_"+i);
+    }
+  }
 
   /// Scan Numbers
-
-
   if(IsData){
     if(IsMuon){
-      TString FSFKey = GetYearString()  + "_"+ Lep.GetEtaRegion() +"_MuMu_"+LooseID + "_DATA" ;
-
+      
+      //// Muon Data we use Inclusive of Barrel + Endcap
+      TString FSFKey = GetYearString()  + "_Inclusive_MuMu_"+LooseID + "_DATA" ;
       map<TString, double>::iterator fit = MakeSFmap.find(FSFKey);
 
       if(fit == MakeSFmap.end()) {
@@ -130,20 +77,21 @@ double HNL_LeptonCore::GetPtPartonSF(Lepton  Lep, TString LooseID){
       }
 
       return fit->second;
+    }
+    else{
+      TString FSFKey = GetYearString()  + "_"+Lep.GetEtaRegion()+"_EE_"+LooseID + "_DATA" ;
 
-      if(DataEra == "2016preVFP"  && Lep.IsBB()  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.673;
-      if(DataEra == "2016preVFP"  && !Lep.IsBB()  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.744;
-      if(DataEra == "2016postVFP"  && Lep.IsBB()  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.894;
-      if(DataEra == "2016postVFP"  && !Lep.IsBB()  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.922;
+      map<TString, double>::iterator fit = MakeSFmap.find(FSFKey);
 
-      if(DataYear == 2017  && Lep.IsBB()  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.796;
-      if(DataYear == 2017  && !Lep.IsBB()  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.608;
+      if(fit == MakeSFmap.end()) {
+        cout << "MakeSFmap has no key " <<  FSFKey << endl;
+        exit(EXIT_FAILURE);
+      }
 
-      if(DataYear == 2018  && Lep.IsBB()  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.823;
-      if(DataYear == 2018  && !Lep.IsBB()  && (LooseID == "HNL_ULID_FO_"+GetEraShort())) return 0.842;
+      return fit->second;
 
     }
-
+  }
 
 
   cout << "ERROR in GetPtPartonSF " << IsMuon << " " << LooseID << endl;

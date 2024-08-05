@@ -274,14 +274,10 @@ bool Muon::PassID(TString ID) const {
   
   //// Optimised Loose IDs
   if(ID == "HNL_ULID_FO_2016a")     return PassID("HNL_ULID_FO_v1_a_2016");
-  if(ID == "HNL_ULID_FO_2016b")     return PassID("HNL_ULID_FO_v4_b_2016");
-  if(ID == "HNL_ULID_FO_2017")      {    
-    if (this->IsBB()) return PassID("HNL_ULID_FO_v9_c_2017");
-    else return PassID("HNL_ULID_FO_v1_a_2017");
-  }
-  if(ID == "HNL_ULID_FO_2018")     return PassID("HNL_ULID_FO_v3_b_2018");
+  if(ID == "HNL_ULID_FO_2016b")     return PassID("HNL_ULID_FO_v2_a_2016");
+  if(ID == "HNL_ULID_FO_2017")      return PassID("HNL_ULID_FO_v2_a_2017");
+  if(ID == "HNL_ULID_FO_2018")      return PassID("HNL_ULID_FO_v3_a_2018");
   
-
   ///// DeepJet Variations in Loose v0-9
   if(ID == "HNL_ULID_FO_v0_"+Era){
     if(!PassID("HNL_ULID_FO")) return false;
@@ -335,8 +331,7 @@ bool Muon::PassID(TString ID) const {
     return true;
   }
 
-  
-  
+    
   if(ID == "HNL_ULID_2016")    return (PassID("MVALooseTrgSafe") && (MVA() >  MVACut) && (fabs(IP3D()/IP3Derr()) < 7) );
   if(ID == "HNL_ULID_2016a")   return (PassID("MVALooseTrgSafe") && (MVA() >  MVACut) && (fabs(IP3D()/IP3Derr()) < 7) );
   if(ID == "HNL_ULID_2016b")   return (PassID("MVALooseTrgSafe") && (MVA() >  MVACut) && (fabs(IP3D()/IP3Derr()) < 7) );

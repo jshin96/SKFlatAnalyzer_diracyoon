@@ -187,7 +187,6 @@ void HNL_Lepton_FakeRate::executeEvent(){
     VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNTightV2"     , "HNTightV2", "HNLooseV1"));
     VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNL_HN3L"      , "HNL_HN3L",  "HNL_TopMVA_FO_MM"));
     VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNL_ULID_"+GetYearString()   , "HNL_ULID_"+GetYearString(),    "HNL_ULID_FO_"+GetEraShort()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNL_ULID2_"+GetYearString()   , "HNL_ULID2_"+GetYearString(),  "HNL_ULID_FCO_"+GetEraShort()));
     
     goto RunJobs;
   }
@@ -245,7 +244,7 @@ void HNL_Lepton_FakeRate::executeEvent(){
     VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"Peking"        , "Peking_"+GetYearString(),    "Peking_FO_"+GetYearString()));
     VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNTightV2"     , "HNTightV2", "HNLooseV1"));
     VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNL_ULID_"+GetYearString()   , "HNL_ULID_"+GetYearString(),    "HNL_ULID_FO_"+GetEraShort()));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNL_ULID2_"+GetYearString()   , "HNL_ULID2_"+GetYearString(),  "HNL_ULID_FCO_"+GetEraShort()));
+    
 
     goto RunJobs;
   }

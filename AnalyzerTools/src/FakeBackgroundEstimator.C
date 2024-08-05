@@ -39,6 +39,7 @@ void FakeBackgroundEstimator::ReadHistograms(bool IsData, bool ScanIDs){
     ifstream in(ihmap);
     while(getline(in,elline)){
       std::istringstream is( elline );
+      
       TString a,b,c,d,e;
       is >> a; // <Rate>
       is >> b; // <IDlabel>
@@ -46,6 +47,8 @@ void FakeBackgroundEstimator::ReadHistograms(bool IsData, bool ScanIDs){
       is >> d; // <syst key>
       is >> e; // <rootfilename>
       
+      if(a.Contains("###")) continue;
+
       TString FFRPath = ihmap;
       FFRPath = FFRPath.ReplaceAll("histmap_Electron.txt","");
       FFRPath = FFRPath.ReplaceAll("histmap_Muon.txt","");
