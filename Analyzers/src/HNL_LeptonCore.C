@@ -4,7 +4,6 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
 
   AnalyzerCore::initializeAnalyzer();
 
-
   /// SETUP BKG OBJ
   mcCorr          = new MCCorrection();
   puppiCorr       = new PuppiSoftdropMassCorr();
@@ -71,7 +70,7 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
   else if (Analyzer.Contains("ChargeFlip"))  cfEst->ReadHistograms(false);
 
 
-  //// Setup Fake SF
+  //// Setup Fake PartonSF 
   TString datapath = getenv("DATA_DIR");
   vector<TString> FakeHMaps = {datapath + "/"+GetEra()+"/FakeRate/MCFR/TT_PartonSF.txt",
 			       datapath + "/"+GetEra()+"/FakeRate/MCFR/QCD_PartonSF.txt"};
@@ -781,7 +780,8 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
 
     return param;
   }
-  else if (s_setup_version=="HighPt"){
+
+  if (s_setup_version=="HighPt"){
 
     param.Apply_Weight_IDSF     = false;
     param.Apply_Weight_TriggerSF= false;
@@ -814,7 +814,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     return param;
   }
 
-  else if (s_setup_version=="TopHN"){
+  if (s_setup_version=="TopHN"){
     param.Apply_Weight_IDSF     = true;
     param.Apply_Weight_TriggerSF= true;
 
@@ -846,8 +846,8 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     return param;
   }
 
-  else if (s_setup_version=="HNL_ULID"){
-
+  if (s_setup_version=="HNL_ULID"){
+    
     /// MAIN SETUP FOR ANALYSIS                                                                                                                                                                                                                                                 
     param.Apply_Weight_IDSF     = true;
     param.Apply_Weight_TriggerSF= true;
@@ -901,7 +901,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     if(channel_st.Contains("EMu"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
     return param;
   }
-  else if (s_setup_version=="POGTight"){
+  if (s_setup_version=="POGTight"){
     param.Apply_Weight_IDSF     = true;
     param.Apply_Weight_TriggerSF= true;
     
@@ -932,7 +932,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
   }
 
 
-  else if (s_setup_version=="Peking"){
+  if (s_setup_version=="Peking"){
     param.Apply_Weight_TriggerSF = false;
     param.Apply_Weight_IDSF      = false;
     param.CFMethod     = "Data";
@@ -949,19 +949,8 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     
     return param;
   }
-  else if (s_setup_version=="EXO17028"){
-    param.Apply_Weight_TriggerSF = false;
-    param.Apply_Weight_IDSF      = false;
-    param.CFMethod           = "MC";
-    param.FakeMethod   = "MC";
-    param.ConvMethod   = "MC";
-    param.Muon_Tight_ID      = "HNTight_17028";
-    param.Electron_Tight_ID  = "HNTight_17028";
-    param.Muon_FR_ID         = "HNLoose_17028";
-    param.Electron_FR_ID     = "HNLoose_17028";
-    return param;
-  }
-  else if (s_setup_version=="MVAUL"){
+
+  if (s_setup_version=="MVAUL"){
     param.FakeMethod = "DATA";    param.CFMethod   = "DATA";    param.ConvMethod = "MC";
     param.Muon_Tight_ID      = "HNL_ULID_"+GetYearString();
     param.Electron_Tight_ID  = "HNL_ULID_"+GetYearString();
@@ -972,7 +961,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     return param;
   }
 
-  else if (s_setup_version=="HNL_Opt"){
+  if (s_setup_version=="HNL_Opt"){
     param.Apply_Weight_TriggerSF = false;
     param.Apply_Weight_IDSF      = false;
     param.FakeMethod = "MC";
@@ -986,7 +975,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.Electron_FR_ID = "HNLooseV4";
     return param;
   }
-  else if (s_setup_version=="BDT"){
+  if (s_setup_version=="BDT"){
     param.Apply_Weight_TriggerSF = false;
     param.Apply_Weight_IDSF      = false;
     param.FakeMethod = "MC";

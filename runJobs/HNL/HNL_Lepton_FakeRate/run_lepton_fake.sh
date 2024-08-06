@@ -13,15 +13,6 @@ for i in "${era_list[@]}"
 
 do
     
-    
-    if [[ $1 == "RatesWR" ]]; then
-        #SKFlat.py -a $analyzer  -l $mcpath/MC.txt              -n ${njobs}       --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRatesTauAnalysisEE&
-        #SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_el.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRatesTauAnalysisEE&
-        SKFlat.py -a $analyzer  -l $mcpath/MC.txt              -n ${njobs}       --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRatesTauAnalysis&
-	SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_mu.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRatesTauAnalysis&
-
-    fi
-
     if [[ $1 == "CheckProfile" ]]; then
         SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_mu.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags CheckProfile&
         SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_el.txt  -n  ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags CheckProfileEE&
@@ -32,6 +23,12 @@ do
         SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_el.txt  -n  ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags CheckProfileEE&
     fi
     
+    if [[ $1 == "PR" ]]; then
+	SKFlat.py -a $analyzer  -i DYJetsToMuMu_MiNNLO  -n  ${njobs_data}  --nmax ${nmax}  -e ${i}  --skim SkimTree_DileptonBDT --userflags RunPromptRates &
+	SKFlat.py -a $analyzer  -i DYJetsToEE_MiNNLO  -n  ${njobs_data}  --nmax ${nmax}  -e ${i}  --skim SkimTree_DileptonBDT --userflags RunPromptRatesEE &
+    fi
+
+
     if [[ $1 == "Rates" ]]; then
         SKFlat.py -a $analyzer  -l $mcpath/MC.txt              -n ${njobs}       --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRates&
         SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_mu.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRates&
@@ -49,8 +46,13 @@ do
 
     if [[ $1 == "MakeRegionPlots" ]]; then
         SKFlat.py -a $analyzer  -l $mcpath/MC.txt              -n ${njobs}       --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags MakeRegionPlots&
-        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_mu.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags MakeRegionPlots&                                              
+        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_mu.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags MakeRegionPlots&              
+        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_el.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags MakeRegionPlots&
         SKFlat.py -a $analyzer  -l ${mcpath}/QCD_${i}.txt  -n ${njobs}  --nmax ${nmax}  -e ${i}   --skim SkimTree_FakeEventSkimBDT --userflags MakeRegionPlots&                                                     
+	SKFlat.py -a $analyzer  -i DYJetsToMuMu_MiNNLO  -n  ${njobs_data}  --nmax ${nmax}  -e ${i}  --skim SkimTree_DileptonBDT --userflags MakeRegionPlots &
+	SKFlat.py -a $analyzer  -i DYJetsToEE_MiNNLO    -n  ${njobs_data}  --nmax ${nmax}  -e ${i}  --skim SkimTree_DileptonBDT --userflags MakeRegionPlots &
+        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_ll.txt   -n  ${njobs_data}  --nmax ${nmax}  -e ${i}  --skim SkimTree_DileptonBDT --userflags MakeRegionPlots &
+	
     fi
 
     if [[ $1 == "GetNvtxSF" ]]; then

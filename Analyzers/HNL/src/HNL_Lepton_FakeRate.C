@@ -191,6 +191,18 @@ void HNL_Lepton_FakeRate::executeEvent(){
     goto RunJobs;
   }
   
+  if(HasFlag("RunPromptRates")){
+    /// Measure FR in Data                                                                                                                                                                                                                                                   
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"PR"},"HNL_ULID_"+GetYearString()   , "HNL_ULID_"+GetYearString(),    "HNL_ULID_FO_"+GetEraShort()));
+
+    goto RunJobs;
+  }
+  if(HasFlag("RunPromptRatesEE")){
+    /// Measure FR in Data                                                                                                                                                                                                                                                   
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"PR"},"HNL_ULID_"+GetYearString()   , "HNL_ULID_"+GetYearString(),    "HNL_ULID_FO_"+GetEraShort()));
+
+    goto RunJobs;
+  }
   
   if(HasFlag("RunRatesEE")){
     /// Measure FR in Data 
@@ -670,38 +682,22 @@ void HNL_Lepton_FakeRate::MakeDiLepPlots(HNL_LeptonCore::Channel channel, Analyz
 
   if(channel == MuMu){
 
-    TString triggerslist_3="HLT_Mu3_PFJet40_v";
     TString triggerslist_8="HLT_Mu8_TrkIsoVVL_v";
     TString triggerslist_17="HLT_Mu17_TrkIsoVVL_v";
 
-    double NVxt_Mu3 =  ApplyNvtxReweight(nPV,triggerslist_3);
     double NVxt_Mu8 =  ApplyNvtxReweight(nPV,triggerslist_8);
     double NVxt_Mu17 =  ApplyNvtxReweight(nPV,triggerslist_17);
 
-    bool Mu3PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_3, this->DataStream) ));
     bool Mu8PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_8, this->DataStream) ));
     bool Mu17PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_17, this->DataStream) ));
 
-    bool pass_3 = ev.PassTrigger(triggerslist_3) && Mu3PD;
     bool pass_8 = ev.PassTrigger(triggerslist_8) && Mu8PD;
     bool pass_17 = ev.PassTrigger(triggerslist_17) && Mu17PD;
 
-
-    if(pass_3){
-      if(leps[1]->Pt() > 5){
-        double prescale_weight  =  (IsDATA) ? 1. : ev.GetTriggerLumi(triggerslist_3)*NVxt_Mu3;
-	
-        if(PassZMass) {
-	  for(auto ilep : leps)FillHistogram(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_3 + "_LepPt").Data(), ilep->Pt() , d_event_weight*prescale_weight,"PrescaledTriggerPt");
-        }
-        FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_3 + "_LLMass").Data(), Z.M() , d_event_weight*prescale_weight, 100., 0., 200);
-      }
-    }
-    
     if(pass_8){
       if(leps[1]->Pt() > 10){
         double prescale_weight  =  (IsDATA) ? 1. : ev.GetTriggerLumi(triggerslist_8)*NVxt_Mu8;
-	
+
         if(PassZMass){
 	  for(auto ilep : leps)FillHistogram(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_8 + "_LepPt").Data(), ilep->Pt() , d_event_weight*prescale_weight,"PrescaledTriggerPt");
         }
@@ -722,34 +718,19 @@ void HNL_Lepton_FakeRate::MakeDiLepPlots(HNL_LeptonCore::Channel channel, Analyz
   
   if(channel == EE){
 
-    TString triggerslist_8="HLT_Ele8_CaloIdL_TrackIdL_IsoVL_PFJet30_v";
     TString triggerslist_12="HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30_v";
-    TString triggerslist_17="HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30_v";
     TString triggerslist_23="HLT_Ele23_CaloIdL_TrackIdL_IsoVL_PFJet30_v";
-    bool El8PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_8, this->DataStream) ));
+
     bool EL12PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_12, this->DataStream) ));
-    bool EL17PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_17, this->DataStream) ));
     bool EL23PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_23, this->DataStream) ));
 
-    bool pass_8 = ev.PassTrigger(triggerslist_8) && El8PD;
     bool pass_12 = ev.PassTrigger(triggerslist_12) && EL12PD ;
-    bool pass_17 = ev.PassTrigger(triggerslist_17) && EL17PD;
     bool pass_23 = ev.PassTrigger(triggerslist_23) && EL23PD;
-    double NVxt_El8 =  ApplyNvtxReweight(nPV,triggerslist_8);
+
     double NVxt_El12 =  ApplyNvtxReweight(nPV,triggerslist_12);
     double NVxt_El23 =  ApplyNvtxReweight(nPV,triggerslist_23);
 
 
-    if(pass_8){
-      if(leps[1]->Pt() > 10){
-        double prescale_weight  =  (IsDATA) ? 1. : ev.GetTriggerLumi(triggerslist_8)*NVxt_El8;
-        if(PassZMass){
-          for(auto ilep : leps)FillHistogram(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_8 + "_LepPt").Data(), ilep->Pt() , d_event_weight*prescale_weight,"PrescaledTriggerPt");
-        }
-        FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_8 + "_LLMass").Data(), Z.M() , d_event_weight*prescale_weight, 100., 0., 200);
-
-      }
-    }
     if(pass_12){
       if(leps[1]->Pt() > 14){
         double prescale_weight  =  (IsDATA) ? 1. : ev.GetTriggerLumi(triggerslist_12)*NVxt_El12;
@@ -760,15 +741,6 @@ void HNL_Lepton_FakeRate::MakeDiLepPlots(HNL_LeptonCore::Channel channel, Analyz
       }
     }
 
-    if(pass_17){
-      if(leps[1]->Pt() > 20){
-        double prescale_weight  =  (IsDATA) ? 1. : ev.GetTriggerLumi(triggerslist_17)*NVxt_El12;
-        if(PassZMass){
-          for(auto ilep : leps)FillHistogram(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_17 + "_LepPt").Data(), ilep->Pt() , d_event_weight*prescale_weight,"PrescaledTriggerPt");
-        }
-        FillHist(( plot_dir +  "/RegionPlots_Dilep/"+triggerslist_17 + "_LLMass").Data(), Z.M() , d_event_weight*prescale_weight, 100., 0., 200);
-      }
-    }
     if(pass_23){
       if(leps[1]->Pt() > 25){
         double prescale_weight  =  (IsDATA) ? 1. : ev.GetTriggerLumi(triggerslist_23)*NVxt_El23;

@@ -1,12 +1,12 @@
 ###-----------------------------------------------------------------------------------------------------------------------------
 ###--- Initial entries for non MVA HNL IDs
 ###-----------------------------------------------------------------------------------------------------------------------------
-FakeRate      HNTightV2				ptcone_eta      AwayJetPt40           MainFiles/FR_Mu_2016_Version1.root
-FakeRate      POGTightWithTightIso     		ptcone_eta      AwayJetPt40           MainFiles/FR_Mu_2016_Version1.root
-FakeRate      TopHN                		ptcone_eta      FR_cent               MainFiles/FR_Mu_2016_Top.root
-FakeRate      Peking               		ptcone_eta      FR_cent               MainFiles/FR_Mu_2016_HNL_PtCone.root
-FakeRate      HNTightV2                      	ptcone_eta      FR_cent               MainFiles/FR_Mu_2016_HNL_PtCone.root
-FakeRate      POGHighPtWithLooseTrkIso       	ptcone_eta      FR_cent     	      MainFiles/FR_Mu_2016_HighPt_PtCone.root
+FakeRate      HNTightV2				ptcone_eta      AwayJetPt40           MainFiles/FR_Mu_2016b_Version1.root
+FakeRate      POGTightWithTightIso     		ptcone_eta      AwayJetPt40           MainFiles/FR_Mu_2016b_Version1.root
+FakeRate      TopHN                		ptcone_eta      FR_cent               MainFiles/FR_Mu_2016b_Top.root
+FakeRate      Peking               		ptcone_eta      FR_cent               MainFiles/FR_Mu_2016b_HNL_PtCone.root
+FakeRate      HNTightV2                      	ptcone_eta      FR_cent               MainFiles/FR_Mu_2016b_HNL_PtCone.root
+FakeRate      POGHighPtWithLooseTrkIso       	ptcone_eta      FR_cent     	      MainFiles/FR_Mu_2016b_HighPt_PtCone.root
 ###-----------------------------------------------------------------------------------------------------------------------------
 ###--- Following entries for MVA HNL IDs using v5 [Binning SYST]
 ###-----------------------------------------------------------------------------------------------------------------------------
