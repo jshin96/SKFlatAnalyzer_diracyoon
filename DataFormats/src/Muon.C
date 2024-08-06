@@ -278,6 +278,16 @@ bool Muon::PassID(TString ID) const {
   if(ID == "HNL_ULID_FO_2017")      return PassID("HNL_ULID_FO_v2_a_2017");
   if(ID == "HNL_ULID_FO_2018")      return PassID("HNL_ULID_FO_v3_a_2018");
   
+  if(ID == "HNL_ULID_FOUp_2016a")     return PassID("HNL_ULID_FO_v1_a_2016");
+  if(ID == "HNL_ULID_FOUp_2016b")     return PassID("HNL_ULID_FO_v1_a_2016");
+  if(ID == "HNL_ULID_FOUp_2017")      return PassID("HNL_ULID_FO_v1_a_2017");
+  if(ID == "HNL_ULID_FOUp_2018")      return PassID("HNL_ULID_FO_v1_a_2018");
+
+  if(ID == "HNL_ULID_FODown_2016a")     return PassID("HNL_ULID_FO_v2_a_2016");
+  if(ID == "HNL_ULID_FODown_2016b")     return PassID("HNL_ULID_FO_v3_a_2016");
+  if(ID == "HNL_ULID_FODown_2017")      return PassID("HNL_ULID_FO_v3_a_2017");
+  if(ID == "HNL_ULID_FODown_2018")      return PassID("HNL_ULID_FO_v4_a_2018");
+
   ///// DeepJet Variations in Loose v0-9
   if(ID == "HNL_ULID_FO_v0_"+Era){
     if(!PassID("HNL_ULID_FO")) return false;

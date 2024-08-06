@@ -1,31 +1,37 @@
 #include "HNL_LeptonCore.h"
 
-double HNL_LeptonCore::GetPtPartonSF(Lepton  Lep, TString LooseID){
+double HNL_LeptonCore::GetPtPartonSF(Lepton  Lep, TString LooseID,AnalyzerParameter param){
 
   bool IsMuon=(Lep.LeptonFlavour() == Lepton::MUON);
 
+  double SystFactor = 1;
+  if(param.syst_ == AnalyzerParameter::FRPartonSFUp) SystFactor = 1.1;
+  if(param.syst_ == AnalyzerParameter::FRPartonSFDown) SystFactor = 0.9;
+
+
   // If CheckProfile flag then new IDs are being ran so function would crash 
-  if(HasFlag("CheckProfile")) return 1;
-  if(HasFlag("CheckProfileEE")) return 1;
-  
-  if (LooseID.Contains("Veto")) return 1;
+  if (HasFlag("CheckProfile"))   return 1;
+  if (HasFlag("CheckProfileEE")) return 1;
+  if (LooseID.Contains("Veto"))  return 1;
 
   if(!IsData){
 
-  //// Access SF from text file 
+    //// Access SF from text file 
     if(IsMuon){
-    TString FSFKey = DataEra + "_"+ Lep.GetEtaRegion() +"_MuMu_"+LooseID + "_MC_QCD" ;
-    
-    map<TString, double>::iterator fit = MakeSFmap.find(FSFKey);
-    
-    if(fit == MakeSFmap.end()) {
-      cout << "MakeSFmap has no key " <<  FSFKey << endl;
-      exit(EXIT_FAILURE);
-    }
-    return fit->second;
+
+      TString FSFKey = DataEra + "_"+ Lep.GetEtaRegion() +"_MuMu_"+LooseID + "_MC_QCD" ;
+      
+      map<TString, double>::iterator fit = MakeSFmap.find(FSFKey);
+      
+      if(fit == MakeSFmap.end()) {
+	cout << "MakeSFmap has no key " <<  FSFKey << endl;
+	exit(EXIT_FAILURE);
+      }
+      
+      return fit->second * SystFactor ;
     }
     else{
-
+      
       TString FSFKey = DataEra + "_"+ Lep.etaRegionString() +"_EE_"+LooseID + "_MC_QCD" ;
       map<TString, double>::iterator fit = MakeSFmap.find(FSFKey);
       
@@ -33,7 +39,7 @@ double HNL_LeptonCore::GetPtPartonSF(Lepton  Lep, TString LooseID){
 	cout << "MakeSFmap has no key " <<  FSFKey << endl;
 	exit(EXIT_FAILURE);
       }
-      return fit->second;
+      return fit->second* SystFactor ;
     }
   }
 
@@ -48,8 +54,8 @@ double HNL_LeptonCore::GetPtPartonSF(Lepton  Lep, TString LooseID){
   if(!isMVAID) return 1.;
   
   ///// Some IDs are predefined by other groups and we use their values
-  if(LooseID == "HNL_TopMVA_FO_MM") return 0.661;
-  if(LooseID == "HNL_HN3L") return 0.661;
+  if(LooseID == "HNL_TopMVA_FO_MM") return 0.661* SystFactor ;
+  if(LooseID == "HNL_HN3L") return 0.661* SystFactor ;
   
   
   /// MUON   //https://jalmond.web.cern.ch/jalmond/SNU/WebPlots/HNL/HNL_LeptonFakeRatesMC/HNL_LeptonFakeRatesMC/2017/HNL_GetProfileSFMC_Jan24_Muon/?match=v1_M
@@ -59,7 +65,7 @@ double HNL_LeptonCore::GetPtPartonSF(Lepton  Lep, TString LooseID){
   /// FCO IDs are for checks regarding Conv backgrounds
   if(LooseID.Contains("HNL_ULID_FCO")){
     for(auto i : {"2016a","2016b","2017","2018"}) {
-      return GetPtPartonSF(Lep,"HNL_ULID_FO_"+TString(i));
+      return GetPtPartonSF(Lep,"HNL_ULID_FO_"+TString(i), param);
     }
   }
 
@@ -76,7 +82,7 @@ double HNL_LeptonCore::GetPtPartonSF(Lepton  Lep, TString LooseID){
 	exit(EXIT_FAILURE);
       }
 
-      return fit->second;
+      return fit->second* SystFactor ;
     }
     else{
       TString FSFKey = GetYearString()  + "_"+Lep.GetEtaRegion()+"_EE_"+LooseID + "_DATA" ;
@@ -88,7 +94,7 @@ double HNL_LeptonCore::GetPtPartonSF(Lepton  Lep, TString LooseID){
         exit(EXIT_FAILURE);
       }
 
-      return fit->second;
+      return fit->second* SystFactor ;
 
     }
   }
@@ -136,7 +142,10 @@ double HNL_LeptonCore::GetFakeRateElectron(Electron el, AnalyzerParameter param)
   double  LepEta = el.fEta();
   double  LepPt  = el.PtMaxed(80);
   TString  fr_key = param.k.Electron_FR;
-  
+
+  if(param.syst_ == AnalyzerParameter::FRAJ30) fr_key = fr_key.ReplaceAll("40","30");
+  if(param.syst_ == AnalyzerParameter::FRAJ60) fr_key = fr_key.ReplaceAll("40","60");
+
   return fakeEst->GetElectronFakeRate(param.Electron_Tight_ID, fr_key,param.FakeRateMethod, param.FakeRateParam, LepEta, LepPt, el.LeptonFakeTagger() );
 
 
@@ -146,15 +155,10 @@ double HNL_LeptonCore::GetFakeRateMuon(Muon mu, AnalyzerParameter param){
   double  LepEta = mu.fEta();
   double  LepPt  = mu.PtMaxed(80);
   TString  fr_key = param.k.Muon_FR;
-  if(param.k.Muon_BB_FR != "Default") {
-    if(mu.IsBB()) fr_key = param.k.Muon_BB_FR;
-  }
-  if(param.k.Muon_EC_FR!= "Default") {
-    if(mu.IsEC()) fr_key = param.k.Muon_EC_FR;
-  }
 
+  if(param.syst_ == AnalyzerParameter::FRAJ30) fr_key = fr_key.ReplaceAll("40","30");
+  if(param.syst_ == AnalyzerParameter::FRAJ60) fr_key = fr_key.ReplaceAll("40","60");
   
-  //// Access individual lepton Fake Ratex                                                                                                                                                                                                                                                                                                                                                                                               
   return fakeEst->GetMuonFakeRate(param.Muon_Tight_ID, fr_key,param.FakeRateMethod,param.FakeRateParam,LepEta, LepPt, mu.LeptonFakeTagger() );
 
 }
@@ -170,17 +174,15 @@ double HNL_LeptonCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParamet
   double this_weight = -1.;
 
   if(leps.size() == 1){
-    TString  muon_fr_key = _param.k.Muon_FR;
-    if(_param.k.Muon_BB_FR!= "Default") {
-      if(leps[0]->IsBB()) muon_fr_key = _param.k.Muon_BB_FR;
-    }
-    if(_param.k.Muon_EC_FR!= "Default") {
-      if(leps[0]->IsEC()) muon_fr_key = _param.k.Muon_EC_FR;
-    }
-    TString fr_key = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.k.Electron_FR : muon_fr_key;
+
+    TString fr_key = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.k.Electron_FR : _param.k.Muon_FR;
     TString pr_key = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.k.Electron_PR : _param.k.Muon_PR;
+
     bool IsMuon    = (leps[0]->LeptonFlavour() != Lepton::ELECTRON);
     TString ID     = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.Electron_Tight_ID : _param.Muon_Tight_ID;
+
+    if(_param.syst_ == AnalyzerParameter::FRAJ30) fr_key = fr_key.ReplaceAll("40","30");
+    if(_param.syst_ == AnalyzerParameter::FRAJ60) fr_key = fr_key.ReplaceAll("40","60");
    
     if(!leps[0]->LepIDSet()) {      cout << "Lepton ID not set" << endl;      exit(EXIT_FAILURE);    }
 
@@ -205,18 +207,15 @@ double HNL_LeptonCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParamet
       exit(EXIT_FAILURE);
     }
 
-    TString  muon_fr_key1 = _param.k.Muon_FR;
-    TString  muon_fr_key2 = _param.k.Muon_FR;
-    if(_param.k.Muon_BB_FR!= "Default") {
-      if(leps[0]->IsBB()) muon_fr_key1 = _param.k.Muon_BB_FR;
-      else  muon_fr_key1 = _param.k.Muon_EC_FR;
-      if(leps[1]->IsBB()) muon_fr_key2 = _param.k.Muon_BB_FR;
-      else  muon_fr_key2 = _param.k.Muon_EC_FR;
-
-    }
-    TString fr_key1 = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.k.Electron_FR : muon_fr_key1;
-    TString fr_key2 = (leps[1]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.k.Electron_FR : muon_fr_key2;
+    TString fr_key1 = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.k.Electron_FR : _param.k.Muon_FR;
+    TString fr_key2 = (leps[1]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.k.Electron_FR : _param.k.Muon_FR;
     TString pr_key = (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.k.Electron_PR : _param.k.Muon_PR;
+
+    /// Apply Syst
+    if(_param.syst_ == AnalyzerParameter::FRAJ30) fr_key1 = fr_key1.ReplaceAll("40","30");
+    if(_param.syst_ == AnalyzerParameter::FRAJ60) fr_key1 = fr_key1.ReplaceAll("40","60");
+    if(_param.syst_ == AnalyzerParameter::FRAJ30) fr_key2 = fr_key2.ReplaceAll("40","30");
+    if(_param.syst_ == AnalyzerParameter::FRAJ60) fr_key2 = fr_key2.ReplaceAll("40","60");
 
     if(run_Debug){
       if(leps[0]->LeptonFlavour() == Lepton::ELECTRON) cout << "_param.Electron_Tight_ID = " << _param.Electron_Tight_ID <<  " fr_key1 = " << fr_key1 << endl;
@@ -226,11 +225,14 @@ double HNL_LeptonCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParamet
     
     TString ID1   =  (leps[0]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.Electron_Tight_ID : _param.Muon_Tight_ID;
     TString ID2   =  (leps[1]->LeptonFlavour() == Lepton::ELECTRON) ?  _param.Electron_Tight_ID : _param.Muon_Tight_ID;
+
     bool IsMuon1  = (leps[0]->LeptonFlavour() != Lepton::ELECTRON);
     bool IsMuon2  = (leps[1]->LeptonFlavour() != Lepton::ELECTRON);
 
+
     double this_fr1 =  fakeEst->GetFakeRate(IsMuon1, ID1,  fr_key1, _param.FakeRateMethod, _param.FakeRateParam, leps[0]->fEta(), leps[0]->Pt(),leps[0]->LeptonFakeTagger());
     double this_fr2 =  fakeEst->GetFakeRate(IsMuon2, ID2,  fr_key2, _param.FakeRateMethod, _param.FakeRateParam, leps[1]->fEta(), leps[1]->Pt(),leps[1]->LeptonFakeTagger() );
+
     double this_pr1 =  1;//fakeEst->GetPromptRate(_param.ApplyPR, IsMuon1, ID1, pr_key, leps[0]->fEta(), leps[0]->UncorrectedPt());
     double this_pr2 =  1;//fakeEst->GetPromptRate(_param.ApplyPR, IsMuon2, ID2, pr_key, leps[1]->fEta(), leps[1]->UncorrectedPt());
     
@@ -263,15 +265,12 @@ double HNL_LeptonCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParamet
 
       if( lep->PassLepID() ) continue;
 
-      TString  muon_fr_key = _param.k.Muon_FR;
-      if(_param.k.Muon_BB_FR!= "Default") {
-	if(lep->IsBB()) muon_fr_key = _param.k.Muon_BB_FR;
-	else  muon_fr_key = _param.k.Muon_EC_FR;
-      }
-
-      TString fr_key = (lep->LeptonFlavour() == Lepton::ELECTRON) ?  _param.k.Electron_FR : muon_fr_key;
+      TString fr_key = (lep->LeptonFlavour() == Lepton::ELECTRON) ?  _param.k.Electron_FR : _param.k.Muon_FR;
       TString ID     = (lep->LeptonFlavour() == Lepton::ELECTRON) ?  _param.Electron_Tight_ID : _param.Muon_Tight_ID;
       bool IsMuon    = (lep->LeptonFlavour() != Lepton::ELECTRON);
+
+      if(_param.syst_ == AnalyzerParameter::FRAJ30) fr_key = fr_key.ReplaceAll("40","30");
+      if(_param.syst_ == AnalyzerParameter::FRAJ60) fr_key = fr_key.ReplaceAll("40","60");
       
       this_fr = fakeEst->GetFakeRate(IsMuon, ID,  fr_key, _param.FakeRateMethod, _param.FakeRateParam, lep->fEta(), lep->Pt(),lep->LeptonFakeTagger());
       this_weight *= -1.*this_fr/(1.-this_fr);

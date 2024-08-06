@@ -89,6 +89,9 @@ class HNL_LeptonCore : public AnalyzerCore {
   AnalyzerParameter InitialiseHNLParameter(TString s_setup);  
   AnalyzerParameter InitialiseHNLParameter(TString s_setup, HNL_LeptonCore::Channel channel);  
   AnalyzerParameter SetupHNLParameter(TString s_setup_version, TString channel_str_name);
+
+  /// Systemaic HNL ID setup
+  bool UpdataParamBySyst(TString JobID, AnalyzerParameter& paramEv , AnalyzerParameter::Syst systname, TString OrigParamName);
   
   // ------ Analysis Obj   
 
@@ -133,7 +136,7 @@ class HNL_LeptonCore : public AnalyzerCore {
 
    
   //------ BKG
-  double GetPtPartonSF(Lepton Lep, TString ID);
+  double GetPtPartonSF(Lepton Lep, TString ID, AnalyzerParameter param);
   double GetFakeWeightMuon(std::vector<Muon> muons , AnalyzerParameter param);
   double GetFakeWeightMuon(std::vector<Muon> muons , std::vector<TString> vtrig, AnalyzerParameter param);
   double GetFakeWeightElectron(std::vector<Electron> electrons , vector<TString> trigs, AnalyzerParameter param);

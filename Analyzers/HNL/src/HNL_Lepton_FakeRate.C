@@ -369,7 +369,7 @@ void HNL_Lepton_FakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon
     for(auto ilep : leps){
       if(ilep->Pt() > 80) continue;
       
-      double PtParton = ilep->PtParton(GetPtPartonSF(*ilep, param.Muon_Loose_ID),ilep->MVAFakeCut(param.Muon_Tight_ID,GetYearString()));
+      double PtParton = ilep->PtParton(GetPtPartonSF(*ilep, param.Muon_Loose_ID,param),ilep->MVAFakeCut(param.Muon_Tight_ID,GetYearString()));
       double PtPartonUncorr = ilep->PtParton(1,ilep->MVAFakeCut(param.Muon_Tight_ID,GetYearString()));
       double W = event_weight;
       if(UseEvent(leps , jets, 40., METv, event_weight)) FillProf(("DATAProfile/"+param.Name + "/FakeCR"+param.GetSystType()+"_AJ40_MVA_PtParton").Data(), ilep->HNL_MVA_Fake("HFTop"), PtParton, W, 50, -1, 1);
@@ -516,7 +516,7 @@ void HNL_Lepton_FakeRate::RunE( std::vector<Electron> loose_el, std::vector<Muon
     for(auto ilep : leps){
 
       double PtPartonUncorr = ilep->PtParton(1,ilep->MVAFakeCut(param.Electron_Tight_ID,GetYearString()));
-      double PtParton = ilep->PtParton(GetPtPartonSF(*ilep, param.Electron_Loose_ID),ilep->MVAFakeCut(param.Electron_Tight_ID,GetYearString()));
+      double PtParton = ilep->PtParton(GetPtPartonSF(*ilep, param.Electron_Loose_ID,param),ilep->MVAFakeCut(param.Electron_Tight_ID,GetYearString()));
       double W = event_weight;
 
       FillProf(("DATAProfile/"+param.Name + "/FakeCR"+param.GetSystType()+"_Inclusive_MVA_"+ilep->GetEtaRegion("2bin")+"_PtParton").Data(), ilep->HNL_MVA_Fake("EDv5"), PtParton, W, 40, -1, 1);
@@ -1088,10 +1088,9 @@ void HNL_Lepton_FakeRate::MakeFakeRatePlots(TString label, TString mutag,Analyze
   if(!truth_match) return;
 
   double AWJPt = -1;
-  vector<AnalyzerParameter::Syst> AJPt = {AnalyzerParameter::FRAJ25, AnalyzerParameter::FRAJ30,AnalyzerParameter::FRAJ40,AnalyzerParameter::FRAJ60};
+  vector<AnalyzerParameter::Syst> AJPt = { AnalyzerParameter::FRAJ30,AnalyzerParameter::FRAJ40,AnalyzerParameter::FRAJ60};
 
   for(auto isys : AJPt){
-    if(isys == AnalyzerParameter::FRAJ25)  AWJPt = 25;
     if(isys == AnalyzerParameter::FRAJ30)  AWJPt = 30;
     if(isys == AnalyzerParameter::FRAJ40)  AWJPt = 40;
     if(isys == AnalyzerParameter::FRAJ60)  AWJPt = 60;
@@ -1247,7 +1246,7 @@ void HNL_Lepton_FakeRate::GetElFakeRates(TString Method, std::vector<Lepton *> l
   else if(Method == "PtParton"){
     PtHist ="ptcone";
     ptname = "ptparton_eta";
-    double PTPartonSF = GetPtPartonSF(*leps[0], LooseID);
+    double PTPartonSF = GetPtPartonSF(*leps[0], LooseID,param);
 
     lep_pt      =  (leps[0]->PtParton(PTPartonSF,MVACut) < UpperPtCut) ?  leps[0]->PtParton(PTPartonSF, MVACut) : UpperPtCutM1;
     double uncorr_lep_pt = (leps[0]->PtParton(1,MVACut) < UpperPtCut) ?  leps[0]->PtParton(1, MVACut) : UpperPtCutM1;
@@ -1471,7 +1470,7 @@ void HNL_Lepton_FakeRate::GetMuFakeRates(TString Method, std::vector<Lepton *> l
   else if(Method == "PtParton"){
     
     ptname = "ptparton_eta";
-    double PTPartonSF = GetPtPartonSF(*leps[0], LooseID);
+    double PTPartonSF = GetPtPartonSF(*leps[0], LooseID,param);
     
     lep_pt      =  (leps[0]->PtParton(PTPartonSF,MVACut) < UpperPtCut) ?  leps[0]->PtParton(PTPartonSF, MVACut) : UpperPtCutM1;
     

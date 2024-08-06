@@ -349,6 +349,17 @@ int  Electron::PassIDTight(TString ID) const{
   if(ID == "HNL_ULID_FO_2017")      return PassID("HNL_ULID_FO_v9_a_"+Year);
   if(ID == "HNL_ULID_FO_2018")      return PassID("HNL_ULID_FO_v9_a_"+Year);
 
+  if(ID == "HNL_ULID_FOUp_2016a")     return PassID("HNL_ULID_FO_v8_a_"+Year);
+  if(ID == "HNL_ULID_FOUp_2016b")     return PassID("HNL_ULID_FO_v8_a_"+Year);
+  if(ID == "HNL_ULID_FOUp_2017")      return PassID("HNL_ULID_FO_v8_a_"+Year);
+  if(ID == "HNL_ULID_FOUp_2018")      return PassID("HNL_ULID_FO_v8_a_"+Year);
+
+  if(ID == "HNL_ULID_FODown_2016a")     return PassID("HNL_ULID_FO_v0_"+Year);
+  if(ID == "HNL_ULID_FODown_2016b")     return PassID("HNL_ULID_FO_v0_"+Year);
+  if(ID == "HNL_ULID_FODown_2017")      return PassID("HNL_ULID_FO_v0_"+Year);
+  if(ID == "HNL_ULID_FODown_2018")      return PassID("HNL_ULID_FO_v0_"+Year);
+
+
   if(ID == "HNL_ULID_OLD_FO_2016a")     return PassID("HNL_ULID_OLD_FO_v9_a_"+Year);
   if(ID == "HNL_ULID_OLD_FO_2016b")     return PassID("HNL_ULID_OLD_FO_v9_a_"+Year);
   if(ID == "HNL_ULID_OLD_FO_2017")      return PassID("HNL_ULID_OLD_FO_v9_a_"+Year);

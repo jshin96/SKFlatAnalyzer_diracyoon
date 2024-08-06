@@ -355,7 +355,7 @@ void HNL_Lepton_FakeRate_MC::RunM(std::vector<Electron> loose_el,  std::vector<M
       
       if(!PromptPassID) return;
       
-      double PTPartonSF    = GetPtPartonSF(loose_mu[nFakeLep],param.Muon_Loose_ID);
+      double PTPartonSF    = GetPtPartonSF(loose_mu[nFakeLep],param.Muon_Loose_ID,param);
       double MVACut        = loose_mu[nFakeLep].MVAFakeCut(param.Muon_Tight_ID,GetYearString());
       double PtCorr        = (loose_mu[nFakeLep].CalcMVACone(MVACut)  < 80 )       ? loose_mu[nFakeLep].CalcMVACone( MVACut)  : 79;
       double lep_ptparton  = (loose_mu[nFakeLep].PtParton(PTPartonSF,MVACut) < 80) ? loose_mu[nFakeLep].PtParton(PTPartonSF,MVACut) : 79;
@@ -772,7 +772,7 @@ void HNL_Lepton_FakeRate_MC::RunE( std::vector<Electron> loose_el, std::vector<M
 
       if(!PromptPassID) return;
 
-      double PTPartonSF    = GetPtPartonSF(loose_el[nFakeLep],param.Electron_Loose_ID);
+      double PTPartonSF    = GetPtPartonSF(loose_el[nFakeLep],param.Electron_Loose_ID,param);
       double MVACut        = loose_el[nFakeLep].MVAFakeCut(param.Electron_Tight_ID,GetYearString());
       double PtCorr        = (loose_el[nFakeLep].CalcMVACone(MVACut)  < 80 )       ? loose_el[nFakeLep].CalcMVACone( MVACut)  : 79;
       double lep_ptparton  = (loose_el[nFakeLep].PtParton(PTPartonSF,MVACut) < 80) ? loose_el[nFakeLep].PtParton(PTPartonSF,MVACut) : 79;
@@ -1000,7 +1000,7 @@ void HNL_Lepton_FakeRate_MC::GetElFakeRates(TString Method, Lepton* lep,bool ble
   else if(Method == "PtParton"){
     PtHist ="ptcone";
     ptname = "ptparton_eta";
-    double PTPartonSF = GetPtPartonSF(*lep, LooseID);
+    double PTPartonSF = GetPtPartonSF(*lep, LooseID,param);
 
     lep_pt      =  (lep->PtParton(PTPartonSF,MVACut) < 80) ?  lep->PtParton(PTPartonSF, MVACut) : 79;
 
@@ -1189,7 +1189,7 @@ void HNL_Lepton_FakeRate_MC::GetMuFakeRates(TString Method, Lepton*  lep, bool b
   else if(Method == "PtParton"){
     
     ptname = "ptparton";
-    double PTPartonSF = GetPtPartonSF(*lep, LooseID);
+    double PTPartonSF = GetPtPartonSF(*lep, LooseID,param);
     
     //cout << param.Name << "  PTPartonSF = " << PTPartonSF << " MVACut = " << MVACut << endl;
     
@@ -1218,7 +1218,7 @@ void HNL_Lepton_FakeRate_MC::GetMuFakeRates(TString Method, Lepton*  lep, bool b
   else if(Method == "PtParton20"){
 
     ptname = "ptparton";
-    double PTPartonSF = GetPtPartonSF(*lep, LooseID);
+    double PTPartonSF = GetPtPartonSF(*lep, LooseID,param);
 
     lep_pt      =  (lep->PtParton(PTPartonSF,MVACut,2) < 80) ?  lep->PtParton(PTPartonSF, MVACut,2) : 79;
 
