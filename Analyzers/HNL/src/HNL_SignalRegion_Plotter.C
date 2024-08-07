@@ -16,7 +16,7 @@ void HNL_SignalRegion_Plotter::executeEvent(){
   FillTimer("START_EV");
   
   vector<TString> LepIDs = {"HNL_ULID","HNTightV2"};
-  if(strcmp(std::getenv("USER"),"jalmond")==0) LepIDs = {"HNL_ULID","HNTightV2","POGTight","TopHN","HighPt"};
+  if(strcmp(std::getenv("USER"),"jalmond")==0) LepIDs = {"HNL_ULID"};//,"HNTightV2","POGTight","TopHN","HighPt"};
 
   vector<HNL_LeptonCore::Channel> ChannelsToRun = {MuMu,EE,EMu};                                                    
 
@@ -27,18 +27,15 @@ void HNL_SignalRegion_Plotter::executeEvent(){
       param.PlottingVerbose = 1;
       RunULAnalysis(param);
       
-      //if(!IsData) RunSyst=true;
-      RunSyst=false;
+      //      if(!IsData) RunSyst=true;
+      RunSyst=true;
       if(RunSyst){
         TString param_name = param.Name;
-        vector<AnalyzerParameter::Syst> SystList = GetSystList("Initial");
-        
+        vector<AnalyzerParameter::Syst> SystList = GetSystList("Fake");
+	
         for(auto isyst : SystList){
-          param.syst_ = AnalyzerParameter::Syst(isyst);
-          
-          param.Name = "Syst_"+param.GetSystType()+param_name;
-          param.DefName = "Syst_"+param.GetSystType()+param_name;
-          RunULAnalysis(param);
+	  bool runJob = UpdataParamBySyst(id,param,AnalyzerParameter::Syst(isyst),param_name);
+          if(runJob) RunULAnalysis(param);
         }
       }    
       
@@ -57,8 +54,8 @@ void HNL_SignalRegion_Plotter::RunULAnalysis(AnalyzerParameter param){
   double weight =SetupWeight(ev,param);
   
   // HL ID
-  std::vector<Electron>   ElectronCollV = GetElectrons(param.Electron_Veto_ID, 10., 2.5); 
-  std::vector<Muon>       MuonCollV     = GetMuons    (param.Muon_Veto_ID,     5., 2.4);
+  std::vector<Electron>   ElectronCollV = SelectElectrons(param,param.Electron_Veto_ID, 10., 2.5); 
+  std::vector<Muon>       MuonCollV     = SelectMuons    (param,param.Muon_Veto_ID,     5., 2.4);
   
   TString el_ID = SetLeptonID("Electron",param);
   TString mu_ID = SetLeptonID("Muon", param);
@@ -97,6 +94,7 @@ void HNL_SignalRegion_Plotter::RunULAnalysis(AnalyzerParameter param){
   else RunEl = {-1};
 
   for(auto ir : RunEl){
+    
     RunAllSignalRegions(Inclusive,
 			ElectronCollT,ElectronCollV,MuonCollT,MuonCollV,  TauColl,
 			AK4_JetCollLoose,AK4_JetColl,AK4_VBF_JetColl,AK8_JetColl, AK4_BJetColl, 
