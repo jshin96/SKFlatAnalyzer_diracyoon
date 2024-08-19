@@ -5,7 +5,7 @@ void HNL_SignalRegion_Plotter::initializeAnalyzer(){
   // All default settings like trigger/ PD/ BJet are decalred in HNL_LeptonCore::initializeAnalyzer to make them consistent for all HNL codes
 
   HNL_LeptonCore::initializeAnalyzer();
-  SetupEventMVAReader();
+  SetupEventMVAReader("V2");
   nLog = 100000;
 
 }

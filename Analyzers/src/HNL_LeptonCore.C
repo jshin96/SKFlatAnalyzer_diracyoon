@@ -981,12 +981,23 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.FakeMethod = "MC";
     param.CFMethod   = "MC";
     param.ConvMethod = "MC";
-    param.Muon_Tight_ID = "MVAID";
-    param.Electron_Tight_ID = "MVAID";
-    param.k.Electron_ID_SF = "NUM_HNTightV2";
-    param.k.Muon_ID_SF = "NUM_HNTightV2";
-    param.Muon_FR_ID = "HNLooseV1";
-    param.Electron_FR_ID = "HNLooseV4";
+    //param.Muon_Tight_ID = "MVAID";
+    //param.Electron_Tight_ID = "MVAID";
+    //param.k.Electron_ID_SF = "NUM_HNTightV2";
+    //param.k.Muon_ID_SF = "NUM_HNTightV2";
+    //param.Muon_FR_ID = "HNLooseV1";
+    //param.Electron_FR_ID = "HNLooseV4";
+
+    param.Muon_Veto_ID      = "HNVetoMVA";
+    param.Muon_Tight_ID     = "HNL_ULID_"+GetYearString();
+    param.Electron_Veto_ID  = "HNVetoMVA";
+    param.Electron_Tight_ID = "HNL_ULID_"+GetYearString();
+
+    param.k.Electron_ID_SF  = "TmpHNL_ULID_"+GetYearString();
+    param.k.Muon_ID_SF      = "TmpHNL_ULID_"+GetYearString();
+    param.Muon_FR_ID        = "HNL_ULID_FO_"+GetYearString();
+    param.Electron_FR_ID    = "HNL_ULID_FO_"+GetYearString();
+
     return param;
   }
 
