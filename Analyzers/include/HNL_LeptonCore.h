@@ -161,7 +161,7 @@ class HNL_LeptonCore : public AnalyzerCore {
 
   //---- BDT Related    HNL_LeptonCore_BDT                                                                                                                                                                                           
   void initializeAnalyzer(bool READBKGHISTS=true, bool SETUPIDBDT=true);
-  void SetupEventMVAReader(bool ee=true, bool mm=true, bool emu=true);
+  void SetupEventMVAReader(TString version, bool ee=true, bool mm=true, bool emu=true);
   void SetupEvMVA();
   void DeleteEvMVA();
   
