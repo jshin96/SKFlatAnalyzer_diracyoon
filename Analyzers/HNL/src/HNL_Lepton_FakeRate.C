@@ -266,10 +266,19 @@ void HNL_Lepton_FakeRate::executeEvent(){
     VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"NvtxSF"},"HNL_ID"         ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO"));
     goto RunJobs;
   }
-  if(HasFlag("MakeRegionPlots")){
+  if(HasFlag("MakeRegionPlotsL")){
     VParameters.clear();
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"MakeDiLeptonPlots"}    ,"HNL_ID_MakeDiLeptonPlots"         ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO"));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"MakeSingleLeptonPlots"},"HNL_ID_MakeSingleLeptonPlots"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO"));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"MakeSingleLeptonPlots"},"HNL_ID_MakeSingleLeptonPlots"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO_"+GetEraShort()));
+    //VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"MakeSingleLeptonPlots"},"HNL_ID_MakeSingleLeptonPlots"     ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO_"+GetEraShort()));
+
+    goto RunJobs;
+  }
+
+  if(HasFlag("MakeRegionPlotsLL")){
+    VParameters.clear();
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,MuMu,HNL_LeptonCore::NormTo1Invpb,{"MakeDiLeptonPlots"}    ,"HNL_ID_MakeDiLeptonPlots"         ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO_"+GetEraShort()));
+    //VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"MakeDiLeptonPlots"}    ,"HNL_ID_MakeDiLeptonPlots"         ,"HNL_ULID_"+GetYearString(), "HNL_ULID_FO_"+GetEraShort()));
+    //
     goto RunJobs;
   }
 
@@ -295,9 +304,9 @@ void HNL_Lepton_FakeRate::executeEventFromParameter(AnalyzerParameter param){
   std::vector<Electron> Initial_loose_electrons     = SelectElectrons( param,param.Electron_Loose_ID, 10, 2.5) ;
   std::vector<Muon>     Initial_loose_muons         = SelectMuons    ( param,param.Muon_Loose_ID,     5,  2.4);
 
-  if(_jentry < 10) {
-    cout << "param.Electron_Loose_ID = " << param.Electron_Loose_ID << " nel = " << Initial_loose_electrons.size() << endl;
-  }
+  if(_jentry < 10)    cout << "param.Electron_Loose_ID = " << param.Electron_Loose_ID << " nel = " << Initial_loose_electrons.size() << endl;
+  if(_jentry < 10)    cout << "param.Muon_Loose_ID = "     << param.Muon_Loose_ID     << " nmu = " << Initial_loose_muons.size() << endl;
+ 
 
   std::vector<Electron> Loose_Electrons;
   std::vector<Muon>     Loose_Muons;
@@ -335,45 +344,13 @@ void HNL_Lepton_FakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon
   if(loose_el.size() > 0) return;
 
   std::vector<Lepton *> leps = MakeLeptonPointerVector(loose_mu,param);
-  if(1){
-    TString triggerslist_3="HLT_Mu3_PFJet40_v";    TString triggerslist_8="HLT_Mu8_TrkIsoVVL_v";    TString triggerslist_17="HLT_Mu17_TrkIsoVVL_v";
-
-    bool Mu3PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_3, this->DataStream) ));
-    bool Mu8PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_8, this->DataStream) ));
-    bool Mu17PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_17, this->DataStream) ));
-
-    bool pass_3 = ev.PassTrigger(triggerslist_3) && Mu3PD;
-    bool pass_8 = ev.PassTrigger(triggerslist_8) && Mu8PD;
-    bool pass_17 = ev.PassTrigger(triggerslist_17) && Mu17PD;
-    int n50J(0);
-    for(auto ijet : jets) {
-      if(ijet.Pt() > 50) n50J++;
-    }
-    for(auto ilep : loose_mu) {
-      FillHist("LeptonPt/Inclusive_pt" , ilep.Pt() ,  event_weight, 200, 0, 200);
-      if((n50J > 0) && pass_3) FillHist("LeptonPt/Mu3_pt" , ilep.Pt() ,  event_weight, 200, 0, 200);
-      if(pass_8) FillHist("LeptonPt/Mu8_pt" , ilep.Pt() ,  event_weight, 200, 0, 200);
-      if(pass_17) FillHist("LeptonPt/Mu17_pt" , ilep.Pt() ,  event_weight, 200, 0, 200);
-    }
-    if(UseEvent(leps ,jets, 40.,  GetvMET("PuppiT1xyULCorr",param), event_weight)){
-      for(auto ilep : loose_mu) {
-	FillHist("LeptonPtCR/Inclusive_pt" , ilep.Pt() ,  event_weight, 200, 0, 200);
-	if((n50J > 0) && pass_3) FillHist("LeptonPtCR/Mu3_pt" , ilep.Pt() ,  event_weight, 200, 0, 200);
-	if(pass_8) FillHist("LeptonPtCR/Mu8_pt" , ilep.Pt() ,  event_weight, 200, 0, 200);
-	if(pass_17) FillHist("LeptonPtCR/Mu17_pt" , ilep.Pt() ,  event_weight, 200, 0, 200);
-      }
-    }
-  }
-
-
 
   std::vector<bool>    blepsT;
   for(auto ilep : loose_mu)   blepsT.push_back(ilep.PassID(param.Muon_Tight_ID));
   
   Particle METv = GetvMET("PuppiT1xyULCorr",param);
 
-  if(param.HasFlag("NvtxSF"))   MakeNVertexDistPrescaledTrig(MuMu,param, ev, leps,blepsT,param.Name+param.Channel,event_weight);   
-  
+  if(param.HasFlag("NvtxSF"))        MakeNVertexDistPrescaledTrig(MuMu,param, ev, leps,blepsT,param.Name+param.Channel,event_weight);   
   if(param.HasFlag("DATAProfile")){
     
     if(leps.size() != 1) return;
@@ -417,13 +394,27 @@ void HNL_Lepton_FakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon
     if(dphi > 2.5)      has_away_jet=true;
   }
 
-  /// Make plots to check control of prompt leptons and to plot Loose and Tight Samples
-  /// Only run when not running MANY IDs so param.WriteOutVerbose is set to 2
+  /// Check Single lepon
 
-  // prescale_trigger is to set weight of trigger prescale depending on the lepton pt
-  float prescale_trigger = GetPrescale(leps);
-  if(prescale_trigger == 0.) return;
-  event_weight*=prescale_trigger;
+  TString triggerslist_8="HLT_Mu8_TrkIsoVVL_v";
+  TString triggerslist_17="HLT_Mu17_TrkIsoVVL_v";
+  TString trigger_unprescale = TrigList_POG_Mu[0];
+
+  bool Mu8PD  = (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_8,     this->DataStream) ));
+  bool Mu17PD = (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_17,    this->DataStream) ));
+  bool IsoMuPD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(trigger_unprescale, this->DataStream) ));
+
+  bool pass_8     = ev.PassTrigger(triggerslist_8)     && Mu8PD;
+  bool pass_17    = ev.PassTrigger(triggerslist_17)    && Mu17PD;
+  bool pass_IsoMu = ev.PassTrigger(trigger_unprescale) && IsoMuPD;
+
+  
+  double PFWeight = GetPrefireWeight(0);
+  
+  double NVxt_Mu8 =  ApplyNvtxReweight(nPV,triggerslist_8);
+  double NVxt_Mu17 =  ApplyNvtxReweight(nPV,triggerslist_17);
+  double NVtx_UnPre = GetPileUpWeight(nPileUp,0);
+
 
   bool truth_match= false;
   if(!IsDATA) {
@@ -431,16 +422,14 @@ void HNL_Lepton_FakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon
   }
   else truth_match=true;
 
-  if(jets.size() > 0){
-    if(jets.at(0).Pt() > 40.){
-      
-      // Plot for 1  lep + Jet pT > trig pt
-      FillRegionPlots("MuMu", "SingleLooseMuJet_"+param.Name , jets,   loose_el,loose_mu,  METv, event_weight);
-      if(has_away_jet)       FillRegionPlots("MuMu","SingleLooseMuAwayJet_"+param.Name, jets,   loose_el,  loose_mu,  METv, event_weight);
-      if(blepsT[0]){
-        FillRegionPlots("MuMu","SingleTightMuJet_"+param.Name,  jets,  loose_el,loose_mu,  METv, event_weight);
-        if(has_away_jet) FillRegionPlots("MuMu","SingleTightMuAwayJet_"+param.Name, jets,  loose_el, loose_mu,  METv, event_weight);
-      }
+  bool isTight =  blepsT[0]; 
+ 
+  bool IsPromptLike=false;
+  for(unsigned int ij=0; ij < jets.size(); ij++){
+    if(jets.at(ij).Pt() < 40.) continue;
+    float dphi =fabs(TVector2::Phi_mpi_pi(loose_mu[0].Phi()- jets.at(ij).Phi()));
+    if(dphi > 2.5){
+      if((jets.at(ij).Pt() /  loose_mu[0].Pt() ) < 1.) IsPromptLike = true;
     }
   }
 
@@ -450,41 +439,56 @@ void HNL_Lepton_FakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon
     METdphi=  TVector2::Phi_mpi_pi((loose_mu.at(imu).Phi()- METv.Phi()));
     MT = sqrt(2.* loose_mu.at(imu).Et()*METv.Pt() * (1 - cos( METdphi)));
   }
-  if((60. < MT)  &&(MT < 100.)){
-    if(loose_mu[0].Pt() > 20){
-      if(jets.size() > 0 && blepsT[0]){
-	if(jets[0].Pt() > 40){
-	  
-	  FillRegionPlots("MuMu","SingleTightMu_promptCR_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
-	  if(has_away_jet)FillRegionPlots("MuMu","SingleTightMuAwayJet_promptCR_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
 
-	  bool isPrompt=false;
-	  for(unsigned int ij=0; ij < jets.size(); ij++){
-	    if(jets.at(ij).Pt() < 40.) continue;
-	    float dphi =fabs(TVector2::Phi_mpi_pi(loose_mu[0].Phi()- jets.at(ij).Phi()));
-	    if(dphi > 2.5){
-	      if((jets.at(ij).Pt() /  loose_mu[0].Pt() ) < 1.) isPrompt = true;
-	    }
-	  }
-	  
-	  if (isPrompt) FillRegionPlots("MuMu","SingleTightMu_promptCR2_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
-	  if (isPrompt&&has_away_jet) FillRegionPlots("MuMu","SingleTightMuAwayJet_promptCR2_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
-	}	
+  bool PromptRegion = ((60. < MT)  &&(MT < 150.) && IsPromptLike); 
+
+  if(pass_8){
+    if(loose_mu.at(0).Pt() >= 10){
+      double prescale_trigger = (IsDATA) ? 1. : ev.GetTriggerLumi(triggerslist_8)*NVxt_Mu8;
+      FillRegionPlots("MuMu","Mu8/All_SingleLooseMuon_"+param.Name, jets,   loose_el,  loose_mu,  METv, event_weight*PFWeight*prescale_trigger);
+      if(isTight) FillRegionPlots("MuMu","Mu8/All_SingleLooseMuon_TightMu_"+param.Name, jets,   loose_el,  loose_mu,  METv, event_weight*PFWeight*prescale_trigger);
+      if(PromptRegion){
+	FillRegionPlots("MuMu","Mu8/PromptCR_SingleLooseMuon_"+param.Name, jets,   loose_el,  loose_mu,  METv, event_weight*PFWeight*prescale_trigger);
+	if(isTight) FillRegionPlots("MuMu","Mu8/PromptCR_SingleLooseMuon_TightMu_"+param.Name, jets,   loose_el,  loose_mu,  METv, event_weight*PFWeight*prescale_trigger);
       }
     }
   }
+  if(pass_17){
+    if(loose_mu.at(0).Pt() >= 20){
+      double prescale_trigger = (IsDATA) ? 1. : ev.GetTriggerLumi(triggerslist_17)*NVxt_Mu17;
+      FillRegionPlots("MuMu","Mu20/All_SingleLooseMuon_"+param.Name, jets,   loose_el,  loose_mu,  METv, event_weight*PFWeight*prescale_trigger);
+      if(isTight) FillRegionPlots("MuMu","Mu8/All_SingleLooseMuon_TightMu_"+param.Name, jets,   loose_el,  loose_mu,  METv, event_weight*PFWeight*prescale_trigger);
+      if(PromptRegion){
+        FillRegionPlots("MuMu","Mu20/PromptCR_SingleLooseMuon_"+param.Name, jets,   loose_el,  loose_mu,  METv, event_weight*PFWeight*prescale_trigger);
+        if(isTight) FillRegionPlots("MuMu","Mu8/PromptCR_SingleLooseMuon_TightMu_"+param.Name, jets,   loose_el,  loose_mu,  METv, event_weight*PFWeight*prescale_trigger);
+      } 
+    }
+  }
+  if(pass_IsoMu){
+    if(loose_mu.at(0).Pt() >= 30){
+      double prescale_trigger = (IsDATA) ? 1. : ev.GetTriggerLumi(trigger_unprescale)*NVtx_UnPre;
+      FillRegionPlots("MuMu","IsoMu/All_SingleLooseMuon_"+param.Name, jets,   loose_el,  loose_mu,  METv, event_weight*PFWeight*prescale_trigger);
+      if(isTight) FillRegionPlots("MuMu","Mu8/All_SingleLooseMuon_TightMu_"+param.Name, jets,   loose_el,  loose_mu,  METv, event_weight*PFWeight*prescale_trigger);
 
-  
-  bool useevent40 = UseEvent(leps , jets, 40., METv, event_weight);
-  if(useevent40){
-    if (blepsT[0] && jets.size() >= 1)FillRegionPlots("MuMu","TightMu40_notm_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
-    if (jets.size() >= 1)FillRegionPlots("MuMu","LooseMu40_notm_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
+      if(PromptRegion){
+        FillRegionPlots("MuMu","IsoMu/PromptCR_SingleLooseMuon_"+param.Name, jets,   loose_el,  loose_mu,  METv, event_weight*PFWeight*prescale_trigger);
+        if(isTight) FillRegionPlots("MuMu","Mu8/PromptCR_SingleLooseMuon_TightMu_"+param.Name, jets,   loose_el,  loose_mu,  METv, event_weight*PFWeight*prescale_trigger);
+      } 
+    }
+  }
+
+ 
+  bool useevent40 = UseEvent(leps , jets, 40., METv, event_weight*PFWeight);
+  if(useevent40&&has_away_jet){
+    float prescale_trigger =  GetPrescale(leps);
+
+    if (blepsT[0] && jets.size() >= 1)FillRegionPlots("MuMu","MeasureRegion/TightMu40_notm_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight*PFWeight*prescale_trigger);
+    if (jets.size() >= 1)FillRegionPlots("MuMu","MeasureRegion/LooseMu40_notm_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight*PFWeight*prescale_trigger);
     
     if(truth_match){
-      if (blepsT[0] && jets.size() >= 1)FillRegionPlots("MuMu","TightMu40_"+param.Name , jets,  loose_el,loose_mu, METv, event_weight);
-      if (jets.size() >= 1)FillRegionPlots("MuMu","LooseMu40_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
-    }
-    
+      if (blepsT[0] && jets.size() >= 1)FillRegionPlots("MuMu","MeasureRegion/TightMu40_"+param.Name , jets,  loose_el,loose_mu, METv, event_weight*PFWeight*prescale_trigger);
+      if (jets.size() >= 1)FillRegionPlots("MuMu","MeasureRegion/LooseMu40_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight*PFWeight*prescale_trigger);
+    }    
   }
   
   return;
@@ -568,6 +572,7 @@ void HNL_Lepton_FakeRate::RunE( std::vector<Electron> loose_el, std::vector<Muon
   event_weight*=prescale_trigger;
 
 
+  if(loose_el[0].Pt() < 20) return;
 
   bool truth_match= false;
   if(!IsDATA) {
@@ -575,17 +580,11 @@ void HNL_Lepton_FakeRate::RunE( std::vector<Electron> loose_el, std::vector<Muon
   }
   else truth_match=true;
 
-  if(jets.size() > 0){
-    if(jets.at(0).Pt() > 40.){
-      FillRegionPlots("EE","SingleLooseElJet_"+param.Name , jets,   loose_el,loose_mu,  METv, event_weight);
-      if(has_away_jet)      FillRegionPlots("EE","SingleLooseElAwayJet_"+param.Name , jets,   loose_el,loose_mu,  METv, event_weight);
-      if(blepsT[0]){
-        FillRegionPlots("EE","SingleTightElJet_"+param.Name,  jets,  loose_el,loose_mu,  METv, event_weight);
-        if(has_away_jet) FillRegionPlots("EE","SingleTightElAwayJet_"+param.Name, jets,  loose_el, loose_mu,  METv, event_weight);
-      }
-    }
+  if(has_away_jet){
+    FillRegionPlots("EE","SingleLooseElAwayJet_"+param.Name , jets,   loose_el,loose_mu,  METv, event_weight);
+    if(blepsT[0]) FillRegionPlots("EE","SingleTightElAwayJet_"+param.Name, jets,  loose_el, loose_mu,  METv, event_weight);
   }
-
+  
   Double_t MT=0;
   Double_t METdphi=0;
   for(unsigned int iel = 0; iel < loose_el.size();  iel++){
@@ -594,38 +593,33 @@ void HNL_Lepton_FakeRate::RunE( std::vector<Electron> loose_el, std::vector<Muon
   }
   if((60. < MT)  &&(MT < 100.)){
     if(loose_el[0].Pt() > 25){
-      if(jets.size() > 0 && blepsT[0]){
-	if(jets[0].Pt() > 40){
-	  FillRegionPlots("EE","SingleTightEl_promptCR_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
-	  if(has_away_jet)	  FillRegionPlots("EE","SingleTightElAwayJet_promptCR_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
-
-	  bool isPrompt=false;
-          for(unsigned int ij=0; ij < jets.size(); ij++){
-	    if(jets.at(ij).Pt() < 40.) continue;
-            float dphi =fabs(TVector2::Phi_mpi_pi(loose_el[0].Phi()- jets.at(ij).Phi()));
-            if(dphi > 2.5){
-              if((jets.at(ij).Pt() /  loose_el[0].Pt() ) < 1.) isPrompt = true;
-	    }
+      if(has_away_jet && blepsT[0]){
+	
+	FillRegionPlots("EE","SingleTightElAwayJet_promptCR_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
+	
+	bool isPrompt=false;
+	for(unsigned int ij=0; ij < jets.size(); ij++){
+	  if(jets.at(ij).Pt() < 40.) continue;
+	  float dphi =fabs(TVector2::Phi_mpi_pi(loose_el[0].Phi()- jets.at(ij).Phi()));
+	  if(dphi > 2.5){
+	    if((jets.at(ij).Pt() /  loose_el[0].Pt() ) < 1.) isPrompt = true;
 	  }
-	  
-          if (isPrompt ) FillRegionPlots("EE","SingleTightEl_promptCR2_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
-	  if (isPrompt && has_away_jet) FillRegionPlots("EE","SingleTightElAwayJet_promptCR2_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
 	}
+	if (isPrompt ) FillRegionPlots("EE","SingleTightElAwayJet_promptCR2_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
       }
     }
   }
-  
 
 
   bool useevent40 = UseEvent(leps , jets, 40., METv,event_weight);
   if(useevent40){
-    if (blepsT[0] && jets.size() >= 1)FillRegionPlots("EE","TightEl40_notm_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
-    if (jets.size() >= 1)FillRegionPlots("EE","LooseEl40_notm_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
+    if (blepsT[0] && jets.size() >= 1)FillRegionPlots("EE","MeasureRegion_TightEl40_notm_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
+    if (jets.size() >= 1)FillRegionPlots("EE","MeasureRegion_LooseEl40_notm_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
     
     
     if(truth_match){
-      if (blepsT[0] && jets.size() >= 1)FillRegionPlots("EE","TightEl40_"+param.Name , jets,  loose_el,loose_mu, METv, event_weight);
-      if (jets.size() >= 1)FillRegionPlots("EE","LooseEl40_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
+      if (blepsT[0] && jets.size() >= 1)FillRegionPlots("EE","MeasureRegion_TightEl40_"+param.Name , jets,  loose_el,loose_mu, METv, event_weight);
+      if (jets.size() >= 1)FillRegionPlots("EE","MeasureRegion_LooseEl40_"+param.Name, jets,  loose_el,loose_mu, METv, event_weight);
     }
   }
   
@@ -977,19 +971,15 @@ float HNL_Lepton_FakeRate::GetPrescale(std::vector<Lepton *>   leps  ){
   float prescale_trigger= 0;
   if(leps[0]->LeptonFlavour() == Lepton::MUON){
 
-    TString triggerslist_3="HLT_Mu3_PFJet40_v";
     TString triggerslist_8="HLT_Mu8_TrkIsoVVL_v";
     TString triggerslist_17="HLT_Mu17_TrkIsoVVL_v";
 
-    bool Mu3PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_3, this->DataStream) ));
     bool Mu8PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_8, this->DataStream) ));
     bool Mu17PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_17, this->DataStream) ));
 
-    bool pass_3 = ev.PassTrigger(triggerslist_3) && Mu3PD;
     bool pass_8 = ev.PassTrigger(triggerslist_8) && Mu8PD;
     bool pass_17 = ev.PassTrigger(triggerslist_17) && Mu17PD;
   
-    double NVxt_Mu3 =  ApplyNvtxReweight(nPV,triggerslist_3);
     double NVxt_Mu8 =  ApplyNvtxReweight(nPV,triggerslist_8);
     double NVxt_Mu17 =  ApplyNvtxReweight(nPV,triggerslist_17);
 
@@ -1000,47 +990,37 @@ float HNL_Lepton_FakeRate::GetPrescale(std::vector<Lepton *>   leps  ){
       if(pass_17) prescale_trigger = (IsDATA) ? 1. : ev.GetTriggerLumi(triggerslist_17)*NVxt_Mu17;
       return prescale_trigger;
     }
-    if(leps.at(0)->Pt() >= 10.){
+    if(leps.at(0)->Pt() >= 5.){
 
       if(pass_8)prescale_trigger =  (IsDATA) ? 1. :   ev.GetTriggerLumi(triggerslist_8)*NVxt_Mu8 ; //// 20 + GeV bins
       return prescale_trigger;
     }
-    if(leps.at(0)->Pt() >= 5.){
-      if(pass_3)prescale_trigger =  (IsDATA) ? 1. : ev.GetTriggerLumi(triggerslist_3)*NVxt_Mu3 ; //// 20 + GeV bins                                                                             
-      return prescale_trigger;
-    }      
-    
+
     return 0 ;
   }
   else{
-    TString triggerslist_8="HLT_Ele8_CaloIdL_TrackIdL_IsoVL_PFJet30_v";  
+
     TString triggerslist_12="HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30_v";
     TString triggerslist_23="HLT_Ele23_CaloIdL_TrackIdL_IsoVL_PFJet30_v";
-    bool El8PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_8, this->DataStream) ));
+
     bool EL12PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_12, this->DataStream) ));
     bool EL23PD= (!IsDATA || (IsDATA&& ev.IsPDForTrigger(triggerslist_23, this->DataStream) ));
 
-    bool pass_8 = ev.PassTrigger(triggerslist_8) && El8PD;
     bool pass_12 = ev.PassTrigger(triggerslist_12) && EL12PD ;
     bool pass_23 = ev.PassTrigger(triggerslist_23) && EL23PD;
 
-    double NVxt_El8 =  ApplyNvtxReweight(nPV,triggerslist_8);
     double NVxt_El12 =  ApplyNvtxReweight(nPV,triggerslist_12);
     double NVxt_El23 =  ApplyNvtxReweight(nPV,triggerslist_23);
 
- 
     if(leps.at(0)->Pt() >= 25.){
       if(pass_23)prescale_trigger = (IsDATA) ? 1. : ev.GetTriggerLumi(triggerslist_23)*NVxt_El23;
       return prescale_trigger;
     }
-    else   if(leps.at(0)->Pt() >= 15.){
+    else   if(leps.at(0)->Pt() >= 10.){
       if(pass_12) prescale_trigger = (IsDATA) ? 1. : ev.GetTriggerLumi(triggerslist_12)*NVxt_El12;
       return prescale_trigger;
     }
-    else   if(leps.at(0)->Pt() >= 9.5){
-      if(pass_8) prescale_trigger = (IsDATA) ? 1. : ev.GetTriggerLumi(triggerslist_8)*NVxt_El8;
-      return prescale_trigger;
-    }
+
     return 0 ;
   }
   
