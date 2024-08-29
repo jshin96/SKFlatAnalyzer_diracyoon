@@ -600,7 +600,7 @@ if args.no_exec:
 
 FinalOutputPath = args.Outputdir
 if args.Outputdir=="":
-  FinalOutputPath = SKFlatOutputDir+'/'+SKFlatV+'/'+args.Analyzer+'/'+args.Era+'/'
+  FinalOutputPath = SKFlatOutputDir+'_Original_jbh'+'/'+SKFlatV+'/'+args.Analyzer+'/'+args.Era+'/'
   for flag in Userflags:
     FinalOutputPath += flag+"__"
   if IsDATA:

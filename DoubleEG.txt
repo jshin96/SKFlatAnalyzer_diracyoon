@@ -1,0 +1,8 @@
+DoubleEGA
+DoubleEGB
+DoubleEGC
+DoubleEGD
+DoubleEGE
+DoubleEGF
+DoubleEGG
+DoubleEGB_ver2

@@ -11,7 +11,7 @@ public:
   void executeEventFromParameter(AnalyzerParameter param);
   void executeEvent();
 
-  bool OS2l, SS2l, TriLep, TetraLep, SB_SS2L, CFlip, ConvCR, FkCR3l; 
+  bool OS2l, SS2l, TriLep, TetraLep, SB_SS2L, CFlip, ConvCR, FkCR3l, PUVETO; 
   bool TrigClos;
   bool DblMu, DblEG, MuEG, SglEl;
   bool FakeRun, ConvRun, FlipRun, SystRun, HEMCheck;
@@ -25,7 +25,8 @@ public:
                        vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, Event& Ev, float weight, TString Label);
   void CheckFkCR3l(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,
                    vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
-                   vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, Event& Ev, float weight, TString Label);
+                   vector<Jet>& JetColl, vector<Jet>& BJetColl, vector<Jet>& RawBJetColl, Particle& vMET, 
+                   Event& Ev, float weight, TString Label);
   void CheckConvCR(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,
                    vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
                    vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, Event& Ev, float weight, TString Label);
@@ -43,7 +44,7 @@ public:
 
 
   float GetDataFakeRate(float VarX, float VarY, TString Key, TString Opt);
-  float GetDataFakeWeight(vector<Muon>& MuColl, vector<Electron>& ElColl,
+  float GetDataFakeWeight(vector<Muon>& MuColl, vector<Electron>& ElColl, vector<Jet>& rawbjetColl,
                           TString MuTID, TString ElTID, TString MuFRKey, TString ElFRKey, TString Opt);
   float GetCFRWeight(vector<Electron>& ElColl, TString Option);
   float GetCFRAndSF(float VarX, float VarY, TString Key, TString Opt);
@@ -54,7 +55,7 @@ public:
   int   GetGenLepInfo(vector<Electron>& ElColl, vector<Muon>& MuColl, TString Option="");
   void  DoSystRun(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,
                   vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
-                  vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, Event& Ev, float weight, TString Label);
+                  vector<Jet>& JetColl, vector<Jet>& BJetColl, vector<Jet>& RawBJetColl, Particle& vMET, Event& Ev, float weight, TString Label);
 
 
   void InitializeTreeVars();

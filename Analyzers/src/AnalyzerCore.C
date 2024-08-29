@@ -3245,9 +3245,11 @@ vector<Jet> AnalyzerCore::SelectJets(vector<Jet>& JetColl, vector<Muon>& MuColl,
       bool MatchL=false;
       for(unsigned int im=0; im<MuColl.size() && (!MatchL); im++){
         if(ThisJet.DeltaR(MuColl.at(im))<0.4){ MatchL=true; break; }
+//////        if(ThisJet.DeltaR(MuColl.at(im))>0.4){ MatchL=true; break; }
       }
       for(unsigned int ie=0; ie<ElColl.size() && (!MatchL); ie++){
         if(ThisJet.DeltaR(ElColl.at(ie))<0.4){ MatchL=true; break; }
+//////        if(ThisJet.DeltaR(ElColl.at(ie))>0.4){ MatchL=true; break; }
       }
       if(MatchL) continue;
     }

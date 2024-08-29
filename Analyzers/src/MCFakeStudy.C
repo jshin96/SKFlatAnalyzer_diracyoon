@@ -1074,7 +1074,7 @@ void MCFakeStudy::ScanFakeRate(vector<Electron>& FakePreColl, vector<Jet>& JetCo
 
 
 
-float MCFakeStudy::GetMCFakeWeight(vector<Muon>& MuColl, vector<Electron>& ElColl, TString MuTID, TString ElTID, TString MuFRKey, TString ElFRKey, int SystDir){
+float MCFakeStudy::GetMCFakeWeight(vector<Muon>& MuColl, vector<Electron>& ElColl, TString MuTID, TString ElTID, TString MuFRKey, TString ElFRKey, int SystDir, float FR_MCCorr){
 
   if(IsDATA) return 1.;
 
@@ -1100,13 +1100,13 @@ float MCFakeStudy::GetMCFakeWeight(vector<Muon>& MuColl, vector<Electron>& ElCol
     weight*=-FR/(1.-FR);
     NLepLNotT++;
   }
-
+  weight *= (FR_MCCorr);
   if(NLepLNotT==0) weight=0.;
   return weight;
 }
 
 
-float MCFakeStudy::GetGenMatchFakeWeight(vector<Muon>& MuColl, vector<Electron>& ElColl, vector<Gen>& TruthColl, TString MuTID, TString ElTID, TString MuFRKey, TString ElFRKey){
+float MCFakeStudy::GetGenMatchFakeWeight(vector<Muon>& MuColl, vector<Electron>& ElColl, vector<Gen>& TruthColl, TString MuTID, TString ElTID, TString MuFRKey, TString ElFRKey, float FR_MCCorr){
 
   if(IsDATA) return 1.;
 
@@ -1136,6 +1136,7 @@ float MCFakeStudy::GetGenMatchFakeWeight(vector<Muon>& MuColl, vector<Electron>&
     NLepLNotT++;
   }
 
+  weight *= (FR_MCCorr);
   if(NLepLNotT==0) weight=0.;
   return weight;
 }
@@ -1350,6 +1351,52 @@ void MCFakeStudy::CheckMCClosure(vector<Muon>& MuRawColl, vector<Electron>& ElRa
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
   vector<Jet>      BJetColl = SelBJets       (JetColl, param_jets);
 
+/////////////////////// Select Jet that might overlap with leptons without Jet Cleaning
+
+
+  vector<Jet> DirtyJetColl = SelectJets     (JetRawColl, "tight", 25., 2.4);
+  vector<Jet> DirtyBJetColl = SelBJets       (DirtyJetColl, param_jets);
+  bool B_overlap = false;
+  float FR_MCCorr = 1.0;
+  if(MuFR){
+    for(unsigned int im=0; im<MuLColl.size(); im++){
+      for(unsigned int ij=0; ij<DirtyBJetColl.size(); ij++){
+        if(DirtyBJetColl.at(ij).DeltaR(MuLColl.at(im))<0.4){B_overlap = true;}
+      }
+      for(unsigned int ilj=0; ilj<DirtyJetColl.size(); ilj++){
+        if(DirtyJetColl.at(ilj).DeltaR(MuLColl.at(im))<0.4){
+          FillHist("Overlap_Mu_Jet_Score"+Label, DirtyJetColl.at(ilj).GetTaggerResult(JetTagging::DeepJet), weight, 30, 0.0, 1.0);
+        }
+      }
+    }
+  }
+  else if(ElFR){
+    for(unsigned int ie=0; ie<ElLColl.size(); ie++){
+      for(unsigned int ij=0; ij<DirtyBJetColl.size(); ij++){
+        if(DirtyBJetColl.at(ij).DeltaR(ElLColl.at(ie))<0.4){B_overlap = true;}
+      }
+      for(unsigned int ilj=0; ilj<DirtyJetColl.size(); ilj++){
+        if(DirtyJetColl.at(ilj).DeltaR(ElLColl.at(ie))<0.4){
+          FillHist("Overlap_El_Jet_Score"+Label, DirtyJetColl.at(ilj).GetTaggerResult(JetTagging::DeepJet), weight, 30, 0.0, 1.0);
+        }
+      }
+    }
+  }
+
+  if(B_overlap){
+    if(MuFR){
+      if (GetEraShort() == "2018") { FR_MCCorr = 0.84;}
+      else if (GetEraShort() == "2017") { FR_MCCorr = 0.84;}
+      else if (GetEraShort() == "2016a") { FR_MCCorr = 0.85;}
+      else if (GetEraShort() == "2016b") { FR_MCCorr = 0.85;}
+    }
+    else if(ElFR){
+      if (GetEraShort() == "2018") { FR_MCCorr = 0.86;}
+      else if (GetEraShort() == "2017") { FR_MCCorr = 0.81;}
+      else if (GetEraShort() == "2016a") { FR_MCCorr = 0.86;}
+      else if (GetEraShort() == "2016b") { FR_MCCorr = 0.85;}
+    }
+  }
   TString FRProc = Label.Contains("FRTT")? "TT_powheg":Label.Contains("FRQCD")? "QCD":"";
   TString MeasSel = Option.Contains("MeasSel")? "_QCDMeasSel":""; 
   TString TrigStr = Option.Contains("Trig")?    "_Trig":"";
@@ -1369,6 +1416,7 @@ void MCFakeStudy::CheckMCClosure(vector<Muon>& MuRawColl, vector<Electron>& ElRa
   if( NElL!=NElV ) return;
   if( !((NMuL==2 && NElL==0) or (NMuL==0 && NElL==2)) ) return;
   if(NMuL==2 && MuFR){
+    FillHist("Mu_FR_MCCorr"+Label, FR_MCCorr, 1, 2, 0., 1.99);
     int aSumQ = abs(SumCharge(MuLColl));
     if(aSumQ==0) return;
     if(!(MuLColl.at(0).Pt()>20. && MuLColl.at(1).Pt()>10.)) return;
@@ -1382,8 +1430,8 @@ void MCFakeStudy::CheckMCClosure(vector<Muon>& MuRawColl, vector<Electron>& ElRa
     }
     float FRweight = 1.;
     int SystDir = Option.Contains("FRUp")? 1: Option.Contains("FRDown")? -1: 0; 
-    if(DoGenMatchW) FRweight = GetGenMatchFakeWeight(MuLColl, ElLColl, TruthColl, MuTID, ElTID, MuFRKey, ElFRKey);
-    else            FRweight = GetMCFakeWeight(MuLColl, ElLColl, MuTID, ElTID, MuFRKey, ElFRKey, SystDir);
+    if(DoGenMatchW) FRweight = GetGenMatchFakeWeight(MuLColl, ElLColl, TruthColl, MuTID, ElTID, MuFRKey, ElFRKey, FR_MCCorr);
+    else            FRweight = GetMCFakeWeight(MuLColl, ElLColl, MuTID, ElTID, MuFRKey, ElFRKey, SystDir,FR_MCCorr);
     if(NMuT==NMuL && NElT==NElL){ Label="_Obs"+Label; }
     else                        { Label="_Exp"+Label; weight*=FRweight; }
 
@@ -1508,6 +1556,7 @@ void MCFakeStudy::CheckMCClosure(vector<Muon>& MuRawColl, vector<Electron>& ElRa
     }
   }
   if(NElL==2 && ElFR){
+    FillHist("El_FR_MCCorr"+Label, FR_MCCorr, 1, 2, 0., 1.99);
     int aSumQ = abs(SumCharge(ElLColl));
     if(aSumQ==0) return;
     if(!( ElLColl.at(0).Pt()>25 && ElLColl.at(1).Pt()>15 )) return;
@@ -1522,8 +1571,8 @@ void MCFakeStudy::CheckMCClosure(vector<Muon>& MuRawColl, vector<Electron>& ElRa
 
     float FRweight = 1.;
     int SystDir = Option.Contains("FRUp")? 1: Option.Contains("FRDown")? -1: 0; 
-    if(DoGenMatchW) FRweight = GetGenMatchFakeWeight(MuLColl, ElLColl, TruthColl, MuTID, ElTID, MuFRKey, ElFRKey);
-    else            FRweight = GetMCFakeWeight(MuLColl, ElLColl, MuTID, ElTID, MuFRKey, ElFRKey, SystDir);
+    if(DoGenMatchW) FRweight = GetGenMatchFakeWeight(MuLColl, ElLColl, TruthColl, MuTID, ElTID, MuFRKey, ElFRKey, FR_MCCorr);
+    else            FRweight = GetMCFakeWeight(MuLColl, ElLColl, MuTID, ElTID, MuFRKey, ElFRKey, SystDir,FR_MCCorr);
     if(NMuT==NMuL && NElT==NElL){ Label="_Obs"+Label; }
     else                        { Label="_Exp"+Label; weight*=FRweight; }
 

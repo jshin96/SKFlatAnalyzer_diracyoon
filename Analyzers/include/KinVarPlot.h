@@ -17,8 +17,8 @@ public:
 
   bool OS2l, SS2l, TriLep, TetraLep; 
   bool DblMu, DblEG, MuEG;
-  bool FakeRun, ConvRun, FlipRun, SystRun, GenSyst;
-  bool DiscPlots, VarPlots, EffFlow, GlobFeas, GenMatchedDist, DecCompCheck, DiscCutOpt, DiscTable, DiscCNC, TestPlot;
+  bool FakeRun, ConvRun, FlipRun, SystRun, GenSyst, PUVETO, ReverseBDT;
+  bool DiscPlots, VarPlots, EffFlow, GlobFeas, GenMatchedDist, DecCompCheck, DiscCutOpt, DiscTable, DiscCNC, TestPlot, BDTVal;
   vector<TString> TrigList_DblMu, TrigList_DblEG, TrigList_MuEG;
 
   void MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl, vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
@@ -55,7 +55,7 @@ public:
   void FillGlobFeasBins2L(TString Mix, TString Label);
 
   float GetDataFakeRate(float VarX, float VarY, TString Key, TString Opt);
-  float GetDataFakeWeight(vector<Muon>& MuColl, vector<Electron>& ElColl,
+  float GetDataFakeWeight(vector<Muon>& MuColl, vector<Electron>& ElColl, vector<Jet>& rawbjetColl,
                           TString MuTID, TString ElTID, TString MuFRKey, TString ElFRKey, TString Opt);
   float GetCFRWeight(vector<Electron>& ElColl, TString Option);
   float GetCFRAndSF(float VarX, float VarY, TString Key, TString Opt);

@@ -126,7 +126,9 @@ public:
   float GetTriggerSF(vector<Electron>& EleColl, vector<Muon>& MuColl, TString SFKey, TString Option);
   float TriggerEfficiency(vector<Electron>& EleColl, vector<Muon>& MuColl, TString SFKey, bool ReturnDataEff, TString Option);
   float DZEfficiency(TString SFKey, bool ReturnDataEff, TString Option);
-
+  std::map<TString, TH2F *> map_hist_pujet_veto;
+  double PileupJetVeto_MCCorr(const TString &type, const TString &wp, double pt, double eta, const int sys);
+  double PileupJetVeto_Reweight(const vector<Jet> &jets, const TString &wp, const int sys);
 };
 
 #endif
