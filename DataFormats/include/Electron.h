@@ -228,6 +228,9 @@ public:
   inline bool passHEEPID() const {return PassSelector(POG_HEEP); }
 
 
+  int PassHNLTight(TString ID) const;
+  int PassHNLTop(TString ID) const;
+
   bool Pass_MultiFunction_Opt(TString ID) const;
   bool Pass_LepMVAID() const ;
   bool Pass_LepMVATopID() const ;
@@ -257,17 +260,16 @@ public:
   bool passMVAID_Iso_WP80HNLoose() const;
   bool passMVAID_Iso_WP90HNLoose() const;
 
-  bool PassHNIsGsfCtfScPixChargeConsistent() const;
-  bool PassHNIsGsfCtfScPixChargeConsistentVar(double pt1, double pt2) const;
+
   bool Pass_SUSYLoose() const;
   bool passTightIDHN() const;
   bool passMediumIDHN() const;
   bool passLooseIDHN() const;
-  bool passMediumID_NoCC() const;
-  bool passTightID_NoCCB() const;
-  bool passTightID_NoCC() const;
-  bool passLooseID_NoCCB() const;
-  bool passLooseID_NoCC() const;
+  bool passMediumID_NoTightCharge() const;
+  bool passTightID_NoTightChargeB() const;
+  bool passTightID_NoTightCharge() const;
+  bool passLooseID_NoTightChargeB() const;
+  bool passLooseID_NoTightCharge() const;
   bool Pass_CutBasedTightWithIPcut() const;
 
   //==== HN ID

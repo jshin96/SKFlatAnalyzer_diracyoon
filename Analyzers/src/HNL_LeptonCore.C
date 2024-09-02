@@ -49,8 +49,9 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
   mcCorr->SetIsFastSim(IsFastSim);
 
   //// Read Histograms Moved from Initialise Tools
+  cout << "HNL_LeptonCore::initializeAnalyzer : Analyzer = " << Analyzer << endl;
   if(!IsDATA){
-    if(!Analyzer.Contains("SkimTree")) mcCorr->ReadHistograms();
+    mcCorr->ReadHistograms();
     mcCorr->SetupJetTagging();
   }
 
@@ -747,6 +748,34 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     return param;
   }
 
+  if (s_setup_version=="MVAPOG"){
+    param.Apply_Weight_IDSF     = false;
+    param.Apply_Weight_TriggerSF= false;
+    param.FakeMethod = "DATA";    param.CFMethod   = "DATA";    param.ConvMethod = "MC";
+    /// ID config                                                                                                                                                     
+    param.Muon_Veto_ID     = "HNVeto_17028";   param.Electron_Veto_ID  = "HNVeto";
+    param.Muon_Tight_ID    = "HNTightV2";     param.Electron_Tight_ID = "passMVAID_Iso_WP80";
+    param.Muon_FR_ID       = "HNLooseV1";     param.Electron_FR_ID    = "HNLooseV4";
+
+    ///FIX
+    param.FakeRateMethod       = "Standard";
+    param.FakeRateParam        = "PtCone";
+    param.k.Muon_FR            = "AwayJetPt40";
+    param.k.Electron_FR        = "AwayJetPt40";
+    param.k.Electron_ID_SF     = "passHNTightV2";
+    param.k.Muon_ID_SF         = "NUM_HNTightV2";
+    param.k.Muon_RECO_SF       = "MuonRecoSF";
+
+    param.TriggerSelection = "Dilep";
+    if(channel_st.Contains("EE"))   param.k.Electron_Trigger_SF = "DiElIso_HNL_ULID";
+    if(channel_st.Contains("MuMu")) param.k.Muon_Trigger_SF = "DiMuIso_HNL_ULID";
+    if(channel_st.Contains("EMu"))  param.k.EMu_Trigger_SF = "EMuIso_HNL_ULID";
+
+    param.AK8JetColl       = "HNL";
+
+    return param;
+
+  }
 
   if (s_setup_version=="HNTightV2"){
 
