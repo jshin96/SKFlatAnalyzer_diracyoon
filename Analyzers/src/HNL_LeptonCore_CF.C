@@ -57,6 +57,12 @@ double HNL_LeptonCore::GetCFSF(AnalyzerParameter param, TString EraReg, bool App
   
   CFSFValues["TopHNSST_BB"]      =  {0.80,     0.79,     1.162, 1.47};
   CFSFValues["TopHNSST_EC"]      =  {0.78,     0.83,     1.31,  1.28};
+  
+
+  /// HEEP Values are copied for HNTight
+  CFSFValues["passHEEPID_v3_BB"]     =  {0.842,0.967, 1.34, 1.44};
+  CFSFValues["passHEEPID_v3_EC"]     =  {0.84,0.90, 1.37, 1.40};
+
 
   map<TString,vector<double> >::iterator CFMapIter ;
 
