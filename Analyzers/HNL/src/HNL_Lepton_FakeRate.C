@@ -133,6 +133,15 @@ void HNL_Lepton_FakeRate::executeEvent(){
 
   }
 
+  if(HasFlag("RunRatesHEEP")){
+    /// Measure FR in Data                                                                                                                                                                                                                                                                                                 
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"passHEEPID_v1"  ,"passHEEPID_v1", "HEEPLoose_v1"));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"passHEEPID_v2"  ,"passHEEPID_v2", "HEEPLoose_v2"));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"passHEEPID_v3"  ,"passHEEPID_v3", "HEEPLoose_v3"));
+    
+  }
+    
+
 
   if(HasFlag("RunRates")){
     /// Measure FR in Data
@@ -868,6 +877,7 @@ void HNL_Lepton_FakeRate::MakeFakeRatePlots(TString label, TString mutag,Analyze
 	else{
 	  GetElFakeRates("Pt",leps, blepsT, param,  jets,              label+"_"+param.GetSystType(),(event_weight));
 	  GetElFakeRates("PtCone",leps, blepsT, param,  jets,          label+"_"+param.GetSystType(),(event_weight));
+	  GetElFakeRates("TrkPtCone",leps, blepsT, param,  jets,          label+"_"+param.GetSystType(),(event_weight));
 	  GetElFakeRates("PtCorr",leps, blepsT, param,  jets,          label+"_"+param.GetSystType(),(event_weight));
 	  GetElFakeRates("PtParton",leps, blepsT, param,  jets,        label+"_"+param.GetSystType(),(event_weight));
 	  GetElFakeRates("MotherPt",leps, blepsT, param,  jets,        label+"_"+param.GetSystType(),(event_weight));
@@ -919,11 +929,14 @@ void HNL_Lepton_FakeRate::GetElFakeRates(TString Method, std::vector<Lepton *> l
   if(param.Name.Contains("HNL_")){
     if(Method.Contains("PtCone")) return;
   }
+  else if(param.Name.Contains("HEEP")){
+    if(!(Method == "TrkPtCone" || Method == "Pt")) return;
+  }
   else{
-    if(!(Method.Contains("PtCone") || Method.Contains("Pt"))) return;
+    if(!(Method == "PtCone"    || Method == "Pt")) return;
   }
   
-  double   isocut  = (Method == "PtCone") ? GetIsoFromID(*leps[0], param.Electron_Tight_ID) : 0. ;
+  double   isocut  = (Method.Contains("PtCone")) ? GetIsoFromID(*leps[0], param.Electron_Tight_ID) : 0. ;
   TString  LooseID =  param.Electron_Loose_ID ;
   TString  TightID =  param.Electron_Tight_ID ;
   double MVACut = leps[0]->MVAFakeCut(TightID,GetYearString());
@@ -980,6 +993,28 @@ void HNL_Lepton_FakeRate::GetElFakeRates(TString Method, std::vector<Lepton *> l
   if(Method == "PtCone"){
     PtHist ="ptcone";
     lep_pt =  ( leps[0]->CalcPtCone(leps[0]->RelIso(), isocut) < UpperPtCut) ?  leps[0]->CalcPtCone(leps[0]->RelIso(), isocut) : UpperPtCutM1;
+    ptname = "ptcone_eta";
+    if(lep_pt > 40){
+      if(leps[0]->Pt() < 25) return;
+      if(!pass_23) return;
+      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_23)*NVxt_El23);
+    }
+    else if(lep_pt > 23){
+      if(leps[0]->Pt() < 15) return;
+      if(!pass_12) return;
+      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_12)*NVxt_El12);
+    }
+    else if(lep_pt > 10){
+      if(leps[0]->Pt() < 9.5) return;
+      if(!pass_8) return;
+      if(!IsData) weight_ptcorr *=(ev.GetTriggerLumi(triggerslist_8)*NVxt_El8);
+
+    }
+    else return ;
+  }
+  else   if(Method == "TrkPtCone"){
+    PtHist ="ptcone";
+    lep_pt =  ( leps[0]->CalcTrkPtCone(leps[0]->TrkIso(), isocut) < UpperPtCut) ?  leps[0]->CalcTrkPtCone(leps[0]->TrkIso(), isocut) : UpperPtCutM1;
     ptname = "ptcone_eta";
     if(lep_pt > 40){
       if(leps[0]->Pt() < 25) return;

@@ -36,7 +36,6 @@ Electron::Electron(){
   j_e15 = -999.;
   j_e25 = -999.;
   j_e55 = -999.;
-  j_trkiso = -999.;
   j_dr03EcalRecHitSumEt = -999.;
   j_dr03HcalDepth1TowerSumEt = -999.;
   j_dr03HcalTowerSumEt = -999.;
@@ -124,7 +123,7 @@ void Electron::SetCutBasedIDVariables(
   j_InvEminusInvP = InvEminusInvP;
   j_e2x5OverE5x5 = e2x5OverE5x5;
   j_e1x5OverE5x5 = e1x5OverE5x5;
-  j_trkiso = trackIso;
+  //j_trkiso = trackIso;
   j_dr03EcalRecHitSumEt = dr03EcalRecHitSumEt;
   j_dr03HcalDepth1TowerSumEt = dr03HcalDepth1TowerSumEt;
   j_dr03HcalTowerSumEt = dr03HcalTowerSumEt;
@@ -275,56 +274,60 @@ int  Electron::PassIDTight(TString ID) const{
   //// OTHER ANALYSES IDs / POG IDs
   //////////////////////////////////////////////////////////////////////////////////// 
 
-  if(ID=="Peking_2016") {
-    if(! (passTightID()) ) return 0;
-    if( IsBB()){
-      if( !(fabs(dXY()) < 0.05 && fabs(dZ())< 0.1)) return 0;
-      if(  (NMissingHits()>1) ) return 0;
-    }
-    else {
-      if( !(fabs(dXY()) < 0.1 && fabs(dZ())< 0.2)) return 0;
-      if(  (NMissingHits()>1) ) return 0;
-    }
-    if(! IsGsfCtfScPixChargeConsistent())  return 0;
-    if(! (Pass_TriggerEmulation()) ) return 0;
-    return 1;
-  }
+  if(ID=="Peking"){
+    if( Run_Era()== 2016) {
 
-  if(ID=="Peking_FO_2016") {
-    if(! (passLooseID()) ) return 0;
-    if( IsBB()){
-      if( !(fabs(dXY()) < 0.05 && fabs(dZ())< 0.1)) return 0;
-      if(  (NMissingHits()>1) ) return 0;
+      if(! (passTightID()) ) return 0;
+      if( IsBB()){
+	if( !(fabs(dXY()) < 0.05 && fabs(dZ())< 0.1)) return 0;
+	if(  (NMissingHits()>1) ) return 0;
+      }
+      else {
+	if( !(fabs(dXY()) < 0.1 && fabs(dZ())< 0.2)) return 0;
+	if(  (NMissingHits()>1) ) return 0;
+      }
+      if(! IsGsfCtfScPixChargeConsistent())  return 0;
+      if(! (Pass_TriggerEmulation()) ) return 0;
+      return 1;
     }
-    else {
-      if( !(fabs(dXY()) < 0.1 && fabs(dZ())< 0.2)) return 0;
-      if(  (NMissingHits()>1) ) return 0;
+  
+    else{
+      if(!passMVAID_Iso_WP90()) return 0;
+      if(! IsGsfCtfScPixChargeConsistent())  return 0;
+      if(! (Pass_TriggerEmulation()) ) return 0;
+      if(IsBB()){
+	if(! (RelIso() < 0.0571 )) return 0;
+      }
+      else       if(! (RelIso() < 0.05880 )) return 0;
+      return 1;
     }
-    if(! IsGsfCtfScPixChargeConsistent())  return 0;
-    if(! (Pass_TriggerEmulation()) ) return 0;
-    return 1;
   }
-
-  if(ID=="Peking_2017" || ID=="Peking_2018") {
-    if(!passMVAID_Iso_WP90()) return 0;
-    if(! IsGsfCtfScPixChargeConsistent())  return 0;
-    if(! (Pass_TriggerEmulation()) ) return 0;
-    if(IsBB()){
-      if(! (RelIso() < 0.0571 )) return 0;
+  if(ID=="Peking_FO") {
+    if( Run_Era()== 2016) {
+      if(! (passLooseID()) ) return 0;
+      if( IsBB()){
+	if( !(fabs(dXY()) < 0.05 && fabs(dZ())< 0.1)) return 0;
+	if(  (NMissingHits()>1) ) return 0;
+      }
+      else {
+	if( !(fabs(dXY()) < 0.1 && fabs(dZ())< 0.2)) return 0;
+	if(  (NMissingHits()>1) ) return 0;
+      }
+      if(! IsGsfCtfScPixChargeConsistent())  return 0;
+      if(! (Pass_TriggerEmulation()) ) return 0;
+      return 1;
     }
-    else       if(! (RelIso() < 0.05880 )) return 0;
-    return 1;
+    else{
+      if(!passMVAID_noiso_WPLoose()) return 0;
+      if(! IsGsfCtfScPixChargeConsistent())  return 0;
+      if(! (Pass_TriggerEmulation()) ) return 0;
+      if(IsBB()){
+	if(! (RelIso() < 0.4 )) return 0;
+      }
+      else       if(! (RelIso() < 0.4 )) return 0;
+      return 1;
+    }  
   }
-  if(ID=="Peking_FO_2017" || ID=="Peking_FO_2018") {
-    if(!passMVAID_noiso_WPLoose()) return 0;
-    if(! IsGsfCtfScPixChargeConsistent())  return 0;
-    if(! (Pass_TriggerEmulation()) ) return 0;
-    if(IsBB()){
-      if(! (RelIso() < 0.4 )) return 0;
-    }
-    else       if(! (RelIso() < 0.4 )) return 0;
-    return 1;
-  }  
   
   if(ID=="HNTightV2")  return passTightID_NoTightCharge() &&PassHNID()  &&(fabs(IP3D()/IP3Derr())<4.)? 1 : 0 ;
   if(ID=="HNTightV3")  return (PassHNOpt()==1)  ? 1 : 0 ;
@@ -343,8 +346,19 @@ int  Electron::PassIDTight(TString ID) const{
   if(ID=="passMediumID") return passMediumID()? 1 : 0 ;
   if(ID=="passTightID") return passTightID()? 1 : 0 ;
   //=== HEEP IDS                                                                                                                                                                                       
-  if(ID=="passHEEPID") return passHEEPID()? 1 : 0 ;
-  if(ID=="passHEEPID2018Prompt") return passHEEP2018Prompt()? 1 : 0 ;
+  if(ID=="passHEEPID_v1")           {
+    if(Run_Era() == 2018 ) return passHEEP2018Prompt()? 1 : 0 ;
+    else return passHEEPID()? 1 : 0 ;
+  }
+  
+  if(ID=="passHEEPID_v2"){
+    if(Run_Era() == 2018 ) return passHEEP2018Prompt()&&Pass_TriggerEmulation()&&PassConversionVeto() && IsGsfCtfScPixChargeConsistent()? 1 : 0 ;
+    else return passHEEPID()&& Pass_TriggerEmulation()&&PassConversionVeto() && IsGsfCtfScPixChargeConsistent() ? 1 : 0;
+  }
+  if(ID=="passHEEPID_v3"){
+    if(Run_Era() == 2018 )return passHEEP2018Prompt()&& Pass_TriggerEmulation()&&PassConversionVeto() && IsGsfCtfChargeConsistent()? 1 : 0;
+    else   return passHEEPID()         && Pass_TriggerEmulation()&&PassConversionVeto() && IsGsfCtfChargeConsistent()? 1 : 0;
+  }
 
   //=== MVA
 
@@ -354,9 +368,6 @@ int  Electron::PassIDTight(TString ID) const{
   if(ID=="passMVAID_noIso_WP90") return passMVAID_noIso_WP90HN()? 1 : 0 ;
   if(ID=="passMVAID_Iso_WP80")   return passMVAID_Iso_WP80HN()? 1 : 0 ;
   if(ID=="passMVAID_Iso_WP90")   return passMVAID_Iso_WP90HN()? 1 : 0 ;
-
-  if(ID=="HNHEEPID")  return passHEEPID()&&PassHNID()? 1 : 0;
-  if(ID=="HNHEEPID2018Prompt")  return passHEEP2018Prompt()&&PassHNID()? 1 : 0 ;
 
   //==== Customized                                                                                                                                                                                  
   if(ID=="SUSYTight") return Pass_SUSYTight()? 1 : 0 ;
@@ -417,8 +428,10 @@ int  Electron::PassIDLoose(TString ID) const{
   if(ID=="passProbeIDTight") return passMVAID_noiso_WPLoose()&&Pass_TriggerEmulationLoose() ? 1 : 0;  // --- VETO POG                                                                                                                                             
 
   if(ID=="passLooseID")  return passLooseID()     ? 1 : 0; 
-  if(ID=="HEEPLoose")    return passLooseHEEPID() ? 1 : 0; 
-  if(ID=="HNHEEPLoose")  return passLooseHEEPID()&&PassHNID() ? 1 : 0; 
+  if(ID=="HEEPLoose_v1")    return passLooseHEEPID() ? 1 : 0; 
+  if(ID=="HEEPLoose_v2")    return passLooseHEEPID() && Pass_TriggerEmulation()&&PassConversionVeto() && IsGsfCtfScPixChargeConsistent() ? 1 : 0; 
+  if(ID=="HEEPLoose_v3")    return passLooseHEEPID() && Pass_TriggerEmulation()&&PassConversionVeto() && IsGsfCtfChargeConsistent()? 1 : 0; 
+
 
   //=== loose user                                                                                                                                                                                       
   if(ID=="HNLooseMVA") return (passIDHN(3,0.2, 0.2, 0.2,0.2, 10.,10., 0.6, 0.6, -999., -999.)&&passMVAID_noiso_WPLoose())  ? 1 : 0;  

@@ -184,7 +184,6 @@ public:
   inline double e15() const { return j_e15; }
   inline double e25() const { return j_e25; }
   inline double e55() const { return j_e55; }
-  inline double TrkIso() const {return j_trkiso; }
   inline double dr03EcalRecHitSumEt() const { return j_dr03EcalRecHitSumEt; }
   inline double dr03HcalDepth1TowerSumEt() const { return j_dr03HcalDepth1TowerSumEt; }
   inline double dr03HcalTowerSumEt() const { return j_dr03HcalTowerSumEt; }
@@ -365,7 +364,7 @@ private:
   double j_EnergyUnCorr;
   bool j_passConversionVeto;
 
-  double j_Full5x5_sigmaIetaIeta, j_sigmaIetaIeta,j_dEtaSeed, j_dPhiIn,j_dEtaIn,j_PhiWidth, j_EtaWidth, j_HoverE, j_InvEminusInvP, j_e2x5OverE5x5, j_e1x5OverE5x5, j_trkiso, j_dr03EcalRecHitSumEt, j_dr03HcalDepth1TowerSumEt, j_e15, j_e25, j_e55,j_fbrem,j_eoverp;
+  double j_Full5x5_sigmaIetaIeta, j_sigmaIetaIeta,j_dEtaSeed, j_dPhiIn,j_dEtaIn,j_PhiWidth, j_EtaWidth, j_HoverE, j_InvEminusInvP, j_e2x5OverE5x5, j_e1x5OverE5x5, j_dr03EcalRecHitSumEt, j_dr03HcalDepth1TowerSumEt, j_e15, j_e25, j_e55,j_fbrem,j_eoverp;
   double j_dr03HcalTowerSumEt, j_dr03TkSumPt, j_ecalPFClusterIso, j_hcalPFClusterIso;
   bool j_isEcalDriven;
   double j_L1Et; 

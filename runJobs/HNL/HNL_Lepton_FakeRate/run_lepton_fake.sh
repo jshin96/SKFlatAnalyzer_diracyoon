@@ -9,8 +9,6 @@ declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
 
 declare  -a joblist=("CheckProfile"  "RatesMuon" "RatesMuon2" "RatesEl" "RatesEl2" "RatesWR")
 
-declare  -a era_list=("2018")
-
 
 
 for i in "${era_list[@]}"
@@ -32,6 +30,11 @@ do
 	SKFlat.py -a $analyzer  -i DYJetsToEE_MiNNLO  -n  ${njobs_data}  --nmax ${nmax}  -e ${i}  --skim SkimTree_DileptonBDT --userflags RunPromptRatesEE &
     fi
 
+
+    if [[ $1 == "RatesHEEP" ]]; then
+        SKFlat.py -a $analyzer  -l $mcpath/MC.txt              -n ${njobs}       --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRatesHEEP&
+        SKFlat.py -a $analyzer  -l $datapath/DATA_${i}_el.txt  -n ${njobs_data}  --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRatesHEEP&
+    fi
 
     if [[ $1 == "Rates" ]]; then
         SKFlat.py -a $analyzer  -l $mcpath/MC.txt              -n ${njobs}       --nmax ${nmax}  -e ${i}   --skim SkimTree_HNFakeBDT --userflags RunRates&
