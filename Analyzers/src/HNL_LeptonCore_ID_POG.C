@@ -42,26 +42,27 @@ void HNL_LeptonCore::GetSetup_HighPt(AnalyzerParameter& param_default ){
   param_default.Apply_Weight_TriggerSF= false;
 
   param_default.FakeMethod = "DATA";
-  param_default.CFMethod   = "MC";
+  param_default.CFMethod   = "DATA";
   param_default.ConvMethod = "MC";
   param_default.Muon_Veto_ID     = "HNVeto_17028";
   param_default.Electron_Veto_ID = "HNVeto";
   /// Tight ID                                                                                                                                                      
   param_default.Muon_Tight_ID     = "POGHighPtWithLooseTrkIso";
-  param_default.Electron_Tight_ID = "passPOGTight";
+  param_default.Electron_Tight_ID = "passHEEPID_v3";
 
   /////// Fake Bkg                                                                                                                                                  
-  param_default.FakeRateMethod       = "PtStandard";
-  param_default.FakeRateParam        = "PtCone";
+  param_default.FakeRateMethod       = "Standard";
+  param_default.FakeRateParam        = "Pt";
   param_default.k.Muon_FR            = "FR_cent";
   param_default.k.Electron_FR        = "AwayJetPt40";
   param_default.Muon_FR_ID           = "POGHighPt";
-  param_default.Electron_FR_ID       = "HNLoosePOG";
+  param_default.Electron_FR_ID       = "HEEPLoose_v3";
 
   //// Lepton Corr [not needed as set false]                                                                                                                        
   param_default.k.Muon_RECO_SF       = "HighPtMuonRecoSF";
-  param_default.Electron_Tight_ID   = "passPOGTight";
-  param_default.k.Electron_ID_SF    = "passTightID";
+  param_default.Electron_Tight_ID   = "passHEEPID_v3";
+
+  param_default.k.Electron_CF  = "CFRate_InvPtEta3_PBSExtrap_Central_passHEEPID_v3";
 
   param_default.TriggerSelection = "Dilep";
 
