@@ -617,7 +617,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     return param;
   }
 
-
+  return param;
 
   cout << "[HNL_LeptonCore::InitialiseHNLParameters ] ID not found.." << endl;
   exit(EXIT_FAILURE);

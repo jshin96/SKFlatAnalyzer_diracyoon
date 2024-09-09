@@ -6,6 +6,7 @@ void HNL_LeptonCore::SetupEventMVAReader(TString version, bool ee, bool mm, bool
 
   TString AnalyzerPath=std::getenv("SKFlat_WD");
   TString MVAPath = "/data/Run2UltraLegacy_v3/Run2/BDTClassifier/results_xml/HNL_ULID/"+version+"/";
+  TString MVAPathV1 = "/data/Run2UltraLegacy_v3/Run2/BDTClassifier/results_xml/HNL_ULID/V1/";
   MNStrList = {"85", "90", "95", "100", "125", "150", "200", "250", "300", "400", "500"};
   NCutList  = {"200"};
   NTreeList = {"850"};
@@ -575,8 +576,8 @@ void HNL_LeptonCore::SetupEventMVAReader(TString version, bool ee, bool mm, bool
 
     if(mm){
       MVAReaderMM->BookMVA(MVATagStrMM, AnalyzerPath+MVAPath+FileNameMM);
-      MVAReaderMMFake->BookMVA(MVATagStrMMFake, AnalyzerPath+MVAPath+FileNameMMFake);
-      MVAReaderMMNonFake->BookMVA(MVATagStrMMNonFake, AnalyzerPath+MVAPath+FileNameMMNonFake);
+      MVAReaderMMFake->BookMVA(MVATagStrMMFake, AnalyzerPath+MVAPathV1+FileNameMMFake);
+      MVAReaderMMNonFake->BookMVA(MVATagStrMMNonFake, AnalyzerPath+MVAPathV1+FileNameMMNonFake);
     }
 
     TString FileNameEE        = "output_DY_EE_M"+MNStrList.at(im)+"_Incl_Run2_NTrees"+NTreeEE+"_NCuts"+NCutEE+"_MaxDepth3_BDT.weights.xml";
@@ -589,8 +590,8 @@ void HNL_LeptonCore::SetupEventMVAReader(TString version, bool ee, bool mm, bool
 
     if(ee){
       MVAReaderEE->BookMVA(MVATagStrEE, AnalyzerPath+MVAPath+FileNameEE);
-      MVAReaderEEFake->BookMVA(MVATagStrEEFake, AnalyzerPath+MVAPath+FileNameEEFake);
-      MVAReaderEENonFake->BookMVA(MVATagStrEENonFake, AnalyzerPath+MVAPath+FileNameEENonFake);
+      MVAReaderEEFake->BookMVA(MVATagStrEEFake, AnalyzerPath+MVAPathV1+FileNameEEFake);
+      MVAReaderEENonFake->BookMVA(MVATagStrEENonFake, AnalyzerPath+MVAPathV1+FileNameEENonFake);
     }
 
     TString FileNameEM        = "output_DY_EMu_M"+MNStrList.at(im)+"_Incl_Run2_NTrees"+NTreeEM+"_NCuts"+NCutEM+"_MaxDepth3_BDT.weights.xml";
@@ -603,8 +604,8 @@ void HNL_LeptonCore::SetupEventMVAReader(TString version, bool ee, bool mm, bool
 
     if(emu){
       MVAReaderEM->BookMVA(MVATagStrEM, AnalyzerPath+MVAPath+FileNameEM);
-      MVAReaderEMFake->BookMVA(MVATagStrEMFake, AnalyzerPath+MVAPath+FileNameEMFake);
-      MVAReaderEMNonFake->BookMVA(MVATagStrEMNonFake, AnalyzerPath+MVAPath+FileNameEMNonFake);
+      MVAReaderEMFake->BookMVA(MVATagStrEMFake, AnalyzerPath+MVAPathV1+FileNameEMFake);
+      MVAReaderEMNonFake->BookMVA(MVATagStrEMNonFake, AnalyzerPath+MVAPathV1+FileNameEMNonFake);
     }
 
   }
