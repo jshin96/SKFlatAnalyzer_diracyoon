@@ -339,6 +339,10 @@ nvtx,  double w);
   TMVA::Reader *MVAReaderMM, *MVAReaderEE, *MVAReaderEM;
   TMVA::Reader *MVAReaderMMFake, *MVAReaderEEFake, *MVAReaderEMFake, *MVAReaderMMNonFake, *MVAReaderEENonFake, *MVAReaderEMNonFake;
 
+  /// Map to store booked settings
+  map<TString, TString > map_bdt_booked;
+
+
   /// Event BDT var 
   void InitializeTreeVars();
   void SetupEventBDTVariables(std::vector<Lepton *> LepTColl,    std::vector<Jet> JetAllColl,std::vector<Jet> JetColl, std::vector<Jet> JetVBFColl, std::vector<Jet> B_JetColl, Event  ev, Particle METv, AnalyzerParameter param);
@@ -383,7 +387,7 @@ nvtx,  double w);
 
 
   /// ------ SYSTEMATICS
-  vector<AnalyzerParameter::Syst> GetSystList(TString SystType);
+  vector<AnalyzerParameter::Syst> GetSystList(TString SystType="");
 
   /// ---- TRIGGER HNL_LeptonCore_Trigger
   void    SetupTriggerLists();  

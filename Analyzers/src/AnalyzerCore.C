@@ -297,7 +297,6 @@ std::vector<Electron> AnalyzerCore::GetAllElectrons(){
 
     Electron el;
     el.SetRunEra(DataYear);
-
     el.SetEnShift(  electron_Energy_Scale_Up->at(i)/electron_Energy->at(i), electron_Energy_Scale_Down->at(i)/electron_Energy->at(i) );
     el.SetResShift( electron_Energy_Smear_Up->at(i)/electron_Energy->at(i), electron_Energy_Smear_Down->at(i)/electron_Energy->at(i) );
 

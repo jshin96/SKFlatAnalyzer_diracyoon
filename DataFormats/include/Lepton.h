@@ -301,6 +301,14 @@ public:
   /// Standard Functions
 
   inline int Run_Era() const {return j_run_era;}
+
+  inline TString sRun_Era() const {
+    if(j_run_era==2016) return "2016";
+    if(j_run_era==2017) return "2017";
+    if(j_run_era==2018) return "2018";
+    return "999";
+  }
+
   void SetdXY(double dXY, double dXYerr);
   inline double fdXY() const {return fabs(j_dXY);}
   inline double dXY() const {return j_dXY;}

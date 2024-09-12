@@ -28,6 +28,9 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
   RunSyst = HasFlag("RunSyst");
   HEM1516 = HasFlag("HEM1516");
 
+  /// clear map
+  map_bdt_booked.clear();
+
   std::vector<JetTagging::Parameters> jtps;
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Loose, JetTagging::incl, JetTagging::mujets));
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets));
@@ -289,13 +292,11 @@ vector<AnalyzerParameter::Syst> HNL_LeptonCore::GetSystList(TString SystType){
 
   vector<AnalyzerParameter::Syst> SystList = {};
 
-  if(SystType == "Initial"){
+  if(SystType == "Initial" || SystType == ""){
     SystList.push_back(AnalyzerParameter::JetResUp);
     SystList.push_back(AnalyzerParameter::JetResDown);
     SystList.push_back(AnalyzerParameter::PUUp);
     SystList.push_back(AnalyzerParameter::PUDown);
-    //SystList.push_back(AnalyzerParameter::FRUp);
-    //SystList.push_back(AnalyzerParameter::FRDown);
     SystList.push_back(AnalyzerParameter::BTagSFHTagUp);
     SystList.push_back(AnalyzerParameter::BTagSFHTagDown);  
     SystList.push_back(AnalyzerParameter::BTagSFLTagUp);
