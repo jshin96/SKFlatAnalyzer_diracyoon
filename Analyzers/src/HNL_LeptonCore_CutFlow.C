@@ -62,7 +62,20 @@ void HNL_LeptonCore::FillLimitInput(HNL_LeptonCore::SearchRegion sr, double even
   TString histname = GetCutFlowNameFromRegion(sr);
 
   FillCutflowDef(hist_path,   histname, event_weight,lables, label);
-  //FillCutflowDef(hist_path,   histname+"_unweighted", 1,lables, label);
+
+  /// Fill SingleBinned                                                                                                                                                                                           
+  vector<HNL_LeptonCore::SearchRegion> SingleBinned = {HNL_LeptonCore::MuonCR1,HNL_LeptonCore::MuonCR2,HNL_LeptonCore::MuonCR3,HNL_LeptonCore::MuonCRBDT,HNL_LeptonCore::MuonCR3BDT,
+                                                       HNL_LeptonCore::ElectronCR1,HNL_LeptonCore::ElectronCR2,HNL_LeptonCore::ElectronCR3,HNL_LeptonCore::ElectronCRBDT,HNL_LeptonCore::ElectronCR3BDT,
+                                                       HNL_LeptonCore::ElectronMuonCR1,HNL_LeptonCore::ElectronMuonCR2,HNL_LeptonCore::ElectronMuonCR3,HNL_LeptonCore::ElectronMuonCRBDT,HNL_LeptonCore::Electron MuonCR3BDT,
+                                                       HNL_LeptonCore::MuonSR1,HNL_LeptonCore::MuonSR2,HNL_LeptonCore::MuonSR3,HNL_LeptonCore::MuonSRBDT,HNL_LeptonCore::MuonSR3BDT,
+                                                       HNL_LeptonCore::ElectronSR1,HNL_LeptonCore::ElectronSR2,HNL_LeptonCore::ElectronSR3,HNL_LeptonCore::ElectronSRBDT,HNL_LeptonCore::ElectronSR3BDT,
+                                                       HNL_LeptonCore::ElectronMuonSR1,HNL_LeptonCore::ElectronMuonSR2,HNL_LeptonCore::ElectronMuonSR3,HNL_LeptonCore::ElectronMuonSRBDT,HNL_LeptonCore::Electron MuonSR3BDT,
+                                                       HNL_LeptonCore::MuonCR,HNL_LeptonCore::ElectronCR,HNL_LeptonCore::ElectronMuonCR,
+                                                       HNL_LeptonCore::MuonSR,HNL_LeptonCore::ElectronSR,HNL_LeptonCore::ElectronMuonSR};
+
+  if(std::find(SingleBinned.begin(), SingleBinned.end(), sr) != SingleBinned.end())  FillCutflowDef(hist_path,   histname+"_SingleBin", event_weight,{"SingleBin"}, "SingleBin");
+
+
 
 }
 void HNL_LeptonCore::FillCutflow(HNL_LeptonCore::SearchRegion sr, double event_weight, TString label,  TString hist_path){
@@ -71,18 +84,7 @@ void HNL_LeptonCore::FillCutflow(HNL_LeptonCore::SearchRegion sr, double event_w
   TString histname = GetCutFlowNameFromRegion(sr);
   
   FillCutflowDef(hist_path,   histname, event_weight,lables, label);
-
-  /// Fill SingleBinned 
-  vector<HNL_LeptonCore::SearchRegion> SingleBinned = {HNL_LeptonCore::MuonCR1,HNL_LeptonCore::MuonCR2,HNL_LeptonCore::MuonCR3,HNL_LeptonCore::MuonCRBDT,HNL_LeptonCore::MuonCR3BDT,
-						       HNL_LeptonCore::ElectronCR1,HNL_LeptonCore::ElectronCR2,HNL_LeptonCore::ElectronCR3,HNL_LeptonCore::ElectronCRBDT,HNL_LeptonCore::ElectronCR3BDT,
-						       HNL_LeptonCore::ElectronMuonCR1,HNL_LeptonCore::ElectronMuonCR2,HNL_LeptonCore::ElectronMuonCR3,HNL_LeptonCore::ElectronMuonCRBDT,HNL_LeptonCore::ElectronMuonCR3BDT,
-						       HNL_LeptonCore::MuonSR1,HNL_LeptonCore::MuonSR2,HNL_LeptonCore::MuonSR3,HNL_LeptonCore::MuonSRBDT,HNL_LeptonCore::MuonSR3BDT,
-                                                       HNL_LeptonCore::ElectronSR1,HNL_LeptonCore::ElectronSR2,HNL_LeptonCore::ElectronSR3,HNL_LeptonCore::ElectronSRBDT,HNL_LeptonCore::ElectronSR3BDT,
-                                                       HNL_LeptonCore::ElectronMuonSR1,HNL_LeptonCore::ElectronMuonSR2,HNL_LeptonCore::ElectronMuonSR3,HNL_LeptonCore::ElectronMuonSRBDT,HNL_LeptonCore::ElectronMuonSR3BDT,
-						       HNL_LeptonCore::MuonCR,HNL_LeptonCore::ElectronCR,HNL_LeptonCore::ElectronMuonCR,
-						       HNL_LeptonCore::MuonSR,HNL_LeptonCore::ElectronSR,HNL_LeptonCore::ElectronMuonSR};
-  
-  if(std::find(SingleBinned.begin(), SingleBinned.end(), sr) != SingleBinned.end())  FillCutflowDef(hist_path,   histname+"_SingleBin", event_weight,{"SingleBin"}, "SingleBin");
+  //FillCutflowDef(hist_path,   histname+"_unweighted", 1,lables, label);
 
 }
 
