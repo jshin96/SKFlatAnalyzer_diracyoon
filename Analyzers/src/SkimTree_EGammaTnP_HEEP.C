@@ -207,7 +207,7 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
 
       int nProbe=0;     
       int nProbe_HighestPt(0);
-      double pt_probe_highest = 0.;
+      double pt_probe_highest = -1.;
 
       for(Electron& tag:electrons){
 	if(!IsTag(tag)) continue;
@@ -218,11 +218,12 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
 	  if(!IsGoodTagProbe(tag,probe)) continue;
 	  if(probe.Pt() > pt_probe_highest) {
 	    pt_probe_highest = probe.Pt();
-	    nProbe_HighestPt=nProbe;
+	    nProbe_HighestPt = nProbe;
 	  }
 	}
       }
-      matched_pair_electrons.push_back(electrons[nProbe_HighestPt]);
+      if(nProbe_HighestPt< 0) return;
+      matched_pair_electrons.push_back(electrons[nProbe_HighestPt-1]);
     }
     else if(nTags>1){
       
@@ -233,6 +234,7 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
 	  if(&tag==&probe) continue;
           if(!IsGoodTagProbe(tag,probe)) continue;
 
+	  //// If matched probe is also tag then end search 
 	  if(IsTag(probe)) {
 	    matched_pair_electrons.push_back(tag);
 	    matched_pair_electrons.push_back(probe);
