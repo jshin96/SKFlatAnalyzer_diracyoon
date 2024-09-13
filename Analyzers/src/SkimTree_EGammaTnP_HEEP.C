@@ -191,23 +191,32 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
     }
     L1ThresholdHLTEle23Ele12CaloIdLTrackIdLIsoVL=GetL1Threshold();
 
-    /// Check number of tags to help sort pairs
-    int nTags(0);
-    for(Electron& tag:electrons){
-      if(IsTag(tag)) nTags++;
-    }
+    
 
+    /// Check number of tags to help sort pairs
+    int nTagPair(0);
+    for(Electron& tag:electrons){
+      if(!IsTag(tag)) continue;
+      bool HasPair=false;
+      for(Electron& probe:electrons){
+	if(&tag==&probe) continue;
+	if(!IsGoodTagProbe(tag,probe)) continue;
+	HasPair=true;
+      }
+      if(HasPair) nTagPair++;
+    }
+    
     /// Fill matched_pair_electrons with T&P pairs
     vector<Electron> matched_pair_electrons;
     
     /// if nTags == 1 then use High Pt probe 
 
-    if(nTags==0) return;
-    else if(nTags==1){
+    if(nTagPair==0) return;
+    else if(nTagPair==1){
 
       int nProbe=0;     
-      int nProbe_HighestPt(0);
-      double pt_probe_highest = -1.;
+      int nProbe_HighestPt(-1);
+      double pt_probe_highest = 0;
 
       for(Electron& tag:electrons){
 	if(!IsTag(tag)) continue;
@@ -222,10 +231,10 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
 	  }
 	}
       }
-      if(nProbe_HighestPt< 0) return;
+      if(nProbe_HighestPt< 0) return; /// if no probe found passing pair req return
       matched_pair_electrons.push_back(electrons[nProbe_HighestPt-1]);
     }
-    else if(nTags>1){
+    else if(nTagPair>1){
       
       //// Take leading TT pair and use in T&P
       for(Electron& tag:electrons){
@@ -243,7 +252,7 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
 	}
       }
     }
-    
+  
     
     for(Electron& tag:matched_pair_electrons){
       
