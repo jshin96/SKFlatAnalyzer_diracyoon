@@ -121,9 +121,11 @@ bool Muon::PassID(TString ID) const {
   double MVACut = -1;
   TString Year = this->sRun_Year();
   TString Era  = this->Run_Era();
-  if(Year = "2016")  MVACut= mu_mva_cut_fake_2016;
-  if(Year = "2017")  MVACut= mu_mva_cut_fake_2017;
-  if(Year = "2018")  MVACut= mu_mva_cut_fake_2018;
+  if(Year == "2016")  MVACut= mu_mva_cut_fake_2016;
+  if(Year == "2017")  MVACut= mu_mva_cut_fake_2017;
+  if(Year == "2018")  MVACut= mu_mva_cut_fake_2018;
+
+  //  cout << "Year = " << Year << " Era = " << Era << " MVACut = " << MVACut << endl;
 
   ////////////// BASIC IDS
 
@@ -344,8 +346,8 @@ bool Muon::PassID(TString ID) const {
   }
 
     
-  if(ID == "HNL_ULID")    return (PassID("MVALooseTrgSafe") && (MVA() >  MVACut) && (fabs(IP3D()/IP3Derr()) < 7) );
-  if(ID == "HNL_ULID_"+Year)    return (PassID("MVALooseTrgSafe") && (MVA() >  MVACut) && (fabs(IP3D()/IP3Derr()) < 7) );
+  if(ID == "HNL_ULID")        return (PassID("MVALooseTrgSafe") && (MVA() >  MVACut) && (fabs(IP3D()/IP3Derr()) < 7) );
+  if(ID == "HNL_ULID_"+Year)  return (PassID("MVALooseTrgSafe") && (MVA() >  MVACut) && (fabs(IP3D()/IP3Derr()) < 7) );
 
   //// ISDF functions to check several WP for each MVA                                                                                                                                                                                                                                                                                                     
   if(ID.Contains("HNL_ULID_FAKE")) {

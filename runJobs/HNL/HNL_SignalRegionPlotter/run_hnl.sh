@@ -63,7 +63,7 @@ fi
 
 if [[ $1 == "FAKE" ]]; then
 
-    declare  -a era_list=("2017")
+    declare  -a era_list=("2016postVFP")
     for i in "${era_list[@]}"
     do
 	SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_MuMu.txt      -n 100  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT  --userflags RunFake   &
