@@ -20,8 +20,8 @@ void HNL_LeptonCore::GetSetup_HNLID(AnalyzerParameter& param_default ){
   param_default.FakeRateMethod    = "Standard";
   param_default.FakeRateParam     = "PtParton";
 
-  param_default.Muon_FR_ID        = "HNL_ULID_FO_"+GetEraShort();
-  param_default.Electron_FR_ID    = "HNL_ULID_FO_"+GetEraShort();
+  param_default.Muon_FR_ID        = "HNL_ULID_FO";
+  param_default.Electron_FR_ID    = "HNL_ULID_FO";
 
   TString JFRJetPt = "_AJ40";
   TString MuFRBin =  "";

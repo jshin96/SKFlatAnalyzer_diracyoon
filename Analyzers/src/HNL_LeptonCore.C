@@ -28,6 +28,9 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
   RunSyst = HasFlag("RunSyst");
   HEM1516 = HasFlag("HEM1516");
 
+  /// clear map
+  map_bdt_booked.clear();
+
   std::vector<JetTagging::Parameters> jtps;
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Loose, JetTagging::incl, JetTagging::mujets));
   jtps.push_back( JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets));
@@ -289,13 +292,11 @@ vector<AnalyzerParameter::Syst> HNL_LeptonCore::GetSystList(TString SystType){
 
   vector<AnalyzerParameter::Syst> SystList = {};
 
-  if(SystType == "Initial"){
+  if(SystType == "Initial" || SystType == ""){
     SystList.push_back(AnalyzerParameter::JetResUp);
     SystList.push_back(AnalyzerParameter::JetResDown);
     SystList.push_back(AnalyzerParameter::PUUp);
     SystList.push_back(AnalyzerParameter::PUDown);
-    //SystList.push_back(AnalyzerParameter::FRUp);
-    //SystList.push_back(AnalyzerParameter::FRDown);
     SystList.push_back(AnalyzerParameter::BTagSFHTagUp);
     SystList.push_back(AnalyzerParameter::BTagSFHTagDown);  
     SystList.push_back(AnalyzerParameter::BTagSFLTagUp);
@@ -492,16 +493,16 @@ bool  HNL_LeptonCore::UpdataParamBySyst(TString JobID, AnalyzerParameter& paramE
 
   //// Setup FR ID
   if(paramEv.syst_ == AnalyzerParameter::FRLooseIDDJUp){
-    paramEv.Muon_FR_ID        = "HNL_ULID_FOUp_"+GetEraShort();
-    paramEv.Electron_FR_ID    = "HNL_ULID_FOUp_"+GetEraShort();
+    paramEv.Muon_FR_ID        = "HNL_ULID_FOUp";
+    paramEv.Electron_FR_ID    = "HNL_ULID_FOUp";
   }
   else if(paramEv.syst_ == AnalyzerParameter::FRLooseIDDJDown){
-    paramEv.Muon_FR_ID        = "HNL_ULID_FODown_"+GetEraShort();
-    paramEv.Electron_FR_ID    = "HNL_ULID_FODown_"+GetEraShort();
+    paramEv.Muon_FR_ID        = "HNL_ULID_FODown";
+    paramEv.Electron_FR_ID    = "HNL_ULID_FODown";
   }
   else{
-    paramEv.Muon_FR_ID        = "HNL_ULID_FO_"+GetEraShort();
-    paramEv.Electron_FR_ID    = "HNL_ULID_FO_"+GetEraShort();
+    paramEv.Muon_FR_ID        = "HNL_ULID_FO";
+    paramEv.Electron_FR_ID    = "HNL_ULID_FO";
   }
 
   TString MuFRBin = (paramEv.syst_ ==AnalyzerParameter::FRAltBinning) ? "_Binv2" : "";

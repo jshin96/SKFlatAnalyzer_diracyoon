@@ -3,7 +3,29 @@
 void HNL_ControlRegion_Plotter::initializeAnalyzer(){
 
   HNL_LeptonCore::initializeAnalyzer();
-  SetupEventMVAReader("V2");
+
+
+  bool run_ee_bdt=false;
+  bool run_mm_bdt=false;
+  bool run_em_bdt=false;
+
+  if(HasFlag("EE") || HasFlag("MuMu") || HasFlag("EMu")){
+    run_ee_bdt=HasFlag("EE");
+    run_mm_bdt=HasFlag("MuMu");
+    run_em_bdt=HasFlag("EMu");
+    SetupEventMVAReader("V2",run_ee_bdt,run_mm_bdt,run_em_bdt);
+  }
+  else SetupEventMVAReader("V2");
+
+  RunEE   = HasFlag("EE");
+  RunMuMu = HasFlag("MuMu");
+  RunEMu  = HasFlag("EMu");
+  RunSyst = HasFlag("RunSyst");
+  RunFullSyst = HasFlag("RunFullSyst");
+  RunTopID = HasFlag("RunHNTop");
+  RunPOGID = HasFlag("RunPOG");
+  RunHighPtID = HasFlag("RunHighPt");
+  RunPekingID = HasFlag("RunPeking");
 
   nLog = 100000;
 }
@@ -14,15 +36,19 @@ void HNL_ControlRegion_Plotter::executeEvent(){
   if(!(_jentry%10000)) run_Debug=true;
   else run_Debug=false;
 
-  ///// LIST IDs to run
-  vector<TString> LepIDs = {"HNL_ULID","HNTightV2"};//,"TopHN", "DefaultPOGTight"};
-  if(strcmp(std::getenv("USER"),"jalmond")==0) LepIDs = {"HNL_ULID","HNTightV2" };//, "POGTight"};
-  if(RunFakeTF) LepIDs = {"HNL_ULID"};
+  vector<TString> LepIDs = {"HNL_ULID","HNTightV2"};
+  if(RunTopID) LepIDs = {"TopHN"};
+  if(RunPOGID) LepIDs = {"POGTight"};
+  if(RunHighPtID) LepIDs = {"HighPt"};
+  if(RunPekingID) LepIDs = {"Peking"};
+  //  if(strcmp(std::getenv("USER"),"jalmond")==0) LepIDs = {"HNL_ULID","POGTight","TopHN","HNTightV2","MVAPOG"};//,"HNTightV2","POGTight","TopHN","HighPt"};                                
 
-  //// List Channels to run
-  vector<HNL_LeptonCore::Channel> ChannelsToRun = {MuMu,EE,EMu };
-  
-  
+  vector<HNL_LeptonCore::Channel> ChannelsToRun = {};
+  if(RunEE)   ChannelsToRun.push_back(EE);
+  if(RunMuMu) ChannelsToRun.push_back(MuMu);
+  if(RunEMu)  ChannelsToRun.push_back(EMu);
+  if(ChannelsToRun.size() == 0)ChannelsToRun = {EE,MuMu,EMu};
+
   ///// Run command 
 
   vector<TString> CRToRun;
@@ -38,7 +64,21 @@ void HNL_ControlRegion_Plotter::executeEvent(){
       AnalyzerParameter param_signal = HNL_LeptonCore::InitialiseHNLParameter(id,channel);
       if(channel == EMu) param_signal.CFMethod   = "MC";
 
-      for(auto iCR : CRToRun) RunControlRegions(param_signal , {iCR} );
+      for(auto iCR : CRToRun) {
+	RunControlRegions(param_signal , {iCR} );
+
+	if(RunSyst || RunFullSyst){
+	  TString param_name = param_signal.Name;
+	  vector<AnalyzerParameter::Syst> SystList = GetSystList("All");
+	  if(RunSyst){
+	    SystList = {}; /// Set Individual systs
+	  }
+	  for(auto isyst : SystList){
+	    bool runJob = UpdataParamBySyst(id,param_signal,AnalyzerParameter::Syst(isyst),param_name);
+	    if(runJob)         RunControlRegions(param_signal , {iCR} );
+	  }
+	}
+      }
     }
   }
   return;

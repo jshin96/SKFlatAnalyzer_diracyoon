@@ -14,44 +14,6 @@ void HNL_LeptonCore::SetupEventMVAReader(TString version, bool ee, bool mm, bool
 
   if(mm){
 
-    /*MVAReaderMM->AddVariable("Nvbfj", &ev_bdt_Nvbfj);
-    MVAReaderMM->AddVariable("Ptl1", &ev_bdt_Ptl1);
-    MVAReaderMM->AddVariable("Ptl2", &ev_bdt_Ptl2);
-    MVAReaderMM->AddVariable("Ptj1", &ev_bdt_Ptj1);
-    MVAReaderMM->AddVariable("Ptj2", &ev_bdt_Ptj2);
-    MVAReaderMM->AddVariable("MET2ST", &ev_bdt_MET2ST);
-    MVAReaderMM->AddVariable("HTLT1", &ev_bdt_HTLT1);
-    MVAReaderMM->AddVariable("HTLT2", &ev_bdt_HTLT2);
-    MVAReaderMM->AddVariable("Etal1", &ev_bdt_Etal1);
-    MVAReaderMM->AddVariable("Etal2", &ev_bdt_Etal2);
-    MVAReaderMM->AddVariable("PtRatioAJl1", &ev_bdt_PtRatioAJl1);
-    MVAReaderMM->AddVariable("PtRatioAJl2", &ev_bdt_PtRatioAJl2);
-    MVAReaderMM->AddVariable("NEMFracAJl1", &ev_bdt_NEMFracAJl1);
-    MVAReaderMM->AddVariable("NEMFracAJl2", &ev_bdt_NEMFracAJl2);
-    MVAReaderMM->AddVariable("CHFracAJl1", &ev_bdt_CHFracAJl1);
-    MVAReaderMM->AddVariable("CHFracAJl2", &ev_bdt_CHFracAJl2);
-    MVAReaderMM->AddVariable("NHFracAJl1", &ev_bdt_NHFracAJl1);
-    MVAReaderMM->AddVariable("NHFracAJl2", &ev_bdt_NHFracAJl2);
-    MVAReaderMM->AddVariable("JetDiscAJl1", &ev_bdt_JetDiscAJl1);
-    MVAReaderMM->AddVariable("JetDiscAJl2", &ev_bdt_JetDiscAJl2);
-    MVAReaderMM->AddVariable("dRll", &ev_bdt_dRll);
-    MVAReaderMM->AddVariable("dRlj11", &ev_bdt_dRlj11);
-    MVAReaderMM->AddVariable("dRlj21", &ev_bdt_dRlj21);
-    MVAReaderMM->AddVariable("MSSSF", &ev_bdt_MSSSF);
-    MVAReaderMM->AddVariable("Mlj11", &ev_bdt_Mlj11);
-    MVAReaderMM->AddVariable("Mlj21", &ev_bdt_Mlj21);
-    MVAReaderMM->AddVariable("Mlj22", &ev_bdt_Mlj22);
-    MVAReaderMM->AddVariable("MTvl1", &ev_bdt_MTvl1);
-    MVAReaderMM->AddVariable("MTvl2", &ev_bdt_MTvl2);
-    MVAReaderMM->AddVariable("Mllj1", &ev_bdt_Mllj1);
-    MVAReaderMM->AddVariable("dRWjj", &ev_bdt_dRWjj);
-    MVAReaderMM->AddVariable("M_W2_jj", &ev_bdt_M_W2_jj);
-    MVAReaderMM->AddVariable("M_N2_l2jj", &ev_bdt_M_N2_l2jj);
-    MVAReaderMM->AddVariable("Nb", &ev_bdt_Nb);
-    MVAReaderMM->AddVariable("MuFracAJl1", &ev_bdt_MuFracAJl1);
-    MVAReaderMM->AddVariable("M_N1_l1jj", &ev_bdt_M_N1_l1jj);
-    MVAReaderMM->AddSpectator("w_tot", &w_tot);*/
-
     MVAReaderMM->AddVariable("Nvbfj", &ev_bdt_Nvbfj);
     MVAReaderMM->AddVariable("Nb", &ev_bdt_Nb);
     MVAReaderMM->AddVariable("Ptl1", &ev_bdt_Ptl1);
@@ -168,44 +130,6 @@ void HNL_LeptonCore::SetupEventMVAReader(TString version, bool ee, bool mm, bool
 
   if(ee){
 
-    /*MVAReaderEE->AddVariable("Nvbfj", &ev_bdt_Nvbfj);
-    MVAReaderEE->AddVariable("Ptl1", &ev_bdt_Ptl1);
-    MVAReaderEE->AddVariable("Ptl2", &ev_bdt_Ptl2);
-    MVAReaderEE->AddVariable("Ptj1", &ev_bdt_Ptj1);
-    MVAReaderEE->AddVariable("Ptj2", &ev_bdt_Ptj2);
-    MVAReaderEE->AddVariable("MET2ST", &ev_bdt_MET2ST);
-    MVAReaderEE->AddVariable("HTLT1", &ev_bdt_HTLT1);
-    MVAReaderEE->AddVariable("HTLT2", &ev_bdt_HTLT2);
-    MVAReaderEE->AddVariable("Etal1", &ev_bdt_Etal1);
-    MVAReaderEE->AddVariable("Etal2", &ev_bdt_Etal2);
-    MVAReaderEE->AddVariable("PtRatioAJl1", &ev_bdt_PtRatioAJl1);
-    MVAReaderEE->AddVariable("PtRatioAJl2", &ev_bdt_PtRatioAJl2);
-    MVAReaderEE->AddVariable("NEMFracAJl1", &ev_bdt_NEMFracAJl1);
-    MVAReaderEE->AddVariable("NEMFracAJl2", &ev_bdt_NEMFracAJl2);
-    MVAReaderEE->AddVariable("CHFracAJl1", &ev_bdt_CHFracAJl1);
-    MVAReaderEE->AddVariable("CHFracAJl2", &ev_bdt_CHFracAJl2);
-    MVAReaderEE->AddVariable("NHFracAJl1", &ev_bdt_NHFracAJl1);
-    MVAReaderEE->AddVariable("NHFracAJl2", &ev_bdt_NHFracAJl2);
-    MVAReaderEE->AddVariable("JetDiscAJl1", &ev_bdt_JetDiscAJl1);
-    MVAReaderEE->AddVariable("JetDiscAJl2", &ev_bdt_JetDiscAJl2);
-    MVAReaderEE->AddVariable("dRll", &ev_bdt_dRll);
-    MVAReaderEE->AddVariable("dRlj11", &ev_bdt_dRlj11);
-    MVAReaderEE->AddVariable("dRlj21", &ev_bdt_dRlj21);
-    MVAReaderEE->AddVariable("MSSSF", &ev_bdt_MSSSF);
-    MVAReaderEE->AddVariable("Mlj11", &ev_bdt_Mlj11);
-    MVAReaderEE->AddVariable("Mlj21", &ev_bdt_Mlj21);
-    MVAReaderEE->AddVariable("Mlj22", &ev_bdt_Mlj22);
-    MVAReaderEE->AddVariable("MTvl1", &ev_bdt_MTvl1);
-    MVAReaderEE->AddVariable("MTvl2", &ev_bdt_MTvl2);
-    MVAReaderEE->AddVariable("Mllj1", &ev_bdt_Mllj1);
-    MVAReaderEE->AddVariable("dRWjj", &ev_bdt_dRWjj);
-    MVAReaderEE->AddVariable("M_W2_jj", &ev_bdt_M_W2_jj);
-    MVAReaderEE->AddVariable("M_N2_l2jj", &ev_bdt_M_N2_l2jj);
-    MVAReaderEE->AddVariable("dRlj12", &ev_bdt_dRlj12);
-    MVAReaderEE->AddVariable("dRlj22", &ev_bdt_dRlj22);
-    MVAReaderEE->AddVariable("Mllj2", &ev_bdt_Mllj2);
-    MVAReaderEE->AddSpectator("w_tot", &w_tot);*/
-
     MVAReaderEE->AddVariable("Nvbfj", &ev_bdt_Nvbfj);
     MVAReaderEE->AddVariable("Nb", &ev_bdt_Nb);
     MVAReaderEE->AddVariable("Ptl1", &ev_bdt_Ptl1);
@@ -321,44 +245,6 @@ void HNL_LeptonCore::SetupEventMVAReader(TString version, bool ee, bool mm, bool
 
 
   if(emu){
-
-    /*MVAReaderEM->AddVariable("Nvbfj", &ev_bdt_Nvbfj);
-    MVAReaderEM->AddVariable("Ptl1", &ev_bdt_Ptl1);
-    MVAReaderEM->AddVariable("Ptl2", &ev_bdt_Ptl2);
-    MVAReaderEM->AddVariable("Ptj1", &ev_bdt_Ptj1);
-    MVAReaderEM->AddVariable("Ptj2", &ev_bdt_Ptj2);
-    MVAReaderEM->AddVariable("MET2ST", &ev_bdt_MET2ST);
-    MVAReaderEM->AddVariable("HTLT1", &ev_bdt_HTLT1);
-    MVAReaderEM->AddVariable("HTLT2", &ev_bdt_HTLT2);
-    MVAReaderEM->AddVariable("Etal1", &ev_bdt_Etal1);
-    MVAReaderEM->AddVariable("Etal2", &ev_bdt_Etal2);
-    MVAReaderEM->AddVariable("PtRatioAJl1", &ev_bdt_PtRatioAJl1);
-    MVAReaderEM->AddVariable("PtRatioAJl2", &ev_bdt_PtRatioAJl2);
-    MVAReaderEM->AddVariable("NEMFracAJl1", &ev_bdt_NEMFracAJl1);
-    MVAReaderEM->AddVariable("NEMFracAJl2", &ev_bdt_NEMFracAJl2);
-    MVAReaderEM->AddVariable("CHFracAJl1", &ev_bdt_CHFracAJl1);
-    MVAReaderEM->AddVariable("CHFracAJl2", &ev_bdt_CHFracAJl2);
-    MVAReaderEM->AddVariable("NHFracAJl1", &ev_bdt_NHFracAJl1);
-    MVAReaderEM->AddVariable("NHFracAJl2", &ev_bdt_NHFracAJl2);
-    MVAReaderEM->AddVariable("JetDiscAJl1", &ev_bdt_JetDiscAJl1);
-    MVAReaderEM->AddVariable("JetDiscAJl2", &ev_bdt_JetDiscAJl2);
-    MVAReaderEM->AddVariable("dRll", &ev_bdt_dRll);
-    MVAReaderEM->AddVariable("dRlj11", &ev_bdt_dRlj11);
-    MVAReaderEM->AddVariable("dRlj21", &ev_bdt_dRlj21);
-    MVAReaderEM->AddVariable("MSSSF", &ev_bdt_MSSSF);
-    MVAReaderEM->AddVariable("Mlj11", &ev_bdt_Mlj11);
-    MVAReaderEM->AddVariable("Mlj21", &ev_bdt_Mlj21);
-    MVAReaderEM->AddVariable("Mlj22", &ev_bdt_Mlj22);
-    MVAReaderEM->AddVariable("MTvl1", &ev_bdt_MTvl1);
-    MVAReaderEM->AddVariable("MTvl2", &ev_bdt_MTvl2);
-    MVAReaderEM->AddVariable("Mllj1", &ev_bdt_Mllj1);
-    MVAReaderEM->AddVariable("dRWjj", &ev_bdt_dRWjj);
-    MVAReaderEM->AddVariable("M_W2_jj", &ev_bdt_M_W2_jj);
-    MVAReaderEM->AddVariable("M_N2_l2jj", &ev_bdt_M_N2_l2jj);
-    MVAReaderEM->AddVariable("Nb", &ev_bdt_Nb);
-    MVAReaderEM->AddVariable("dRlj12", &ev_bdt_dRlj12);
-    MVAReaderEM->AddVariable("M_N1_l1jj", &ev_bdt_M_N1_l1jj);
-    MVAReaderEM->AddSpectator("w_tot", &w_tot);*/
 
     MVAReaderEM->AddVariable("Nvbfj", &ev_bdt_Nvbfj);
     MVAReaderEM->AddVariable("Nb", &ev_bdt_Nb);
@@ -573,11 +459,15 @@ void HNL_LeptonCore::SetupEventMVAReader(TString version, bool ee, bool mm, bool
     TString MVATagStrMM        = "BDT_MuMu_M"+MNStrList.at(im)+"_Incl_NTrees"+NTreeMM+"_NCuts"+NCutMM+"_MaxDepth3";
     TString MVATagStrMMFake    = "BDT_MuMu_M"+MNStrList.at(im)+"_Fake_NTrees850_NCuts200_MaxDepth3";
     TString MVATagStrMMNonFake = "BDT_MuMu_M"+MNStrList.at(im)+"_NonFake_NTrees850_NCuts200_MaxDepth3";
-
+    
     if(mm){
       MVAReaderMM->BookMVA(MVATagStrMM, AnalyzerPath+MVAPath+FileNameMM);
       MVAReaderMMFake->BookMVA(MVATagStrMMFake, AnalyzerPath+MVAPathV1+FileNameMMFake);
       MVAReaderMMNonFake->BookMVA(MVATagStrMMNonFake, AnalyzerPath+MVAPathV1+FileNameMMNonFake);
+      map_bdt_booked["Incl_MuMu_M"+MNStrList.at(im)] = MVATagStrMM;
+      map_bdt_booked["Fake_MuMu_M"+MNStrList.at(im)] = MVATagStrMMFake;
+      map_bdt_booked["NonFake_MuMu_M"+MNStrList.at(im)] = MVATagStrMMNonFake;
+
     }
 
     TString FileNameEE        = "output_DY_EE_M"+MNStrList.at(im)+"_Incl_Run2_NTrees"+NTreeEE+"_NCuts"+NCutEE+"_MaxDepth3_BDT.weights.xml";
@@ -587,11 +477,14 @@ void HNL_LeptonCore::SetupEventMVAReader(TString version, bool ee, bool mm, bool
     TString MVATagStrEE        = "BDT_EE_M"+MNStrList.at(im)+"_Incl_NTrees"+NTreeEE+"_NCuts"+NCutEE+"_MaxDepth3";
     TString MVATagStrEEFake    = "BDT_EE_M"+MNStrList.at(im)+"_Fake_NTrees850_NCuts200_MaxDepth3";
     TString MVATagStrEENonFake = "BDT_EE_M"+MNStrList.at(im)+"_NonFake_NTrees850_NCuts200_MaxDepth3";
-
+    
     if(ee){
       MVAReaderEE->BookMVA(MVATagStrEE, AnalyzerPath+MVAPath+FileNameEE);
       MVAReaderEEFake->BookMVA(MVATagStrEEFake, AnalyzerPath+MVAPathV1+FileNameEEFake);
       MVAReaderEENonFake->BookMVA(MVATagStrEENonFake, AnalyzerPath+MVAPathV1+FileNameEENonFake);
+      map_bdt_booked["Incl_EE_M"+MNStrList.at(im)] = MVATagStrEE;
+      map_bdt_booked["Fake_EE_M"+MNStrList.at(im)] = MVATagStrEEFake;
+      map_bdt_booked["NonFake_EE_M"+MNStrList.at(im)] = MVATagStrEENonFake;
     }
 
     TString FileNameEM        = "output_DY_EMu_M"+MNStrList.at(im)+"_Incl_Run2_NTrees"+NTreeEM+"_NCuts"+NCutEM+"_MaxDepth3_BDT.weights.xml";
@@ -606,8 +499,11 @@ void HNL_LeptonCore::SetupEventMVAReader(TString version, bool ee, bool mm, bool
       MVAReaderEM->BookMVA(MVATagStrEM, AnalyzerPath+MVAPath+FileNameEM);
       MVAReaderEMFake->BookMVA(MVATagStrEMFake, AnalyzerPath+MVAPathV1+FileNameEMFake);
       MVAReaderEMNonFake->BookMVA(MVATagStrEMNonFake, AnalyzerPath+MVAPathV1+FileNameEMNonFake);
-    }
+      map_bdt_booked["Incl_EMu_M"+MNStrList.at(im)] = MVATagStrEM;
+      map_bdt_booked["Fake_EMu_M"+MNStrList.at(im)] = MVATagStrEMFake;
+      map_bdt_booked["NonFake_EMu_M"+MNStrList.at(im)] = MVATagStrEMNonFake;
 
+    }
   }
   return;
 
@@ -860,12 +756,6 @@ void HNL_LeptonCore::SetupEventBDTVariables(std::vector<Lepton *> LepTColl,
 double HNL_LeptonCore::EvaluateEventMVA(TString mN, TString bkgType, TString NCut, TString NTree, HNL_LeptonCore::Channel channel,
                                         std::vector<Lepton *> LepTColl, Event ev, Particle METv, AnalyzerParameter param){
 
-  /*std::vector<FatJet> FatjetColl                  = GetHNLAK8Jets("BDT",param);
-  std::vector<Jet> All_JetColl                    = GetHNLJets("NoCut_Eta3",param);
-  std::vector<Jet> B_JetColl                      = GetHNLJets("BJetM",param);
-  std::vector<Jet> JetColl                        = GetHNLJets("Tight",param);
-  std::vector<Jet> VBF_JetColl                    = GetHNLJets("VBFTight",param);*/
-
   std::vector<FatJet> FatjetColl                  = GetHNLAK8Jets("HNL_PN",param);
   std::vector<Jet> All_JetColl                    = GetHNLJets("TightPUL",param);
   std::vector<Jet> B_JetColl                      = GetHNLJets("BJet",param);
@@ -876,54 +766,15 @@ double HNL_LeptonCore::EvaluateEventMVA(TString mN, TString bkgType, TString NCu
                          All_JetColl, JetColl,VBF_JetColl,B_JetColl,
                          ev,METv,param);
 
-  if(bkgType == "Incl"){
 
-    if(GetChannelString(channel) == "MuMu"){
-      if(mN == "85"){ NTree = "700", NCut = "150"; }
-      if(mN == "90"){ NTree = "700", NCut = "150"; }
-      if(mN == "95"){ NTree = "700", NCut = "150"; }
-      if(mN == "100"){ NTree = "700", NCut = "150"; }
-      if(mN == "125"){ NTree = "600", NCut = "100"; }
-      if(mN == "150"){ NTree = "850", NCut = "250"; }
-      if(mN == "200"){ NTree = "500", NCut = "300"; }
-      if(mN == "250"){ NTree = "850", NCut = "150"; }
-      if(mN == "300"){ NTree = "850", NCut = "200"; }
-      if(mN == "400"){ NTree = "850", NCut = "200"; }
-      if(mN == "500"){ NTree = "850", NCut = "200"; }
-    }
 
-    if(GetChannelString(channel) == "EE"){
-      if(mN == "85"){ NTree = "500", NCut = "250"; }
-      if(mN == "90"){ NTree = "500", NCut = "250"; }
-      if(mN == "95"){ NTree = "500", NCut = "250"; }
-      if(mN == "100"){ NTree = "500", NCut = "250"; }
-      if(mN == "125"){ NTree = "500", NCut = "200"; }
-      if(mN == "150"){ NTree = "600", NCut = "250"; }
-      if(mN == "200"){ NTree = "500", NCut = "150"; }
-      if(mN == "250"){ NTree = "700", NCut = "200"; }
-      if(mN == "300"){ NTree = "500", NCut = "200"; }
-      if(mN == "400"){ NTree = "500", NCut = "400"; }
-      if(mN == "500"){ NTree = "700", NCut = "200"; }
-    }
-
-    if(GetChannelString(channel) == "EMu"){
-      if(mN == "85"){ NTree = "1000", NCut = "100"; }
-      if(mN == "90"){ NTree = "1000", NCut = "100"; }
-      if(mN == "95"){ NTree = "1000", NCut = "100"; }
-      if(mN == "100"){ NTree = "1000", NCut = "100"; }
-      if(mN == "125"){ NTree = "600", NCut = "200"; }
-      if(mN == "150"){ NTree = "500", NCut = "100"; }
-      if(mN == "200"){ NTree = "1000", NCut = "100"; }
-      if(mN == "250"){ NTree = "850", NCut = "200"; }
-      if(mN == "300"){ NTree = "850", NCut = "200"; }
-      if(mN == "400"){ NTree = "850", NCut = "200"; }
-      if(mN == "500"){ NTree = "850", NCut = "200"; }
-    }
-
+  map<TString,TString>::iterator mapit = map_bdt_booked.find(bkgType+"_"+GetChannelString(channel)+"_M"+mN);
+  if(mapit == map_bdt_booked.end()) {
+    cout << "[EvaluateEventMVA] : Wrong configuration of map_bdt_booked " << bkgType+"_"+GetChannelString(channel)+"_M"+mN << " was not found as key...." << endl;
+    for(auto i : map_bdt_booked) cout << i.first << " : "  << i.second << endl;
+    exit(EXIT_FAILURE);
   }
-
-  //TString MVATagStr = "BDT_M"+mN+"_NCut"+NCut+"_NTree"+NTree+"_"+GetChannelString(channel);
-  TString MVATagStr = "BDT_"+GetChannelString(channel)+"_M"+mN+"_"+bkgType+"_NTrees"+NTree+"_NCuts"+NCut+"_MaxDepth3";
+  TString MVATagStr =  mapit->second;
   float MVAvalue = -99999.;
 
   if(bkgType == "Incl"){
