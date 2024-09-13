@@ -11,6 +11,9 @@ public:
   void executeEvent();
   void WriteHist();
 
+  bool IsTag(Electron el_tag);
+  bool IsGoodTagProbe(Electron el_tag, Electron el_probe);
+
   static map<int,vector<pair<int,double>>> map_L1Threshold;
   double GetL1Threshold();
 
