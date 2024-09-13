@@ -5,7 +5,19 @@ void HNL_SignalRegion_Plotter::initializeAnalyzer(){
   // All default settings like trigger/ PD/ BJet are decalred in HNL_LeptonCore::initializeAnalyzer to make them consistent for all HNL codes
 
   HNL_LeptonCore::initializeAnalyzer();
-  SetupEventMVAReader("V2");
+  
+  bool run_ee_bdt=false;
+  bool run_mm_bdt=false;
+  bool run_em_bdt=false;
+  
+  if(HasFlag("EE") || HasFlag("MuMu") || HasFlag("EMu")){
+    run_ee_bdt=HasFlag("EE");
+    run_mm_bdt=HasFlag("MuMu");
+    run_em_bdt=HasFlag("EMu");
+    SetupEventMVAReader("V2",run_ee_bdt,run_mm_bdt,run_em_bdt);
+  }
+  else SetupEventMVAReader("V2");
+
   nLog = 100000;
 
   RunEE   = HasFlag("EE");

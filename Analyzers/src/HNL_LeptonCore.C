@@ -493,16 +493,16 @@ bool  HNL_LeptonCore::UpdataParamBySyst(TString JobID, AnalyzerParameter& paramE
 
   //// Setup FR ID
   if(paramEv.syst_ == AnalyzerParameter::FRLooseIDDJUp){
-    paramEv.Muon_FR_ID        = "HNL_ULID_FOUp_"+GetEraShort();
-    paramEv.Electron_FR_ID    = "HNL_ULID_FOUp_"+GetEraShort();
+    paramEv.Muon_FR_ID        = "HNL_ULID_FOUp";
+    paramEv.Electron_FR_ID    = "HNL_ULID_FOUp";
   }
   else if(paramEv.syst_ == AnalyzerParameter::FRLooseIDDJDown){
-    paramEv.Muon_FR_ID        = "HNL_ULID_FODown_"+GetEraShort();
-    paramEv.Electron_FR_ID    = "HNL_ULID_FODown_"+GetEraShort();
+    paramEv.Muon_FR_ID        = "HNL_ULID_FODown";
+    paramEv.Electron_FR_ID    = "HNL_ULID_FODown";
   }
   else{
-    paramEv.Muon_FR_ID        = "HNL_ULID_FO_"+GetEraShort();
-    paramEv.Electron_FR_ID    = "HNL_ULID_FO_"+GetEraShort();
+    paramEv.Muon_FR_ID        = "HNL_ULID_FO";
+    paramEv.Electron_FR_ID    = "HNL_ULID_FO";
   }
 
   TString MuFRBin = (paramEv.syst_ ==AnalyzerParameter::FRAltBinning) ? "_Binv2" : "";

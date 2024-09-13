@@ -119,14 +119,11 @@ void Muon::SetSoftMVA(double MVA){
 bool Muon::PassID(TString ID) const {
 
   double MVACut = -1;
-  if(ID.Contains("2016")) MVACut= mu_mva_cut_fake_2016;
-  if(ID.Contains("2017")) MVACut= mu_mva_cut_fake_2017;
-  if(ID.Contains("2018")) MVACut= mu_mva_cut_fake_2018;
-
-  TString Era = "";
-  if(ID.Contains("2016")) Era="2016";
-  if(ID.Contains("2017")) Era="2017";
-  if(ID.Contains("2018")) Era="2018";
+  TString Year = this->sRun_Year();
+  TString Era  = this->Run_Era();
+  if(Year = "2016")  MVACut= mu_mva_cut_fake_2016;
+  if(Year = "2017")  MVACut= mu_mva_cut_fake_2017;
+  if(Year = "2018")  MVACut= mu_mva_cut_fake_2018;
 
   ////////////// BASIC IDS
 
@@ -271,23 +268,30 @@ bool Muon::PassID(TString ID) const {
   
   
   //// Optimised Loose IDs
-  if(ID == "HNL_ULID_FO_2016a")     return PassID("HNL_ULID_FO_v1_a_2016");
-  if(ID == "HNL_ULID_FO_2016b")     return PassID("HNL_ULID_FO_v2_a_2016");
-  if(ID == "HNL_ULID_FO_2017")      return PassID("HNL_ULID_FO_v2_a_2017");
-  if(ID == "HNL_ULID_FO_2018")      return PassID("HNL_ULID_FO_v3_a_2018");
-  
-  if(ID == "HNL_ULID_FOUp_2016a")     return PassID("HNL_ULID_FO_v1_a_2016");
-  if(ID == "HNL_ULID_FOUp_2016b")     return PassID("HNL_ULID_FO_v1_a_2016");
-  if(ID == "HNL_ULID_FOUp_2017")      return PassID("HNL_ULID_FO_v1_a_2017");
-  if(ID == "HNL_ULID_FOUp_2018")      return PassID("HNL_ULID_FO_v1_a_2018");
+  if(Era=="2016a"){
+    if(ID == "HNL_ULID_FO")       return PassID("HNL_ULID_FO_v1_a");
+    if(ID == "HNL_ULID_FOUp")     return PassID("HNL_ULID_FO_v1_a");
+    if(ID == "HNL_ULID_FODown")   return PassID("HNL_ULID_FO_v2_a");
+  }
+  if(Era=="2016b"){
+    if(ID == "HNL_ULID_FO")       return PassID("HNL_ULID_FO_v2_a");
+    if(ID == "HNL_ULID_FOUp")     return PassID("HNL_ULID_FO_v1_a");
+    if(ID == "HNL_ULID_FODown")   return PassID("HNL_ULID_FO_v3_a");
 
-  if(ID == "HNL_ULID_FODown_2016a")     return PassID("HNL_ULID_FO_v2_a_2016");
-  if(ID == "HNL_ULID_FODown_2016b")     return PassID("HNL_ULID_FO_v3_a_2016");
-  if(ID == "HNL_ULID_FODown_2017")      return PassID("HNL_ULID_FO_v3_a_2017");
-  if(ID == "HNL_ULID_FODown_2018")      return PassID("HNL_ULID_FO_v4_a_2018");
+  }
+  if(Era=="2017"){
+    if(ID == "HNL_ULID_FO")       return PassID("HNL_ULID_FO_v2_a");
+    if(ID == "HNL_ULID_FOUp")     return PassID("HNL_ULID_FO_v1_a");
+    if(ID == "HNL_ULID_FODown")   return PassID("HNL_ULID_FO_v3_a");
+  }
+  if(Era=="2018"){
+    if(ID == "HNL_ULID_FO")       return PassID("HNL_ULID_FO_v3_a");
+    if(ID == "HNL_ULID_FOUp")     return PassID("HNL_ULID_FO_v1_a");
+    if(ID == "HNL_ULID_FODown")   return PassID("HNL_ULID_FO_v4_a");
+  }
 
   ///// DeepJet Variations in Loose v0-9
-  if(ID == "HNL_ULID_FO_v0_"+Era){
+  if(ID == "HNL_ULID_FO_v0"){
     if(!PassID("HNL_ULID_FO")) return false;
     if(MVA() < MVACut) {
       if(this->HasCloseJet()){
@@ -340,13 +344,8 @@ bool Muon::PassID(TString ID) const {
   }
 
     
-  if(ID == "HNL_ULID_2016")    return (PassID("MVALooseTrgSafe") && (MVA() >  MVACut) && (fabs(IP3D()/IP3Derr()) < 7) );
-  if(ID == "HNL_ULID_2016a")   return (PassID("MVALooseTrgSafe") && (MVA() >  MVACut) && (fabs(IP3D()/IP3Derr()) < 7) );
-  if(ID == "HNL_ULID_2016b")   return (PassID("MVALooseTrgSafe") && (MVA() >  MVACut) && (fabs(IP3D()/IP3Derr()) < 7) );
-  if(ID == "HNL_ULID_2017")    return (PassID("MVALooseTrgSafe") && (MVA() >  MVACut) && (fabs(IP3D()/IP3Derr()) < 7) );
-  if(ID == "HNL_ULID_2018")    return (PassID("MVALooseTrgSafe") && (MVA() >  MVACut) && (fabs(IP3D()/IP3Derr()) < 7) );
-
-
+  if(ID == "HNL_ULID")    return (PassID("MVALooseTrgSafe") && (MVA() >  MVACut) && (fabs(IP3D()/IP3Derr()) < 7) );
+  if(ID == "HNL_ULID_"+Year)    return (PassID("MVALooseTrgSafe") && (MVA() >  MVACut) && (fabs(IP3D()/IP3Derr()) < 7) );
 
   //// ISDF functions to check several WP for each MVA                                                                                                                                                                                                                                                                                                     
   if(ID.Contains("HNL_ULID_FAKE")) {

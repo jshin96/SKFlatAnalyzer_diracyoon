@@ -275,7 +275,7 @@ int  Electron::PassIDTight(TString ID) const{
   //////////////////////////////////////////////////////////////////////////////////// 
 
   if(ID=="Peking"){
-    if( Run_Era()== 2016) {
+    if( Run_Year()== 2016) {
 
       if(! (passTightID()) ) return 0;
       if( IsBB()){
@@ -303,7 +303,7 @@ int  Electron::PassIDTight(TString ID) const{
     }
   }
   if(ID=="Peking_FO") {
-    if( Run_Era()== 2016) {
+    if( Run_Year()== 2016) {
       if(! (passLooseID()) ) return 0;
       if( IsBB()){
 	if( !(fabs(dXY()) < 0.05 && fabs(dZ())< 0.1)) return 0;
@@ -347,16 +347,16 @@ int  Electron::PassIDTight(TString ID) const{
   if(ID=="passTightID")         return BtoI(passTightID());
   //=== HEEP IDS                                                                                                                                                                                       
   if(ID=="passHEEPID_v1")           {
-    if(Run_Era() == 2018 ) return BtoI(passHEEP2018PromptHNL());
+    if(Run_Year() == 2018 ) return BtoI(passHEEP2018PromptHNL());
     else return BtoI(passHEEPIDHNL());
   }
   
   if(ID=="passHEEPID_v2"){
-    if(Run_Era() == 2018 ) return BtoI(passHEEP2018PromptHNL()     &&Pass_TriggerEmulationLoose()&&PassConversionVeto() && IsGsfCtfScPixChargeConsistent());
+    if(Run_Year() == 2018 ) return BtoI(passHEEP2018PromptHNL()     &&Pass_TriggerEmulationLoose()&&PassConversionVeto() && IsGsfCtfScPixChargeConsistent());
     else return BtoI(passHEEPIDHNL()&& Pass_TriggerEmulationLoose()&&PassConversionVeto() && IsGsfCtfScPixChargeConsistent());
   }
   if(ID=="passHEEPID_v3"){
-    if(Run_Era() == 2018 )  return BtoI(passHEEP2018PromptHNL()&& Pass_TriggerEmulationLoose()&&PassConversionVeto() && IsGsfCtfChargeConsistent());
+    if(Run_Year() == 2018 )  return BtoI(passHEEP2018PromptHNL()&& Pass_TriggerEmulationLoose()&&PassConversionVeto() && IsGsfCtfChargeConsistent());
     else   return BtoI(passHEEPIDHNL() && Pass_TriggerEmulationLoose()&&PassConversionVeto() && IsGsfCtfChargeConsistent());
   }
 

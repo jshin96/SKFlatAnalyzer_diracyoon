@@ -19,7 +19,8 @@ int  Electron::PassHNLTight(TString ID) const{
   ////////////////////////////////////////////////////////////////////////////////////                                                                                                                                
   ///  Era Scanned ID                                                                                                                                                                                                 
   ////////////////////////////////////////////////////////////////////////////////////                                                                                                                                
-  TString Year = this->sRun_Era();
+  TString Year = this->sRun_Year();
+  TString Era  = this->Run_Era();
 
   //// TC = Tight Charge                                                                                                                                                                                              
   //// *TC* ID are IDs before updating Charge cut to a MEDIUM charge cut to reduce CF at high pt                                                                                                                      
@@ -55,26 +56,26 @@ int  Electron::PassHNLTight(TString ID) const{
   // HNL_ULID_Defv2_FO_ is new default FO ID WIth medium charge cut                                                                                                                                                     
   if(ID == "HNL_ULID_Defv2_FO")   return BtoI(PassID("HNL_ULID_Conv")   && PassID("HNL_ULID_CF") &&  IsGsfCtfChargeConsistent());
   
-  /// FO = Fake Obj, is main obj in NP bkg estimate                                                                                                                                                                   
-  if(ID == "HNL_ULID_FO_2016a")     return BtoI(PassID("HNL_ULID_FO_v9_a"));
-  if(ID == "HNL_ULID_FO_2016b")     return BtoI(PassID("HNL_ULID_FO_v9_a"));
-  if(ID == "HNL_ULID_FO_2017")      return BtoI(PassID("HNL_ULID_FO_v9_a"));
-  if(ID == "HNL_ULID_FO_2018")      return BtoI(PassID("HNL_ULID_FO_v9_a"));
+  /// FO = Fake Obj, is main obj in NP bkg estimate                                                                                                                                                                
+  if(ID == "HNL_ULID_FO")     return BtoI(PassID("HNL_ULID_FO_v9_a"));
+  if(ID == "HNL_ULID_FODown") return BtoI(PassID("HNL_ULID_FO_v0"));
 
-  if(ID == "HNL_ULID_FOUp_2016a")     return BtoI(PassID("HNL_ULID_FO_v8_a"));
-  if(ID == "HNL_ULID_FOUp_2016b")     return BtoI(PassID("HNL_ULID_FO_v8_a"));
-  if(ID == "HNL_ULID_FOUp_2017")      return BtoI(PassID("HNL_ULID_FO_v8_a"));
-  if(ID == "HNL_ULID_FOUp_2018")      return BtoI(PassID("HNL_ULID_FO_v8_a"));
-
-  if(ID == "HNL_ULID_FODown_2016a")     return BtoI(PassID("HNL_ULID_FO_v0"));
-  if(ID == "HNL_ULID_FODown_2016b")     return BtoI(PassID("HNL_ULID_FO_v0"));
-  if(ID == "HNL_ULID_FODown_2017")      return BtoI(PassID("HNL_ULID_FO_v0"));
-  if(ID == "HNL_ULID_FODown_2018")      return BtoI(PassID("HNL_ULID_FO_v0"));
-
-  if(ID == "HNL_ULID_v1_FO_2016a")     return BtoI(PassID("HNL_ULID_v1_FO_v9_a"));
-  if(ID == "HNL_ULID_v1_FO_2016b")     return BtoI(PassID("HNL_ULID_v1_FO_v9_a"));
-  if(ID == "HNL_ULID_v1_FO_2017")      return BtoI(PassID("HNL_ULID_v1_FO_v9_a"));
-  if(ID == "HNL_ULID_v1_FO_2018")      return BtoI(PassID("HNL_ULID_v1_FO_v9_a"));
+  if(Era=="2016a"){
+    if(ID == "HNL_ULID_FOUp")   return BtoI(PassID("HNL_ULID_FO_v8_a"));
+    if(ID == "HNL_ULID_v1_FO")  return BtoI(PassID("HNL_ULID_v1_FO_v9_a"));
+  }
+  if(Era=="2016b"){
+    if(ID == "HNL_ULID_FOUp")   return BtoI(PassID("HNL_ULID_FO_v8_a"));
+    if(ID == "HNL_ULID_v1_FO")     return BtoI(PassID("HNL_ULID_v1_FO_v9_a"));
+  }
+  if(Era=="2017"){
+    if(ID == "HNL_ULID_FOUp")      return BtoI(PassID("HNL_ULID_FO_v8_a"));
+    if(ID == "HNL_ULID_v1_FO")      return BtoI(PassID("HNL_ULID_v1_FO_v9_a"));
+  }
+  if(Era=="2018"){
+    if(ID == "HNL_ULID_FOUp")      return BtoI(PassID("HNL_ULID_FO_v8_a"));
+    if(ID == "HNL_ULID_v1_FO")      return BtoI(PassID("HNL_ULID_v1_FO_v9_a"));
+  }
 
   //// Now List Fake DeepJet Scan IDs v1-9 a,b,c....                                                                                                                                                                  
   double CloseJet_PtratioCut = 0.4;
@@ -152,7 +153,7 @@ int  Electron::PassHNLTight(TString ID) const{
 
   ////  ID cuts is Cut1*CUt2*Cut3, for each era... Here we define and apply each cut                                                                                                                                  
   /// 2016                                                                                                                                                                                                            
-  if(Run_Era()==2016){
+  if(Run_Year()==2016){
     if(ID == "HNL_ULID_Conv" ) return BtoI(PassMVABaseLine() && Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,60, -0.7,0.) , GetPtSlopeCut(20,60,-0.7,0.) ,   "Conv_v5"));
     if(ID == "HNL_ULID_CF"   ) return BtoI(PassMVABaseLine() && Pass_MVA_BBEC("CF_EDv5",   el_mva_cut_cf_2016_B,   el_mva_cut_cf_2016_EC,     "CF_v5"));
     if(ID == "HNL_ULID_Fake" ) return BtoI(PassMVABaseLine() && Pass_MVA_BBEC("Fake_EDv5", el_mva_cut_fake_2016_B, el_mva_cut_fake_2016_EC,   "Fake_v5"));
@@ -167,7 +168,7 @@ int  Electron::PassHNLTight(TString ID) const{
 
   }
   /// 2017                                                                                                                                                                                     
-  else   if(Run_Era()==2017){
+  else   if(Run_Year()==2017){
 
     if(ID == "HNL_ULID_Conv" ) return BtoI(PassMVABaseLine() && Pass_MVA_BBEC("Conv_EDv5", GetPtSlopeCut(20,50, -0.4,0.) , GetPtSlopeCut(20,50,-0.4,0.2) ,   "Conv_v5"));
     if(ID == "HNL_ULID_CF"   ) return BtoI(PassMVABaseLine() && Pass_MVA_BBEC("CF_EDv5",   el_mva_cut_cf_2017_B,   el_mva_cut_cf_2017_EC,     "CF_v5"));
