@@ -130,9 +130,16 @@ bool SkimTree_EGammaTnP_HEEP::IsTag(Electron el_tag){
   if(el_tag.Pt() < 30) return false;
   if(fabs(el_tag.scEta()) >2.17) return false;
   
-  if(!el_tag.PassFilter("hltEGL1SingleEGOrFilter")) return false;
-  if(!el_tag.PassFilter("hltEle32L1DoubleEGWPTightGsfTrackIsoFilter")) return false;
-  
+  if(DataYear == 2016){
+    if(!el_tag.PassFilter("hltEle27erWPTightGsfTrackIsoFilter")) return false; 
+  }
+  if(DataYear == 2017){
+    if(!el_tag.PassFilter("hltEGL1SingleEGOrFilter")) return false;
+    if(!el_tag.PassFilter("hltEle32L1DoubleEGWPTightGsfTrackIsoFilter")) return false;
+  }
+  if(DataYear == 2018){
+    if(!el_tag.PassFilter("hltEle32WPTightGsfTrackIsoFilter")) return false;
+  }
   return true;
 }
 
@@ -147,13 +154,20 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
    
     
     AnalyzerParameter p = HNL_LeptonCore::InitialiseHNLParameter("Basic");
-
+    
+    if(DataYear == 2016){
+      if(! (ev.PassTrigger("HLT_Ele27_eta2p1_WPTight_Gsf_v")))return;
+    }
     if(DataYear == 2017){
       if(! (ev.PassTrigger("HLT_Ele32_WPTight_Gsf_L1DoubleEG_v"))) return;
     }
-    else{
-      if(! (ev.PassTrigger({"HLT_Ele27_WPTight_Gsf_v","HLT_Ele28_WPTight_Gsf_v","HLT_Ele32_WPTight_Gsf_L1DoubleEG_v","HLT_Ele32_WPTight_Gsf_v","HLT_Ele35_WPTight_Gsf_v"})) ) return;
+    if(DataYear == 2018){
+      if(! (ev.PassTrigger("HLT_Ele32_WPTight_Gsf_v"))) return;
     }
+    
+    //else{
+    //  if(! (ev.PassTrigger({"HLT_Ele27_WPTight_Gsf_v","HLT_Ele28_WPTight_Gsf_v","HLT_Ele32_WPTight_Gsf_L1DoubleEG_v","HLT_Ele32_WPTight_Gsf_v","HLT_Ele35_WPTight_Gsf_v"})) ) return;
+    // }
     
     if(!PassMETFilter()) return;
     
@@ -193,7 +207,7 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
 
     
 
-    /// Check number of tags to help sort pairs
+    /// Check number of tag + probe pairs to help sort pairs
     int nTagPair(0);
     for(Electron& tag:electrons){
       if(!IsTag(tag)) continue;
@@ -214,25 +228,22 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
     if(nTagPair==0) return;
     else if(nTagPair==1){
 
-      int nProbe=0;     
-      int nProbe_HighestPt(-1);
       double pt_probe_highest = 0;
-
       for(Electron& tag:electrons){
 	if(!IsTag(tag)) continue;
 	matched_pair_electrons.push_back(tag); /// Fill tag by default 
+
 	for(Electron& probe:electrons){
-	  nProbe++;
+
 	  if(&tag==&probe) continue;
 	  if(!IsGoodTagProbe(tag,probe)) continue;
 	  if(probe.Pt() > pt_probe_highest) {
 	    pt_probe_highest = probe.Pt();
-	    nProbe_HighestPt = nProbe;
+	    if(matched_pair_electrons.size() == 2)matched_pair_electrons.pop_back();
+	    matched_pair_electrons.push_back(probe);
 	  }
 	}
       }
-      if(nProbe_HighestPt< 0) return; /// if no probe found passing pair req return
-      matched_pair_electrons.push_back(electrons[nProbe_HighestPt-1]);
     }
     else if(nTagPair>1){
       
