@@ -249,16 +249,17 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
       
       //// Take leading TT pair and use in T&P
       for(Electron& tag:electrons){
+	if(matched_pair_electrons.size()==2) break;
+
         if(!IsTag(tag)) continue;
         for(Electron& probe:electrons){
 	  if(&tag==&probe) continue;
           if(!IsGoodTagProbe(tag,probe)) continue;
-
+	  
 	  //// If matched probe is also tag then end search 
 	  if(IsTag(probe)) {
 	    matched_pair_electrons.push_back(tag);
 	    matched_pair_electrons.push_back(probe);
-	    break;
 	  }
 	}
       }

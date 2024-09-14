@@ -15,8 +15,8 @@ if [[ $1 == "" ]]; then
     for i in "${era_list[@]}"
     do
 	
-	SKFlat.py -a $analyzer  -i DYJets_MG    -n 6000  --nmax 500           -e ${i}   --skim SkimTree_DileptonBDT &
-        SKFlat.py -a $analyzer  -i DYJets       -n 6000  --nmax 500           -e ${i}   --skim SkimTree_DileptonBDT &
+	#SKFlat.py -a $analyzer  -i DYJets_MG    -n 6000  --nmax 500           -e ${i}   --skim SkimTree_DileptonBDT &
+        #SKFlat.py -a $analyzer  -i DYJets       -n 6000  --nmax 500           -e ${i}   --skim SkimTree_DileptonBDT &
         SKFlat.py -a $analyzer  -l $datapath/${i}_SingleLepton.txt  -n 6000  --nmax 500   -e ${i}  --skim SkimTree_DileptonBDT &
 
     done
