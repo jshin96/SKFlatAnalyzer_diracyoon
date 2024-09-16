@@ -127,17 +127,20 @@ bool SkimTree_EGammaTnP_HEEP::IsGoodTagProbe(Electron el_tag, Electron el_probe)
 bool SkimTree_EGammaTnP_HEEP::IsTag(Electron el_tag){
   
   if(el_tag.etaRegion()==Electron::GAP) return false;
-  if(el_tag.Pt() < 30) return false;
-  if(fabs(el_tag.scEta()) >2.17) return false;
+  if(fabs(el_tag.scEta()) >2.1) return false;
+  if(!el_tag.passTightID()) return false;
   
   if(DataYear == 2016){
+    if(el_tag.Pt() < 30) return false;
     if(!el_tag.PassFilter("hltEle27erWPTightGsfTrackIsoFilter")) return false; 
   }
   if(DataYear == 2017){
+    if(el_tag.Pt() < 35) return false;
     if(!el_tag.PassFilter("hltEGL1SingleEGOrFilter")) return false;
     if(!el_tag.PassFilter("hltEle32L1DoubleEGWPTightGsfTrackIsoFilter")) return false;
   }
   if(DataYear == 2018){
+    if(el_tag.Pt() < 35) return false;
     if(!el_tag.PassFilter("hltEle32WPTightGsfTrackIsoFilter")) return false;
   }
   return true;
@@ -221,7 +224,7 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
     }
     
     /// Fill matched_pair_electrons with T&P pairs
-    vector<Electron> matched_pair_electrons;
+    vector<pair<Electron,Electron> > matched_pair_electrons;
     
     /// if nTags == 1 then use High Pt probe 
 
@@ -231,8 +234,7 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
       double pt_probe_highest = 0;
       for(Electron& tag:electrons){
 	if(!IsTag(tag)) continue;
-	matched_pair_electrons.push_back(tag); /// Fill tag by default 
-
+	///matched_pair_electrons.push_back(tag); /// Fill tag by default 
 	for(Electron& probe:electrons){
 
 	  if(&tag==&probe) continue;
@@ -240,36 +242,60 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
 	  if(probe.Pt() > pt_probe_highest) {
 	    pt_probe_highest = probe.Pt();
 	    if(matched_pair_electrons.size() == 2)matched_pair_electrons.pop_back();
-	    matched_pair_electrons.push_back(probe);
+	    matched_pair_electrons.push_back(make_pair(tag,probe));
 	  }
 	}
       }
     }
     else if(nTagPair>1){
       
-      //// Take leading TT pair and use in T&P
-      for(Electron& tag:electrons){
-	if(matched_pair_electrons.size()==2) break;
+      //// Since there are more than one pair with different tags  need to check first if one pair has two tags
 
+      bool TTPair=false;
+      //// check for TT pair
+      for(Electron& tag:electrons){
+	if(TTPair) continue; /// already found TT pair
         if(!IsTag(tag)) continue;
         for(Electron& probe:electrons){
-	  if(&tag==&probe) continue;
+          if(&tag==&probe) continue;
           if(!IsGoodTagProbe(tag,probe)) continue;
-	  
-	  //// If matched probe is also tag then end search 
 	  if(IsTag(probe)) {
-	    matched_pair_electrons.push_back(tag);
-	    matched_pair_electrons.push_back(probe);
+	    /// Fill Leading TT pair only
+	    matched_pair_electrons.push_back(make_pair(tag,probe));
+            matched_pair_electrons.push_back(make_pair(probe,tag));
+	    TTPair=true;
 	  }
 	}
       }
-    }
-  
-    
-    for(Electron& tag:matched_pair_electrons){
       
+      /// If no TT pair loop and fill pair for each tag using highest pt probe
+      if(!TTPair){
+	//// Take leading TT pair and use in T&P
+	for(Electron& tag:electrons){
+	  double pt_probe_highest_pt = 0;
+	  if(!IsTag(tag)) continue;
+	  Electron probe_HighPt;
+	  for(Electron& probe:electrons){
+	    if(&tag==&probe) continue;
+	    if(!IsGoodTagProbe(tag,probe)) continue;
+	    if(probe.Pt() > pt_probe_highest_pt) {
+	      pt_probe_highest_pt = probe.Pt();
+	      probe_HighPt = probe;
+	    }
+	  }// probe loop
+	  matched_pair_electrons.push_back(make_pair(tag,probe_HighPt));
+	} // tag loop
+      } // no TT pair
+    } // multi Tag pairs loop
+    
+    
+    for(auto t_p_pair : matched_pair_electrons){
+    
+      vector<Electron> vProbe = {t_p_pair.second};  // fill vector to keep structure of code same
+      Electron tag = t_p_pair.first;
       if(!IsTag(tag)) continue;
-      for(Electron& probe:matched_pair_electrons){
+
+      for(Electron& probe:vProbe){
 	
 	if(&tag==&probe) continue;
 	if(!IsGoodTagProbe(tag,probe)) continue;
@@ -324,7 +350,9 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
 	tag_passHltEle32WPTightGsf=tag.PassPath("HLT_Ele32_WPTight_Gsf_v");
 	tag_passHltEle32DoubleEGWPTightGsf=tag.PassPath("HLT_Ele32_WPTight_Gsf_L1DoubleEG_v");
 	tag_passHltEle35WPTightGsf=tag.PassPath("HLT_Ele35_WPTight_Gsf_v");
+
 	if(!(tag_passHltEle27WPTightGsf|tag_passHltEle28WPTightGsf|tag_passHltEle32WPTightGsf|tag_passHltEle32DoubleEGWPTightGsf|tag_passHltEle35WPTightGsf)) continue;
+
 	tag_passingCutBasedMedium94XV2=tag.passMediumID();
 	tag_passingCutBasedTight94XV2=tag.passTightID();
 	tag_passingHEEP = (DataYear == 2018)  ?  tag.passHEEP2018Prompt() : tag.passHEEPID();

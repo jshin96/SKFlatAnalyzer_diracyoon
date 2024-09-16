@@ -603,7 +603,7 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
     param.Apply_Weight_LumiNorm = false;
     return param;  }
 
-  if (s_setup_version=="SignalStudy"){
+  if (s_setup_version=="SignalStudy" || s_setup_version=="MCBkg"){
     param.FakeMethod = "MC";
     param.CFMethod   = "MC";
     param.ConvMethod = "MC";

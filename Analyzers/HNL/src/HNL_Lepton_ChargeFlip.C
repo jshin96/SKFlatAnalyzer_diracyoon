@@ -22,12 +22,12 @@ void HNL_Lepton_ChargeFlip::initializeAnalyzer(){
 
 void HNL_Lepton_ChargeFlip::executeEvent(){
   
-  vector<TString> LepIDs = {"HNL_ULID_"+GetYearString(),"HNL_TC0_ULID_"+GetYearString() , "HNL_TC1_ULID_"+GetYearString() , "TopHN", "POGTight", "HNTightV2", "passHEEPID_v1","passHEEPID_v2","passHEEPID_v3"};
-  if(HasFlag("ClosureTest")) LepIDs = {"HNL_ULID_"+GetYearString() , "HNL_TC0_ULID_"+GetYearString() };
-  if(HasFlag("ScaleFactor")) LepIDs = {"HNL_ULID_"+GetYearString() , "HNL_TC0_ULID_"+GetYearString() };
-
+  vector<TString> LepIDs = {"HNL_ULID","HNL_TC0_ULID" , "HNL_TC1_ULID" , "TopHN", "POGTight", "HNTightV2", "passHEEPID_v1","passHEEPID_v2","passHEEPID_v3","HNL_ULID_HEEP"};
+  if(HasFlag("ClosureTest")) LepIDs = {"HNL_ULID" , "HNL_TC0_ULID" };
+  if(HasFlag("ScaleFactor")) LepIDs = {"HNL_ULID" , "HNL_TC0_ULID" };
+  
   for (auto id: LepIDs){
-    AnalyzerParameter param = InitialiseHNLParameter("SignalStudy");
+    AnalyzerParameter param = InitialiseHNLParameter("MCBkg");
     param.Name    =  id;
     param.DefName =  id;
     
@@ -58,10 +58,8 @@ void HNL_Lepton_ChargeFlip::executeEvent(){
     
     param.Electron_Tight_ID = (id == "TopHN") ? "TopHNSST" :  id;
     param.Muon_Tight_ID   =    "POGTightWithTightIso";
-    if(id =="POGTight"){   
-      param.Electron_Tight_ID  = "passPOGTight";
-      //param.k.Electron_CF  = CFMethod+"_EtaRegion_POGTight";
-    }
+    if(id =="POGTight")   param.Electron_Tight_ID  = "passPOGTight";
+    
     executeEventFromParameter(param);
   }
 }
@@ -1017,13 +1015,13 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 
   if(HasFlag("ShiftEnergy")){
 
+    //// This function is used to measure the pt / eta dependance on the shift between Prompt El and CF electrons
     
     for(auto iel : ElectronColl){
-
       
       /// Remove Conv and Fakeelectrons
-      if(iel.LeptonGenType() <= 0 || iel.LeptonGenType() >=4) continue;
-
+      if(iel.LeptonGenType() <= 0 || iel.LeptonGenType() >=3) continue;
+      
       /////TruthIdx returns matched lepton status 1 index
       int TruthIdx  = GenMatchedIdx(iel, All_Gens);;
       if(TruthIdx < 0 || (TruthIdx > int(All_Gens.size()))) continue;
@@ -1032,28 +1030,42 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
       Gen truth_lep = All_Gens[TruthIdx];
       if(truth_lep.PID() ==0 ) continue;
 
-      //int LastSelfIdx    = LastAbsSelfMotherIdx(TruthIdx,All_Gens);
-      
       ///// Get sum of status 1 photon and electrons in dR < 0.1 to matched el 
       double PtSum = 0;
       Particle X = truth_lep;
-      vector<Gen> MatchedStatus1;
+
+      //// Check for 2 status 1 electrons overlaping; makes it complicated so veto for study
+      bool hasOverlappingEl=false;
+      
+      /// check for rare CF 
       int nSt1el(0);
+      
       for(unsigned int i=2; i < All_Gens.size(); i++){
 	if(TruthIdx == int(i)) continue;
 	if(fabs(All_Gens.at(TruthIdx).Eta()-All_Gens.at(i).Eta())>0.1) continue;
-	if(All_Gens.at(TruthIdx).DeltaPhi(All_Gens.at(i))>0.3) continue;
+	if(fabs(All_Gens.at(TruthIdx).DeltaPhi(All_Gens.at(i)))>0.3) continue;
 	if(All_Gens[TruthIdx].MotherIndex() == All_Gens[i].MotherIndex()){
 	  if(All_Gens[i].Status() == 1) {
-	    MatchedStatus1.push_back(All_Gens[i]);
+
+	    if(fabs(All_Gens[i].PID()) == 11){
+	      Particle Z = All_Gens[i]  + truth_lep;
+	      if(Z.M() > 10) hasOverlappingEl=true;
+	    }
 	    PtSum+= All_Gens[i].Pt() ;
 	    X=X+All_Gens[i];
 	    if(fabs(All_Gens[i].PID()) == 11) nSt1el++;
 	  }
 	}
       }
-
       
+      if(hasOverlappingEl) {
+	cout << "2 status 1 el overlapping " << endl;
+	cout << "PtSum = " << PtSum << " truth_lep.Pt() = " << truth_lep.Pt() << " Type  " << iel.LeptonGenType() << endl;                                                                                  
+	cout << " HasPromptConv(iel)  = " << HasPromptConv(iel) << endl;
+	cout << "iel.LeptonIsCF() = " << iel.LeptonIsCF() << endl;
+	return;
+      }
+     
       /// if nSt1el (number of status 1 electrons in dR < 0.4 from same mother , if > 1 e->eee  that passes JH Gen code
       bool bIsConv  =  HasPromptConv(iel);
       
@@ -1068,13 +1080,34 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
       double gen_d_phi = X.Phi();
 
       /// PtResponse measures how RECO pt compares to GEN pt
-      double PtResponse  = (iel.Pt()  -  gen_d_pt) / gen_d_pt;
+      double PtResponse   = (iel.Pt()    -  gen_d_pt) / gen_d_pt;
       double EtaResponse  = (iel.Eta()  -  gen_d_eta) / gen_d_eta;
       double PhiResponse  = (iel.Phi()  -  gen_d_phi) / gen_d_phi;
 
+      
+      if(bIsConv) continue;
+      /*if(PtResponse < -0.5) {
+	cout << "  " << endl;
+	cout << "TruthIdx = " << TruthIdx << endl;
+	cout << "Is CF = "<< iel.LeptonIsCF() << endl;
+	cout << "PtResponse = " << PtResponse << endl;
+	cout << "gen_d_pt = " << gen_d_pt <<  "  iel.Pt() = " << iel.Pt() << " truth_lep.Pt() = " << truth_lep.Pt() << endl;
+	cout << "gen_d_eta = " << gen_d_eta <<  "  iel.Eta() = " << iel.Eta() << endl;
+	cout << "gen_d_phi = " << gen_d_phi <<  "  iel.Phi() = " << iel.Phi() << endl;
+ 
+	//for(unsigned int i=2; i < All_Gens.size(); i++){
+	// if(TruthIdx == int(i)) continue;
+	// if(fabs(All_Gens.at(TruthIdx).Eta()-All_Gens.at(i).Eta())>0.1) continue;
+	//  if(All_Gens.at(TruthIdx).DeltaPhi(All_Gens.at(i))>0.3) continue;
+	//  if(All_Gens[TruthIdx].MotherIndex() == All_Gens[i].MotherIndex()){
+	//  }
+	//	}
+	
+	PrintMatchedGen(All_Gens, Lepton(iel));
+	}*/
 
       TString EtaBin = (iel.IsBB()) ? "BB" : "EC";
-      if(bIsConv) continue;
+      
 
       ///// Draw GenPt
       vector<double> Shifts_El = {0.998,0.996,0.994,0.992,0.99,0.988,0.986, 0.984,0.982,0.98,0.978,0.976,0.974,0.972,0.97,0.965,0.96,0.955,0.95,0.94};
@@ -1095,12 +1128,9 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
         }
       }
 
-
-
       //double rate_cf= cfEst->GetElectronCFRate(param.Electron_Tight_ID, param.Electron_CF_Key, iel.defEta(), iel.Pt(), 0);
-      
-
-      
+  
+     
       if(iel.IsPrompt() && !bIsCF){
 	FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt_Prompt", PtResponse ,   EvWeight , 200, -0.5,0.5);
 	FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Eta_Prompt", EtaResponse , EvWeight , 200, -0.1,0.1);
@@ -1150,14 +1180,26 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
       }
 
 
-
-      
+      TString EtaBinLabel =  "";
+      if(iel.scEta() < -2.3) EtaBinLabel =  "_Eta_Bin1";
+      else if(iel.scEta() < -2.) EtaBinLabel =  "_Eta_Bin1";
+      else if(iel.scEta() < -1.56) EtaBinLabel =  "_Eta_Bin1";
+      else if((iel.etaRegion()!=Electron::GAP) && iel.scEta() < -1) EtaBinLabel =  "_Eta_Bin1";
+      else if(iel.scEta() < -0.8) EtaBinLabel =  "_Eta_Bin1";
+      else if(iel.scEta() < -0.3) EtaBinLabel =  "_Eta_Bin1";
+      else if(iel.scEta() < 0) EtaBinLabel =  "_Eta_Bin1";
+      else if(iel.scEta() < 0.3) EtaBinLabel =  "_Eta_Bin1";
+      else if(iel.scEta() < 0.8) EtaBinLabel =  "_Eta_Bin1";
+      else if(iel.scEta() < 1) EtaBinLabel =  "_Eta_Bin1";
+      else if(iel.scEta() < 1.442) EtaBinLabel =  "_Eta_Bin1";
+      else if(iel.scEta() < 2.&& (iel.etaRegion()!=Electron::GAP))  EtaBinLabel =  "_Eta_Bin1";
+      else if(iel.scEta() < 2.5) EtaBinLabel =  "_Eta_Bin1";
+            
       if(iel.IsPrompt() &&  bIsCF) {
         FillHist(param.Name+"/Pt/"+EtaBin+"_CF", iel.Pt() , EvWeight , 200, 0,2000);
-
 	FillHist(param.Name+"/EnergyShift/"+EtaBin+PtBinLabel+"_CF", PtResponse , EvWeight , 200, -1,1);
 	FillHist(param.Name+"/EnergyShift/"+EtaBin+PtBinLabel2+"_CF", PtResponse , EvWeight , 200, -1,1);
-
+        FillHist(param.Name+"/EnergyShift/"+EtaBinLabel+"_CF", PtResponse , EvWeight , 200, -1,1);
 	FillHist(param.Name+"/EnergyShift/"+EtaBin+"_CF", PtResponse , EvWeight , 200, -1,1);
       }
 
@@ -1169,14 +1211,12 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
         FillHist(param.Name+"/Pt/"+EtaBin+"_Prompt", iel.Pt() , EvWeight , 200, 0,2000);
 
 	double shiftEl = GetShiftCFEl(iel,param.Electron_Tight_ID,IsData,0);
-	double shiftElMean = GetShiftCFEl(iel,param.Electron_Tight_ID,IsData,0);
 	double PtResponseShift = (shiftEl*iel.Pt() - gen_d_pt) / (gen_d_pt);
-	double PtResponseShiftMean = (shiftElMean*iel.Pt() - gen_d_pt) / (gen_d_pt);
+
+	/// Check performance of already measured shift values
 	FillHist(param.Name+"/EnergyShift/"+EtaBin+"_PromptShifted_GetShiftCFEl", PtResponseShift , EvWeight , 200, -1,1);
 	FillHist(param.Name+"/EnergyShift/"+EtaBin+PtBinLabel2+"_PromptShifted_GetShiftCFEl", PtResponseShift , EvWeight , 200, -1,1);
-	
-	FillHist(param.Name+"/EnergyShift/"+EtaBin+"_PromptShifted_GetShiftMeanCFEl", PtResponseShiftMean , EvWeight , 200, -1,1);
-        FillHist(param.Name+"/EnergyShift/"+EtaBin+PtBinLabel2+"_PromptShifted_GetShiftMeanCFEl", PtResponseShiftMean , EvWeight , 200, -1,1);
+	FillHist(param.Name+"/EnergyShift/"+EtaBinLabel+"_PromptShifted_GetShiftCFEl", PtResponseShift , EvWeight , 200, -1,1);
 
 	unsigned int nBins = 100;
 	if(iel.Pt() < 50)  nBins = 200;
@@ -1187,6 +1227,7 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 	  double PtResponseShift = (shiftEl*iel.Pt() - gen_d_pt) / (gen_d_pt);
 	  FillHist(param.Name+"/EnergyShift/"+EtaBin+PtBinLabel+"_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
 	  FillHist(param.Name+"/EnergyShift/"+EtaBin+PtBinLabel2+"_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
+	  FillHist(param.Name+"/EnergyShift/"+EtaBinLabel+"_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
 	  FillHist(param.Name+"/EnergyShift/"+EtaBin+"_PromptShifted_"+shift_string, PtResponseShift , EvWeight , 200, -1,1);
 	  
 	}
