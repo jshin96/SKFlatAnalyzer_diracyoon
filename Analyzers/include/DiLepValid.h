@@ -15,7 +15,7 @@ public:
   bool ElEl, MuMu, ElMu, SF2L; 
   bool DblMu, DblEG, MuEG, SglEl;
   bool DiLIncl, DiLBJet;
-  bool HEMCheck;
+  bool HEMCheck, PUVETO;
   bool SystRun;
   vector<TString> TrigList, TrigList_SglMu, TrigList_SglEl, TrigList_DiMu, TrigList_DiEl, TrigList_ElMu;
   TString SFKey_Trig;

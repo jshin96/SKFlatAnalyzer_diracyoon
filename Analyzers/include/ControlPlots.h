@@ -11,7 +11,7 @@ public:
   void executeEventFromParameter(AnalyzerParameter param);
   void executeEvent();
 
-  bool OS2l, SS2l, TriLep, TetraLep, SB_SS2L, CFlip, ConvCR, FkCR3l, PUVETO; 
+  bool OS2l, SS2l, TriLep, TetraLep, SB_SS2L, CFlip, ConvCR, FkCR3l, PUVETO, POGEl; 
   bool TrigClos;
   bool DblMu, DblEG, MuEG, SglEl;
   bool FakeRun, ConvRun, FlipRun, SystRun, HEMCheck;

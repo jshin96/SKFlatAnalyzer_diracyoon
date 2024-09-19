@@ -2,7 +2,7 @@
 
 void DiLepValid::initializeAnalyzer(){
 
-  SglLTrig=false, DiLTrig=false, ElEl=false, MuMu=false, ElMu=false, SF2L=false; 
+  SglLTrig=false, DiLTrig=false, ElEl=false, MuMu=false, ElMu=false, SF2L=false, PUVETO=false; 
   DiLIncl=false, DiLBJet =false;
   HEMCheck=false, SystRun=false;
   for(unsigned int i=0; i<Userflags.size(); i++){
@@ -16,6 +16,7 @@ void DiLepValid::initializeAnalyzer(){
     if(Userflags.at(i).Contains("DiLBJet" )) DiLBJet  = true; 
     if(Userflags.at(i).Contains("HEMCheck")) HEMCheck = true;
     if(Userflags.at(i).Contains("SystRun" )) SystRun  = true; 
+    if(Userflags.at(i).Contains("PUVETO"))     PUVETO    = true; 
   }
 
   DblMu=false, DblEG=false, MuEG=false, SglEl=false;
@@ -119,7 +120,14 @@ void DiLepValid::executeEvent(){
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
   vector<Jet> jetPreColl = GetAllJets();
   sort(jetPreColl.begin(), jetPreColl.end(), PtComparing);
-  vector<Jet> jetColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
+  vector<Jet> jetColl;
+  if(PUVETO){
+    jetColl  = SelectJets(jetPreColl, "LoosePileupJetVeto", 25., 2.4);
+    jetColl  = SelectJets(jetColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
+  } 
+  else { 
+    jetColl = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
+  }  
   vector<Jet> bjetColl = SelBJets(jetColl, param_jets);
 
   Particle vMET = GetvMET("PUPPIMETT1"); //"T1"
@@ -130,7 +138,7 @@ void DiLepValid::executeEvent(){
 
 
   bool EventCand = false;
-  float w_TopPtRW = 1., w_Pref = 1., sf_Tr = 1.;
+  float w_TopPtRW = 1., w_Pref = 1., sf_Tr = 1., w_PUVeto = 1.;
   float sf_MuTk = 1., sf_mID = 1., sf_muiso = 1., sf_eReco = 1., sf_eID = 1., sf_B = 1.;
   if(MuMu){ EventCand = muonLooseColl.size()>1; }
   if(ElEl){ EventCand = electronLooseColl.size()>1; }
@@ -149,9 +157,9 @@ void DiLepValid::executeEvent(){
     //cout<<"w_Pref:"<<w_Pref<<" sf_Tr:"<<sf_Tr<<endl;
     //cout<<"sf_MuTk"<<sf_MuTk<<" sf_mID:"<<sf_mID<<" sf_muiso:"<<sf_muiso<<" sf_eReco:"<<sf_eReco<<" sf_eID:"<<sf_eID<<" sf_B:"<<sf_B<<endl;
   }
-  weight *= w_TopPtRW * w_Pref * sf_Tr;
+  if(PUVETO) w_PUVeto = mcCorr->PileupJetVeto_Reweight(jetColl, "LoosePileupJetVeto", 0);
+  weight *= w_TopPtRW * w_Pref * sf_Tr * w_PUVeto;
   weight *= sf_MuTk * sf_mID * sf_muiso * sf_eReco * sf_eID * sf_B;
-
  
   if(SF2L){
     if(DiLBJet){
@@ -699,29 +707,29 @@ void DiLepValid::AnalyzeDiLeptonBJet(vector<Muon>& MuTColl, vector<Muon>& MuLCol
   int it_cut=0;
   FillHist("CutFlow"+Label, it_cut, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList); it_cut++;
 
-  if(Njet<2) return;
+//  if(Njet<2) return;
+//  FillHist("CutFlow"+Label, it_cut, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList); it_cut++;
+
+  if(OffZ) return;
   FillHist("CutFlow"+Label, it_cut, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList); it_cut++;
 
-  if(!OffZ) return;
-  FillHist("CutFlow"+Label, it_cut, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList); it_cut++;
-
-  if(!PtJet1_50) return;
-  FillHist("CutFlow"+Label, it_cut, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList);
+//  if(!PtJet1_50) return;
+//  FillHist("CutFlow"+Label, it_cut, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList);
 
 
-  vector<TString> LabelList = {}; //{"_1B2JOffZPtb50"+Label};
-  if( MET50 ){
+  vector<TString> LabelList = {"_ONZ"}; //{"_1B2JOffZPtb50"+Label};
+//  if( MET50 ){
     //LabelList.push_back("_1B2JOffZPtb50MET50"+Label);
-    FillHist("CutFlow"+Label, it_cut+1, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList);
-  }
-  if( NBjet>1 ){
-    //LabelList.push_back("_2BOffZPtb50"+Label);
-    FillHist("CutFlow"+Label, it_cut+2, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList);
-  }
-  if( NBjet>1 && MET50 ){
-    LabelList.push_back("_2BOffZPtb50MET50"+Label);
-    FillHist("CutFlow"+Label, it_cut+3, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList);
-  }
+//    FillHist("CutFlow"+Label, it_cut+1, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList);
+//  }
+//  if( NBjet>1 ){
+//    //LabelList.push_back("_2BOffZPtb50"+Label);
+//    FillHist("CutFlow"+Label, it_cut+2, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList);
+//  }
+//  if( NBjet>1 && MET50 ){
+//    LabelList.push_back("_2BOffZPtb50MET50"+Label);
+//    FillHist("CutFlow"+Label, it_cut+3, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList);
+//  }
  
   for(unsigned int il=0; il<LabelList.size(); il++){
     TString FinLabel(LabelList.at(il));

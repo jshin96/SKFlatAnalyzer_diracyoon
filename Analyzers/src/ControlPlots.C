@@ -4,7 +4,7 @@ void ControlPlots::initializeAnalyzer(){
 
   TriLep=false, TetraLep=false, SS2l=false, OS2l=false;
   SB_SS2L=false, CFlip=false, ConvCR=false, FkCR3l=false;
-  TrigClos=false, PUVETO = false;
+  TrigClos=false, PUVETO = false, POGEl = false;
   FakeRun=false, ConvRun=false, FlipRun=false, SystRun=false, HEMCheck=false; 
   for(unsigned int i=0; i<Userflags.size(); i++){
     if(Userflags.at(i).Contains("SS2l"))        SS2l        = true;
@@ -22,6 +22,7 @@ void ControlPlots::initializeAnalyzer(){
     if(Userflags.at(i).Contains("SystRun"))     SystRun     = true; 
     if(Userflags.at(i).Contains("HEMCheck"))    HEMCheck    = true; 
     if(Userflags.at(i).Contains("PUVETO"))     PUVETO    = true;
+    if(Userflags.at(i).Contains("POGEl"))     POGEl    = true;
   }
   if(FlipRun && !FakeRun) OS2l=true;
 
@@ -120,6 +121,7 @@ void ControlPlots::executeEvent(){
   TString PreCutIDEl = (SB_SS2L or CFlip or ConvCR or FkCR3l)? "TopHN_Isop4NoSIPMVA":"NOCUT";
   vector<Muon>     muonPreColl     = GetMuons(PreCutIDMu, 5., 2.4);
   vector<Electron> electronPreColl = GetElectrons(PreCutIDEl, 5., 2.5);
+  if(POGEl){electronPreColl = GetElectrons("NOCUT", 5., 2.5);}
   sort(muonPreColl.begin(), muonPreColl.end(), PtComparing);
   sort(electronPreColl.begin(), electronPreColl.end(), PtComparing);
   if(TriLep and (muonPreColl.size()+electronPreColl.size())>2 ) PreCutPass=true;
@@ -133,11 +135,13 @@ void ControlPlots::executeEvent(){
   if((OS2l or TrigClos) && (muonPreColl.size()+electronPreColl.size())>1) PreCutPass=true;
   if(electronPreColl.size()>0) PreCutPass=true;
   if(!PreCutPass) return;
+  FillHist("CutFlow", 3., weight, 20, 0., 20.);
 
 
   TString IDSSLabel = "SS";
   TString MuTID = "TopHNT", MuLID = "TopHNL", MuVID=MuLID;
   TString ElTID = "TopHNSST", ElLID = "TopHNSSL_"+GetEraShort(), ElVID = "TopHNL_"+GetEraShort();  
+  if(POGEl){ElTID = "passMVAID_noIso_WP80", ElLID = "passMVAID_noIso_WP90", ElVID = "passMVAID_noIso_WP90";}  
   vector<Muon>     muonTightColl     = SelectMuons    (muonPreColl    , FakeRun? MuLID:MuTID, 10., 2.4);
   vector<Electron> electronTightColl = SelectElectrons(electronPreColl, FakeRun? ElLID:ElTID, 15., 2.5);
   vector<Muon>     muonLooseColl     = SelectMuons    (muonPreColl    , MuLID, 10., 2.4);
@@ -176,12 +180,13 @@ void ControlPlots::executeEvent(){
   if(TetraLep){ EventCand = (muonLooseColl.size()+electronLooseColl.size())>3; }
 
   float w_TopPtRW = 1., w_Pref = 1., sf_Tr = 1., w_FR=1., w_PUVeto=1.;
-  float sf_MuTk = 1., sf_mID = 1., sf_MuIso = 1., sf_eReco = 1., sf_eID = 1., sf_B = 1.;
+  float sf_MuTk = 1., sf_mID = 1., sf_mIso = 1., sf_eReco = 1., sf_eID = 1., sf_B = 1.;
   float w_CF = 1., w_CV = 1.;
   if((!IsDATA) and EventCand){
     //if(MCSample.Contains("TT") and MCSample.Contains("powheg")) truthColl = GetGens();
     //w_TopPtRW = mcCorr->GetTopPtReweight(truthColl);
     sf_mID   = GetMuonSF(muonTightColl, MuTID, "ID");
+    sf_mIso   = GetMuonSF(muonTightColl, "TopHNTIsoIP_POGMID", "Iso");
     sf_eReco = GetElectronSF(electronLooseColl, "", "Reco");
     sf_eID   = GetElectronSF(electronTightColl, ElTID, "ID");
     sf_B   = mcCorr->GetBTaggingReweight_1a(jetColl, param_jets);
@@ -201,7 +206,7 @@ void ControlPlots::executeEvent(){
   }
   if(PUVETO) w_PUVeto = mcCorr->PileupJetVeto_Reweight(jetColl, "LoosePileupJetVeto", 0);
   weight *= w_TopPtRW * w_Pref * sf_Tr * w_PUVeto; 
-  weight *= sf_MuTk * sf_mID * sf_MuIso * sf_eReco * sf_eID * sf_B * w_CV * w_CF * w_FR;
+  weight *= sf_MuTk * sf_mID * sf_mIso * sf_eReco * sf_eID * sf_B * w_CV * w_CF * w_FR;
   //cout<<" w_PU:"<<w_PU<<" w_Pref:"<<w_Pref<<" sf_Tr:"<<sf_Tr<<endl;
   //cout<<" sfIDMu:"<<sf_mID<<" sfIsoMu:"<<sf_MuIso<<" sfRecEl:"<<sf_eReco<<" sfIDEl:"<<sf_eID<<" sfBTag:"<<sf_B<<endl;
 
@@ -285,7 +290,7 @@ void ControlPlots::executeEvent(){
     float w_PUUp=1., w_PUDown=1., w_PrefUp=1., w_PrefDown=1., w_PUVetoUp=1., w_PUVetoDown=1.;
     float w_FRUp=1., w_FRDown=1.;
     float w_CFUp=1., w_CFDown=1., w_FrCF1=0., w_FrCF2=0., w_CF_ElSclUp=1., w_CF_ElSclDown=1., w_CF_ElResUp=1., w_CF_ElResDown=1.;
-    float sf_mIDUp=1., sf_mIDDown=1., sf_mID_MuEnUp=1., sf_mID_MuEnDown=1.;
+    float sf_mIDUp=1., sf_mIDDown=1., sf_mID_MuEnUp=1., sf_mID_MuEnDown=1., sf_mIsoUp=1., sf_mIsoDown=1.;
     float sf_eIDUp=1., sf_eIDDown=1., sf_eID_ElSclUp=1., sf_eID_ElSclDown=1., sf_eID_ElResUp=1., sf_eID_ElResDown=1.;
     float sf_eRecoUp=1., sf_eRecoDown=1., sf_eReco_ElSclUp=1., sf_eReco_ElSclDown=1., sf_eReco_ElResUp=1., sf_eReco_ElResDown=1.;
     float sf_B_JESUp=1., sf_B_JESDown=1., sf_B_JERUp=1., sf_B_JERDown=1.;
@@ -315,6 +320,8 @@ void ControlPlots::executeEvent(){
       sf_eID_ElResDown = GetElectronSF(ElResDownTColl, ElTID, "ID");
       sf_mIDUp         = GetMuonSF(muonTightColl, MuTID, "IDSystUp");
       sf_mIDDown       = GetMuonSF(muonTightColl, MuTID, "IDSystDown");
+      sf_mIsoUp         = GetMuonSF(muonTightColl, "TopHNTIsoIP_POGMID", "IsoSystUp");
+      sf_mIsoDown       = GetMuonSF(muonTightColl, "TopHNTIsoIP_POGMID", "IsoSystDown");
       sf_mID_MuEnUp    = GetMuonSF(MuEnUpTColl, MuTID, "ID");
       sf_mID_MuEnDown  = GetMuonSF(MuEnDownTColl, MuTID, "ID");
 
@@ -356,38 +363,40 @@ void ControlPlots::executeEvent(){
     }
 
     float w_base = w_GenNorm * w_BR * w_TopPtRW * sf_MuTk * w_CV;
-    float weight_PUUp      = w_base* w_PUUp  * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_PUDown    = w_base* w_PUDown* w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_PUVetoUp      = w_base* w_PU * w_PUVetoUp * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_PUVetoDown      = w_base* w_PU * w_PUVetoDown  * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_PrefUp    = w_base* w_PU    * w_PrefUp  * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_PrefDown  = w_base* w_PU    * w_PrefDown* w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_MuEnUp    = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID_MuEnUp  * sf_eReco          * sf_eID          * sf_Tr_MuEnUp   * sf_B;
-    float weight_MuEnDown  = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID_MuEnDown* sf_eReco          * sf_eID          * sf_Tr_MuEnDown * sf_B;
-    float weight_MuIDUp    = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mIDUp       * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_MuIDDown  = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mIDDown     * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_ElRecoUp  = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eRecoUp        * sf_eID          * sf_Tr          * sf_B;
-    float weight_ElRecoDown= w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eRecoDown      * sf_eID          * sf_Tr          * sf_B;
-    float weight_ElIDUp    = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eIDUp        * sf_Tr          * sf_B;
-    float weight_ElIDDown  = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eIDDown      * sf_Tr          * sf_B;
-    float weight_ElSclUp   = w_base* w_PU    * w_Pref    * w_FR    * w_CF_ElSclUp  * sf_mID   * sf_eReco_ElSclUp  * sf_eID_ElSclUp  * sf_Tr_ElSclUp  * sf_B;
-    float weight_ElSclDown = w_base* w_PU    * w_Pref    * w_FR    * w_CF_ElSclDown* sf_mID   * sf_eReco_ElSclDown* sf_eID_ElSclDown* sf_Tr_ElSclDown* sf_B;
-    float weight_ElResUp   = w_base* w_PU    * w_Pref    * w_FR    * w_CF_ElResUp  * sf_mID   * sf_eReco_ElResUp  * sf_eID_ElResUp  * sf_Tr_ElResUp  * sf_B;
-    float weight_ElResDown = w_base* w_PU    * w_Pref    * w_FR    * w_CF_ElResDown* sf_mID   * sf_eReco_ElResDown* sf_eID_ElResDown* sf_Tr_ElResDown* sf_B;
-    float weight_JESUp     = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JESUp;
-    float weight_JESDown   = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JESDown;
-    float weight_JERUp     = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JERUp;
-    float weight_JERDown   = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JERDown;
-    float weight_LTagUp    = w_base* w_PU    * w_Pref    * w_CF    * w_FR    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_LTagUp;
-    float weight_LTagDown  = w_base* w_PU    * w_Pref    * w_CF    * w_FR    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_LTagDown;
-    float weight_HTagUp    = w_base* w_PU    * w_Pref    * w_CF    * w_FR    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_HTagUp;
-    float weight_HTagDown  = w_base* w_PU    * w_Pref    * w_CF    * w_FR    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_HTagDown;
-    float weight_CFUp      = w_base* w_PU    * w_Pref    * w_FR    * w_CFUp  * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_CFDown    = w_base* w_PU    * w_Pref    * w_FR    * w_CFDown* sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_FRUp      = w_base* w_PU    * w_Pref    * w_FRUp  * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_FRDown    = w_base* w_PU    * w_Pref    * w_FRDown* w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_TrUp      = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_TrUp        * sf_B;
-    float weight_TrDown    = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_TrDown      * sf_B;
+    float weight_PUUp      = w_base* w_PUUp  * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_PUDown    = w_base* w_PUDown* w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_PUVetoUp      = w_base* w_PU * w_PUVetoUp * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_PUVetoDown      = w_base* w_PU * w_PUVetoDown  * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_PrefUp    = w_base* w_PU    * w_PrefUp  * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_PrefDown  = w_base* w_PU    * w_PrefDown* w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_MuEnUp    = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID_MuEnUp  * sf_eReco          * sf_eID          * sf_Tr_MuEnUp   * sf_B * sf_mIso;
+    float weight_MuEnDown  = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID_MuEnDown* sf_eReco          * sf_eID          * sf_Tr_MuEnDown * sf_B * sf_mIso;
+    float weight_MuIDUp    = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mIDUp       * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_MuIDDown  = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mIDDown     * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_MuIsoUp    = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mIDUp       * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIsoUp;
+    float weight_MuIsoDown  = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mIDDown     * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIsoDown;
+    float weight_ElRecoUp  = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eRecoUp        * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_ElRecoDown= w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eRecoDown      * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_ElIDUp    = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eIDUp        * sf_Tr          * sf_B * sf_mIso;
+    float weight_ElIDDown  = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eIDDown      * sf_Tr          * sf_B * sf_mIso;
+    float weight_ElSclUp   = w_base* w_PU    * w_Pref    * w_FR    * w_CF_ElSclUp  * sf_mID   * sf_eReco_ElSclUp  * sf_eID_ElSclUp  * sf_Tr_ElSclUp  * sf_B * sf_mIso;
+    float weight_ElSclDown = w_base* w_PU    * w_Pref    * w_FR    * w_CF_ElSclDown* sf_mID   * sf_eReco_ElSclDown* sf_eID_ElSclDown* sf_Tr_ElSclDown* sf_B * sf_mIso;
+    float weight_ElResUp   = w_base* w_PU    * w_Pref    * w_FR    * w_CF_ElResUp  * sf_mID   * sf_eReco_ElResUp  * sf_eID_ElResUp  * sf_Tr_ElResUp  * sf_B * sf_mIso;
+    float weight_ElResDown = w_base* w_PU    * w_Pref    * w_FR    * w_CF_ElResDown* sf_mID   * sf_eReco_ElResDown* sf_eID_ElResDown* sf_Tr_ElResDown* sf_B * sf_mIso;
+    float weight_JESUp     = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JESUp * sf_mIso;
+    float weight_JESDown   = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JESDown * sf_mIso;
+    float weight_JERUp     = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JERUp * sf_mIso;
+    float weight_JERDown   = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JERDown * sf_mIso;
+    float weight_LTagUp    = w_base* w_PU    * w_Pref    * w_CF    * w_FR    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_LTagUp * sf_mIso;
+    float weight_LTagDown  = w_base* w_PU    * w_Pref    * w_CF    * w_FR    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_LTagDown * sf_mIso;
+    float weight_HTagUp    = w_base* w_PU    * w_Pref    * w_CF    * w_FR    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_HTagUp * sf_mIso;
+    float weight_HTagDown  = w_base* w_PU    * w_Pref    * w_CF    * w_FR    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_HTagDown * sf_mIso;
+    float weight_CFUp      = w_base* w_PU    * w_Pref    * w_FR    * w_CFUp  * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_CFDown    = w_base* w_PU    * w_Pref    * w_FR    * w_CFDown* sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_FRUp      = w_base* w_PU    * w_Pref    * w_FRUp  * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_FRDown    = w_base* w_PU    * w_Pref    * w_FRDown* w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_TrUp      = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_TrUp        * sf_B * sf_mIso;
+    float weight_TrDown    = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_TrDown      * sf_B * sf_mIso;
 
 
     if(!IsDATA && !FakeRun){
@@ -404,6 +413,8 @@ void ControlPlots::executeEvent(){
       SysWgtStrPairList.push_back( make_pair(weight_ElIDDown  , "_SystDown_ElID"  ) );
       SysWgtStrPairList.push_back( make_pair(weight_MuIDUp    , "_SystUp_MuID"    ) );
       SysWgtStrPairList.push_back( make_pair(weight_MuIDDown  , "_SystDown_MuID"  ) );
+      SysWgtStrPairList.push_back( make_pair(weight_MuIsoUp    , "_SystUp_MuIso"    ) );
+      SysWgtStrPairList.push_back( make_pair(weight_MuIsoDown  , "_SystDown_MuIso"  ) );
       SysWgtStrPairList.push_back( make_pair(weight_TrUp      , "_SystUp_Tr"      ) );
       SysWgtStrPairList.push_back( make_pair(weight_TrDown    , "_SystDown_Tr"    ) );
       SysWgtStrPairList.push_back( make_pair(weight_LTagUp    , "_SystUp_LTag"    ) );
@@ -801,6 +812,7 @@ void ControlPlots::CheckCR4l(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vecto
   if( !(NMuT==NMuL and NElT==NElL) ) return;
   if( !(NMuT==NMuV and NElT==NElV) ) return;
   if( NLepT!=4 or NElT==1 or NMuT==1 ) return;
+  FillHist("CutFlow", 4., weight, 20, 0., 20.);
   bool PassTrAcc=false, PassTrAcc_MM=false, PassTrAcc_EE=false, PassTrAcc_EM=false;
   if( NMuT>1 && MuTColl.at(0).Pt()>20 && MuTColl.at(1).Pt()>10 ) PassTrAcc_MM=true;
   if( NElT>1 && ElTColl.at(0).Pt()>25 && ElTColl.at(1).Pt()>15 ) PassTrAcc_EE=true;
@@ -1835,15 +1847,12 @@ float ControlPlots::GetDataFakeWeight(vector<Muon>& MuColl, vector<Electron>& El
 
   float weight = IsDATA? -1.:1.;
   int NLepLNotT=0; float TightIso= 0.1;
-  bool MuFRConePtCut = MuFRKey.Contains("ConePtCut"), ElFRConePtCut=ElFRKey.Contains("ConePtCut");
+  bool MuFRConePtCut = MuFRKey.Contains("ConePtCut"), ElFRConePtCut=ElFRKey.Contains("ConePtCut"), Overlap_Mu = false, Overlap_El = false;
   for(unsigned int im=0; im<MuColl.size(); im++){
     if(MuColl.at(im).PassID(MuTID)) continue; 
     for(unsigned int ib=0; ib<rawbjetColl.size(); ib++){
       if(rawbjetColl.at(ib).DeltaR(MuColl.at(im))<0.4){
-        if (GetEraShort() == "2018") { weight *= 0.84;}
-        else if (GetEraShort() == "2017") { weight *= 0.84;}
-        else if (GetEraShort() == "2016a") { weight *= 0.85;}
-        else if (GetEraShort() == "2016b") { weight *= 0.85;}
+        Overlap_Mu = true;
       }
     }
     float PTCorr = MuColl.at(im).CalcPtCone(MuColl.at(im).MiniRelIso(), TightIso);
@@ -1853,15 +1862,16 @@ float ControlPlots::GetDataFakeWeight(vector<Muon>& MuColl, vector<Electron>& El
     weight*=-FR/(1.-FR);
     NLepLNotT++;
   }
+  if (GetEraShort() == "2018" && Overlap_Mu) { weight *= 0.84;}
+  else if (GetEraShort() == "2017" && Overlap_Mu) { weight *= 0.84;}
+  else if (GetEraShort() == "2016a" && Overlap_Mu) { weight *= 0.85;}
+  else if (GetEraShort() == "2016b" && Overlap_Mu) { weight *= 0.85;}
 
   for(unsigned int ie=0; ie<ElColl.size(); ie++){
     if(ElColl.at(ie).PassID(ElTID)) continue; 
     for(unsigned int ib=0; ib<rawbjetColl.size(); ib++){
       if(rawbjetColl.at(ib).DeltaR(ElColl.at(ie))<0.4){
-        if (GetEraShort() == "2018") { weight *= 0.86;}
-        else if (GetEraShort() == "2017") { weight *= 0.81;}
-        else if (GetEraShort() == "2016a") { weight *= 0.86;}
-        else if (GetEraShort() == "2016b") { weight *= 0.85;}     
+        Overlap_El = true;
       }
     }
     float PTCorr = ElColl.at(ie).CalcPtCone(ElColl.at(ie).MiniRelIso(), TightIso);
@@ -1871,6 +1881,10 @@ float ControlPlots::GetDataFakeWeight(vector<Muon>& MuColl, vector<Electron>& El
     weight*=-FR/(1.-FR);
     NLepLNotT++;
   }
+  if (GetEraShort() == "2018" && Overlap_El) { weight *= 0.86;}
+  else if (GetEraShort() == "2017" && Overlap_El) { weight *= 0.81;}
+  else if (GetEraShort() == "2016a" && Overlap_El) { weight *= 0.86;}
+  else if (GetEraShort() == "2016b" && Overlap_El) { weight *= 0.85;}     
   if(NLepLNotT==0) weight=0.;
 
   return weight;

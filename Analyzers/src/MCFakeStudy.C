@@ -1357,6 +1357,7 @@ void MCFakeStudy::CheckMCClosure(vector<Muon>& MuRawColl, vector<Electron>& ElRa
   vector<Jet> DirtyJetColl = SelectJets     (JetRawColl, "tight", 25., 2.4);
   vector<Jet> DirtyBJetColl = SelBJets       (DirtyJetColl, param_jets);
   bool B_overlap = false;
+  bool J_overlap = false;
   float FR_MCCorr = 1.0;
   if(MuFR){
     for(unsigned int im=0; im<MuLColl.size(); im++){
@@ -1366,6 +1367,7 @@ void MCFakeStudy::CheckMCClosure(vector<Muon>& MuRawColl, vector<Electron>& ElRa
       for(unsigned int ilj=0; ilj<DirtyJetColl.size(); ilj++){
         if(DirtyJetColl.at(ilj).DeltaR(MuLColl.at(im))<0.4){
           FillHist("Overlap_Mu_Jet_Score"+Label, DirtyJetColl.at(ilj).GetTaggerResult(JetTagging::DeepJet), weight, 30, 0.0, 1.0);
+          J_overlap = true;
         }
       }
     }
@@ -1378,6 +1380,7 @@ void MCFakeStudy::CheckMCClosure(vector<Muon>& MuRawColl, vector<Electron>& ElRa
       for(unsigned int ilj=0; ilj<DirtyJetColl.size(); ilj++){
         if(DirtyJetColl.at(ilj).DeltaR(ElLColl.at(ie))<0.4){
           FillHist("Overlap_El_Jet_Score"+Label, DirtyJetColl.at(ilj).GetTaggerResult(JetTagging::DeepJet), weight, 30, 0.0, 1.0);
+          J_overlap = true;
         }
       }
     }
@@ -1542,6 +1545,8 @@ void MCFakeStudy::CheckMCClosure(vector<Muon>& MuRawColl, vector<Electron>& ElRa
     FillHist("dRll"+Label,  dRll, weight, 25, 0., 5.);
     FillHist("MSSSF"+Label, MSSSF, weight, 25, 0., 250.);
     FillHist("MET"+Label, MET, weight, 20, 0., 100.);
+    FillHist("Overlap_lb"+Label, B_overlap, weight, 2, 0., 2.);
+    FillHist("Overlap_lj"+Label, J_overlap, weight, 2, 0., 2.);
     if(DrawMVA){
       for(unsigned int im=0; im<MNStrListL.size(); im++){
         TString MVATagStr_Mu = "BDTG_MN"+MNStrListL.at(im)+"_Mu";
@@ -1685,6 +1690,8 @@ void MCFakeStudy::CheckMCClosure(vector<Muon>& MuRawColl, vector<Electron>& ElRa
     FillHist("dRll"+Label,  dRll, weight, 25, 0., 5.);
     FillHist("MSSSF"+Label, MSSSF, weight, 25, 0., 250.);
     FillHist("MET"+Label, MET, weight, 20, 0., 100.);
+    FillHist("Overlap_lb"+Label, B_overlap, weight, 2, 0., 2.);
+    FillHist("Overlap_lj"+Label, J_overlap, weight, 2, 0., 2.);
     if(DrawMVA){
       for(unsigned int ie=0; ie<MNStrListL.size(); ie++){
         TString MVATagStr_El = "BDTG_MN"+MNStrListL.at(ie)+"_El";

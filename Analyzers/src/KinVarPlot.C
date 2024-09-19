@@ -3,7 +3,7 @@
 void KinVarPlot::initializeAnalyzer(){
 
   TriLep=false, TetraLep=false, SS2l=false, OS2l=false; 
-  FakeRun=false, ConvRun=false, FlipRun=false, SystRun=false, GenSyst=false, PUVETO = false, ReverseBDT = false; 
+  FakeRun=false, ConvRun=false, FlipRun=false, SystRun=false, GenSyst=false, PUVETO = false, ReverseBDT = false, POGEl = false; 
   DiscPlots=false, VarPlots=false, EffFlow=false, GlobFeas=false, GenMatchedDist=false, DecCompCheck=false;
   DiscCutOpt=false, DiscTable=false, DiscCNC=false, TestPlot=false;
   for(unsigned int i=0; i<Userflags.size(); i++){
@@ -26,10 +26,11 @@ void KinVarPlot::initializeAnalyzer(){
     if(Userflags.at(i).Contains("SystRun"))    SystRun    = true; 
     if(Userflags.at(i).Contains("GenSyst"))    GenSyst    = true; 
     if(Userflags.at(i).Contains("PUVETO"))     PUVETO    = true; 
+    if(Userflags.at(i).Contains("POGEl"))     POGEl    = true; 
     if(Userflags.at(i).Contains("ReverseBDT"))     ReverseBDT    = true; 
   }
-  if(FlipRun && !FakeRun) OS2l=true;
-//  if(FlipRun && !FakeRun) SS2l=true;
+//  if(FlipRun && !FakeRun) OS2l=true;
+  if(FlipRun && !FakeRun) SS2l=true;
 
   DblMu=false, DblEG=false, MuEG=false;
   if     (DataStream.Contains("DoubleMuon")) DblMu=true;
@@ -133,7 +134,7 @@ void KinVarPlot::executeEvent(){
   vector<Muon>     muonPreColl     = GetMuons("TopHNL", 5., 2.4);
   vector<Electron> electronPreColl = GetElectrons("TopHN_Isop4NoSIPMVA", 5., 2.5);
   //vector<Muon>     muonPreColl     = GetMuons("NOCUT", 5., 2.4);
-  //vector<Electron> electronPreColl = GetElectrons("NOCUT", 5., 2.5);
+  if(POGEl){ electronPreColl = GetElectrons("NOCUT", 5., 2.5);}
   sort(muonPreColl.begin(), muonPreColl.end(), PtComparing);
   sort(electronPreColl.begin(), electronPreColl.end(), PtComparing);
   if(TriLep   and (muonPreColl.size()+electronPreColl.size())>2 ) PreCutPass=true;
@@ -150,6 +151,7 @@ void KinVarPlot::executeEvent(){
 
   TString MuTID = "TopHNT", MuLID = "TopHNL", MuVID=MuLID;
   TString ElTID = "TopHNSST", ElLID = "TopHNSSL_"+GetEraShort(), ElVID = "TopHNL_"+GetEraShort();  
+  if (POGEl){ ElTID = "passMVAID_noIso_WP80", ElLID = "passMVAID_noIso_WP90", ElVID = "passMVAID_noIso_WP90";}  
   vector<Muon>     muonTightColl     = SelectMuons    (muonPreColl    , FakeRun? MuLID:MuTID, 10., 2.4);
   vector<Electron> electronTightColl = SelectElectrons(electronPreColl, FakeRun? ElLID:ElTID, 15., 2.5);
   vector<Muon>     muonLooseColl     = SelectMuons    (muonPreColl    , MuLID, 10., 2.4);
@@ -160,18 +162,20 @@ void KinVarPlot::executeEvent(){
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
   vector<Jet> jetPreColl = GetAllJets();
   sort(jetPreColl.begin(), jetPreColl.end(), PtComparing);
-  vector<Jet> jetColl;
+  vector<Jet> jetColl, rawjetColl;
 /////////// Pileup Jet Veto
   if(PUVETO){
     jetColl  = SelectJets(jetPreColl, "LoosePileupJetVeto", 25., 2.4);
     jetColl  = SelectJets(jetColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
+    rawjetColl  = SelectJets(jetPreColl, "LoosePileupJetVeto", 25., 2.4);
+    rawjetColl  = SelectJets(rawjetColl, "tight", 25., 2.4);
   } 
   else { 
     jetColl = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
+    rawjetColl  = SelectJets(jetPreColl, "tight", 25., 2.4);
+    
   }
 /////////// Pileup Jet Veto
-  vector<Jet> rawjetColl  = SelectJets(jetPreColl, "LoosePileupJetVeto", 25., 2.4);
-  rawjetColl  = SelectJets(rawjetColl, "tight", 25., 2.4);
   vector<Jet> bjetColl = SelBJets(jetColl, param_jets);
   vector<Jet> rawbjetColl = SelBJets(rawjetColl, param_jets);
 
@@ -188,10 +192,11 @@ void KinVarPlot::executeEvent(){
   if(EffFlow && MCSample.Contains("HeavyN")) EventCand=false;
 
   float w_TopPtRW = 1., w_Pref = 1., sf_Tr = 1., w_FR=1., w_PUVeto=1.;
-  float sf_MuTk = 1., sf_mID = 1., sf_MuIso = 1., sf_eReco = 1., sf_eID = 1., sf_B = 1.;
+  float sf_MuTk = 1., sf_mID = 1., sf_mIso = 1., sf_eReco = 1., sf_eID = 1., sf_B = 1.;
   float w_CF = 1., w_CV = 1.;
   if((!IsDATA) and EventCand){
     sf_mID   = GetMuonSF(muonTightColl, MuTID, "ID");
+//    sf_mIso  = GetMuonSF(muonTightColl, "TopHNTIsoIP_POGMID", "Iso");
     sf_eReco = GetElectronSF(electronLooseColl, "", "Reco");
     sf_eID   = GetElectronSF(electronTightColl, ElTID, "ID");
     sf_B     = mcCorr->GetBTaggingReweight_1a(jetColl, param_jets);
@@ -212,12 +217,12 @@ void KinVarPlot::executeEvent(){
   }
   if(PUVETO) w_PUVeto = mcCorr->PileupJetVeto_Reweight(jetColl, "LoosePileupJetVeto", 0);
   weight *= w_TopPtRW * w_Pref * sf_Tr * w_PUVeto; 
-  weight *= sf_MuTk * sf_mID * sf_MuIso * sf_eReco * sf_eID * sf_B * w_CV * w_CF * w_FR;
+  weight *= sf_MuTk * sf_mID * sf_mIso * sf_eReco * sf_eID * sf_B * w_CV * w_CF * w_FR;
  
   if(SS2l or OS2l){
     if(VarPlots or DiscPlots){
       MakePlotSS2L(muonTightColl, muonLooseColl, muonVetoColl, electronTightColl, electronLooseColl, electronVetoColl,
-                   jetColl, bjetColl, vMET_T1xy, weight, "");
+                   jetColl, bjetColl, rawjetColl, param_jets, vMET_T1xy, weight, "");
     }
     if(GenMatchedDist){
       CheckGenMatchedDist(muonTightColl, muonLooseColl, muonVetoColl, electronTightColl, electronLooseColl, electronVetoColl,
@@ -251,8 +256,9 @@ void KinVarPlot::executeEvent(){
     vector<Electron> ElSclUpTColl, ElSclUpLColl, ElSclDownTColl, ElSclDownLColl;
     vector<Electron> ElResUpTColl, ElResUpLColl, ElResDownTColl, ElResDownLColl;
 //    vector<Electron> ElCFPT1UpTColl, ElCFPT1UpLColl, ElCFPT2UpTColl, ElCFPT2UpLColl;
-//    vector<Electron> ElCFPT1DownTColl, ElCFPT1DownLColl, ElCFPT2DownTColl, ElCFPT2DownLColl;
+ //   vector<Electron> ElCFPT1DownTColl, ElCFPT1DownLColl, ElCFPT2DownTColl, ElCFPT2DownLColl;
     vector<Jet>      jetJESUpColl, jetJESDownColl, jetJERUpColl, jetJERDownColl;
+    vector<Jet>      rawjetJESUpColl, rawjetJESDownColl, rawjetJERUpColl, rawjetJERDownColl;
     vector<Jet>      bjetJESUpColl, bjetJESDownColl, bjetJERUpColl, bjetJERDownColl;
     Particle         vMET_T1xy_JESUp, vMET_T1xy_JESDown, vMET_T1xy_JERUp, vMET_T1xy_JERDown, vMET_T1xy_UnclUp, vMET_T1xy_UnclDown;
     if(!IsDATA){
@@ -282,6 +288,10 @@ void KinVarPlot::executeEvent(){
       jetJESDownColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVetoSystJESDown");
       jetJERUpColl    = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVetoSystJERUp");
       jetJERDownColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVetoSystJERDown");
+      rawjetJESUpColl    = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tight", 25., 2.4, "SystJESUp");
+      rawjetJESDownColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tight", 25., 2.4, "SystJESDown");
+      rawjetJERUpColl    = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tight", 25., 2.4, "SystJERUp");
+      rawjetJERDownColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tight", 25., 2.4, "SystJERDown");
       bjetJESUpColl   = SelBJets(jetJESUpColl, param_jets);
       bjetJESDownColl = SelBJets(jetJESDownColl, param_jets);
       bjetJERUpColl   = SelBJets(jetJERUpColl, param_jets);
@@ -297,7 +307,7 @@ void KinVarPlot::executeEvent(){
     float w_PUUp=1., w_PUDown=1., w_PrefUp=1., w_PrefDown=1., w_PUVetoUp=1., w_PUVetoDown=1.;
     float w_FRUp=1., w_FRDown=1.;
     float w_CFUp=1., w_CFDown=1., w_FrCF1=0., w_FrCF2=0., w_CF_ElSclUp=1., w_CF_ElSclDown=1., w_CF_ElResUp=1., w_CF_ElResDown=1.;
-    float sf_mIDUp=1., sf_mIDDown=1., sf_mID_MuEnUp=1., sf_mID_MuEnDown=1.;
+    float sf_mIDUp=1., sf_mIDDown=1., sf_mID_MuEnUp=1., sf_mID_MuEnDown=1., sf_mIsoUp= 1., sf_mIsoDown=1.;
     float sf_eIDUp=1., sf_eIDDown=1., sf_eID_ElSclUp=1., sf_eID_ElSclDown=1., sf_eID_ElResUp=1., sf_eID_ElResDown=1.;
     float sf_eRecoUp=1., sf_eRecoDown=1., sf_eReco_ElSclUp=1., sf_eReco_ElSclDown=1., sf_eReco_ElResUp=1., sf_eReco_ElResDown=1.;
     float sf_B_JESUp=1., sf_B_JESDown=1., sf_B_JERUp=1., sf_B_JERDown=1.;
@@ -328,6 +338,10 @@ void KinVarPlot::executeEvent(){
       sf_eID_ElResDown = GetElectronSF(ElResDownTColl, ElTID, "ID");
       sf_mIDUp         = GetMuonSF(muonTightColl, MuTID, "IDSystUp");
       sf_mIDDown       = GetMuonSF(muonTightColl, MuTID, "IDSystDown");
+//////      sf_mIsoUp         = GetMuonSF(muonTightColl, "TopHNTIsoIP_POGMID", "IsoSystUp");
+//////      sf_mIsoDown       = GetMuonSF(muonTightColl, "TopHNTIsoIP_POGMID", "IsoSystDown");
+//////      sf_mIsoUp       = GetMuonSF(muonTightColl, MuTID, "IsoSystUp");
+//////      sf_mIsoDown       = GetMuonSF(muonTightColl, MuTID, "IsoSystDown");
       sf_mID_MuEnUp   = GetMuonSF(MuEnUpTColl, MuTID, "ID");
       sf_mID_MuEnDown = GetMuonSF(MuEnDownTColl, MuTID, "ID");
 
@@ -374,49 +388,51 @@ void KinVarPlot::executeEvent(){
 
 
     float w_base = w_GenNorm * w_BR * w_TopPtRW * sf_MuTk * w_CV;
-    float weight_PUUp      = w_base* w_PUUp * w_PUVeto  * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_PUDown    = w_base* w_PUDown * w_PUVeto * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_PUVetoUp      = w_base* w_PU * w_PUVetoUp * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_PUVetoDown      = w_base* w_PU * w_PUVetoDown  * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_PrefUp    = w_base* w_PU * w_PUVeto   * w_PrefUp  * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_PrefDown  = w_base* w_PU * w_PUVeto   * w_PrefDown* w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_MuEnUp    = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID_MuEnUp  * sf_eReco          * sf_eID          * sf_Tr_MuEnUp   * sf_B;
-    float weight_MuEnDown  = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID_MuEnDown* sf_eReco          * sf_eID          * sf_Tr_MuEnDown * sf_B;
-    float weight_MuIDUp    = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mIDUp       * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_MuIDDown  = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mIDDown     * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_ElRecoUp  = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eRecoUp        * sf_eID          * sf_Tr          * sf_B;
-    float weight_ElRecoDown= w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eRecoDown      * sf_eID          * sf_Tr          * sf_B;
-    float weight_ElIDUp    = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eIDUp        * sf_Tr          * sf_B;
-    float weight_ElIDDown  = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eIDDown      * sf_Tr          * sf_B;
-    float weight_ElSclUp   = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF_ElSclUp  * sf_mID   * sf_eReco_ElSclUp  * sf_eID_ElSclUp  * sf_Tr_ElSclUp  * sf_B;
-    float weight_ElSclDown = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF_ElSclDown* sf_mID   * sf_eReco_ElSclDown* sf_eID_ElSclDown* sf_Tr_ElSclDown* sf_B;
-    float weight_ElResUp   = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF_ElResUp  * sf_mID   * sf_eReco_ElResUp  * sf_eID_ElResUp  * sf_Tr_ElResUp  * sf_B;
-    float weight_ElResDown = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF_ElResDown* sf_mID   * sf_eReco_ElResDown* sf_eID_ElResDown* sf_Tr_ElResDown* sf_B;
-    float weight_JESUp     = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JESUp;
-    float weight_JESDown   = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JESDown;
-    float weight_JERUp     = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JERUp;
-    float weight_JERDown   = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JERDown;
-    float weight_LTagCorrUp    = w_base* w_PU * w_PUVeto *  w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_LTagCorrUp;
-    float weight_LTagCorrDown  = w_base* w_PU * w_PUVeto * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_LTagCorrDown;
-    float weight_LTagUnCorrUp  = w_base* w_PU * w_PUVeto * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_LTagUnCorrUp;
-    float weight_LTagUnCorrDown= w_base* w_PU * w_PUVeto * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_LTagUnCorrDown;
-    float weight_HTagCorrUp    = w_base* w_PU * w_PUVeto * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_HTagCorrUp;
-    float weight_HTagCorrDown  = w_base* w_PU * w_PUVeto * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_HTagCorrDown;
-    float weight_HTagUnCorrUp  = w_base* w_PU * w_PUVeto  * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_HTagUnCorrUp;
-    float weight_HTagUnCorrDown= w_base* w_PU * w_PUVeto * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_HTagUnCorrDown;
-    float weight_CFUp      = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CFUp  * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_CFDown    = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CFDown* sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_FRUp      = w_base* w_PU * w_PUVeto   * w_Pref    * w_FRUp  * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_FRDown    = w_base* w_PU * w_PUVeto   * w_Pref    * w_FRDown* w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_TrUp      = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_TrUp        * sf_B;
-    float weight_TrDown    = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_TrDown      * sf_B;
+    float weight_PUUp      = w_base* w_PUUp * w_PUVeto  * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_PUDown    = w_base* w_PUDown * w_PUVeto * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_PUVetoUp      = w_base* w_PU * w_PUVetoUp * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_PUVetoDown      = w_base* w_PU * w_PUVetoDown  * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_PrefUp    = w_base* w_PU * w_PUVeto   * w_PrefUp  * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_PrefDown  = w_base* w_PU * w_PUVeto   * w_PrefDown* w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_MuEnUp    = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID_MuEnUp  * sf_eReco          * sf_eID          * sf_Tr_MuEnUp   * sf_B * sf_mIso;
+    float weight_MuEnDown  = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID_MuEnDown* sf_eReco          * sf_eID          * sf_Tr_MuEnDown * sf_B * sf_mIso;
+    float weight_MuIDUp    = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mIDUp       * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_MuIDDown  = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mIDDown     * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_MuIsoUp    = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mIDUp       * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIsoUp;
+    float weight_MuIsoDown  = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mIDDown     * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIsoDown;
+    float weight_ElRecoUp  = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eRecoUp        * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_ElRecoDown= w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eRecoDown      * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_ElIDUp    = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eIDUp        * sf_Tr          * sf_B * sf_mIso;
+    float weight_ElIDDown  = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eIDDown      * sf_Tr          * sf_B * sf_mIso; 
+    float weight_ElSclUp   = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF_ElSclUp  * sf_mID   * sf_eReco_ElSclUp  * sf_eID_ElSclUp  * sf_Tr_ElSclUp  * sf_B * sf_mIso;
+    float weight_ElSclDown = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF_ElSclDown* sf_mID   * sf_eReco_ElSclDown* sf_eID_ElSclDown* sf_Tr_ElSclDown* sf_B * sf_mIso;
+    float weight_ElResUp   = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF_ElResUp  * sf_mID   * sf_eReco_ElResUp  * sf_eID_ElResUp  * sf_Tr_ElResUp  * sf_B * sf_mIso;
+    float weight_ElResDown = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF_ElResDown* sf_mID   * sf_eReco_ElResDown* sf_eID_ElResDown* sf_Tr_ElResDown* sf_B * sf_mIso;
+    float weight_JESUp     = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JESUp * sf_mIso;
+    float weight_JESDown   = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JESDown * sf_mIso;
+    float weight_JERUp     = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JERUp * sf_mIso;
+    float weight_JERDown   = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JERDown * sf_mIso;
+    float weight_LTagCorrUp    = w_base* w_PU * w_PUVeto *  w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_LTagCorrUp * sf_mIso;
+    float weight_LTagCorrDown  = w_base* w_PU * w_PUVeto * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_LTagCorrDown * sf_mIso;
+    float weight_LTagUnCorrUp  = w_base* w_PU * w_PUVeto * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_LTagUnCorrUp * sf_mIso;
+    float weight_LTagUnCorrDown= w_base* w_PU * w_PUVeto * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_LTagUnCorrDown * sf_mIso;
+    float weight_HTagCorrUp    = w_base* w_PU * w_PUVeto * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_HTagCorrUp * sf_mIso;
+    float weight_HTagCorrDown  = w_base* w_PU * w_PUVeto * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_HTagCorrDown * sf_mIso;
+    float weight_HTagUnCorrUp  = w_base* w_PU * w_PUVeto  * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_HTagUnCorrUp * sf_mIso;
+    float weight_HTagUnCorrDown= w_base* w_PU * w_PUVeto * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_HTagUnCorrDown * sf_mIso;
+    float weight_CFUp      = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CFUp  * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_CFDown    = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CFDown* sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_FRUp      = w_base* w_PU * w_PUVeto   * w_Pref    * w_FRUp  * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_FRDown    = w_base* w_PU * w_PUVeto   * w_Pref    * w_FRDown* w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
+    float weight_TrUp      = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_TrUp        * sf_B * sf_mIso;
+    float weight_TrDown    = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_TrDown      * sf_B * sf_mIso;
 
     if(!IsDATA && !FakeRun){
       SysWgtStrPairList.clear();//safe-guard, in-case there was usage before this and uncleared
       SysWgtStrPairList.push_back( make_pair(weight_PUUp          , "_SystUp_PU"          ) );
       SysWgtStrPairList.push_back( make_pair(weight_PUDown        , "_SystDown_PU"        ) );
-      SysWgtStrPairList.push_back( make_pair(weight_PUVetoUp      , "_SystUp_PUVeto"      ) );
-      SysWgtStrPairList.push_back( make_pair(weight_PUVetoDown    , "_SystDown_PUVeto"    ) );
+//////      SysWgtStrPairList.push_back( make_pair(weight_PUVetoUp      , "_SystUp_PUVeto"      ) );
+//////      SysWgtStrPairList.push_back( make_pair(weight_PUVetoDown    , "_SystDown_PUVeto"    ) );
       SysWgtStrPairList.push_back( make_pair(weight_PrefUp        , "_SystUp_Pref"        ) );
       SysWgtStrPairList.push_back( make_pair(weight_PrefDown      , "_SystDown_Pref"      ) );
       SysWgtStrPairList.push_back( make_pair(weight_ElRecoUp      , "_SystUp_ElReco"      ) );
@@ -425,6 +441,8 @@ void KinVarPlot::executeEvent(){
       SysWgtStrPairList.push_back( make_pair(weight_ElIDDown      , "_SystDown_ElID"      ) );
       SysWgtStrPairList.push_back( make_pair(weight_MuIDUp        , "_SystUp_MuID"        ) );
       SysWgtStrPairList.push_back( make_pair(weight_MuIDDown      , "_SystDown_MuID"      ) );
+//////      SysWgtStrPairList.push_back( make_pair(weight_MuIsoUp        , "_SystUp_MuIso"        ) );
+//////      SysWgtStrPairList.push_back( make_pair(weight_MuIsoDown      , "_SystDown_MuIso"      ) );
       SysWgtStrPairList.push_back( make_pair(weight_TrUp          , "_SystUp_Tr"          ) );
       SysWgtStrPairList.push_back( make_pair(weight_TrDown        , "_SystDown_Tr"        ) );
       SysWgtStrPairList.push_back( make_pair(weight_LTagCorrUp    , "_SystUp_LTagCorr"    ) );
@@ -479,29 +497,29 @@ void KinVarPlot::executeEvent(){
         }
       }
       DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, ElSclUpTColl, ElSclUpLColl, electronVetoColl,
-                jetColl, bjetColl, vMET_T1xy, ev, weight_ElSclUp, "_SystUp_ElScl");
+                jetColl, bjetColl, rawjetColl, param_jets, vMET_T1xy, ev, weight_ElSclUp, "_SystUp_ElScl");
       DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, ElSclDownTColl, ElSclDownLColl, electronVetoColl,
-                jetColl, bjetColl, vMET_T1xy, ev, weight_ElSclDown, "_SystDown_ElScl");
+                jetColl, bjetColl, rawjetColl, param_jets, vMET_T1xy, ev, weight_ElSclDown, "_SystDown_ElScl");
       DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, ElResUpTColl, ElResUpLColl, electronVetoColl,
-                jetColl, bjetColl, vMET_T1xy, ev, weight_ElResUp, "_SystUp_ElRes");
+                jetColl, bjetColl, rawjetColl, param_jets, vMET_T1xy, ev, weight_ElResUp, "_SystUp_ElRes");
       DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, ElResDownTColl, ElResDownLColl, electronVetoColl,
-                jetColl, bjetColl, vMET_T1xy, ev, weight_ElResDown, "_SystDown_ElRes");
+                jetColl, bjetColl, rawjetColl, param_jets, vMET_T1xy, ev, weight_ElResDown, "_SystDown_ElRes");
       DoSystRun(MuEnUpTColl, MuEnUpLColl, MuEnUpLColl, electronTightColl, electronLooseColl, electronVetoColl,
-                jetColl, bjetColl, vMET_T1xy, ev, weight_MuEnUp, "_SystUp_MuEn");
+                jetColl, bjetColl, rawjetColl, param_jets, vMET_T1xy, ev, weight_MuEnUp, "_SystUp_MuEn");
       DoSystRun(MuEnDownTColl, MuEnDownLColl, MuEnDownLColl, electronTightColl, electronLooseColl, electronVetoColl,
-                jetColl, bjetColl, vMET_T1xy, ev, weight_MuEnDown, "_SystDown_MuEn");
+                jetColl, bjetColl, rawjetColl, param_jets, vMET_T1xy, ev, weight_MuEnDown, "_SystDown_MuEn");
       DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                jetJESUpColl, bjetJESUpColl, vMET_T1xy_JESUp, ev, weight_JESUp, "_SystUp_JES");
+                jetJESUpColl, bjetJESUpColl, rawjetJESUpColl, param_jets, vMET_T1xy_JESUp, ev, weight_JESUp, "_SystUp_JES");
       DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                jetJESDownColl, bjetJESDownColl, vMET_T1xy_JESDown, ev, weight_JESDown, "_SystDown_JES");
+                jetJESDownColl, bjetJESDownColl, rawjetJESDownColl, param_jets, vMET_T1xy_JESDown, ev, weight_JESDown, "_SystDown_JES");
       DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                jetJERUpColl, bjetJERUpColl, vMET_T1xy_JERUp, ev, weight_JERUp, "_SystUp_JER");
+                jetJERUpColl, bjetJERUpColl, rawjetJERUpColl, param_jets, vMET_T1xy_JERUp, ev, weight_JERUp, "_SystUp_JER");
       DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                jetJERDownColl, bjetJERDownColl, vMET_T1xy_JERDown, ev, weight_JERDown, "_SystDown_JER");
+                jetJERDownColl, bjetJERDownColl, rawjetJERDownColl, param_jets, vMET_T1xy_JERDown, ev, weight_JERDown, "_SystDown_JER");
       DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                jetColl, bjetColl, vMET_T1xy_UnclUp, ev, weight, "_SystUp_Uncl");
+                jetColl, bjetColl, rawjetColl, param_jets, vMET_T1xy_UnclUp, ev, weight, "_SystUp_Uncl");
       DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                jetColl, bjetColl, vMET_T1xy_UnclDown, ev, weight, "_SystDown_Uncl");
+                jetColl, bjetColl, rawjetColl, param_jets, vMET_T1xy_UnclDown, ev, weight, "_SystDown_Uncl");
 //      if(FlipRun && !FakeRun){
 //        DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, ElCFPT1UpTColl, ElCFPT1UpLColl, electronVetoColl,
 //                  jetColl, bjetColl, vMET_T1xy, ev, weight*w_FrCF1, "_SystUp_CFPT");
@@ -519,7 +537,7 @@ void KinVarPlot::executeEvent(){
     }
     if(SysWgtStrPairList.size()>0){
       DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
-                jetColl, bjetColl, vMET_T1xy, ev, weight, "SystWgtVar");
+                jetColl, bjetColl, rawjetColl, param_jets, vMET_T1xy, ev, weight, "SystWgtVar");
       
       SysWgtStrPairList.clear();
     }
@@ -530,11 +548,11 @@ void KinVarPlot::executeEvent(){
 
 void KinVarPlot::DoSystRun(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,
                            vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
-                           vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, Event& Ev, float weight, TString Label)
+                           vector<Jet>& JetColl, vector<Jet>& BJetColl, vector<Jet>& rawJetColl, JetTagging::Parameters& param_jets, Particle& vMET, Event& Ev, float weight, TString Label)
 {
 
   if(VarPlots or DiscPlots){
-    MakePlotSS2L(MuTColl, MuLColl, MuVColl, ElTColl, ElLColl, ElVColl, JetColl, BJetColl, vMET, weight, Label);
+    MakePlotSS2L(MuTColl, MuLColl, MuVColl, ElTColl, ElLColl, ElVColl, JetColl, BJetColl, rawJetColl, param_jets, vMET, weight, Label);
   }
   else if(TriLep){
     MakePlot3L(MuTColl, MuLColl, MuVColl, ElTColl, ElLColl, ElVColl, JetColl, BJetColl, vMET, weight, Label); 
@@ -556,7 +574,7 @@ void KinVarPlot::CheckEffFlow(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
 
   int NMuT=MuTColl.size(), NElT=ElTColl.size(), NMuL=MuLColl.size(), NElL=ElLColl.size(), NMuV=MuVColl.size(), NElV=ElVColl.size();
   float w_Pref = 1., sf_Tr = 1.;
-  float sf_mID = 1., sf_eReco = 1., sf_eID = 1., sf_B = 1.;
+  float sf_mID = 1., sf_eReco = 1., sf_eID = 1., sf_B = 1., sf_mIso=1.;
   bool IsSigMC = !IsDATA && MCSample.Contains("HeavyN");
   int it_cut=0;
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
@@ -567,6 +585,7 @@ void KinVarPlot::CheckEffFlow(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
       TString SFKey_Trig_All = MuTColl.size()==2? "DiMuIso_HNTopID":ElTColl.size()==2? "DiElIso_HNTopIDSS":"EMuIso_HNTopIDSS"; 
       sf_Tr   = mcCorr->GetTriggerSF(ElTColl, MuTColl, SFKey_Trig_All, "");
       sf_mID   = GetMuonSF(MuTColl, "TopHNT", "ID");
+      sf_mIso   = GetMuonSF(MuTColl, "TopHNTIsoIP_POGMID", "Iso");
       sf_eReco = GetElectronSF(ElTColl, "", "Reco");
       sf_eID   = GetElectronSF(ElTColl, "TopHNSST", "ID");
       sf_B   = mcCorr->GetBTaggingReweight_1a(JetColl, param_jets);
@@ -595,7 +614,7 @@ void KinVarPlot::CheckEffFlow(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
   }
 
   //2lss
-  if(IsSigMC) weight *= sf_mID*sf_eID*sf_eReco;
+  if(IsSigMC) weight *= sf_mID*sf_eID*sf_eReco*sf_mIso;
   if     (NMuT==2) Label="_2M"+Label;
   else if(NElT==2) Label="_2E"+Label;
   if( !( (NMuT==2 and NElT==0 && MuTColl.at(0).Charge()==MuTColl.at(1).Charge())
@@ -1441,7 +1460,7 @@ void KinVarPlot::TestPlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
 
 void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,
                               vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
-                              vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, float weight, TString Label)
+                              vector<Jet>& JetColl, vector<Jet>& BJetColl, vector<Jet>& rawJetColl, JetTagging::Parameters& param_jets, Particle& vMET, float weight, TString Label)
 {
 
   int NMuT=MuTColl.size(), NElT=ElTColl.size(), NMuL=MuLColl.size(), NElL=ElLColl.size(), NMuV=MuVColl.size(), NElV=ElVColl.size();
@@ -1450,6 +1469,7 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
   if( !(NMuT==NMuL and NElT==NElL) ) return;
   if( !(NMuT==NMuV and NElT==NElV) ) return;
   if( FakeRun      and weight==0.  ) return; 
+  vector<Jet> rawbJetColl = SelBJets(rawJetColl, param_jets);
   
   if(NMuT==2){
     if(!IsDATA && MCSample.Contains("HeavyN-El")) return;
@@ -1469,6 +1489,18 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
     if(BJetColl.size()<1) return;
     NjPre = JetColl.size();
     if(JetColl.size() <3) return;
+    if(FakeRun ){ 
+      for(unsigned int im=0; im < MuTColl.size();im++){
+        for(unsigned int ij=0; ij < rawJetColl.size(); ij++){
+          if(MuTColl.at(im).DeltaR(rawJetColl.at(ij))<0.4){Overlap_lj = 1;}
+          else{Overlap_lj = 0;}
+        }
+        for(unsigned int ib=0; ib < rawbJetColl.size(); ib++){
+          if(MuTColl.at(im).DeltaR(rawbJetColl.at(ib))<0.4){Overlap_lb = 1;}
+          else{Overlap_lb = 0;}
+        }
+      }
+    }
 
     vector<Jet> BCandColl = BJetColl.size()>1? BJetColl:JetColl;
     vector<Jet> NonBJetColl = SelLightJets(JetColl, jtps.at(0));
@@ -1476,7 +1508,6 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
     if(NonBJetColl.size()==0) return;
 
     if(FakeRun){
-      cout<<"Fake Cone Correction"<<endl;
       for(unsigned int ie=0; ie<ElTColl.size(); ie++){ 
         Electron TmpEl(ElTColl.at(ie));
         float RelIso = ElTColl.at(ie).MiniRelIso();
@@ -1545,10 +1576,6 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
     Ml1W_1jL  = (MuConeColl.at(0)+NonBJetColl.at(Idxj1W_1jL)).M();
     Ml2W_1jL  = (MuConeColl.at(1)+NonBJetColl.at(Idxj1W_1jL)).M();
 
-    MbllW_1jL = 0;
-    MllW_1jL  = 0;
-    Ml1W_1jL  = 0;
-    Ml2W_1jL  = 0;
 
 
 
@@ -1568,9 +1595,6 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
     Ml1W_1jH  = (MuConeColl.at(0)+NonBJetColl.at(Idxj1W_1jH)).M();
     Ml2W_1jH  = (MuConeColl.at(1)+NonBJetColl.at(Idxj1W_1jH)).M();
 
-    MbllW_1jH=0;
-    Ml1W_1jH=0;
-    Ml2W_1jH=0;
 
 
     int Idxj1W_H=-1, Idxj2W_H=-1, Idxbt_H=-1; float BestSumDelta_H=-1; 
@@ -1592,9 +1616,6 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
     Ml1W_H  = BestSumDelta_H<0? -1.:(MuConeColl.at(0)+NonBJetColl.at(Idxj1W_H)+NonBJetColl.at(Idxj2W_H)).M();
     Ml2W_H  = BestSumDelta_H<0? -1.:(MuConeColl.at(1)+NonBJetColl.at(Idxj1W_H)+NonBJetColl.at(Idxj2W_H)).M();
 
-    MbllW_H = 0;
-    Ml1W_H = 0;
-    Ml2W_H = 0;
 
 
     if( !(Label.Contains("SystWgtVar") && SysWgtStrPairList.size()>0) ){
@@ -1602,7 +1623,6 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
       if(VarPlots){
         PlotParameters("_2M_MNltMW"+Label);
         if(NonBJetColl.size()>1) PlotParameters("_2M_MNgtMW"+Label);
-//        PlotParameters("_2M_MNgtMW"+Label);
       }
       if(DiscPlots){
         PlotDiscriminators("_2M_MNltMW"+Label);
@@ -1616,7 +1636,6 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
         TString SystStr = SysWgtStrPairList.at(iw).second;
         if(VarPlots){
           PlotParameters("_2M_MNltMW"+Label+SystStr);
-//          PlotParameters("_2M_MNgtMW"+Label+SystStr);
           if(NonBJetColl.size()>1) PlotParameters("_2M_MNgtMW"+Label+SystStr);
         }
         if(DiscPlots){
@@ -1658,6 +1677,18 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
     vector<Jet> NonBJetColl = SelLightJets(JetColl, jtps.at(0));
     NljPre = NonBJetColl.size();
     if(NonBJetColl.size()==0) return;
+    if(FakeRun){ 
+      for(unsigned int ie=0; ie < ElTColl.size();ie++){
+        for(unsigned int ij=0; ij < rawJetColl.size(); ij++){
+          if(ElTColl.at(ie).DeltaR(rawJetColl.at(ij))<0.4){Overlap_lj = 1;}
+          else{Overlap_lj = 0;}
+        }
+        for(unsigned int ib=0; ib < rawbJetColl.size(); ib++){
+          if(ElTColl.at(ie).DeltaR(rawbJetColl.at(ib))<0.4){Overlap_lb = 1;}
+          else{Overlap_lb = 0;}
+        }
+      }
+    }
 
     if(FakeRun){
       cout<<"Fake Cone Correction"<<endl;
@@ -1776,9 +1807,6 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
     Ml2j1W_BkdTop = (ElConeColl.at(1)+NonBJetColl.at(0)).M();
     Ml2W_BkdTop   = bestmjjW<0? -1.:(ElConeColl.at(1)+NonBJetColl.at(Idxj1W)+NonBJetColl.at(Idxj2W)).M();
     MTbl1v_BkdTop = MT(BJetColl.at(0)+ElConeColl.at(0),vMET);
-    Ml2j1W_BkdTop=0;
-    Ml2W_BkdTop=0;
-    MTbl1v_BkdTop=0;
 
     int Idxj1W_1jL=-1, Idxbt_1jL=-1; float BestSumDelta_L=-1; 
     for(unsigned int ib=0; ib<BCandColl.size(); ib++){
@@ -1796,10 +1824,6 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
     MllW_1jL  = (ElConeColl.at(0)+ElConeColl.at(1)+NonBJetColl.at(Idxj1W_1jL)).M();
     Ml1W_1jL  = (ElConeColl.at(0)+NonBJetColl.at(Idxj1W_1jL)).M();
     Ml2W_1jL  = (ElConeColl.at(1)+NonBJetColl.at(Idxj1W_1jL)).M();
-    MbllW_1jL = 0;
-    MllW_1jL = 0;
-    Ml1W_1jL = 0;
-    Ml2W_1jL = 0;
 
 
     int Idxj1W_1jH=-1, Idxbt_1jH=-1; float BestDeltambllj=-1;
@@ -1816,9 +1840,6 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
     MbllW_1jH = (ElConeColl.at(0)+ElConeColl.at(1)+NonBJetColl.at(Idxj1W_1jH)+BCandColl.at(Idxbt_1jH)).M();
     Ml1W_1jH  = (ElConeColl.at(0)+NonBJetColl.at(Idxj1W_1jH)).M();
     Ml2W_1jH  = (ElConeColl.at(1)+NonBJetColl.at(Idxj1W_1jH)).M();
-    MbllW_1jH = 0;
-    Ml1W_1jH = 0;
-    Ml2W_1jH = 0;
 
     int Idxj1W_H=-1, Idxj2W_H=-1, Idxbt_H=-1; float BestSumDelta_H=-1; 
     for(unsigned int ib=0; ib<BCandColl.size(); ib++){
@@ -1837,15 +1858,11 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
     MbllW_H = BestSumDelta_H<0? -1.:(ElConeColl.at(0)+ElConeColl.at(1)+NonBJetColl.at(Idxj1W_H)+NonBJetColl.at(Idxj2W_H)+BCandColl.at(Idxbt_H)).M();
     Ml1W_H  = BestSumDelta_H<0? -1.:(ElConeColl.at(0)+NonBJetColl.at(Idxj1W_H)+NonBJetColl.at(Idxj2W_H)).M();
     Ml2W_H  = BestSumDelta_H<0? -1.:(ElConeColl.at(1)+NonBJetColl.at(Idxj1W_H)+NonBJetColl.at(Idxj2W_H)).M();
-    MbllW_H = 0;
-    Ml1W_H = 0;
-    Ml2W_H = 0;
 
     if( !(Label.Contains("SystWgtVar") && SysWgtStrPairList.size()>0) ){
       w_tot   = newweight;
       if(VarPlots){
         PlotParameters("_2E_MNltMW"+Label);
-//        PlotParameters("_2E_MNgtMW"+Label);
         if(NonBJetColl.size()>1) PlotParameters("_2E_MNgtMW"+Label);
       }
       if(DiscPlots){
@@ -1860,7 +1877,6 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
         TString SystStr = SysWgtStrPairList.at(iw).second;
         if(VarPlots){
           PlotParameters("_2E_MNltMW"+Label+SystStr);
-//          PlotParameters("_2E_MNgtMW"+Label+SystStr);
           if(NonBJetColl.size()>1) PlotParameters("_2E_MNgtMW"+Label+SystStr);
         }
         if(DiscPlots){
@@ -2126,6 +2142,10 @@ void KinVarPlot::PlotParameters(TString Label){
   FillHist("NEvt"+Label, 0., w_tot, 1, 0., 1.);
   FillHist("Nj"+Label, Nj, w_tot, 10, 0., 10.);
   FillHist("Nb"+Label, Nb, w_tot, 4, 0, 4.);
+  if(FakeRun){
+    FillHist("Overlap_lj"+Label, Overlap_lj, w_tot, 2, 0, 2.);
+    FillHist("Overlap_lb"+Label, Overlap_lb, w_tot, 2, 0, 2.);
+  }
   FillHist("Ptl1"+Label, Ptl1, w_tot, 25, 0., 250.);
   FillHist("Ptl2"+Label, Ptl2, w_tot, 20, 0., 100.);
   FillHist("HT"+Label, HT, w_tot, 25, 0., 1000.);
@@ -2185,6 +2205,7 @@ void KinVarPlot::PlotDiscriminators(TString Label){
       TString NewLabel(Label);
       NewLabel.ReplaceAll("_MNgtMW",""); NewLabel.ReplaceAll("_MNltMW","");
       FillHist("NCntBDTG_All"+NewLabel, PassCut? (double) BinIdx:-1., w_tot, 5, 0., 5.);
+      FillHist("BDTG"+MixTag+"_MN"+MNStrList.at(im)+Label, MVAvalue, w_tot, 25, -1., 1.);
 
       int BinIdxPre = BelowMW? 0:1;
       if(im==0) FillHist("NCntPreSel_All"+NewLabel, BinIdxPre, w_tot, 2, 0., 2.);
@@ -2248,7 +2269,7 @@ void KinVarPlot::InitializeTreeVars(){
   NjPre=-1, NbPre=-1, NljPre=-1;
   Nj=-1, Nb=-1, Ptl1=-1, Ptl2=-1, MET=-1, HT=-1;
   dRll=-1, dRlj11=-1, dRlj12=-1, dRlj13=-1, dRlj21=-1, dRlj22=-1, dRlj23=-1;
-  MSSSF=-1;
+  MSSSF=-1, Overlap_lj=-1, Overlap_lb=-1;
   MTvl1=-1, MTllv=-1, Ml2j1W_BkdTop=-1, Ml2W_BkdTop=-1, MTbl1v_BkdTop=-1;
   MbllW_1jL=-1, MllW_1jL=-1, Ml1W_1jL=-1, Ml2W_1jL=-1;
   MbllW_1jH=-1, Ml1W_1jH=-1, Ml2W_1jH=-1;
@@ -2426,15 +2447,12 @@ float KinVarPlot::GetDataFakeWeight(vector<Muon>& MuColl, vector<Electron>& ElCo
 
   float weight = IsDATA? -1.:1.;
   int NLepLNotT=0; float TightIso= 0.1;
-  bool MuFRConePtCut = MuFRKey.Contains("ConePtCut"), ElFRConePtCut=ElFRKey.Contains("ConePtCut");
+  bool MuFRConePtCut = MuFRKey.Contains("ConePtCut"), ElFRConePtCut=ElFRKey.Contains("ConePtCut"), Overlap_Mu = false, Overlap_El = false;
   for(unsigned int im=0; im<MuColl.size(); im++){
     if(MuColl.at(im).PassID(MuTID)) continue; 
     for(unsigned int ib=0; ib<rawbjetColl.size(); ib++){
       if(rawbjetColl.at(ib).DeltaR(MuColl.at(im))<0.4){
-        if (GetEraShort() == "2018") { weight *= 0.84;}
-        else if (GetEraShort() == "2017") { weight *= 0.84;}
-        else if (GetEraShort() == "2016a") { weight *= 0.85;}
-        else if (GetEraShort() == "2016b") { weight *= 0.85;}
+        Overlap_Mu = true;
       }
     }
     float PTCorr = MuColl.at(im).CalcPtCone(MuColl.at(im).MiniRelIso(), TightIso);
@@ -2444,15 +2462,15 @@ float KinVarPlot::GetDataFakeWeight(vector<Muon>& MuColl, vector<Electron>& ElCo
     weight*=-FR/(1.-FR);
     NLepLNotT++;
   }
+  if (GetEraShort() == "2018" && Overlap_Mu) { weight *= 0.84;}
+  else if (GetEraShort() == "2017" && Overlap_Mu) { weight *= 0.84;}
+  else if (GetEraShort() == "2016a" && Overlap_Mu) { weight *= 0.85;}
+  else if (GetEraShort() == "2016b" && Overlap_Mu) { weight *= 0.85;}
 
   for(unsigned int ie=0; ie<ElColl.size(); ie++){
     if(ElColl.at(ie).PassID(ElTID)) continue; 
     for(unsigned int ib=0; ib<rawbjetColl.size(); ib++){
       if(rawbjetColl.at(ib).DeltaR(ElColl.at(ie))<0.4){
-        if (GetEraShort() == "2018") { weight *= 0.86;}
-        else if (GetEraShort() == "2017") { weight *= 0.81;}
-        else if (GetEraShort() == "2016a") { weight *= 0.86;}
-        else if (GetEraShort() == "2016b") { weight *= 0.85;}     
       }
     }
     float PTCorr = ElColl.at(ie).CalcPtCone(ElColl.at(ie).MiniRelIso(), TightIso);
@@ -2462,6 +2480,10 @@ float KinVarPlot::GetDataFakeWeight(vector<Muon>& MuColl, vector<Electron>& ElCo
     weight*=-FR/(1.-FR);
     NLepLNotT++;
   }
+  if (GetEraShort() == "2018" && Overlap_El) { weight *= 0.86;}
+  else if (GetEraShort() == "2017" && Overlap_El) { weight *= 0.81;}
+  else if (GetEraShort() == "2016a" && Overlap_El) { weight *= 0.86;}
+  else if (GetEraShort() == "2016b" && Overlap_El) { weight *= 0.85;}     
   if(NLepLNotT==0) weight=0.;
 
   return weight;

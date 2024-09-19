@@ -17,12 +17,12 @@ public:
 
   bool OS2l, SS2l, TriLep, TetraLep; 
   bool DblMu, DblEG, MuEG;
-  bool FakeRun, ConvRun, FlipRun, SystRun, GenSyst, PUVETO, ReverseBDT;
+  bool FakeRun, ConvRun, FlipRun, SystRun, GenSyst, PUVETO, ReverseBDT, POGEl;
   bool DiscPlots, VarPlots, EffFlow, GlobFeas, GenMatchedDist, DecCompCheck, DiscCutOpt, DiscTable, DiscCNC, TestPlot, BDTVal;
   vector<TString> TrigList_DblMu, TrigList_DblEG, TrigList_MuEG;
 
   void MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl, vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
-                    vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, float weight, TString Label);
+                    vector<Jet>& JetColl, vector<Jet>& BJetColl, vector<Jet>& rawJetColl, JetTagging::Parameters& param_jets, Particle& vMET, float weight, TString Label);
   void MakePlot3L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl, vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
                   vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, float weight, TString Label);
   void MakePlot4L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,
@@ -42,7 +42,7 @@ public:
 
   void  DoSystRun(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,
                   vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
-                  vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, Event& Ev, float weight, TString Label);
+                  vector<Jet>& JetColl, vector<Jet>& BJetColl, vector<Jet>& rawJetColl, JetTagging::Parameters& param_jets, Particle& vMET, Event& Ev, float weight, TString Label);
 
 
 
@@ -77,6 +77,7 @@ public:
   Float_t MbllW_1jL, MllW_1jL, Ml1W_1jL, Ml2W_1jL;
   Float_t MbllW_1jH, Ml1W_1jH, Ml2W_1jH;
   Float_t MbllW_H, Ml1W_H, Ml2W_H; 
+  Float_t Overlap_lj, Overlap_lb; 
 
   TFile* FRFile_El; TFile* FRFile_Mu; TFile* CFRFile; TFile* GenNormFile; 
   std::map< TString, TH2D* > maphist_FR;
