@@ -21,6 +21,7 @@ public:
   ~SkimTree_EGammaTnP_HEEP();
 
   TTree* newtree;
+  TTree* weight_tree;
   float weight;
   float PUweight,PUweight_up,PUweight_down;
   float prefireweight,prefireweight_up,prefireweight_down;

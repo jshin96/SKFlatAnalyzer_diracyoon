@@ -9,6 +9,22 @@ void SkimTree_EGammaTnP_HEEP::initializeAnalyzer(){
   HNL_LeptonCore::initializeAnalyzer(); 
   outfile->cd();
 
+  weight_tree=new TTree("weight_tree","weight_tree");
+  if(!IsDATA){
+    weight_tree->Branch("event",&event);
+    weight_tree->Branch("weight",&weight);
+    weight_tree->Branch("PUweight",&PUweight);
+    weight_tree->Branch("PUweight_up",&PUweight_up);
+    weight_tree->Branch("PUweight_down",&PUweight_down);
+    weight_tree->Branch("prefireweight",&prefireweight);
+    weight_tree->Branch("prefireweight_up",&prefireweight_up);
+    weight_tree->Branch("prefireweight_down",&prefireweight_down);
+    weight_tree->Branch("zptweight",&zptweight);
+    weight_tree->Branch("z0weight",&z0weight);
+    weight_tree->Branch("totWeight",&totWeight);
+  }
+
+
   newtree=new TTree("fitter_tree","fitter_tree");
 
   newtree->Branch("run",&run);
@@ -207,12 +223,11 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
       prefireweight_down=p.w.prefireweight_down;
       zptweight=p.w.zptweight;
       z0weight=p.w.z0weight;
-      totWeight=p.w.lumiweight*p.w.PUweight*p.w.prefireweight*p.w.zptweight*p.w.z0weight;
+      //      totWeight=p.w.lumiweight*p.w.PUweight*p.w.prefireweight*p.w.zptweight*p.w.z0weight;
+      totWeight=p.w.lumiweight*p.w.PUweight*p.w.prefireweight;
     }
     L1ThresholdHLTEle23Ele12CaloIdLTrackIdLIsoVL=GetL1Threshold();
-
     
-
     /// Check number of tag + probe pairs to help sort pairs
     int nTagPair(0);
     for(Electron& tag:electrons){
@@ -398,6 +413,7 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
 	}
 	
 	newtree->Fill();
+	weight_tree->Fill();
 	
       }
     } /// tag loop
@@ -405,6 +421,10 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
 }
 
 void SkimTree_EGammaTnP_HEEP::WriteHist(){
+
+  /// Write 
+  outfile->cd();
+  weight_tree->Write();
   outfile->mkdir("tnpEleIDs");
   outfile->cd("tnpEleIDs");
   newtree->Write();
