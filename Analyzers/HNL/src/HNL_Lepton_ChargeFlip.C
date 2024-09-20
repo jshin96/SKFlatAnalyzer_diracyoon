@@ -10,7 +10,7 @@ void HNL_Lepton_ChargeFlip::initializeAnalyzer(){
   ///
 
   // HasFlag("ShiftEnergy")  ---> Step 1 measure Pt response of CF vs Prompt Electron to Get Pt/Eta dep shift  
-  // HasFlag("ElCFRates")    ---> Measure rates in DY/Top MC (using Pt CF response)
+  // HasFlag("ElCFRates")    ---> Measure rates in DY/Top MC (using Pt CF response)set
   // HasFlag("ClosureTest") ---> Check mc closure  (Using only DY)
   // HasFlag("ScaleFactor")  ---> Compare Data SS vs OS weighted in BB / EC (using CF Rates) 
   
@@ -1107,7 +1107,8 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 	}*/
 
       TString EtaBin = (iel.IsBB()) ? "BB" : "EC";
-      
+      if (iel.IsBB() && fabs(iel.scEta()) < .8) EtaBin= "BB1" ;
+      if (iel.IsBB() && fabs(iel.scEta()) > .8) EtaBin= "BB2" ;
 
       ///// Draw GenPt
       vector<double> Shifts_El = {0.998,0.996,0.994,0.992,0.99,0.988,0.986, 0.984,0.982,0.98,0.978,0.976,0.974,0.972,0.97,0.965,0.96,0.955,0.95,0.94};
@@ -1181,19 +1182,19 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 
 
       TString EtaBinLabel =  "";
-      if(iel.scEta() < -2.3) EtaBinLabel =  "_Eta_Bin1";
-      else if(iel.scEta() < -2.) EtaBinLabel =  "_Eta_Bin1";
-      else if(iel.scEta() < -1.56) EtaBinLabel =  "_Eta_Bin1";
-      else if((iel.etaRegion()!=Electron::GAP) && iel.scEta() < -1) EtaBinLabel =  "_Eta_Bin1";
-      else if(iel.scEta() < -0.8) EtaBinLabel =  "_Eta_Bin1";
-      else if(iel.scEta() < -0.3) EtaBinLabel =  "_Eta_Bin1";
-      else if(iel.scEta() < 0) EtaBinLabel =  "_Eta_Bin1";
-      else if(iel.scEta() < 0.3) EtaBinLabel =  "_Eta_Bin1";
-      else if(iel.scEta() < 0.8) EtaBinLabel =  "_Eta_Bin1";
-      else if(iel.scEta() < 1) EtaBinLabel =  "_Eta_Bin1";
-      else if(iel.scEta() < 1.442) EtaBinLabel =  "_Eta_Bin1";
-      else if(iel.scEta() < 2.&& (iel.etaRegion()!=Electron::GAP))  EtaBinLabel =  "_Eta_Bin1";
-      else if(iel.scEta() < 2.5) EtaBinLabel =  "_Eta_Bin1";
+      if(iel.scEta() < -2.3) EtaBinLabel =  "Eta_Bin1";
+      else if(iel.scEta() < -2.) EtaBinLabel =  "Eta_Bin2";
+      else if(iel.scEta() < -1.56) EtaBinLabel =  "Eta_Bin3";
+      else if((iel.etaRegion()!=Electron::GAP) && iel.scEta() < -1) EtaBinLabel =  "Eta_Bin4";
+      else if(iel.scEta() < -0.8) EtaBinLabel =  "Eta_Bin5";
+      else if(iel.scEta() < -0.3) EtaBinLabel =  "Eta_Bin6";
+      else if(iel.scEta() < 0) EtaBinLabel =  "Eta_Bin7";
+      else if(iel.scEta() < 0.3) EtaBinLabel =  "Eta_Bin8";
+      else if(iel.scEta() < 0.8) EtaBinLabel =  "Eta_Bin9";
+      else if(iel.scEta() < 1) EtaBinLabel =  "Eta_Bin10";
+      else if(iel.scEta() < 1.442) EtaBinLabel =  "Eta_Bin11";
+      else if(iel.scEta() < 2.&& (iel.etaRegion()!=Electron::GAP))  EtaBinLabel =  "Eta_Bin12";
+      else if(iel.scEta() < 2.5) EtaBinLabel =  "Eta_Bin13";
             
       if(iel.IsPrompt() &&  bIsCF) {
         FillHist(param.Name+"/Pt/"+EtaBin+"_CF", iel.Pt() , EvWeight , 200, 0,2000);

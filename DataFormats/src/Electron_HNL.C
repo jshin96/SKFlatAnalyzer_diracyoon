@@ -34,6 +34,10 @@ int  Electron::PassHNLTight(TString ID) const{
   if(ID == "HNL_ULID_"+Year)    return BtoI(PassID("HNL_ULID_Defv2_FO") && PassID("HNL_ULID_Fake"));
   if(ID == "HNL_ULID_NoMedCC")  return BtoI(PassID("HNL_ULID_Defv1_FO") && PassID("HNL_ULID_Fake"));
 
+  if(ID == "HNL_ULID_TrkIso")    return BtoI(PassID("HNL_ULID_TrkIso_Conv")   &&
+						   PassID("HNL_ULID_TrkIso_CF")     &&
+						   PassID("HNL_ULID_TrkIso_Fake"));
+  
   if(ID == "HNL_ULID_HEEP")    {
     if(this->Pt() < 200)      return BtoI(PassID("HNL_ULID_TrkIso_Conv")   && 
 					  PassID("HNL_ULID_TrkIso_CF")     && 

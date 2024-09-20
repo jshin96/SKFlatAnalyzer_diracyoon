@@ -31,20 +31,23 @@ void SkimTree_EGammaTnP_HEEP::initializeAnalyzer(){
   newtree->Branch("L1ThresholdHLTEle23Ele12CaloIdLTrackIdLIsoVL",&L1ThresholdHLTEle23Ele12CaloIdLTrackIdLIsoVL);
 
   newtree->Branch("passingCutBasedMedium94XV2",&passingCutBasedMedium94XV2);
-  newtree->Branch("passingCutBasedTight94XV2",&passingCutBasedTight94XV2);
+  newtree->Branch("passingCutBasedTight94XV2", &passingCutBasedTight94XV2);
   newtree->Branch("passingMVA80",&passingMVA80);
   newtree->Branch("passingMVA90",&passingMVA90);
   newtree->Branch("passingHEEP",&passingHEEP);
   newtree->Branch("passingMVALoose",&passingMVALoose);
   newtree->Branch("passingTriggerEmul",&passingTriggerEmul);
 
+  newtree->Branch("passingHNLHeep",&passingHNLHeep);
   newtree->Branch("passingHNLMVA",&passingHNLMVA);
+  newtree->Branch("passingHNLMVA_TrkIso",&passingHNLMVA_TrkIso);
   newtree->Branch("passingHNLMVACF",&passingHNLMVACF);
   newtree->Branch("passingHNLMVAConv",&passingHNLMVAConv);
   newtree->Branch("passingHNLMVAFake",&passingHNLMVAFake);
   newtree->Branch("scoreHNLMVACF",&scoreHNLMVACF);
   newtree->Branch("scoreHNLMVAConv",&scoreHNLMVAConv);
   newtree->Branch("scoreHNLMVAFake",&scoreHNLMVAFake);
+
   newtree->Branch("passEGL1SingleEGOr",&passEGL1SingleEGOr);
   newtree->Branch("passHltEle27WPTightGsf",&passHltEle27WPTightGsf);
   newtree->Branch("passHltEle28WPTightGsf",&passHltEle28WPTightGsf);
@@ -251,41 +254,22 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
       
       //// Since there are more than one pair with different tags  need to check first if one pair has two tags
 
-      bool TTPair=false;
-      //// check for TT pair
       for(Electron& tag:electrons){
-	if(TTPair) continue; /// already found TT pair
-        if(!IsTag(tag)) continue;
-        for(Electron& probe:electrons){
-          if(&tag==&probe) continue;
-          if(!IsGoodTagProbe(tag,probe)) continue;
-	  if(IsTag(probe)) {
-	    /// Fill Leading TT pair only
-	    matched_pair_electrons.push_back(make_pair(tag,probe));
-            matched_pair_electrons.push_back(make_pair(probe,tag));
-	    TTPair=true;
+	double pt_probe_highest_pt = 0;
+	if(!IsTag(tag)) continue;
+	Electron probe_assigned;
+	for(Electron& probe:electrons){
+	  if(&tag==&probe) continue;
+
+	  if(!IsGoodTagProbe(tag,probe)) continue;
+
+	  if(probe.Pt() > pt_probe_highest_pt) {
+	    pt_probe_highest_pt = probe.Pt();
+	    probe_assigned = probe;
 	  }
-	}
-      }
-      
-      /// If no TT pair loop and fill pair for each tag using highest pt probe
-      if(!TTPair){
-	//// Take leading TT pair and use in T&P
-	for(Electron& tag:electrons){
-	  double pt_probe_highest_pt = 0;
-	  if(!IsTag(tag)) continue;
-	  Electron probe_HighPt;
-	  for(Electron& probe:electrons){
-	    if(&tag==&probe) continue;
-	    if(!IsGoodTagProbe(tag,probe)) continue;
-	    if(probe.Pt() > pt_probe_highest_pt) {
-	      pt_probe_highest_pt = probe.Pt();
-	      probe_HighPt = probe;
-	    }
-	  }// probe loop
-	  matched_pair_electrons.push_back(make_pair(tag,probe_HighPt));
-	} // tag loop
-      } // no TT pair
+	}// probe loop
+	matched_pair_electrons.push_back(make_pair(tag,probe_assigned));
+      } // tag loop
     } // multi Tag pairs loop
     
     
@@ -312,6 +296,8 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
 	passingHNLMVAConv =probe.PassID("HNL_ULID_Conv");
 	passingHNLMVAFake =probe.PassID("HNL_ULID_Fake");
 	passingHNLMVA     =probe.PassID("HNL_ULID_"+GetYearString());
+	passingHNLMVA_TrkIso     =probe.PassID("HNL_ULID_TrkIso");
+	passingHNLHeep     =probe.PassID("HNL_ULID_HEEP");
 	
 	scoreHNLMVACF=probe.HNL_MVA_CF("EDv5");
 	scoreHNLMVAConv=probe.HNL_MVA_Conv("EDv5");
