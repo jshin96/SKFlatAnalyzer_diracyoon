@@ -193,27 +193,30 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
     
     if(!PassMETFilter()) return;
     
-
     map<Electron*,Gen*> genmatching;
+
     if(!IsDATA){
+
       for(Gen* gen:{&gen_l0_dressed,&gen_l1_dressed}){
 	vector<Electron*> cands={};
-	for(Electron& electron:electrons)
+	for(Electron&  electron: electrons){
 	  if(gen->DeltaR(electron)<0.2) cands.push_back(&electron);
-	double mindpt=1000.;
-	Electron *matched=NULL;
-	for(Electron* cand:cands){
-	  double dpt=fabs((cand->Pt()-gen->Pt())/gen->Pt());
-	  if(dpt<mindpt&&genmatching.find(cand)==genmatching.end()){
-	    mindpt=dpt;
-	    matched=cand;
+	  double mindpt=1000.;
+	  Electron *matched=NULL;
+	  for(Electron* cand:cands){
+	    double dpt=fabs((cand->Pt()-gen->Pt())/gen->Pt());
+	    if(dpt<mindpt&&genmatching.find(cand)==genmatching.end()){
+	      mindpt=dpt;
+	      matched=cand;
+	    }
+	  }
+	  if(matched){
+	    genmatching[matched]=gen;
 	  }
 	}
-	if(matched){
-	  genmatching[matched]=gen;
-	}
       }
-      
+
+
       weight=p.w.lumiweight;
       PUweight=p.w.PUweight;
       PUweight_up=p.w.PUweight_up;
@@ -231,6 +234,7 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
     /// Check number of tag + probe pairs to help sort pairs
     int nTagPair(0);
     for(Electron& tag:electrons){
+      
       if(!IsTag(tag)) continue;
       bool HasPair=false;
       for(Electron& probe:electrons){
@@ -243,7 +247,9 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
     
     /// Fill matched_pair_electrons with T&P pairs
     vector<pair<Electron,Electron> > matched_pair_electrons;
-    
+    vector<bool> matched_truth_pair_electrons;
+    vector<Gen*> v_gen_tag;
+    vector<Gen*> v_gen_probe;
     /// if nTags == 1 then use High Pt probe 
 
     if(nTagPair==0) return;
@@ -252,15 +258,41 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
       double pt_probe_highest = 0;
       for(Electron& tag:electrons){
 	if(!IsTag(tag)) continue;
-	///matched_pair_electrons.push_back(tag); /// Fill tag by default 
+	//// Loop over probe candidates
 	for(Electron& probe:electrons){
 
 	  if(&tag==&probe) continue;
 	  if(!IsGoodTagProbe(tag,probe)) continue;
+
+	  /// Check highest pt
 	  if(probe.Pt() > pt_probe_highest) {
 	    pt_probe_highest = probe.Pt();
-	    if(matched_pair_electrons.size() == 2)matched_pair_electrons.pop_back();
+
+	    if(matched_pair_electrons.size() == 2){
+	      /// Reset to update Highest Pt
+	      if(!IsData) {
+		v_gen_tag.pop_back();
+		v_gen_probe.pop_back();
+		matched_truth_pair_electrons.pop_back();
+	      }
+	      matched_pair_electrons.pop_back();
+	    }
 	    matched_pair_electrons.push_back(make_pair(tag,probe));
+	    /// Check Trth match for MC
+	    if(!IsData){
+	      /// Fill Tag and Probe Gen closest matched
+	      Gen* NullGen= NULL;
+	      if((genmatching.find(&tag)!=genmatching.end())) v_gen_tag.push_back(genmatching.find(&tag)->second);
+	      else v_gen_tag.push_back(NullGen);
+	      if((genmatching.find(&probe)!=genmatching.end())) v_gen_probe.push_back(genmatching.find(&probe)->second);
+	      else v_gen_probe.push_back(NullGen);
+
+	      /// If both are found set pair match true
+	      if(genmatching.find(&probe)!=genmatching.end() && (genmatching.find(&tag)!=genmatching.end())) {
+		matched_truth_pair_electrons.push_back(true);
+	      }
+	      else matched_truth_pair_electrons.push_back(false);
+	    }
 	  }
 	}
       }
@@ -271,8 +303,11 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
 
       for(Electron& tag:electrons){
 	double pt_probe_highest_pt = 0;
+	bool truth_matched_pair=false;
 	if(!IsTag(tag)) continue;
 	Electron probe_assigned;
+	Gen* TagGen=NULL;
+	Gen* ProbeGen=NULL;
 	for(Electron& probe:electrons){
 	  if(&tag==&probe) continue;
 
@@ -281,15 +316,33 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
 	  if(probe.Pt() > pt_probe_highest_pt) {
 	    pt_probe_highest_pt = probe.Pt();
 	    probe_assigned = probe;
+	    if(!IsData){
+              if(genmatching.find(&probe)!=genmatching.end() && (genmatching.find(&tag)!=genmatching.end())) truth_matched_pair=true;
+	      else               truth_matched_pair=false;
+
+	      Gen* NullGen= NULL;
+	      if((genmatching.find(&tag)!=genmatching.end())) TagGen = genmatching.find(&tag)->second;
+	      else  TagGen = NullGen;
+	      if((genmatching.find(&probe)!=genmatching.end())) ProbeGen = genmatching.find(&probe)->second;
+	      else ProbeGen = NullGen;
+
+	    }
 	  }
 	}// probe loop
 	matched_pair_electrons.push_back(make_pair(tag,probe_assigned));
+	if(!IsData){
+	  matched_truth_pair_electrons.push_back(truth_matched_pair);
+	  v_gen_tag.push_back(TagGen);	
+	  v_gen_probe.push_back(ProbeGen);	
+	}
       } // tag loop
     } // multi Tag pairs loop
     
     
+    int nPairs_counter=-1; /// Needed to access Gen Info
     for(auto t_p_pair : matched_pair_electrons){
-    
+      nPairs_counter++;
+      
       vector<Electron> vProbe = {t_p_pair.second};  // fill vector to keep structure of code same
       Electron tag = t_p_pair.first;
       if(!IsTag(tag)) continue;
@@ -386,13 +439,11 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
 	pair_pt_cor=pair_cor.Pt();
 	
 	if(!IsDATA){
-	  Gen *mc_probe=NULL,*mc_tag=NULL;
-	  if(genmatching.find(&probe)!=genmatching.end())
-	    mc_probe=genmatching[&probe];
-	  if(genmatching.find(&tag)!=genmatching.end())
-	    mc_tag=genmatching[&tag];
+	  Gen *mc_probe=v_gen_probe.at(nPairs_counter);
+	  Gen *mc_tag=v_gen_tag.at(nPairs_counter);
 	  
 	  if(mc_probe){
+	    //if(RunDebug) cout << " mc_probe->E()  " << mc_probe->E() << " mc_probe->Et() = " << mc_probe->Et() << " mc_probe->Eta() " << mc_probe->Eta() << " mc_probe->Phi() = " << mc_probe->Phi() << endl;
 	    mc_probe_e=mc_probe->E();
 	    mc_probe_et=mc_probe->Et();
 	    mc_probe_eta=mc_probe->Eta();
@@ -403,7 +454,7 @@ void SkimTree_EGammaTnP_HEEP::executeEvent(){
 	    mc_probe_eta=0.;
 	    mc_probe_phi=0.;
 	  }
-	  if(mc_probe&&mc_tag){
+	  if(matched_truth_pair_electrons.at(nPairs_counter)){
 	    mcTrue=true;
 	    mcMass=(*mc_probe+*mc_tag).M();
 	  }else{
