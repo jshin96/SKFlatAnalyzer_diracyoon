@@ -440,8 +440,8 @@ int  Electron::PassIDLoose(TString ID) const{
 
   if(ID=="passLooseID")  return BtoI(passLooseID());
   if(ID=="HEEPLoose_v1") return BtoI(passLooseHEEPID());
-  if(ID=="HEEPLoose_v2") return BtoI(passLooseHEEPID() && Pass_TriggerEmulation()&&PassConversionVeto() && IsGsfCtfScPixChargeConsistent());
-  if(ID=="HEEPLoose_v3") return BtoI(passLooseHEEPID() && Pass_TriggerEmulation()&&PassConversionVeto() && IsGsfCtfChargeConsistent());
+  if(ID=="HEEPLoose_v2") return BtoI(passLooseHEEPID() && Pass_TriggerEmulationLoose()&&PassConversionVeto() && IsGsfCtfScPixChargeConsistent());
+  if(ID=="HEEPLoose_v3") return BtoI(passLooseHEEPID() && Pass_TriggerEmulationLoose()&&PassConversionVeto() && IsGsfCtfChargeConsistent());
 
 
   //=== loose user                                                                                                                                                                                       
