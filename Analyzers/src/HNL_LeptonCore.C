@@ -71,7 +71,7 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
   //==== CFBackgroundEstimator                                                                                                                                              
   cfEst->SetEra(GetEra());
   if(RunCF&&READBKGHISTS)     cfEst->ReadHistograms(true);
-  else if (Analyzer.Contains("ChargeFlip"))  cfEst->ReadHistograms(false);
+  else if (Analyzer.Contains("ChargeFlip"))  cfEst->ReadHistograms(true);
 
 
   //// Setup Fake PartonSF 
@@ -79,14 +79,15 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
   vector<TString> FakeHMaps = {datapath + "/"+GetEra()+"/FakeRate/MCFR/TT_PartonSF.txt",
 			       datapath + "/"+GetEra()+"/FakeRate/MCFR/QCD_PartonSF.txt"};
 
-  if(IsData) FakeHMaps = {datapath + "/"+GetEra()+"/FakeRate/DataFR/Data_PartonSF.txt"};
+  if(IsDATA) FakeHMaps = {datapath + "/"+GetEra()+"/FakeRate/DataFR/Data_PartonSF.txt"};
+  cout << "HNL_LeptonCore::IsData = " << IsData << endl;
 
   for(auto ihmap  :  FakeHMaps){
     string Fline;
     ifstream in(ihmap);
     while(getline(in,Fline)){
       std::istringstream is( Fline );
-      if(IsData){
+      if(IsDATA){
         TString a,b,c,d;
         double e;
         is >> a; // Era
@@ -593,7 +594,8 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
   if (s_setup_version=="EXO17028") GetSetup_HNL16(param);
   if (s_setup_version=="TopHN")    GetSetup_HNLTopID(param);
   if (s_setup_version=="HNL_ULID") GetSetup_HNLID(param);
-   
+  if (s_setup_version=="HNL_ULID_HEEP") GetSetup_HNLIDHEEP(param);
+
   if (s_setup_version=="Peking")  GetSetup_Peking(param);
   if (s_setup_version=="HNL_Opt") GetSetup_HNLOpt(param);
   if (s_setup_version=="BDT")     GetSetup_BDT(param);

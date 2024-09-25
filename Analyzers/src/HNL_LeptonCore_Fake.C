@@ -16,7 +16,11 @@ double HNL_LeptonCore::GetPtPartonSF(Lepton  Lep, TString LooseID,AnalyzerParame
   if (HasFlag("CheckProfileEE")) return 1;
   if (LooseID.Contains("Veto"))  return 1;
 
-  if(!IsData){
+  bool UseDataSF=true;
+  if(IsDATA) UseDataSF=true;
+  else UseDataSF=false;
+
+  if(!UseDataSF){
 
     //// Access SF from text file 
     if(IsMuon){
@@ -70,7 +74,7 @@ double HNL_LeptonCore::GetPtPartonSF(Lepton  Lep, TString LooseID,AnalyzerParame
   }
 
   /// Scan Numbers
-  if(IsData){
+  if(UseDataSF){
     if(IsMuon){
       
       //// Muon Data we use Inclusive of Barrel + Endcap
@@ -85,6 +89,8 @@ double HNL_LeptonCore::GetPtPartonSF(Lepton  Lep, TString LooseID,AnalyzerParame
       return fit->second* SystFactor ;
     }
     else{
+
+      if(LooseID.Contains("HEEP")) LooseID = LooseID.ReplaceAll("_HEEP","");
       TString FSFKey = GetYearString()  + "_"+Lep.GetEtaRegion()+"_EE_"+LooseID + "_DATA" ;
 
       map<TString, double>::iterator fit = MakeSFmap.find(FSFKey);
@@ -166,7 +172,7 @@ double HNL_LeptonCore::GetFakeRateMuon(Muon mu, AnalyzerParameter param){
 double HNL_LeptonCore::GetFakeWeight(std::vector<Lepton *> leps, AnalyzerParameter _param){
 
   //// Access event weight based on Lepton collection                                                               
-  if(!IsData) return 1.;
+  if(!IsDATA) return 1.;
 
   fakeEst->IgnoreNoHist=true;
 
