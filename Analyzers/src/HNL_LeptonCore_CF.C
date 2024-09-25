@@ -206,10 +206,18 @@ double HNL_LeptonCore::GetShiftCFEl(Electron el,TString ID, bool ApplyDataCorr, 
       if(DataEra=="2017"        && !el.IsBB()) DataCorr=1.;
       if(DataEra=="2018"        && !el.IsBB()) DataCorr=0.98;
     }
+
+    double IDCorr = 1.;
     
+    if(ID == "POGTight"){
+      if(el.Pt() > 75) IDCorr = 1.02;
+    }
+    
+    
+
     /// For Data use corr based on closure
 
-    double ShiftSys=DataCorr;
+    double ShiftSys=DataCorr*IDCorr;
     if(Sys==1) ShiftSys=1.02*DataCorr;
     if(Sys==-1) ShiftSys=0.98*DataCorr;
 

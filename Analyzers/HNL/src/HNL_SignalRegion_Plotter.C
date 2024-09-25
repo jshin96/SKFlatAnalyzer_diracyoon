@@ -37,6 +37,10 @@ void HNL_SignalRegion_Plotter::executeEvent(){
 
   FillTimer("START_EV");
   
+
+  if(_jentry == 0){
+    cout << "HNL_SignalRegion_Plotter::IsData = " << IsData << endl;
+  }
   vector<TString> LepIDs = {"HNL_ULID","HNTightV2"};
   if(RunTopID) LepIDs = {"TopHN"};
   if(RunPOGID) LepIDs = {"POGTight"};
