@@ -70,12 +70,52 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
   
   //==== CFBackgroundEstimator                                                                                                                                              
   cfEst->SetEra(GetEra());
-  if(RunCF&&READBKGHISTS)     cfEst->ReadHistograms(true);
-  else if (Analyzer.Contains("ChargeFlip"))  cfEst->ReadHistograms(true);
+  if(RunCF&&READBKGHISTS)     cfEst->ReadHistograms(1);
+  else if (Analyzer.Contains("ChargeFlip"))  cfEst->ReadHistograms(2);
+
+  TString datapath = getenv("DATA_DIR");
+  for(auto mapCFShift  : {datapath+ "/"+GetEra()+"/CFRate/Shift.txt"} ){
+    cout << "Reading " << mapCFShift << endl;
+    string Fline;
+    ifstream in(mapCFShift);
+    while(getline(in,Fline)){
+      std::istringstream is( Fline );
+      TString a,b,c;
+      double d,e;
+      is >> a; // Era                                                                                                                                           
+      is >> b; // Bin
+      is >> c; // ID                                                                                                                                            
+      is >> d; // shiftValuechi
+      is >> e; // shiftValuemean
+
+      MakeCFShiftmap[a+"_"+b+"_"+c+"_Nom"] = d;
+      double sysVal= fabs(e-d);
+
+      double upvalue=d;
+      double downvalue=d;
+      if(sysVal < 0.01) sysVal = 0.01;
+      if(e > d) {
+	downvalue = 0.01;
+	upvalue = sysVal;
+      }
+      else if(e < d) {
+	downvalue = sysVal;
+	upvalue= 0.01;
+      }
+      else {
+	downvalue = 0.01;
+	upvalue = 0.01;
+      }
+      MakeCFShiftmap[a+"_"+b+"_"+c+"_Up"]  = upvalue;
+      MakeCFShiftmap[a+"_"+b+"_"+c+"_Down"] = downvalue;
+    }
+  }
+
+  for(auto ih : MakeCFShiftmap) cout << "Adding EL Shift " << ih.first << " " << ih.second << endl;
 
 
   //// Setup Fake PartonSF 
-  TString datapath = getenv("DATA_DIR");
+
   vector<TString> FakeHMaps = {datapath + "/"+GetEra()+"/FakeRate/MCFR/TT_PartonSF.txt",
 			       datapath + "/"+GetEra()+"/FakeRate/MCFR/QCD_PartonSF.txt"};
 
