@@ -18,6 +18,9 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
   //=== bkg flags                                                                                                                                      
   RunPrompt = HasFlag("RunPrompt");
   RunFake   = HasFlag("RunFake");
+  RunOSFake = HasFlag("RunOSFake");
+
+  if(RunOSFake) RunFake = true;/// In case RunFake not flagged
   RunFakeTF = HasFlag("RunFakeTF");
   RunCF     = HasFlag("RunCF");
   RunConv   = HasFlag("RunConv");
@@ -534,12 +537,12 @@ bool  HNL_LeptonCore::UpdataParamBySyst(TString JobID, AnalyzerParameter& paramE
 
   //// Setup FR ID
   if(paramEv.syst_ == AnalyzerParameter::FRLooseIDDJUp){
-    paramEv.Muon_FR_ID        = "HNL_ULID_FOUp";
-    paramEv.Electron_FR_ID    = "HNL_ULID_FOUp";
+    paramEv.Muon_FR_ID        = "HNL_ULID_FO_Up";
+    paramEv.Electron_FR_ID    = "HNL_ULID_FO_Up";
   }
   else if(paramEv.syst_ == AnalyzerParameter::FRLooseIDDJDown){
-    paramEv.Muon_FR_ID        = "HNL_ULID_FODown";
-    paramEv.Electron_FR_ID    = "HNL_ULID_FODown";
+    paramEv.Muon_FR_ID        = "HNL_ULID_FO_Down";
+    paramEv.Electron_FR_ID    = "HNL_ULID_FO_Down";
   }
   else{
     paramEv.Muon_FR_ID        = "HNL_ULID_FO";
@@ -631,10 +634,9 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
   if (s_setup_version=="HighPt")    GetSetup_HighPt(param);
 
   if (s_setup_version=="HNTightV2") GetSetup_HNTightV2(param);  
-  if (s_setup_version=="EXO17028") GetSetup_HNL16(param);
-  if (s_setup_version=="TopHN")    GetSetup_HNLTopID(param);
-  if (s_setup_version=="HNL_ULID") GetSetup_HNLID(param);
-  if (s_setup_version=="HNL_ULID_HEEP") GetSetup_HNLIDHEEP(param);
+  if (s_setup_version=="EXO17028")  GetSetup_HNL16(param);
+  if (s_setup_version=="TopHN")     GetSetup_HNLTopID(param);
+  if (s_setup_version=="HNL_ULID")  GetSetup_HNLID(param);
 
   if (s_setup_version=="Peking")  GetSetup_Peking(param);
   if (s_setup_version=="HNL_Opt") GetSetup_HNLOpt(param);

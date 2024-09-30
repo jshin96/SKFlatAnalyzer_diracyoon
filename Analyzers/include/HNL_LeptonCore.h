@@ -100,7 +100,6 @@ class HNL_LeptonCore : public AnalyzerCore {
   void GetSetup_HNL16(AnalyzerParameter& paramEv);
   void GetSetup_HNLTopID(AnalyzerParameter& paramEv);
   void GetSetup_HNLID(AnalyzerParameter& paramEv);
-  void GetSetup_HNLIDHEEP(AnalyzerParameter& paramEv);
   void GetSetup_Peking(AnalyzerParameter& paramEv);
   void GetSetup_HNLOpt(AnalyzerParameter& paramEv);
   void GetSetup_BDT(AnalyzerParameter& paramEv);
@@ -469,7 +468,7 @@ nvtx,  double w);
   bool SameCharge(std::vector<Lepton *> leps, int ch=0);
 
   /// global var for user flags
-  bool RunPrompt,RunFake,RunFakeTF, RunCF,  RunConv, RunSyst,RunPromptTLRemoval,run_ORTrigger;
+  bool RunPrompt,RunFake,RunOSFake,RunFakeTF, RunCF,  RunConv, RunSyst,RunPromptTLRemoval,run_ORTrigger;
   bool IsSkimmed, Signal, HEM1516 ,BeforeRun319077;
   bool DEBUG,IsCentral, RunFullAnalysis;
   TRandom3* rand_;

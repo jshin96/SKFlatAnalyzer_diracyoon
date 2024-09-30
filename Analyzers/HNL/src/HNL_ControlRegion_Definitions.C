@@ -69,8 +69,10 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     
     /// Filters events based on Conv/CF/Fake/Prompt
     
+    bool Running_OSFake = (RunOSFake || (RunCR("OS_VR",CRs) && RunFake));
     
-    if(! (RunCR("OS_VR",CRs) && RunFake)){
+    if(!Running_OSFake){
+      /// If running OS Region then fakes use Gen
       if(!PassGenMatchFilter(LepsT,param)) continue;
     }
     
@@ -176,7 +178,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
     /// For OS Fakes use SS TT events - VV , but RunFake uses LL so need to apply Tight ID 
     bool PassTight = true;
     if(RunFake){
-      if(RunCR("OS_VR",CRs) && (dilep_channel==EE || dilep_channel==MuMu) ){
+      if(Running_OSFake && (dilep_channel==EE || dilep_channel==MuMu) ){
 	
 	if(dilep_channel==EE   && !SameCharge(electrons))   continue;
 	if(dilep_channel==MuMu && !SameCharge(muons))       continue;
@@ -221,7 +223,7 @@ void HNL_RegionDefinitions::RunAllControlRegions(std::vector<Electron> electrons
 
           }
 	  
-          if(RunCR("OS_VR",CRs)) weight_OS = weight_channel;
+          if(Running_OSFake) weight_OS = weight_channel;
           if(run_Debug) {cout <<"RunAllControlRegions ["<< nlog<< "] Fake Weight = " << weight_channel << endl;nlog++;}
 	}
       }
