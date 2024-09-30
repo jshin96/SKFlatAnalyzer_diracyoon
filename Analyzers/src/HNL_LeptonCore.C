@@ -18,6 +18,9 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
   //=== bkg flags                                                                                                                                      
   RunPrompt = HasFlag("RunPrompt");
   RunFake   = HasFlag("RunFake");
+  RunOSFake = HasFlag("RunOSFake");
+
+  if(RunOSFake) RunFake = true;/// In case RunFake not flagged
   RunFakeTF = HasFlag("RunFakeTF");
   RunCF     = HasFlag("RunCF");
   RunConv   = HasFlag("RunConv");
@@ -70,12 +73,52 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
   
   //==== CFBackgroundEstimator                                                                                                                                              
   cfEst->SetEra(GetEra());
-  if(RunCF&&READBKGHISTS)     cfEst->ReadHistograms(true);
-  else if (Analyzer.Contains("ChargeFlip"))  cfEst->ReadHistograms(true);
+  if(RunCF&&READBKGHISTS)     cfEst->ReadHistograms(1);
+  else if (Analyzer.Contains("ChargeFlip"))  cfEst->ReadHistograms(2);
+
+  TString datapath = getenv("DATA_DIR");
+  for(auto mapCFShift  : {datapath+ "/"+GetEra()+"/CFRate/Shift.txt"} ){
+    cout << "Reading " << mapCFShift << endl;
+    string Fline;
+    ifstream in(mapCFShift);
+    while(getline(in,Fline)){
+      std::istringstream is( Fline );
+      TString a,b,c;
+      double d,e;
+      is >> a; // Era                                                                                                                                           
+      is >> b; // Bin
+      is >> c; // ID                                                                                                                                            
+      is >> d; // shiftValuechi
+      is >> e; // shiftValuemean
+
+      MakeCFShiftmap[a+"_"+b+"_"+c+"_Nom"] = d;
+      double sysVal= fabs(e-d);
+
+      double upvalue=d;
+      double downvalue=d;
+      if(sysVal < 0.01) sysVal = 0.01;
+      if(e > d) {
+	downvalue = 0.01;
+	upvalue = sysVal;
+      }
+      else if(e < d) {
+	downvalue = sysVal;
+	upvalue= 0.01;
+      }
+      else {
+	downvalue = 0.01;
+	upvalue = 0.01;
+      }
+      MakeCFShiftmap[a+"_"+b+"_"+c+"_Up"]  = upvalue;
+      MakeCFShiftmap[a+"_"+b+"_"+c+"_Down"] = downvalue;
+    }
+  }
+
+  for(auto ih : MakeCFShiftmap) cout << "Adding EL Shift " << ih.first << " " << ih.second << endl;
 
 
   //// Setup Fake PartonSF 
-  TString datapath = getenv("DATA_DIR");
+
   vector<TString> FakeHMaps = {datapath + "/"+GetEra()+"/FakeRate/MCFR/TT_PartonSF.txt",
 			       datapath + "/"+GetEra()+"/FakeRate/MCFR/QCD_PartonSF.txt"};
 
@@ -494,12 +537,12 @@ bool  HNL_LeptonCore::UpdataParamBySyst(TString JobID, AnalyzerParameter& paramE
 
   //// Setup FR ID
   if(paramEv.syst_ == AnalyzerParameter::FRLooseIDDJUp){
-    paramEv.Muon_FR_ID        = "HNL_ULID_FOUp";
-    paramEv.Electron_FR_ID    = "HNL_ULID_FOUp";
+    paramEv.Muon_FR_ID        = "HNL_ULID_FO_Up";
+    paramEv.Electron_FR_ID    = "HNL_ULID_FO_Up";
   }
   else if(paramEv.syst_ == AnalyzerParameter::FRLooseIDDJDown){
-    paramEv.Muon_FR_ID        = "HNL_ULID_FODown";
-    paramEv.Electron_FR_ID    = "HNL_ULID_FODown";
+    paramEv.Muon_FR_ID        = "HNL_ULID_FO_Down";
+    paramEv.Electron_FR_ID    = "HNL_ULID_FO_Down";
   }
   else{
     paramEv.Muon_FR_ID        = "HNL_ULID_FO";
@@ -591,10 +634,9 @@ AnalyzerParameter HNL_LeptonCore::SetupHNLParameter(TString s_setup_version, TSt
   if (s_setup_version=="HighPt")    GetSetup_HighPt(param);
 
   if (s_setup_version=="HNTightV2") GetSetup_HNTightV2(param);  
-  if (s_setup_version=="EXO17028") GetSetup_HNL16(param);
-  if (s_setup_version=="TopHN")    GetSetup_HNLTopID(param);
-  if (s_setup_version=="HNL_ULID") GetSetup_HNLID(param);
-  if (s_setup_version=="HNL_ULID_HEEP") GetSetup_HNLIDHEEP(param);
+  if (s_setup_version=="EXO17028")  GetSetup_HNL16(param);
+  if (s_setup_version=="TopHN")     GetSetup_HNLTopID(param);
+  if (s_setup_version=="HNL_ULID")  GetSetup_HNLID(param);
 
   if (s_setup_version=="Peking")  GetSetup_Peking(param);
   if (s_setup_version=="HNL_Opt") GetSetup_HNLOpt(param);

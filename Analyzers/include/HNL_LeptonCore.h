@@ -100,7 +100,6 @@ class HNL_LeptonCore : public AnalyzerCore {
   void GetSetup_HNL16(AnalyzerParameter& paramEv);
   void GetSetup_HNLTopID(AnalyzerParameter& paramEv);
   void GetSetup_HNLID(AnalyzerParameter& paramEv);
-  void GetSetup_HNLIDHEEP(AnalyzerParameter& paramEv);
   void GetSetup_Peking(AnalyzerParameter& paramEv);
   void GetSetup_HNLOpt(AnalyzerParameter& paramEv);
   void GetSetup_BDT(AnalyzerParameter& paramEv);
@@ -116,6 +115,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   std::map<TString, double> cfmap;
 
   std::map<TString, double> MakeSFmap;
+  std::map<TString, double> MakeCFShiftmap;
   map<TString, Particle> METMap(AnalyzerParameter param);
 
 
@@ -166,8 +166,12 @@ class HNL_LeptonCore : public AnalyzerCore {
   double GetCFWeightElectron(std::vector<Electron> electrons ,  AnalyzerParameter param,   bool ApplySF=true);
   double GetCFWeightElectron(std::vector<Lepton* > leps ,  AnalyzerParameter param,int nEl,bool ApplySF=true);
   double CheckShiftRange(double val, double shift);
+  double GetShiftPtMedian(double pt1, double pt2, double shiftVal);
+
+  double GetCFShift(TString ID, TString bintag);
+  double GetCFShiftSyst(TString ID, TString bintag,int sys);
   double GetShiftCFEl(Electron el , TString ID, bool ApplyCorr=false, int sys=0) ;
-  double GetShiftCFEl(double elpt, bool isbb, TString ID, bool ApplyCorr=false, TString method="minChi2") ;
+  double GetShiftCFEl(double elpt, bool isbb, TString ID, bool ApplyCorr=false, int sys=0) ;
   double PtExtrap(double val, double x1, double x2, double y1, double y2);
   double GetZMassShift(vector<Electron> Electrons) ;
 
@@ -464,7 +468,7 @@ nvtx,  double w);
   bool SameCharge(std::vector<Lepton *> leps, int ch=0);
 
   /// global var for user flags
-  bool RunPrompt,RunFake,RunFakeTF, RunCF,  RunConv, RunSyst,RunPromptTLRemoval,run_ORTrigger;
+  bool RunPrompt,RunFake,RunOSFake,RunFakeTF, RunCF,  RunConv, RunSyst,RunPromptTLRemoval,run_ORTrigger;
   bool IsSkimmed, Signal, HEM1516 ,BeforeRun319077;
   bool DEBUG,IsCentral, RunFullAnalysis;
   TRandom3* rand_;

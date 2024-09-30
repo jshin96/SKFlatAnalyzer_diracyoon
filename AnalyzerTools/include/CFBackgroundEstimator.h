@@ -26,7 +26,7 @@ public:
   ~CFBackgroundEstimator();
 
   TDirectory *histDir;
-  void ReadHistograms(bool loadStandard=true);
+  void ReadHistograms(int loadFormat=0);
 
   int DataYear;
   TString DataEra;

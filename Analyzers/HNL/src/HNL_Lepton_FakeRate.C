@@ -135,15 +135,11 @@ void HNL_Lepton_FakeRate::executeEvent(){
 
   if(HasFlag("RunRatesHEEP")){
     /// Measure FR in Data                                                                                                                                                                                                                                                                                                 
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"passHEEPID_v1"  ,"passHEEPID_v1", "HEEPLoose_v1"));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"passHEEPID_v2"  ,"passHEEPID_v2", "HEEPLoose_v2"));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"passHEEPID_v3"  ,"passHEEPID_v3", "HEEPLoose_v3"));
-    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"HNL_ULID_HEEP"  ,"HNL_ULID_HEEP", "HNL_ULID_HEEP_FO"));
-    
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"passHEEPID_v1"  ,"passHEEPID_v1", "passHEEPLoose_v1"));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"passHEEPID_v2"  ,"passHEEPID_v2", "passHEEPLoose_v2"));
+    VParameters.push_back(SetupFakeParameter(AnalyzerParameter::Central,EE,HNL_LeptonCore::NormTo1Invpb,{"FR"},"passHEEPID_v3"  ,"passHEEPID_v3", "passHEEPLoose_v3"));    
   }
-    
-
-
+   
 
   if(HasFlag("RunRates")){
     /// Measure FR in Data
@@ -942,7 +938,6 @@ void HNL_Lepton_FakeRate::GetElFakeRates(TString Method, std::vector<Lepton *> l
   TString  LooseID =  param.Electron_Loose_ID ;
   TString  TightID =  param.Electron_Tight_ID ;
   double MVACut = leps[0]->MVAFakeCut(TightID,GetYearString());
-
 
   Event ev = GetEvent();
   TString triggerslist_8="HLT_Ele8_CaloIdL_TrackIdL_IsoVL_PFJet30_v";   

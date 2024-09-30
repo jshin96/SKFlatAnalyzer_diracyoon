@@ -22,10 +22,10 @@ void HNL_Lepton_ChargeFlip::initializeAnalyzer(){
 
 void HNL_Lepton_ChargeFlip::executeEvent(){
   
-  vector<TString> LepIDs = {"HNL_ULID","TopHN", "POGTight", "HNTightV2", "passHEEPID_v3","HNL_ULID_HEEP"};
-  if(HasFlag("ClosureTest")) LepIDs = {"HNL_ULID" , "HNL_TC0_ULID" };
-  if(HasFlag("ScaleFactor")) LepIDs = {"HNL_ULID" , "HNL_TC0_ULID" };
-  //  if(HasFlag("ShiftEnergyZ")) LepIDs = {"HNL_ULID" , "POGTight","passHEEPID_v3", "TopHN", };
+  vector<TString> LepIDs = {"HNL_ULID","TopHN", "POGTight", "HNTightV2", "passHEEPID_v1","passHEEPID_v2","passHEEPID_v3"};
+  if(HasFlag("ClosureTest")) LepIDs = {"HNL_ULID" , "passHEEPID_v1","passHEEPID_v2", "passHEEPID_v3" };
+  if(HasFlag("ScaleFactor")) LepIDs = {"HNL_ULID" , "passHEEPID_v1","passHEEPID_v2","passHEEPID_v3" };
+  //  if(HasFlag("ShiftEnergyZ")) LepIDs = {"HNL_ULID" , "POGTight","passHEEPID_v3", "TpHN", };
 
 
   for (auto id: LepIDs){
@@ -68,7 +68,7 @@ void HNL_Lepton_ChargeFlip::executeEvent(){
     param.Muon_Tight_ID   =    "POGTightWithTightIso";
     if(id =="POGTight")   param.Electron_Tight_ID  = "passPOGTight";
     
-    if(id =="HNL_ULID")   param.k.Electron_CF  = "CFRate_InvPtEta3_PBSExtrap_Central_HNL_ULID_"+GetYearString();
+    if(id =="HNL_ULID")   param.k.Electron_CF  = "CFRate_InvPtEta3_PBSExtrap_Central_HNL_ULID";
     if(id =="TopHN")   param.k.Electron_CF  = "CFRate_InvPtEta3_PBSExtrap_Central_TopHNSST";
     if(id =="HNTightV2")   param.k.Electron_CF  = "CFRate_InvPtEta3_PBSExtrap_Central_HNTightV2";
     if(id =="POGTight")   param.k.Electron_CF  = "CFRate_InvPtEta3_PBSExtrap_Central_POGTight";
@@ -106,7 +106,7 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
   if(_jentry==4000) cout << "EvWeight  = " << EvWeight << endl;
   // Electrons 
   std::vector<Electron> ElectronColltmp;
-  if(param.Electron_Tight_ID.Contains("HEEP")) ElectronColltmp = GetElectrons(param.Electron_Tight_ID,50.,2.5);
+  if(param.Electron_Tight_ID.Contains("HEEP")) ElectronColltmp = GetElectrons(param.Electron_Tight_ID,15.,2.5);
   else ElectronColltmp = GetElectrons(param.Electron_Tight_ID,15.,2.5);
   
   if(run_Debug) cout <<  "Number of All ID Electrons = " << ElectronColltmp.size() << endl;
@@ -330,7 +330,7 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
       
       if(HasPromptConv(ElectronColl.at(i))) continue;
    
-      for(unsigned int imethod = 0; imethod < 7; imethod++){
+      for(unsigned int imethod = 0; imethod < 4; imethod++){
 	
 	double PtShift = 1. ;
 	TString Method = "";
@@ -353,19 +353,6 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 	  PtShift = 1. ;
 	  Method = "NoS";
 	}
-	if(imethod==4) {
-          PtShift = 0.987 ; /// 1.3 BUG in April 12 samples
-          Method = "CS_Central";
-	}
-        if(imethod==5) {
-          PtShift = 0.975 ; /// 1.3 BUG in April 12 samples                                                                                                                                                       
-          Method = "CS_PSigma";
-        }
-        if(imethod==6) {
-          PtShift = 0.995 ; /// 1.3 BUG in April 12 samples                                                                                                                                                       
-          Method = "CS_MSigma";
-	}
-      
 
 		
 	vector<TString> FillCFrates = {"Denom"};
@@ -468,10 +455,10 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
       
 
       TString CFKey = param.Electron_Tight_ID;
-      
+      double oldVal=0;
       /// Fill Rate plots
-      for(int ipt = 30; ipt < 2000; ipt++){
-	double lpt = double(ipt)*0.5;
+      for(int ipt = 15; ipt < 1000; ipt++){
+	double lpt = double(ipt)*1.;
 	if(lpt > 1000) lpt = 999;
 
 	double WFittedv3_Eta1       = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InvPtBB1",   "CFRate_InvPtEta3_PBSExtrap_Central_"   + CFKey,   0.1, lpt, 0);
@@ -481,6 +468,7 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 	double WFittedv3_Eta5       = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InvPtBB1",   "CFRate_InvPtEta3_PBSExtrap_Central_"   + CFKey,   2.1, lpt, 0);
 	double WFittedv3_Eta6       = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InvPtBB1",   "CFRate_InvPtEta3_PBSExtrap_Central_"   + CFKey,   2.35, lpt, 0);
 	
+
 	double WFittedEta2_Eta1     = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InvPtBB2",   "CFRate_InvPtEtaBB2_PBSExtrap_Central_"  + CFKey,   0.1, lpt, 0);
 	double WFittedEta2_Eta2     = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InvPtBB2",   "CFRate_InvPtEtaBB2_PBSExtrap_Central_"  + CFKey,   0.7, lpt, 0);
 	double WFittedEta2_Eta3     = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InvPtBB2",   "CFRate_InvPtEtaBB2_PBSExtrap_Central_"  + CFKey,   0.9, lpt, 0);
@@ -488,7 +476,12 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 	double WFittedEta2_Eta5     = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InvPtEC1",   "CFRate_InvPtEtaEC1_PBSExtrap_Central_"  + CFKey,   2.1, lpt, 0);
 	double WFittedEta2_Eta6     = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InvPtEC2",   "CFRate_InvPtEtaEC2_PBSExtrap_Central_"  + CFKey,   2.35, lpt, 0);
 	
-	//	cout << "lpt = " << lpt << " WFittedv3_Eta1 = " << WFittedv3_Eta1 << " " << cfEst->GetElectronCFRate(param.Electron_Tight_ID,  "CFRate_InvPtEta3_PBSExtrap_Central_"   + CFKey,   0.1, lpt, 0) << endl;
+	
+
+	if(oldVal > WFittedv3_Eta1)  	cout << "lpt = " << lpt << " WFittedv3_Eta1 = " << WFittedv3_Eta1 << " " << cfEst->GetElectronCFRate(param.Electron_Tight_ID,  "CFRate_InvPtEta3_PBSExtrap_Central_"   + CFKey,   0.1, lpt, 0) << " ----> DECRESE" << endl;
+	else 	cout << "lpt = " << lpt << " WFittedv3_Eta1 = " << WFittedv3_Eta1 << " " << cfEst->GetElectronCFRate(param.Electron_Tight_ID,  "CFRate_InvPtEta3_PBSExtrap_Central_"   + CFKey,   0.1, lpt, 0) << endl;
+	oldVal = WFittedv3_Eta1;
+
 	FillHist(param.Name+"/CFRatePlots/Rate_Fittedv3_Eta1", lpt  , WFittedv3_Eta1           , 1000, 0, 1000);
 	FillHist(param.Name+"/CFRatePlots/Rate_Fittedv3_Eta2", lpt  , WFittedv3_Eta2           , 1000, 0, 1000);
 	FillHist(param.Name+"/CFRatePlots/Rate_Fittedv3_Eta3", lpt  , WFittedv3_Eta3           , 1000, 0, 1000);
@@ -631,9 +624,11 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
       
       if(HasPromptConv(iel)) continue;
     
-      TString CFKey = param.Electron_Tight_ID;
-      if(CFKey =="passPOGTight") CFKey="POGTight";
+      //      TString CFKey    = param.Electron_Tight_ID;
+      //if(CFKey =="passPOGTight") CFKey="POGTight";
+      //if(CFKey_CS =="HNL_ULID") CFKey_CS="HNL_ULID_"+GetYearString();
 
+      
       if(IsCF){
 	FillHist(param.Name+"/Closure/CF_LeptonPt", iel.PtMaxed(500) ,       EvWeight        , 250, 0, 500);
 	if(fabs(iel.scEta()) < 0.8)                  FillHist(param.Name+"/Closure/CF_LeptonPt_EtaBin1", iel.PtMaxed(500) ,       EvWeight        , 250, 0, 500);
@@ -647,11 +642,19 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 
         map<TString,vector<double> > CFMapShift;
         CFMapShift["_w_pbs"] = {GetShiftCFEl(iel,param.Electron_Tight_ID, false,0), GetShiftCFEl(iel,param.Electron_Tight_ID, false,1),GetShiftCFEl(iel,param.Electron_Tight_ID, false,-1) };
-        CFMapShift["_w_cs"]  = { 0.987,0.975,0.995 };
+        
+	if(param.Electron_Tight_ID.Contains("HNL_ULID")) CFMapShift["_w_cs"]  = { 0.987,0.975,0.995 };
         CFMapShift["_w_nos"] = {1,1,1};
 
 	for(auto im : CFMapShift){
   
+	  TString CFKey    = param.Electron_Tight_ID;
+	  if(CFKey =="passPOGTight") CFKey="POGTight";
+	  
+          if(im.first == "_w_cs"){
+	    if(CFKey =="HNL_ULID") CFKey= "HNL_ULID_"+GetYearString();
+	  }
+
 	  Electron ShiftedEl = iel;
 	  Electron ShiftedElSigUp = iel;
 	  Electron ShiftedElSigDown = iel;
@@ -810,7 +813,7 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 	if(!HasPromptConv(ElectronColl.at(0)) && !HasPromptConv(ElectronColl.at(1))) {
 	  
 	  // To be safe remove LeptonGenType() > 4 which are conversions
-	  if(ElectronColl.at(0).LeptonGenType() < 4 &&  ElectronColl.at(1).LeptonGenType() <4) {
+	  if(ElectronColl.at(0).LeptonGenType() < 3 &&  ElectronColl.at(1).LeptonGenType() <3) {
 	    
 	    // Construct LL candidate
 	    Particle ZCand = ElectronColl.at(0)+ElectronColl.at(1);
@@ -839,7 +842,13 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
             FillHist(param.Name+"/Z/SS_Lepton1Pt", ElectronColl[0].PtMaxed(500) ,      EvWeight , 100, 0, 500,"pT");
             FillHist(param.Name+"/Z/SS_Lepton2Pt", ElectronColl[1].PtMaxed(500) ,      EvWeight , 40, 0, 200,"pT");
 	    FillHist(param.Name+"/MET/SS",  GetvMET("PuppiT1xyULCorr",param).Pt() , EvWeight ,50 , 0, 100,"MET");
-	    
+	    if(Zmass < 70)        FillHist(param.Name+"/Z/SS_Bin1_Lepton1Pt", ElectronColl[0].PtMaxed(500) ,      EvWeight , 100, 0, 500,"pT");
+	    else if(Zmass < 78)        FillHist(param.Name+"/Z/SS_Bin2_Lepton1Pt", ElectronColl[0].PtMaxed(500) ,      EvWeight , 100, 0, 500,"pT");
+	    else if(Zmass < 82)        FillHist(param.Name+"/Z/SS_Bin3_Lepton1Pt", ElectronColl[0].PtMaxed(500) ,      EvWeight , 100, 0, 500,"pT");
+	    else if(Zmass < 85)        FillHist(param.Name+"/Z/SS_Bin4_Lepton1Pt", ElectronColl[0].PtMaxed(500) ,      EvWeight , 100, 0, 500,"pT");
+	    else if(Zmass < 90)        FillHist(param.Name+"/Z/SS_Bin5_Lepton1Pt", ElectronColl[0].PtMaxed(500) ,      EvWeight , 100, 0, 500,"pT");
+
+
 
 	  } /// Non Conv
 	} 
@@ -851,7 +860,7 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
       if(ElectronColl.at(0).IsPrompt() && ElectronColl.at(1).IsPrompt()){
 
 	if(HasPromptConv(ElectronColl.at(0))  || HasPromptConv(ElectronColl.at(1))) return;
-	if(ElectronColl.at(0).LeptonGenType() >= 4 || ElectronColl.at(1).LeptonGenType() >=4) return;
+	if(ElectronColl.at(0).LeptonGenType() >= 3 || ElectronColl.at(1).LeptonGenType() >=3) return;
 	
 
 	//// Loop several Energy shift
@@ -864,6 +873,7 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 	  if(imethod==1)  ShiftVersion = "Paired_ConstShift";
 	  if(imethod==2)  ShiftVersion = "Paired_ConstShiftUp";
 	  if(imethod==3)  ShiftVersion = "Paired_ConstShiftDown";
+	  if(param.Electron_Tight_ID.Contains("HEEP") && ShiftVersion.Contains("Const")) continue;
 	  if(imethod==4)  ShiftVersion = "Separate_BinnedShift";
 	  if(imethod==5)  ShiftVersion = "Separate_BinnedShiftUp";
 	  if(imethod==6)  ShiftVersion = "Separate_BinnedShiftDown";
@@ -875,9 +885,13 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
           if(imethod==12)  ShiftVersion = "Separate_BinnedStatUp";
           if(imethod==13)  ShiftVersion = "Separate_BinnedStatDown";
 			  
-	  
+	
 	  TString CFKey = param.Electron_Tight_ID;
 	  if(CFKey =="passPOGTight")CFKey="POGTight";
+	  if(imethod< 4 && imethod > 0 ){
+	    //// Fix issue with HNL_ULID ID name remvoing year in version 6 of CFRates
+	    if(CFKey =="HNL_ULID") CFKey="HNL_ULID_"+GetYearString();
+	  }
 
           TString EtaLabelEl1 = ElectronColl.at(0).CFEtaLabel();
 	  TString EtaLabelEl2 = ElectronColl.at(1).CFEtaLabel();
@@ -984,6 +998,13 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 	  
 	  /// SHIFTED
 	  FillHist(param.Name+"/"+ShiftVersion+"/ZMass/OS_Weighted_EnergyShift",  ZShiftedmass             , weight_shifted*EvWeight ,100 , 50, 150);
+	  if(ZShiftedmass <  70)           FillHist(param.Name+"/"+ShiftVersion+"/ZMass/OS_Bin1_Weighted_EnergyShift",  ZShiftedmass             , weight_shifted*EvWeight ,100 , 50, 150);
+	  else if(ZShiftedmass < 78)     FillHist(param.Name+"/"+ShiftVersion+"/ZMass/OS_Bin2_Weighted_EnergyShift",  ZShiftedmass             , weight_shifted*EvWeight ,100 , 50, 150);
+	  else if(ZShiftedmass < 82)     FillHist(param.Name+"/"+ShiftVersion+"/ZMass/OS_Bin3_Weighted_EnergyShift",  ZShiftedmass             , weight_shifted*EvWeight ,100 , 50, 150);
+	  else if(ZShiftedmass < 85)     FillHist(param.Name+"/"+ShiftVersion+"/ZMass/OS_Bin4_Weighted_EnergyShift",  ZShiftedmass             , weight_shifted*EvWeight ,100 , 50, 150);
+	  else if(ZShiftedmass < 90)     FillHist(param.Name+"/"+ShiftVersion+"/ZMass/OS_Bin5_Weighted_EnergyShift",  ZShiftedmass             , weight_shifted*EvWeight ,100 , 50, 150);
+
+
 	  FillHist(param.Name+"/"+ShiftVersion+"/ZMass/OS_"+OSEtaCat+"_Weighted_EnergyShift",  ZShiftedmass             , weight_shifted*EvWeight ,100 , 50, 150);
 	  
 	  FillHist(param.Name+"/"+ShiftVersion+"/Z/OS_"+OSEtaCat+"_Weighted_EnergyShift_Pt",   this_el1.PtMaxed(500)    , weight_shifted*EvWeight , nbinNeg, pTbinNeg,"pT");
@@ -1402,102 +1423,32 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 
       TString EtaBin = (iel.IsBB()) ? "BB" : "EC";
 
-      ///// Draw GenPt
-      vector<double> Shifts_El = {0.998,0.996,0.994,0.992,0.99,0.988,0.986, 0.984,0.982,0.98,0.978,0.976,0.974,0.972,0.97,0.965,0.96,0.955,0.95,0.94};
-      vector<TString> Shifts_El_Tag = {"_shift1","_shift2","_shift3","_shift4","_shift5","_shift6","_shift7","_shift8","_shift9","_shift10","_shift11","_shift12","_shift13","_shift14","_shift15","_shift16","_shift17","_shift18","_shift19","_shift20"};
-
-      if(iel.IsPrompt() && !bIsCF) {
-	FillHist(param.Name+"/PtShift/Gen_"+EtaBin+"_Pt_Prompt", gen_d_pt ,   EvWeight , 500, 0,500);
-	FillHist(param.Name+"/PtShift/Reco_"+EtaBin+"_Pt_Prompt", iel.Pt() ,   EvWeight , 500, 0,500);
-	for(int ish = 0; ish < Shifts_El.size(); ish++){
-	  FillHist(param.Name+"/PtShift/Gen_"+EtaBin+"_Pt"+Shifts_El_Tag[ish]+"_Prompt", gen_d_pt*Shifts_El[ish] ,   EvWeight , 500, 0,500);
-	}
-      }
-      if(iel.IsPrompt() && bIsCF) {
-	FillHist(param.Name+"/PtShift/Gen_"+EtaBin+"_Pt_CF", gen_d_pt ,   EvWeight , 500, 0,500);
-	FillHist(param.Name+"/PtShift/Reco_"+EtaBin+"_Pt_CF", iel.Pt() ,   EvWeight , 500, 0,500);
-	for(int ish = 0; ish < Shifts_El.size(); ish++){
-          FillHist(param.Name+"/PtShift/Gen_"+EtaBin+"_Pt"+Shifts_El_Tag[ish]+"_CF", gen_d_pt*Shifts_El[ish] ,   EvWeight , 500, 0,500);
-        }
-      }
-
       //double rate_cf= cfEst->GetElectronCFRate(param.Electron_Tight_ID, param.Electron_CF_Key, iel.defEta(), iel.Pt(), 0);
   
-     
+    
       if(iel.IsPrompt() && !bIsCF){
 	FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt_Prompt", PtResponse ,   EvWeight , 200, -0.5,0.5);
 	FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Eta_Prompt", EtaResponse , EvWeight , 200, -0.1,0.1);
 	FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Phi_Prompt", PhiResponse , EvWeight , 200,  -0.1,0.1);
-
-	FillHist(param.Name+"/EnergyShift/"+EtaBin+"_SmearedPhi1_Prompt", PhiResponse + gRandom->Gaus(0,0.005) , EvWeight , 200,  -0.1,0.1);
-	FillHist(param.Name+"/EnergyShift/"+EtaBin+"_SmearedPhi2_Prompt", PhiResponse + gRandom->Gaus(0,0.002) , EvWeight , 200,  -0.1,0.1);
-	FillHist(param.Name+"/EnergyShift/"+EtaBin+"_SmearedPhi3_Prompt", PhiResponse + gRandom->Gaus(0,0.001) , EvWeight , 200,  -0.1,0.1);
-	FillHist(param.Name+"/EnergyShift/"+EtaBin+"_SmearedPhi4_Prompt", PhiResponse + gRandom->Gaus(0,0.0005) , EvWeight , 200,  -0.1,0.1);
 	
       }
 
     
       if(iel.IsPrompt() &&  bIsCF){
 	FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt_CF",  PtResponse , EvWeight , nbins_res,bins_res);
-	//FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt_CF",  PtResponse , EvWeight , 200, -0.5,1);
         FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Eta_CF", EtaResponse , EvWeight , 200, -0.1,0.1);
 	FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Phi_CF", PhiResponse , EvWeight , 200,  -0.1,0.1);
       }
 
-      TString PtBinLabel =  "";
-      if(iel.IsEC()){
-	if(iel.Pt() < 20)       PtBinLabel = "_PtBin1";
-	else  if(iel.Pt() < 30) PtBinLabel = "_PtBin2";
-	else  if(iel.Pt() < 50) PtBinLabel = "_PtBin3";
-        else  if(iel.Pt() < 70) PtBinLabel = "_PtBin4";
-	else PtBinLabel = "_PtBin5";
-      }
-      else{
-	if(iel.Pt()< 30)   PtBinLabel = "_PtBin1";
-	if(iel.Pt()< 50)   PtBinLabel = "_PtBin2";
-        else PtBinLabel = "_PtBin3";
-      }
 
-      
-      TString PtBinLabel2  =  ""; 
-      if(iel.IsBB()){
-	if(iel.Pt() < 50)       PtBinLabel2 = "_Pt_Bin1";
-	else  if(iel.Pt() < 100)PtBinLabel2 = "_Pt_Bin2";
-	else  if(iel.Pt() < 200)PtBinLabel2 = "_Pt_Bin3";
-	else PtBinLabel2 = "_Pt_Bin4";
-      }
-      else{
-
-	if(iel.Pt() < 30)       PtBinLabel2 = "_Pt_Bin1";
-	else if(iel.Pt() < 50)  PtBinLabel2 = "_Pt_Bin2";
-	else if(iel.Pt() < 75)  PtBinLabel2 = "_Pt_Bin3";
-	else  if(iel.Pt() < 100)PtBinLabel2 = "_Pt_Bin4";
-	else  if(iel.Pt() < 200)PtBinLabel2 = "_Pt_Bin5";
-	else PtBinLabel2 = "_Pt_Bin6";
-      }
-
-
-      TString EtaBinLabel =  "";
-      if(iel.scEta() < -2.3) EtaBinLabel =  "Eta_Bin1";
-      else if(iel.scEta() < -2.) EtaBinLabel =  "Eta_Bin2";
-      else if(iel.scEta() < -1.56) EtaBinLabel =  "Eta_Bin3";
-      else if((iel.etaRegion()!=Electron::GAP) && iel.scEta() < -1) EtaBinLabel =  "Eta_Bin4";
-      else if(iel.scEta() < -0.8) EtaBinLabel =  "Eta_Bin5";
-      else if(iel.scEta() < -0.3) EtaBinLabel =  "Eta_Bin6";
-      else if(iel.scEta() < 0) EtaBinLabel =  "Eta_Bin7";
-      else if(iel.scEta() < 0.3) EtaBinLabel =  "Eta_Bin8";
-      else if(iel.scEta() < 0.8) EtaBinLabel =  "Eta_Bin9";
-      else if(iel.scEta() < 1) EtaBinLabel =  "Eta_Bin10";
-      else if(iel.scEta() < 1.442) EtaBinLabel =  "Eta_Bin11";
-      else if(iel.scEta() < 2.&& (iel.etaRegion()!=Electron::GAP))  EtaBinLabel =  "Eta_Bin12";
-      else if(iel.scEta() < 2.5) EtaBinLabel =  "Eta_Bin13";
-            
+      TString PtBinLabel      = iel.GetCFShift_BinLabel(1.);  /// assignes bin based on BB/EC and pt 
+      TString Gen_PtBinLabel  = X.GetCFShift_BinLabel(gen_d_pt);  /// assignes bin based on BB/EC and pt                                                                                                                                                                
+          
       if(iel.IsPrompt() &&  bIsCF) {
         FillHist(param.Name+"/Pt/"+EtaBin+"_CF", iel.Pt() , EvWeight , 200, 0,2000);
-	FillHist(param.Name+"/EnergyShift/"+EtaBin+PtBinLabel+"_CF", PtResponse , EvWeight , 200, -1,1);
-	FillHist(param.Name+"/EnergyShift/"+EtaBin+PtBinLabel2+"_CF", PtResponse , EvWeight , 200, -1,1);
-        FillHist(param.Name+"/EnergyShift/"+EtaBinLabel+"_CF", PtResponse , EvWeight , 200, -1,1);
-	FillHist(param.Name+"/EnergyShift/"+EtaBin+"_CF", PtResponse , EvWeight , 200, -1,1);
+	FillHist(param.Name+"/EnergyShift/"+EtaBin+PtBinLabel+"_CF", PtResponse , EvWeight ,nbins_res,bins_res);
+	FillHist(param.Name+"/GenEnergyShift/"+EtaBin+Gen_PtBinLabel+"_CF", PtResponse , EvWeight ,nbins_res,bins_res);
+	FillHist(param.Name+"/EnergyShift/"+EtaBin+"_CF", PtResponse , EvWeight ,nbins_res,bins_res);
       }
 
       
@@ -1507,26 +1458,26 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 	
         FillHist(param.Name+"/Pt/"+EtaBin+"_Prompt", iel.Pt() , EvWeight , 200, 0,2000);
 
-	double shiftEl = GetShiftCFEl(iel,param.Electron_Tight_ID,IsData,0);
-	double PtResponseShift = (shiftEl*iel.Pt() - gen_d_pt) / (gen_d_pt);
+	double shiftEl = 1.;//GetShiftCFEl(iel,param.Electron_Tight_ID,IsData,0);
+	double PtResponseShift_Pre = (shiftEl*iel.Pt() - gen_d_pt) / (gen_d_pt);
 
 	/// Check performance of already measured shift values
 	//        FillHist(param.Name+"/EnergyShift/"+EtaBin+"_Pt_CF",  PtResponse , EvWeight , nbins_res,bins_res);
 
-	FillHist(param.Name+"/EnergyShift/"+EtaBin+"_PromptShifted_GetShiftCFEl", PtResponseShift , EvWeight , nbins_res,bins_res);
-	FillHist(param.Name+"/EnergyShift/"+EtaBin+PtBinLabel2+"_PromptShifted_GetShiftCFEl", PtResponseShift , EvWeight , nbins_res,bins_res);
-	FillHist(param.Name+"/EnergyShift/"+EtaBinLabel+"_PromptShifted_GetShiftCFEl", PtResponseShift , EvWeight , nbins_res,bins_res);
+	FillHist(param.Name+"/EnergyShift/"+EtaBin+"_PromptShifted_GetShiftCFEl", PtResponseShift_Pre , EvWeight , nbins_res,bins_res);
+	FillHist(param.Name+"/EnergyShift/"+EtaBin+PtBinLabel+"_PromptShifted_GetShiftCFEl", PtResponseShift_Pre , EvWeight , nbins_res,bins_res);
 
-	unsigned int nBins = 100;
-	if(iel.Pt() < 50)  nBins = 200;
+	unsigned int nBins = 75;
+	if(iel.Pt() < 50)  nBins = 125;
 	
 	for (unsigned int ishift = 0 ; ishift < nBins; ishift++){
-	  double shiftEl = 1.05 - double(ishift)*0.001;
+	  double shiftEl = 1.025 - double(ishift)*0.001;
 	  TString shift_string = DoubleToString(shiftEl);
 	  double PtResponseShift = (shiftEl*iel.Pt() - gen_d_pt) / (gen_d_pt);
-	  FillHist(param.Name+"/EnergyShift/"+EtaBin+PtBinLabel+"_PromptShifted_"+shift_string, PtResponseShift , EvWeight , nbins_res,bins_res);
-	  FillHist(param.Name+"/EnergyShift/"+EtaBin+PtBinLabel2+"_PromptShifted_"+shift_string, PtResponseShift , EvWeight , nbins_res,bins_res);
-	  FillHist(param.Name+"/EnergyShift/"+EtaBinLabel+"_PromptShifted_"+shift_string, PtResponseShift , EvWeight , nbins_res,bins_res);
+	  TString PtBinLabel_shift = iel.GetCFShift_BinLabel(shiftEl);
+	  
+	  FillHist(param.Name+"/EnergyShift/"+EtaBin+PtBinLabel_shift+"_PromptShifted_"+shift_string, PtResponseShift , EvWeight , nbins_res,bins_res);
+	  FillHist(param.Name+"/GenEnergyShift/"+EtaBin+Gen_PtBinLabel+"_PromptShifted_"+shift_string, PtResponseShift , EvWeight , nbins_res,bins_res);
 	  FillHist(param.Name+"/EnergyShift/"+EtaBin+"_PromptShifted_"+shift_string, PtResponseShift , EvWeight , nbins_res,bins_res);
 	  
 	}

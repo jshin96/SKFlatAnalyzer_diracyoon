@@ -351,16 +351,14 @@ int  Electron::PassIDTight(TString ID) const{
     else return BtoI(passHEEPIDHNL());
   }
   
-  if(ID=="passHEEPID_v2"){
-    if(Run_Year() == 2018 ) return BtoI(passHEEP2018PromptHNL()     &&Pass_TriggerEmulationLoose()&&PassConversionVeto() && IsGsfCtfScPixChargeConsistent());
-    else return BtoI(passHEEPIDHNL()&& Pass_TriggerEmulationLoose()&&PassConversionVeto() && IsGsfCtfScPixChargeConsistent());
-  }
-  if(ID=="passHEEPID_v3"){
-    if(Run_Year() == 2018 )  return BtoI(passHEEP2018PromptHNL()&& Pass_TriggerEmulationLoose()&&PassConversionVeto() && IsGsfCtfChargeConsistent());
-    else   return BtoI(passHEEPIDHNL() && Pass_TriggerEmulationLoose()&&PassConversionVeto() && IsGsfCtfChargeConsistent());
-  }
+  if(ID=="passHEEPID_v2") return BtoI(PassID("passHEEPID_v1") && PassID("passTriggerLoose") && PassID("passTightCharge"));
+  if(ID=="passHEEPID_v3") return BtoI(PassID("passHEEPID_v1") && PassID("passTriggerLoose") && PassID("passMediumCharge"));
 
-
+  if(ID=="passMediumCharge") return IsGsfCtfChargeConsistent();
+  if(ID=="passTightCharge") return IsGsfCtfChargeConsistent();
+  if(ID=="passTriggerLoose") return Pass_TriggerEmulationLoose();
+  
+  
   //=== MVA
 
   if(ID=="passMVAID_noIso_WP90Opt") return BtoI(passMVAID_noIso_WP90()) ;
@@ -439,10 +437,11 @@ int  Electron::PassIDLoose(TString ID) const{
   if(ID=="passProbeIDTight") return BtoI(passMVAID_noiso_WPLoose()&&Pass_TriggerEmulationLoose());
 
   if(ID=="passLooseID")  return BtoI(passLooseID());
-  if(ID=="HEEPLoose_v1") return BtoI(passLooseHEEPID());
-  if(ID=="HEEPLoose_v2") return BtoI(passLooseHEEPID() && Pass_TriggerEmulationLoose()&&PassConversionVeto() && IsGsfCtfScPixChargeConsistent());
-  if(ID=="HEEPLoose_v3") return BtoI(passLooseHEEPID() && Pass_TriggerEmulationLoose()&&PassConversionVeto() && IsGsfCtfChargeConsistent());
 
+
+  if(ID=="passHEEPLoose_v1") return BtoI(passLooseHEEPID());
+  if(ID=="passHEEPLoose_v2") return BtoI(passLooseHEEPID() && Pass_TriggerEmulationLoose()&&PassConversionVeto() && IsGsfCtfScPixChargeConsistent());
+  if(ID=="passHEEPLoose_v3") return BtoI(passLooseHEEPID() && Pass_TriggerEmulationLoose()&&PassConversionVeto() && IsGsfCtfChargeConsistent());
 
   //=== loose user                                                                                                                                                                                       
   if(ID=="HNLooseMVA") return BtoI(passIDHN(3,0.2, 0.2, 0.2,0.2, 10.,10., 0.6, 0.6, -999., -999.)&&passMVAID_noiso_WPLoose());  

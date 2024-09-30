@@ -32,6 +32,7 @@ int  Electron::PassHNLTight(TString ID) const{
   //// HNL_ULID_Defv2_FO_ has Medium Charge cut on top of HNL_ULID_Defv1_FO_                                                                                                                                           
   if(ID == "HNL_ULID")          return BtoI(PassID("HNL_ULID_Defv2_FO") && PassID("HNL_ULID_Fake"));
   if(ID == "HNL_ULID_"+Year)    return BtoI(PassID("HNL_ULID_Defv2_FO") && PassID("HNL_ULID_Fake"));
+
   if(ID == "HNL_ULID_NoMedCC")  return BtoI(PassID("HNL_ULID_Defv1_FO") && PassID("HNL_ULID_Fake"));
 
   if(ID == "HNL_ULID_TrkIso")    return BtoI(PassID("HNL_ULID_TrkIso_Conv")   &&
@@ -66,23 +67,23 @@ int  Electron::PassHNLTight(TString ID) const{
   }
 
   /// FO = Fake Obj, is main obj in NP bkg estimate                                                                                                                                                                
-  if(ID == "HNL_ULID_FO")     return BtoI(PassID("HNL_ULID_FO_v9_a"));
-  if(ID == "HNL_ULID_FODown") return BtoI(PassID("HNL_ULID_FO_v0"));
+  if(ID == "HNL_ULID_FO")  return BtoI(PassID("HNL_ULID_FO_v9_a"));
+  if(ID == "HNL_ULID_FO_Down") return BtoI(PassID("HNL_ULID_FO_v0"));
 
   if(Era=="2016a"){
-    if(ID == "HNL_ULID_FOUp")   return BtoI(PassID("HNL_ULID_FO_v8_a"));
+    if(ID == "HNL_ULID_FO_Up")   return BtoI(PassID("HNL_ULID_FO_v8_a"));
     if(ID == "HNL_ULID_v1_FO")  return BtoI(PassID("HNL_ULID_v1_FO_v9_a"));
   }
   if(Era=="2016b"){
-    if(ID == "HNL_ULID_FOUp")   return BtoI(PassID("HNL_ULID_FO_v8_a"));
+    if(ID == "HNL_ULID_FO_Up")   return BtoI(PassID("HNL_ULID_FO_v8_a"));
     if(ID == "HNL_ULID_v1_FO")     return BtoI(PassID("HNL_ULID_v1_FO_v9_a"));
   }
   if(Era=="2017"){
-    if(ID == "HNL_ULID_FOUp")      return BtoI(PassID("HNL_ULID_FO_v8_a"));
+    if(ID == "HNL_ULID_FO_Up")      return BtoI(PassID("HNL_ULID_FO_v8_a"));
     if(ID == "HNL_ULID_v1_FO")      return BtoI(PassID("HNL_ULID_v1_FO_v9_a"));
   }
   if(Era=="2018"){
-    if(ID == "HNL_ULID_FOUp")      return BtoI(PassID("HNL_ULID_FO_v8_a"));
+    if(ID == "HNL_ULID_FO_Up")      return BtoI(PassID("HNL_ULID_FO_v8_a"));
     if(ID == "HNL_ULID_v1_FO")      return BtoI(PassID("HNL_ULID_v1_FO_v9_a"));
   }
 

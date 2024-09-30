@@ -15,6 +15,34 @@ public:
     return b? 1 : 0 ;
   }
 
+  inline TString GetCFShift_BinLabel(double shift) const{
+
+    double pt_shifted = this->Pt() * shift;
+    TString PtBinLabel  =  "";
+    if(IsBB()){
+      if(pt_shifted < 35)       PtBinLabel = "_Pt_Bin1";
+      else  if(pt_shifted < 50)PtBinLabel = "_Pt_Bin2";
+      else  if(pt_shifted < 70)PtBinLabel = "_Pt_Bin3";
+      else  if(pt_shifted < 100)PtBinLabel = "_Pt_Bin4";
+      else PtBinLabel = "_Pt_Bin5";
+    }
+    else{
+
+      if(pt_shifted < 20)       PtBinLabel = "_Pt_Bin1";
+      else if(pt_shifted < 30)  PtBinLabel = "_Pt_Bin2";
+      else if(pt_shifted < 40)  PtBinLabel = "_Pt_Bin3";
+      else if(pt_shifted < 50)  PtBinLabel = "_Pt_Bin4";
+      else if(pt_shifted < 60)  PtBinLabel = "_Pt_Bin5";
+      else if(pt_shifted < 70)  PtBinLabel = "_Pt_Bin6";
+      else if(pt_shifted < 80)  PtBinLabel = "_Pt_Bin7";
+      else  if(pt_shifted < 100)PtBinLabel = "_Pt_Bin8";
+      else  if(pt_shifted < 200)PtBinLabel = "_Pt_Bin9";
+      else PtBinLabel = "_Pt_Bin10";
+    }
+    return PtBinLabel;
+    
+  }
+  
   inline double GetDeepJetFromID(TString ID, TString prefix) const{
     double BJetDeepJetCut=999;
     if(ID.Contains(prefix+"v1")) BJetDeepJetCut = 0.025;

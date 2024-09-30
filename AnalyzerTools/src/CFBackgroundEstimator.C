@@ -11,7 +11,7 @@ CFBackgroundEstimator::CFBackgroundEstimator()
 
 }
 
-void CFBackgroundEstimator::ReadHistograms(bool loadStandard){
+void CFBackgroundEstimator::ReadHistograms(int loadFormat){
 
   TString datapath = getenv("DATA_DIR");
   datapath = datapath+"/"+GetEra()+"/CFRate/";
@@ -20,6 +20,11 @@ void CFBackgroundEstimator::ReadHistograms(bool loadStandard){
 
   bool loadStudy=false;
   bool loadSyst=false;
+  bool loadStandard=false;
+
+  if(loadFormat > 0) loadStandard=true;
+  if(loadFormat > 1) loadSyst=true;
+  if(loadFormat > 1) loadStudy=true;
   
   if(loadStandard){
     string elline;
@@ -53,69 +58,67 @@ void CFBackgroundEstimator::ReadHistograms(bool loadStandard){
 
     }
   }
-  else{
-    if(loadStudy){
-      string elline;
-      ifstream in(datapath+"/histmap_StudyElectron.txt");
-      while(getline(in,elline)){
-	std::istringstream is( elline );
-	TString a,b,c,d,e,f;
-	is >> a; // <Rate>
-	is >> b; // histlabel
-	is >> c; // shiftlabel
-	is >> d; // syst
-	is >> e; // ID
-	is >> f; // <rootfilename>
-	TFile *file = new TFile(datapath+"/"+f);
-	TList *histlist = file->GetListOfKeys();
-	
-	for(int i=0;i<histlist->Capacity();i++){
-	  TString this_cfname = histlist->At(i)->GetName();
-	  //cout << this_cfname << " " << b+"_"+c+"_"+d  << " --- " << f << endl;
-	  if(!this_cfname.Contains(b+"_"+c+"_"+d )) continue;
-	  if(!this_cfname.Contains(e)) continue;
-	  histDir->cd();
-	  map_hist_Electron[a+"_"+b+"_"+c+"_"+d+"_"+e] = (TH2D *)file->Get(this_cfname)->Clone();
-	  cout << "[CFBackgroundEstimator::CFBackgroundEstimator] map_hist_Electron : " << a+"_"+b+"_"+c+"_"+d+"_"+e +"  --> "+this_cfname << endl;
+  if(loadStudy){
+    string elline;
+    ifstream in(datapath+"/histmap_StudyElectron.txt");
+    while(getline(in,elline)){
+      std::istringstream is( elline );
+      TString a,b,c,d,e,f;
+      is >> a; // <Rate>
+      is >> b; // histlabel
+      is >> c; // shiftlabel
+      is >> d; // syst
+      is >> e; // ID
+      is >> f; // <rootfilename>
+      TFile *file = new TFile(datapath+"/"+f);
+      TList *histlist = file->GetListOfKeys();
+      
+      for(int i=0;i<histlist->Capacity();i++){
+	TString this_cfname = histlist->At(i)->GetName();
+	//cout << this_cfname << " " << b+"_"+c+"_"+d  << " --- " << f << endl;
+	if(!this_cfname.Contains(b+"_"+c+"_"+d )) continue;
+	if(!this_cfname.Contains(e)) continue;
+	histDir->cd();
+	map_hist_Electron[a+"_"+b+"_"+c+"_"+d+"_"+e] = (TH2D *)file->Get(this_cfname)->Clone();
+	cout << "[CFBackgroundEstimator::CFBackgroundEstimator] map_hist_Electron : " << a+"_"+b+"_"+c+"_"+d+"_"+e +"  --> "+this_cfname << endl;
 	}
-	
-	//// Delete  File after loop
-	file->Close();
-	delete file;
-	origDir->cd();
-	
-      }
+      
+      //// Delete  File after loop
+      file->Close();
+      delete file;
+      origDir->cd();
+      
     }
-    if(loadSyst){
-      string elline;
-      ifstream in(datapath+"/histmap_SystElectron.txt");
-      while(getline(in,elline)){
-	std::istringstream is( elline );
-	TString a,b,c,d,e,f;
-	is >> a; // <Rate>                                                                                                                                                                                                                              
-	is >> b; // histlabel                                                                                                                                                                                                                           
-	is >> c; // shiftlabel                                                                                                                                                                                                                          
-	is >> d; // syst                                                                                                                                                                                                                                
-	is >> e; // ID                                                                                                                                                                                                                                  
-	is >> f; // <rootfilename>                                                                                                                                                                                                                      
-	TFile *file = new TFile(datapath+"/"+f);
-	TList *histlist = file->GetListOfKeys();
-	
-	for(int i=0;i<histlist->Capacity();i++){
-	  TString this_cfname = histlist->At(i)->GetName();
-	  if(!this_cfname.Contains(b+"_"+c+"_"+d )) continue;
-	  if(!this_cfname.Contains(e)) continue;
-	  histDir->cd();
-	  map_hist_Electron[a+"_"+b+"_"+c+"_"+d+"_"+e] = (TH2D *)file->Get(this_cfname)->Clone();
-	  cout << "[CFBackgroundEstimator::CFBackgroundEstimator] map_hist_Electron : " << a+"_"+b+"_"+c+"_"+d+"_"+e +"  --> "+this_cfname << endl;
-	}
-	
-	//// Delete  File after loop                                                                                                                                                                                                                    
-	file->Close();
-	delete file;
-	origDir->cd();
-	
+  }
+  if(loadSyst){
+    string elline;
+    ifstream in(datapath+"/histmap_SystElectron.txt");
+    while(getline(in,elline)){
+      std::istringstream is( elline );
+      TString a,b,c,d,e,f;
+      is >> a; // <Rate>                                                                                                                                                                                                                              
+      is >> b; // histlabel                                                                                                                                                                                                                           
+      is >> c; // shiftlabel                                                                                                                                                                                                                          
+      is >> d; // syst                                                                                                                                                                                                                                
+      is >> e; // ID                                                                                                                                                                                                                                  
+      is >> f; // <rootfilename>                                                                                                                                                                                                                      
+      TFile *file = new TFile(datapath+"/"+f);
+      TList *histlist = file->GetListOfKeys();
+      
+      for(int i=0;i<histlist->Capacity();i++){
+	TString this_cfname = histlist->At(i)->GetName();
+	if(!this_cfname.Contains(b+"_"+c+"_"+d )) continue;
+	if(!this_cfname.Contains(e)) continue;
+	histDir->cd();
+	map_hist_Electron[a+"_"+b+"_"+c+"_"+d+"_"+e] = (TH2D *)file->Get(this_cfname)->Clone();
+	cout << "[CFBackgroundEstimator::CFBackgroundEstimator] map_hist_Electron : " << a+"_"+b+"_"+c+"_"+d+"_"+e +"  --> "+this_cfname << endl;
       }
+      
+      //// Delete  File after loop                                                                                                                                                                                                                    
+      file->Close();
+      delete file;
+      origDir->cd();
+      
     }
   }
 
