@@ -197,7 +197,9 @@ double HNL_LeptonCore::CheckShiftRange(double val, double shift){
 double HNL_LeptonCore::GetShiftCFEl(Electron el,TString ID, bool ApplyDataCorr, int Sys) {
   
   //// By default if HNL ID just use extraoplated Shift based on pt binned MC Truth
-
+  
+  if(ID.Contains("HNL_ULID")) ID=ID.ReplaceAll("_"+GetYearString(),"");//// Remove Year for CF inputs 
+  
   double DataCorr = 1.;
   if(ApplyDataCorr){
     if(DataEra=="2016preVFP"  && el.IsBB()) DataCorr=0.975;
