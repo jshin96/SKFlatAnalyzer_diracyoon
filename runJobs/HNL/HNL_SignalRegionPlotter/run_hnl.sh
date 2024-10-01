@@ -85,6 +85,17 @@ if [[ $1 == "SIG" ]]; then
     
 fi
 
+if [[ $1 == "DATA" ]]; then
+
+    declare  -a era_list=("2017")
+
+    for i in "${era_list[@]}"
+    do
+        SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_MuMu.txt      -n 100  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT    &
+        SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_EE.txt      -n 100    --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT    &
+  done
+fi
+
 if [[ $1 == "" ]]; then
 
     declare  -a era_list=("2017" "2018" "2016preVFP" "2016postVFP")

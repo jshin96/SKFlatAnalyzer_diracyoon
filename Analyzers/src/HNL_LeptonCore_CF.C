@@ -197,7 +197,9 @@ double HNL_LeptonCore::CheckShiftRange(double val, double shift){
 double HNL_LeptonCore::GetShiftCFEl(Electron el,TString ID, bool ApplyDataCorr, int Sys) {
   
   //// By default if HNL ID just use extraoplated Shift based on pt binned MC Truth
-
+  
+  if(ID.Contains("HNL_ULID")) ID=ID.ReplaceAll("_"+GetYearString(),"");//// Remove Year for CF inputs 
+  
   double DataCorr = 1.;
   if(ApplyDataCorr){
     if(DataEra=="2016preVFP"  && el.IsBB()) DataCorr=0.975;
@@ -228,7 +230,7 @@ double HNL_LeptonCore::GetCFShiftSyst(TString ID, TString bintag, int direction)
 
   CFMapIter = MakeCFShiftmap.find(key);
 
-  if(CFMapIter == MakeCFShiftmap.end()) {  cout << "[HNL_LeptonCore::GGetCFShiftSyst] ERROR in CGetCFShiftSyst.. " << key  << endl;   exit(EXIT_FAILURE);}
+  if(CFMapIter == MakeCFShiftmap.end()) {  cout << "[HNL_LeptonCore::GGetCFShiftSyst] ERROR in GetCFShiftSyst.. " << key  << endl;   exit(EXIT_FAILURE);}
 
   return 1 + double(direction)*CFMapIter->second;
 
@@ -242,7 +244,7 @@ double HNL_LeptonCore::GetCFShift(TString ID, TString bintag){
   map<TString,double >::iterator CFMapIter ;
   
   CFMapIter = MakeCFShiftmap.find(key);
-  if(CFMapIter == MakeCFShiftmap.end()) {  cout << "[HNL_LeptonCore::GGetCFShift] ERROR in CGetCFShift.. " << key  << endl;   exit(EXIT_FAILURE);}
+  if(CFMapIter == MakeCFShiftmap.end()) {  cout << "[HNL_LeptonCore::GGetCFShift] ERROR in GetCFShift.. " << key  << endl;   exit(EXIT_FAILURE);}
 
   return CFMapIter->second;
 
