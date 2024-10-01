@@ -210,69 +210,9 @@ double HNL_LeptonCore::GetShiftCFEl(Electron el,TString ID, bool ApplyDataCorr, 
     if(DataEra=="2017"        && !el.IsBB()) DataCorr=1.;
     if(DataEra=="2018"        && !el.IsBB()) DataCorr=0.98;
   }
+  
   return  DataCorr*GetShiftCFEl(el.Pt(),el.IsBB(), ID, ApplyDataCorr, Sys );
   
-  /// OLD VALUES
-  
-  double ShiftSys = 1.0;
-  if(Sys > 0) ShiftSys = 1.01;
-  if(Sys < 0) ShiftSys = 0.99;
-  
-  if(DataEra.Contains("2016")){
-    
-    if(el.IsBB()){
-      if(el.Pt() < 50)        return CheckShiftRange(0.971,ShiftSys);
-      else if(el.Pt() < 75)   return CheckShiftRange(PtExtrap(el.Pt() , 50,75, 0.971,0.987),ShiftSys);
-      else if(el.Pt() < 150)  return CheckShiftRange(PtExtrap(el.Pt() , 75,150, 0.987,0.997),ShiftSys);
-      else return CheckShiftRange(0.997,ShiftSys);
-    }
-    else{
-      
-      if(el.Pt() < 30)         return  CheckShiftRange(0.951,ShiftSys);
-      else if(el.Pt() < 40)    return  CheckShiftRange(PtExtrap(el.Pt() , 30,40., 0.951,0.972),ShiftSys);
-      else if(el.Pt() < 62.5)  return  CheckShiftRange(PtExtrap(el.Pt() , 40,62.5, 0.972,0.983),ShiftSys);
-      else  if(el.Pt() < 87.5) return  CheckShiftRange(PtExtrap(el.Pt() , 62.5,87.5, 0.983,0.989),ShiftSys);
-      else  if(el.Pt() < 150)  return  CheckShiftRange(PtExtrap(el.Pt() , 87.5,150, 0.989,0.995),ShiftSys);
-      else  return CheckShiftRange(0.995,ShiftSys);
-    }
-  }//// 2016
-  
-  if(DataEra=="2017"){
-    if(el.IsBB()){
-      if(el.Pt() < 50)         return CheckShiftRange(0.969,ShiftSys);
-      else if(el.Pt() < 75)    return CheckShiftRange(PtExtrap(el.Pt() , 50,75, 0.969,0.987),ShiftSys);
-      else if(el.Pt() < 150)   return CheckShiftRange(PtExtrap(el.Pt() , 75,150, 0.987,0.995),ShiftSys);
-      else return CheckShiftRange(0.995,ShiftSys);
-    } 
-    else{
-      if(el.Pt() < 30)         return  CheckShiftRange(0.949,ShiftSys);
-      else if(el.Pt() < 40)    return  CheckShiftRange(PtExtrap(el.Pt() , 30,40, 0.949,0.969),ShiftSys);
-      else if(el.Pt() < 62.5)  return  CheckShiftRange(PtExtrap(el.Pt() , 40,62.5, 0.969,0.982),ShiftSys);
-      else  if(el.Pt() < 87.5) return  CheckShiftRange(PtExtrap(el.Pt() ,62.5, 87.5, 0.982,0.989),ShiftSys);
-      else  if(el.Pt() < 150)  return  CheckShiftRange(PtExtrap(el.Pt() , 87.5,150, 0.989,0.995),ShiftSys);
-      else  return CheckShiftRange(0.995,ShiftSys);
-    }
-  }/// 2017
-  
-  if(DataEra=="2018"){
-    
-    if(el.IsBB()){
-      if(el.Pt() < 50)       return CheckShiftRange(0.971,ShiftSys);
-      else if(el.Pt() < 75)  return CheckShiftRange(PtExtrap(el.Pt() , 50,75, 0.971,0.985),ShiftSys);
-      else if(el.Pt() < 150) return CheckShiftRange(PtExtrap(el.Pt() , 75,150, 0.985,0.997),ShiftSys);
-      else return CheckShiftRange(0.997,ShiftSys);
-    }
-    else{
-      if(el.Pt() < 30)         return  CheckShiftRange(0.948,ShiftSys);
-      else if(el.Pt() < 40)    return  CheckShiftRange(PtExtrap(el.Pt() , 30,40, 0.948,0.971),ShiftSys);
-      else if(el.Pt() < 62.5)  return  CheckShiftRange(PtExtrap(el.Pt() , 40,62.5, 0.971,0.982),ShiftSys);
-      else  if(el.Pt() < 87.5) return  CheckShiftRange(PtExtrap(el.Pt() , 62.5,87.5, 0.982,0.988),ShiftSys);
-      else  if(el.Pt() < 150)  return  CheckShiftRange(PtExtrap(el.Pt() , 87.5,150, 0.988,0.995),ShiftSys);
-      else  return CheckShiftRange(0.995,ShiftSys);
-    }
-  }// 2018
-  
-  return 0;  
 }
 
 double HNL_LeptonCore::GetCFShiftSyst(TString ID, TString bintag, int direction){
@@ -323,7 +263,7 @@ double HNL_LeptonCore::GetShiftCFEl(double el_pt, bool IsBB,TString ID, bool App
     if(el_pt < MedianBin3)  return CheckShiftRange(PtExtrap(el_pt , MedianBin2,MedianBin3, GetCFShift(ID,"BB_Pt_Bin2"),GetCFShift(ID,"BB_Pt_Bin3")),GetCFShiftSyst(ID,"BB_Pt_Bin3",sys));
     if(el_pt < MedianBin4)  return CheckShiftRange(PtExtrap(el_pt , MedianBin3,MedianBin4, GetCFShift(ID,"BB_Pt_Bin3"),GetCFShift(ID,"BB_Pt_Bin4")),GetCFShiftSyst(ID,"BB_Pt_Bin4",sys));
     if(el_pt < MedianBin5)  return CheckShiftRange(PtExtrap(el_pt , MedianBin4,MedianBin5, GetCFShift(ID,"BB_Pt_Bin4"),GetCFShift(ID,"BB_Pt_Bin5")),GetCFShiftSyst(ID,"BB_Pt_Bin5",sys));
-    return GetCFShift(ID,"BB_Pt_Bin5")*GetCFShiftSyst(ID,"BB_Pt_Bin5",sys);
+    return CheckShiftRange(GetCFShift(ID,"BB_Pt_Bin5"),GetCFShiftSyst(ID,"BB_Pt_Bin5",sys));
     
   }
   else {
@@ -347,7 +287,7 @@ double HNL_LeptonCore::GetShiftCFEl(double el_pt, bool IsBB,TString ID, bool App
     if(el_pt < MedianBin7)  return CheckShiftRange(PtExtrap(el_pt , MedianBin6,MedianBin7, GetCFShift(ID,"EC_Pt_Bin6"),GetCFShift(ID,"EC_Pt_Bin7")),GetCFShiftSyst(ID,"EC_Pt_Bin7",sys));
     if(el_pt < MedianBin8)  return CheckShiftRange(PtExtrap(el_pt , MedianBin7,MedianBin8, GetCFShift(ID,"EC_Pt_Bin7"),GetCFShift(ID,"EC_Pt_Bin8")),GetCFShiftSyst(ID,"EC_Pt_Bin8",sys));
     if(el_pt < MedianBin9)  return CheckShiftRange(PtExtrap(el_pt , MedianBin8,MedianBin9, GetCFShift(ID,"EC_Pt_Bin8"),GetCFShift(ID,"EC_Pt_Bin9")),GetCFShiftSyst(ID,"EC_Pt_Bin9",sys));
-    return GetCFShift(ID,"EC_Pt_Bin9")*GetCFShiftSyst(ID,"EC_Pt_Bin9",sys);
+    return CheckShiftRange(GetCFShift(ID,"EC_Pt_Bin9"),GetCFShiftSyst(ID,"EC_Pt_Bin9",sys));
     
   }
 

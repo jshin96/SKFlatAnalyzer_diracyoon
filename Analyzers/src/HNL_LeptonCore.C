@@ -73,6 +73,8 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
   
   //==== CFBackgroundEstimator                                                                                                                                              
   cfEst->SetEra(GetEra());
+  cfEst->SetFittedBins();
+
   if(RunCF&&READBKGHISTS)     cfEst->ReadHistograms(1);
   else if (Analyzer.Contains("ChargeFlip"))  cfEst->ReadHistograms(2);
 
