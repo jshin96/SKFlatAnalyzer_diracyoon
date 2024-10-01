@@ -106,18 +106,19 @@ double HNL_LeptonCore::GetCFWeightElectron(std::vector<Lepton* > leps ,  Analyze
   if(param.syst_ == AnalyzerParameter::CFRateUp) sysR = 1;
   if(param.syst_ == AnalyzerParameter::CFRateDown) sysR = -1;
   
+  TString TightID = TightID;
+  if(TightID.Contains("HNL_ULID")) TightID=TightID.ReplaceAll("_"+GetYearString(),"");
 
   for(auto ilep : leps){
     if(ilep->LeptonFlavour()==Lepton::ELECTRON){
       
       if(nElIt==nEl) {
-	//	double el_cf_rate =   cfEst->GetElectronCFRate(param.Electron_Tight_ID, param.k.Electron_CF,ilep->defEta(),ilep->Pt(), sysR);
-	double el_cf_rate =   cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID,"InvPtBB1", param.k.Electron_CF,ilep->defEta(),ilep->Pt(), sysR);
+	double el_cf_rate =   cfEst->GetElectronCFRateFitted(TightID,"InvPtBB1", param.k.Electron_CF,ilep->defEta(),ilep->Pt(), sysR);
 	el_cf_rate *= GetCFSF(param,ilep,ApplySF);
 	cf_weight += (el_cf_rate / (1.-el_cf_rate));
       }
       else if(nEl == -1){
-	double el_cf_rate =   cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID,"InvPtBB1", param.k.Electron_CF,ilep->defEta(),ilep->Pt(), sysR);
+	double el_cf_rate =   cfEst->GetElectronCFRateFitted(TightID,"InvPtBB1", param.k.Electron_CF,ilep->defEta(),ilep->Pt(), sysR);
 	el_cf_rate *= GetCFSF(param,ilep,ApplySF);
         cf_weight += (el_cf_rate / (1.-el_cf_rate));
       }
