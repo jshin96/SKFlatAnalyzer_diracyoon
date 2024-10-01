@@ -354,16 +354,20 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
       TString CFKey = param.Electron_Tight_ID;
 
       /// Fill Rate plots
-      for(int ipt = 2; ipt < 70; ipt++){
-	double lpt = double(ipt)*10.;
+      for(int ipt = 3; ipt < 140; ipt++){
+	double lpt = double(ipt)*5.;
 	if(lpt > 700) lpt = 699;
 
 	double WFittedv3_Eta1       = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InvPtBB1",   "CFRate_InvPtEta3_PBSExtrap_Central_"   + CFKey,   0.1, lpt, 0);
+
+	cout << "lpt = " << lpt << " WFittedv3_Eta1 = " << WFittedv3_Eta1 << endl;
+	continue;
 	double WFittedv3_Eta2       = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InvPtBB1",   "CFRate_InvPtEta3_PBSExtrap_Central_"   + CFKey,   0.7, lpt, 0);
 	double WFittedv3_Eta3       = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InvPtBB1",   "CFRate_InvPtEta3_PBSExtrap_Central_"   + CFKey,   0.9, lpt, 0);
 	double WFittedv3_Eta4       = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InvPtBB1",   "CFRate_InvPtEta3_PBSExtrap_Central_"   + CFKey,   1.3, lpt, 0);
 	double WFittedv3_Eta5       = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InvPtBB1",   "CFRate_InvPtEta3_PBSExtrap_Central_"   + CFKey,   2.1, lpt, 0);
 	double WFittedv3_Eta6       = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InvPtBB1",   "CFRate_InvPtEta3_PBSExtrap_Central_"   + CFKey,   2.35, lpt, 0);
+	
 	
 
 	double WFittedEta2_Eta1     = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InvPtBB2",   "CFRate_InvPtEtaBB2_PBSExtrap_Central_"  + CFKey,   0.1, lpt, 0);
@@ -489,7 +493,7 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 
       }
     }
-
+    return;
     
     int nbinNeg= 19;
 

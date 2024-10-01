@@ -5,7 +5,9 @@ mcpath=${SKFlat_WD}/runJobs/HNL/${analyzer}/Bkg/
 njobs=250
 nmax=400
 skim=' '
-declare  -a era_list=("2016postVFP" "2016preVFP" "2017" "2018")
+declare  -a era_list=("2016postVFP")
+
+# "2016preVFP" "2017" "2018")
 
 declare  -a flag_list=("ClosureTest")
 
