@@ -32,7 +32,7 @@ CFRate          InvPtEtaBB1     PBSExtrap   Central         passHEEPID_v1       
 CFRate          InvPtEtaBB2     PBSExtrap   Central         passHEEPID_v1                          MainFiles/HNL_CF_Version6_Electron_2016a_Rates.root
 CFRate          InvPtEta2BB2    PBSExtrap   Central         passHEEPID_v1                          MainFiles/HNL_CF_Version6_Electron_2016a_Rates.root
 CFRate          InvPtEtaEC1     PBSExtrap   Central         passHEEPID_v1                          MainFiles/HNL_CF_Version6_Electron_2016a_Rates.root
-CFRate          InvPtEtaEC2     PBSExtrap   Central         passHEEPID_v2                          MainFiles/HNL_CF_Version6_Electron_2016a_Rates.root
+CFRate          InvPtEtaEC2     PBSExtrap   Central         passHEEPID_v1                          MainFiles/HNL_CF_Version6_Electron_2016a_Rates.root
 CFRate          InvPtEta1       NoS         Central         passHEEPID_v2                         MainFiles/HNL_CF_Version6_Electron_2016a_Rates.root
 CFRate          InvPtEta3       NoS         Central         passHEEPID_v2                         MainFiles/HNL_CF_Version6_Electron_2016a_Rates.root
 CFRate          InvPtEtaBB1     NoS         Central         passHEEPID_v2                         MainFiles/HNL_CF_Version6_Electron_2016a_Rates.root
