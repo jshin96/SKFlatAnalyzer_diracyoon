@@ -334,7 +334,7 @@ double CFBackgroundEstimator::GetElectronCFRateFitted(TString ID, TString EtaBin
   mapit = map_hist_Electron.find(key );
 
   if(mapit==map_hist_Electron.end()){
-    cout << "[CFBackgroundEstimator::GetElectronCFRate] No"<< key  <<endl;
+    cout << "[CFBackgroundEstimator::GetElectronCFRateFitted] No"<< key  <<endl;
     if(IgnoreNoHist) {
       TString MapK = key;
       if (std::find(MissingHists.begin(), MissingHists.end(), MapK ) == MissingHists.end())   MissingHists.push_back(MapK);
