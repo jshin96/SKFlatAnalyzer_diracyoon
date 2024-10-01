@@ -247,6 +247,11 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
     if(ilep->LeptonFlavour() == Lepton::MUON) nmu++;
   }
     
+  std::vector<FatJet> AK8_JetColl_PN_NoMass          = GetHNLAK8Jets("HNL_PN_NoMass",param);
+  std::vector<FatJet> AK8_JetColl_NoMass          = GetHNLAK8Jets("HNL_NoMass",param);
+  Fill_PlotsAK8(param, regionAK8, plot_dir+"_AK8_JetColl_PN_NoMass",TauColl,jets , AK8_JetColl_PN_NoMass, leps, met, nvtx,w);
+  Fill_PlotsAK8(param, regionAK8, plot_dir+"_AK8_JetColl_NoMass",TauColl,jets , AK8_JetColl_NoMass, leps, met, nvtx,w);
+
   Fill_PlotsAK8(param, regionAK8, plot_dir,TauColl,jets , fatjets, leps, met, nvtx,w);
   
   bool DrawLevel1 = true; // Always gets drawn

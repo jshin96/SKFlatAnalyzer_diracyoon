@@ -349,19 +349,14 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
   if(HasFlag("ClosureTest")){
     
     if(_jentry == 1){
-      
-
       TString CFKey = param.Electron_Tight_ID;
 
       /// Fill Rate plots
-      for(int ipt = 3; ipt < 140; ipt++){
+      for(int ipt = 3; ipt < 350; ipt++){
 	double lpt = double(ipt)*5.;
 	if(lpt > 700) lpt = 699;
 
 	double WFittedv3_Eta1       = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InvPtBB1",   "CFRate_InvPtEta3_PBSExtrap_Central_"   + CFKey,   0.1, lpt, 0);
-
-	cout << "lpt = " << lpt << " WFittedv3_Eta1 = " << WFittedv3_Eta1 << endl;
-	continue;
 	double WFittedv3_Eta2       = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InvPtBB1",   "CFRate_InvPtEta3_PBSExtrap_Central_"   + CFKey,   0.7, lpt, 0);
 	double WFittedv3_Eta3       = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InvPtBB1",   "CFRate_InvPtEta3_PBSExtrap_Central_"   + CFKey,   0.9, lpt, 0);
 	double WFittedv3_Eta4       = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InvPtBB1",   "CFRate_InvPtEta3_PBSExtrap_Central_"   + CFKey,   1.3, lpt, 0);
@@ -493,7 +488,6 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 
       }
     }
-    return;
     
     int nbinNeg= 19;
 

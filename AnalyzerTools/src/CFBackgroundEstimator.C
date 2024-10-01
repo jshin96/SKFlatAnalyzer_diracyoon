@@ -305,10 +305,15 @@ double CFBackgroundEstimator::GetElectronCFRateFitted(TString ID, TString EtaBin
   eta = fabs(eta);
   if(eta>=2.5) eta = 2.49;
   
+  if(eta > 1.5 && GetEra()=="2018") {
+    if(pt > 500) key=key.ReplaceAll("InvPtEta3","InvPtEta1");
+  }
+
   //// Lowest pt value is 20;                                                                                                                                                                
   if(pt < 15) pt = 15;
   if(EtaBinTag == "InvPtBB1" || EtaBinTag == "InvPtBB2"){
     if(pt > 650) pt = 650;
+    
     //if(eta > 2.2) pt = 399;
   }
   else   if(EtaBinTag == "InvPt2BB2"){
@@ -322,8 +327,9 @@ double CFBackgroundEstimator::GetElectronCFRateFitted(TString ID, TString EtaBin
   }
   else {
     if(pt > 900) pt = 899;
-
   }
+
+
   std::map< TString, TH2D* >::const_iterator mapit;
   mapit = map_hist_Electron.find(key );
 
@@ -339,6 +345,31 @@ double CFBackgroundEstimator::GetElectronCFRateFitted(TString ID, TString EtaBin
 
   int this_bin = (key.Contains("Inv")) ?  (mapit->second)->FindBin(1/pt,eta) :  (mapit->second)->FindBin(pt,eta);
   
+  if(GetEra() == "2016preVFP"){
+    if(ID.Contains("HNL_ULID")){
+      if( key.Contains("InvPtEta3")  && this_bin == (mapit->second)->FindBin(0.0026,2.3)) this_bin = (mapit->second)->FindBin(0.0029,2.3)  ;
+    }
+  }
+  if(GetEra() == "2016postVFP"){
+    if(ID.Contains("HNL_ULID")){
+      if( key.Contains("InvPtEta3")  && this_bin == (mapit->second)->FindBin(0.0023,2.3)) this_bin = (mapit->second)->FindBin(0.0026,2.3)  ;
+    }
+  }
+  if(GetEra() == "2017"){
+    if(ID.Contains("HNL_ULID")){
+      if( key.Contains("InvPtEta3")  && this_bin == (mapit->second)->FindBin(0.0026,2.1)) this_bin = (mapit->second)->FindBin(0.0029,2.1)  ;
+      if( key.Contains("InvPtEta3")  && this_bin == (mapit->second)->FindBin(0.0026,1.)) this_bin = (mapit->second)->FindBin(0.0029,1.)  ;
+    }
+  }
+
+  if(GetEra() == "2018"){
+    if(ID.Contains("HNL_ULID")){
+      if( key.Contains("InvPtEta3")  && this_bin == (mapit->second)->FindBin(0.0024,2.3)) this_bin = (mapit->second)->FindBin(0.0026,2.3)  ;
+      if( key.Contains("InvPtEta3")  && this_bin == (mapit->second)->FindBin(0.0024,2.1)) this_bin = (mapit->second)->FindBin(0.0026,2.1)  ;
+    }
+  }
+
+
   int this_bin_m1 = this_bin-1;
   int this_bin_p1 = this_bin+1;
 
@@ -380,23 +411,6 @@ double CFBackgroundEstimator::GetElectronCFRateFitted(TString ID, TString EtaBin
   
   ////    0         0.002     0.003                      0.04     0.07
   ////    |         |         |       |    |      |     |    |
-
-  ////Based on MC closure apply corr
-
-  ///// Look to apply MC corr  
-  double Corr =1.;
-  if(GetEra() =="2018") {
-    if(pt > 400) Corr  = 0.8;
-  }    
-  if(GetEra() =="2017") {
-    if(pt > 400 && pt < 500) Corr  = 0.8;
-  }
-  if(GetEra() =="2016postVFP") {
-    if(pt > 250) Corr = 0.8;
-  }
-  if(GetEra() =="2016preVFP") {
-    if(pt > 500) Corr =0.78;
-  }
 
 
 

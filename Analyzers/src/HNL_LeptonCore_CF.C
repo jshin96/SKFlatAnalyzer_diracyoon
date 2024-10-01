@@ -228,7 +228,7 @@ double HNL_LeptonCore::GetCFShiftSyst(TString ID, TString bintag, int direction)
 
   CFMapIter = MakeCFShiftmap.find(key);
 
-  if(CFMapIter == MakeCFShiftmap.end()) {  cout << "[HNL_LeptonCore::GGetCFShiftSyst] ERROR in CGetCFShiftSyst.. " << key  << endl;   exit(EXIT_FAILURE);}
+  if(CFMapIter == MakeCFShiftmap.end()) {  cout << "[HNL_LeptonCore::GGetCFShiftSyst] ERROR in GetCFShiftSyst.. " << key  << endl;   exit(EXIT_FAILURE);}
 
   return 1 + double(direction)*CFMapIter->second;
 
@@ -242,7 +242,7 @@ double HNL_LeptonCore::GetCFShift(TString ID, TString bintag){
   map<TString,double >::iterator CFMapIter ;
   
   CFMapIter = MakeCFShiftmap.find(key);
-  if(CFMapIter == MakeCFShiftmap.end()) {  cout << "[HNL_LeptonCore::GGetCFShift] ERROR in CGetCFShift.. " << key  << endl;   exit(EXIT_FAILURE);}
+  if(CFMapIter == MakeCFShiftmap.end()) {  cout << "[HNL_LeptonCore::GGetCFShift] ERROR in GetCFShift.. " << key  << endl;   exit(EXIT_FAILURE);}
 
   return CFMapIter->second;
 
