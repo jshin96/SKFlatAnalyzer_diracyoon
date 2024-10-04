@@ -124,40 +124,23 @@ Particle HNL_LeptonCore::GetvMET(TString METType, AnalyzerParameter param,
   if(param.syst_ == AnalyzerParameter::JetEnDown)             IdxSyst = 3;
   if(param.syst_ == AnalyzerParameter::MuonEnUp)              IdxSyst = 54; /// +50 so code uses our Muon corr not POG in MiniAOD
   if(param.syst_ == AnalyzerParameter::MuonEnDown)            IdxSyst = 55; /// +50 so code uses our Muon corr not POG in MiniAOD
-  if(param.syst_ == AnalyzerParameter::ElectronEnUp)          IdxSyst = 6;
-  if(param.syst_ == AnalyzerParameter::ElectronEnDown)        IdxSyst = 7;
+  if(param.syst_ == AnalyzerParameter::ElectronEnUp)          IdxSyst = 56;
+  if(param.syst_ == AnalyzerParameter::ElectronEnDown)        IdxSyst = 57;
   // syst source not defined in CMSSW
   if(param.syst_ == AnalyzerParameter::JetMassUp)             IdxSyst = 20;
   if(param.syst_ == AnalyzerParameter::JetMassDown)           IdxSyst = 21;
   if(param.syst_ == AnalyzerParameter::JetMassSmearUp)        IdxSyst = 22;
   if(param.syst_ == AnalyzerParameter::JetMassSmearDown)      IdxSyst = 23;
-  if(param.syst_ == AnalyzerParameter::MuonRecoSFUp)          IdxSyst = 24;
-  if(param.syst_ == AnalyzerParameter::MuonRecoSFDown)        IdxSyst = 25;
-  if(param.syst_ == AnalyzerParameter::MuonIDSFUp)            IdxSyst = 26;
-  if(param.syst_ == AnalyzerParameter::MuonIDSFDown)          IdxSyst = 27;
-  if(param.syst_ == AnalyzerParameter::MuonISOSFUp)           IdxSyst = 28;
-  if(param.syst_ == AnalyzerParameter::MuonISOSFDown)         IdxSyst = 29;
-  if(param.syst_ == AnalyzerParameter::MuonTriggerSFUp)       IdxSyst = 30;
-  if(param.syst_ == AnalyzerParameter::MuonTriggerSFDown)     IdxSyst = 31;
-  if(param.syst_ == AnalyzerParameter::ElectronRecoSFUp)      IdxSyst = 32;
-  if(param.syst_ == AnalyzerParameter::ElectronRecoSFDown)    IdxSyst = 33;
   if(param.syst_ == AnalyzerParameter::ElectronResUp)         IdxSyst = 34;
   if(param.syst_ == AnalyzerParameter::ElectronResDown)       IdxSyst = 35;
-  if(param.syst_ == AnalyzerParameter::ElectronIDSFUp)        IdxSyst = 36;
-  if(param.syst_ == AnalyzerParameter::ElectronIDSFDown)      IdxSyst = 37;
-  if(param.syst_ == AnalyzerParameter::ElectronTriggerSFUp)   IdxSyst = 38;
-  if(param.syst_ == AnalyzerParameter::ElectronTriggerSFDown) IdxSyst = 39;
   if(param.syst_ == AnalyzerParameter::BTagSFHTagUp)          IdxSyst = 40;
   if(param.syst_ == AnalyzerParameter::BTagSFHTagDown)        IdxSyst = 41;
   if(param.syst_ == AnalyzerParameter::BTagSFLTagUp)          IdxSyst = 42;
   if(param.syst_ == AnalyzerParameter::BTagSFLTagDown)        IdxSyst = 43;
-  if(param.syst_ == AnalyzerParameter::PrefireUp)             IdxSyst = 44;
-  if(param.syst_ == AnalyzerParameter::PrefireDown)           IdxSyst = 45;
-  if(param.syst_ == AnalyzerParameter::PUUp)                  IdxSyst = 46;
-  if(param.syst_ == AnalyzerParameter::PUDown)                IdxSyst = 47;
-
 
   Particle vMETCorr = PropSmearing ? GetvCorrMET(METType,param,vStandMET) : vStandMET;
+  if(IdxSyst == -1) return vMETCorr;
+
   Particle vMETFinal;
 
   if(IdxSyst >= 20 )  vMETFinal = UpdateMETSyst(param, vMETCorr, jets, fatjets, muons, electrons);
