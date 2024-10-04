@@ -1361,15 +1361,15 @@ bool HNL_RegionDefinitions::FillSSZPeakCRPlots(HNL_LeptonCore::Channel channel, 
   }
   if(AK8_JetColl.size() > 0){
     Fill_RegionPlots(param,"HNL_HighMassSSZPeak_AK8_TwoLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
-    FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_CF/SR1",  1  ,  w, 1,0,1 ,"SR1");
+    FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_CF/SR1",  0.5  ,  w, 1,0,1 ,"SR1");
   }
   else if(PassVBF(VBF_JetColl,leps,750)){
     Fill_RegionPlots(param,"HNL_HighMassSSZPeak_VBF_TwoLepton_CR"  ,  VBF_JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
-    FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_CF/SR2",  1  ,  w, 1,0,1 ,"SR2");
+    FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_CF/SR2",  0.5  ,  w, 1,0,1 ,"SR2");
   }
   else{
     Fill_RegionPlots(param,"HNL_HighMassSSZPeak_AK4_TwoLepton_CR"  ,  JetColl,  AK8_JetColl,  leps,  METv, nPV, w);
-    FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_CF/SR3",  1  ,  w, 1,0,1 ,"SR3");
+    FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_CF/SR3",  0.5  ,  w, 1,0,1 ,"SR3");
   }
 
 
@@ -1692,7 +1692,7 @@ bool HNL_RegionDefinitions::FillWZVBFCRPlots(HNL_LeptonCore::Channel channel, st
     else Binvalue= 5.5;
   }
   FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_WZ_SR2/Binned",  Binvalue  ,  w, 6,0,6 ,"CR Binned");
-  FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_WZ/Binned",  Binvalue+3  ,  w, 12,0,12 ,"CR Binned");
+  FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_WZ/Binned",  Binvalue+3  ,  w, 15,0,15 ,"CR Binned");
   
   Fill_RegionPlots(param,"HNL_WZVBF_ThreeLepton_CR" ,  jets_eta5,  AK8_JetColl,  leps,  METv, nPV, w);
   OutCutFlow("HNL_WZVBF_ThreeLepton_CR",w);
@@ -2118,7 +2118,7 @@ bool HNL_RegionDefinitions::FillZGCRPlots(HNL_LeptonCore::Channel channel, std::
     if(llJ.M() < 200) Binvalue= 0.5;
     else     if(llJ.M() < 750) Binvalue= 1.5;
     else Binvalue= 2.5;
-    FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_ZG_SR1/Binned",  Binvalue  ,  w, 6,0,6 ,"CR Binned");
+    FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_ZG_SR1/Binned",  Binvalue  ,  w, 3,0,3 ,"CR Binned");
     FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_ZG/Binned",  Binvalue  ,  w, 9,0,9 ,"CR Binned");
   }
   else {
@@ -2293,8 +2293,8 @@ bool HNL_RegionDefinitions::FillWZCRPlots(HNL_LeptonCore::Channel channel, std::
       else     if(llJJ.M() < 400) Binvalue= 4.5;
       else Binvalue= 5.5;
     }
-    FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_WZ/Binned",  Binvalue  ,  w, 12,0,12 ,"CR Binned");
     FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_WZ_SR3/Binned",  Binvalue  ,  w, 6,0,6 ,"CR Binned");
+    FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_WZ/Binned",  Binvalue+9  ,  w, 15,0,15 ,"CR Binned");
   }
   else if(AK8_JetColl.size() > 0 && JetColl.size() < 5 ){
     double Binvalue=0;
@@ -2303,8 +2303,8 @@ bool HNL_RegionDefinitions::FillWZCRPlots(HNL_LeptonCore::Channel channel, std::
     else     if(llJJ.M() < 750) Binvalue= 1.5;
     else Binvalue= 2.5;
 
-    FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_WZ/Binned",  Binvalue+9  ,  w, 12,0,12 ,"CR Binned");
     FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_WZ_SR1/Binned",  Binvalue  ,  w, 3,0,3 ,"CR Binned");
+    FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_WZ/Binned",  Binvalue  ,  w, 15,0,15 ,"CR Binned");
   }
 
   //// SR1
