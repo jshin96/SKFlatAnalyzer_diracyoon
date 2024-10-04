@@ -75,7 +75,7 @@ void HNL_SignalRegion_Plotter::executeEvent(){
 	}
 
         for(auto isyst : SystList){
-	  bool runJob = UpdataParamBySyst(id,param,AnalyzerParameter::Syst(isyst),param_name);
+	  bool runJob = UpdateParamBySyst(id,param,AnalyzerParameter::Syst(isyst),param_name);
           if(runJob) RunULAnalysis(param);
         }
       }    

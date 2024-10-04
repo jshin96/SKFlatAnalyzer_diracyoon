@@ -74,7 +74,7 @@ void HNL_ControlRegion_Plotter::executeEvent(){
 	    SystList = {}; /// Set Individual systs
 	  }
 	  for(auto isyst : SystList){
-	    bool runJob = UpdataParamBySyst(id,param_signal,AnalyzerParameter::Syst(isyst),param_name);
+	    bool runJob = UpdateParamBySyst(id,param_signal,AnalyzerParameter::Syst(isyst),param_name);
 	    if(runJob)         RunControlRegions(param_signal , {iCR} );
 	  }
 	}
