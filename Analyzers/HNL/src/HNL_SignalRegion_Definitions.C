@@ -549,7 +549,7 @@ TString HNL_RegionDefinitions::RunSignalRegionWWString(bool ApplyForSR,HNL_Lepto
   double HT(0.);
   for(auto ij : JetLooseColl) HT += ij.Pt();
   
-  double htltcut = 1.;
+  double htltcut = 2.;
   
   if(PassHMMet     && ApplyForSR) FillCutflow(Reg, w, RegionTag+"_met",param);
 
@@ -576,8 +576,11 @@ TString HNL_RegionDefinitions::RunSignalRegionWWString(bool ApplyForSR,HNL_Lepto
       
       FillCutflow(Reg, w, RegionTag+"_ht_lt1",param);
       
-      if (L2Pt > 120)      return RegionTag+"_HTLTbin1";
-      return RegionTag+"_HTLTbin2";
+      if(HT/leps[0]->Pt() < 1.){
+        if (L2Pt > 120.)      return RegionTag+"_HTLTbin1";
+        else return RegionTag+"_HTLTbin2";
+      }
+      else return RegionTag+"_HTLTbin3";
     }
   }
   return "false";
