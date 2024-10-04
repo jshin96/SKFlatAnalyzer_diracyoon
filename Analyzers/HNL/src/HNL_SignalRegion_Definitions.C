@@ -44,7 +44,6 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
       electrons.push_back( this_electron);
     }
     //// Update MET For CF
-    
     METv = UpdateMETCF(METv,electronsInitial,electrons);
   }
   else  electrons = electronsInitial;
