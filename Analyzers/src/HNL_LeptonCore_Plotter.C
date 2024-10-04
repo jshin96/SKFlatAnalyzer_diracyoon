@@ -86,6 +86,7 @@ bool HNL_LeptonCore::DrawSyst(AnalyzerParameter::Syst SystType){
     SystToPlot= {AnalyzerParameter::Syst::JetEnUp, AnalyzerParameter::Syst::JetEnDown};
   }
   
+  SystToPlot.push_back(AnalyzerParameter::Syst::Central);
   if(std::find(SystToPlot.begin(), SystToPlot.end(), SystType) != SystToPlot.end()) return true;
   else return false;
 }

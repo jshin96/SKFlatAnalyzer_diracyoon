@@ -537,6 +537,8 @@ AnalyzerParameter HNL_LeptonCore::SetupFakeParameter(AnalyzerParameter::Syst Sys
 
 bool  HNL_LeptonCore::UpdataParamBySyst(TString JobID, AnalyzerParameter& paramEv , AnalyzerParameter::Syst systname, TString OrigParamName){
  
+  if(!RunFake) return true;
+
   //// This function updates the ID/Keys for Fakes based on systematic settings
 
   /// If not HNL_ULID setting return 
