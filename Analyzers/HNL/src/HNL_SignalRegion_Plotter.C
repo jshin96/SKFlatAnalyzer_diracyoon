@@ -58,9 +58,11 @@ void HNL_SignalRegion_Plotter::executeEvent(){
     for(auto channel : ChannelsToRun){
 
       AnalyzerParameter param = HNL_LeptonCore::InitialiseHNLParameter(id,channel);
-      param.PlottingVerbose = 1;
+      param.PlottingVerbose = 2;
+      if(id == "HNL_ULID")         param.PlottingVerbose = 1;
+      if(id.Contains("HEEP"))      param.PlottingVerbose = 1;
       RunULAnalysis(param);
-      
+
       if(RunSyst||RunFullSyst){
         TString param_name = param.Name;
         vector<AnalyzerParameter::Syst> SystList = GetSystList("All");
@@ -120,6 +122,7 @@ void HNL_SignalRegion_Plotter::RunULAnalysis(AnalyzerParameter param){
   std::vector<Jet>    AK4_JetAllColl              = GetHNLJets("NoCut_Eta3",param);
   std::vector<Jet>    AK4_JetCollLoose            = GetHNLJets("Loose",     param);
   std::vector<Jet>    AK4_BJetColl                = GetHNLJets("BJet", param);
+  std::vector<Jet>    AK4_BJetColl_noAk8Cl        = GetHNLJets("BJet_NoAk8Cleaning", param);
  
   //Particle METv = GetvMET("PuppiT1xyULCorr",param);
   Particle METv = GetvMET("PuppiT1xyULCorr", param, AK4_VBF_JetColl, AK8_JetColl, MuonCollT, ElectronCollT); // returns MET with systematic correction; run this after all object selection done; NOTE that VBF jet is used here
@@ -127,7 +130,7 @@ void HNL_SignalRegion_Plotter::RunULAnalysis(AnalyzerParameter param){
   EvalJetWeight(AK4_JetColl, AK8_JetColl, weight, param);
 
   FillTimer("START_SR");
-  
+
   vector<int> RunEl ;
   if(RunCF) RunEl =  {0,1} ;
   else RunEl = {-1};
@@ -140,15 +143,20 @@ void HNL_SignalRegion_Plotter::RunULAnalysis(AnalyzerParameter param){
 			ev,METv, param, ir, weight);
   }
 
+  param.Name = param.Name + "_BJetCleaned";
+  param.DefName = param.DefName + "_BJetCleaned";
+  for(auto ir : RunEl){
+
+    RunAllSignalRegions(Inclusive,
+                        ElectronCollT,ElectronCollV,MuonCollT,MuonCollV,  TauColl,
+                        AK4_JetCollLoose,AK4_JetColl,AK4_VBF_JetColl,AK8_JetColl, AK4_BJetColl_noAk8Cl,
+			ev,METv, param, ir, weight);
+  }
   FillTimer("END_SR");
 
 
 }
-
-
-
  
-
 
 HNL_SignalRegion_Plotter::HNL_SignalRegion_Plotter(){
 

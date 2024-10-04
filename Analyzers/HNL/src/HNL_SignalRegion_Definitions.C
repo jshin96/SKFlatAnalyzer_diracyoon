@@ -380,7 +380,7 @@ TString HNL_RegionDefinitions::RunSignalRegionAK8String(bool ApplyForSR,
   double met_cut     = ApplyForSR ? 10. : 12;
   double met2_st     = GetMET2ST(leps, JetColl, AK8_JetColl, METv);
   bool PassHMMet     = ApplyForSR ? (met2_st < met_cut) :  (met2_st > met_cut);
-  bool PassBJetMVeto = ApplyForSR ? (B_JetColl.size()==0) : (B_JetColl.size()> 0);
+  bool PassBJetMVeto = ApplyForSR ? (B_JetColl.size()==0) : (B_JetColl.size()== 1);
   bool PassRegionReq = ApplyForSR ? (PassHMMet && PassBJetMVeto) :  (PassHMMet ||  PassBJetMVeto) ;
 
   double LowerMassSR1WmassCut = 450.;
@@ -492,7 +492,7 @@ TString HNL_RegionDefinitions::RunSignalRegionWWString(bool ApplyForSR,HNL_Lepto
 
   double met2_st     = GetMET2ST(leps, JetColl, AK8_JetColl, METv);
   bool PassHMMet     = ApplyForSR ? (met2_st < met_cut) :  (met2_st > met_cut);
-  bool PassBJetMVeto = ApplyForSR ? (B_JetColl.size()==0) : (B_JetColl.size()> 0);
+  bool PassBJetMVeto = ApplyForSR ? (B_JetColl.size()==0) : (B_JetColl.size() ==1);
   bool PassRegionReq = ApplyForSR ? (PassHMMet && PassBJetMVeto) :  (PassHMMet ||  PassBJetMVeto) ;
 
   if (leps_veto.size() != 2) return "false";
@@ -605,7 +605,7 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4StringBDT(bool ApplyForSR, TStr
   vector<FatJet> AK8_JetColl;
   double met2_st     = GetMET2ST(LepTColl, JetColl, AK8_JetColl, METv);
   bool PassHMMet     = ApplyForSR ? (met2_st < met_cut) :  (met2_st > met_cut);
-  bool PassBJetMVeto = ApplyForSR ? (B_JetColl.size()==0) : (B_JetColl.size()> 0);
+  bool PassBJetMVeto = ApplyForSR ? (B_JetColl.size()==0) : (B_JetColl.size() ==1);
   bool PassRegionReq = ApplyForSR ? (PassHMMet && PassBJetMVeto) :  (PassHMMet ||  PassBJetMVeto) ;
 
   TString RegionTag                = ApplyForSR ? "SR3" : "CR3";
@@ -942,7 +942,7 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4String(bool ApplyForSR,HNL_Lept
 
   double met2_st     = GetMET2ST(leps, JetColl, AK8_JetColl, METv);
   bool PassHMMet     = ApplyForSR ? (met2_st < met_cut) :  (met2_st > met_cut);
-  bool PassBJetMVeto = ApplyForSR ? (B_JetColl.size()==0) : (B_JetColl.size()> 0);
+  bool PassBJetMVeto = ApplyForSR ? (B_JetColl.size()==0) : (B_JetColl.size() == 1);
   bool PassRegionReq = ApplyForSR ? (PassHMMet && PassBJetMVeto) :  (PassHMMet ||  PassBJetMVeto) ;
 
   TString RegionTag  = ApplyForSR ? "SR3" : "CR3";
