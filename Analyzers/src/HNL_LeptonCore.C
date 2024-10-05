@@ -29,6 +29,12 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
 
   /// Other flags                                                                                                                                      
   RunSyst = HasFlag("RunSyst");
+  RunFullSyst = HasFlag("RunFullSyst");
+  RunEE   = HasFlag("EE");
+  RunMuMu = HasFlag("MuMu");
+  RunEMu  = HasFlag("EMu");
+
+  if(RunFullSyst) RunSyst = RunFullSyst;
   HEM1516 = HasFlag("HEM1516");
 
   /// clear map
@@ -348,57 +354,70 @@ double HNL_LeptonCore::MergeMultiMC(vector<TString> vec, TString Method){
 vector<AnalyzerParameter::Syst> HNL_LeptonCore::GetSystList(TString SystType){
 
   vector<AnalyzerParameter::Syst> SystList = {};
-
-  if(SystType == "Initial" || SystType == ""){
-    SystList.push_back(AnalyzerParameter::JetResUp);
-    SystList.push_back(AnalyzerParameter::JetResDown);
-    SystList.push_back(AnalyzerParameter::PUUp);
-    SystList.push_back(AnalyzerParameter::PUDown);
-    SystList.push_back(AnalyzerParameter::BTagSFHTagUp);
-    SystList.push_back(AnalyzerParameter::BTagSFHTagDown);  
-    SystList.push_back(AnalyzerParameter::BTagSFLTagUp);
-    SystList.push_back(AnalyzerParameter::BTagSFLTagDown);
-
+  
+  if(!RunSyst) return SystList;
+  
+  if(RunCF){
+    SystList = {
+      AnalyzerParameter::CFRateUp,
+      AnalyzerParameter::CFRateDown,
+      AnalyzerParameter::CFSFUp,
+      AnalyzerParameter::CFSFDown
+    };
   }
   
-  if(SystType == "Fake"){
-
+  else if(RunFake){
+    SystList.push_back(AnalyzerParameter::FRUp);
+    SystList.push_back(AnalyzerParameter::FRDown);
     SystList.push_back(AnalyzerParameter::FRAJ30);
-    SystList.push_back(AnalyzerParameter::FRAJ40);
     SystList.push_back(AnalyzerParameter::FRAJ60);
     SystList.push_back(AnalyzerParameter::FRLooseIDDJUp);
     SystList.push_back(AnalyzerParameter::FRLooseIDDJDown);
     SystList.push_back(AnalyzerParameter::FRPartonSFUp);
     SystList.push_back(AnalyzerParameter::FRPartonSFDown);
-    SystList.push_back(AnalyzerParameter::FRAltBinning);
   }
-
-
-  if(SystType == "All"){
-    SystList = {AnalyzerParameter::JetResUp,AnalyzerParameter::JetResDown,
-		AnalyzerParameter::JetEnUp, AnalyzerParameter::JetEnDown,
-		AnalyzerParameter::JetMassUp,AnalyzerParameter::JetMassDown,                                                                                     
-		AnalyzerParameter::JetMassSmearUp,AnalyzerParameter::JetMassSmearDown,                                                                           
-		AnalyzerParameter::MuonRecoSFUp,AnalyzerParameter::MuonRecoSFDown,                                                                               
-		AnalyzerParameter::MuonEnUp,AnalyzerParameter::MuonEnDown,                                                                                       
-		AnalyzerParameter::MuonIDSFUp,AnalyzerParameter::MuonIDSFDown,                                                                                   
-		AnalyzerParameter::MuonISOSFUp,AnalyzerParameter::MuonISOSFDown,                                                                                 
-		AnalyzerParameter::MuonTriggerSFUp,AnalyzerParameter::MuonTriggerSFDown,                                                                                 
-		AnalyzerParameter::ElectronRecoSFUp,AnalyzerParameter::ElectronRecoSFDown,                                                                       
-		AnalyzerParameter::ElectronResUp,AnalyzerParameter::ElectronResDown,                                                                             
-		AnalyzerParameter::ElectronEnUp,AnalyzerParameter::ElectronEnDown,                                                                               
-		AnalyzerParameter::ElectronIDSFUp,AnalyzerParameter::ElectronIDSFDown,                                                                           
-		AnalyzerParameter::ElectronTriggerSFUp,AnalyzerParameter::ElectronTriggerSFDown,                                                                 
-		AnalyzerParameter::BTagSFHTagUp,AnalyzerParameter::BTagSFHTagDown,                                                                               
-		AnalyzerParameter::BTagSFLTagUp,AnalyzerParameter::BTagSFLTagDown,                                                                               
-		AnalyzerParameter::METUnclUp,AnalyzerParameter::METUnclDown,                                                                                     
-		AnalyzerParameter::CFRateUp,AnalyzerParameter::CFRateDown,                                                                                               
-		AnalyzerParameter::CFSFUp,AnalyzerParameter::CFSFDown,                                                                                               
-		AnalyzerParameter::FRUp,AnalyzerParameter::FRDown,                                                                                               
-		AnalyzerParameter::PrefireUp,AnalyzerParameter::PrefireDown,                                                                                     
-		AnalyzerParameter::PUUp,AnalyzerParameter::PUDown};
+  else{
     
+    SystList.push_back(AnalyzerParameter::JetResUp);
+    SystList.push_back(AnalyzerParameter::JetResDown);
+    SystList.push_back(AnalyzerParameter::PUUp);
+    SystList.push_back(AnalyzerParameter::PUDown);
+    SystList.push_back(AnalyzerParameter::JetEnUp);
+    SystList.push_back(AnalyzerParameter::JetEnDown);
     
+    if(RunFullSyst){
+      
+      SystList = {AnalyzerParameter::JetResUp,AnalyzerParameter::JetResDown,
+		  AnalyzerParameter::JetEnUp, AnalyzerParameter::JetEnDown,
+		  AnalyzerParameter::BTagSFHTagUp,AnalyzerParameter::BTagSFHTagDown,
+                  AnalyzerParameter::BTagSFLTagUp,AnalyzerParameter::BTagSFLTagDown,
+                  AnalyzerParameter::METUnclUp,AnalyzerParameter::METUnclDown,
+                  AnalyzerParameter::PrefireUp,AnalyzerParameter::PrefireDown,
+                  AnalyzerParameter::PUUp,AnalyzerParameter::PUDown};
+      
+      if(RunMuMu || RunEMu){
+	SystList.push_back(AnalyzerParameter::MuonRecoSFUp);
+	SystList.push_back(AnalyzerParameter::MuonRecoSFDown);
+	SystList.push_back(AnalyzerParameter::MuonEnUp);
+	SystList.push_back(AnalyzerParameter::MuonEnDown);
+	SystList.push_back(AnalyzerParameter::MuonIDSFUp);
+	SystList.push_back(AnalyzerParameter::MuonIDSFDown);
+	SystList.push_back(AnalyzerParameter::MuonTriggerSFUp);
+	SystList.push_back(AnalyzerParameter::MuonTriggerSFDown);
+      }
+      if(RunEE || RunEMu){
+	SystList.push_back(AnalyzerParameter::ElectronRecoSFUp);
+	SystList.push_back(AnalyzerParameter::ElectronRecoSFDown);
+	SystList.push_back(AnalyzerParameter::ElectronResUp);
+	SystList.push_back(AnalyzerParameter::ElectronResDown);
+	SystList.push_back(AnalyzerParameter::ElectronEnUp);
+	SystList.push_back(AnalyzerParameter::ElectronEnDown);
+	SystList.push_back(AnalyzerParameter::ElectronIDSFUp);
+	SystList.push_back(AnalyzerParameter::ElectronIDSFDown);
+	SystList.push_back(AnalyzerParameter::ElectronTriggerSFUp);
+	SystList.push_back(AnalyzerParameter::ElectronTriggerSFDown);
+      }
+    }
   }
   
   return SystList;
