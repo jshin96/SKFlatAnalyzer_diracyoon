@@ -105,7 +105,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   void GetSetup_BDT(AnalyzerParameter& paramEv);
 
   /// Systemaic HNL ID setup
-  bool UpdataParamBySyst(TString JobID, AnalyzerParameter& paramEv , AnalyzerParameter::Syst systname, TString OrigParamName);
+  bool UpdateParamBySyst(TString JobID, AnalyzerParameter& paramEv , AnalyzerParameter::Syst systname, TString OrigParamName);
   
   // ------ Analysis Obj   
 
