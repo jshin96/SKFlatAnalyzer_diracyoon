@@ -420,11 +420,12 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
          
       if(IsCF){
 	FillHist(param.Name+"/Closure/CF_LeptonPt", iel.PtMaxed(500) ,       EvWeight        , 250, 0, 500);
+
 	if(fabs(iel.scEta()) < 0.8)                  FillHist(param.Name+"/Closure/CF_LeptonPt_EtaBin1", iel.PtMaxed(500) ,       EvWeight        , 250, 0, 500);
 	else if(fabs(iel.scEta()) < 1.4442)          FillHist(param.Name+"/Closure/CF_LeptonPt_EtaBin2", iel.PtMaxed(500) ,       EvWeight        , 250, 0, 500);
 	else if(fabs(iel.scEta()) > 1.556 && fabs(iel.scEta()) < 2.)         FillHist(param.Name+"/Closure/CF_LeptonPt_EtaBin3", iel.PtMaxed(500) ,       EvWeight        , 250, 0, 500);
 	else  FillHist(param.Name+"/Closure/CF_LeptonPt_EtaBin4", iel.PtMaxed(500) ,       EvWeight        , 250, 0, 500);
-
+	
 	FillHist(param.Name+"/Closure/CF_LepEta",  fabs(iel.scEta()) ,       EvWeight        , 100,0, 2.5);
       }
       else {
@@ -449,243 +450,61 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 	  ShiftedElSigUp*=im.second.at(1);
 	  ShiftedElSigDown*=im.second.at(2);
 	  
-	  
 
-	  TString CFKeyClv1 = "";
-	  TString CFKeyClv2 = "";
 	  TString CFKeyClv3 = "";
-	  TString CFKeyCl2v1 = "";
-          TString CFKeyCl2v2 = "";
-          TString CFKeyCl2v3 = "";
-
-	  TString CFKeyClv1Up = "";
-          TString CFKeyClv2Up = "";
           TString CFKeyClv3Up = "";
-          TString CFKeyCl2v1Up = "";
-          TString CFKeyCl2v2Up = "";
-          TString CFKeyCl2v3Up = "";
-
-	  TString CFKeyClv1Down = "";
-          TString CFKeyClv2Down = "";
           TString CFKeyClv3Down = "";
-          TString CFKeyCl2v1Down = "";
-          TString CFKeyCl2v2Down = "";
-          TString CFKeyCl2v3Down = "";
-
-	  TString CFKeyClv1PS = "";
-          TString CFKeyClv2PS = "";
           TString CFKeyClv3PS = "";
-          TString CFKeyCl2v1PS = "";
-          TString CFKeyCl2v2PS = "";
-          TString CFKeyCl2v3PS = "";
-
-          TString CFKeyClv1MS = "";
-          TString CFKeyClv2MS = "";
           TString CFKeyClv3MS = "";
-          TString CFKeyCl2v1MS = "";
-          TString CFKeyCl2v2MS = "";
           TString CFKeyCl2v3MS = "";
-
 
 
 	  TString DirName = "Closure";
 	  if(im.first == "_w_pbs") {
 	    DirName = "Closure_PBS";
 
-            CFKeyClv1     = "CFRate_InvPtEta1_PBSExtrap_Central_";
-            CFKeyClv2     = "CFRate_InvPtEta2_PBSExtrap_Central_";
             CFKeyClv3     = "CFRate_InvPtEta3_PBSExtrap_Central_";
-            CFKeyCl2v1     = "CFRate_InvPt2Eta1_PBSExtrap_Central_";
-            CFKeyCl2v2     = "CFRate_InvPt2Eta2_PBSExtrap_Central_";
-            CFKeyCl2v3     = "CFRate_InvPt2Eta3_PBSExtrap_Central_";
-
-            CFKeyClv1Up     = "CFRate_InvPtEta1_PBSExtrap_SystUp_";
-            CFKeyClv2Up      = "CFRate_InvPtEta2_PBSExtrap_SystUp_";
             CFKeyClv3Up      = "CFRate_InvPtEta3_PBSExtrap_SystUp_";
-            CFKeyCl2v1Up      = "CFRate_InvPt2Eta1_PBSExtrap_SystUp_";
-            CFKeyCl2v2Up      = "CFRate_InvPt2Eta2_PBSExtrap_SystUp_";
-            CFKeyCl2v3Up      = "CFRate_InvPt2Eta3_PBSExtrap_SystUp_";
-
-            CFKeyClv1Down     = "CFRate_InvPtEta1_PBSExtrap_SystDown_";
-            CFKeyClv2Down      = "CFRate_InvPtEta2_PBSExtrap_SystDown_";
             CFKeyClv3Down      = "CFRate_InvPtEta3_PBSExtrap_SystDown_";
-            CFKeyCl2v1Down      = "CFRate_InvPt2Eta1_PBSExtrap_SystDown_";
-            CFKeyCl2v2Down      = "CFRate_InvPt2Eta2_PBSExtrap_SystDown_";
-            CFKeyCl2v3Down      = "CFRate_InvPt2Eta3_PBSExtrap_SystDown_";
-
-            CFKeyClv1PS     = "CFRate_InvPtEta1_PBSExtrap_PSigma_";
-            CFKeyClv2PS      = "CFRate_InvPtEta2_PBSExtrap_PSigma_";
             CFKeyClv3PS      = "CFRate_InvPtEta3_PBSExtrap_PSigma_";
-            CFKeyCl2v1PS      = "CFRate_InvPt2Eta1_PBSExtrap_PSigma_";
-            CFKeyCl2v2PS      = "CFRate_InvPt2Eta2_PBSExtrap_PSigma_";
-            CFKeyCl2v3PS      = "CFRate_InvPt2Eta3_PBSExtrap_PSigma_";
-
-            CFKeyClv1MS     = "CFRate_InvPtEta1_PBSExtrap_MSigma_";
-            CFKeyClv2MS      = "CFRate_InvPtEta2_PBSExtrap_MSigma_";
             CFKeyClv3MS      = "CFRate_InvPtEta3_PBSExtrap_MSigma_";
-            CFKeyCl2v1MS      = "CFRate_InvPt2Eta1_PBSExtrap_MSigma_";
-            CFKeyCl2v2MS      = "CFRate_InvPt2Eta2_PBSExtrap_MSigma_";
-            CFKeyCl2v3MS      = "CFRate_InvPt2Eta3_PBSExtrap_MSigma_";
-
 
 
 	  }
 	  if(im.first == "_w_cs"){
 	    DirName = "Closure_CS";
 
-
-            CFKeyClv1     = "CFRate_InvPtEta1_CS_Central_";
-            CFKeyClv2     = "CFRate_InvPtEta2_CS_Central_";
             CFKeyClv3     = "CFRate_InvPtEta3_CS_Central_";
-            CFKeyCl2v1     = "CFRate_InvPt2Eta1_CS_Central_";
-            CFKeyCl2v2     = "CFRate_InvPt2Eta2_CS_Central_";
-            CFKeyCl2v3     = "CFRate_InvPt2Eta3_CS_Central_";
-
-            CFKeyClv1Up     = "CFRate_InvPtEta1_CS_SystUp_";
-            CFKeyClv2Up      = "CFRate_InvPtEta2_CS_SystUp_";
             CFKeyClv3Up      = "CFRate_InvPtEta3_CS_SystUp_";
-            CFKeyCl2v1Up      = "CFRate_InvPt2Eta1_CS_SystUp_";
-            CFKeyCl2v2Up      = "CFRate_InvPt2Eta2_CS_SystUp_";
-            CFKeyCl2v3Up      = "CFRate_InvPt2Eta3_CS_SystUp_";
-
-            CFKeyClv1Down     = "CFRate_InvPtEta1_CS_SystDown_";
-            CFKeyClv2Down      = "CFRate_InvPtEta2_CS_SystDown_";
-            CFKeyClv3Down      = "CFRate_InvPtEta3_CS_SystDown_";
-            CFKeyCl2v1Down      = "CFRate_InvPt2Eta1_CS_SystDown_";
-            CFKeyCl2v2Down      = "CFRate_InvPt2Eta2_CS_SystDown_";
-            CFKeyCl2v3Down      = "CFRate_InvPt2Eta3_CS_SystDown_";
-
-            CFKeyClv1PS     = "CFRate_InvPtEta1_CS_PSigma_";
-            CFKeyClv2PS      = "CFRate_InvPtEta2_CS_PSigma_";
+	    CFKeyClv3Down      = "CFRate_InvPtEta3_CS_SystDown_";
             CFKeyClv3PS      = "CFRate_InvPtEta3_CS_PSigma_";
-            CFKeyCl2v1PS      = "CFRate_InvPt2Eta1_CS_PSigma_";
-            CFKeyCl2v2PS      = "CFRate_InvPt2Eta2_CS_PSigma_";
-            CFKeyCl2v3PS      = "CFRate_InvPt2Eta3_CS_PSigma_";
-
-            CFKeyClv1MS     = "CFRate_InvPtEta1_CS_MSigma_";
-            CFKeyClv2MS      = "CFRate_InvPtEta2_CS_MSigma_";
             CFKeyClv3MS      = "CFRate_InvPtEta3_CS_MSigma_";
-            CFKeyCl2v1MS      = "CFRate_InvPt2Eta1_CS_MSigma_";
-            CFKeyCl2v2MS      = "CFRate_InvPt2Eta2_CS_MSigma_";
-            CFKeyCl2v3MS      = "CFRate_InvPt2Eta3_CS_MSigma_";
 
 	  }
 	  if(im.first == "_w_nos"){
 	    DirName = "Closure_NoShift";
 
-            CFKeyClv1     = "CFRate_InvPtEta1_NoS_Central_";
-            CFKeyClv2     = "CFRate_InvPtEta2_NoS_Central_";
             CFKeyClv3     = "CFRate_InvPtEta3_NoS_Central_";
-            CFKeyCl2v1     = "CFRate_InvPt2Eta1_NoS_Central_";
-            CFKeyCl2v2     = "CFRate_InvPt2Eta2_NoS_Central_";
-            CFKeyCl2v3     = "CFRate_InvPt2Eta3_NoS_Central_";
-
-            CFKeyClv1Up     = "CFRate_InvPtEta1_NoS_Central_";
-            CFKeyClv2Up      = "CFRate_InvPtEta2_NoS_Central_";
             CFKeyClv3Up      = "CFRate_InvPtEta3_NoS_Central_";
-            CFKeyCl2v1Up      = "CFRate_InvPt2Eta1_NoS_Central_";
-            CFKeyCl2v2Up      = "CFRate_InvPt2Eta2_NoS_Central_";
-            CFKeyCl2v3Up      = "CFRate_InvPt2Eta3_NoS_Central_";
-
-            CFKeyClv1Down     = "CFRate_InvPtEta1_NoS_Central_";
-            CFKeyClv2Down      = "CFRate_InvPtEta2_NoS_Central_";
             CFKeyClv3Down      = "CFRate_InvPtEta3_NoS_Central_";
-            CFKeyCl2v1Down      = "CFRate_InvPt2Eta1_NoS_Central_";
-            CFKeyCl2v2Down      = "CFRate_InvPt2Eta2_NoS_Central_";
-            CFKeyCl2v3Down      = "CFRate_InvPt2Eta3_NoS_Central_";
-
-            CFKeyClv1PS     = "CFRate_InvPtEta1_NoS_Central_";
-            CFKeyClv2PS      = "CFRate_InvPtEta2_NoS_Central_";
             CFKeyClv3PS      = "CFRate_InvPtEta3_NoS_Central_";
-            CFKeyCl2v1PS      = "CFRate_InvPt2Eta1_NoS_Central_";
-            CFKeyCl2v2PS      = "CFRate_InvPt2Eta2_NoS_Central_";
-            CFKeyCl2v3PS      = "CFRate_InvPt2Eta3_NoS_Central_";
-
-            CFKeyClv1MS     = "CFRate_InvPtEta1_NoS_Central_";
-            CFKeyClv2MS      = "CFRate_InvPtEta2_NoS_Central_";
             CFKeyClv3MS      = "CFRate_InvPtEta3_NoS_Central_";
-            CFKeyCl2v1MS      = "CFRate_InvPt2Eta1_NoS_Central_";
-            CFKeyCl2v2MS      = "CFRate_InvPt2Eta2_NoS_Central_";
-            CFKeyCl2v3MS      = "CFRate_InvPt2Eta3_NoS_Central_";
 
 	  }
   
-	  double CFClosureWFittedv1      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version1",             CFKeyClv1  + CFKey,   ShiftedEl.defEta(), ShiftedEl.Pt(), 0);
-	  double CFClosureWFittedv2      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version1",             CFKeyClv2  + CFKey,   ShiftedEl.defEta(), ShiftedEl.Pt(), 0);
 	  double CFClosureWFittedv3      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version1",             CFKeyClv3  + CFKey,   ShiftedEl.defEta(), ShiftedEl.Pt(), 0);
-	  double CFClosureWFitted2v1      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version2",             CFKeyCl2v1  + CFKey,   ShiftedEl.defEta(), ShiftedEl.Pt(), 0);
-          double CFClosureWFitted2v2      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version2",             CFKeyCl2v2  + CFKey,   ShiftedEl.defEta(), ShiftedEl.Pt(), 0);
-          double CFClosureWFitted2v3      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version2",             CFKeyCl2v3  + CFKey,   ShiftedEl.defEta(), ShiftedEl.Pt(), 0);
-	  
-
-          double CFClosureWFittedv1Up      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version1",             CFKeyClv1Up  + CFKey,  ShiftedEl.defEta(),ShiftedEl.Pt(), 0);
-          double CFClosureWFittedv2Up      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version1",             CFKeyClv2Up  + CFKey,  ShiftedEl.defEta(),ShiftedEl.Pt(), 0);
           double CFClosureWFittedv3Up      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version1",             CFKeyClv3Up  + CFKey,  ShiftedEl.defEta(),ShiftedEl.Pt(), 0);
-          double CFClosureWFitted2v1Up      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version2",             CFKeyCl2v1Up  + CFKey,  ShiftedEl.defEta(),ShiftedEl.Pt(), 0);
-          double CFClosureWFitted2v2Up      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version2",             CFKeyCl2v2Up + CFKey,  ShiftedEl.defEta(),ShiftedEl.Pt(), 0);
-          double CFClosureWFitted2v3Up      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version2",             CFKeyCl2v3Up  + CFKey,  ShiftedEl.defEta(),ShiftedEl.Pt(), 0);
-
-          double CFClosureWFittedv1Down      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version1",             CFKeyClv1Down  + CFKey,   ShiftedEl.defEta(), ShiftedEl.Pt(), 0);
-          double CFClosureWFittedv2Down      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version1",             CFKeyClv2Down  + CFKey,   ShiftedEl.defEta(), ShiftedEl.Pt(), 0);
           double CFClosureWFittedv3Down      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version1",             CFKeyClv3Down  + CFKey,   ShiftedEl.defEta(), ShiftedEl.Pt(), 0);
-          double CFClosureWFitted2v1Down      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version2",             CFKeyCl2v1Down  + CFKey,   ShiftedEl.defEta(), ShiftedEl.Pt(), 0);
-          double CFClosureWFitted2v2Down      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version2",             CFKeyCl2v2Down + CFKey,   ShiftedEl.defEta(), ShiftedEl.Pt(), 0);
-          double CFClosureWFitted2v3Down      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version2",             CFKeyCl2v3Down  + CFKey,   ShiftedEl.defEta(), ShiftedEl.Pt(), 0);
-
-
-	  double CFClosureWFittedv1SUp      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version1",             CFKeyClv1PS  + CFKey,   ShiftedElSigUp.defEta(), ShiftedElSigUp.Pt(), 0);
-          double CFClosureWFittedv2SUp      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version1",             CFKeyClv2PS  + CFKey,   ShiftedElSigUp.defEta(), ShiftedElSigUp.Pt(), 0);
           double CFClosureWFittedv3SUp      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version1",             CFKeyClv3PS  + CFKey,   ShiftedElSigUp.defEta(), ShiftedElSigUp.Pt(), 0);
-          double CFClosureWFitted2v1SUp      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version2",             CFKeyCl2v1PS  + CFKey,   ShiftedElSigUp.defEta(), ShiftedElSigUp.Pt(), 0);
-          double CFClosureWFitted2v2SUp      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version2",             CFKeyCl2v2PS + CFKey,   ShiftedElSigUp.defEta(), ShiftedElSigUp.Pt(), 0);
-          double CFClosureWFitted2v3SUp      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version2",             CFKeyCl2v3PS  + CFKey,   ShiftedElSigUp.defEta(), ShiftedElSigUp.Pt(), 0);
-
-          double CFClosureWFittedv1SDown      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version1",             CFKeyClv1MS  + CFKey,   ShiftedElSigDown.defEta(), ShiftedElSigDown.Pt(), 0);
-          double CFClosureWFittedv2SDown      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version1",             CFKeyClv2MS  + CFKey,   ShiftedElSigDown.defEta(), ShiftedElSigDown.Pt(), 0);
-          double CFClosureWFittedv3SDown      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version1",             CFKeyClv3MS  + CFKey,   ShiftedElSigDown.defEta(), ShiftedElSigDown.Pt(), 0);
-          double CFClosureWFitted2v1SDown      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version2",             CFKeyCl2v1MS  + CFKey,   ShiftedElSigDown.defEta(), ShiftedElSigDown.Pt(), 0);
-          double CFClosureWFitted2v2SDown      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version2",             CFKeyCl2v2MS + CFKey,   ShiftedElSigDown.defEta(), ShiftedElSigDown.Pt(), 0);
-          double CFClosureWFitted2v3SDown      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version2",             CFKeyCl2v3MS  + CFKey,   ShiftedElSigDown.defEta(), ShiftedElSigDown.Pt(), 0);
+	  double CFClosureWFittedv3SDown      = cfEst->GetElectronCFRateFitted(param.Electron_Tight_ID, "InputBins_Version1",             CFKeyClv3MS  + CFKey,   ShiftedElSigDown.defEta(), ShiftedElSigDown.Pt(), 0);
 
 	  //// Use All MC
-	  FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binningv1_LeptonPt_"     +im.first,                  ShiftedEl.PtMaxed(500) ,          CFClosureWFittedv1*EvWeight        , 250, 0, 500);
-	  FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binningv2_LeptonPt_"     +im.first,                  ShiftedEl.PtMaxed(500) ,          CFClosureWFittedv2*EvWeight        , 250, 0, 500);
 	  FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binningv3_LeptonPt_"     +im.first,                  ShiftedEl.PtMaxed(500) ,          CFClosureWFittedv3*EvWeight        , 250, 0, 500);
-	  FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binning2v1_LeptonPt_"     +im.first,                  ShiftedEl.PtMaxed(500) ,          CFClosureWFitted2v1*EvWeight        , 250, 0, 500);
-          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binning2v2_LeptonPt_"     +im.first,                  ShiftedEl.PtMaxed(500) ,          CFClosureWFitted2v2*EvWeight        , 250, 0, 500);
-          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binning2v3_LeptonPt_"     +im.first,                  ShiftedEl.PtMaxed(500) ,          CFClosureWFitted2v3*EvWeight        , 250, 0, 500);
-
-
-          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binningv1Up_LeptonPt_"     +im.first,                  ShiftedEl.PtMaxed(500) ,          CFClosureWFittedv1Up*EvWeight        , 250, 0, 500);
-          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binningv2Up_LeptonPt_"     +im.first,                  ShiftedEl.PtMaxed(500) ,          CFClosureWFittedv2Up*EvWeight        , 250, 0, 500);
           FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binningv3Up_LeptonPt_"     +im.first,                  ShiftedEl.PtMaxed(500) ,          CFClosureWFittedv3Up*EvWeight        , 250, 0, 500);
-          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binning2v1Up_LeptonPt_"     +im.first,                  ShiftedEl.PtMaxed(500) ,          CFClosureWFitted2v1Up*EvWeight        , 250, 0, 500);
-          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binning2v2Up_LeptonPt_"     +im.first,                  ShiftedEl.PtMaxed(500) ,          CFClosureWFitted2v2Up*EvWeight        , 250, 0, 500);
-          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binning2v3Up_LeptonPt_"     +im.first,                  ShiftedEl.PtMaxed(500) ,          CFClosureWFitted2v3Up*EvWeight        , 250, 0, 500);
-
-
-	  FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binningv1Down_LeptonPt_"     +im.first,                  ShiftedEl.PtMaxed(500) ,          CFClosureWFittedv1Down*EvWeight        , 250, 0, 500);
-          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binningv2Down_LeptonPt_"     +im.first,                  ShiftedEl.PtMaxed(500) ,          CFClosureWFittedv2Down*EvWeight        , 250, 0, 500);
           FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binningv3Down_LeptonPt_"     +im.first,                  ShiftedEl.PtMaxed(500) ,          CFClosureWFittedv3Down*EvWeight        , 250, 0, 500);
-          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binning2v1Down_LeptonPt_"     +im.first,                  ShiftedEl.PtMaxed(500) ,          CFClosureWFitted2v1Down*EvWeight        , 250, 0, 500);
-          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binning2v2Down_LeptonPt_"     +im.first,                  ShiftedEl.PtMaxed(500) ,          CFClosureWFitted2v2Down*EvWeight        , 250, 0, 500);
-          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binning2v3Down_LeptonPt_"     +im.first,                  ShiftedEl.PtMaxed(500) ,          CFClosureWFitted2v3Down*EvWeight        , 250, 0, 500);
-	  
-
-          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binningv1ShiftUp_LeptonPt_"     +im.first,                  ShiftedElSigUp.PtMaxed(500) ,          CFClosureWFittedv1SUp*EvWeight        , 250, 0, 500);
-          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binningv2ShiftUp_LeptonPt_"     +im.first,                  ShiftedElSigUp.PtMaxed(500) ,          CFClosureWFittedv2SUp*EvWeight        , 250, 0, 500);
           FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binningv3ShiftUp_LeptonPt_"     +im.first,                  ShiftedElSigUp.PtMaxed(500) ,          CFClosureWFittedv3SUp*EvWeight        , 250, 0, 500);
-          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binning2v1ShiftUp_LeptonPt_"     +im.first,                  ShiftedElSigUp.PtMaxed(500) ,          CFClosureWFitted2v1SUp*EvWeight        , 250, 0, 500);
-          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binning2v2ShiftUp_LeptonPt_"     +im.first,                  ShiftedElSigUp.PtMaxed(500) ,          CFClosureWFitted2v2SUp*EvWeight        , 250, 0, 500);
-          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binning2v3ShiftUp_LeptonPt_"     +im.first,                  ShiftedElSigUp.PtMaxed(500) ,          CFClosureWFitted2v3SUp*EvWeight        , 250, 0, 500);
-
-          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binningv1ShiftDown_LeptonPt_"     +im.first,                  ShiftedElSigDown.PtMaxed(500) ,          CFClosureWFittedv1SDown*EvWeight        , 250, 0, 500);
-          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binningv2ShiftDown_LeptonPt_"     +im.first,                  ShiftedElSigDown.PtMaxed(500) ,          CFClosureWFittedv2SDown*EvWeight        , 250, 0, 500);
-          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binningv3ShiftDown_LeptonPt_"     +im.first,                  ShiftedElSigDown.PtMaxed(500) ,          CFClosureWFittedv3SDown*EvWeight        , 250, 0, 500);
-          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binning2v1ShiftDown_LeptonPt_"     +im.first,                  ShiftedElSigDown.PtMaxed(500) ,          CFClosureWFitted2v1SDown*EvWeight        , 250, 0, 500);
-          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binning2v2ShiftDown_LeptonPt_"     +im.first,                  ShiftedElSigDown.PtMaxed(500) ,          CFClosureWFitted2v2SDown*EvWeight        , 250, 0, 500);
-          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binning2v3ShiftDown_LeptonPt_"     +im.first,                  ShiftedElSigDown.PtMaxed(500) ,          CFClosureWFitted2v3SDown*EvWeight        , 250, 0, 500);
-
+          FillHist(param.Name+"/"+DirName+"/NonCF_Fitted_Binningv3ShiftDown_LeptonPt_"     +im.first,                  ShiftedElSigDown.PtMaxed(500) ,          CFClosureWFittedv3SDown*EvWeight        , 250, 0,500);
+	  
 
 
 	}
@@ -695,9 +514,8 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
     if(ElectronColl.size() != 2) return;
     if(Leptons.size() != 2) return;
 
-    if(ElectronColl.at(0).Pt() < 35) return;
-    if(ElectronColl.at(1).Pt() < 20) return;
-
+    if(ElectronColl.at(0).Pt() < 25) return;
+    if(ElectronColl.at(1).Pt() < 15) return;
 
     //// Select SS events in MC that are 1 Prompt + 1 CF
     if(SameCharge(ElectronColl)){
@@ -737,6 +555,8 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 
 	    FillHist(param.Name+"/ZMass/SS", Zmass , EvWeight ,100 , 50, 150);
             FillHist(param.Name+"/Z/SS_Lepton1Pt", ElectronColl[0].PtMaxed(500) ,      EvWeight , 100, 0, 500,"pT");
+	    if(ElectronColl[0].IsBB())             FillHist(param.Name+"/Z/SS_BB_Lepton1Pt", ElectronColl[0].PtMaxed(500) ,      EvWeight , 100, 0, 500,"pT");
+	    else  FillHist(param.Name+"/Z/SS_EC_Lepton1Pt", ElectronColl[0].PtMaxed(500) ,      EvWeight , 100, 0, 500,"pT");
             FillHist(param.Name+"/Z/SS_Lepton2Pt", ElectronColl[1].PtMaxed(500) ,      EvWeight , 40, 0, 200,"pT");
 	    FillHist(param.Name+"/MET/SS",  GetvMET("PuppiT1xyULCorr",param).Pt() , EvWeight ,50 , 0, 100,"MET");
 	    if(Zmass < 70)        FillHist(param.Name+"/Z/SS_Bin1_Lepton1Pt", ElectronColl[0].PtMaxed(500) ,      EvWeight , 100, 0, 500,"pT");
@@ -762,12 +582,12 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 
 	//// Loop several Energy shift
 	map<TString,TString> m_binning;
-	m_binning["Bin1"] ="InvPtEta1";
-	m_binning["Bin2"] ="InvPtEta2";
+	//m_binning["Bin1"] ="InvPtEta1";
+	//m_binning["Bin2"] ="InvPtEta2";
 	m_binning["Bin3"] ="InvPtEta3";
-	m_binning["Bin4"] ="InvPt2Eta1";
-	m_binning["Bin5"] ="InvPt2Eta2";
-	m_binning["Bin6"] ="InvPt2Eta3";
+	//m_binning["Bin4"] ="InvPt2Eta1";
+	//m_binning["Bin5"] ="InvPt2Eta2";
+	//m_binning["Bin6"] ="InvPt2Eta3";
 	for(auto ib : m_binning){
 	  TString BinningTag = "InputBins_Version1";
 	  if(ib.second.Contains("InvPt2"))  BinningTag = "InputBins_Version2";
@@ -908,6 +728,11 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 	    FillHist(param.Name+"/"+ShiftVersion+"/Z/OS_Weighted_EnergyShift_Lepton2Pt", this_el2.PtMaxed(500) ,            weight_shifted*EvWeight , 40, 0, 200,"pT");
 	    
 	    FillHist(param.Name+"/"+ShiftVersion+"/Z/OS_EnergyShift_Lepton1Pt", this_el1.PtMaxed(500) ,            EvWeight , 100, 0, 500,"pT");
+
+            if(this_el1.IsBB())FillHist(param.Name+"/"+ShiftVersion+"/Z/OS_BB_EnergyShift_Lepton1Pt", this_el1.PtMaxed(500) ,            EvWeight , 100, 0, 500,"pT");
+	    else  FillHist(param.Name+"/"+ShiftVersion+"/Z/OS_EC_EnergyShift_Lepton1Pt", this_el1.PtMaxed(500) ,            EvWeight , 100, 0, 500,"pT");
+
+
 	    FillHist(param.Name+"/"+ShiftVersion+"/Z/OS_EnergyShift_Lepton2Pt", this_el2.PtMaxed(500) ,            EvWeight , 40, 0, 200,"pT");
 	    
 	    if(ZShiftedmass <  70)         FillHist(param.Name+"/"+ShiftVersion+"/Z/OS_Bin1_Weighted_EnergyShift_Lepton1Pt", this_el1.PtMaxed(500) ,            weight_shifted*EvWeight , 100, 0, 500,"pT");

@@ -339,7 +339,7 @@ double CFBackgroundEstimator::GetElectronCFRateFitted(TString ID, TString EtaBin
 
   int this_bin = (key.Contains("Inv")) ?  (mapit->second)->FindBin(1/pt,eta) :  (mapit->second)->FindBin(pt,eta);
 
-  /*if(GetEra() == "2016preVFP"){
+  if(GetEra() == "2016preVFP"){
     if(ID.Contains("HNL_ULID")){
       if( key.Contains("InvPtEta3")  && this_bin == (mapit->second)->FindBin(0.0026,2.3)) this_bin = (mapit->second)->FindBin(0.0029,2.3)  ;
     }
@@ -361,8 +361,8 @@ double CFBackgroundEstimator::GetElectronCFRateFitted(TString ID, TString EtaBin
       if( key.Contains("InvPtEta3")  && this_bin == (mapit->second)->FindBin(0.0024,2.3)) this_bin = (mapit->second)->FindBin(0.0026,2.3)  ;
       if( key.Contains("InvPtEta3")  && this_bin == (mapit->second)->FindBin(0.0024,2.1)) this_bin = (mapit->second)->FindBin(0.0026,2.1)  ;
     }
-    }*/
-
+  }
+  
 
   int this_bin_m1 = this_bin-1;
   int this_bin_p1 = this_bin+1;
@@ -395,6 +395,16 @@ double CFBackgroundEstimator::GetElectronCFRateFitted(TString ID, TString EtaBin
 
     }
   }
+
+  double MC_Closure_Corr = 1;
+  if(GetEra() == "2016"){
+    if(pt > 300) MC_Closure_Corr = 1.3;
+  }
+
+  if(GetEra() == "2017"){
+    if(pt > 200) MC_Closure_Corr = 1.2;
+    else if(pt > 100) MC_Closure_Corr = 1.1;
+  }
   //  PrintBins((mapit->second));
 
 
@@ -424,7 +434,7 @@ double CFBackgroundEstimator::GetElectronCFRateFitted(TString ID, TString EtaBin
       
       exit(ENODATA);
     }
-    return CFRate+ double(sys)*error_MainBin;
+    return CFRate*MC_Closure_Corr+ double(sys)*error_MainBin;
   }
 
   else{
@@ -442,7 +452,7 @@ double CFBackgroundEstimator::GetElectronCFRateFitted(TString ID, TString EtaBin
       exit(ENODATA);
     }
     
-    return CFRate+ double(sys)*error_MainBin;
+    return CFRate*MC_Closure_Corr+ double(sys)*error_MainBin;
   }
 
   
