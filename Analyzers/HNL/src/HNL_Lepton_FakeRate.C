@@ -368,7 +368,7 @@ void HNL_Lepton_FakeRate::RunM(std::vector<Electron> loose_el,  std::vector<Muon
       FillProf(("DATAProfile/"+param.Name + "/FakeCR"+param.GetSystType()+"_Inclusive_MVA_PtPartonUncorr").Data(), ilep->HNL_MVA_Fake("HFTop"), PtPartonUncorr, W, 50, -1, 1);
  
       if(UseEvent(leps , jets, 40., METv, event_weight)) FillProf(("DATAProfile/"+param.Name + "/FakeCR"+param.GetSystType()+"_AJ40_MVA_"+ilep->GetEtaRegion("2bin")+"_PtParton").Data(), ilep->HNL_MVA_Fake("HFTop"), PtParton, W, 50, -1, 1);
-      if(UseEvent(leps , jets, 40., METv, event_weight)) FillProf(("DATAProfile/"+param.Name + "/FakeCR"+param.GetSystType()+"_AJ40_MVA_"+ilep->GetEtaRegion("2bin")+"_PtPartonUncorr").Data(), ilep->HNL_MVA_Fake("HFTop"), PtPartonUncorr, W, 40, -1, 1);
+      if(UseEvent(leps , jets, 40., METv, event_weight)) FillProf(("DATAProfile/"+param.Name + "/FakeCR"+param.GetSystType()+"_AJ40_MVA_"+ilep->GetEtaRegion("2bin")+"_PtPartonUncorr").Data(), ilep->HNL_MVA_Fake("HFTop"), PtPartonUncorr, W, 50, -1, 1);
 
     }
     return;
