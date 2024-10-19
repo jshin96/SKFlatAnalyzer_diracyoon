@@ -914,7 +914,7 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
       vector<double> Shifts_CL = {1,1,1, 1,
 				  0.998,0.996,0.995,0.9925,0.99,0.9875,0.985,0.9825, 0.98,0.9775,0.975,0.9725,0.97,0.965, 0.96,0.955,0.95, 0.94,0.93,0.92,0.91,0.9};
       vector<TString> Shifts_CL_Tag = {"Func_0","Func_m1","Func_p1","_m0","_m1","_m2","_m3","_m4","_m5","_m6","_m7","_m8","_m9","_m10","_m11","_m12","_m13","_m14","_m15","_m16","_m17","_m18", "_m19","_m20","_m21","_m22"};
-      for(int is = 0 ; is < Shifts_CL.size(); is++){
+      for(long unsigned int is = 0 ; is < Shifts_CL.size(); is++){
 	Electron El1_shift = El1; 
 	Electron El2_shift = El2;
 
@@ -977,7 +977,7 @@ void HNL_Lepton_ChargeFlip::executeEventFromParameter(AnalyzerParameter param){
 
       }	  
       
-      for(int is = 0 ; is < Shifts_CL.size(); is++){
+      for(long unsigned int is = 0 ; is < Shifts_CL.size(); is++){
         Electron El1_shift = El1;
         Electron El2_shift = El2;
 	

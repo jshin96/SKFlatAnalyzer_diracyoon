@@ -1,7 +1,3 @@
-DoubleMuon:A
-DoubleMuon:B
-DoubleMuon:C
-DoubleMuon:D
 SingleMuon:A
 SingleMuon:B
 SingleMuon:C

@@ -3,8 +3,3 @@ DoubleMuon:C
 DoubleMuon:D
 DoubleMuon:E
 DoubleMuon:F
-SingleMuon:B
-SingleMuon:C
-SingleMuon:D
-SingleMuon:E
-SingleMuon:F

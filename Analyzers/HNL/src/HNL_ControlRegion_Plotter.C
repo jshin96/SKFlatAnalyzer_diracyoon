@@ -4,7 +4,6 @@ void HNL_ControlRegion_Plotter::initializeAnalyzer(){
 
   HNL_LeptonCore::initializeAnalyzer();
 
-
   bool run_ee_bdt=false;
   bool run_mm_bdt=false;
   bool run_em_bdt=false;
@@ -32,10 +31,16 @@ void HNL_ControlRegion_Plotter::executeEvent(){
   else run_Debug=false;
 
   vector<TString> LepIDs = {"HNL_ULID","HNTightV2"};
+
+  /// Set ID by flag
   if(RunTopID) LepIDs = {"TopHN"};
   if(RunPOGID) LepIDs = {"POGTight"};
   if(RunHighPtID) LepIDs = {"HighPt"};
   if(RunPekingID) LepIDs = {"Peking"};
+
+  //// If Full syst only run Main ID
+  if(RunFullSyst) LepIDs = {"HNL_ULID"};
+
   //  if(strcmp(std::getenv("USER"),"jalmond")==0) LepIDs = {"HNL_ULID","POGTight","TopHN","HNTightV2","MVAPOG"};//,"HNTightV2","POGTight","TopHN","HighPt"};                                
 
   vector<HNL_LeptonCore::Channel> ChannelsToRun = {};
@@ -53,6 +58,9 @@ void HNL_ControlRegion_Plotter::executeEvent(){
   else CRToRun = {"SS_CR"};
 
   for (auto id: LepIDs){
+    /// For non HNL_ULID run no syst
+    RunNoSyst= (id == "HNL_ULID") ? false : true;
+
     for(auto channel : ChannelsToRun){
       if(channel != MuMu  && id =="TopHN") continue;
 
@@ -62,9 +70,6 @@ void HNL_ControlRegion_Plotter::executeEvent(){
       param_signal.PlottingVerbose = 0;
       if(id == "HNL_ULID")        param_signal.PlottingVerbose = 1;
       if(id.Contains("HEEP"))     param_signal.PlottingVerbose = 1;
-      if(RunSyst)  param_signal.PlottingVerbose = -1;
-
-
 
       for(auto iCR : CRToRun) {
 	RunControlRegions(param_signal , {iCR} );
@@ -154,6 +159,7 @@ void HNL_ControlRegion_Plotter::RunControlRegions(AnalyzerParameter param, vecto
   vector<int> RunEl ;
   if(RunCF) RunEl =  {0,1} ;
   else RunEl = {-1};
+
 
   for(auto ir : RunEl){
     RunAllControlRegions(ElectronTightColl,ElectronVetoColl,MuonTightColl,MuonVetoColl, 

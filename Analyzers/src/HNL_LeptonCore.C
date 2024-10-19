@@ -20,6 +20,7 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
   RunFake   = HasFlag("RunFake");
   RunOSFake = HasFlag("RunOSFake");
 
+  UseMET2ST = HasFlag("UseMET2ST"); 
   if(RunOSFake) RunFake = true;/// In case RunFake not flagged
   RunFakeTF = HasFlag("RunFakeTF");
   RunCF     = HasFlag("RunCF");
@@ -28,13 +29,12 @@ void HNL_LeptonCore::initializeAnalyzer(bool READBKGHISTS, bool SETUPIDBDT){
   run_ORTrigger = HasFlag("MultiTrig");
 
   /// Other flags                                                                                                                                      
-  RunSyst = HasFlag("RunSyst");
-  RunFullSyst = HasFlag("RunFullSyst");
+  RunNoSyst = HasFlag("RunNoSyst");/// Turn off default Syst
+  RunFullSyst = HasFlag("RunFullSyst"); /// Turn on Full MC syst
   RunEE   = HasFlag("EE");
   RunMuMu = HasFlag("MuMu");
   RunEMu  = HasFlag("EMu");
 
-  if(RunFullSyst) RunSyst = RunFullSyst;
   HEM1516 = HasFlag("HEM1516");
 
   /// clear map
@@ -355,7 +355,7 @@ vector<AnalyzerParameter::Syst> HNL_LeptonCore::GetSystList(TString SystType){
 
   vector<AnalyzerParameter::Syst> SystList = {};
   
-  if(!RunSyst) return SystList;
+  if(RunNoSyst) return SystList;
   
   if(RunCF){
     SystList = {
@@ -376,12 +376,12 @@ vector<AnalyzerParameter::Syst> HNL_LeptonCore::GetSystList(TString SystType){
     SystList.push_back(AnalyzerParameter::FRPartonSFUp);
     SystList.push_back(AnalyzerParameter::FRPartonSFDown);
   }
-  else{
-    
+  else {
+  
+    if(IsData) return {};
+
     SystList.push_back(AnalyzerParameter::JetResUp);
     SystList.push_back(AnalyzerParameter::JetResDown);
-    SystList.push_back(AnalyzerParameter::PUUp);
-    SystList.push_back(AnalyzerParameter::PUDown);
     SystList.push_back(AnalyzerParameter::JetEnUp);
     SystList.push_back(AnalyzerParameter::JetEnDown);
     
