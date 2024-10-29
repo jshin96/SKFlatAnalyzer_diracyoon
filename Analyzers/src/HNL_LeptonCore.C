@@ -1286,7 +1286,7 @@ double  HNL_LeptonCore::GetRecoObjMass(TString METHOD , std::vector<Jet> jets, s
 	dijetmass_tmp = (jets[emme]+jets[enne]).M();
         if(emme == enne) continue;
 
-        if ( fabs(dijetmass_tmp-80.4) < fabs(dijetmass-80.4) ) {
+        if ( fabs(dijetmass_tmp-M_W) < fabs(dijetmass-M_W) ) {
           dijetmass = dijetmass_tmp;
           m = emme;
           n = enne;
@@ -1313,7 +1313,7 @@ double  HNL_LeptonCore::GetRecoObjMass(TString METHOD , std::vector<Jet> jets, s
         dijetmass_tmp = (jets[emme]+jets[enne]).M();
         if(emme == enne) continue;
 
-        if ( fabs(dijetmass_tmp-80.4) < fabs(dijetmass-80.4) ) {
+        if ( fabs(dijetmass_tmp-M_W) < fabs(dijetmass-M_W) ) {
           dijetmass = dijetmass_tmp;
           m = emme;
           n = enne;
@@ -1334,7 +1334,7 @@ double  HNL_LeptonCore::GetRecoObjMass(TString METHOD , std::vector<Jet> jets, s
     int m=-999;
     for(UInt_t emme=0; emme<fatjets.size(); emme++){
       dijetmass_tmp= fatjets[emme].SDMass();
-      if ( fabs(dijetmass_tmp-80.4) < fabs(dijetmass-80.4) ) {
+      if ( fabs(dijetmass_tmp-M_W) < fabs(dijetmass-M_W) ) {
         dijetmass = dijetmass_tmp;
         m = emme;
       }
@@ -1351,7 +1351,7 @@ double  HNL_LeptonCore::GetRecoObjMass(TString METHOD , std::vector<Jet> jets, s
     int m=-999;
     for(UInt_t emme=0; emme<fatjets.size(); emme++){
       dijetmass_tmp= fatjets[emme].SDMass();
-      if ( fabs(dijetmass_tmp-80.4) < fabs(dijetmass-80.4) ) {
+      if ( fabs(dijetmass_tmp-M_W) < fabs(dijetmass-M_W) ) {
         dijetmass = dijetmass_tmp;
         m = emme;
       }
