@@ -461,7 +461,6 @@ TString HNL_RegionDefinitions::RunSignalRegionAK8String(bool ApplyForSR,
   if(!ApplyForSR){
 
     //// CR Inputs
-    
     double nbin_reg;
     double binvalue = GetLimitBin("CR_SR1_Inv",leps,JetColl,AK8_JetColl,ev,nbin_reg);    
     FillHist(  "LimitExtraction/"+ param.Name+"/LimitShape_"+RegionTag+"/N1Mass_Central", binvalue,  w, int(nbin_reg),0,nbin_reg ,"CR Binned");
@@ -930,7 +929,29 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4StringBDT(bool ApplyForSR, TStr
       BDTLimitBinsEMu.push_back( make_pair(RegionTag+"_BDTbin17" , 1.));
     }
   }
-  
+
+  vector<pair<TString, double > > BDTLimitBins;
+  if(ApplyForSR){
+    BDTLimitBins.push_back( make_pair(RegionTag+"_BDTbin1" , 0));  
+    BDTLimitBins.push_back( make_pair(RegionTag+"_BDTbin2" , 0.1));  
+    BDTLimitBins.push_back( make_pair(RegionTag+"_BDTbin3" , 0.15));  
+    BDTLimitBins.push_back( make_pair(RegionTag+"_BDTbin4" , 0.2));  
+    BDTLimitBins.push_back( make_pair(RegionTag+"_BDTbin5" , 0.225));  
+    BDTLimitBins.push_back( make_pair(RegionTag+"_BDTbin6" , 0.25));  
+    BDTLimitBins.push_back( make_pair(RegionTag+"_BDTbin7" , 0.3));  
+    BDTLimitBins.push_back( make_pair(RegionTag+"_BDTbin8" , 1));  
+  }
+  else{
+    BDTLimitBins.push_back( make_pair(RegionTag+"_BDTbin1" , -0.5));
+    BDTLimitBins.push_back( make_pair(RegionTag+"_BDTbin2" , -0.2));
+    BDTLimitBins.push_back( make_pair(RegionTag+"_BDTbin3" , -0.1));
+    BDTLimitBins.push_back( make_pair(RegionTag+"_BDTbin4" , -0.05));
+    BDTLimitBins.push_back( make_pair(RegionTag+"_BDTbin5" , 0.));
+    BDTLimitBins.push_back( make_pair(RegionTag+"_BDTbin6" , 0.05));
+    BDTLimitBins.push_back( make_pair(RegionTag+"_BDTbin7" , 0.1));
+    BDTLimitBins.push_back( make_pair(RegionTag+"_BDTbin8" , 1));
+
+  }
 
 
   /// Need to Add EMu Binning as current EMu uses EE
@@ -944,6 +965,16 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4StringBDT(bool ApplyForSR, TStr
       }
       bdtbin=bdtbin+1.;
     }  
+    
+    bdtbin = 0.5;    
+    for(auto imap : BDTLimitBins){
+      if(MVAvalueIncl< imap.second) {
+        FillHist( "LimitExtraction/"+param.Name+"/LimitShape_"+RegionTag+"BDT/BasicsBinned_MVA_"+BDTLabel+"_Binned",  bdtbin,  w,  BDTLimitBins.size(), 0, double(BDTLimitBins.size()),  RegionTag);
+        return imap.first;
+      }
+      bdtbin=bdtbin+1.;
+    }
+
   }
   if(channel == EE){
 
@@ -956,6 +987,16 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4StringBDT(bool ApplyForSR, TStr
       bdtbin=bdtbin+1.;
     }
 
+    bdtbin = 0.5;
+    for(auto imap : BDTLimitBins){
+      if(MVAvalueIncl< imap.second) {
+        FillHist( "LimitExtraction/"+param.Name+"/LimitShape_"+RegionTag+"BDT/BasicsBinned_MVA_"+BDTLabel+"_Binned",  bdtbin,  w,  BDTLimitBins.size(), 0, double(BDTLimitBins.size()),  RegionTag);
+        return imap.first;
+      }
+      bdtbin=bdtbin+1.;
+    }
+
+
   }
   if(channel == EMu){
 
@@ -966,8 +1007,18 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4StringBDT(bool ApplyForSR, TStr
       }
       bdtbin=bdtbin+1.;
     }
-
+  
+    
+    bdtbin = 0.5;
+    for(auto imap : BDTLimitBins){
+      if(MVAvalueIncl< imap.second) {
+	FillHist( "LimitExtraction/"+param.Name+"/LimitShape_"+RegionTag+"BDT/BasicsBinned_MVA_"+BDTLabel+"_Binned",  bdtbin,  w,  BDTLimitBins.size(), 0, double(BDTLimitBins.size()),  RegionTag);
+	return imap.first;
+      }
+      bdtbin=bdtbin+1.;
+    }
   }
+
 
   return "true";
 }

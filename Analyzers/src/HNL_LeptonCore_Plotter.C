@@ -285,10 +285,6 @@ void HNL_LeptonCore::Fill_Standard_Plots(AnalyzerParameter param, TString region
 
   FillHist( plot_dir+ region+ "/NObj/N_AK4J", jets.size() , w, 10, 0., 10., "N_{AK4 jets}");
   
-  double ST = GetST(leps, jets, fatjets, met);
-  double met2_st = pow(met.Pt(),2.)/ ST;
-
-  FillHist( plot_dir+ region+ "/SKEvent/Ev_MET2_ST", met2_st  , w, 100, 0., 100.,"MET2/ST GeV");
   FillHist( plot_dir+ region+ "/SKEvent/Ev_MET", met.Pt()  , w, 200, 0., 400.,"MET GeV");
 
   Particle llCand = *leps[0] + *leps[1];
@@ -337,6 +333,12 @@ void HNL_LeptonCore::Fill_Standard_Plots(AnalyzerParameter param, TString region
 void HNL_LeptonCore::Fill_Main_Plots(AnalyzerParameter param, TString region,  TString plot_dir,
                                 vector<Tau> TauColl,  std::vector<Jet> jets, std::vector<FatJet> fatjets, std::vector<Lepton *> leps ,
                                 Particle  met, double nvtx,  double w){
+
+
+  double ST = GetST(leps, jets, fatjets, met);
+  double met2_st = pow(met.Pt(),2.)/ ST;
+
+  FillHist( plot_dir+ region+ "/SKEvent/Ev_MET2_ST", met2_st  , w, 100, 0., 100.,"MET2/ST GeV");
 
 
 
