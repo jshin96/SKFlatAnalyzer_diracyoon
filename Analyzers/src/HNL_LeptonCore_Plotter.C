@@ -474,7 +474,7 @@ void HNL_LeptonCore::Fill_Plots(AnalyzerParameter param, TString region,  TStrin
         if(emme == enne) continue;
         dijetmass_tmp = (jets[emme]+jets[enne]).M();
 
-        if ( fabs(dijetmass_tmp-80.4) < fabs(dijetmass-80.4) ) {
+        if ( fabs(dijetmass_tmp-M_W) < fabs(dijetmass-M_W) ) {
           dijetmass = dijetmass_tmp;
           m = emme;
           n = enne;
