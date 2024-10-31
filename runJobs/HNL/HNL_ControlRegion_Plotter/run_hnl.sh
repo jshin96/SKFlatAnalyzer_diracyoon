@@ -8,7 +8,7 @@ datapath=${SKFlat_WD}/runJobs/SampleLists/Data/
 njobs=30
 njobs_sig=2
 njobs_data=200
-nmax=600
+nmax=400
 skim=' '
 
 if [[ $1 == "CF" ]]; then
@@ -20,19 +20,19 @@ if [[ $1 == "CF" ]]; then
     done
 fi
 
-if [[ $1 == "WG" ]]; then
+if [[ $1 == "WZ" ]]; then
 
     declare  -a era_list=("2018")
     for i in "${era_list[@]}"
     do
 
-	 SKFlat.py -a $analyzer  -i WGToLNuG_01J_5f_Pt10_resub  -n 100        --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT  --userflags SSMultiLep,RunConv&
-	 SKFlat.py -a $analyzer  -i WGToLNuG  -n 100        --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT  --userflags SSMultiLep,RunConv&
+	SKFlat.py -a $analyzer  -i   WZTo3LNu_mllmin4p0_powheg -n 100        --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT  --userflags SSMultiLep,RunPrompt,RunSyst&
     done
 fi
 
 if [[ $1 == "" ]]; then
 
+    #UseMET2ST
     declare  -a era_list=("2017" "2016postVFP" "2016preVFP" "2018")
     for i in "${era_list[@]}"
     do
@@ -57,11 +57,8 @@ if [[ $1 == "" ]]; then
 	### CF
 	SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_EE.txt      -n 100    --nmax ${nmax}   -e ${i} --skim SkimTree_DileptonBDT  --userflags SSMultiLep,RunCF 
 
-        #SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_EMu.txt      -n 100  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT  --userflags SSMultiLep,RunFakeTF   &
-        #SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_MuMu.txt      -n 100  --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT  --userflags SSMultiLep,RunFakeTF   &
-        #SKFlat.py -a $analyzer  -l $datapath/${i}_DiLepton_EE.txt      -n 100    --nmax ${nmax}   -e ${i}  --skim SkimTree_HNMultiLepBDT  --userflags SSMultiLep,RunFakeTF   
 	
-
     done
     
 fi
+
