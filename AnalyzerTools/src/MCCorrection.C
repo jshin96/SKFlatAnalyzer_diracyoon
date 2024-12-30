@@ -175,7 +175,7 @@ void MCCorrection::ReadHistograms(){
 
 
   // == Get Pileup Jet Veto
-  TString pileupJetVetoPath = datapath + "/" + GetEra() + "/PileupJetVeto/PUID_ULRun2_" + DataEra + ".root";
+  TString pileupJetVetoPath = datapath + "/" + GetEra() + "/PileupJetVeto/PUID_106XTraining_ULRun2_EffSFandUncties_v1.root";
   TFile *file_pileupJetVetoPath = new TFile(pileupJetVetoPath);
   histDir->cd();
 
@@ -192,17 +192,10 @@ void MCCorrection::ReadHistograms(){
     TString target = "h2_eff_mcUL" + period_alt_name + "_" + pileupjetveto_wp[i];
     map_hist_pujet_veto[key] = (TH2F *)file_pileupJetVetoPath->Get(target)->Clone();
 
-    key = "mistag_mcUL" + DataEra + "_" + pileupjetveto_wp[i];
-    target = "h2_mistag_mcUL" + period_alt_name + "_" + pileupjetveto_wp[i];
-    map_hist_pujet_veto[key] = (TH2F *)file_pileupJetVetoPath->Get(target)->Clone();
-
     key = "eff_sfUL" + DataEra + "_" + pileupjetveto_wp[i];
     target = "h2_eff_sfUL" + period_alt_name + "_" + pileupjetveto_wp[i];
     map_hist_pujet_veto[key] = (TH2F *)file_pileupJetVetoPath->Get(target)->Clone();
 
-    key = "mistag_sfUL" + DataEra + "_" + pileupjetveto_wp[i];
-    target = "h2_mistag_sfUL" + period_alt_name + "_" + pileupjetveto_wp[i];
-    map_hist_pujet_veto[key] = (TH2F *)file_pileupJetVetoPath->Get(target)->Clone();
   }
 
   file_pileupJetVetoPath->Close();
@@ -314,6 +307,45 @@ double MCCorrection::MuonID_SF(TString ID, double eta, double pt, int sys){
 
   return value+double(sys)*error;
 
+}
+
+double MCCorrection::MuonID_Eff(TString ID, double eta, double pt, int sys){
+
+  if(ID=="Default") return 1.;
+
+  //cout << "[MCCorrection::MuonID_SF] ID = " << ID << endl;
+  //cout << "[MCCorrection::MuonID_SF] eta = " << eta << ", pt = " << pt << endl;
+
+  double value = 1.;
+  double error = 0.;
+
+  eta = fabs(eta);
+
+  //==== boundaries
+  double ptmin=10.1, ptmax=199., etamin=0.01, etamax=2.39;
+  if(ID=="NUM_TightID_DEN_genTracks" || ID=="NUM_HighPtID_DEN_genTracks" || ID=="NUM_MediumID_DEN_TrackerMuons"){
+    ptmin = 15.1, ptmax = 119., etamin = 0.01, etamax = 2.39;
+  }
+  else if(ID.Contains("HNTop")){ ptmin=10.1, ptmax=199., etamin=0.01, etamax=2.39; }
+  pt = min(max(pt,ptmin),ptmax); eta = min(max(eta,etamin),etamax);
+
+
+  TH2F *this_hist = map_hist_Muon["ID_Eff_DATA_"+ID];
+  if(!this_hist){
+    if(IgnoreNoHist) return 1.;
+    else{
+      cerr << "[MCCorrection::MuonID_Eff] No "<<"ID_Eff_"+ID<<endl;
+      exit(ENODATA);
+    }
+  }
+
+  int this_bin = this_hist->FindBin(eta,pt);
+  value = this_hist->GetBinContent(this_bin);
+  error = this_hist->GetBinError(this_bin);
+
+  //cout << "[MCCorrection::MuonID_SF] value = " << value << endl;
+
+  return value+double(sys)*error;
 }
 
 double MCCorrection::MuonISO_SF(TString ID, double eta, double pt, int sys){
@@ -589,6 +621,38 @@ double MCCorrection::ElectronID_SF(TString ID, double sceta, double pt, int sys)
     return value+double(sys)*error;
 
   }
+
+}
+
+double MCCorrection::ElectronID_Eff(TString ID, double sceta, double pt, int sys){
+
+  if(ID=="Default") return 1.;
+
+  double value = 1.;
+  double error = 0.;
+
+  if(pt<10.) pt = 10.;
+  if(pt>=500.) pt = 499.;
+  if(sceta>=2.5) sceta = 2.49;
+  if(sceta<-2.5) sceta = -2.5;
+
+  if( ID.Contains("TopHNSST") ){ pt = max(pt,(double) 15.1); pt = min(pt,(double) 199.); }
+
+  TH2F *this_hist = map_hist_Electron["ID_Eff_DATA_"+ID];
+  if(!this_hist){
+    if(IgnoreNoHist) return 1.;
+    else{
+      cerr << "[MCCorrection::ElectronID_Eff] (Hist) No "<<"ID_Eff_"+ID<<endl;
+      exit(ENODATA);
+    }
+  }
+
+  int this_bin = this_hist->FindBin(sceta,pt);
+  value = this_hist->GetBinContent(this_bin);
+  error = this_hist->GetBinError(this_bin);
+
+  return value+double(sys)*error;
+
 
 }
 
@@ -879,6 +943,18 @@ double MCCorrection::GetOfficialDYReweight(const vector<Gen>& gens, int sys){
   double error = hist_DYPtReweight_2D->GetBinError( bin_mass, bin_pt );
 
   return value+double(sys)*error;
+
+}
+
+double MCCorrection::GetDYPtReweight(TString file, double pt){
+
+  if(IsDATA) return 1.0;
+  double ZPTRW = 1.0;
+  TString datapath = getenv("DATA_DIR");
+  TString ZPTRWpath = datapath+"/"+GetEra()+"/DYPTReweight/"+file;
+  ZptCorrection a(ZPTRWpath);
+  ZPTRW = a.GetZptWeight(pt);
+  return ZPTRW;
 
 }
 
@@ -1434,10 +1510,6 @@ double MCCorrection::PileupJetVeto_MCCorr(const TString &type, const TString &wp
     target = "eff_mcUL";
   else if (type == "MC_Eff_SF")
     target = "eff_sfUL";
-  else if (type == "MC_Mistag")
-    target = "mistag_mcUL";
-  else if (type == "MC_Mistag_SF")
-    target = "mistag_sfUL";
   else
   {
     cout << "[MCCorrection::PileupJetVeto_MCCorr] Wrong " << type << ". Abort." << endl;
@@ -1498,15 +1570,15 @@ double MCCorrection::PileupJetVeto_Reweight(const vector<Jet> &jets, const TStri
 
     bool gen_matched = jet.IsGenMatched();
 
-    bool passed = jet.Pass_PileupJetVeto(wp);
+    bool passed = jet.Pass_PileupJetVeto(wp,GetEra());
 
     double pt = jet.Pt();
     double eta = jet.Eta();
-
     // genjet matched
     if (gen_matched)
     {
       double mc_eff = PileupJetVeto_MCCorr("MC_Eff", wp, pt, eta, sys);
+      //double mc_eff = 1.0;
       double mc_eff_sf = PileupJetVeto_MCCorr("MC_Eff_SF", wp, pt, eta, sys);
 
       double data_eff = mc_eff * mc_eff_sf;
@@ -1516,32 +1588,13 @@ double MCCorrection::PileupJetVeto_Reweight(const vector<Jet> &jets, const TStri
         prob_mc *= mc_eff;
         prob_data *= data_eff;
       }
-      else
-      {
-        prob_mc *= 1 - mc_eff;
-        prob_data *= 1 - data_eff;
-      }
     } // genjet matched
-    // genjet unmatched
-    else
-    {
-      double mc_mistag = PileupJetVeto_MCCorr("MC_Mistag", wp, pt, eta, sys);
-      double mc_mistag_sf = PileupJetVeto_MCCorr("MC_Mistag_SF", wp, pt, eta, sys);
-
-      double data_mistag = mc_mistag * mc_mistag_sf;
-
-      if (passed)
-      {
-        prob_mc *= mc_mistag;
-        prob_data *= data_mistag;
-      }
-      else
-      {
-        prob_mc *= 1 - mc_mistag;
-        prob_data *= 1 - data_mistag;
-      }
-    } // genjet unmatched
   } // loop over jets
 
-  return prob_data / prob_mc;
+  if(prob_mc>0. && prob_data>0.) {
+    return prob_data / prob_mc;
+  }
+  else{
+    return 0;
+  }
 } // double MCCorrection::PileupJetVeto_Reweight(const vector<Jet>& jets, string wp, string Syst)

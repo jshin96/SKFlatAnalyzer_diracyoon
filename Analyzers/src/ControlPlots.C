@@ -4,8 +4,8 @@ void ControlPlots::initializeAnalyzer(){
 
   TriLep=false, TetraLep=false, SS2l=false, OS2l=false;
   SB_SS2L=false, CFlip=false, ConvCR=false, FkCR3l=false;
-  TrigClos=false, PUVETO = false, POGEl = false;
-  FakeRun=false, ConvRun=false, FlipRun=false, SystRun=false, HEMCheck=false; 
+  TrigClos=false, POGEl = false, CFCorr = false;
+  FakeRun=false, ConvRun=false, FlipRun=false, SystRun=false, HEMCheck=false, SigLike = false, PTShift = false, NoPURW = false; 
   for(unsigned int i=0; i<Userflags.size(); i++){
     if(Userflags.at(i).Contains("SS2l"))        SS2l        = true;
     if(Userflags.at(i).Contains("TriLep"))      TriLep      = true;
@@ -21,9 +21,12 @@ void ControlPlots::initializeAnalyzer(){
     if(Userflags.at(i).Contains("FlipRun"))     FlipRun     = true; 
     if(Userflags.at(i).Contains("SystRun"))     SystRun     = true; 
     if(Userflags.at(i).Contains("HEMCheck"))    HEMCheck    = true; 
-    if(Userflags.at(i).Contains("PUVETO"))     PUVETO    = true;
-    if(Userflags.at(i).Contains("POGEl"))     POGEl    = true;
-  }
+    if(Userflags.at(i).Contains("POGEl"))       POGEl       = true;
+    if(Userflags.at(i).Contains("CFCorr"))      CFCorr      = true;
+    if(Userflags.at(i).Contains("SigLike"))     SigLike     = true;
+    if(Userflags.at(i).Contains("PTShift"))     PTShift     = true;
+    if(Userflags.at(i).Contains("NoPURW"))      NoPURW      = true;
+  }  
   if(FlipRun && !FakeRun) OS2l=true;
 
   DblMu=false, DblEG=false, MuEG=false, SglEl=false;
@@ -73,6 +76,9 @@ void ControlPlots::initializeAnalyzer(){
   CFRFile = new TFile(FileDir_CF+"CFRateVar.root");
 
   InitializeTreeVars();
+//  for(unsigned int im=0; im<MNStrList.size(); im++){
+//    InitializeReader(MNStrList.at(im));
+//  }
   InitializeReader();
   outfile->cd();
 
@@ -87,7 +93,7 @@ void ControlPlots::executeEvent(){
   if(!IsDATA){
     w_GenNorm = MCweight()*GetKFactor()*ev.GetTriggerLumi("Full");
     w_BR      = GetBRWeight();
-    w_PU      = GetPileUpWeight(nPileUp, 0);
+    if (!NoPURW){w_PU      = GetPileUpWeight(nPileUp, 0);}
     weight *= w_GenNorm * w_BR * w_PU;
   }
   FillHist("CutFlow", 0., weight, 20, 0., 20.);
@@ -126,13 +132,14 @@ void ControlPlots::executeEvent(){
   sort(electronPreColl.begin(), electronPreColl.end(), PtComparing);
   if(TriLep and (muonPreColl.size()+electronPreColl.size())>2 ) PreCutPass=true;
   if(TetraLep and (muonPreColl.size()+electronPreColl.size())>3 ) PreCutPass=true;
-  if(SS2l){
+  if(SS2l && !PTShift){
     int NPreMu=muonPreColl.size(), NPreEl=electronPreColl.size();
     if( (NPreMu+NPreEl)>2 ) PreCutPass=true;
     else if(NPreMu==2 and SumCharge(muonPreColl)!=0) PreCutPass=true;
     else if(NPreEl==2 and SumCharge(electronPreColl)!=0) PreCutPass=true;
   }
   if((OS2l or TrigClos) && (muonPreColl.size()+electronPreColl.size())>1) PreCutPass=true;
+  if(PTShift and electronPreColl.size() == 2) PreCutPass=true; 
   if(electronPreColl.size()>0) PreCutPass=true;
   if(!PreCutPass) return;
   FillHist("CutFlow", 3., weight, 20, 0., 20.);
@@ -155,19 +162,23 @@ void ControlPlots::executeEvent(){
   sort(jetPreColl.begin(), jetPreColl.end(), PtComparing);
   vector<Jet> jetColl;
 /////////// Pileup Jet Veto
-  if(PUVETO){
-    jetColl  = SelectJets(jetPreColl, "LoosePileupJetVeto", 25., 2.4);
-    jetColl  = SelectJets(jetColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
-  }
-  else {
-    jetColl = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
-  }
+  jetPreColl  = SelectPUJets(jetPreColl, "LoosePileupJetVeto", 25., 2.4, GetEra());
+  jetColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
 /////////// Pileup Jet Veto
   vector<Jet> rawjetColl  = SelectJets(jetPreColl, "tight", 25., 2.4);
   vector<Jet> bjetColl = SelBJets(jetColl, param_jets);
   vector<Jet> rawbjetColl = SelBJets(rawjetColl, param_jets);
 
   Particle vMET_T1xy = GetvMET("PUPPIMETT1xyCorr");
+  if (GetEraShort().Contains("18")) {
+    for(unsigned int ij=0; ij < jetColl.size(); ij++){
+      if (jetColl.at(ij).Eta() < -1.3 && jetColl.at(ij).Eta() > -3.0 && jetColl.at(ij).Phi() < -0.87 && jetColl.at(ij).Phi() < -1.57) {
+        vMET_T1xy = vMET_T1xy + 0.2*jetColl.at(ij);
+        vMET_T1xy.SetPtEtaPhiM(vMET_T1xy.Pt(),0,vMET_T1xy.Phi(),0);
+        jetColl.at(ij) *= 0.8;
+      }
+    }
+  }
 
 
   bool FillGenColl=!IsDATA && (ConvRun or FakeRun or FlipRun);
@@ -204,7 +215,7 @@ void ControlPlots::executeEvent(){
   if(FakeRun && EventCand){
     w_FR = GetDataFakeWeight(muonLooseColl, electronLooseColl, rawbjetColl, MuTID, ElTID, "FR_cent_"+MuTID+"_"+MuLID, "FR_cent_"+ElTID+"_"+ElLID+"_Pt15", "");
   }
-  if(PUVETO) w_PUVeto = mcCorr->PileupJetVeto_Reweight(jetColl, "LoosePileupJetVeto", 0);
+  w_PUVeto = mcCorr->PileupJetVeto_Reweight(jetColl, "LoosePileupJetVeto", 0);
   weight *= w_TopPtRW * w_Pref * sf_Tr * w_PUVeto; 
   weight *= sf_MuTk * sf_mID * sf_mIso * sf_eReco * sf_eID * sf_B * w_CV * w_CF * w_FR;
   //cout<<" w_PU:"<<w_PU<<" w_Pref:"<<w_Pref<<" sf_Tr:"<<sf_Tr<<endl;
@@ -220,6 +231,10 @@ void ControlPlots::executeEvent(){
     }
     if(CFlip){
       CheckChargeFlip(muonTightColl, muonLooseColl, muonVetoColl, electronTightColl, electronLooseColl, electronVetoColl,
+                        jetColl, bjetColl, vMET_T1xy, weight, "");
+    }
+    if(PTShift){
+      CFShiftCheck(muonTightColl, muonLooseColl, muonVetoColl, electronTightColl, electronLooseColl, electronVetoColl,
                         jetColl, bjetColl, vMET_T1xy, weight, "");
     }
   }
@@ -243,11 +258,11 @@ void ControlPlots::executeEvent(){
     vector<Electron> ElResUpTColl, ElResUpLColl, ElResDownTColl, ElResDownLColl;
 //    vector<Electron> ElCFPT1UpTColl, ElCFPT1UpLColl, ElCFPT2UpTColl, ElCFPT2UpLColl;
 //    vector<Electron> ElCFPT1DownTColl, ElCFPT1DownLColl, ElCFPT2DownTColl, ElCFPT2DownLColl;
-    vector<Jet>      jetJESUpColl, jetJESDownColl, jetJERUpColl, jetJERDownColl;
-    vector<Jet>      rawjetJESUpColl, rawjetJESDownColl, rawjetJERUpColl, rawjetJERDownColl;
-    vector<Jet>      bjetJESUpColl, bjetJESDownColl, bjetJERUpColl, bjetJERDownColl;
-    vector<Jet>      rawbjetJESUpColl, rawbjetJESDownColl, rawbjetJERUpColl, rawbjetJERDownColl;
-    Particle         vMET_T1xy_JESUp, vMET_T1xy_JESDown, vMET_T1xy_JERUp, vMET_T1xy_JERDown, vMET_T1xy_UnclUp, vMET_T1xy_UnclDown;
+    vector<Jet>      jetJESUpColl, jetJESDownColl, jetJERUpColl, jetJERDownColl, jetHEMColl, jetPreHEMColl;
+    vector<Jet>      rawjetJESUpColl, rawjetJESDownColl, rawjetJERUpColl, rawjetJERDownColl, rawjetHEMColl;
+    vector<Jet>      bjetJESUpColl, bjetJESDownColl, bjetJERUpColl, bjetJERDownColl, bjetHEMColl;
+    vector<Jet>      rawbjetJESUpColl, rawbjetJESDownColl, rawbjetJERUpColl, rawbjetJERDownColl, rawbjetHEMColl;
+    Particle         vMET_T1xy_JESUp, vMET_T1xy_JESDown, vMET_T1xy_JERUp, vMET_T1xy_JERDown, vMET_T1xy_UnclUp, vMET_T1xy_UnclDown, vMET_T1xy_HEM;
     if(!IsDATA){
       MuEnUpTColl    = SelectMuons(muonPreColl, FakeRun? MuLID:MuTID, 10., 2.4, "SystEnUp");
       MuEnUpLColl    = SelectMuons(muonPreColl, MuLID, 10., 2.4, "SystEnUp");
@@ -285,6 +300,21 @@ void ControlPlots::executeEvent(){
       vMET_T1xy_JERDown  = GetvMET("PUPPIMETT1xyCorr", "SystDownJER");
       vMET_T1xy_UnclUp   = GetvMET("PUPPIMETT1xyCorr", "SystUpUncl");
       vMET_T1xy_UnclDown = GetvMET("PUPPIMETT1xyCorr", "SystDownUncl");
+
+
+      jetHEMColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
+      if (GetEraShort().Contains("18")) {
+        vMET_T1xy_HEM = vMET_T1xy;
+        for(unsigned int ij=0; ij < jetHEMColl.size(); ij++){
+          if (jetHEMColl.at(ij).Eta() < -1.3 && jetHEMColl.at(ij).Phi() < -0.87 && jetHEMColl.at(ij).Phi() > -1.57) {
+            vMET_T1xy_HEM += 0.2*jetHEMColl.at(ij);
+            vMET_T1xy_HEM.SetPtEtaPhiM(vMET_T1xy_HEM.Pt(),0,vMET_T1xy_HEM.Phi(),0);
+            jetHEMColl.at(ij) *= 0.8;
+          }
+        }
+      }
+      bjetHEMColl = SelBJets(jetHEMColl, param_jets);
+
     }
 
     float w_PUUp=1., w_PUDown=1., w_PrefUp=1., w_PrefDown=1., w_PUVetoUp=1., w_PUVetoDown=1.;
@@ -299,12 +329,12 @@ void ControlPlots::executeEvent(){
     float sf_TrUp = sf_Tr*1.01, sf_TrDown = sf_Tr*0.99;
     if(!IsDATA && EventCand){
       w_PrefUp   = GetPrefireWeight(1), w_PrefDown = GetPrefireWeight(-1);
-      w_PUUp     = GetPileUpWeight(nPileUp, 1);
-      w_PUDown   = GetPileUpWeight(nPileUp,-1);
-      if(PUVETO){
-        w_PUVetoUp =  mcCorr->PileupJetVeto_Reweight(jetColl, "LoosePileupJetVeto", +1);
-        w_PUVetoDown =  mcCorr->PileupJetVeto_Reweight(jetColl, "LoosePileupJetVeto", -1);
+      if (!NoPURW) {
+        w_PUUp     = GetPileUpWeight(nPileUp, 1);
+        w_PUDown   = GetPileUpWeight(nPileUp,-1);
       }
+      w_PUVetoUp =  mcCorr->PileupJetVeto_Reweight(jetColl, "LoosePileupJetVeto", +1);
+      w_PUVetoDown =  mcCorr->PileupJetVeto_Reweight(jetColl, "LoosePileupJetVeto", -1);
 
       sf_eRecoUp   = GetElectronSF(electronTightColl, "", "RecoSystUp");
       sf_eRecoDown = GetElectronSF(electronTightColl, "", "RecoSystDown");
@@ -397,6 +427,8 @@ void ControlPlots::executeEvent(){
     float weight_FRDown    = w_base* w_PU    * w_Pref    * w_FRDown* w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
     float weight_TrUp      = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_TrUp        * sf_B * sf_mIso;
     float weight_TrDown    = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_TrDown      * sf_B * sf_mIso;
+    float weight_CFShiftUp      = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr        * sf_B * sf_mIso;
+    float weight_CFShiftDown    = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr      * sf_B * sf_mIso;
 
 
     if(!IsDATA && !FakeRun){
@@ -425,6 +457,12 @@ void ControlPlots::executeEvent(){
         SysWgtStrPairList.push_back( make_pair(weight_CFUp  , "_SystUp_CF"  ) );
         SysWgtStrPairList.push_back( make_pair(weight_CFDown, "_SystDown_CF") );
       }
+      if(FlipRun && !FakeRun && CFCorr){
+        DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
+                jetColl, bjetColl, rawbjetColl, vMET_T1xy, ev, weight_CFShiftUp, "_SystUp_CFShift");
+        DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
+                jetColl, bjetColl, rawbjetColl, vMET_T1xy, ev, weight_CFShiftDown, "_SystDown_CFShift");
+      }
       DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, ElSclUpTColl, ElSclUpLColl, electronVetoColl,
                 jetColl, bjetColl, rawbjetColl, vMET_T1xy, ev, weight_ElSclUp, "_SystUp_ElScl");
       DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, ElSclDownTColl, ElSclDownLColl, electronVetoColl,
@@ -449,6 +487,8 @@ void ControlPlots::executeEvent(){
                 jetColl, bjetColl, rawbjetColl, vMET_T1xy_UnclUp, ev, weight, "_SystUp_Uncl");
       DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
                 jetColl, bjetColl, rawbjetColl, vMET_T1xy_UnclDown, ev, weight, "_SystDown_Uncl");
+      DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
+                jetHEMColl, bjetHEMColl, rawbjetColl, vMET_T1xy_HEM, ev, weight, "_Syst_HEM");
   //    if(FlipRun && !FakeRun){
   //      DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, ElCFPT1UpTColl, ElCFPT1UpLColl, electronVetoColl,
   //                jetColl, bjetColl, rawbjetColl, vMET_T1xy, ev, weight*w_FrCF1, "_SystUp_CFPT");
@@ -681,6 +721,195 @@ void ControlPlots::CheckChargeFlip(vector<Muon>& MuTColl, vector<Muon>& MuLColl,
       }
     }
   }
+
+
+///////////////// signal like jet seletion
+  if(SigLike && BJetColl.size()<1) return;
+  if(SigLike && JetColl.size() <3) return;
+/////////////////////////
+
+  float newweight = weight*MCCFSF;
+
+  vector<Electron> ElConeColl; vector<Muon> MuConeColl;
+  if(FakeRun){
+    for(unsigned int ie=0; ie<ElTColl.size(); ie++){ 
+      Electron TmpEl(ElTColl.at(ie));
+      float RelIso = ElTColl.at(ie).MiniRelIso();
+      float PTCorr = ElTColl.at(ie).CalcPtCone(RelIso,0.1), PT=ElTColl.at(ie).Pt();
+      if(RelIso>0.1) TmpEl *= PTCorr/PT;
+      ElConeColl.push_back(TmpEl);
+    }
+    for(unsigned int im=0; im<MuTColl.size(); im++){ 
+      Muon TmpMu(MuTColl.at(im));
+      float RelIso = MuTColl.at(im).MiniRelIso();
+      float PTCorr = MuTColl.at(im).CalcPtCone(RelIso,0.1), PT=MuTColl.at(im).Pt();
+      if(RelIso>0.1) TmpMu *= PTCorr/PT;
+      MuConeColl.push_back(TmpMu);
+    }
+  }
+  else{ ElConeColl = ElTColl; MuConeColl = MuTColl; }
+
+  int Nj=JetColl.size(), Nb=BJetColl.size();
+  float Mll=-1., PTl1=-1, Etal1=999., PTl2=-1., Etal2=-1., MTW=-1., MET=-1.;
+  bool IsOnZ=false, IsBJOrtho=false;
+
+  Etal1 = ElConeColl.at(0).Eta();
+  Etal2 = ElConeColl.at(1).Eta();
+  TString EtaStr;
+  if(fabs(Etal1)<1.5 && fabs(Etal2)<1.5){
+    EtaStr = "_BB";
+  }
+  else if (fabs(Etal1)>1.5 && fabs(Etal2)>1.5){
+    EtaStr = "_EE";
+  }
+  else {
+    EtaStr = "_EB";
+  }
+  
+///////////////// Fliped Electron pT shift
+
+
+  if(FlipRun && !IsDATA && CFCorr){
+    float PT_Shift = 1.0;
+    float PT_Shift_syst = 0.0;
+    TString Era = GetEraShort();
+    if(EtaStr == "_BB"){
+      if(Era == "2018"){
+        PT_Shift = 0.975;
+        PT_Shift_syst = 0.015;
+      }
+      if(Era == "2017"){
+        PT_Shift = 0.973;
+        PT_Shift_syst = 0.014;
+      }
+      if(Era == "2016b"){
+        PT_Shift = 0.987;
+        PT_Shift_syst = 0.005;
+      }
+      if(Era == "2016a"){
+        PT_Shift = 0.982;
+        PT_Shift_syst = 0.005;
+      }
+    }
+    if(EtaStr == "_EE"){
+      if(Era == "2018"){
+        PT_Shift = 0.990;
+        PT_Shift_syst = 0.014;
+      }
+      if(Era == "2017"){
+        PT_Shift = 0.989;
+        PT_Shift_syst = 0.015;
+      }
+      if(Era == "2016b"){
+        PT_Shift = 0.991;
+        PT_Shift_syst = 0.007;
+      }
+      if(Era == "2016a"){
+        PT_Shift = 0.992;
+        PT_Shift_syst = 0.012;
+      }
+    }
+    if(EtaStr == "_EB"){
+      if(Era == "2018"){
+        PT_Shift = 0.979;
+        PT_Shift_syst = 0.009;
+      }
+      if(Era == "2017"){
+        PT_Shift = 0.979;
+        PT_Shift_syst = 0.013;
+      }
+      if(Era == "2016b"){
+        PT_Shift = 0.979;
+        PT_Shift_syst = 0.007;
+      }
+      if(Era == "2016a"){
+        PT_Shift = 0.982;
+        PT_Shift_syst = 0.007;
+      }
+    }
+    if (Label.Contains("Up") && Label.Contains("CFShift")) {PT_Shift = PT_Shift + PT_Shift_syst;}
+    else if (Label.Contains("Down") && Label.Contains("CFShift")) {PT_Shift = PT_Shift - PT_Shift_syst;}
+    vMET.SetPxPyPzE(vMET.Px()-ElConeColl.at(0).Px()-ElConeColl.at(1).Px(),
+                    vMET.Py()-ElConeColl.at(0).Py()-ElConeColl.at(1).Py(),
+                    vMET.Pz()-ElConeColl.at(0).Pz()-ElConeColl.at(1).Pz(),
+                    vMET.E());
+    ElConeColl.at(0).SetPtEtaPhiM(PT_Shift*ElConeColl.at(0).Pt(),ElConeColl.at(0).Eta(),ElConeColl.at(0).Phi(),ElConeColl.at(0).M());
+    ElConeColl.at(1).SetPtEtaPhiM(PT_Shift*ElConeColl.at(1).Pt(),ElConeColl.at(1).Eta(),ElConeColl.at(1).Phi(),ElConeColl.at(1).M());
+    vMET.SetPxPyPzE(vMET.Px()+ElConeColl.at(0).Px()+ElConeColl.at(1).Px(),
+                    vMET.Py()+ElConeColl.at(0).Py()+ElConeColl.at(1).Py(),
+                    vMET.Pz()+ElConeColl.at(0).Pz()+ElConeColl.at(1).Pz(),
+                    vMET.E());
+  }
+
+
+  Mll   = (ElConeColl.at(0)+ElConeColl.at(1)).M();
+  PTl1  = ElConeColl.at(0).Pt();  Etal1 = ElConeColl.at(0).Eta();
+  PTl2  = ElConeColl.at(1).Pt();  Etal2 = ElConeColl.at(1).Eta();
+  MTW   = MT(ElConeColl.at(0), vMET);
+  MET   = vMET.Pt();
+  IsOnZ = fabs(Mll-91.2)<15.; IsBJOrtho = Nb==0 && Nj<3;
+  //TString EtaStr = fabs(Etal1)<1.5? "_E1B":"_E1E";
+
+  vector<TString> EtaTagList = {"", EtaStr};
+  vector<TString> SelTagList;
+  if(   IsBJOrtho    ) SelTagList.push_back("_0Blt3J"); 
+  if(     IsOnZ      ) SelTagList.push_back("_OnZ");
+
+
+
+
+
+  for(unsigned int it=0; it<SelTagList.size(); it++){
+  for(unsigned int iEta=0; iEta<EtaTagList.size(); iEta++){
+    TString SelTag(SelTagList.at(it)), EtaTag(EtaTagList.at(iEta));
+    FillHist("NCount"+SelTag+EtaTag+Label, 0., newweight, 1, 0., 1., ApplyWVar, SysWgtStrPairList);
+    FillHist("Mll"+SelTag+EtaTag+Label, Mll, newweight, 20, 0., 200., ApplyWVar, SysWgtStrPairList);
+    FillHist("MllnearZ"+SelTag+EtaTag+Label, Mll, newweight, 30, 60., 120., ApplyWVar, SysWgtStrPairList);
+    FillHist("PTl1"+SelTag+EtaTag+Label, PTl1, newweight, 30, 0., 300., ApplyWVar, SysWgtStrPairList);
+    FillHist("PTl2"+SelTag+EtaTag+Label, PTl2, newweight, 20, 0., 200., ApplyWVar, SysWgtStrPairList);
+    FillHist("Etal1"+SelTag+EtaTag+Label, Etal1, newweight, 20, -5., 5., ApplyWVar, SysWgtStrPairList);
+    FillHist("Etal2"+SelTag+EtaTag+Label, Etal2, newweight, 20, -5., 5., ApplyWVar, SysWgtStrPairList);
+    FillHist("MET"+SelTag+EtaTag+Label, MET, newweight, 20, 0., 200., ApplyWVar, SysWgtStrPairList);
+    FillHist("MTW"+SelTag+EtaTag+Label, MTW, newweight, 20, 0., 200., ApplyWVar, SysWgtStrPairList);
+    if(SigLike){
+      InitializeTreeVars();
+      SetVarSS2L(MuConeColl, MuLColl, MuVColl, ElConeColl, ElLColl, ElVColl, JetColl, BJetColl, vMET, newweight, "");
+      for(unsigned int im=0; im<MNStrList.size(); im++){
+        bool Is2E = Label.Contains("_2E"), Is2M = Label.Contains("_2M");
+        TString MVATagStr_Mu = "BDTG_MN"+MNStrList.at(im)+"_Mu";
+        TString MVATagStr_El = "BDTG_MN"+MNStrList.at(im)+"_El";
+        float MVAvalue_Mu = Is2M? MVAReader->EvaluateMVA(MVATagStr_Mu):999.;
+        float MVAvalue_El = Is2E? MVAReader->EvaluateMVA(MVATagStr_El):999.;
+        if(Is2M) FillHist("BDTG_Mu_MN"+MNStrList.at(im)+SelTag+EtaTag+Label, MVAvalue_Mu, newweight, 40, -1., 1.);
+        if(Is2E) FillHist("BDTG_El_MN"+MNStrList.at(im)+SelTag+EtaTag+Label, MVAvalue_El, newweight, 40, -1., 1.);
+      }
+    }
+  }}
+
+}
+
+
+void ControlPlots::CFShiftCheck(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,
+                                   vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
+                                   vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, float weight, TString Label)
+{
+  int NMuT=MuTColl.size(), NElT=ElTColl.size(), NMuL=MuLColl.size(), NElL=ElLColl.size(), NMuV=MuVColl.size(), NElV=ElVColl.size();
+  float MCCFSF = 1.;
+  bool ApplyWVar = Label.Contains("SystWgtVar");
+  if( ApplyWVar ) Label.ReplaceAll("SystWgtVar","");
+  if( FakeRun      and weight==0.  ) return; 
+  if( !( (NElT==2  and NMuT==0)  ) ) return;
+  if( !(NMuT==NMuL and NElT==NElL) ) return;
+  if( !(NMuT==NMuV and NElT==NElV) ) return;
+  if(NElT==2){
+    Label="_2E"+Label;
+    int aSumQ = abs(SumCharge(ElTColl));
+    if(aSumQ!=0) Label="_SS"+Label; 
+    else Label="_OS"+Label;
+    if(!(ElTColl.at(0).Pt()>25 && ElTColl.at(1).Pt()>15)) return;
+  }
+
+
   float newweight = weight*MCCFSF;
 
   vector<Electron> ElConeColl; vector<Muon> MuConeColl;
@@ -709,97 +938,108 @@ void ControlPlots::CheckChargeFlip(vector<Muon>& MuTColl, vector<Muon>& MuLColl,
   Etal1 = ElConeColl.at(0).Eta();
   Etal2 = ElConeColl.at(1).Eta();
   TString EtaStr = fabs(Etal1)<1.5 && fabs(Etal2)<1.5? "_BB": fabs(Etal1)>1.5 && fabs(Etal2)>1.5? "_EE":"_EB";
-///////////////// Fliped Electron pT shift
-
-
-  if(FlipRun && !IsDATA){
-    float PT_Shift = 1.0;
-    TString Era = GetEraShort();
-    if(EtaStr = "_BB"){
-      if(Era == "2018"){
-        PT_Shift = 0.980;
-      }
-      if(Era == "2017"){
-        PT_Shift = 0.976;
-      }
-      if(Era == "2016b"){
-        PT_Shift = 0.986;
-      }
-      if(Era == "2016a"){
-        PT_Shift = 0.984;
-      }
-    }
-    if(EtaStr = "_EE"){
-      if(Era == "2018"){
-        PT_Shift = 0.985;
-      }
-      if(Era == "2017"){
-        PT_Shift = 0.989;
-      }
-      if(Era == "2016b"){
-        PT_Shift = 0.990;
-      }
-      if(Era == "2016a"){
-        PT_Shift = 0.990;
-      }
-    }
-    if(EtaStr = "_EB"){
-      if(Era == "2018"){
-        PT_Shift = 0.983;
-      }
-      if(Era == "2017"){
-        PT_Shift = 0.984;
-      }
-      if(Era == "2016b"){
-        PT_Shift = 0.986;
-      }
-      if(Era == "2016a"){
-        PT_Shift = 0.987;
-      }
-    }
-
-    vMET.SetPxPyPzE(vMET.Px()-ElConeColl.at(0).Px()-ElConeColl.at(1).Px(),
-                    vMET.Py()-ElConeColl.at(0).Py()-ElConeColl.at(1).Py(),
-                    vMET.Pz()-ElConeColl.at(0).Pz()-ElConeColl.at(1).Pz(),
-                    vMET.E());
-    ElConeColl.at(0).SetPtEtaPhiM(PT_Shift*ElConeColl.at(0).Pt(),ElConeColl.at(0).Eta(),ElConeColl.at(0).Phi(),ElConeColl.at(0).M());
-    ElConeColl.at(1).SetPtEtaPhiM(PT_Shift*ElConeColl.at(1).Pt(),ElConeColl.at(1).Eta(),ElConeColl.at(1).Phi(),ElConeColl.at(1).M());
-    vMET.SetPxPyPzE(vMET.Px()+ElConeColl.at(0).Px()+ElConeColl.at(1).Px(),
-                    vMET.Py()+ElConeColl.at(0).Py()+ElConeColl.at(1).Py(),
-                    vMET.Pz()+ElConeColl.at(0).Pz()+ElConeColl.at(1).Pz(),
-                    vMET.E());
-  }
 
 
   Mll   = (ElConeColl.at(0)+ElConeColl.at(1)).M();
   PTl1  = ElConeColl.at(0).Pt();  Etal1 = ElConeColl.at(0).Eta();
   PTl2  = ElConeColl.at(1).Pt();  Etal2 = ElConeColl.at(1).Eta();
-  MTW   = MT(ElConeColl.at(0), vMET);
-  MET   = vMET.Pt();
   IsOnZ = fabs(Mll-91.2)<15.; IsBJOrtho = Nb==0 && Nj<3;
   //TString EtaStr = fabs(Etal1)<1.5? "_E1B":"_E1E";
   EtaStr = fabs(Etal1)<1.5 && fabs(Etal2)<1.5? "_BB": fabs(Etal1)>1.5 && fabs(Etal2)>1.5? "_EE":"_EB";
-
   vector<TString> EtaTagList = {"", EtaStr};
+//  vector<TString> EtaTagList = {""};
   vector<TString> SelTagList;
-  if(   IsBJOrtho    ) SelTagList.push_back("_0Blt3J"); 
+//  if(   IsBJOrtho    ) SelTagList.push_back("_0Blt3J"); 
   if(     IsOnZ      ) SelTagList.push_back("_OnZ");
+  double PT_Shift;
+  Electron ElConeColl_1;
+  Electron ElConeColl_2;
+  Particle vMET_raw;
+  TString pt_region;
+  for(double p=2; p<8; p++){
+    if(ElConeColl.at(0).Pt() < 15.0 + p*5 and ElConeColl.at(1).Pt() < 15.0 + p*5){pt_region = "below";}
+    else if (ElConeColl.at(0).Pt() > 15.0 + p*5 and ElConeColl.at(1).Pt() > 15.0 + p*5){pt_region = "above";}
+    else {continue;}
+    TString PTCut_s; 
+    PTCut_s = PTCut_s.Format("%.0f",15.0 + p*5);
+    if(Label.Contains("OS")){
+      for(double Shift = -30; Shift < 11; Shift++) {
+        PT_Shift = 1.0+Shift*0.001;
+        TString PTShift_s; 
+        PTShift_s = PTShift_s.Format("%.0f",Shift);
+        PTShift_s.ReplaceAll("-","m");
+        vMET_raw.SetPxPyPzE(vMET.Px()-ElConeColl.at(0).Px()-ElConeColl.at(1).Px(),
+                            vMET.Py()-ElConeColl.at(0).Py()-ElConeColl.at(1).Py(),
+                            vMET.Pz()-ElConeColl.at(0).Pz()-ElConeColl.at(1).Pz(),
+                            vMET.E());
+        ElConeColl_1.SetPtEtaPhiM(PT_Shift*ElConeColl.at(0).Pt(),ElConeColl.at(0).Eta(),ElConeColl.at(0).Phi(),ElConeColl.at(0).M());
+        ElConeColl_2.SetPtEtaPhiM(PT_Shift*ElConeColl.at(1).Pt(),ElConeColl.at(1).Eta(),ElConeColl.at(1).Phi(),ElConeColl.at(1).M());
+        vMET_raw.SetPxPyPzE(vMET.Px()+ElConeColl_1.Px()+ElConeColl_2.Px(),
+                            vMET.Py()+ElConeColl_1.Py()+ElConeColl_2.Py(),
+                            vMET.Pz()+ElConeColl_1.Pz()+ElConeColl_2.Pz(),
+                            vMET.E());
 
-  for(unsigned int it=0; it<SelTagList.size(); it++){
-  for(unsigned int iEta=0; iEta<EtaTagList.size(); iEta++){
-    TString SelTag(SelTagList.at(it)), EtaTag(EtaTagList.at(iEta));
-    FillHist("NCount"+SelTag+EtaTag+Label, 0., newweight, 1, 0., 1., ApplyWVar, SysWgtStrPairList);
-    FillHist("Mll"+SelTag+EtaTag+Label, Mll, newweight, 20, 0., 200., ApplyWVar, SysWgtStrPairList);
-    FillHist("MllnearZ"+SelTag+EtaTag+Label, Mll, newweight, 30, 60., 120., ApplyWVar, SysWgtStrPairList);
-    FillHist("PTl1"+SelTag+EtaTag+Label, PTl1, newweight, 30, 0., 300., ApplyWVar, SysWgtStrPairList);
-    FillHist("PTl2"+SelTag+EtaTag+Label, PTl2, newweight, 20, 0., 200., ApplyWVar, SysWgtStrPairList);
-    FillHist("Etal1"+SelTag+EtaTag+Label, Etal1, newweight, 20, -5., 5., ApplyWVar, SysWgtStrPairList);
-    FillHist("Etal2"+SelTag+EtaTag+Label, Etal2, newweight, 20, -5., 5., ApplyWVar, SysWgtStrPairList);
-    FillHist("MET"+SelTag+EtaTag+Label, MET, newweight, 20, 0., 200., ApplyWVar, SysWgtStrPairList);
-    FillHist("MTW"+SelTag+EtaTag+Label, MTW, newweight, 20, 0., 200., ApplyWVar, SysWgtStrPairList);
-  }}
 
+
+        for(unsigned int it=0; it<SelTagList.size(); it++){
+        for(unsigned int iEta=0; iEta<EtaTagList.size(); iEta++){
+          TString SelTag(SelTagList.at(it)), EtaTag(EtaTagList.at(iEta));
+          FillHist("MllnearZ"+SelTag+EtaTag+Label+"_PTCut"+PTCut_s+"_PTShift"+PTShift_s+"_"+pt_region, (ElConeColl_1+ElConeColl_2).M(), newweight, 40, 60., 120., ApplyWVar, SysWgtStrPairList);
+          FillHist("PTl1"+SelTag+EtaTag+Label+"_PTCut"+PTCut_s+"_PTShift"+PTShift_s+"_"+pt_region, ElConeColl_1.Pt(), newweight, 60, 0., 300., ApplyWVar, SysWgtStrPairList);
+          FillHist("PTl2"+SelTag+EtaTag+Label+"_PTCut"+PTCut_s+"_PTShift"+PTShift_s+"_"+pt_region, ElConeColl_2.Pt(), newweight, 40, 0., 200., ApplyWVar, SysWgtStrPairList);
+        }}
+      }
+    }
+    else if(Label.Contains("_SS")){
+      for(unsigned int it=0; it<SelTagList.size(); it++){
+      for(unsigned int iEta=0; iEta<EtaTagList.size(); iEta++){
+        TString SelTag(SelTagList.at(it)), EtaTag(EtaTagList.at(iEta));
+        FillHist("MllnearZ"+SelTag+EtaTag+Label+"_PTCut"+PTCut_s+"_"+pt_region, Mll, newweight, 40, 60., 120., ApplyWVar, SysWgtStrPairList);
+        FillHist("PTl1"+SelTag+EtaTag+Label+"_PTCut"+PTCut_s+"_"+pt_region, PTl1, newweight, 60, 0., 300., ApplyWVar, SysWgtStrPairList);
+        FillHist("PTl2"+SelTag+EtaTag+Label+"_PTCut"+PTCut_s+"_"+pt_region, PTl2, newweight, 40, 0., 200., ApplyWVar, SysWgtStrPairList);
+      }}
+    } 
+  }
+  if(Label.Contains("OS")){
+    for(double Shift = -30; Shift < 11; Shift++) {
+      PT_Shift = 1.0+Shift*0.001;
+      TString PTShift_s; 
+      PTShift_s = PTShift_s.Format("%.0f",Shift);
+      PTShift_s.ReplaceAll("-","m");
+      vMET_raw.SetPxPyPzE(vMET.Px()-ElConeColl.at(0).Px()-ElConeColl.at(1).Px(),
+                          vMET.Py()-ElConeColl.at(0).Py()-ElConeColl.at(1).Py(),
+                          vMET.Pz()-ElConeColl.at(0).Pz()-ElConeColl.at(1).Pz(),
+                          vMET.E());
+      ElConeColl_1.SetPtEtaPhiM(PT_Shift*ElConeColl.at(0).Pt(),ElConeColl.at(0).Eta(),ElConeColl.at(0).Phi(),ElConeColl.at(0).M());
+      ElConeColl_2.SetPtEtaPhiM(PT_Shift*ElConeColl.at(1).Pt(),ElConeColl.at(1).Eta(),ElConeColl.at(1).Phi(),ElConeColl.at(1).M());
+      vMET_raw.SetPxPyPzE(vMET.Px()+ElConeColl_1.Px()+ElConeColl_2.Px(),
+                          vMET.Py()+ElConeColl_1.Py()+ElConeColl_2.Py(),
+                          vMET.Pz()+ElConeColl_1.Pz()+ElConeColl_2.Pz(),
+                          vMET.E());
+
+
+
+      for(unsigned int it=0; it<SelTagList.size(); it++){
+      for(unsigned int iEta=0; iEta<EtaTagList.size(); iEta++){
+        TString SelTag(SelTagList.at(it)), EtaTag(EtaTagList.at(iEta));
+        FillHist("MllnearZ"+SelTag+EtaTag+Label+"_PTShift"+PTShift_s+"_all", (ElConeColl_1+ElConeColl_2).M(), newweight, 40, 60., 120., ApplyWVar, SysWgtStrPairList);
+        FillHist("PTl1"+SelTag+EtaTag+Label+"_PTShift"+PTShift_s+"_all", ElConeColl_1.Pt(), newweight, 60, 0., 300., ApplyWVar, SysWgtStrPairList);
+        FillHist("PTl2"+SelTag+EtaTag+Label+"_PTShift"+PTShift_s+"_all", ElConeColl_2.Pt(), newweight, 40, 0., 200., ApplyWVar, SysWgtStrPairList);
+      }}
+    }
+  }
+  else if(Label.Contains("_SS")){
+    for(unsigned int it=0; it<SelTagList.size(); it++){
+    for(unsigned int iEta=0; iEta<EtaTagList.size(); iEta++){
+      TString SelTag(SelTagList.at(it)), EtaTag(EtaTagList.at(iEta));
+      FillHist("MllnearZ"+SelTag+EtaTag+Label+"_all", Mll, newweight, 40, 60., 120., ApplyWVar, SysWgtStrPairList);
+      FillHist("PTl1"+SelTag+EtaTag+Label+"_all", PTl1, newweight, 60, 0., 300., ApplyWVar, SysWgtStrPairList);
+      FillHist("PTl2"+SelTag+EtaTag+Label+"_all", PTl2, newweight, 40, 0., 200., ApplyWVar, SysWgtStrPairList);
+    }}
+  } 
 }
+
+
 
 
 void ControlPlots::CheckCR4l(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,
@@ -866,7 +1106,7 @@ void ControlPlots::CheckCR4l(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vecto
   }
   else if(NElT==4){
     if( !(PassTrAcc_EE && Ev.PassTrigger(TrigList_DblEG)) ) return; 
-    FinStStr = "_4M";
+    FinStStr = "_4E";
     PTl1    = ElConeColl.at(0).Pt() , PTl2  = ElConeColl.at(1).Pt();
     Etal1   = ElConeColl.at(0).Eta(), Etal2 = ElConeColl.at(1).Eta();
     PTl3    = ElConeColl.at(2).Pt() , PTl4  = ElConeColl.at(3).Pt();
@@ -875,7 +1115,7 @@ void ControlPlots::CheckCR4l(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vecto
   }
   else if(NMuT==4){
     if( !(PassTrAcc_MM && Ev.PassTrigger(TrigList_DblMu)) ) return;
-    FinStStr = "_4E";
+    FinStStr = "_4M";
     PTl1    = MuConeColl.at(0).Pt() , PTl2  = MuConeColl.at(1).Pt();
     Etal1   = MuConeColl.at(0).Eta(), Etal2 = MuConeColl.at(1).Eta();
     PTl3    = MuConeColl.at(2).Pt() , PTl4  = MuConeColl.at(3).Pt();
@@ -917,7 +1157,7 @@ void ControlPlots::CheckCR4l(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vecto
 
   for(unsigned il=0; il<LabelList.size(); il++){
     TString FinLabel = LabelList.at(il);
-    FillHist("M4l"  +FinLabel, M4l , weight, 250, 0., 500.);
+    FillHist("M4l"  +FinLabel, M4l , weight, 50, 0., 200.);
     FillHist("PTl1" +FinLabel, PTl1, weight, 40, 0., 200.);
     FillHist("PTl2" +FinLabel, PTl2, weight, 40, 0., 200.);
     FillHist("PTl3" +FinLabel, PTl3, weight, 40, 0., 200.);
@@ -964,7 +1204,9 @@ void ControlPlots::CheckFkCR3l(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vec
   if( abs(Qtot_Lep)!=1 ) return;
   if( NMuT==2 && Qtot_Mu!=0 ) return;
   if( NElT==2 && Qtot_El!=0 ) return;
+  FillHist("CutFlow", 4., weight, 20, 0., 20.);
   if( BJetColl.size()>0 ) return;
+  FillHist("CutFlow", 5., weight, 20, 0., 20.);
 
   if(HEMCheck){
     bool IsHEMReg=false;
@@ -1148,6 +1390,7 @@ void ControlPlots::CheckFkCR3l(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vec
     FillHist("dRZFk"+SelTag+Label, dRZFk, weight, 25, 0., 5., ApplyWVar, SysWgtStrPairList);
     FillHist("dEtaZFk"+SelTag+Label, dEtaZFk, weight, 25, 0., 5., ApplyWVar, SysWgtStrPairList);
     FillHist("NCnt"+SelTag+Label, dEtaZFk, weight, 1, 0., 1., ApplyWVar, SysWgtStrPairList);
+    FillHist("NPV"+SelTag+Label, nPV, weight, 80, 0., 80., ApplyWVar, SysWgtStrPairList);
     if(IsFkHEMReg) FillHist("NCntHEMFk"+SelTag+Label, 0., weight, 1, 0., 1., ApplyWVar, SysWgtStrPairList);
   
   }
@@ -1860,6 +2103,7 @@ float ControlPlots::GetDataFakeWeight(vector<Muon>& MuColl, vector<Electron>& El
     float FR     = GetDataFakeRate(PTCorr, fEta, MuFRKey, "Mu"+Opt);
     if(PTCorr<15 && MuFRConePtCut) FR*=0.6667;
     weight*=-FR/(1.-FR);
+//    weight*=-FR/(Eff_mID-FR);
     NLepLNotT++;
   }
   if (GetEraShort() == "2018" && Overlap_Mu) { weight *= 0.84;}
@@ -1874,11 +2118,12 @@ float ControlPlots::GetDataFakeWeight(vector<Muon>& MuColl, vector<Electron>& El
         Overlap_El = true;
       }
     }
-    float PTCorr = ElColl.at(ie).CalcPtCone(ElColl.at(ie).MiniRelIso(), TightIso);
-    float fEta   = fabs(ElColl.at(ie).Eta());
-    float FR     = GetDataFakeRate(PTCorr, fEta, ElFRKey, "El"+Opt);
+    float PTCorr  = ElColl.at(ie).CalcPtCone(ElColl.at(ie).MiniRelIso(), TightIso);
+    float fEta    = fabs(ElColl.at(ie).Eta());
+    float FR      = GetDataFakeRate(PTCorr, fEta, ElFRKey, "El"+Opt);
     if(PTCorr<20 && ElFRConePtCut) FR*=0.9;
     weight*=-FR/(1.-FR);
+//    weight*=-FR/(Eff_eID-FR);
     NLepLNotT++;
   }
   if (GetEraShort() == "2018" && Overlap_El) { weight *= 0.86;}
@@ -1935,8 +2180,6 @@ float ControlPlots::GetCFRWeight(vector<Electron>& ElColl, TString Option){
 }
 
 
-
-
 void ControlPlots::InitializeReader(){
 
   MVAReader->AddVariable("Nj"      , &Nj      );
@@ -1980,4 +2223,52 @@ void ControlPlots::InitializeReader(){
     MVAReader->BookMVA(MVATagStr_El, AnalyzerPath+MVAPath+FileName_El);
   }
 }
+
+
+
+//void ControlPlots::InitializeReader(TString mass){
+
+//  ThisReader->AddVariable("Nj",    &Nj);
+//  ThisReader->AddVariable("Nb",    &Nb);
+//  ThisReader->AddVariable("Ptl1",  &Ptl1);
+//  ThisReader->AddVariable("Ptl2",  &Ptl2);
+//  ThisReader->AddVariable("MET",   &MET);
+//  ThisReader->AddVariable("HT",    &HT);
+//  ThisReader->AddVariable("dRll",  &dRll);
+//  ThisReader->AddVariable("dRlj11",&dRlj11);
+//  ThisReader->AddVariable("dRlj12",&dRlj12);
+//  ThisReader->AddVariable("dRlj13",&dRlj13);
+//  ThisReader->AddVariable("dRlj21",&dRlj21);
+//  ThisReader->AddVariable("dRlj22",&dRlj22);
+//  ThisReader->AddVariable("dRlj23",&dRlj23);
+//  ThisReader->AddVariable("MSSSF", &MSSSF);
+//  if (mass == "20" or mass == "50" or mass == "75"){
+//    ThisReader->AddVariable("MbllW_1jL", &MbllW_1jL);
+//    ThisReader->AddVariable("MllW_1jL",  &MllW_1jL);
+//    ThisReader->AddVariable("Ml1W_1jL",  &Ml1W_1jL);
+//    ThisReader->AddVariable("Ml2W_1jL",  &Ml2W_1jL);
+//  }
+//  else{
+//    ThisReader->AddVariable("MbllW_1jH", &MbllW_1jH);
+//    ThisReader->AddVariable("Ml1W_1jH",  &Ml1W_1jH);
+//    ThisReader->AddVariable("Ml2W_1jH",  &Ml2W_1jH);
+//    ThisReader->AddVariable("MbllW_H",     &MbllW_H);
+//    ThisReader->AddVariable("Ml1W_H",      &Ml1W_H);
+//    ThisReader->AddVariable("Ml2W_H",      &Ml2W_H);
+//    ThisReader->AddVariable("Ml2W_BkdTop", &Ml2W_BkdTop);
+//  }
+//  ThisReader->AddVariable("MTvl1", &MTvl1);
+//  ThisReader->AddVariable("MTbl1v_BkdTop", &MTbl1v_BkdTop);
+//  ThisReader->AddVariable("Ml2j1W_BkdTop", &Ml2j1W_BkdTop);
+//
+//
+//  TString AnalyzerPath=std::getenv("SKFlat_WD"), MVAPath="/data/Run2UltraLegacy_v3/2018/MVAClassifier/";
+
+//  TString FileName_Mu="TMVAClassification_MN"+MNStrList.at(im)+"_Mu_BDTG.weights.xml"; 
+//  TString FileName_El="TMVAClassification_MN"+MNStrList.at(im)+"_El_BDTG.weights.xml"; 
+//  TString MVATagStr_Mu = "BDTG_MN"+MNStrList.at(im)+"_Mu";
+//  TString MVATagStr_El = "BDTG_MN"+MNStrList.at(im)+"_El";
+//  ThisReader->BookMVA(MVATagStr_Mu, AnalyzerPath+MVAPath+FileName_Mu);
+//  ThisReader->BookMVA(MVATagStr_El, AnalyzerPath+MVAPath+FileName_El);
+//}
 

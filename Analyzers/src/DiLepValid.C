@@ -2,7 +2,7 @@
 
 void DiLepValid::initializeAnalyzer(){
 
-  SglLTrig=false, DiLTrig=false, ElEl=false, MuMu=false, ElMu=false, SF2L=false, PUVETO=false; 
+  SglLTrig=false, DiLTrig=false, ElEl=false, MuMu=false, ElMu=false, SF2L=false, PUVETO=false, NoPURW=false; 
   DiLIncl=false, DiLBJet =false;
   HEMCheck=false, SystRun=false;
   for(unsigned int i=0; i<Userflags.size(); i++){
@@ -16,7 +16,8 @@ void DiLepValid::initializeAnalyzer(){
     if(Userflags.at(i).Contains("DiLBJet" )) DiLBJet  = true; 
     if(Userflags.at(i).Contains("HEMCheck")) HEMCheck = true;
     if(Userflags.at(i).Contains("SystRun" )) SystRun  = true; 
-    if(Userflags.at(i).Contains("PUVETO"))     PUVETO    = true; 
+    if(Userflags.at(i).Contains("IDeffP"))   IDeffP   = true; 
+    if(Userflags.at(i).Contains("NoPURW"))   NoPURW   = true; 
   }
 
   DblMu=false, DblEG=false, MuEG=false, SglEl=false;
@@ -82,7 +83,7 @@ void DiLepValid::executeEvent(){
   if(!IsDATA){
     w_GenNorm = MCweight()*GetKFactor()*ev.GetTriggerLumi("Full");
     w_BR      = GetBRWeight();
-    w_PU      = GetPileUpWeight(nPileUp, 0);
+    if(!NoPURW){w_PU      = GetPileUpWeight(nPileUp, 0);}
     weight *= w_GenNorm * w_BR * w_PU;
   }
 
@@ -121,13 +122,9 @@ void DiLepValid::executeEvent(){
   vector<Jet> jetPreColl = GetAllJets();
   sort(jetPreColl.begin(), jetPreColl.end(), PtComparing);
   vector<Jet> jetColl;
-  if(PUVETO){
-    jetColl  = SelectJets(jetPreColl, "LoosePileupJetVeto", 25., 2.4);
-    jetColl  = SelectJets(jetColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
-  } 
-  else { 
-    jetColl = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
-  }  
+  jetPreColl  = SelectPUJets(jetPreColl, "LoosePileupJetVeto", 25., 2.4, GetEra());
+  jetColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
+   
   vector<Jet> bjetColl = SelBJets(jetColl, param_jets);
 
   Particle vMET = GetvMET("PUPPIMETT1"); //"T1"
@@ -157,7 +154,7 @@ void DiLepValid::executeEvent(){
     //cout<<"w_Pref:"<<w_Pref<<" sf_Tr:"<<sf_Tr<<endl;
     //cout<<"sf_MuTk"<<sf_MuTk<<" sf_mID:"<<sf_mID<<" sf_muiso:"<<sf_muiso<<" sf_eReco:"<<sf_eReco<<" sf_eID:"<<sf_eID<<" sf_B:"<<sf_B<<endl;
   }
-  if(PUVETO) w_PUVeto = mcCorr->PileupJetVeto_Reweight(jetColl, "LoosePileupJetVeto", 0);
+  w_PUVeto = mcCorr->PileupJetVeto_Reweight(jetColl, "LoosePileupJetVeto", 0);
   weight *= w_TopPtRW * w_Pref * sf_Tr * w_PUVeto;
   weight *= sf_MuTk * sf_mID * sf_muiso * sf_eReco * sf_eID * sf_B;
  
@@ -179,6 +176,9 @@ void DiLepValid::executeEvent(){
     else if(DiLBJet){
       AnalyzeDiMuonBJet(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET_T1xy, weight, "");
     }
+    else if(IDeffP){
+      AnalyzeDiMuon(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET_T1xy, weight, "");
+    }
   }
   if(ElEl){
     if(DiLIncl){
@@ -193,6 +193,9 @@ void DiLepValid::executeEvent(){
     }
     else if(DiLBJet){
       AnalyzeDiElectronBJet(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET_T1xy, weight, "");
+    }
+    else if(IDeffP){
+      AnalyzeDiElectron(muonTightColl, muonLooseColl, electronTightColl, electronVetoColl, jetColl, bjetColl, vMET_T1xy, weight, "");
     }
   }
   if(ElMu){
@@ -261,9 +264,10 @@ void DiLepValid::executeEvent(){
     float sf_TrUp=sf_Tr*1.01, sf_TrDown=sf_Tr*0.99;
     if(!IsDATA && EventCand){
       w_PrefUp   = GetPrefireWeight(1), w_PrefDown = GetPrefireWeight(-1);
-      w_PUUp     = GetPileUpWeight(nPileUp, 1);
-      w_PUDown   = GetPileUpWeight(nPileUp,-1);
-
+      if(!NoPURW){
+        w_PUUp     = GetPileUpWeight(nPileUp, 1);
+        w_PUDown   = GetPileUpWeight(nPileUp,-1);
+      }
       sf_eRecoUp   = GetElectronSF(electronTightColl, "", "RecoSystUp");
       sf_eRecoDown = GetElectronSF(electronTightColl, "", "RecoSystDown");
       sf_eReco_ElSclUp   = GetElectronSF(ElSclUpTColl, "", "Reco");
@@ -304,25 +308,25 @@ void DiLepValid::executeEvent(){
     float weight_MuEnUp    = w_base* w_PU    * w_Pref    * sf_mID_MuEnUp  * sf_eReco          * sf_eID          * sf_Tr_MuEnUp   * sf_B;
     float weight_MuEnDown  = w_base* w_PU    * w_Pref    * sf_mID_MuEnDown* sf_eReco          * sf_eID          * sf_Tr_MuEnDown * sf_B;
     float weight_MuIDUp    = w_base* w_PU    * w_Pref    * sf_mIDUp       * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_MuIDDown  = w_base* w_PU    * w_Pref    * sf_mIDDown     * sf_eReco          * sf_eID          * sf_Tr          * sf_B;
-    float weight_ElRecoUp  = w_base* w_PU    * w_Pref    * sf_mID         * sf_eRecoUp        * sf_eID          * sf_Tr          * sf_B;
-    float weight_ElRecoDown= w_base* w_PU    * w_Pref    * sf_mID         * sf_eRecoDown      * sf_eID          * sf_Tr          * sf_B;
-    float weight_ElIDUp    = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eIDUp        * sf_Tr          * sf_B;
-    float weight_ElIDDown  = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eIDDown      * sf_Tr          * sf_B;
-    float weight_ElSclUp   = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco_ElSclUp  * sf_eID_ElSclUp  * sf_Tr_ElSclUp  * sf_B;
-    float weight_ElSclDown = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco_ElSclDown* sf_eID_ElSclDown* sf_Tr_ElSclDown* sf_B;
-    float weight_ElResUp   = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco_ElResUp  * sf_eID_ElResUp  * sf_Tr_ElResUp  * sf_B;
+    float weight_MuIDDown  = w_base* w_PU    * w_Pref    * sf_mIDDown     * sf_eReco          * sf_eID          * sf_Tr          * sf_B   ;
+    float weight_ElRecoUp  = w_base* w_PU    * w_Pref    * sf_mID         * sf_eRecoUp        * sf_eID          * sf_Tr          * sf_B   ;
+    float weight_ElRecoDown= w_base* w_PU    * w_Pref    * sf_mID         * sf_eRecoDown      * sf_eID          * sf_Tr          * sf_B   ;
+    float weight_ElIDUp    = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eIDUp        * sf_Tr          * sf_B   ;
+    float weight_ElIDDown  = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eIDDown      * sf_Tr          * sf_B   ;
+    float weight_ElSclUp   = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco_ElSclUp  * sf_eID_ElSclUp  * sf_Tr_ElSclUp  * sf_B   ;
+    float weight_ElSclDown = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco_ElSclDown* sf_eID_ElSclDown* sf_Tr_ElSclDown* sf_B   ;
+    float weight_ElResUp   = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco_ElResUp  * sf_eID_ElResUp  * sf_Tr_ElResUp  * sf_B   ;
     float weight_ElResDown = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco_ElResDown* sf_eID_ElResDown* sf_Tr_ElResDown* sf_B;
-    float weight_JESUp     = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JESUp;
-    float weight_JESDown   = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JESDown;
-    float weight_JERUp     = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JERUp;
-    float weight_JERDown   = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JERDown;
-    float weight_LTagUp    = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_LTagUp;
-    float weight_LTagDown  = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_LTagDown;
-    float weight_HTagUp    = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_HTagUp;
-    float weight_HTagDown  = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_HTagDown;
-    float weight_TrUp      = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eID          * sf_TrUp        * sf_B;
-    float weight_TrDown    = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eID          * sf_TrDown      * sf_B;
+    float weight_JESUp     = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JESUp   ;
+    float weight_JESDown   = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JESDown   ;
+    float weight_JERUp     = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JERUp   ;
+    float weight_JERDown   = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_JERDown   ;
+    float weight_LTagUp    = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_LTagUp   ;
+    float weight_LTagDown  = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_LTagDown   ;
+    float weight_HTagUp    = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_HTagUp   ;
+    float weight_HTagDown  = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B_HTagDown   ;
+    float weight_TrUp      = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eID          * sf_TrUp        * sf_B   ;
+    float weight_TrDown    = w_base* w_PU    * w_Pref    * sf_mID         * sf_eReco          * sf_eID          * sf_TrDown      * sf_B   ;
 
 
     if(!IsDATA){
@@ -411,7 +415,8 @@ void DiLepValid::AnalyzeDiMuon(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vec
 {
   bool ApplyWVar = Label.Contains("SystWgtVar");
   if( ApplyWVar ) Label.ReplaceAll("SystWgtVar","");
-  if( !(MuTColl.size()==2 && MuLColl.size()==2) ) return;
+  if( !(MuTColl.size()==2) ) return;
+  if( !(MuLColl.size()==2) ) return;
   if( ElLColl.size()!=0 ) return;
   if( MuTColl.at(0).Charge() == MuTColl.at(1).Charge() ) return;
 
@@ -421,8 +426,10 @@ void DiLepValid::AnalyzeDiMuon(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vec
   if( !(MuTColl.at(0).Pt()>PTmin1 && MuTColl.at(1).Pt()>PTmin2) ) return; 
   
   float Mmumu = (MuTColl.at(0)+MuTColl.at(1)).M();
-  if(Mmumu<50) return;
-
+  float Ptmumu = (MuTColl.at(0)+MuTColl.at(1)).Pt();
+  if(Mmumu<50 and !IDeffP ) return;
+  
+  else if (abs(Mmumu-91.2)>10 and IDeffP) return;
   if(HEMCheck){
     bool IsHEMReg=false;
     for(unsigned int im=0; im<MuTColl.size() && !IsHEMReg; im++){
@@ -430,22 +437,35 @@ void DiLepValid::AnalyzeDiMuon(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vec
     }
     if(IsHEMReg) return;
   }
-       
-  FillHist("NCount"+Label, 0., weight, 1, 0., 1., ApplyWVar, SysWgtStrPairList);
-  FillHist("NPV"   +Label, nPV, weight, 80, 0., 80., ApplyWVar, SysWgtStrPairList);
-  FillHist("Rho"   +Label, Rho, weight, 70, 0., 70., ApplyWVar, SysWgtStrPairList);
-  FillHist("Mmumu" +Label, Mmumu, weight, 60, 60., 120., ApplyWVar, SysWgtStrPairList);
-  FillHist("PtMu1" +Label, MuTColl.at(0).Pt(), weight, 40, 0., 200., ApplyWVar, SysWgtStrPairList);
-  FillHist("PtMu2" +Label, MuTColl.at(1).Pt(), weight, 40, 0., 200., ApplyWVar, SysWgtStrPairList);
-  FillHist("EtaMu1"+Label, MuTColl.at(0).Eta(), weight, 20, -5., 5., ApplyWVar, SysWgtStrPairList);
-  FillHist("EtaMu2"+Label, MuTColl.at(1).Eta(), weight, 20, -5., 5., ApplyWVar, SysWgtStrPairList);
-  FillHist("NJet"  +Label, JetColl.size(), weight, 10, 0., 10., ApplyWVar, SysWgtStrPairList);
-  FillHist("NBJet" +Label, BJetColl.size(), weight, 10, 0., 10., ApplyWVar, SysWgtStrPairList);
-  FillHist("MET"   +Label, vMET.Pt(), weight, 40, 0., 200., ApplyWVar, SysWgtStrPairList);
-  FillHist("METPhi"+Label, vMET.Phi(), weight, 10, -3.15, 3.15, ApplyWVar, SysWgtStrPairList);
+  int NPrompt=-1;
+  float w_DYPtRW = 1.;
+  if( (MuTColl.size()==2) ) {NPrompt = 2;}
+  else if( (MuTColl.size()==1) ) {NPrompt = 1;}
+  else if( (MuTColl.size()==0) ) {NPrompt = 0;}
+  
+  
+  if(MCSample.Contains("DY")){ 
+    w_DYPtRW = mcCorr->GetDYPtReweight("ZptWeight_DYJets.root", Ptmumu);
+    weight *= w_DYPtRW;
+  }
+  FillHist("NCount"+Label, 0., weight, 1, 0., 1., ApplyWVar, SysWgtStrPairList,w_DYPtRW);
+  FillHist("NPrompt"+Label, 1., NPrompt, 2, 0., 2., ApplyWVar, SysWgtStrPairList,w_DYPtRW);
+  FillHist("NPrompt"+Label, 0., 2, 2, 0., 2., ApplyWVar, SysWgtStrPairList,w_DYPtRW);
+  FillHist("NPV"   +Label, nPV, weight, 80, 0., 80., ApplyWVar, SysWgtStrPairList,w_DYPtRW);
+  FillHist("Rho"   +Label, Rho, weight, 70, 0., 70., ApplyWVar, SysWgtStrPairList,w_DYPtRW);
+  FillHist("Mmumu" +Label, Mmumu, weight, 60, 60., 120., ApplyWVar, SysWgtStrPairList,w_DYPtRW);
+  FillHist("Ptmumu" +Label,Ptmumu, weight, 60, 0., 300., ApplyWVar, SysWgtStrPairList,w_DYPtRW);
+  FillHist("PtMu1" +Label, MuTColl.at(0).Pt(), weight, 40, 0., 200., ApplyWVar, SysWgtStrPairList,w_DYPtRW);
+  FillHist("PtMu2" +Label, MuTColl.at(1).Pt(), weight, 40, 0., 200., ApplyWVar, SysWgtStrPairList,w_DYPtRW);
+  FillHist("EtaMu1"+Label, MuTColl.at(0).Eta(), weight, 20, -5., 5., ApplyWVar, SysWgtStrPairList,w_DYPtRW);
+  FillHist("EtaMu2"+Label, MuTColl.at(1).Eta(), weight, 20, -5., 5., ApplyWVar, SysWgtStrPairList,w_DYPtRW);
+  FillHist("NJet"  +Label, JetColl.size(), weight, 10, 0., 10., ApplyWVar, SysWgtStrPairList,w_DYPtRW);
+  FillHist("NBJet" +Label, BJetColl.size(), weight, 10, 0., 10., ApplyWVar, SysWgtStrPairList,w_DYPtRW);
+  FillHist("MET"   +Label, vMET.Pt(), weight, 40, 0., 200., ApplyWVar, SysWgtStrPairList,w_DYPtRW);
+  FillHist("METPhi"+Label, vMET.Phi(), weight, 10, -3.15, 3.15, ApplyWVar, SysWgtStrPairList,w_DYPtRW);
 
   float HT=0; for(unsigned int itj=0; itj<JetColl.size(); itj++){ HT+=JetColl.at(itj).Pt(); }
-  FillHist("HT"+Label, HT, weight, 40, 0., 200., ApplyWVar, SysWgtStrPairList);
+  FillHist("HT"+Label, HT, weight, 40, 0., 200., ApplyWVar, SysWgtStrPairList,w_DYPtRW);
 } 
 
 
@@ -707,29 +727,29 @@ void DiLepValid::AnalyzeDiLeptonBJet(vector<Muon>& MuTColl, vector<Muon>& MuLCol
   int it_cut=0;
   FillHist("CutFlow"+Label, it_cut, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList); it_cut++;
 
-//  if(Njet<2) return;
-//  FillHist("CutFlow"+Label, it_cut, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList); it_cut++;
-
-  if(OffZ) return;
+  if(Njet<2) return;
   FillHist("CutFlow"+Label, it_cut, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList); it_cut++;
 
-//  if(!PtJet1_50) return;
-//  FillHist("CutFlow"+Label, it_cut, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList);
+  if(!OffZ) return;
+  FillHist("CutFlow"+Label, it_cut, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList); it_cut++;
+
+  if(!PtJet1_50) return;
+  FillHist("CutFlow"+Label, it_cut, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList);
 
 
   vector<TString> LabelList = {"_ONZ"}; //{"_1B2JOffZPtb50"+Label};
-//  if( MET50 ){
-    //LabelList.push_back("_1B2JOffZPtb50MET50"+Label);
-//    FillHist("CutFlow"+Label, it_cut+1, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList);
-//  }
-//  if( NBjet>1 ){
-//    //LabelList.push_back("_2BOffZPtb50"+Label);
-//    FillHist("CutFlow"+Label, it_cut+2, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList);
-//  }
-//  if( NBjet>1 && MET50 ){
-//    LabelList.push_back("_2BOffZPtb50MET50"+Label);
-//    FillHist("CutFlow"+Label, it_cut+3, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList);
-//  }
+  if( MET50 ){
+    LabelList.push_back("_2JOffZPtb50MET50"+Label);
+    FillHist("CutFlow"+Label, it_cut+1, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList);
+  }
+  if( NBjet>1 ){
+    //LabelList.push_back("_2BOffZPtb50"+Label);
+    FillHist("CutFlow"+Label, it_cut+2, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList);
+  }
+  if( NBjet>1 && MET50 ){
+    LabelList.push_back("_2BOffZPtb50MET50"+Label);
+    FillHist("CutFlow"+Label, it_cut+3, weight, 20, 0., 20., ApplyWVar, SysWgtStrPairList);
+  }
  
   for(unsigned int il=0; il<LabelList.size(); il++){
     TString FinLabel(LabelList.at(il));
@@ -766,7 +786,7 @@ void DiLepValid::AnalyzeDiElectron(vector<Muon>& MuTColl, vector<Muon>& MuLColl,
 {
   bool ApplyWVar = Label.Contains("SystWgtVar");
   if( ApplyWVar ) Label.ReplaceAll("SystWgtVar","");
-  if( !(ElTColl.size()==2 && ElLColl.size()==2) ) return;
+  if( !(ElLColl.size()==2 and ElTColl.size()==2) ) return;
   if( MuLColl.size()!=0 ) return;
   if( ElTColl.at(0).Charge() == ElTColl.at(1).Charge() ) return;
 
@@ -776,7 +796,10 @@ void DiLepValid::AnalyzeDiElectron(vector<Muon>& MuTColl, vector<Muon>& MuLColl,
   if( !(ElTColl.at(0).Pt()>PTmin1 && ElTColl.at(1).Pt()>PTmin2) ) return; 
 
   float Melel = (ElTColl.at(0)+ElTColl.at(1)).M();
-  if(Melel<50) return;
+  float Ptelel = (ElTColl.at(0)+ElTColl.at(1)).Pt();
+  if(Melel<50 and !IDeffP ) return;
+  
+  else if (abs(Melel-91.2)>10 and IDeffP) return;
 
   if(HEMCheck){
     bool IsHEMReg=false;
@@ -790,6 +813,7 @@ void DiLepValid::AnalyzeDiElectron(vector<Muon>& MuTColl, vector<Muon>& MuLColl,
   FillHist("NPV"   +Label, nPV, weight, 80, 0., 80., ApplyWVar, SysWgtStrPairList);
   FillHist("Rho"   +Label, Rho, weight, 70, 0., 70., ApplyWVar, SysWgtStrPairList);
   FillHist("Melel" +Label, Melel, weight, 60, 60., 120., ApplyWVar, SysWgtStrPairList);
+  FillHist("Ptelel" +Label, Ptelel, weight, 60, 0., 300., ApplyWVar, SysWgtStrPairList);
   FillHist("PtEl1" +Label, ElTColl.at(0).Pt(), weight, 40, 0., 200., ApplyWVar, SysWgtStrPairList);
   FillHist("PtEl2" +Label, ElTColl.at(1).Pt(), weight, 40, 0., 200., ApplyWVar, SysWgtStrPairList);
   FillHist("EtaEl1"+Label, ElTColl.at(0).Eta(), weight, 20, -5., 5., ApplyWVar, SysWgtStrPairList);
@@ -797,6 +821,7 @@ void DiLepValid::AnalyzeDiElectron(vector<Muon>& MuTColl, vector<Muon>& MuLColl,
   FillHist("NJet"  +Label, JetColl.size(), weight, 10, 0., 10., ApplyWVar, SysWgtStrPairList);
   FillHist("NBJet" +Label, BJetColl.size(), weight, 10, 0., 10., ApplyWVar, SysWgtStrPairList);
   FillHist("MET"   +Label, vMET.Pt(), weight, 40, 0., 200., ApplyWVar, SysWgtStrPairList);
+  FillHist("METPhi"   +Label, vMET.Phi(), weight, 10, -3.15, 3.15, ApplyWVar, SysWgtStrPairList);
 
 }
 

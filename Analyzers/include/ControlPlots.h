@@ -11,10 +11,10 @@ public:
   void executeEventFromParameter(AnalyzerParameter param);
   void executeEvent();
 
-  bool OS2l, SS2l, TriLep, TetraLep, SB_SS2L, CFlip, ConvCR, FkCR3l, PUVETO, POGEl; 
-  bool TrigClos;
+  bool OS2l, SS2l, TriLep, TetraLep, SB_SS2L, CFlip, ConvCR, FkCR3l, PUVETO, POGEl, PTShift, NoPURW; 
+  bool TrigClos, CFCorr;
   bool DblMu, DblEG, MuEG, SglEl;
-  bool FakeRun, ConvRun, FlipRun, SystRun, HEMCheck;
+  bool FakeRun, ConvRun, FlipRun, SystRun, HEMCheck, SigLike;
   vector<TString> TrigList_DblMu, TrigList_DblEG, TrigList_MuEG, TrigList_SglEl;
 
 
@@ -34,6 +34,9 @@ public:
                     vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
                     vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, float weight, TString Label);
   void CheckChargeFlip(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,
+                       vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
+                       vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, float weight, TString Label);
+  void CFShiftCheck(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,
                        vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
                        vector<Jet>& JetColl, vector<Jet>& BJetColl, Particle& vMET, float weight, TString Label);
   void MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl, vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,

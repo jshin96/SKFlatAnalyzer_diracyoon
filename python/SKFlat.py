@@ -600,7 +600,13 @@ if args.no_exec:
 
 FinalOutputPath = args.Outputdir
 if args.Outputdir=="":
-  FinalOutputPath = SKFlatOutputDir+'_Original_jbh'+'/'+SKFlatV+'/'+args.Analyzer+'/'+args.Era+'/'
+  
+  if args.Era == "2016preVFP":
+    FinalOutputPath = SKFlatOutputDir+'_Original_jbh'+'/'+SKFlatV+'/'+args.Analyzer+'/2016a/'
+  elif args.Era == "2016postVFP":
+    FinalOutputPath = SKFlatOutputDir+'_Original_jbh'+'/'+SKFlatV+'/'+args.Analyzer+'/2016b/'
+  else:
+    FinalOutputPath = SKFlatOutputDir+'_Original_jbh'+'/'+SKFlatV+'/'+args.Analyzer+'/'+args.Era+'/'
   for flag in Userflags:
     FinalOutputPath += flag+"__"
   if IsDATA:

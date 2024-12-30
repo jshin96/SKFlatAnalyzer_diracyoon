@@ -1098,10 +1098,62 @@ float MCFakeStudy::GetMCFakeWeight(vector<Muon>& MuColl, vector<Electron>& ElCol
     if(ElFRKey.Contains("QCD") && PTCorr>50) PTCorr=49.;
     float FR = GetMCFakeRate(PTCorr, fEta, ElFRKey, SystDir);
     weight*=-FR/(1.-FR);
+//    weight*=-FR/(Eff_eID-FR);
     NLepLNotT++;
   }
   weight *= (FR_MCCorr);
   if(NLepLNotT==0) weight=0.;
+  return weight;
+}
+float MCFakeStudy::GetPreciseMCFakeWeight(vector<Muon>& MuColl, vector<Electron>& ElColl, TString MuTID, TString ElTID, TString MuFRKey, TString ElFRKey, int SystDir, float FR_MCCorr){
+
+  if(IsDATA) return 1.;
+
+  float weight=0.;
+  int Tight_Lep = 0;
+  float TightIso= 0.1;
+  if(MuTID.Contains("TIsop15")) TightIso=0.15;
+  vector<float> FRs, Effs;
+  for(unsigned int im=0; im<MuColl.size(); im++){
+    float PTCorr = MuColl.at(im).CalcPtCone(MuColl.at(im).MiniRelIso(), TightIso);
+    float fEta   = fabs(MuColl.at(im).Eta());
+    if(MuFRKey.Contains("QCD") && PTCorr>50) PTCorr=49.;
+    FRs.push_back(GetMCFakeRate(PTCorr, fEta, MuFRKey, SystDir));
+    Effs.push_back(GetMuonIDEff(MuColl.at(im), MuTID, SystDir));
+    if(MuColl.at(im).PassID(MuTID)) {Tight_Lep++;}
+  }
+
+  for(unsigned int ie=0; ie<ElColl.size(); ie++){
+    float PTCorr = ElColl.at(ie).CalcPtCone(ElColl.at(ie).MiniRelIso(), TightIso);
+    float fEta   = fabs(ElColl.at(ie).Eta());
+    if(ElFRKey.Contains("QCD") && PTCorr>50) PTCorr=49.;
+    FRs.push_back(GetMCFakeRate(PTCorr, fEta, ElFRKey, SystDir));
+    Effs.push_back(GetElectronIDEff(ElColl.at(ie), ElTID, SystDir));
+    if(ElColl.at(ie).PassID(ElTID)) {Tight_Lep++;}
+  }
+
+
+  float FR1T = FRs.at(0);
+  float FR2T = FRs.at(1);
+  float FR1L = FRs.at(0)-1;
+  float FR2L = FRs.at(1)-1;
+  float Eff1T = Effs.at(0);
+  float Eff2T = Effs.at(1);
+  float Eff1L = Effs.at(0)-1;
+  float Eff2L = Effs.at(1)-1;
+  if(Tight_Lep == 2){
+    weight = (FR1T+Eff2T-(FR1T*Eff2T)-1)+(FR2T+Eff1T-(FR2T*Eff1T)-1) + (Eff2L*Eff1L);
+  }
+  else if (Tight_Lep == 1){
+    weight = ((Eff2T-(FR1T*Eff2T)) + (FR2T-(FR2T*Eff1T)) + (Eff2T*Eff1L) + (FR1T-(FR1T*Eff2T)) + (Eff1T - (FR2T*Eff1T)) + (Eff2L*Eff1T))/2;
+  }
+  else if (Tight_Lep == 0) {
+    weight = (Eff1T*Eff2T)-(FR2T*Eff1T)-(FR1T*Eff2T);
+  }  
+
+  weight /= ((FR1T-Eff1T)*(FR2T-Eff2T));
+
+  weight *= (FR_MCCorr);
   return weight;
 }
 
@@ -1347,7 +1399,17 @@ void MCFakeStudy::CheckMCClosure(vector<Muon>& MuRawColl, vector<Electron>& ElRa
   vector<Muon>     MuLColl  = SelectMuons    (MuRawColl, MuLID, 10., 2.4);
   vector<Electron> ElLColl  = SelectElectrons(ElRawColl, ElLID, 15., 2.5);
   vector<Electron> ElVColl  = SelectElectrons(ElRawColl, ElVID, 10., 2.5);
-  vector<Jet>      JetColl  = SelectJets     (JetRawColl, MuLColl, ElVColl, "tight", 25., 2.4, "LVeto");
+  vector<Jet>      JetColl  = SelectPUJets     (JetRawColl, "MediumPileupJetVeto", 25., 2.4, GetEraShort());
+                   JetColl  = SelectJets     (JetColl, MuLColl, ElVColl, "tight", 25., 2.4, "LVeto");
+  if (GetEraShort().Contains("18")) {
+    for(unsigned int ij=0; ij < JetColl.size(); ij++){
+      if (JetColl.at(ij).Eta() < -1.3 && JetColl.at(ij).Eta() > -3.0 && JetColl.at(ij).Phi() < -0.87 && JetColl.at(ij).Phi() < -1.57) {
+        vMET = vMET + 0.2*JetColl.at(ij);
+        vMET.SetPtEtaPhiM(vMET.Pt(),0,vMET.Phi(),0);
+        JetColl.at(ij) *= 0.8;
+      }
+    }
+  }
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
   vector<Jet>      BJetColl = SelBJets       (JetColl, param_jets);
 
@@ -1386,20 +1448,20 @@ void MCFakeStudy::CheckMCClosure(vector<Muon>& MuRawColl, vector<Electron>& ElRa
     }
   }
 
-  if(B_overlap){
-    if(MuFR){
-      if (GetEraShort() == "2018") { FR_MCCorr = 0.84;}
-      else if (GetEraShort() == "2017") { FR_MCCorr = 0.84;}
-      else if (GetEraShort() == "2016a") { FR_MCCorr = 0.85;}
-      else if (GetEraShort() == "2016b") { FR_MCCorr = 0.85;}
-    }
-    else if(ElFR){
-      if (GetEraShort() == "2018") { FR_MCCorr = 0.86;}
-      else if (GetEraShort() == "2017") { FR_MCCorr = 0.81;}
-      else if (GetEraShort() == "2016a") { FR_MCCorr = 0.86;}
-      else if (GetEraShort() == "2016b") { FR_MCCorr = 0.85;}
-    }
-  }
+//  if(B_overlap){
+//    if(MuFR){
+//      if (GetEraShort() == "2018") { FR_MCCorr = 0.84;}
+//      else if (GetEraShort() == "2017") { FR_MCCorr = 0.84;}
+//      else if (GetEraShort() == "2016a") { FR_MCCorr = 0.85;}
+//      else if (GetEraShort() == "2016b") { FR_MCCorr = 0.85;}
+//    }
+//    else if(ElFR){
+//      if (GetEraShort() == "2018") { FR_MCCorr = 0.86;}
+//      else if (GetEraShort() == "2017") { FR_MCCorr = 0.81;}
+//      else if (GetEraShort() == "2016a") { FR_MCCorr = 0.86;}
+//      else if (GetEraShort() == "2016b") { FR_MCCorr = 0.85;}
+//    }
+//  }
   TString FRProc = Label.Contains("FRTT")? "TT_powheg":Label.Contains("FRQCD")? "QCD":"";
   TString MeasSel = Option.Contains("MeasSel")? "_QCDMeasSel":""; 
   TString TrigStr = Option.Contains("Trig")?    "_Trig":"";
@@ -1435,6 +1497,7 @@ void MCFakeStudy::CheckMCClosure(vector<Muon>& MuRawColl, vector<Electron>& ElRa
     int SystDir = Option.Contains("FRUp")? 1: Option.Contains("FRDown")? -1: 0; 
     if(DoGenMatchW) FRweight = GetGenMatchFakeWeight(MuLColl, ElLColl, TruthColl, MuTID, ElTID, MuFRKey, ElFRKey, FR_MCCorr);
     else            FRweight = GetMCFakeWeight(MuLColl, ElLColl, MuTID, ElTID, MuFRKey, ElFRKey, SystDir,FR_MCCorr);
+//    else            FRweight = GetPreciseMCFakeWeight(MuLColl, ElLColl, MuTID, ElTID, MuFRKey, ElFRKey, SystDir,1.0);
     if(NMuT==NMuL && NElT==NElL){ Label="_Obs"+Label; }
     else                        { Label="_Exp"+Label; weight*=FRweight; }
 
@@ -1578,6 +1641,7 @@ void MCFakeStudy::CheckMCClosure(vector<Muon>& MuRawColl, vector<Electron>& ElRa
     int SystDir = Option.Contains("FRUp")? 1: Option.Contains("FRDown")? -1: 0; 
     if(DoGenMatchW) FRweight = GetGenMatchFakeWeight(MuLColl, ElLColl, TruthColl, MuTID, ElTID, MuFRKey, ElFRKey, FR_MCCorr);
     else            FRweight = GetMCFakeWeight(MuLColl, ElLColl, MuTID, ElTID, MuFRKey, ElFRKey, SystDir,FR_MCCorr);
+//    else            FRweight = GetPreciseMCFakeWeight(MuLColl, ElLColl, MuTID, ElTID, MuFRKey, ElFRKey, SystDir,1.0);
     if(NMuT==NMuL && NElT==NElL){ Label="_Obs"+Label; }
     else                        { Label="_Exp"+Label; weight*=FRweight; }
 

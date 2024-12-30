@@ -790,6 +790,27 @@ std::vector<Jet> AnalyzerCore::SelectJets(const std::vector<Jet>& jets, TString 
 
 }
 
+std::vector<Jet> AnalyzerCore::SelectPUJets(const std::vector<Jet>& jets, TString id, double ptmin, double fetamax, TString Era){
+
+  std::vector<Jet> out;
+  for(unsigned int i=0; i<jets.size(); i++){
+    if(!( jets.at(i).Pt()>ptmin )){
+      //cout << "Fail Pt : pt = " << jets.at(i).Pt() << ", cut = " << ptmin << endl;
+      continue;
+    }
+    if(!( fabs(jets.at(i).Eta())<fetamax )){
+      //cout << "Fail Eta : eta = " << fabs(jets.at(i).Eta()) << ", cut = " << fetamax << endl;
+      continue;
+    }
+    if(!( jets.at(i).PassPUID(id, Era) )){
+      //cout << "Fail ID" << endl;
+      continue;
+    }
+    out.push_back( jets.at(i) );
+  }
+  return out;
+
+}
 std::vector<FatJet> AnalyzerCore::SelectFatJets(const std::vector<FatJet>& jets, TString id, double ptmin, double fetamax){
 
   std::vector<FatJet> out;
@@ -2453,6 +2474,22 @@ float AnalyzerCore::GetMuonSF(std::vector<Muon>& muonColl, TString SFKey, TStrin
   return weight;
 } 
 
+float AnalyzerCore::GetMuonIDEff(Muon muon, TString SFKey, TString Option){
+
+  float weight = 1.;
+  bool IsIDSF = Option.Contains("ID");
+  int SystDir=0;
+  if(Option.Contains("Syst")){
+    if     (Option.Contains("Up")  ) SystDir=1;
+    else if(Option.Contains("Down")) SystDir=-1;
+  }
+
+  if(IsIDSF){
+    weight *= mcCorr->MuonID_Eff (SFKey, muon.Eta(), muon.Pt(), SystDir);
+  }
+
+  return weight;
+} 
 
 float AnalyzerCore::GetElectronSF(std::vector<Electron>& electronColl, TString SFKey, TString Option){
 
@@ -2479,6 +2516,22 @@ float AnalyzerCore::GetElectronSF(std::vector<Electron>& electronColl, TString S
   return weight;
 } 
 
+float AnalyzerCore::GetElectronIDEff(Electron electron, TString SFKey, TString Option){
+
+  float weight = 1.;
+  bool IsIDSF = Option.Contains("ID");
+  int SystDir=0;
+  if(Option.Contains("Syst")){
+    if     (Option.Contains("Up")  ) SystDir=1;
+    else if(Option.Contains("Down")) SystDir=-1;
+  }
+
+  if(IsIDSF){
+    weight *= mcCorr->ElectronID_Eff(SFKey, electron.scEta(), electron.Pt(), SystDir);
+  }
+
+  return weight;
+} 
 
 
 float AnalyzerCore::GetKFactor(){
@@ -3479,6 +3532,24 @@ void AnalyzerCore::FillHist(TString histname, double value, double weight, int n
 
   return;
 }
+
+
+void AnalyzerCore::FillHist(TString histname, double value, double weight, int n_bin, double x_min, double x_max, bool ApplyWVar, vector<pair<float,TString>>& SysWgtStrPairList, double ZRW){
+
+  if(ApplyWVar && SysWgtStrPairList.size()>0){
+    for(unsigned int iw=0; iw<SysWgtStrPairList.size(); iw++){
+      float   w_tmp   = SysWgtStrPairList.at(iw).first;
+      TString SystStr = SysWgtStrPairList.at(iw).second;
+      FillHist(histname+SystStr, value, w_tmp*ZRW, n_bin, x_min, x_max);
+    }
+  }
+  else{
+    FillHist(histname, value, weight, n_bin, x_min, x_max);
+  }
+
+  return;
+}
+
 
 void AnalyzerCore::FillHist(TString histname, double value, double weight, int n_bin, double *xbins, bool ApplyWVar, vector<pair<float,TString>>& SysWgtStrPairList){
 

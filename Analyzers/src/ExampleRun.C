@@ -1,4 +1,9 @@
 #include "ExampleRun.h"
+#include "fastjet/ClusterSequence.hh"
+#include "fastjet/PseudoJet.hh"
+#include <iostream>
+using namespace fastjet;
+using namespace std;
 
 ExampleRun::ExampleRun(){
 
@@ -364,6 +369,23 @@ void ExampleRun::executeEventFromParameter(AnalyzerParameter param){
   Particle ZCand = muons.at(0) + muons.at(1);
   if(!IsOnZ(ZCand.M(), 15.)) return;
 
+  vector<Gen> TruthColl = GetGens();
+  vector<PseudoJet> particles;
+  for(unsigned int ig=0; ig < TruthColl.size(); ig++){
+    particles.push_back( PseudoJet(TruthColl.at(ig).Px(), TruthColl.at(ig).Py(), TruthColl.at(ig).Pz(), TruthColl.at(ig).E())); 
+  }
+  for (const auto& particle : particles) {
+  std::cout << "Particle px: " << particle.px()
+            << ", py: " << particle.py()
+            << ", pz: " << particle.pz()
+            << ", E: " << particle.E() << std::endl;
+  }
+
+
+  JetDefinition jet_def(fastjet::antikt_algorithm,0.4);
+  ClusterSequence cs(particles, jet_def);
+  vector<PseudoJet> GenJets = sorted_by_pt(cs.inclusive_jets());
+  cout << "GenJets made" << endl;
   //===================
   //==== Event weight
   //===================

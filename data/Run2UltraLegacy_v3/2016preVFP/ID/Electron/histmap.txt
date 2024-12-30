@@ -10,6 +10,8 @@ ID	SF	passVetoID	egammaEffi.txt_Ele_Veto_preVFP_EGM2D.root	EGamma_SF2D	TH2F
 RECO	SF	ptgt20	egammaEffi_ptAbove20.txt_EGM2D_UL2016preVFP.root	EGamma_SF2D	TH2F
 RECO	SF	ptlt20	egammaEffi_ptBelow20.txt_EGM2D_UL2016preVFP.root	EGamma_SF2D	TH2F
 ID	SF	TopHNSST		IDEff_TopHNSST_2016a.root		EGamma_SF2D	TH2F
+ID	Eff_DATA TopHNSST		IDEff_TopHNSST_2016a.root	EGamma_EffData2D	TH2F
+ID	Eff_MC TopHNSST			IDEff_TopHNSST_2016a.root	EGamma_EffMC2D		TH2F
 Trigger Eff_DATA  DiElIsoEl23_HNTopIDSS   TrigEff_Ele23_TopHNSST_2016a.root     EGamma_EffData2D         TH2F
 Trigger Eff_MC    DiElIsoEl23_HNTopIDSS   TrigEff_Ele23_TopHNSST_2016a.root     EGamma_EffMC2D           TH2F
 Trigger Eff_DATA  DiElIsoEl12_HNTopIDSS   TrigEff_Ele12_TopHNSST_2016a.root     EGamma_EffData2D         TH2F

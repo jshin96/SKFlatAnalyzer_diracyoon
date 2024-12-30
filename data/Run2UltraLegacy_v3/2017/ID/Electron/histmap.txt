@@ -9,6 +9,8 @@ ID	SF	passMediumID	egammaEffi.txt_EGM2D_Medium_UL17.root	EGamma_SF2D	TH2F
 ID	SF	passLooseID	egammaEffi.txt_EGM2D_Loose_UL17.root	EGamma_SF2D	TH2F
 ID	SF	passVetoID	egammaEffi.txt_EGM2D_Veto_UL17.root	EGamma_SF2D	TH2F
 ID	SF	TopHNSST		IDEff_TopHNSST_2017.root	EGamma_SF2D	TH2F
+ID	Eff_DATA TopHNSST		IDEff_TopHNSST_2017.root	EGamma_EffData2D	TH2F
+ID	Eff_MC TopHNSST			IDEff_TopHNSST_2017.root	EGamma_EffMC2D		TH2F
 Trigger Eff_DATA  DiElIsoEl23_HNTopIDSS   TrigEff_Ele23_TopHNSST_2017.root     EGamma_EffData2D         TH2F
 Trigger Eff_MC    DiElIsoEl23_HNTopIDSS   TrigEff_Ele23_TopHNSST_2017.root     EGamma_EffMC2D           TH2F
 Trigger Eff_DATA  DiElIsoEl12_HNTopIDSS   TrigEff_Ele12_TopHNSST_2017.root     EGamma_EffData2D         TH2F

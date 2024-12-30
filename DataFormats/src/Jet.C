@@ -97,7 +97,7 @@ void Jet::SetTightLepVetoJetID(double b){
   j_tightLepVetoJetID = b;
 }
 
-bool Jet::Pass_PileupJetVeto(const TString wp) const
+bool Jet::Pass_PileupJetVeto(const TString wp, const TString Era) const
 {
   float pt = this->Pt();
   float eta = this->Eta();
@@ -130,48 +130,96 @@ bool Jet::Pass_PileupJetVeto(const TString wp) const
 
   unsigned int bin = pt_bin + eta_bin;
 
-  double wp_cut[16][3] = {{0.77, 0.26, -0.95},
-                          {0.38, -0.33, -0.72},
-                          {-0.31, -0.54, -0.68},
-                          {-0.21, -0.37, -0.47},
-                          {0.90, 0.68, -0.88},
-                          {0.60, -0.04, -0.55},
-                          {-0.12, -0.43, -0.60},
-                          {-0.13, -0.30, -0.43},
-                          {0.96, 0.90, -0.63},
-                          {0.82, 0.36, -0.18},
-                          {0.20, -0.16, -0.43},
-                          {0.09, -0.09, -0.24},
-                          {0.98, 0.96, -0.19},
-                          {0.92, 0.61, 0.22},
-                          {0.47, 0.14, -0.13},
-                          {0.29, 0.12, -0.03}};
+  double wp_cut_17[16][3] = {{0.77, 0.26, -0.95},
+                             {0.38, -0.33, -0.72},
+                             {-0.31, -0.54, -0.68},
+                             {-0.21, -0.37, -0.47},
+                             {0.90, 0.68, -0.88},
+                             {0.60, -0.04, -0.55},
+                             {-0.12, -0.43, -0.60},
+                             {-0.13, -0.30, -0.43},
+                             {0.96, 0.90, -0.63},
+                             {0.82, 0.36, -0.18},
+                             {0.20, -0.16, -0.43},
+                             {0.09, -0.09, -0.24},
+                             {0.98, 0.96, -0.19},
+                             {0.92, 0.61, 0.22},
+                             {0.47, 0.14, -0.13},
+                             {0.29, 0.12, -0.03}};
+  double wp_cut_16[16][3] = {{0.71, 0.20, -0.95},
+                             {-0.32, -0.56, -0.70},
+                             {-0.30, -0.43, -0.52},
+                             {-0.22, -0.38, -0.49},
+                             {0.87, 0.62, -0.90},
+                             {-0.08, -0.39, -0.57},
+                             {-0.16, -0.32, -0.43},
+                             {-0.12, -0.29, -0.42},
+                             {0.94, 0.86, -0.71},
+                             {0.24, -0.10, -0.36},
+                             {0.05, -0.15, -0.29},
+                             {0.10, -0.08, -0.23},
+                             {0.97, 0.93, -0.42},
+                             {0.48, 0.19, -0.09},
+                             {0.26, 0.04, -0.14},
+                             {0.29, 0.12, -0.02}};
+  
 
-  if (wp.Contains("Tight"))
-  {
-    if (wp_cut[bin][0] < j_PileupJetId)
-      return true;
+
+  if (Era.Contains("16")){
+    if (wp.Contains("Tight"))
+    {
+      if (wp_cut_16[bin][0] < j_PileupJetId)
+        return true;
+      else
+        return false;
+    }
+    else if (wp.Contains("Medium"))
+    {
+      if (wp_cut_16[bin][1] < j_PileupJetId)
+        return true;
+      else
+        return false;
+    }
+    else if (wp.Contains("Loose"))
+    {
+      if (wp_cut_17[bin][2] < j_PileupJetId)
+        return true;
+      else
+        return false;
+    }
     else
-      return false;
+    {
+      cout << "Wrong Jet::Pass_PileupJetVeto wrong wp_type: " << wp << endl;
+      exit(ENODATA);
+    }
   }
-  else if (wp.Contains("Medium"))
-  {
-    if (wp_cut[bin][1] < j_PileupJetId)
-      return true;
+  else {
+    if (wp.Contains("Tight"))
+    {
+      if (wp_cut_17[bin][0] < j_PileupJetId)
+        return true;
+      else
+        return false;
+    }
+    else if (wp.Contains("Medium"))
+    {
+      if (wp_cut_17[bin][1] < j_PileupJetId)
+        return true;
+      else
+        return false;
+    }
+    else if (wp.Contains("Loose"))
+    {
+      if (wp_cut_17[bin][2] < j_PileupJetId)
+        return true;
+      else
+        return false;
+    }
     else
-      return false;
-  }
-  else if (wp.Contains("Loose"))
-  {
-    if (wp_cut[bin][2] < j_PileupJetId)
-      return true;
-    else
-      return false;
-  }
-  else
-  {
-    cout << "Wrong Jet::Pass_PileupJetVeto wrong wp_type: " << wp << endl;
-    exit(ENODATA);
+    {
+      cout << "Wrong Jet::Pass_PileupJetVeto wrong wp_type: " << wp << endl;
+      exit(ENODATA);
+    }
   }
 
   return false;
@@ -182,9 +230,6 @@ bool Jet::PassID(TString ID) const {
 
   if     (ID=="tight"       ) return Pass_tightJetID();
   else if(ID=="tightLepVeto") return Pass_tightLepVetoJetID();
-  else if (ID == "LoosePileupJetVeto") return Pass_PileupJetVeto("Loose");
-  else if (ID == "MediumPileupJetVeto") return Pass_PileupJetVeto("Medium");
-  else if (ID == "TightPileupJetVeto") return Pass_PileupJetVeto("Tight");
   else if(ID=="NoID"        ) return true;
 
   cout << "[Jet::PassID] No id : " << ID << endl;
@@ -194,6 +239,18 @@ bool Jet::PassID(TString ID) const {
 
 }
 
+bool Jet::PassPUID(TString ID, TString Era) const {
+
+  if (ID == "LoosePileupJetVeto") return Pass_PileupJetVeto("Loose", Era);
+  else if (ID == "MediumPileupJetVeto") return Pass_PileupJetVeto("Medium", Era);
+  else if (ID == "TightPileupJetVeto") return Pass_PileupJetVeto("Tight", Era);
+
+  cout << "[Jet::PassID] No id : " << ID << endl;
+  exit(ENODATA);
+
+  return false;
+
+}
 double Jet::GetTaggerResult(JetTagging::Tagger tg) const {
 
   if(tg==JetTagging::DeepCSV) return j_DeepCSV;

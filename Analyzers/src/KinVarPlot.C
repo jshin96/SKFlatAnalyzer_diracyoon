@@ -1,9 +1,14 @@
 #include "KinVarPlot.h"
+#include "fastjet/ClusterSequence.hh"
+#include "fastjet/PseudoJet.hh"
+#include <iostream>
+using namespace fastjet;
+using namespace std;
 
 void KinVarPlot::initializeAnalyzer(){
 
   TriLep=false, TetraLep=false, SS2l=false, OS2l=false; 
-  FakeRun=false, ConvRun=false, FlipRun=false, SystRun=false, GenSyst=false, PUVETO = false, ReverseBDT = false, POGEl = false; 
+  FakeRun=false, ConvRun=false, FlipRun=false, SystRun=false, GenSyst=false, ReverseBDT = false, POGEl = false , CFCorr = false, UnFlipped = false, SingleTrigger = false, BDTCR = false; 
   DiscPlots=false, VarPlots=false, EffFlow=false, GlobFeas=false, GenMatchedDist=false, DecCompCheck=false;
   DiscCutOpt=false, DiscTable=false, DiscCNC=false, TestPlot=false;
   for(unsigned int i=0; i<Userflags.size(); i++){
@@ -25,39 +30,52 @@ void KinVarPlot::initializeAnalyzer(){
     if(Userflags.at(i).Contains("FlipRun"))    FlipRun    = true; 
     if(Userflags.at(i).Contains("SystRun"))    SystRun    = true; 
     if(Userflags.at(i).Contains("GenSyst"))    GenSyst    = true; 
-    if(Userflags.at(i).Contains("PUVETO"))     PUVETO    = true; 
     if(Userflags.at(i).Contains("POGEl"))     POGEl    = true; 
+    if(Userflags.at(i).Contains("CFCorr"))     CFCorr    = true; 
+    if(Userflags.at(i).Contains("BDTCR"))     BDTCR    = true; 
     if(Userflags.at(i).Contains("ReverseBDT"))     ReverseBDT    = true; 
+    if(Userflags.at(i).Contains("UnFlipped"))     UnFlipped    = true; 
+    if(Userflags.at(i).Contains("SingleTrigger"))     SingleTrigger    = true; 
   }
-//  if(FlipRun && !FakeRun) OS2l=true;
-  if(FlipRun && !FakeRun) SS2l=true;
+  if(FlipRun && !FakeRun && !UnFlipped) OS2l=true;
+//  if(FlipRun && !FakeRun) SS2l=true;
 
-  DblMu=false, DblEG=false, MuEG=false;
-  if     (DataStream.Contains("DoubleMuon")) DblMu=true;
-  else if(DataStream.Contains("MuonEG"))     MuEG =true;
-  else if(DataStream.Contains("DoubleEG"))   DblEG=true;
-  else if(DataYear==2018 and DataStream.Contains("EGamma")) DblEG=true;
+  DblMu=false, DblEG=false, MuEG=false, SglMu=false, SglEG=false;
+  if     (DataStream.Contains("DoubleMuon"))       DblMu=true;
+  else if(DataStream.Contains("MuonEG"))           MuEG =true;
+  else if(DataStream.Contains("DoubleEG"))         DblEG=true;
+  else if(DataStream.Contains("SingleMuon"))       SglMu=true;
+  else if(DataStream.Contains("SingleElectron"))   SglEG=true;
+  else if(DataYear==2018 and DataStream.Contains("EGamma")) {DblEG=true; SglEG=true;}
 
 
   if(GetEraShort()=="2016a"){
     TrigList_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v"};
     TrigList_DblEG = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
     TrigList_MuEG  = {"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v", "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v"};
+    TrigList_SglMu = {"HLT_IsoMu24_v", "HLT_IsoTkMu24_v"};
+    TrigList_SglEG = {"HLT_Ele27_WPTight_Gsf_v"};
   }
   else if(GetEraShort()=="2016b"){
     TrigList_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v", "HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"};
     TrigList_DblEG = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
     TrigList_MuEG  = {"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"};
+    TrigList_SglMu = {"HLT_IsoMu24_v", "HLT_IsoTkMu24_v"};
+    TrigList_SglEG = {"HLT_Ele27_WPTight_Gsf_v"};
   }
   else if(DataYear==2017){
     TrigList_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v", "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v"};
     TrigList_DblEG = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v"};
     TrigList_MuEG  = {"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v"};
+    TrigList_SglMu = {"HLT_IsoMu27_v"};
+    TrigList_SglEG = {"HLT_Ele32_WPTight_Gsf_L1DoubleEG_v"};
   }
   else if(DataYear==2018){
     TrigList_DblMu = {"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v"};
     TrigList_DblEG = {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v"};
     TrigList_MuEG  = {"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v", "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v"};
+    TrigList_SglMu = {"HLT_IsoMu24_v"};
+    TrigList_SglEG = {"HLT_Ele32_WPTight_Gsf_v"};
   }
 
 
@@ -114,11 +132,14 @@ void KinVarPlot::executeEvent(){
     }
   }
   else if(SS2l or OS2l){
-    if(!IsDATA) PassTrig = ev.PassTrigger(TrigList_DblMu) or ev.PassTrigger(TrigList_DblEG);
+    if(!IsDATA and !SingleTrigger) PassTrig = ev.PassTrigger(TrigList_DblMu) or ev.PassTrigger(TrigList_DblEG);
+    else if (!IsDATA and SingleTrigger) PassTrig = ev.PassTrigger(TrigList_SglMu) or ev.PassTrigger(TrigList_SglEG);
     else{
-      if     (DblMu) PassTrig = ev.PassTrigger(TrigList_DblMu);
-      else if(DblEG) PassTrig = ev.PassTrigger(TrigList_DblEG);
-      else if(MuEG)  PassTrig = ev.PassTrigger(TrigList_MuEG);
+        if     (DblMu and !SingleTrigger) PassTrig = ev.PassTrigger(TrigList_DblMu);
+        else if(DblEG and !SingleTrigger) PassTrig = ev.PassTrigger(TrigList_DblEG);
+        else if(MuEG and !SingleTrigger)  PassTrig = ev.PassTrigger(TrigList_MuEG);
+        else if(SglMu and SingleTrigger) PassTrig = ev.PassTrigger(TrigList_SglMu);
+        else if(SglEG and SingleTrigger) PassTrig = ev.PassTrigger(TrigList_SglEG);
     }
   }
   PassMETFilterList=PassMETFilter();
@@ -152,34 +173,33 @@ void KinVarPlot::executeEvent(){
   TString MuTID = "TopHNT", MuLID = "TopHNL", MuVID=MuLID;
   TString ElTID = "TopHNSST", ElLID = "TopHNSSL_"+GetEraShort(), ElVID = "TopHNL_"+GetEraShort();  
   if (POGEl){ ElTID = "passMVAID_noIso_WP80", ElLID = "passMVAID_noIso_WP90", ElVID = "passMVAID_noIso_WP90";}  
-  vector<Muon>     muonTightColl     = SelectMuons    (muonPreColl    , FakeRun? MuLID:MuTID, 10., 2.4);
-  vector<Electron> electronTightColl = SelectElectrons(electronPreColl, FakeRun? ElLID:ElTID, 15., 2.5);
-  vector<Muon>     muonLooseColl     = SelectMuons    (muonPreColl    , MuLID, 10., 2.4);
-  vector<Electron> electronLooseColl = SelectElectrons(electronPreColl, ElLID, 15., 2.5);
-  vector<Muon>     muonVetoColl      = SelectMuons    (muonPreColl    , MuVID, 10., 2.4);
-  vector<Electron> electronVetoColl  = SelectElectrons(electronPreColl, ElVID, 10., 2.5);
+  float MuPT_Cut = 10.;
+  float ElPT_Cut = 15.;
+  float ElVPT_Cut = 10.;
+  if (SingleTrigger){MuPT_Cut = 5.; ElPT_Cut=5.; ElVPT_Cut=5.;}
+  vector<Muon>     muonTightColl     = SelectMuons    (muonPreColl    , FakeRun? MuLID:MuTID, MuPT_Cut, 2.4);
+  vector<Electron> electronTightColl = SelectElectrons(electronPreColl, FakeRun? ElLID:ElTID, ElPT_Cut, 2.5);
+  vector<Muon>     muonLooseColl     = SelectMuons    (muonPreColl    , MuLID, MuPT_Cut, 2.4);
+  vector<Electron> electronLooseColl = SelectElectrons(electronPreColl, ElLID, ElPT_Cut, 2.5);
+  vector<Muon>     muonVetoColl      = SelectMuons    (muonPreColl    , MuVID, MuPT_Cut, 2.4);
+  vector<Electron> electronVetoColl  = SelectElectrons(electronPreColl, ElVID, ElVPT_Cut, 2.5);
+
+
+
 
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
   vector<Jet> jetPreColl = GetAllJets();
   sort(jetPreColl.begin(), jetPreColl.end(), PtComparing);
   vector<Jet> jetColl, rawjetColl;
-/////////// Pileup Jet Veto
-  if(PUVETO){
-    jetColl  = SelectJets(jetPreColl, "LoosePileupJetVeto", 25., 2.4);
-    jetColl  = SelectJets(jetColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
-    rawjetColl  = SelectJets(jetPreColl, "LoosePileupJetVeto", 25., 2.4);
-    rawjetColl  = SelectJets(rawjetColl, "tight", 25., 2.4);
-  } 
-  else { 
-    jetColl = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
-    rawjetColl  = SelectJets(jetPreColl, "tight", 25., 2.4);
-    
-  }
-/////////// Pileup Jet Veto
+  Particle vMET_T1xy = GetvMET("PUPPIMETT1xyCorr");
+
+  jetPreColl  = SelectPUJets(jetPreColl, "LoosePileupJetVeto", 25., 2.4, GetEra());
+
+  jetColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
+  rawjetColl  = SelectJets(jetPreColl, "tight", 25., 2.4);
   vector<Jet> bjetColl = SelBJets(jetColl, param_jets);
   vector<Jet> rawbjetColl = SelBJets(rawjetColl, param_jets);
 
-  Particle vMET_T1xy = GetvMET("PUPPIMETT1xyCorr");
 
   bool FillGenColl=!IsDATA && (ConvRun or FakeRun or FlipRun or GenMatchedDist or DecCompCheck);
   if(FillGenColl) truthColl=GetGens(); 
@@ -203,9 +223,24 @@ void KinVarPlot::executeEvent(){
     if(EffFlow) sf_B=1.;
     int NEl = electronTightColl.size(), NMu = muonTightColl.size();
     TString TrSFKey = "";
+
+/*    if (SingleTrigger) {
+      if(GetEraShort().Contains("16") && NMu>1) TrSFKey="IsoORTkIsoMu24_POGTight";
+      else if(GetEraShort().Contains("17") && NMu>1) TrSFKey="IsoMu27_POGTight";
+      else if(GetEraShort().Contains("18") && NMu>1) TrSFKey="IsoMu24_POGTight";
+      else if(GetEraShort().Contains("16") && NEl>1) TrSFKey="Ele27WPTight_POGMVAIsoWP90";
+      else if(GetEraShort().Contains("17") && NEl>1) TrSFKey="Ele32WPTight1OR2_POGMVAIsoWP90";
+      else if(GetEraShort().Contains("18") && NEl>1) TrSFKey="Ele32WPTight_POGMVAIsoWP90";
+    }
+*/
     if     ( (OS2l or SS2l) && NMu>1 ) TrSFKey="DiMuIso_HNTopID";
     else if( (OS2l or SS2l) && NEl>1 ) TrSFKey="DiElIso_HNTopIDSS";
     else if( TriLep && (NMu+NEl)>2   ) TrSFKey="TrigSoup2L_HNTopIDSS";
+    
+
+
+
+
     bool ApplyTrSF = TrSFKey!="" && (SS2l or OS2l or TriLep);
     sf_Tr  = ApplyTrSF? mcCorr->GetTriggerSF(electronTightColl, muonTightColl, TrSFKey, ""):1.;
     w_Pref = GetPrefireWeight(0);
@@ -215,7 +250,7 @@ void KinVarPlot::executeEvent(){
   if(FakeRun && EventCand){
     w_FR = GetDataFakeWeight(muonLooseColl, electronLooseColl, rawbjetColl, MuTID, ElTID, "FR_cent_"+MuTID+"_"+MuLID, "FR_cent_"+ElTID+"_"+ElLID+"_Pt15", "");
   }
-  if(PUVETO) w_PUVeto = mcCorr->PileupJetVeto_Reweight(jetColl, "LoosePileupJetVeto", 0);
+  w_PUVeto = mcCorr->PileupJetVeto_Reweight(jetColl, "LoosePileupJetVeto", 0);
   weight *= w_TopPtRW * w_Pref * sf_Tr * w_PUVeto; 
   weight *= sf_MuTk * sf_mID * sf_mIso * sf_eReco * sf_eID * sf_B * w_CV * w_CF * w_FR;
  
@@ -257,10 +292,10 @@ void KinVarPlot::executeEvent(){
     vector<Electron> ElResUpTColl, ElResUpLColl, ElResDownTColl, ElResDownLColl;
 //    vector<Electron> ElCFPT1UpTColl, ElCFPT1UpLColl, ElCFPT2UpTColl, ElCFPT2UpLColl;
  //   vector<Electron> ElCFPT1DownTColl, ElCFPT1DownLColl, ElCFPT2DownTColl, ElCFPT2DownLColl;
-    vector<Jet>      jetJESUpColl, jetJESDownColl, jetJERUpColl, jetJERDownColl;
-    vector<Jet>      rawjetJESUpColl, rawjetJESDownColl, rawjetJERUpColl, rawjetJERDownColl;
-    vector<Jet>      bjetJESUpColl, bjetJESDownColl, bjetJERUpColl, bjetJERDownColl;
-    Particle         vMET_T1xy_JESUp, vMET_T1xy_JESDown, vMET_T1xy_JERUp, vMET_T1xy_JERDown, vMET_T1xy_UnclUp, vMET_T1xy_UnclDown;
+    vector<Jet>      jetJESUpColl, jetJESDownColl, jetJERUpColl, jetJERDownColl, jetHEMColl, jetPreHEMColl;
+    vector<Jet>      rawjetJESUpColl, rawjetJESDownColl, rawjetJERUpColl, rawjetJERDownColl, rawjetHEMColl;
+    vector<Jet>      bjetJESUpColl, bjetJESDownColl, bjetJERUpColl, bjetJERDownColl, bjetHEMColl;
+    Particle         vMET_T1xy_JESUp, vMET_T1xy_JESDown, vMET_T1xy_JERUp, vMET_T1xy_JERDown, vMET_T1xy_UnclUp, vMET_T1xy_UnclDown, vMET_T1xy_HEM;
     if(!IsDATA){
       MuEnUpTColl    = SelectMuons(muonPreColl, FakeRun? MuLID:MuTID, 10., 2.4, "SystEnUp");
       MuEnUpLColl    = SelectMuons(muonPreColl, MuLID, 10., 2.4, "SystEnUp");
@@ -302,6 +337,20 @@ void KinVarPlot::executeEvent(){
       vMET_T1xy_JERDown  = GetvMET("PUPPIMETT1xyCorr", "SystDownJER");
       vMET_T1xy_UnclUp   = GetvMET("PUPPIMETT1xyCorr", "SystUpUncl");
       vMET_T1xy_UnclDown = GetvMET("PUPPIMETT1xyCorr", "SystDownUncl");
+
+      jetHEMColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
+      if (GetEraShort().Contains("18")) {
+        vMET_T1xy_HEM = vMET_T1xy;
+        for(unsigned int ij=0; ij < jetHEMColl.size(); ij++){
+          if (jetHEMColl.at(ij).Eta() < -1.3 && jetHEMColl.at(ij).Phi() < -0.87 && jetHEMColl.at(ij).Phi() > -1.57) {
+            vMET_T1xy_HEM += 0.2*jetHEMColl.at(ij);
+            jetHEMColl.at(ij) *= 0.8;
+          }
+        }
+        vMET_T1xy_HEM.SetPtEtaPhiM(vMET_T1xy_HEM.Pt(),0,vMET_T1xy_HEM.Phi(),0);
+      }
+      bjetHEMColl = SelBJets(jetHEMColl, param_jets);
+
     }
 
     float w_PUUp=1., w_PUDown=1., w_PrefUp=1., w_PrefDown=1., w_PUVetoUp=1., w_PUVetoDown=1.;
@@ -319,10 +368,8 @@ void KinVarPlot::executeEvent(){
       w_PrefUp   = GetPrefireWeight(1), w_PrefDown = GetPrefireWeight(-1);
       w_PUUp     = GetPileUpWeight(nPileUp, 1);
       w_PUDown   = GetPileUpWeight(nPileUp,-1);
-      if(PUVETO){
-        w_PUVetoUp =  mcCorr->PileupJetVeto_Reweight(jetColl, "LoosePileupJetVeto", +1);
-        w_PUVetoDown =  mcCorr->PileupJetVeto_Reweight(jetColl, "LoosePileupJetVeto", -1);
-      }
+      w_PUVetoUp =  mcCorr->PileupJetVeto_Reweight(jetColl, "LoosePileupJetVeto", +1);
+      w_PUVetoDown =  mcCorr->PileupJetVeto_Reweight(jetColl, "LoosePileupJetVeto", -1);
 
       sf_eRecoUp   = GetElectronSF(electronTightColl, "", "RecoSystUp");
       sf_eRecoDown = GetElectronSF(electronTightColl, "", "RecoSystDown");
@@ -426,13 +473,15 @@ void KinVarPlot::executeEvent(){
     float weight_FRDown    = w_base* w_PU * w_PUVeto   * w_Pref    * w_FRDown* w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr          * sf_B * sf_mIso;
     float weight_TrUp      = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_TrUp        * sf_B * sf_mIso;
     float weight_TrDown    = w_base* w_PU * w_PUVeto   * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_TrDown      * sf_B * sf_mIso;
+    float weight_CFShiftUp      = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr        * sf_B * sf_mIso;
+    float weight_CFShiftDown    = w_base* w_PU    * w_Pref    * w_FR    * w_CF    * sf_mID         * sf_eReco          * sf_eID          * sf_Tr      * sf_B * sf_mIso;
 
     if(!IsDATA && !FakeRun){
       SysWgtStrPairList.clear();//safe-guard, in-case there was usage before this and uncleared
       SysWgtStrPairList.push_back( make_pair(weight_PUUp          , "_SystUp_PU"          ) );
       SysWgtStrPairList.push_back( make_pair(weight_PUDown        , "_SystDown_PU"        ) );
-//////      SysWgtStrPairList.push_back( make_pair(weight_PUVetoUp      , "_SystUp_PUVeto"      ) );
-//////      SysWgtStrPairList.push_back( make_pair(weight_PUVetoDown    , "_SystDown_PUVeto"    ) );
+      SysWgtStrPairList.push_back( make_pair(weight_PUVetoUp      , "_SystUp_PUVeto"      ) );
+      SysWgtStrPairList.push_back( make_pair(weight_PUVetoDown    , "_SystDown_PUVeto"    ) );
       SysWgtStrPairList.push_back( make_pair(weight_PrefUp        , "_SystUp_Pref"        ) );
       SysWgtStrPairList.push_back( make_pair(weight_PrefDown      , "_SystDown_Pref"      ) );
       SysWgtStrPairList.push_back( make_pair(weight_ElRecoUp      , "_SystUp_ElReco"      ) );
@@ -520,7 +569,13 @@ void KinVarPlot::executeEvent(){
                 jetColl, bjetColl, rawjetColl, param_jets, vMET_T1xy_UnclUp, ev, weight, "_SystUp_Uncl");
       DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
                 jetColl, bjetColl, rawjetColl, param_jets, vMET_T1xy_UnclDown, ev, weight, "_SystDown_Uncl");
-//      if(FlipRun && !FakeRun){
+      DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl,
+                jetHEMColl, bjetHEMColl, rawjetColl, param_jets, vMET_T1xy_HEM, ev, weight, "_Syst_HEM");
+
+
+      if(FlipRun && !FakeRun){
+        DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl, jetColl, bjetColl, rawjetColl, param_jets, vMET_T1xy, ev, weight_CFShiftUp, "_SystUp_CFShift");
+        DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, electronTightColl, electronLooseColl, electronVetoColl, jetColl, bjetColl, rawjetColl, param_jets, vMET_T1xy, ev, weight_CFShiftDown, "_SystDown_CFShift");
 //        DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, ElCFPT1UpTColl, ElCFPT1UpLColl, electronVetoColl,
 //                  jetColl, bjetColl, vMET_T1xy, ev, weight*w_FrCF1, "_SystUp_CFPT");
 //        DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, ElCFPT1DownTColl, ElCFPT1DownLColl, electronVetoColl,
@@ -529,7 +584,7 @@ void KinVarPlot::executeEvent(){
 //                  jetColl, bjetColl, vMET_T1xy, ev, weight*w_FrCF2, "_SystUp_CFPT");
 //        DoSystRun(muonTightColl, muonLooseColl, muonLooseColl, ElCFPT2DownTColl, ElCFPT2DownLColl, electronVetoColl,
 //                  jetColl, bjetColl, vMET_T1xy, ev, weight*w_FrCF2, "_SystDown_CFPT");
-//      }
+      }
     }
     else if(FakeRun){
       SysWgtStrPairList.push_back( make_pair(weight_FRUp  , "_SystUp_FR"  ) );
@@ -579,10 +634,40 @@ void KinVarPlot::CheckEffFlow(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
   int it_cut=0;
   JetTagging::Parameters param_jets = JetTagging::Parameters(JetTagging::DeepJet, JetTagging::Medium, JetTagging::incl, JetTagging::mujets);
   if(!IsDATA && !IsSigMC && (NMuL+NElL)>1 ){ sf_B = mcCorr->GetBTaggingReweight_1a(JetColl, param_jets); }
+  if(!IsDATA){
+    int GenLepInfo = GetGenLepInfo(ElTColl, MuTColl);
+    float MCCFSF=1.;
+    if(ConvRun && GenLepInfo>=100) return;
+    if(FlipRun && (GenLepInfo>999 or GenLepInfo<100)) return;
+    if(FlipRun && FakeRun && !UnFlipped){
+      int IdxFlipped = GenLepInfo % 10;
+      MCCFSF = GetCFRAndSF( ElTColl.at(IdxFlipped).Pt(), fabs(ElTColl.at(IdxFlipped).Eta()), "hCFR_sf_Var", "");
+    }
+    weight *= MCCFSF;
+  }
+  InitializeTreeVars();
+  if (NMuT==2){
+    Ptl1 = MuTColl.at(0).Pt();
+    Ptl2 = MuTColl.at(1).Pt();
+  }
+  if (NElT==2){
+    Ptl1 = ElTColl.at(0).Pt();
+    Ptl2 = ElTColl.at(1).Pt();
+  }
+  FillHist("Ptl12"+Label,Ptl1, Ptl2, weight  , 20, 0., 100, 20, 0., 100.);
   if(IsSigMC){
     if((NMuL+NElL)>1){
       w_Pref = GetPrefireWeight(0);
       TString SFKey_Trig_All = MuTColl.size()==2? "DiMuIso_HNTopID":ElTColl.size()==2? "DiElIso_HNTopIDSS":"EMuIso_HNTopIDSS"; 
+/*      if (SingleTrigger) {
+        if(GetEraShort().Contains("16") && MuTColl.size()==2) SFKey_Trig_All="IsoORTkIsoMu24_POGTight";
+        else if(GetEraShort().Contains("17") && MuTColl.size()==2) SFKey_Trig_All="IsoMu27_POGTight";
+        else if(GetEraShort().Contains("18") && MuTColl.size()==2) SFKey_Trig_All="IsoMu24_POGTight";
+        else if(GetEraShort().Contains("16") && ElTColl.size()==2) SFKey_Trig_All="Ele27WPTight_POGMVAIsoWP90";
+        else if(GetEraShort().Contains("17") && ElTColl.size()==2) SFKey_Trig_All="Ele32WPTight1OR2_POGMVAIsoWP90";
+        else if(GetEraShort().Contains("18") && ElTColl.size()==2) SFKey_Trig_All="Ele32WPTight_POGMVAIsoWP90";
+      }
+*/
       sf_Tr   = mcCorr->GetTriggerSF(ElTColl, MuTColl, SFKey_Trig_All, "");
       sf_mID   = GetMuonSF(MuTColl, "TopHNT", "ID");
       sf_mIso   = GetMuonSF(MuTColl, "TopHNTIsoIP_POGMID", "Iso");
@@ -591,6 +676,15 @@ void KinVarPlot::CheckEffFlow(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
       sf_B   = mcCorr->GetBTaggingReweight_1a(JetColl, param_jets);
     }
 
+    if (NMuT==2){
+      Ptl1 = MuTColl.at(0).Pt();
+      Ptl2 = MuTColl.at(1).Pt();
+    }
+    if (NElT==2){
+      Ptl1 = ElTColl.at(0).Pt();
+      Ptl2 = ElTColl.at(1).Pt();
+    }
+    FillHist("Ptl12"+Label,Ptl1, Ptl2, weight  , 20, 0., 100, 20, 0., 100.);
     //tot rate.
     FillHist("SelEffFlow_2M"+Label, it_cut, weight, 20, 0., 20.);
     FillHist("SelEffFlow_2E"+Label, it_cut, weight, 20, 0., 20.); it_cut++;
@@ -606,20 +700,31 @@ void KinVarPlot::CheckEffFlow(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
     FillHist("SelEffFlow_2E"+Label, it_cut, weight, 20, 0., 20.); it_cut++;
   
     //HLT
-    if( !(ev.PassTrigger(TrigList_DblMu) or ev.PassTrigger(TrigList_DblEG)) ) return;
+    if( !SingleTrigger && !(ev.PassTrigger(TrigList_DblMu) or ev.PassTrigger(TrigList_DblEG)) ) return;
+    else if ( SingleTrigger && !(ev.PassTrigger(TrigList_SglMu) or ev.PassTrigger(TrigList_SglEG))) return;
     weight*=sf_Tr;
-    if( ev.PassTrigger(TrigList_DblMu) ) FillHist("SelEffFlow_2M"+Label, it_cut, weight, 20, 0., 20.);
-    if( ev.PassTrigger(TrigList_DblEG) ) FillHist("SelEffFlow_2E"+Label, it_cut, weight, 20, 0., 20.);
+    if( !SingleTrigger && ev.PassTrigger(TrigList_DblMu) ) FillHist("SelEffFlow_2M"+Label, it_cut, weight, 20, 0., 20.);
+    if( !SingleTrigger && ev.PassTrigger(TrigList_DblEG) ) FillHist("SelEffFlow_2E"+Label, it_cut, weight, 20, 0., 20.);
+    if( SingleTrigger && ev.PassTrigger(TrigList_SglMu) ) FillHist("SelEffFlow_2M"+Label, it_cut, weight, 20, 0., 20.);
+    if( SingleTrigger && ev.PassTrigger(TrigList_SglEG) ) FillHist("SelEffFlow_2E"+Label, it_cut, weight, 20, 0., 20.);
     it_cut++;
   }
-
+  else {
+    FillHist("SelEffFlow_2M"+Label, it_cut, weight, 20, 0., 20.);
+    FillHist("SelEffFlow_2E"+Label, it_cut, weight, 20, 0., 20.); it_cut++;
+    FillHist("SelEffFlow_2M"+Label, it_cut, weight, 20, 0., 20.);
+    FillHist("SelEffFlow_2E"+Label, it_cut, weight, 20, 0., 20.); it_cut++;
+    FillHist("SelEffFlow_2M"+Label, it_cut, weight, 20, 0., 20.);
+    FillHist("SelEffFlow_2E"+Label, it_cut, weight, 20, 0., 20.); it_cut++;
+    FillHist("SelEffFlow_2M"+Label, it_cut, weight, 20, 0., 20.);
+    FillHist("SelEffFlow_2E"+Label, it_cut, weight, 20, 0., 20.); it_cut++;
+  }
   //2lss
   if(IsSigMC) weight *= sf_mID*sf_eID*sf_eReco*sf_mIso;
   if     (NMuT==2) Label="_2M"+Label;
   else if(NElT==2) Label="_2E"+Label;
   if( !( (NMuT==2 and NElT==0 && MuTColl.at(0).Charge()==MuTColl.at(1).Charge())
       or (NElT==2 and NMuT==0 && ElTColl.at(0).Charge()==ElTColl.at(1).Charge()) ) ) return;
-  if( IsSigMC && !( (NMuT==2 && ev.PassTrigger(TrigList_DblMu)) or (NElT==2 && ev.PassTrigger(TrigList_DblEG)) ) ) return;
   FillHist("SelEffFlow"+Label, it_cut, weight, 20, 0., 20.); it_cut++;
 
   //3rd lep. veto
@@ -628,8 +733,29 @@ void KinVarPlot::CheckEffFlow(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
   FillHist("SelEffFlow"+Label, it_cut, weight, 20, 0., 20.); it_cut++;
 
   //trig pt acc.
-  if( NMuT==2 && !(MuTColl.at(0).Pt()>20 && MuTColl.at(1).Pt()>10) ) return;
-  if( NElT==2 && !(ElTColl.at(0).Pt()>25 && ElTColl.at(1).Pt()>15) ) return;
+  if(!SingleTrigger){
+    if( NMuT==2 && !(MuTColl.at(0).Pt()>20 && MuTColl.at(1).Pt()>10) ) return;
+    if( NElT==2 && !(ElTColl.at(0).Pt()>25 && ElTColl.at(1).Pt()>15) ) return;
+  }
+  else{
+    if (NMuT==2){ 
+      if (GetEraShort().Contains("17")){
+        if(!(MuTColl.at(0).Pt()>30 && MuTColl.at(1).Pt()>5) ) return;
+      }
+      else {
+        if(!(MuTColl.at(0).Pt()>25 && MuTColl.at(1).Pt()>5) ) return;
+      }
+    }
+    if (NElT==2){ 
+      if (GetEraShort().Contains("16")){
+        if(!(ElTColl.at(0).Pt()>30 && ElTColl.at(1).Pt()>10) ) return;
+      }
+      else {
+        if(!(ElTColl.at(0).Pt()>35 && ElTColl.at(1).Pt()>10) ) return;
+      }
+    }
+  }
+
   FillHist("SelEffFlow"+Label, it_cut, weight, 20, 0., 20.); it_cut++;
 
   //mll acc. for trig(2m), for CF veto (2e)
@@ -1469,13 +1595,53 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
   if( !(NMuT==NMuL and NElT==NElL) ) return;
   if( !(NMuT==NMuV and NElT==NElV) ) return;
   if( FakeRun      and weight==0.  ) return; 
-  vector<Jet> rawbJetColl = SelBJets(rawJetColl, param_jets);
+  NbPre = BJetColl.size();
+  if(BJetColl.size()<1) return;
+  NjPre = JetColl.size();
+  if(JetColl.size() <3) return;
   
+
+
+  vector<Jet> rawbJetColl = SelBJets(rawJetColl, param_jets);
+/*  TruthColl = GetGens();
+  vector<PseudoJet> GenParts;
+  for(unsigned int ig=0; ig < TruthColl.size(); ig++){
+    if( TruthColl.at(ig).Pt() == 0 or TruthColl.at(ig).E() == 0 or isnan(TruthColl.at(ig).Eta()) or isnan(TruthColl.at(ig).Phi()) or isnan(TruthColl.at(ig).E()) or abs(TruthColl.at(ig).Eta()) > 100 ){
+      continue;
+    }
+    GenParts.push_back(TruthColl.at(ig));
+  }
+  JetDefinition jet_def(antikt_algorithm, 0.4);
+  ClusterSequence cs(GenParts, jet_def);
+  GenJets = sorted_by_pt(cs.inclusive_jets());
+  for(unsigned int ij=0; ij < JetColl.size(); ij++){
+    int GenJet_Match = 0;
+    for(unsigned int ig=0; ig < GenJets.size(); ig++){
+      if(isnan(GenJets.at(ig).pt()) or isnan(GenJets.at(ig).E()) or isnan(GenJets.at(ig).eta()) or isnan(GenJets.at(ig).phi())){continue;}
+      if(JetColl.at(ij).DeltaR(GenJet) < 0.4 && JetColl.at(ij).IsGenMatched()){
+        GenJet_Match = 1;
+        GenJet_Matches.push_back(GenJet_Match);
+        break;
+      }
+    }
+    if(GenJet_Match == 0){ GenJet_Matches.push_back(GenJet_Match);}
+  }
+*/
   if(NMuT==2){
     if(!IsDATA && MCSample.Contains("HeavyN-El")) return;
     //if(MuTColl.at(0).Charge()==MuTColl.at(1).Charge()) return;
     if(MuTColl.at(0).Charge()!=MuTColl.at(1).Charge()) return;
-    if(!(MuTColl.at(0).Pt()>20 && MuTColl.at(1).Pt()>10)) return;
+    if (!SingleTrigger){
+      if(!(MuTColl.at(0).Pt()>20 && MuTColl.at(1).Pt()>10)) return;
+    }
+    else{
+      if (GetEraShort().Contains("17")) {
+        if(!(MuTColl.at(0).Pt()>30 && MuTColl.at(1).Pt()>5)) return;
+      }
+      else {
+        if(!(MuTColl.at(0).Pt()>25 && MuTColl.at(1).Pt()>5)) return;
+      }
+    }
     double Mll = (MuTColl.at(0)+MuTColl.at(1)).M();
     if(Mll<4) return; 
 //    if(fabs(Mll-91.2)>10.) return;
@@ -1485,10 +1651,12 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
       if(FlipRun && (GenLepInfo>999 or GenLepInfo<100)) return;
     }
     InitializeTreeVars();
-    NbPre = BJetColl.size();
-    if(BJetColl.size()<1) return;
-    NjPre = JetColl.size();
-    if(JetColl.size() <3) return;
+    for(unsigned int ij=0; ij < JetColl.size(); ij++){
+      if (JetColl.at(ij).Eta() < -1.3 && JetColl.at(ij).Phi() < -0.87 && JetColl.at(ij).Phi() > -1.57) {
+        HEMFrac+=1.0;
+      }
+    }
+
     if(FakeRun ){ 
       for(unsigned int im=0; im < MuTColl.size();im++){
         for(unsigned int ij=0; ij < rawJetColl.size(); ij++){
@@ -1540,13 +1708,11 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
     MSSSF   = (MuConeColl.at(0)+MuConeColl.at(1)).M();
     MTvl1   = MT(MuConeColl.at(0),vMET);
     MTllv   = MT(MuConeColl.at(0)+MuConeColl.at(1), vMET);
-
     //Vars requiring complex algo.
     HT      = 0;  for(unsigned int itj=0; itj<JetColl.size(); itj++){ HT+=JetColl.at(itj).Pt(); }
 
 
     int Idxj1W=-1, Idxj2W=-1; float bestmjjW=-1;
-    cout<<"MW candidate"<<endl;
     for(unsigned int ij1=0; ij1<NonBJetColl.size(); ij1++){
     for(unsigned int ij2=ij1+1; ij2<NonBJetColl.size(); ij2++){
       float mjj = (NonBJetColl.at(ij1)+NonBJetColl.at(ij2)).M();
@@ -1559,7 +1725,6 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
 
    
     int Idxj1W_1jL=-1, Idxbt_1jL=-1; float BestSumDelta_L=-1; 
-    cout<<"Mt candidate"<<endl;
     for(unsigned int ib=0; ib<BCandColl.size(); ib++){
     for(unsigned int inb=0; inb<NonBJetColl.size(); inb++){
       if(BCandColl.at(ib).DeltaR(NonBJetColl.at(inb))<0.1) continue;
@@ -1580,7 +1745,6 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
 
 
     int Idxj1W_1jH=-1, Idxbt_1jH=-1; float BestDeltambllj=-1;
-    cout<<"semi-top reco"<<endl;
     for(unsigned int ib=0; ib<BCandColl.size(); ib++){
     for(unsigned int inb=0; inb<NonBJetColl.size(); inb++){
       if(BCandColl.at(ib).DeltaR(NonBJetColl.at(inb))<0.1) continue;
@@ -1598,7 +1762,6 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
 
 
     int Idxj1W_H=-1, Idxj2W_H=-1, Idxbt_H=-1; float BestSumDelta_H=-1; 
-    cout<<"full top reco"<<endl;
     for(unsigned int ib=0; ib<BCandColl.size(); ib++){
     for(unsigned int inb1=0; inb1<NonBJetColl.size(); inb1++){
     for(unsigned int inb2=inb1+1; inb2<NonBJetColl.size(); inb2++){
@@ -1648,17 +1811,27 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
   if(NElT==2){
     if(!IsDATA && MCSample.Contains("HeavyN-Mu")) return;
     int aSumQ = abs(SumCharge(ElTColl)); float MCCFSF=1.;
-    if(FlipRun && !FakeRun){ if(aSumQ!=0) return; }
+    if(FlipRun && !FakeRun && !UnFlipped){ if(aSumQ!=0) return; }
     else                   { if(aSumQ==0) return; }
     //if(FlipRun && !FakeRun){ if(aSumQ==0) return; }
     //else                   { if(aSumQ!=0) return; }
-    if(!(ElTColl.at(0).Pt()>25 && ElTColl.at(1).Pt()>15)) return;
+    if (!SingleTrigger){
+      if(!(ElTColl.at(0).Pt()>25 && ElTColl.at(1).Pt()>15)) return;
+    }
+    else {
+      if (GetEraShort().Contains("16")) {
+        if(!(ElTColl.at(0).Pt()>30 && ElTColl.at(1).Pt()>10)) return;
+      }
+      else {
+        if(!(ElTColl.at(0).Pt()>35 && ElTColl.at(1).Pt()>10)) return;
+      }
+    }
     if(!IsDATA){
       int GenLepInfo = GetGenLepInfo(ElTColl, MuTColl);
       if(ConvRun && GenLepInfo>=100) return;
-      if(FlipRun && aSumQ!=0 && (GenLepInfo>999 or GenLepInfo<100)) return;
+      if(FlipRun && aSumQ!=0 && !UnFlipped && (GenLepInfo>999 or GenLepInfo<100)) return;
       //if(FlipRun && aSumQ==0 && (GenLepInfo>999 or GenLepInfo<100)) return;
-      if(FlipRun && FakeRun){
+      if(FlipRun && FakeRun && !UnFlipped){
         int IdxFlipped = GenLepInfo % 10;
         MCCFSF = GetCFRAndSF( ElTColl.at(IdxFlipped).Pt(), fabs(ElTColl.at(IdxFlipped).Eta()), "hCFR_sf_Var", "");
       }
@@ -1666,12 +1839,15 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
     float newweight = weight*MCCFSF;
 
     InitializeTreeVars();
-    cout<<"Error 10"<<endl;
-    NbPre = BJetColl.size();
-    if(BJetColl.size()<1) return;
-    NjPre = JetColl.size();
-    if(JetColl.size() <3) return;
-    cout<<"Error 11"<<endl;
+    for(unsigned int ij=0; ij < JetColl.size(); ij++){
+      if (JetColl.at(ij).Eta() < -1.3 && JetColl.at(ij).Phi() < -0.87 && JetColl.at(ij).Phi() > -1.57) {
+        HEMFrac+=1.0;
+      }
+    }
+
+
+
+
 
     vector<Jet> BCandColl = BJetColl.size()>1? BJetColl:JetColl;
     vector<Jet> NonBJetColl = SelLightJets(JetColl, jtps.at(0));
@@ -1691,7 +1867,6 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
     }
 
     if(FakeRun){
-      cout<<"Fake Cone Correction"<<endl;
       for(unsigned int ie=0; ie<ElTColl.size(); ie++){ 
         Electron TmpEl(ElTColl.at(ie));
         float RelIso = ElTColl.at(ie).MiniRelIso();
@@ -1710,55 +1885,79 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
     else{ ElConeColl = ElTColl; MuConeColl = MuTColl; }
     float Etal1 = ElConeColl.at(0).Eta();
     float Etal2 = ElConeColl.at(1).Eta();
-    TString EtaStr = fabs(Etal1)<1.5 && fabs(Etal2)<1.5? "_BB": fabs(Etal1)>1.5 && fabs(Etal2)>1.5? "_EE":"_EB";
+    TString EtaStr;
 
+    if(fabs(Etal1)<1.5 && fabs(Etal2)<1.5){
+      EtaStr = "_BB";
+    }
+    else if (fabs(Etal1)>1.5 && fabs(Etal2)>1.5){
+      EtaStr = "_EE";
+    }
+    else {
+      EtaStr = "_EB";
+    }
 ///// FlipRun PT Correction
-    if(FlipRun && !IsDATA){
+    if(FlipRun && !IsDATA && !UnFlipped){
       float PT_Shift = 1.0;
+      float PT_Shift_syst = 0.0;
       TString Era = GetEraShort();
-      if(EtaStr = "_BB"){
+      if(EtaStr == "_BB"){
         if(Era == "2018"){
-          PT_Shift = 0.980;
+          PT_Shift = 0.975;
+          PT_Shift_syst = 0.015;
         }
         if(Era == "2017"){
-          PT_Shift = 0.976;
+          PT_Shift = 0.973;
+          PT_Shift_syst = 0.014;
         }
         if(Era == "2016b"){
-          PT_Shift = 0.986;
+          PT_Shift = 0.987;
+          PT_Shift_syst = 0.005;
         }
         if(Era == "2016a"){
-          PT_Shift = 0.984;
+          PT_Shift = 0.982;
+          PT_Shift_syst = 0.005;
         }
       }
-      if(EtaStr = "_EE"){
+       if(EtaStr == "_EE"){
         if(Era == "2018"){
-          PT_Shift = 0.985;
+          PT_Shift = 0.990;
+          PT_Shift_syst = 0.014;
         }
         if(Era == "2017"){
           PT_Shift = 0.989;
+          PT_Shift_syst = 0.015;
         }
         if(Era == "2016b"){
-          PT_Shift = 0.990;
+          PT_Shift = 0.991;
+          PT_Shift_syst = 0.007;
         }
-        if(Era == "2016a"){
-          PT_Shift = 0.990;
+         if(Era == "2016a"){
+          PT_Shift = 0.992;
+          PT_Shift_syst = 0.012;
         }
       }
-      if(EtaStr = "_EB"){
+      if(EtaStr == "_EB"){
         if(Era == "2018"){
-          PT_Shift = 0.983;
+          PT_Shift = 0.979;
+          PT_Shift_syst = 0.009;
         }
         if(Era == "2017"){
-          PT_Shift = 0.984;
+          PT_Shift = 0.979;
+          PT_Shift_syst = 0.013;
         }
         if(Era == "2016b"){
-          PT_Shift = 0.986;
+          PT_Shift = 0.979;
+          PT_Shift_syst = 0.007;
         }
         if(Era == "2016a"){
-          PT_Shift = 0.987;
+          PT_Shift = 0.982;
+          PT_Shift_syst = 0.007;
         }
       }
-
+      if (Label.Contains("Up") && Label.Contains("CFShift")) {PT_Shift = PT_Shift + PT_Shift_syst;}
+      else if (Label.Contains("Down") && Label.Contains("CFShift")) {PT_Shift = PT_Shift - PT_Shift_syst;}
+ 
       vMET.SetPxPyPzE(vMET.Px()-ElConeColl.at(0).Px()-ElConeColl.at(1).Px(),
                       vMET.Py()-ElConeColl.at(0).Py()-ElConeColl.at(1).Py(),
                       vMET.Pz()-ElConeColl.at(0).Pz()-ElConeColl.at(1).Pz(),
@@ -2134,51 +2333,75 @@ void KinVarPlot::PlotParameters(TString Label){
   bool AboveMW = Label.Contains("_MNgtMW");
   if( !(BelowMW or AboveMW) ) return;
 
-  if(BelowMW){
-    FillHist("NljPre"+Label, NljPre, w_tot, 10, 0., 10.);
-    FillHist("NjPre"+Label ,  NjPre, w_tot, 10, 0., 10.);
-    FillHist("NbPre"+Label ,  NbPre, w_tot, 4, 0., 4.);
-  }
-  FillHist("NEvt"+Label, 0., w_tot, 1, 0., 1.);
-  FillHist("Nj"+Label, Nj, w_tot, 10, 0., 10.);
-  FillHist("Nb"+Label, Nb, w_tot, 4, 0, 4.);
-  if(FakeRun){
-    FillHist("Overlap_lj"+Label, Overlap_lj, w_tot, 2, 0, 2.);
-    FillHist("Overlap_lb"+Label, Overlap_lb, w_tot, 2, 0, 2.);
-  }
-  FillHist("Ptl1"+Label, Ptl1, w_tot, 25, 0., 250.);
-  FillHist("Ptl2"+Label, Ptl2, w_tot, 20, 0., 100.);
-  FillHist("HT"+Label, HT, w_tot, 25, 0., 1000.);
-  FillHist("MET"+Label, MET, w_tot, 30, 0., 300.);
-  FillHist("dRll"+Label, dRll, w_tot, 25, 0., 5.);
-  FillHist("dRlj11"+Label, dRlj11, w_tot, 25, 0., 5.);
-  FillHist("dRlj12"+Label, dRlj12, w_tot, 25, 0., 5.);
-  FillHist("dRlj13"+Label, dRlj13, w_tot, 25, 0., 5.);
-  FillHist("dRlj21"+Label, dRlj21, w_tot, 25, 0., 5.);
-  FillHist("dRlj22"+Label, dRlj22, w_tot, 25, 0., 5.);
-  FillHist("dRlj23"+Label, dRlj23, w_tot, 25, 0., 5.);
-  FillHist("MSSSF"+Label, MSSSF, w_tot, 50, 0., 250.);
-  //FillHist("MSSSF_Fine"+Label, MSSSF, w_tot, 15, 190., 220.);
-  FillHist("MTvl1"+Label, MTvl1, w_tot, 30, 0., 300.);
-  FillHist("MTllv"+Label, MTvl1, w_tot, 36, 0., 360.);
-  FillHist("MTbl1v_BkdTop"+Label, MTbl1v_BkdTop, w_tot, 50, 0., 500.);
-  FillHist("Ml2j1W_BkdTop"+Label, Ml2j1W_BkdTop, w_tot, 40, 0., 400.);
-  if(BelowMW){
-    FillHist("MbllW_1jL"+Label, MbllW_1jL, w_tot, 50, 0., 500.);
-    FillHist("MllW_1jL"+Label, MllW_1jL, w_tot, 50, 0., 500.);
-    FillHist("Ml1W_1jL"+Label, Ml1W_1jL, w_tot, 36, 0., 360.);
-    FillHist("Ml2W_1jL"+Label, Ml2W_1jL, w_tot, 40, 0., 200.);
-  }
-  if(AboveMW){
-    FillHist("MbllW_1jH"+Label, MbllW_1jH, w_tot, 50, 0., 500.);
-    FillHist("Ml1W_1jH"+Label, Ml1W_1jH, w_tot, 36, 0., 360.);
-    FillHist("Ml2W_1jH"+Label, Ml2W_1jH, w_tot, 40, 0., 200.);
-    FillHist("MbllW_H"+Label, MbllW_H, w_tot, 50, 0., 1000.);
-    FillHist("Ml1W_H"+Label, Ml1W_H, w_tot, 60, 0., 600.);
-    FillHist("Ml2W_H"+Label, Ml2W_H, w_tot, 40, 0., 400.);
-    FillHist("Ml2W_BkdTop"+Label, Ml2W_BkdTop, w_tot, 50, 0., 500.);
-  }
+  vector<TString> MNStrList;
+  if(BelowMW) MNStrList = MNStrListL; 
+  else        MNStrList = MNStrListH;
+  TString Orig_Label = Label;
+  for(unsigned int im=0; im<MNStrList.size(); im++){
+    if(BDTCR) {
+      bool Is2E = Label.Contains("_2E"), Is2M = Label.Contains("_2M");
+      if(!(Is2E or Is2M)) continue;
+      TString MixTag = Is2E? "_El":Is2M? "_Mu":"";
+      TString MVATagStr = "BDTG_MN"+MNStrList.at(im)+MixTag;
+      float MVAvalue = BelowMW? MVAReaderL->EvaluateMVA(MVATagStr):MVAReaderH->EvaluateMVA(MVATagStr);
+      if(MVAvalue <= -0.7){
+        Label = "_MN"+MNStrList.at(im)+Orig_Label;
+        FillHist("BDTG"+Label, MVAvalue, w_tot,  20, -1., 1.);
+      }
+      else continue;
+    }
+    else if (!BDTCR && im > 0) return;
 
+    if(BelowMW){
+      FillHist("NljPre"+Label, NljPre, w_tot, 10, 0., 10.);
+      FillHist("NjPre"+Label ,  NjPre, w_tot, 10, 0., 10.);
+      FillHist("NbPre"+Label ,  NbPre, w_tot, 4, 0., 4.);
+    }
+    FillHist("NEvt"+Label, 0., w_tot, 1, 0., 1.);
+  //  for(unsigned int im=0;im<GenJet_Matches.size();im++ ){
+  //    FillHist("NMatched"+Label , GenJet_Matches.at(im) , 1, 2, 0., 2.);
+  //  }
+    FillHist("Nj"+Label, Nj, w_tot, 10, 0., 10.);
+    FillHist("Nb"+Label, Nb, w_tot, 4, 0, 4.);
+    FillHist("HEMFrac"+Label, HEMFrac, 1, 5, 0, 5.);
+    if(FakeRun){
+      FillHist("Overlap_lj"+Label, Overlap_lj, w_tot, 2, 0, 2.);
+      FillHist("Overlap_lb"+Label, Overlap_lb, w_tot, 2, 0, 2.);
+    }
+    FillHist("Ptl1"+Label, Ptl1, w_tot, 25, 0., 250.);
+    FillHist("Ptl2"+Label, Ptl2, w_tot, 20, 0., 100.);
+    FillHist("Ptl12"+Label,Ptl1, Ptl2, w_tot,20,0.,100, 20, 0., 100.);
+    FillHist("HT"+Label, HT, w_tot, 25, 0., 1000.);
+    FillHist("MET"+Label, MET, w_tot, 30, 0., 300.);
+    FillHist("dRll"+Label, dRll, w_tot, 25, 0., 5.);
+    FillHist("dRlj11"+Label, dRlj11, w_tot, 25, 0., 5.);
+    FillHist("dRlj12"+Label, dRlj12, w_tot, 25, 0., 5.);
+    FillHist("dRlj13"+Label, dRlj13, w_tot, 25, 0., 5.);
+    FillHist("dRlj21"+Label, dRlj21, w_tot, 25, 0., 5.);
+    FillHist("dRlj22"+Label, dRlj22, w_tot, 25, 0., 5.);
+    FillHist("dRlj23"+Label, dRlj23, w_tot, 25, 0., 5.);
+    FillHist("MSSSF"+Label, MSSSF, w_tot, 50, 0., 250.);
+    //FillHist("MSSSF_Fine"+Label, MSSSF, w_tot, 15, 190., 220.);
+    FillHist("MTvl1"+Label, MTvl1, w_tot, 30, 0., 300.);
+    FillHist("MTllv"+Label, MTvl1, w_tot, 36, 0., 360.);
+    FillHist("MTbl1v_BkdTop"+Label, MTbl1v_BkdTop, w_tot, 50, 0., 500.);
+    FillHist("Ml2j1W_BkdTop"+Label, Ml2j1W_BkdTop, w_tot, 40, 0., 400.);
+    if(BelowMW){
+      FillHist("MbllW_1jL"+Label, MbllW_1jL, w_tot, 50, 0., 500.);
+      FillHist("MllW_1jL"+Label, MllW_1jL, w_tot, 50, 0., 500.);
+      FillHist("Ml1W_1jL"+Label, Ml1W_1jL, w_tot, 36, 0., 360.);
+      FillHist("Ml2W_1jL"+Label, Ml2W_1jL, w_tot, 40, 0., 200.);
+    }
+    if(AboveMW){
+      FillHist("MbllW_1jH"+Label, MbllW_1jH, w_tot, 50, 0., 500.);
+      FillHist("Ml1W_1jH"+Label, Ml1W_1jH, w_tot, 36, 0., 360.);
+      FillHist("Ml2W_1jH"+Label, Ml2W_1jH, w_tot, 40, 0., 200.);
+      FillHist("MbllW_H"+Label, MbllW_H, w_tot, 50, 0., 1000.);
+      FillHist("Ml1W_H"+Label, Ml1W_H, w_tot, 60, 0., 600.);
+      FillHist("Ml2W_H"+Label, Ml2W_H, w_tot, 40, 0., 400.);
+      FillHist("Ml2W_BkdTop"+Label, Ml2W_BkdTop, w_tot, 50, 0., 500.);
+    }
+  }
 }
 
 
@@ -2266,7 +2489,7 @@ void KinVarPlot::executeEventFromParameter(AnalyzerParameter param){
 
 void KinVarPlot::InitializeTreeVars(){
 
-  NjPre=-1, NbPre=-1, NljPre=-1;
+  NjPre=-1, NbPre=-1, NljPre=-1, HEMFrac=0.0;
   Nj=-1, Nb=-1, Ptl1=-1, Ptl2=-1, MET=-1, HT=-1;
   dRll=-1, dRlj11=-1, dRlj12=-1, dRlj13=-1, dRlj21=-1, dRlj22=-1, dRlj23=-1;
   MSSSF=-1, Overlap_lj=-1, Overlap_lb=-1;

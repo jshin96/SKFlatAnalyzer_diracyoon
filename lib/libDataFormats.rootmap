@@ -4,6 +4,7 @@ class Electron
 class Event
 class FatJet
 class Gen
+class GenJet
 class Jet
 class LHE
 class Lepton
@@ -15,6 +16,7 @@ header Electron.h
 header Event.h
 header FatJet.h
 header Gen.h
+header GenJet.h
 header Jet.h
 header LHE.h
 header Lepton.h

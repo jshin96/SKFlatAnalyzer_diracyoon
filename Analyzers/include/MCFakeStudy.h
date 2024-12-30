@@ -50,6 +50,7 @@ public:
 
   float GetMCFakeRate(float VarX, float VarY, TString Key, int SystDir);
   float GetMCFakeWeight(vector<Muon>& MuColl, vector<Electron>& ElColl, TString MuTID, TString ElTID, TString MuFRKey, TString ElFRKey, int SystDir, float FR_MCCorr);
+  float GetPreciseMCFakeWeight(vector<Muon>& MuColl, vector<Electron>& ElColl, TString MuTID, TString ElTID, TString MuFRKey, TString ElFRKey, int SystDir, float FR_MCCorr);
   float GetGenMatchFakeWeight(vector<Muon>& MuColl, vector<Electron>& ElColl, vector<Gen>& TruthColl, TString MuTID, TString ElTID, TString MuFRKey, TString ElFRKey, float FR_MCCorr);
   int   GetGenLepInfo(vector<Electron>& ElColl, vector<Muon>& MuColl, vector<Gen>& TruthColl);
 

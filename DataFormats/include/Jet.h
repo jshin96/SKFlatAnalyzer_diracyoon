@@ -46,8 +46,9 @@ public:
   void SetTightLepVetoJetID(double b);
   inline bool Pass_tightJetID() const { return j_tightJetID; }
   inline bool Pass_tightLepVetoJetID() const { return j_tightLepVetoJetID; }
-  bool Pass_PileupJetVeto(TString wp) const;
+  bool Pass_PileupJetVeto(TString wp, TString Era) const;
   bool PassID(TString ID) const;
+  bool PassPUID(TString ID, TString Era) const;
 
   double GetTaggerResult(JetTagging::Tagger tg) const;
   double GetIDVariable(TString VarName);

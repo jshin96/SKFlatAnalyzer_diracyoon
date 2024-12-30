@@ -1,4 +1,4 @@
-all: DataFormats AnalyzerTools GEScaleSyst Analyzers Archive
+all: DataFormats AnalyzerTools GEScaleSyst Analyzers Archive 
 
 DataFormats::
 	(cd DataFormats; make)
@@ -14,6 +14,9 @@ GEScaleSyst::
 	(cd external/GEScaleSyst; make)
 	(mvexist.sh external/GEScaleSyst/GEScaleSyst_Dict_rdict.pcm lib/)
 	(mvexist.sh external/GEScaleSyst/libGEScaleSyst.rootmap lib/)
+
+FastJet::
+	(cd external/FastJet; make)
 
 Analyzers::
 	(cd Analyzers; make)

@@ -28,14 +28,17 @@
 #include "CFBackgroundEstimator.h"
 #include "GeneralizedEndpoint.h"
 #include "GEScaleSyst.h"
-#include "PDFReweight.h"
 
+#include "PDFReweight.h"
 #include "TMVA/Tools.h"
 #include "TMVA/Reader.h"
 #include "TMVA/MethodCuts.h"
 
+
+
 #define M_Z 91.1876
 #define M_W 80.379
+
 
 class AnalyzerCore: public SKFlatNtuple {
 
@@ -108,6 +111,7 @@ public:
 
 
   std::vector<Jet> SelectJets(const std::vector<Jet>& jets, TString id, double ptmin, double fetamax);
+  std::vector<Jet> SelectPUJets(const std::vector<Jet>& jets, TString id, double ptmin, double fetamax, TString Era);
 
   std::vector<FatJet> SelectFatJets(const std::vector<FatJet>& jets, TString id, double ptmin, double fetamax);
 
@@ -289,7 +293,9 @@ public:
   void           ApplyMETxyCorr(TLorentzVector& vMET, TString Option="");
   float GetvPz(Lepton& Lep, Particle& vMET, TString Option="");
   float GetMuonSF(std::vector<Muon>& muonColl, TString SFKey, TString Option="");
+  float GetMuonIDEff(Muon muonColl, TString SFKey, TString Option="");
   float GetElectronSF(std::vector<Electron>& electronColl, TString SFKey, TString Option="");
+  float GetElectronIDEff(Electron electronColl, TString SFKey, TString Option="");
   float GetKFactor();
   float GetBRWeight();
   float GetGenFilterEffCorr();
@@ -317,6 +323,7 @@ public:
   int  GetFakeLepSrcType(Lepton& Lep, vector<Jet>& JetColl);
 
   void FillHist(TString histname, double value, double weight, int n_bin, double x_min, double x_max, bool ApplyWVar, vector<pair<float,TString>>& SysWgtStrPairList);
+  void FillHist(TString histname, double value, double weight, int n_bin, double x_min, double x_max, bool ApplyWVar, vector<pair<float,TString>>& SysWgtStrPairList,double ZRW);
   void FillHist(TString histname, double value, double weight, int n_bin, double *xbins, bool ApplyWVar, vector<pair<float,TString>>& SysWgtStrPairList);
 };
 

@@ -2,7 +2,7 @@
 
 void FakeRateMeas::initializeAnalyzer(){
 
-  ElFR=false, MuFR=false, MeasFR=false, MeasPU=false, PrVal=false, METMTWCut=false;
+  ElFR=false, MuFR=false, MeasFR=false, MeasPU=false, PrVal=false, METMTWCut=false, HEMRun=false;
   SystRun=false, ConePtCut=false; 
   for(unsigned int i=0; i<Userflags.size(); i++){
     if(Userflags.at(i).Contains("ElFR"))      ElFR      = true; 
@@ -13,6 +13,7 @@ void FakeRateMeas::initializeAnalyzer(){
     if(Userflags.at(i).Contains("PrVal"))     PrVal     = true; 
     if(Userflags.at(i).Contains("ConePtCut")) ConePtCut = true; 
     if(Userflags.at(i).Contains("SystRun"))   SystRun   = true; 
+    if(Userflags.at(i).Contains("HEMRun"))    HEMRun    = true; 
   }
 
   DblMu=false, DblEG=false, MuEG=false, SglMu=false, SglEl=false;
@@ -112,6 +113,26 @@ void FakeRateMeas::executeEvent(){
   sort(jetPreColl.begin(), jetPreColl.end(), PtComparing);
   vector<Jet> jetColl  = SelectJets(jetPreColl, muonLooseColl, electronVetoColl, "tightLepVeto", 25., 2.4, "LVeto");
   vector<Jet> bjetColl = SelBJets(jetColl, param_jets);
+  
+  vector<Jet> jetHEMColl;
+  vector<Jet> bjetHEMColl;
+  if (HEMRun) {
+    if (GetEraShort().Contains("18")) {
+      for(unsigned int ij=0; ij < jetColl.size(); ij++){
+        if (jetColl.at(ij).Eta() < -1.3 && jetColl.at(ij).Phi() < -0.87 && jetColl.at(ij).Phi() > -1.57) {
+          jetHEMColl.push_back(jetColl.at(ij));
+        }
+      }
+      bjetHEMColl = SelBJets(jetHEMColl, param_jets);
+    }
+    else return;
+  }
+  else {
+    jetHEMColl = jetColl;
+    bjetHEMColl = bjetColl;
+  }
+  jetColl = jetHEMColl;
+  bjetColl = bjetHEMColl;
 
 
   Particle vMET_T1xy = GetvMET("PUPPIMETT1xyCorr");
@@ -775,8 +796,8 @@ void FakeRateMeas::MeasFakeRate(vector<Muon>& MuTColl, vector<Muon>& MuLColl, ve
   if(NMuL==1){
     float TightIso=0.1, RelIso=MuLColl.at(0).MiniRelIso(), MET=vMET.Pt(), MTW=MT(MuLColl.at(0),vMET);
     float PT=MuLColl.at(0).Pt(), PTCorr=MuLColl.at(0).CalcPtCone(RelIso, TightIso), Eta=MuLColl.at(0).Eta(), fEta=fabs(Eta);
-    vector<double> PTEdges1D   = {10., 15., 20., 25., 30., 40., 50., 70., 100.};
-    vector<double> PTEdges2D   = {10., 15., 20., 30., 50.};                     
+    vector<double> PTEdges1D   = {5., 10., 15., 20., 25., 30., 40., 50., 70., 100.};
+    vector<double> PTEdges2D   = {5., 10., 15., 20., 30., 50.};                     
     vector<double> EtaEdges1D  = {-2.4, -1.6, -0.9, 0., 0.9, 1.6, 2.4};         
     vector<double> fEtaEdges2D = {0., 0.9, 1.6, 2.4};                           
     bool PTParam = Option.Contains("PTParam"), TrigSel=false, PassJetReq=false;

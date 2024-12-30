@@ -13,7 +13,7 @@ public:
 
   bool ElFR, MuFR, MeasFR, MeasPU, PrVal, METMTWCut;
   bool DblMu, DblEG, MuEG, SglMu, SglEl;
-  bool SystRun, ConePtCut;
+  bool SystRun, ConePtCut, HEMRun;
   vector<TString> TrigList_ElFR, TrigList_MuFR;
 
   void MeasFakeRate(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl,

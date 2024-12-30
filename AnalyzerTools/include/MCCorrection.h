@@ -28,7 +28,7 @@
 #include "GenFinderForDY.h"
 #include "BTagCalibrationStandalone.h"
 #include "TRandom3.h"
-
+#include "ZptCorrection.h"
 class MCCorrection{
 
 public:
@@ -65,6 +65,7 @@ public:
 
   double MuonReco_SF(TString key, double eta, double p, int sys=0);
   double MuonID_SF(TString ID, double eta, double pt, int sys=0);
+  double MuonID_Eff(TString ID, double eta, double pt, int sys=0);
   double MuonISO_SF(TString ID, double eta, double pt, int sys=0);
   double MuonTrigger_Eff(TString ID, TString trig, int DataOrMC, double eta, double pt, int sys=0);
   double MuonTrigger_SF(TString ID, TString trig, const std::vector<Muon>& muons, int sys=0);
@@ -74,6 +75,7 @@ public:
 
   double ElectronReco_SF(double sceta, double pt, int sys=0);
   double ElectronID_SF(TString ID, double sceta, double pt, int sys=0);
+  double ElectronID_Eff(TString ID, double sceta, double pt, int sys=0);
   double ElectronTrigger_Eff(TString ID, TString trig, int DataOrMC, double eta, double pt, int sys=0);
   double ElectronTrigger_SF(TString ID, TString trig, const std::vector<Electron>& electrons, int sys=0);
   double ElectronTrigger_SF(TString ID, TString trig, const std::vector<Electron *>& electrons, int sys=0);
@@ -92,7 +94,7 @@ public:
   TH2D *hist_DYPtReweight_2D;
   GenFinderForDY *genFinderDY;
   double GetOfficialDYReweight(const vector<Gen>& gens, int sys=0);
-
+  double GetDYPtReweight(TString file, double pt);
   //==== b tagging
 
   double GetJetTaggingCutValue(JetTagging::Tagger tagger, JetTagging::WP wp);

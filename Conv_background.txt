@@ -1,4 +1,4 @@
-WJets_amcatnlo
+WGToLNuG_MG
 DYJets
 DYJets10to50_MG
 TTLJ_powheg
