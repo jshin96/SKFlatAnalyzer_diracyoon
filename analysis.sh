@@ -36,24 +36,24 @@ SKFlat.py -a ControlPlots -l prompt_background.txt               -n 5  -e 2018  
 
 
 
-SKFlat.py -a KinVarPlot   -l TT_HeavyN.txt         -n  5  -e 2016b                           --userflags SS2l,SystRun,VarPlots,SingleTrigger   &
-SKFlat.py -a KinVarPlot   -l TT_HeavyN.txt         -n  5  -e 2016a                           --userflags SS2l,SystRun,VarPlots,SingleTrigger   &
-SKFlat.py -a KinVarPlot   -l TT_HeavyN.txt         -n  5  -e 2017                            --userflags SS2l,SystRun,VarPlots,SingleTrigger   &
-SKFlat.py -a KinVarPlot   -l TT_HeavyN.txt         -n  5  -e 2018                            --userflags SS2l,SystRun,VarPlots,SingleTrigger   &
+SKFlat.py -a KinVarPlot   -l TT_HeavyN.txt         -n  5  -e 2016b                           --userflags SS2l,SystRun,VarPlots,OrSingle   &
+SKFlat.py -a KinVarPlot   -l TT_HeavyN.txt         -n  5  -e 2016a                           --userflags SS2l,SystRun,VarPlots,OrSingle   &
+SKFlat.py -a KinVarPlot   -l TT_HeavyN.txt         -n  5  -e 2017                            --userflags SS2l,SystRun,VarPlots,OrSingle   &
+SKFlat.py -a KinVarPlot   -l TT_HeavyN.txt         -n  5  -e 2018                            --userflags SS2l,SystRun,VarPlots,OrSingle   &
 
 
-SKFlat.py -a KinVarPlot   -i DoubleEG              -n  15 -e 2016a  --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,SingleTrigger   &
-SKFlat.py -a KinVarPlot   -i DoubleEG              -n  15 -e 2016a  --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,SingleTrigger,FakeRun   &
-SKFlat.py -a KinVarPlot   -i DoubleEG              -n  15 -e 2016b  --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,SingleTrigger   &
-SKFlat.py -a KinVarPlot   -i DoubleEG              -n  15 -e 2016b  --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,SingleTrigger,FakeRun   &
-SKFlat.py -a KinVarPlot   -i DoubleEG              -n  15 -e 2017   --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,SingleTrigger   &
-SKFlat.py -a KinVarPlot   -i DoubleEG              -n  15 -e 2017   --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,SingleTrigger,FakeRun   &
+SKFlat.py -a KinVarPlot   -i DoubleEG              -n  15 -e 2016a  --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,OrSingle   &
+SKFlat.py -a KinVarPlot   -i DoubleEG              -n  15 -e 2016a  --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,OrSingle,FakeRun   &
+SKFlat.py -a KinVarPlot   -i DoubleEG              -n  15 -e 2016b  --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,OrSingle   &
+SKFlat.py -a KinVarPlot   -i DoubleEG              -n  15 -e 2016b  --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,OrSingle,FakeRun   &
+SKFlat.py -a KinVarPlot   -i DoubleEG              -n  15 -e 2017   --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,OrSingle   &
+SKFlat.py -a KinVarPlot   -i DoubleEG              -n  15 -e 2017   --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,OrSingle,FakeRun   &
 
 
 
 
-SKFlat.py -a KinVarPlot   -i TT_HeavyN-Mu_2L_MN50         -n  5  -e 2018                            --userflags SS2l,SystRun,VarPlots,SingleTrigger   &
-SKFlat.py -a KinVarPlot   -l TT_HeavyN.txt         -n  5  -e 2018                            --userflags SS2l,SystRun,SystRun,VarPlots,SingleTrigger   &
+SKFlat.py -a KinVarPlot   -i TT_HeavyN-Mu_2L_MN50         -n  5  -e 2018                            --userflags SS2l,SystRun,VarPlots,OrSingle   &
+SKFlat.py -a KinVarPlot   -l TT_HeavyN.txt         -n  5  -e 2018                            --userflags SS2l,SystRun,SystRun,VarPlots,OrSingle   &
 
 
 
@@ -81,55 +81,79 @@ Deactive
 
 
 
-#SKFlat.py -a KinVarPlot   -i SingleMuon            -n  15 -e 2018   --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,SingleTrigger   &
-#SKFlat.py -a KinVarPlot   -i SingleMuon            -n  15 -e 2018   --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,SingleTrigger,FakeRun   &
-#SKFlat.py -a KinVarPlot   -i EGamma                -n  15 -e 2018   --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,SingleTrigger   &
-#SKFlat.py -a KinVarPlot   -i EGamma                -n  15 -e 2018   --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,SingleTrigger,FakeRun   &
-
-#SKFlat.py -a KinVarPlot   -i DoubleMuon            -n  15 -e 2016a  --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,SingleTrigger   &
-#SKFlat.py -a KinVarPlot   -i DoubleMuon            -n  15 -e 2016a  --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,SingleTrigger,FakeRun   &
-#SKFlat.py -a KinVarPlot   -i DoubleEG              -n  15 -e 2016a  --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,SingleTrigger   &
-#SKFlat.py -a KinVarPlot   -i DoubleEG              -n  15 -e 2016a  --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,SingleTrigger,FakeRun   &
-
-
-#SKFlat.py -a KinVarPlot   -l TT_HeavyN.txt         -n  5  -e 2018                            --userflags SS2l,SystRun,VarPlots,SingleTrigger   &
-#SKFlat.py -a KinVarPlot   -l Conv_background.txt   -n  15 -e 2018   --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,SingleTrigger,ConvRun   &
-#SKFlat.py -a KinVarPlot   -l Conv_background.txt   -n  15 -e 2018   --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,SingleTrigger,FakeRun,ConvRun   &
-#SKFlat.py -a KinVarPlot   -l CF_background.txt     -n  15 -e 2018                            --userflags SS2l,SystRun,VarPlots,SingleTrigger,FlipRun   &
-#SKFlat.py -a KinVarPlot   -l CF_background.txt     -n  15 -e 2018                            --userflags SS2l,SystRun,VarPlots,SingleTrigger,FakeRun,FlipRun   &
-#SKFlat.py -a KinVarPlot   -l prompt_background.txt -n  5  -e 2018   --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,VarPlots,SingleTrigger   &
+#SKFlat.py -a KinVarPlot   -i SingleMuon            -n  15 -e 2018   --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,DiscPlots,DiscCutOpt,OrSingle   &
+#SKFlat.py -a KinVarPlot   -i SingleMuon            -n  15 -e 2018   --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,DiscPlots,DiscCutOpt,OrSingle,FakeRun   &
+#SKFlat.py -a KinVarPlot   -i EGamma                -n  15 -e 2018   --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,DiscPlots,DiscCutOpt,OrSingle   &
+#SKFlat.py -a KinVarPlot   -i EGamma                -n  15 -e 2018   --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,DiscPlots,DiscCutOpt,OrSingle,FakeRun   &
+#SKFlat.py -a KinVarPlot   -i DoubleMuon            -n  15 -e 2018   --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,DiscPlots,DiscCutOpt,OrSingle   &
+#SKFlat.py -a KinVarPlot   -i DoubleMuon            -n  15 -e 2018   --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,DiscPlots,DiscCutOpt,OrSingle,FakeRun   &
+#SKFlat.py -a KinVarPlot   -i EGamma                -n  15 -e 2018   --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,DiscPlots,DiscCutOpt,OrSingle   &
+#SKFlat.py -a KinVarPlot   -i EGamma                -n  15 -e 2018   --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,DiscPlots,DiscCutOpt,OrSingle,FakeRun   &
+#SKFlat.py -a KinVarPlot   -l TT_HeavyN.txt         -n  5  -e 2018                            --userflags SS2l,SystRun,DiscPlots,DiscCutOpt,OrSingle   &
+#SKFlat.py -a KinVarPlot   -l Conv_background.txt   -n  15 -e 2018   --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,DiscPlots,DiscCutOpt,OrSingle,ConvRun   &
+#SKFlat.py -a KinVarPlot   -l Conv_background.txt   -n  15 -e 2018   --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,DiscPlots,DiscCutOpt,OrSingle,FakeRun,ConvRun   &
+#SKFlat.py -a KinVarPlot   -l CF_background.txt     -n  15 -e 2018                            --userflags SS2l,SystRun,DiscPlots,DiscCutOpt,OrSingle,FlipRun   &
+#SKFlat.py -a KinVarPlot   -l CF_background.txt     -n  15 -e 2018                            --userflags SS2l,SystRun,DiscPlots,DiscCutOpt,OrSingle,FakeRun,FlipRun   &
+#SKFlat.py -a KinVarPlot   -l prompt_background.txt -n  5  -e 2018   --skim SkimTree_SS2lOR3l --userflags SS2l,SystRun,DiscPlots,DiscCutOpt,OrSingle   &
 
 
 
-#SKFlat.py -a KinVarPlot    -l TT_HeavyN.txt          -n  5  -e 2016b                           --userflags SS2l,EffFlow,SingleTrigger  &
-#SKFlat.py -a KinVarPlot    -l TT_HeavyN.txt          -n  5  -e 2016b                           --userflags SS2l,EffFlow  &
+#SKFlat.py -a KinVarPlot    -l TT_HeavyN.txt          -n  5  -e 2016a                           --userflags SS2l,EffFlow,OrSingle  &
+##SKFlat.py -a KinVarPlot    -l TT_HeavyN.txt          -n  5  -e 2016a                           --userflags SS2l,EffFlow  &
 
-#SKFlat.py -a KinVarPlot    -i SingleMuon             -n  15 -e 2016b --skim SkimTree_SS2lOR3l  --userflags SS2l,EffFlow,SingleTrigger,FakeRun  & 
-#SKFlat.py -a KinVarPlot    -i DoubleMuon             -n  15 -e 2016b --skim SkimTree_SS2lOR3l  --userflags SS2l,EffFlow,FakeRun  & 
+#SKFlat.py -a KinVarPlot    -i SingleMuon             -n  15 -e 2016a --skim SkimTree_SS2lOR3l  --userflags SS2l,EffFlow,OrSingle,FakeRun  & 
+#SKFlat.py -a KinVarPlot    -i DoubleMuon             -n  15 -e 2016a --skim SkimTree_SS2lOR3l  --userflags SS2l,EffFlow,FakeRun  & 
 
-#SKFlat.py -a KinVarPlot    -i SingleElectron         -n  15 -e 2016b --skim SkimTree_SS2lOR3l  --userflags SS2l,EffFlow,SingleTrigger,FakeRun  &
-#SKFlat.py -a KinVarPlot    -i DoubleEG               -n  15 -e 2016b --skim SkimTree_SS2lOR3l  --userflags SS2l,EffFlow,FakeRun  &
+#SKFlat.py -a KinVarPlot    -i SingleElectron         -n  15 -e 2016a --skim SkimTree_SS2lOR3l  --userflags SS2l,EffFlow,OrSingle,FakeRun  &
+#SKFlat.py -a KinVarPlot    -i DoubleEG               -n  15 -e 2016a --skim SkimTree_SS2lOR3l  --userflags SS2l,EffFlow,FakeRun  &
 
-#SKFlat.py -a KinVarPlot    -l CF_background.txt      -n  15 -e 2016b                           --userflags SS2l,EffFlow,SingleTrigger,FakeRun,FlipRun &
-#SKFlat.py -a KinVarPlot    -l CF_background.txt      -n  15 -e 2016b                           --userflags SS2l,EffFlow,FakeRun,FlipRun &
+#SKFlat.py -a KinVarPlot    -l CF_background.txt      -n  15 -e 2016a                           --userflags SS2l,EffFlow,OrSingle,FakeRun,FlipRun &
+#SKFlat.py -a KinVarPlot    -l CF_background.txt      -n  15 -e 2016a                           --userflags SS2l,EffFlow,FakeRun,FlipRun &
 
-#SKFlat.py -a KinVarPlot    -l Conv_background.txt    -n  15 -e 2016b --skim SkimTree_SS2lOR3l  --userflags SS2l,EffFlow,SingleTrigger,FakeRun,ConvRun &
-#SKFlat.py -a KinVarPlot    -l Conv_background.txt    -n  15 -e 2016b --skim SkimTree_SS2lOR3l  --userflags SS2l,EffFlow,FakeRun,ConvRun &
-
-
-SKFlat.py -a FakeRateMeas  -l FakeRateMeas.txt       -n  15 -e 2017                            --userflags ElFR,MeasFR,SystRun,ConePtCut,HEMRun &
-SKFlat.py -a FakeRateMeas  -l FakeRateMeas.txt       -n  15 -e 2017                            --userflags MuFR,MeasFR,SystRun,ConePtCut,HEMRun &
-SKFlat.py -a FakeRateMeas  -i DoubleEG               -n  15 -e 2017                            --userflags ElFR,MeasFR,SystRun,ConePtCut,HEMRun &
-SKFlat.py -a FakeRateMeas  -i DoubleMuon             -n  15 -e 2017                            --userflags MuFR,MeasFR,SystRun,ConePtCut,HEMRun &
+#SKFlat.py -a KinVarPlot    -l Conv_background.txt    -n  15 -e 2016a --skim SkimTree_SS2lOR3l  --userflags SS2l,EffFlow,OrSingle,FakeRun,ConvRun &
+#SKFlat.py -a KinVarPlot    -l Conv_background.txt    -n  15 -e 2016a --skim SkimTree_SS2lOR3l  --userflags SS2l,EffFlow,FakeRun,ConvRun &
 
 
+#SKFlat.py -a FakeRateMeas  -l FakeRateMeas.txt       -n  15 -e 2016a                           --userflags ElFR,MeasFR,SystRun,ConePtCut &
+#SKFlat.py -a FakeRateMeas  -l FakeRateMeas.txt       -n  15 -e 2016a                           --userflags MuFR,MeasFR,SystRun,ConePtCut &
+#SKFlat.py -a FakeRateMeas  -i DoubleEG               -n  15 -e 2016a                           --userflags ElFR,MeasFR,SystRun,ConePtCut &
+#SKFlat.py -a FakeRateMeas  -i DoubleMuon             -n  15 -e 2016a                           --userflags MuFR,MeasFR,SystRun,ConePtCut &
 
-#SKFlat.py -a FakeRateMeas  -i WGToLNuG_MG            -n  15 -e 2018                            --userflags MuFR,MeasFR,SystRun &
-#SKFlat.py -a FakeRateMeas  -i WGToLNuG_MG            -n  15 -e 2018                            --userflags ElFR,MeasFR,SystRun &
-#SKFlat.py -a FakeRateMeas  -i WGToLNuG_MG            -n  15 -e 2017                            --userflags MuFR,MeasFR,SystRun &
-#SKFlat.py -a FakeRateMeas  -i WGToLNuG_MG            -n  15 -e 2017                            --userflags ElFR,MeasFR,SystRun &
-#SKFlat.py -a FakeRateMeas  -i WGToLNuG_MG            -n  15 -e 2016b                           --userflags MuFR,MeasFR,SystRun &
-#SKFlat.py -a FakeRateMeas  -i WGToLNuG_MG            -n  15 -e 2016b                           --userflags ElFR,MeasFR,SystRun &
-#SKFlat.py -a FakeRateMeas  -i WGToLNuG_MG            -n  15 -e 2016a                           --userflags MuFR,MeasFR,SystRun &
-#SKFlat.py -a FakeRateMeas  -i WGToLNuG_MG            -n  15 -e 2016a                           --userflags ElFR,MeasFR,SystRun &
+#SKFlat.py -a FakeRateMeas  -l FakeRateMeas.txt       -n  15 -e 2016b                           --userflags ElFR,MeasFR,SystRun,ConePtCut &
+#SKFlat.py -a FakeRateMeas  -l FakeRateMeas.txt       -n  15 -e 2016b                           --userflags MuFR,MeasFR,SystRun,ConePtCut &
+#SKFlat.py -a FakeRateMeas  -i DoubleEG               -n  15 -e 2016b                           --userflags ElFR,MeasFR,SystRun,ConePtCut &
+#SKFlat.py -a FakeRateMeas  -i DoubleMuon             -n  15 -e 2016b                           --userflags MuFR,MeasFR,SystRun,ConePtCut &
+
+#SKFlat.py -a FakeRateMeas  -l FakeRateMeas.txt       -n  15 -e 2018                            --userflags ElFR,MeasFR,SystRun,HEMRun &
+#SKFlat.py -a FakeRateMeas  -l FakeRateMeas.txt       -n  15 -e 2018                            --userflags MuFR,MeasFR,SystRun,HEMRun &
+#SKFlat.py -a FakeRateMeas  -i EGamma                 -n  15 -e 2018                            --userflags ElFR,MeasFR,SystRun,HEMRun &
+#SKFlat.py -a FakeRateMeas  -i DoubleMuon             -n  15 -e 2018                            --userflags MuFR,MeasFR,SystRun,HEMRun &
+
+
+
+#SKFlat.py -a FakeRateMeas  -l FakeRateMeas.txt            -n  15 -e 2018                            --userflags MuFR,MeasFR,SystRun,NoNvtxRW &
+#SKFlat.py -a FakeRateMeas  -l FakeRateMeas.txt            -n  15 -e 2018                            --userflags ElFR,MeasFR,SystRun,NoNvtxRW &
+#SKFlat.py -a FakeRateMeas  -i DoubleMuon                  -n  15 -e 2018                            --userflags MuFR,MeasFR,SystRun,NoNvtxRW &
+#SKFlat.py -a FakeRateMeas  -i EGamma                      -n  15 -e 2018                            --userflags ElFR,MeasFR,SystRun,NoNvtxRW &
+
+#SKFlat.py -a FakeRateMeas  -l FakeRateMeas.txt            -n  15 -e 2017                            --userflags MuFR,MeasFR,SystRun,NoNvtxRW &
+#SKFlat.py -a FakeRateMeas  -l FakeRateMeas.txt            -n  15 -e 2017                            --userflags ElFR,MeasFR,SystRun,NoNvtxRW &
+#SKFlat.py -a FakeRateMeas  -i DoubleMuon                  -n  15 -e 2017                            --userflags MuFR,MeasFR,SystRun,NoNvtxRW &
+#SKFlat.py -a FakeRateMeas  -i DoubleEG                    -n  15 -e 2017                            --userflags ElFR,MeasFR,SystRun,NoNvtxRW &
+
+#SKFlat.py -a FakeRateMeas  -l FakeRateMeas.txt            -n  15 -e 2016b                           --userflags MuFR,MeasFR,SystRun,NoNvtxRW &
+#SKFlat.py -a FakeRateMeas  -l FakeRateMeas.txt            -n  15 -e 2016b                           --userflags ElFR,MeasFR,SystRun,NoNvtxRW &
+#SKFlat.py -a FakeRateMeas  -i DoubleMuon                  -n  15 -e 2016b                           --userflags MuFR,MeasFR,SystRun,NoNvtxRW &
+#SKFlat.py -a FakeRateMeas  -i DoubleEG                    -n  15 -e 2016b                           --userflags ElFR,MeasFR,SystRun,NoNvtxRW &
+
+#SKFlat.py -a FakeRateMeas  -l FakeRateMeas.txt            -n  15 -e 2018                            --userflags MuFR,MeasFR,SystRun,NoNvtxRW &
+#SKFlat.py -a FakeRateMeas  -l FakeRateMeas.txt            -n  15 -e 2018                            --userflags ElFR,MeasFR,SystRun,NoNvtxRW &
+SKFlat.py -a FakeRateMeas  -l FakeRateMeas.txt            -n  15 -e 2018                            --userflags MuFR,MeasFR,SystRun &
+SKFlat.py -a FakeRateMeas  -l FakeRateMeas.txt            -n  15 -e 2018                            --userflags ElFR,MeasFR,SystRun &
+SKFlat.py -a FakeRateMeas  -i DoubleMuon                  -n  15 -e 2018                            --userflags MuFR,MeasFR,SystRun &
+SKFlat.py -a FakeRateMeas  -i EGamma                      -n  15 -e 2018                            --userflags ElFR,MeasFR,SystRun &
+
+#SKFlat.py -a MeasCFlipRate  -i EGamma                             -n 15  -e 2018                            --userflags All2l,MDists &
+#SKFlat.py -a MeasCFlipRate  -l CF_background.txt                  -n 15  -e 2018                            --userflags All2l,MDists &
+
 

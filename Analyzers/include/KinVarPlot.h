@@ -3,14 +3,11 @@
 
 #include "AnalyzerCore.h"
 
-#include "fastjet/ClusterSequence.hh"
-#include "fastjet/PseudoJet.hh"
 #include <iostream>
 #include "TMVA/Tools.h"
 #include "TMVA/Reader.h"
 #include "TMVA/MethodCuts.h"
 
-using namespace fastjet;
 class KinVarPlot : public AnalyzerCore {
 
 public:
@@ -22,7 +19,7 @@ public:
   bool OS2l, SS2l, TriLep, TetraLep; 
   bool DblMu, DblEG, MuEG,SglMu, SglEG, SingleTrigger, BDTCR;
   bool FakeRun, ConvRun, FlipRun, SystRun, GenSyst, PUVETO, ReverseBDT, POGEl, CFCorr;
-  bool DiscPlots, VarPlots, EffFlow, GlobFeas, GenMatchedDist, DecCompCheck, DiscCutOpt, DiscTable, DiscCNC, TestPlot, BDTVal, UnFlipped;
+  bool DiscPlots, VarPlots, EffFlow, GlobFeas, GenMatchedDist, DecCompCheck, DiscCutOpt, DiscTable, DiscCNC, TestPlot, BDTVal, UnFlipped, OrSingle;
   vector<TString> TrigList_DblMu, TrigList_DblEG, TrigList_MuEG, TrigList_SglEG,TrigList_SglMu;
 
   void MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vector<Muon>& MuVColl, vector<Electron>& ElTColl, vector<Electron>& ElLColl, vector<Electron>& ElVColl,
@@ -91,7 +88,6 @@ public:
   std::map< TString, TH1D* > maphist_GenNorm;
   std::vector<std::pair<float,TString>> SysWgtStrPairList;
   vector<Gen> TruthColl;
-  vector<PseudoJet> GenJets;
 
 
   Float_t w_tot, disc_BDTG;

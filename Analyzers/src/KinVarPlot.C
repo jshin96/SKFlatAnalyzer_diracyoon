@@ -1,8 +1,5 @@
 #include "KinVarPlot.h"
-#include "fastjet/ClusterSequence.hh"
-#include "fastjet/PseudoJet.hh"
 #include <iostream>
-using namespace fastjet;
 using namespace std;
 
 void KinVarPlot::initializeAnalyzer(){
@@ -77,7 +74,10 @@ void KinVarPlot::initializeAnalyzer(){
     TrigList_SglMu = {"HLT_IsoMu24_v"};
     TrigList_SglEG = {"HLT_Ele32_WPTight_Gsf_v"};
   }
-
+  if (OrSingle){
+    TrigList_DblMu.insert(TrigList_DblMu.end(), TrigList_SglMu.begin(), TrigList_SglMu.end());
+    TrigList_DblEG.insert(TrigList_DblEG.end(), TrigList_SglEG.begin(), TrigList_SglEG.end());
+  }
 
 
   //Set up the tagger map only for the param settings to be used.
@@ -176,7 +176,7 @@ void KinVarPlot::executeEvent(){
   float MuPT_Cut = 10.;
   float ElPT_Cut = 15.;
   float ElVPT_Cut = 10.;
-  if (SingleTrigger){MuPT_Cut = 5.; ElPT_Cut=5.; ElVPT_Cut=5.;}
+  if (SingleTrigger or OrSingle){MuPT_Cut = 5.; ElPT_Cut=5.; ElVPT_Cut=5.;}
   vector<Muon>     muonTightColl     = SelectMuons    (muonPreColl    , FakeRun? MuLID:MuTID, MuPT_Cut, 2.4);
   vector<Electron> electronTightColl = SelectElectrons(electronPreColl, FakeRun? ElLID:ElTID, ElPT_Cut, 2.5);
   vector<Muon>     muonLooseColl     = SelectMuons    (muonPreColl    , MuLID, MuPT_Cut, 2.4);
@@ -1631,8 +1631,16 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
     if(!IsDATA && MCSample.Contains("HeavyN-El")) return;
     //if(MuTColl.at(0).Charge()==MuTColl.at(1).Charge()) return;
     if(MuTColl.at(0).Charge()!=MuTColl.at(1).Charge()) return;
-    if (!SingleTrigger){
+    if (!SingleTrigger and !OrSingle){
       if(!(MuTColl.at(0).Pt()>20 && MuTColl.at(1).Pt()>10)) return;
+    }
+    else if (OrSingle){
+      if (GetEraShort().Contains("17")) {
+        if(!(MuTColl.at(0).Pt()>30 && MuTColl.at(1).Pt()>5) and !(MuTColl.at(0).Pt()>20 && MuTColl.at(1).Pt()>10)) return;
+      }
+      else {
+        if(!(MuTColl.at(0).Pt()>25 && MuTColl.at(1).Pt()>5) and !(MuTColl.at(0).Pt()>20 && MuTColl.at(1).Pt()>10)) return;
+      }
     }
     else{
       if (GetEraShort().Contains("17")) {
@@ -1817,6 +1825,14 @@ void KinVarPlot::MakePlotSS2L(vector<Muon>& MuTColl, vector<Muon>& MuLColl, vect
     //else                   { if(aSumQ!=0) return; }
     if (!SingleTrigger){
       if(!(ElTColl.at(0).Pt()>25 && ElTColl.at(1).Pt()>15)) return;
+    }
+    else if (OrSingle){
+      if (GetEraShort().Contains("16")) {
+        if(!(ElTColl.at(0).Pt()>30 && ElTColl.at(1).Pt()>10) and !(ElTColl.at(0).Pt()>25 && ElTColl.at(1).Pt()>15)) return;
+      }
+      else {
+        if(!(ElTColl.at(0).Pt()>35 && ElTColl.at(1).Pt()>10) and !(ElTColl.at(0).Pt()>25 && ElTColl.at(1).Pt()>15)) return;
+      }
     }
     else {
       if (GetEraShort().Contains("16")) {
