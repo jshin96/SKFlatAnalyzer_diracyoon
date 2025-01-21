@@ -1,4 +1,5 @@
 analyzer=HNL_SignalRegion_Plotter
+#analyzer=GetEffLumi
 rundir=HNL_SignalRegion_Plotter
 runPATH=${SKFlat_WD}/runJobs/HNL/${rundir}/
 sigpath=${SKFlat_WD}/runJobs/SampleLists/Signals/
@@ -6,7 +7,7 @@ mcpath=${SKFlat_WD}/runJobs/SampleLists/Bkg/
 datapath=${SKFlat_WD}/runJobs/SampleLists/Data/
 
 njobs=30
-njobs_sig=5
+njobs_sig=10
 njobs_data=100
 nmax=400
 skim=' '
@@ -65,13 +66,18 @@ fi
 
 if [[ $1 == "SIG" ]]; then
 
-    declare  -a era_list=("2017")
+#    declare  -a era_list=("2016postVFP")
+    declare  -a era_list=("2016preVFP" "2016postVFP" "2017" "2018")
     for i in "${era_list[@]}"
     do
 
-	SKFlat.py -a $analyzer  -l $sigpath/SSWW.txt  -n $njobs_sig  --nmax ${nmax}  -e ${i}  --skim SkimTree_HNMultiLepBDT  --userflags RunFullSyst&
-	SKFlat.py -a $analyzer  -l $sigpath/DY.txt    -n $njobs_sig  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT  --userflags RunFullSyst&
-	SKFlat.py -a $analyzer  -l $sigpath/VBF.txt   -n $njobs_sig  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT  --userflags RunFullSyst&
+	SKFlat.py -a $analyzer  -l $sigpath/SSWW.txt  -n $njobs_sig  --nmax ${nmax}  -e ${i}  --skim SkimTree_HNMultiLepBDT   &
+	SKFlat.py -a $analyzer  -l $sigpath/DY.txt    -n $njobs_sig  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT   &
+	SKFlat.py -a $analyzer  -l $sigpath/VBF.txt   -n $njobs_sig  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT   &
+#	SKFlat.py -a $analyzer  -i DYTypeI_DF_M90_private   -n $njobs_sig  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT   &
+#	SKFlat.py -a $analyzer  -i DYTypeI_DF_M85_private   -n $njobs_sig  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT   &
+#	SKFlat.py -a $analyzer  -i VBFTypeI_DF_M300_private   -n $njobs_sig  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT   &
+#	SKFlat.py -a $analyzer  -i VBFTypeI_DF_M400_private   -n $njobs_sig  --nmax ${nmax}   -e ${i} --skim SkimTree_HNMultiLepBDT   &
     done
     
 fi
@@ -99,7 +105,8 @@ fi
 
 if [[ $1 == "" ]]; then
 
-    declare  -a era_list=("2017" "2018" "2016preVFP" "2016postVFP")
+#    declare  -a era_list=("2017" "2018" "2016preVFP" "2016postVFP")
+    declare  -a era_list=("")
 
     for i in "${era_list[@]}"
     do

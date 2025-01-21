@@ -342,6 +342,7 @@ class HNL_LeptonCore : public AnalyzerCore {
   void FillCutflow(HNL_LeptonCore::SearchRegion sr, double event_weight, TString label,  AnalyzerParameter param);
   void FillCutflow(HNL_LeptonCore::SearchRegion sr, double event_weight, TString label,  TString hist_path);
   void FillLimitInput(HNL_LeptonCore::SearchRegion sr, double event_weight, TString label,  TString hist_path);
+  void FillLimitInputPDF(HNL_LeptonCore::SearchRegion sr, double event_weight, TString label,  TString hist_path, TString syst_name);
 
   vector<TString>  GetLabelsFromRegion(HNL_LeptonCore::SearchRegion sr);
   TString GetCutFlowNameFromRegion(HNL_LeptonCore::SearchRegion sr);

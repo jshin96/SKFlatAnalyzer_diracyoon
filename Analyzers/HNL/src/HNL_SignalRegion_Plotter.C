@@ -36,7 +36,7 @@ void HNL_SignalRegion_Plotter::executeEvent(){
   if(_jentry == 0){
     cout << "HNL_SignalRegion_Plotter::IsData = " << IsData << endl;
   }
-  vector<TString> LepIDs = {"HNL_ULID","HNTightV2", "POGTight"};
+  vector<TString> LepIDs = {"HNL_ULID"};
   if(RunTopID) LepIDs = {"TopHN"};
   if(RunPOGID) LepIDs = {"POGTight"};
   if(RunHighPtID) LepIDs = {"HighPt"};
@@ -57,18 +57,18 @@ void HNL_SignalRegion_Plotter::executeEvent(){
     for(auto channel : ChannelsToRun){
 
       AnalyzerParameter param = HNL_LeptonCore::InitialiseHNLParameter(id,channel);
-      param.PlottingVerbose = 0; //// Draw basic plots
-      if(id == "HNL_ULID")         param.PlottingVerbose = 1; /// Draw more plots
-      if(id.Contains("HEEP"))      param.PlottingVerbose = 1;
+      param.PlottingVerbose = 3; //// Draw basic plots
+      if(id == "HNL_ULID")         param.PlottingVerbose = 3; /// Draw more plots
+      if(id.Contains("HEEP"))      param.PlottingVerbose = 3;
 
       RunULAnalysis(param);
 
       TString param_name = param.Name;
 
-      for(auto isyst : GetSystList()){
-	bool runJob = UpdateParamBySyst(id,param,AnalyzerParameter::Syst(isyst),param_name);
-	if(runJob) RunULAnalysis(param);
-      }
+//      for(auto isyst : GetSystList()){
+//	bool runJob = UpdateParamBySyst(id,param,AnalyzerParameter::Syst(isyst),param_name);
+//	if(runJob) RunULAnalysis(param);
+//      }
     }
   }
   FillTimer("END_EV");

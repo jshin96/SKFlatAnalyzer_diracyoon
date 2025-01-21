@@ -31,7 +31,7 @@
 #include "FakeBackgroundEstimator.h"
 #include "CFBackgroundEstimator.h"
 #include "GeneralizedEndpoint.h"
-#include "GEScaleSyst.h"
+//#include "GEScaleSyst.h"
 #include "PDFReweight.h"
 
 #include "TMVA/Tools.h"
@@ -471,7 +471,7 @@ public:
 
   //==== Muon GeneralizedEngpoint momentum scaling
   GeneralizedEndpoint *muonGE=NULL;
-  GEScaleSyst *muonGEScaleSyst=NULL;
+//  GEScaleSyst *muonGEScaleSyst=NULL;
 
   //==== Using new PDF set
   PDFReweight *pdfReweight=NULL;

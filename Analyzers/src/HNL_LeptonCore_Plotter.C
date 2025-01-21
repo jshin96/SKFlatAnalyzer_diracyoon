@@ -247,7 +247,7 @@ void HNL_LeptonCore::Fill_RegionPlots(AnalyzerParameter param, TString plot_dir,
 
 
 void HNL_LeptonCore::Fill_RegionPlots(AnalyzerParameter param, TString plot_dir, vector<Tau> Taus,  std::vector<Jet> jets,    std::vector<FatJet> fatjets, std::vector<Lepton *> leps , Particle  met, double nvtx,  double w, int DrawConfig){
-
+  return;
   TString region ="/"+param.Name + param.hprefix;
   TString regionL = "/"+param.NameInclusive_Channel + param.hprefix;
 

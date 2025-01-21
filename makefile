@@ -1,4 +1,5 @@
-all: DataFormats AnalyzerTools GEScaleSyst Analyzers AnalyzersHNL AnalyzersHNLExternal AnalyzersHNLOpt Archive
+#all: DataFormats AnalyzerTools GEScaleSyst Analyzers AnalyzersHNL AnalyzersHNLExternal AnalyzersHNLOpt Archive
+all: DataFormats AnalyzerTools Analyzers AnalyzersHNL AnalyzersHNLExternal AnalyzersHNLOpt Archive
 
 DataFormats::
 	(cd DataFormats; make)
@@ -10,10 +11,10 @@ AnalyzerTools::
 	(mvexist.sh AnalyzerTools/src/AnalyzerTools_Dict_rdict.pcm lib/)
 	(mvexist.sh AnalyzerTools/libAnalyzerTools.rootmap lib/)
 
-GEScaleSyst::
-	(cd external/GEScaleSyst; make)
-	(mvexist.sh external/GEScaleSyst/GEScaleSyst_Dict_rdict.pcm lib/)
-	(mvexist.sh external/GEScaleSyst/libGEScaleSyst.rootmap lib/)
+#GEScaleSyst::
+#	(cd external/GEScaleSyst; make)
+#	(mvexist.sh external/GEScaleSyst/GEScaleSyst_Dict_rdict.pcm lib/)
+#	(mvexist.sh external/GEScaleSyst/libGEScaleSyst.rootmap lib/)
 
 Analyzers::
 	(cd Analyzers; make)
@@ -39,7 +40,7 @@ AnalyzersHNLOpt::
 Archive::
 	(tar -zcf lib/DataFormats.tar.gz DataFormats)
 	(tar -zcf lib/AnalyzerTools.tar.gz AnalyzerTools)
-	(tar -zcf lib/GEScaleSyst.tar.gz external/GEScaleSyst/GEScaleSyst.*)
+#	(tar -zcf lib/GEScaleSyst.tar.gz external/GEScaleSyst/GEScaleSyst.*)
 	(tar -zcf lib/Analyzers.tar.gz Analyzers)
 
 clean::

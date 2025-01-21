@@ -589,6 +589,8 @@ export ROOT_HIST=0
 #### use cvmfs for root ####
 export CMS_PATH=/cvmfs/cms.cern.ch
 source $CMS_PATH/cmsset_default.sh
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
 export SCRAM_ARCH={2}
 export cmsswrel={3}
 cd /cvmfs/cms.cern.ch/$SCRAM_ARCH/cms/$cmsswrel/src

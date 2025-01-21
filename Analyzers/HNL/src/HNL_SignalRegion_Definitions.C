@@ -66,7 +66,7 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
     //// Select CHannel used for Signals to check if signal is EE/MM/Emu using gen info
     if(MCSample.Contains("Type")&& !SelectChannel(dilep_channel)) continue;
   
-    FillHist( "AllChannel/RunAllSignalRegions_NOCUT_ALLCHANNEL_"+param.Name,  1,  weight_ll, 2,0,2);
+//    FillHist( "AllChannel/RunAllSignalRegions_NOCUT_ALLCHANNEL_"+param.Name,  1,  weight_ll, 2,0,2);
 
     TString channel_string = GetChannelString(dilep_channel);
     param.CutFlowDir = "CutFlow";
@@ -86,27 +86,27 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
     //// Set METST value after shifting Electrons                                                                                                                                                                                             
     ev.SetMET2ST(GetMET2ST(LepsT, JetColl, AK8_JetColl, METv));
 
-    FillCutflow(CutFlow_Region, weight_ll, "NoCut", param);
+//    FillCutflow(CutFlow_Region, weight_ll, "NoCut", param);
 
     if(!PassGenMatchFilter(LepsT,param)) continue;
-    FillCutflow(CutFlow_Region, weight_ll, "GENMatched",param);
+//    FillCutflow(CutFlow_Region, weight_ll, "GENMatched",param);
     
     if(!PassHEMVeto(LepsV)) continue;
-    FillCutflow(CutFlow_Region, weight_ll, "HEMVeto", param);
+//    FillCutflow(CutFlow_Region, weight_ll, "HEMVeto", param);
 
     if(!PassMETFilter()) return;
 
-    FillCutflow(CutFlow_Region, weight_ll, "METFilter",param);
+//    FillCutflow(CutFlow_Region, weight_ll, "METFilter",param);
   
-    FillCutflow(HNL_LeptonCore::ChannelDepInc, weight_channel, GetChannelString(dilep_channel) +"_NoCut",param);
+//    FillCutflow(HNL_LeptonCore::ChannelDepInc, weight_channel, GetChannelString(dilep_channel) +"_NoCut",param);
     
     
     if(! CheckLeptonFlavourForChannel(dilep_channel, LepsT))  continue;
-    FillCutflow(CutFlow_Region, weight_channel, "LeptonFlavour",param);
+//    FillCutflow(CutFlow_Region, weight_channel, "LeptonFlavour",param);
     
     if(!ConversionSplitting(LepsT,RunConv,2,param)) continue;
 
-    FillCutflow(CutFlow_Region, weight_ll, "ConvFilter",param);
+//    FillCutflow(CutFlow_Region, weight_ll, "ConvFilter",param);
 
     if(LepsT.size() ==2)  FillCutflow(HNL_LeptonCore::ChannelDepDilep, weight_channel, GetChannelString(dilep_channel) +"_Dilep",param);
     
@@ -135,10 +135,10 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
     
     EvalTrigWeight(dilep_channel, muons,electrons,param, ev,weight_channel);
 
-    FillCutflow(CutFlow_Region, weight_channel, "Trigger",param);
-    if(LepsV.size()==2)     FillCutflow(CutFlow_Region, weight_channel, "LepVeto",param);
+//    FillCutflow(CutFlow_Region, weight_channel, "Trigger",param);
+//    if(LepsV.size()==2)     FillCutflow(CutFlow_Region, weight_channel, "LepVeto",param);
   
-    if(LepsV.size()==2&& B_JetColl.size()==0)     FillCutflow(CutFlow_Region, weight_channel, "BJet",param);
+//    if(LepsV.size()==2&& B_JetColl.size()==0)     FillCutflow(CutFlow_Region, weight_channel, "BJet",param);
 
 
     /// RunMainRegionCode runs SR1/SR2/SR3
@@ -147,13 +147,64 @@ void HNL_RegionDefinitions::RunAllSignalRegions(HNL_LeptonCore::ChargeType qq,
       cout << "Weight for event is set to Nan..." << endl;
       exit(EXIT_FAILURE);
     }
+    if(!gSystem->AccessPathName("/data6/Users/shin/SKFlatOutput/Run2UltraLegacy_v3/GetEffLumi/"+DataEra+"/GetEffLumi_SkimTree_HNMultiLepBDT_"+MCSample+".root")){
+      GenNormFile= new TFile("/data6/Users/shin/SKFlatOutput/Run2UltraLegacy_v3/GetEffLumi/"+DataEra+"/GetEffLumi_SkimTree_HNMultiLepBDT_"+MCSample+".root");
+//      cout<<"Gen Norm file "<< "/data6/Users/shin/SKFlatOutput/Run2UltraLegacy_v3/GetEffLumi/"+DataEra+"/GetEffLumi_SkimTree_HNMultiLepBDT_"+MCSample+".root" <<endl;
+    }
+    else{ cout<<"no gen norm file"<<endl; return; }
+
+    float NormNom = ((TH1D*) GenNormFile->Get("sumW_Scale"))->GetBinContent(5); 
+    float Norm, weight_pdf;
+    TString pdf_Name;
     
-    if(HasFlag("RunCR")) RunMainRegionCode(false,dilep_channel,Inclusive, LepsT, LepsV, TauColl, JetColl,  VBF_JetColl, AK8_JetColl, B_JetColl,ev, METv ,param, weight_channel);
-    else     RunMainRegionCode(true,dilep_channel,Inclusive, LepsT, LepsV, TauColl, JetColl, VBF_JetColl, AK8_JetColl, B_JetColl,ev, METv ,param, weight_channel);
+    for(unsigned int iw=0; iw<weight_PDF->size()+1; iw++){
+      if (iw<weight_PDF->size()) {
+        Norm = ((TH1D*) GenNormFile->Get("sumW_PDF"))->GetBinContent(iw+1);
+        weight_pdf = weight_channel*weight_PDF->at(iw)*(NormNom/Norm);
+      //      weight_pdf = weight_reg*weight_PDF->at(iw);
+        pdf_Name = "_Syst_PDF"+TString::Itoa(iw,10);
+        if(HasFlag("RunCR")) RunMainRegionCode(false,dilep_channel,Inclusive, LepsT, LepsV, TauColl, JetColl,  VBF_JetColl, AK8_JetColl, B_JetColl,ev, METv ,param, weight_pdf, pdf_Name);
+        else     RunMainRegionCode(true,dilep_channel,Inclusive, LepsT, LepsV, TauColl, JetColl, VBF_JetColl, AK8_JetColl, B_JetColl,ev, METv ,param, weight_pdf, pdf_Name);
+      }
+      else {
+        weight_pdf = weight_channel;
+        pdf_Name = "";
+        if(HasFlag("RunCR")) RunMainRegionCode(false,dilep_channel,Inclusive, LepsT, LepsV, TauColl, JetColl,  VBF_JetColl, AK8_JetColl, B_JetColl,ev, METv ,param, weight_pdf, pdf_Name);
+        else     RunMainRegionCode(true,dilep_channel,Inclusive, LepsT, LepsV, TauColl, JetColl, VBF_JetColl, AK8_JetColl, B_JetColl,ev, METv ,param, weight_pdf, pdf_Name);
+      }
+    }
+    for(unsigned int iw=0; iw<weight_Scale->size(); iw++){
+      if (iw<weight_Scale->size()) {
+        Norm = ((TH1D*) GenNormFile->Get("sumW_Scale"))->GetBinContent(iw+1);
+        weight_pdf = weight_channel*weight_Scale->at(iw)*(NormNom/Norm);
+        pdf_Name = "_Syst_Scale"+TString::Itoa(iw,10);
+        if(HasFlag("RunCR")) RunMainRegionCode(false,dilep_channel,Inclusive, LepsT, LepsV, TauColl, JetColl,  VBF_JetColl, AK8_JetColl, B_JetColl,ev, METv ,param, weight_pdf, pdf_Name);
+        else     RunMainRegionCode(true,dilep_channel,Inclusive, LepsT, LepsV, TauColl, JetColl, VBF_JetColl, AK8_JetColl, B_JetColl,ev, METv ,param, weight_pdf, pdf_Name);
+      }
+    }
+    for(unsigned int iw=0; iw<weight_AlphaS->size(); iw++){
+      if (iw<weight_AlphaS->size()) {
+        Norm = ((TH1D*) GenNormFile->Get("sumW_AlphaS"))->GetBinContent(iw+1);
+        weight_pdf = weight_channel*weight_AlphaS->at(iw)*(NormNom/Norm);
+        pdf_Name = "_Syst_AlphaS"+TString::Itoa(iw,10);
+        if(HasFlag("RunCR")) RunMainRegionCode(false,dilep_channel,Inclusive, LepsT, LepsV, TauColl, JetColl,  VBF_JetColl, AK8_JetColl, B_JetColl,ev, METv ,param, weight_pdf, pdf_Name);
+        else     RunMainRegionCode(true,dilep_channel,Inclusive, LepsT, LepsV, TauColl, JetColl, VBF_JetColl, AK8_JetColl, B_JetColl,ev, METv ,param, weight_pdf, pdf_Name);
+      }
+    }
+    for(unsigned int iw=0; iw<weight_PSSyst->size(); iw++){
+      if (iw<weight_PSSyst->size()) {
+        Norm = ((TH1D*) GenNormFile->Get("sumW_PSSyst"))->GetBinContent(iw+1);
+        weight_pdf = weight_channel*weight_PSSyst->at(iw)*(NormNom/Norm);
+        pdf_Name = "_Syst_PSSyst"+TString::Itoa(iw,10);
+        if(HasFlag("RunCR")) RunMainRegionCode(false,dilep_channel,Inclusive, LepsT, LepsV, TauColl, JetColl,  VBF_JetColl, AK8_JetColl, B_JetColl,ev, METv ,param, weight_pdf, pdf_Name);
+        else     RunMainRegionCode(true,dilep_channel,Inclusive, LepsT, LepsV, TauColl, JetColl, VBF_JetColl, AK8_JetColl, B_JetColl,ev, METv ,param, weight_pdf, pdf_Name);
+      }
+    }
+    GenNormFile->Close();
   }
 }
 
-void   HNL_RegionDefinitions::RunMainRegionCode(bool IsSR,HNL_LeptonCore::Channel channel,HNL_LeptonCore::ChargeType qq, std::vector<Lepton *> LepsT,std::vector<Lepton *> LepsV, vector<Tau> TauColl,  std::vector<Jet> JetColl,       std::vector<Jet> VBF_JetColl,std::vector<FatJet>  AK8_JetColl, std::vector<Jet> B_JetColl, Event ev, Particle METv, AnalyzerParameter param,  float weight_reg){
+void   HNL_RegionDefinitions::RunMainRegionCode(bool IsSR,HNL_LeptonCore::Channel channel,HNL_LeptonCore::ChargeType qq, std::vector<Lepton *> LepsT,std::vector<Lepton *> LepsV, vector<Tau> TauColl,  std::vector<Jet> JetColl,       std::vector<Jet> VBF_JetColl,std::vector<FatJet>  AK8_JetColl, std::vector<Jet> B_JetColl, Event ev, Particle METv, AnalyzerParameter param,  float weight_reg, TString pdf_Name){
   
 
   TString channel_string = GetChannelString(channel);
@@ -227,28 +278,28 @@ void   HNL_RegionDefinitions::RunMainRegionCode(bool IsSR,HNL_LeptonCore::Channe
     if(RegionBin != "false") {
 
       /// Region 1+2+3                                                                                                                                                                  
-      FillLimitInput(LimitRegions, weight_reg,   RegionBin,  "LimitExtraction/"+param.Name);
+      FillLimitInputPDF(LimitRegions, weight_reg,   RegionBin,  "LimitExtraction/"+param.Name,pdf_Name);
 
-      if(IsSR) Fill_RegionPlots(param,"AllSR" , TauColl, 
-				JetColl, AK8_JetColl, LepsT, 
-				METv, nPV, weight_reg);
+//      if(IsSR) Fill_RegionPlots(param,"AllSR"+pdf_Name , TauColl, 
+//				JetColl, AK8_JetColl, LepsT, 
+//				METv, nPV, weight_reg);
       ///Update
 
       //      if(IsSR) FillCutflow(HNL_LeptonCore::SR, weight_reg, "SR1",param);
 
-      if(IsSR) FillCutflow(HNL_LeptonCore::ChannelDepSR1, weight_reg, channel_string +"_SR1",param);
-      else FillCutflow(HNL_LeptonCore::ChannelDepCR1, weight_reg, channel_string +"_CR1",param);
+//      if(IsSR) FillCutflow(HNL_LeptonCore::ChannelDepSR1, weight_reg, channel_string +"_SR1"+pdf_Name,param);
+//      else FillCutflow(HNL_LeptonCore::ChannelDepCR1, weight_reg, channel_string +"_CR1"+pdf_Name,param);
       
       //// Region1 only limit
-      FillLimitInput(LimitRegionR1, weight_reg,   RegionBin,  "LimitExtraction/"+param.Name);
+      FillLimitInputPDF(LimitRegionR1, weight_reg,   RegionBin,  "LimitExtraction/"+param.Name,pdf_Name);
       
       for(unsigned int im=0; im<MNStrList.size(); im++){
 	//// Low Mass BDT Binned R1+2+3 only limit 
 	
 	if(RegionBin != "false") {
-	  FillLimitInput(LimitRegionsBDT, weight_reg, RegionBin,"LimitExtractionBDT/"+param.Name+"/M"+MNStrList[im]);
-	  if(B_JetColl.size()==1)          FillLimitInput(LimitRegionsBDT, weight_reg, RegionBin,"LimitExtractionBDT_BTagged/"+param.Name+"/M"+MNStrList[im]);
-	  else           FillLimitInput(LimitRegionsBDT, weight_reg, RegionBin,"LimitExtractionBDT_InvMET/"+param.Name+"/M"+MNStrList[im]);
+	  FillLimitInputPDF(LimitRegionsBDT, weight_reg, RegionBin,"LimitExtractionBDT/"+param.Name+"/M"+MNStrList[im], pdf_Name);
+//	  if(B_JetColl.size()==1)          FillLimitInput(LimitRegionsBDT, weight_reg, RegionBin,"LimitExtractionBDT_BTagged/"+param.Name+pdf_Name+"/M"+MNStrList[im]);
+//	  else           FillLimitInput(LimitRegionsBDT, weight_reg, RegionBin,"LimitExtractionBDT_InvMET/"+param.Name+"/M"+MNStrList[im], pdf_Name);
 	}
       }
     }
@@ -265,19 +316,19 @@ void   HNL_RegionDefinitions::RunMainRegionCode(bool IsSR,HNL_LeptonCore::Channe
      
       //if(IsSR) FillCutflow(HNL_LeptonCore::SR, weight_reg, "SR2",param);
  
-      if(IsSR) Fill_RegionPlots(param,"AllSR" , TauColl, JetColl, AK8_JetColl, LepsT,  METv, nPV, weight_reg);
+//      if(IsSR) Fill_RegionPlots(param,"AllSR"+pdf_Name , TauColl, JetColl, AK8_JetColl, LepsT,  METv, nPV, weight_reg);
 
-      if(IsSR)FillCutflow(HNL_LeptonCore::ChannelDepSR2, weight_reg, channel_string +"_SR2",param);
-      else FillCutflow(HNL_LeptonCore::ChannelDepCR2, weight_reg, channel_string +"_CR2",param);
+//      if(IsSR)FillCutflow(HNL_LeptonCore::ChannelDepSR2, weight_reg, channel_string +"_SR2"+pdf_Name,param);
+//      else FillCutflow(HNL_LeptonCore::ChannelDepCR2, weight_reg, channel_string +"_CR2"+pdf_Name,param);
       
       /// Region 1+2+3
-      FillLimitInput(LimitRegions, weight_reg, RegionBin,"LimitExtraction/"+param.Name);
+      FillLimitInputPDF(LimitRegions, weight_reg, RegionBin,"LimitExtraction/"+param.Name,pdf_Name);
 
       /// Region 2 only Limit
-      FillLimitInput(LimitRegionR2, weight_reg, RegionBin,  "LimitExtraction/"+param.Name);
+      FillLimitInputPDF(LimitRegionR2, weight_reg, RegionBin,  "LimitExtraction/"+param.Name,pdf_Name);
       
       //// Low Mass BDT Binned R1+2+3 only limit                                                                                                                          
-      for(unsigned int im=0; im<MNStrList.size(); im++) FillLimitInput(LimitRegionsBDT, weight_reg, RegionBin,"LimitExtractionBDT/"+param.Name+"/M"+MNStrList[im]);
+      for(unsigned int im=0; im<MNStrList.size(); im++) FillLimitInputPDF(LimitRegionsBDT, weight_reg, RegionBin,"LimitExtractionBDT/"+param.Name+"/M"+MNStrList[im], pdf_Name);
 	
     }
     else{
@@ -289,25 +340,25 @@ void   HNL_RegionDefinitions::RunMainRegionCode(bool IsSR,HNL_LeptonCore::Channe
 
 	if(RegBDT != "false"){
 	  //// Low Mass BDT Binned R1+2+3 only limit input
-	  FillLimitInput(LimitRegionsBDT, weight_reg, RegBDT,"LimitExtractionBDT/"+param.Name+"/M"+imapHP.first);
+	  FillLimitInputPDF(LimitRegionsBDT, weight_reg, RegBDT,"LimitExtractionBDT/"+param.Name+"/M"+imapHP.first, pdf_Name);
 	  /// R3 LowMass BDt Only limit input
-	  FillLimitInput(LimitRegionsBDTR3, weight_reg, RegBDT,"LimitExtractionBDT/"+param.Name+"/M"+imapHP.first);
-	  if(IsSR&&imapHP.first == "100") FillCutflow(HNL_LeptonCore::SRLowMass, weight_reg, "SR3_LowMass",param);
+	  FillLimitInputPDF(LimitRegionsBDTR3, weight_reg, RegBDT,"LimitExtractionBDT/"+param.Name+"/M"+imapHP.first, pdf_Name);
+//	  if(IsSR&&imapHP.first == "100") FillCutflow(HNL_LeptonCore::SRLowMass, weight_reg, "SR3_LowMass"+pdf_Name,param);
 	}
       }
       
       RegionBin  = RunSignalRegionAK4String (IsSR,channel,qq, LepsT, LepsV, TauColl, JetColl, AK8_JetColl, B_JetColl, ev, METv ,param,weight_reg);
       if(RegionBin != "false") {
-	if(IsSR) Fill_RegionPlots(param,"AllSR" , TauColl, JetColl, AK8_JetColl, LepsT,  METv, nPV, weight_reg);
-	if(IsSR) FillCutflow(HNL_LeptonCore::ChannelDepSR3HM, weight_reg, channel_string +"_SR3",param);
-	else FillCutflow(HNL_LeptonCore::ChannelDepCR3HM, weight_reg, channel_string +"_CR3",param);
+//	if(IsSR) Fill_RegionPlots(param,"AllSR"+pdf_Name , TauColl, JetColl, AK8_JetColl, LepsT,  METv, nPV, weight_reg);
+//	if(IsSR) FillCutflow(HNL_LeptonCore::ChannelDepSR3HM, weight_reg, channel_string +"_SR3"+pdf_Name,param);
+//	else FillCutflow(HNL_LeptonCore::ChannelDepCR3HM, weight_reg, channel_string +"_CR3"+pdf_Name,param);
 	
-	if(IsSR) FillCutflow(HNL_LeptonCore::SRHighMass, weight_reg, "SR3_HighMass",param);
+//	if(IsSR) FillCutflow(HNL_LeptonCore::SRHighMass, weight_reg, "SR3_HighMass"+pdf_Name,param);
 
 	//// Binned R1+2+3 only limit input
-	FillLimitInput(LimitRegions, weight_reg,   RegionBin,"LimitExtraction/"+param.Name);
+	FillLimitInputPDF(LimitRegions, weight_reg,   RegionBin,"LimitExtraction/"+param.Name,pdf_Name);
 	///  R3 HighMass only limit input
-	FillLimitInput(LimitRegionR3, weight_reg, RegionBin,  "LimitExtraction/"+param.Name);
+	FillLimitInputPDF(LimitRegionR3, weight_reg, RegionBin,  "LimitExtraction/"+param.Name,pdf_Name);
 	
       }
     }
@@ -680,7 +731,7 @@ TString HNL_RegionDefinitions::RunSignalRegionAK4StringBDT(bool ApplyForSR, TStr
   //float MVAvalueFake    = EvaluateEventMVA(mN, "Fake", NCut, NTree, channel, LepTColl, ev, METv, param, w);
   //float MVAvalueNonFake = EvaluateEventMVA(mN, "NonFake", NCut, NTree, channel, LepTColl, ev, METv, param, w);
   
-  if(!ApplyForSR){
+  if(!ApplyForSR|| HasFlag("PlotBDT")){
     FillHist("LimitExtraction/"+param.Name+"/LimitShape_"+RegionTag+"BDT/MVA1D_Incl_AllJets_"+BDTLabel, MVAvalueIncl, w, 80, -1., 1.);
     if(PassRegionReqBTaggedCR)   FillHist("LimitExtraction/"+param.Name+"/LimitShape_"+RegionTag+"BDT_BTagged/MVA1D_Incl_AllJets_"+BDTLabel, MVAvalueIncl, w, 80, -1., 1.);
     if(PassRegionReqInvMETCR)    FillHist("LimitExtraction/"+param.Name+"/LimitShape_"+RegionTag+"BDT_InvMET/MVA1D_Incl_AllJets_"+BDTLabel, MVAvalueIncl, w, 80, -1., 1.);

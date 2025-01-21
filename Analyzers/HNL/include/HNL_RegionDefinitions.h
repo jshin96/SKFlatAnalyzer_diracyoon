@@ -24,7 +24,7 @@ class HNL_RegionDefinitions : public HNL_LeptonCore {
   bool RunCR(TString CRName , vector<TString> CRs) ;
 
 
-  void   RunMainRegionCode(bool isSR, HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType q, std::vector<Lepton *> leps,std::vector<Lepton *> leps_veto,std::vector<Tau> TauColl, std::vector<Jet> jets,  std::vector<Jet> vbf_jets,std::vector<FatJet>  fatjets, std::vector<Jet> bjets, Event ev, Particle METv, AnalyzerParameter param,  float w);
+  void   RunMainRegionCode(bool isSR, HNL_LeptonCore::Channel channel, HNL_LeptonCore::ChargeType q, std::vector<Lepton *> leps,std::vector<Lepton *> leps_veto,std::vector<Tau> TauColl, std::vector<Jet> jets,  std::vector<Jet> vbf_jets,std::vector<FatJet>  fatjets, std::vector<Jet> bjets, Event ev, Particle METv, AnalyzerParameter param,  float w, TString pdf_Name);
 
 
   /// PRESEL 
@@ -116,6 +116,9 @@ class HNL_RegionDefinitions : public HNL_LeptonCore {
   bool RunHighPtID;
   bool RunPekingID;
   
+  std::map< TString, TH1D* > maphist_GenNorm;
+  TFile* GenNormFile; 
+  void  SetUpGenNormHists();
 
 };
 

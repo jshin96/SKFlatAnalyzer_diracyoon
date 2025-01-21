@@ -6,7 +6,7 @@ AnalyzerCore::AnalyzerCore(){
 
   //// MUON SCALE OBJ
   muonGE          = new GeneralizedEndpoint();
-  muonGEScaleSyst = new GEScaleSyst();
+//  muonGEScaleSyst = new GEScaleSyst();
 
   /// GLABAL VARIABLES
   iSetupLeptonBDTv5=false;
@@ -34,7 +34,7 @@ AnalyzerCore::~AnalyzerCore(){
   //==== Tools
 
   if(muonGE) delete muonGE;
-  if(muonGEScaleSyst) delete muonGEScaleSyst;
+//  if(muonGEScaleSyst) delete muonGEScaleSyst;
 
   AK4CHSJECUncMap.clear();
   AK4PUPPIJECUncMap.clear();
